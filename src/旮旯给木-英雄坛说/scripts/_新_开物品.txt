@@ -1,0 +1,42 @@
+  function 开物品(i, 名) {
+    var 包 = 状态.背包 || [], x = 包[i];
+    var 例表 = ((D.物品 || {}).示例) || [];
+    var 参 = null;
+    for (var q = 0; q < 例表.length; q++) if (例表[q].名 === 名) 参 = 例表[q];
+    var rows = "";
+    var 品 = 物品品级(名), 色 = 档色(品);
+    rows += 折行("品级", '<span style="color:' + 色 + '">' + 品名(品) + "</span>");
+    if (参) {
+      rows += 折行("价格", 参.价格 ? 参.价格 + " 文" : "不卖");
+      rows += 折行("槽位", 参.槽 || "—");
+      rows += '<div class="yx-k2">加成（按价格推）</div>';
+      rows += Object.keys(参.加成 || {}).map(function (k) { return 折行(k, "+" + 参.加成[k]); }).join("");
+    }
+    var P = 强参数(), 层 = 取层("装备", 名);
+    var 档 = 强档(层), 率 = 算成功率(档, 附符, 护石, 垫计数());
+    var 要 = 要的材料(P.材料, 层), 门 = 材料够吗(要);
+    rows += '<div class="yx-k2">强化 · ' + 区名(档) + "</div>";
+    rows += 折行("层数", 层 + " / " + P.上限 + (层 > 0 ? '　<span class="gr">加成 ×' + (1 + P.倍 * 层).toFixed(2) + "</span>" : ""));
+    rows += 折行("成功率", '<b style="color:' + (率 >= 0.6 ? "var(--grn)" : 率 >= 0.3 ? "var(--gold)" : "var(--rose)") + '">' + Math.round(率 * 100) + "%</b>" + (附符 ? "（含符 +12%）" : ""));
+    rows += 折行("失败会", '<span class="' + ((档.失败 === "分解" || 档.失败 === "归零") ? "w" : "") + '">' + E(档.失败 || "必成") + "</span>" + ((护石 && 护石能用(层)) ? '　<span class="gr">（护石保住）</span>' : ""));
+    rows += 折行("垫子", 垫计数() + " / " + P.垫上 + (垫计数() >= P.垫上 ? ' <span class="gr">下一发必成</span>' : ""));
+    rows += 折行("下一层要", Object.keys(要).map(function (k) { return E(k) + " " + 要[k]; }).join("　") + (门.够 ? ' <span class="gr">（足）</span>' : ' <span class="w">（不足）</span>'));
+    rows += '<div class="yx-chips" style="margin-top:8px">'
+      + '<span class="yx-ch clk' + (附符 ? " on" : "") + '" data-tg="符">强化符 +12%</span>'
+      + '<span class="yx-ch clk' + (护石 ? " on" : "") + '" data-tg="石">保护石' + (护石能用(层) ? "" : "（+7 起）") + "</span></div>";
+    var 槽 = 参 && 参.槽;
+    var 禁 = !在据点();
+    开层(名, rows + (禁 ? '<div class="yx-nt w">★ 须回驻地才能强化</div>' : "") + '<div class="yx-ops" style="margin-top:12px">'
+      + (槽 ? '<button class="yx-btn pri" data-op="equip" data-i="' + i + '" data-slot="' + E(槽) + '">装备</button>' : "")
+      + '<button class="yx-btn" data-op="enh" data-i="' + i + '"' + (禁 ? " disabled" : "") + '>强化 +1</button>'
+      + '<button class="yx-btn" data-op="use" data-i="' + i + '">用掉</button>'
+      + '<button class="yx-btn dn" data-op="drop" data-i="' + i + '">丢掉</button></div>');
+    绑物品按钮();
+    [].forEach.call(层.querySelectorAll("[data-tg]"), function (c) {
+      c.addEventListener("click", function () {
+        if (c.getAttribute("data-tg") === "符") 附符 = !附符; else 护石 = !护石;
+        开物品(i, 名);
+      });
+    });
+  }
+

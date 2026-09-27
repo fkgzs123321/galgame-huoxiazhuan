@@ -1,0 +1,1 @@
+function e(){window.requestAnimationFrame(()=>{var e;return(e=window.__MORTAL_BOOT_GUARD__)==null?void 0:e.ready()})}function t(e){var t;(t=window.__MORTAL_BOOT_GUARD__)==null||t.fail(e)}function n(){var e;(e=window.__MORTAL_BOOT_GUARD__)==null||e.recordFallbackAttempt()}function r(e){var t;(t=window.__MORTAL_BOOT_GUARD__)==null||t.setPhase(e)}export{e as i,t as n,r,n as t};

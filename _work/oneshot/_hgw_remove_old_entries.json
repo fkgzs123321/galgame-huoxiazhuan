@@ -1,0 +1,16 @@
+[
+  {"op": "remove", "path": "/entryManifest/unknown/[mvu_update]变量更新规则"},
+  {"op": "remove", "path": "/entryManifest/unknown/[mvu_update]变量输出格式"},
+  {"op": "remove", "path": "/entryManifest/unknown/变量列表"},
+  {"op": "remove", "path": "/entryManifest/unknown/[initvar]变量初始化勿开"},
+  {"op": "remove", "path": "/entryManifest/unknown/[system]宿命之卷_开局定制系统"},
+  {"op": "remove", "path": "/entryManifest/unknown/[控制器]剧情主线"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_哈利父母时代_别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第一年：魔法石 别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第二年：密室 别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第三年：阿兹卡班的囚徒 别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第四年：火焰杯 别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第五年：凤凰社 别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第六年：混血王子 别打开"},
+  {"op": "remove", "path": "/entryManifest/unknown/剧情_第七年：死亡圣器 别打开"}
+]

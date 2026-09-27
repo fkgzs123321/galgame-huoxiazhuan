@@ -1,0 +1,135 @@
+@@generate_before
+<%_
+var pName = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var pGender = getvar('stat_data.殖民者_主角.性别', { scope: 'local', defaults: '男' }) || '男';
+var pMood = Number(getvar('stat_data.殖民者_主角.心情', { scope: 'local', defaults: 50 })) || 50;
+var pRel = getvar('stat_data.殖民者_主角.关系阶段', { scope: 'local', defaults: '初识' }) || '初识';
+
+/* 关系阶段表: 5正面 + 3负面, 值域-100到100 */
+var STAGES = [
+  { 名称: '初识', 值域: '0-15', 极性: '正面', 可互动: '基础对话', NSFW权限: '禁止', 战斗配合: '最低', 心情修正: 0, 进展速度: 1.0 },
+  { 名称: '友好', 值域: '16-55', 极性: '正面', 可互动: '协作+赠礼', NSFW权限: '禁止', 战斗配合: '中', 心情修正: 2, 进展速度: 0.8 },
+  { 名称: '暧昧', 值域: '56-75', 极性: '正面', 可互动: '亲密接触', NSFW权限: '允许轻度', 战斗配合: '高', 心情修正: 3, 进展速度: 0.6 },
+  { 名称: '恋爱', 值域: '76-95', 极性: '正面', 可互动: '全面亲密', NSFW权限: '允许', 战斗配合: '高', 心情修正: 4, 进展速度: 0.5 },
+  { 名称: '亲密', 值域: '96-100', 极性: '正面', 可互动: '无限制', NSFW权限: '完全开放', 战斗配合: '最高', 心情修正: 5, 进展速度: 0.3 },
+  { 名称: '疏远', 值域: '-1到-35', 极性: '负面', 可互动: '冷淡/抗拒', NSFW权限: '禁止', 战斗配合: '低', 心情修正: -2, 进展速度: 1.0 },
+  { 名称: '敌对', 值域: '-36到-75', 极性: '负面', 可互动: '敌对/攻击倾向', NSFW权限: '禁止', 战斗配合: '拒绝/背叛', 心情修正: -3, 进展速度: 1.2 },
+  { 名称: '决裂', 值域: '-76到-100', 极性: '负面', 可互动: '断绝', NSFW权限: '禁止', 战斗配合: '敌对', 心情修正: -5, 进展速度: 2.0 }
+];
+
+var POS_TRIGGERS = [
+  { 行为: '协助', 变化: 2 },
+  { 行为: '赠礼', 变化: '3-8' },
+  { 行为: '共餐', 变化: 1 },
+  { 行为: '救援', 变化: 10 },
+  { 行为: '治疗', 变化: 5 },
+  { 行为: '请求', 变化: 5 },
+  { 行为: '赞美', 变化: '1-3' },
+  { 行为: '约会', 变化: 5 },
+  { 行为: 'NSFW', 变化: '3-10' }
+];
+
+var NEG_TRIGGERS = [
+  { 行为: '拒绝', 变化: -2 },
+  { 行为: '错礼', 变化: '-3到-8' },
+  { 行为: '抛弃', 变化: -15 },
+  { 行为: '误伤', 变化: -5 },
+  { 行为: '侮辱', 变化: '-5到-10' },
+  { 行为: '偷窃', 变化: -10 },
+  { 行为: '攻击', 变化: '-15到-30' },
+  { 行为: '杀亲友', 变化: -50 },
+  { 行为: '虐待', 变化: '-20到-40' }
+];
+
+function _stageInfo(name) {
+  var i;
+  for (i = 0; i < STAGES.length; i++) {
+    if (STAGES[i].名称 === name) { return STAGES[i]; }
+  }
+  return STAGES[0];
+}
+
+function _stageByValue(val) {
+  var v = Number(val) || 0;
+  if (v >= 96) { return STAGES[4]; }
+  if (v >= 76) { return STAGES[3]; }
+  if (v >= 56) { return STAGES[2]; }
+  if (v >= 16) { return STAGES[1]; }
+  if (v >= 0) { return STAGES[0]; }
+  if (v >= -35) { return STAGES[5]; }
+  if (v >= -75) { return STAGES[6]; }
+  return STAGES[7];
+}
+
+function _applyChange(currentName, delta) {
+  var cur = _stageInfo(currentName);
+  /* 解析值域: 支持 "0-15"(正面) 和 "-1到-35"(负面) 两种格式 */
+  var rangeStr = String(cur.值域);
+  var lo, hi;
+  if (rangeStr.indexOf('到') >= 0) {
+    var parts = rangeStr.split('到');
+    lo = Number(parts[0]) || 0;
+    hi = Number(parts[1]) || 0;
+  } else {
+    var range = rangeStr.split('-');
+    lo = Number(range[0]) || 0;
+    hi = Number(range[1]) || 0;
+  }
+  var curVal = Math.round((lo + hi) / 2);
+  var newVal = curVal + (Number(delta) || 0);
+  if (newVal > 100) { newVal = 100; }
+  if (newVal < -100) { newVal = -100; }
+  var newStage = _stageByValue(newVal);
+  return { 当前阶段: cur.名称, 当前值: curVal, 变化: delta, 新值: newVal, 新阶段: newStage.名称, 跨阶段: cur.名称 !== newStage.名称 };
+}
+
+var curStage = _stageInfo(pRel);
+var curMoodMod = curStage.心情修正;
+var testAssist = _applyChange(pRel, 2);
+var testGift = _applyChange(pRel, 5);
+var testInsult = _applyChange(pRel, -7);
+_%>
+<关系系统就绪>
+[当前关系状态]
+姓名: <%= pName %> / 性别: <%= pGender %>
+关系阶段: <%= pRel %>
+心情: <%= pMood %>/100 (阶段心情修正: <%= curMoodMod >= 0 ? '+' : '' %><%= curMoodMod %>)
+当前阶段详情: <%= curStage.名称 %>(值域<%= curStage.值域 %>) / 可互动:<%= curStage.可互动 %> / NSFW:<%= curStage.NSFW权限 %> / 战斗配合:<%= curStage.战斗配合 %> / 进展速度:<%= curStage.进展速度 %>
+
+[关系阶段表] (共8阶段: 5正面 + 3负面, 值域-100到100)
+正面阶段:
+  初识(0-15): 可互动-基础对话 / NSFW-禁止 / 战斗配合-最低 / 心情修正0 / 进展速度1.0
+  友好(16-55): 可互动-协作+赠礼 / NSFW-禁止 / 战斗配合-中 / 心情修正+2 / 进展速度0.8
+  暧昧(56-75): 可互动-亲密接触 / NSFW-允许轻度 / 战斗配合-高 / 心情修正+3 / 进展速度0.6
+  恋爱(76-95): 可互动-全面亲密 / NSFW-允许 / 战斗配合-高 / 心情修正+4 / 进展速度0.5
+  亲密(96-100): 可互动-无限制 / NSFW-完全开放 / 战斗配合-最高 / 心情修正+5 / 进展速度0.3
+负面阶段:
+  疏远(-1到-35): 可互动-冷淡/抗拒 / NSFW-禁止 / 战斗配合-低 / 心情修正-2 / 进展速度1.0
+  敌对(-36到-75): 可互动-敌对/攻击倾向 / NSFW-禁止 / 战斗配合-拒绝/背叛 / 心情修正-3 / 进展速度1.2
+  决裂(-76到-100): 可互动-断绝 / NSFW-禁止 / 战斗配合-敌对 / 心情修正-5 / 进展速度2.0
+注: stat_data.殖民者_主角.关系阶段枚举为 初识/友好/暧昧/恋爱/亲密/疏远/敌对/决裂 (8值)
+
+[关系变化触发]
+正面触发清单:
+  协助 +2 / 赠礼 +3~8 / 共餐 +1 / 救援 +10 / 治疗 +5 / 请求 +5 / 赞美 +1~3 / 约会 +5 / NSFW +3~10
+负面触发清单:
+  拒绝 -2 / 错礼 -3~-8 / 抛弃 -15 / 误伤 -5 / 侮辱 -5~-10 / 偷窃 -10 / 攻击 -15~-30 / 杀亲友 -50 / 虐待 -20~-40
+变化示例:
+  <%= pRel %> +协助(2) → 新值<%= testAssist.新值 %>/新阶段<%= testAssist.新阶段 %>/跨阶段<%= testAssist.跨阶段 ? '是' : '否' %>
+  <%= pRel %> +赠礼(5) → 新值<%= testGift.新值 %>/新阶段<%= testGift.新阶段 %>/跨阶段<%= testGift.跨阶段 ? '是' : '否' %>
+  <%= pRel %> +侮辱(-7) → 新值<%= testInsult.新值 %>/新阶段<%= testInsult.新阶段 %>/跨阶段<%= testInsult.跨阶段 ? '是' : '否' %>
+查询函数: _stageInfo(阶段名) → { 名称, 值域, 极性, 可互动, NSFW权限, 战斗配合, 心情修正, 进展速度 }
+值映射函数: _stageByValue(关系值) → 阶段对象
+变化应用函数: _applyChange(当前阶段, 变化值) → { 当前阶段, 当前值, 变化, 新值, 新阶段, 跨阶段 }
+
+[行为校验要求]
+关系变化必须输出行为校验块:
+  行为类型: 互动/赠礼/救援/治疗/侮辱/攻击/NSFW等
+  执行者: 殖民者姓名
+  触发行为: 协助/赠礼/共餐/救援/治疗/请求/赞美/约会/NSFW/拒绝/错礼/抛弃/误伤/侮辱/偷窃/攻击/杀亲友/虐待
+  关系变化: 对应触发值 (查POS_TRIGGERS/NEG_TRIGGERS)
+  当前阶段: stat_data.殖民者_主角.关系阶段
+  变化计算: _applyChange()结果 (当前值/变化/新值/新阶段/跨阶段)
+  心情修正: 新阶段心情修正值 → 叠加到stat_data.殖民者_主角.心情
+  阶段更新: 跨阶段时写入新枚举值到stat_data.殖民者_主角.关系阶段
+</关系系统就绪>

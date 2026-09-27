@@ -1,0 +1,299 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 主动事件触发器（让女角活起来）
+   ════════════════════════════════════════════════════════════
+   职责：
+   - 检查当前女角是否满足"主动行动"条件
+   - 满足时输出"主动事件提示"给AI，要求在叙事中体现女角主动行为
+   - 女角不再被动等主角接触，会主动来找主角/打电话/送东西/邀约
+
+   设计原则：
+   1. 仅当前女角触发主动事件（避免一次触发多个女角导致token爆炸）
+   2. 每个事件有冷却机制（同一天同一事件不重复触发）
+   3. 触发条件综合：女角ID + 好感度 + 时段 + day_count + 主角状态
+   4. 输出格式为"提示框"，AI 必须在叙事中体现
+
+   引用依赖：
+   - _currentHeroineId（来自角色性格控制器）
+   - _affection / _jealousy（来自角色性格控制器）
+   - _dayCount / _tslot / _currentLocation（来自D0系统控制器）
+   - _fatigue / _mood（来自D0系统控制器）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   主动事件定义表（15 个事件）
+   每个事件结构：
+   {
+     id: 事件唯一标识,
+     heroine_id: 触发女角ID,
+     name: 事件名称,
+     condition: 触发条件函数（返回 true/false）,
+     cooldown_flag: 冷却标志变量名（同一天不重复触发）,
+     action: 触发动作描述（给AI的指令）,
+     narrative_hint: 叙事提示（AI 应如何描写）
+   }
+   ════════════════════════════════════════════════════════════ */
+
+/* 读取当前状态（兜底，若控制器未定义则从MVU读取） */
+if (typeof _currentHeroineId === 'undefined') {
+  var _heroineNameMap2 = { '鸣泽唯':1,'鸣泽美佐子':2,'舞岛可怜':3,'加藤美纪':4,'筱原泉美':5,'南川洋子':6,'都筑梢江':7,'水野友美':8,'安田爱美':9,'田中美沙':10,'片桐美铃':11,'野野村美里':12,'永岛久美子':13,'永岛佐知子':14,'齐藤澪':15,'齐藤澪奈':16,'铃木美穗':17,'仁科':18,'正树夏子':19,'杉本樱子':20 };
+  var _hName = getvar('stat_data.场景.当前女角名', { scope: 'local', defaults: '无' });
+  var _currentHeroineId = (_hName && _hName !== '无') ? (_heroineNameMap2[_hName] || 0) : 0;
+}
+if (typeof _affection === 'undefined') {
+  var _hStat = getvar('stat_data.当前女角', { scope: 'local', defaults: {} }) || {};
+  var _affection = Number(_hStat.好感度) || 0;
+  var _jealousy = Number(_hStat.嫉妒值) || 0;
+}
+if (typeof _dayCount === 'undefined') var _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local' }));
+if (typeof _tslot === 'undefined') var _tslot = getvar('stat_data.时间.时段', { scope: 'local' });
+if (typeof _currentLocation === 'undefined') var _currentLocation = getvar('stat_data.场景.当前地点', { scope: 'local' });
+if (typeof _fatigue === 'undefined') var _fatigue = Number(getvar('stat_data.主角.疲劳', { scope: 'local' }));
+if (typeof _mood === 'undefined') var _mood = Number(getvar('stat_data.主角.心情', { scope: 'local' }));
+
+/* 冷却检查：读取今日已触发的主动事件列表 */
+var _todayTriggeredKey = 'stat_data.临时.今日主动事件_day' + _dayCount;
+var _todayTriggeredRaw = getvar(_todayTriggeredKey, { scope: 'local', defaults: '' }) || '';
+var _todayTriggered = _todayTriggeredRaw ? String(_todayTriggeredRaw).split(',') : [];
+
+/* 主动事件定义表 */
+var PROACTIVE_EVENTS = [
+  /* ─── 鸣泽唯（id=1）─── */
+  {
+    id: 'yui_morning_call',
+    heroine_id: 1,
+    name: '唯的早餐呼叫',
+    condition: function() {
+      return _currentHeroineId === 1 && _affection >= 20 && _tslot === '早'
+        && String(_currentLocation).indexOf('自宅') >= 0;
+    },
+    action: '唯主动来叫主角起床吃早餐 — 她会推开主角房门，用冷淡语气说"起来啦，饭在桌上"，但耳后泛红，手里端着热腾腾的咖喱饭和草莓牛奶',
+    narrative_hint: '体现唯以"义妹本分"掩饰关心的别扭性格，表面冷淡实则细心'
+  },
+  {
+    id: 'yui_evening_knock',
+    heroine_id: 1,
+    name: '唯的晚安敲门',
+    condition: function() {
+      return _currentHeroineId === 1 && _affection >= 40 && _tslot === '晚'
+        && String(_currentLocation).indexOf('自宅') >= 0;
+    },
+    action: '唯主动来敲主角房门，借口"借偶像剧DVD"或"抢零食"来制造独处机会，实际上是想多待一会儿',
+    narrative_hint: '体现唯暗恋萌芽期的主动黏人，借口拙劣但意图明显'
+  },
+  {
+    id: 'yui_jealousy_question',
+    heroine_id: 1,
+    name: '唯的嫉妒质问',
+    condition: function() {
+      return _currentHeroineId === 1 && typeof _jealousy !== 'undefined' && _jealousy >= 50 && _tslot !== '早';
+    },
+    action: '唯主动来质问主角最近与其他女角的互动，语气酸涩但强装镇定，会问"哥哥最近是不是很忙？跟谁在一起？"',
+    narrative_hint: '体现唯压抑的嫉妒，表面平静实则内心翻涌，是关系转折的关键信号'
+  },
+
+  /* ─── 鸣泽美佐子（id=2）─── */
+  {
+    id: 'misako_cafe_invite',
+    heroine_id: 2,
+    name: '美佐子的咖啡邀约',
+    condition: function() {
+      return _currentHeroineId === 2 && _affection >= 30 && (_tslot === '上午' || _tslot === '下午')
+        && String(_currentLocation).indexOf('商业区') < 0;
+    },
+    action: '美佐子主动打电话邀主角来咖啡店《憩》，借口"新出了甜点想让你尝尝"或"店里需要帮忙"，实则是想见主角',
+    narrative_hint: '体现美佐子以义母身份掩饰情愫的温柔，用日常借口创造见面机会'
+  },
+  {
+    id: 'misako_night_snack',
+    heroine_id: 2,
+    name: '美佐子的夜宵关怀',
+    condition: function() {
+      return _currentHeroineId === 2 && _affection >= 50 && _tslot === '深夜'
+        && _fatigue >= 60 && String(_currentLocation).indexOf('自宅') >= 0;
+    },
+    action: '美佐子主动端夜宵来主角房间，穿着居家服，温柔说"累了吧？吃点东西再休息"，神情有几分暧昧',
+    narrative_hint: '体现美佐子在深夜独处时的情感流露，是禁忌感升温的关键节点'
+  },
+
+  /* ─── 舞岛可怜（id=3）─── */
+  {
+    id: 'karen_diary_delivery',
+    heroine_id: 3,
+    name: '可怜的日记交付',
+    condition: function() {
+      return _currentHeroineId === 3 && _affection >= 40 && _dayCount >= 6;
+    },
+    action: '可怜主动来找主角，害羞地递上一本日记本，说"这是…给你的，请你读一读"，然后快速转身离开',
+    narrative_hint: '体现可怜暗恋内化的文静性格，日记是她情感的唯一出口'
+  },
+
+  /* ─── 加藤美纪（id=4）─── */
+  {
+    id: 'miki_student_council_help',
+    heroine_id: 4,
+    name: '美纪的学生会求助',
+    condition: function() {
+      return _currentHeroineId === 4 && _affection >= 30 && _tslot === '上午'
+        && String(_currentLocation).indexOf('学园') >= 0;
+    },
+    action: '美纪主动来找主角，以高傲语气说"学生会有点事需要你帮忙，别误会，不是我想找你"，实则是想接近主角',
+    narrative_hint: '体现美纪高傲掩饰好感的典型反差，嘴硬身体诚实'
+  },
+
+  /* ─── 筱原泉美（id=5）─── */
+  {
+    id: 'izumi_onsen_invite',
+    heroine_id: 5,
+    name: '泉美的温泉邀约',
+    condition: function() {
+      return _currentHeroineId === 5 && _affection >= 40 && _dayCount >= 7 && _dayCount <= 9;
+    },
+    action: '泉美主动来邀主角温泉旅行，红着脸说"那个…如果你愿意的话，29号一起去温泉乡吧？只有我们两个…"',
+    narrative_hint: '体现泉美从被动到主动的转变，温泉邀约是她敞开心扉的标志'
+  },
+
+  /* ─── 南川洋子（id=6）─── */
+  {
+    id: 'yoko_running_invite',
+    heroine_id: 6,
+    name: '洋子的跑步邀约',
+    condition: function() {
+      return _currentHeroineId === 6 && _affection >= 30 && _tslot === '下午'
+        && String(_currentLocation).indexOf('海岸') >= 0;
+    },
+    action: '洋子主动跑过来拍主角肩膀，爽朗说"嘿！来跑步吗？别磨蹭，跟上我！"，递过一瓶运动饮料',
+    narrative_hint: '体现洋子哥们儿式的主动，运动是她表达亲近的唯一方式'
+  },
+
+  /* ─── 水野友美（id=8）─── */
+  {
+    id: 'tomomi_borrow_excuse',
+    heroine_id: 8,
+    name: '友美的借东西借口',
+    condition: function() {
+      return _currentHeroineId === 8 && _affection >= 30 && (_tslot === '上午' || _tslot === '下午')
+        && String(_currentLocation).indexOf('自宅') >= 0;
+    },
+    action: '友美主动来敲门，借口"借料酒/借鸡蛋/借DVD"来见面，实际只是想多待一会儿，会脸红说"那个…就是想来看看你…啊不是，是借东西！"',
+    narrative_hint: '体现友美暗恋内化的笨拙，借东西是十年青梅竹马的默契借口'
+  },
+
+  /* ─── 安田爱美（id=9）─── */
+  {
+    id: 'manami_nursery_invite',
+    heroine_id: 9,
+    name: '爱美的保育园邀约',
+    condition: function() {
+      return _currentHeroineId === 9 && _affection >= 30 && (_tslot === '上午' || _tslot === '下午')
+        && String(_currentLocation).indexOf('保育园') < 0;
+    },
+    action: '爱美主动来找主角，温柔说"今天保育园有活动，孩子们想见哥哥…你能来吗？"，眼神期待',
+    narrative_hint: '体现爱美以孩子为桥梁拉近关系的温柔策略'
+  },
+
+  /* ─── 都筑梢江（id=7）─── */
+  {
+    id: 'kozue_bookstore_invite',
+    heroine_id: 7,
+    name: '梢江的书店邀约',
+    condition: function() {
+      return _currentHeroineId === 7 && _affection >= 30 && _tslot === '下午'
+        && String(_currentLocation).indexOf('商业区') < 0;
+    },
+    action: '梢江主动来小声说"那个…商业区书店来了新书…如果方便的话，一起去看看吗？"，低头捏着衣角',
+    narrative_hint: '体现梢文静内敛的主动，书店是她最舒适的约会场景'
+  },
+
+  /* ─── 片桐美铃（id=11）─── */
+  {
+    id: 'misuzu_phone_care',
+    heroine_id: 11,
+    name: '美铃的电话关心',
+    condition: function() {
+      return _currentHeroineId === 11 && _affection >= 40 && _tslot === '晚';
+    },
+    action: '美铃主动打电话给主角，以教师口吻说"最近怎么样？有没有好好吃饭？"，语气逐渐从教师转为女性化关心',
+    narrative_hint: '体现美铃师生恋的克制与越界，电话是她卸下教师身份的安全距离'
+  },
+
+  /* ─── 杉本樱子（id=20）─── */
+  {
+    id: 'sakurako_note_pass',
+    heroine_id: 20,
+    name: '樱子的纸条传递',
+    condition: function() {
+      return _currentHeroineId === 20 && _affection >= 20;
+    },
+    action: '护士转交一张纸条，上面是樱子清秀的字迹："今天感觉怎么样？我写了一首诗，想读给你听。—樱子"',
+    narrative_hint: '体现樱子以文字为媒介的独特交流方式，纸条是她与外界唯一的连接'
+  },
+
+  /* ─── 田中美沙（id=10）─── */
+  {
+    id: 'misa_shopping_invite',
+    heroine_id: 10,
+    name: '美沙的购物邀约',
+    condition: function() {
+      return _currentHeroineId === 10 && _affection >= 30 && _tslot === '下午'
+        && String(_currentLocation).indexOf('商业区') < 0;
+    },
+    action: '美沙主动来邀主角逛街，爽快说"嘿！商业区有打折，陪我去看看呗！"，主动挽主角手臂',
+    narrative_hint: '体现美沙跨作角色特有的主动直率，是姐姐型的亲近表达'
+  },
+
+  /* ─── 永岛佐知子（id=14）─── */
+  {
+    id: 'sachiko_flower_invite',
+    heroine_id: 14,
+    name: '佐知子的花艺邀约',
+    condition: function() {
+      return _currentHeroineId === 14 && _affection >= 30 && _tslot === '下午';
+    },
+    action: '佐知子主动来邀主角学习花艺，优雅说"今天要插花，缺个助手…你有空吗？"，眼神温柔',
+    narrative_hint: '体现佐知子以花艺为媒介的优雅接近，是她成熟女性的含蓄表达'
+  }
+];
+
+/* ════════════════════════════════════════════════════════════
+   触发检查：遍历事件表，找出当前满足条件且未冷却的事件
+   ════════════════════════════════════════════════════════════ */
+var _triggeredEvents = [];
+for (var _ei = 0; _ei < PROACTIVE_EVENTS.length; _ei++) {
+  var _evt = PROACTIVE_EVENTS[_ei];
+  /* 仅触发当前女角的事件 */
+  if (_evt.heroine_id !== _currentHeroineId) continue;
+  /* 冷却检查：同一天同一事件不重复触发 */
+  if (_todayTriggered.indexOf(_evt.id) >= 0) continue;
+  /* 条件检查 */
+  try {
+    if (_evt.condition()) {
+      _triggeredEvents.push(_evt);
+    }
+  } catch(e) { /* 条件检查异常，跳过 */ }
+}
+
+/* 记录今日已触发事件（持久化冷却） */
+if (_triggeredEvents.length > 0) {
+  var _newTriggeredIds = _triggeredEvents.map(function(e) { return e.id; });
+  var _updatedTriggered = _todayTriggered.concat(_newTriggeredIds);
+  /* 输出 MVU 更新指令（由额外模型/主模型执行） */
+%>
+<% if (_triggeredEvents.length > 0) { %>
+[主动事件触发（day=<%= _dayCount %> <%= _tslot %>）：
+当前女角主动行动！AI 必须在叙事中体现以下事件，不能忽略。
+<% _triggeredEvents.forEach(function(_te) { %>
+◆ <%= _te.name %>
+  触发动作：<%= _te.action %>
+  叙事提示：<%= _te.narrative_hint %>
+<% }); %>
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中追加输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace <%= _todayTriggeredKey %> 的值为 "<%= _updatedTriggered.join(',') %>"
+叙事要求：
+1. 主动事件必须在本轮叙事中体现，不能跳过
+2. 女角的主动行为要符合其性格设定（参考四件套+剧情线）
+3. 事件触发后女角 affection +2~5（主动接近是好感累积的重要方式）
+4. 若玩家拒绝/冷淡回应，女角 affection -3~5、jealousy 可能上升]
+<% } %>
+<% } /* end if _triggeredEvents.length > 0 */ %>

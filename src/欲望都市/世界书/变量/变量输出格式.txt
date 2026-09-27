@@ -1,0 +1,26 @@
+---
+<update_variable_rules>
+rule:
+  - you must output the update analysis and the actual update commands at once in the end of the next reply
+  - 'the update commands must strictly follow the **JSON Patch (RFC 6902)** standard, but can only use the following operations: `replace` (replace the value of existing paths), `add` (only used to insert new items into an object or array), `remove`; that is, the output must be a valid JSON array containing operation objects'
+  - '★战斗结算轮（本回复含【战斗结算】块）：AI 【必须】按结算块数值把结果写进 stat_data——缴械值/缴械次数/胜场败场/今日胜败/累计缴械、技能与恢复技能 经验/等级、学业总分/各科（随机科目±）、体力/勃起度/生理、道具增减、今日场次.结果与是否参战、排班.战斗状态=已结算、排班.当前战斗目标 清空""（数值以结算块为准，勿自行估算）；并更新 时间推进、她.欲望积压/今日已使用/身体状态/心理状态/心声、道具补货（add）'
+  - '★非结算轮：按【变量更新规则】对应字段的 check 正常更新（体力/勃起度/生理 的日常变化由 AI 负责）'
+  - '★路径以 stat_data 顶层字段名开头（时间/玩家/排班/女性角色），如 /时间/日期；禁止新建顶层字段（如 当前时间 应为 /时间/日期）'
+format: |-
+  <UpdateVariable>
+  <Analysis>$(IN ENGLISH, no more than 80 words)
+  - ${calculate time passed: ...}
+  - ${decide whether dramatic updates are allowed as it's in a special case or the time passed is more than usual: yes/no}
+  - ${analyze every variable based on its corresponding `check`, according only to current reply instead of previous plots: ...}
+  - ${if the value is number, please write down the calculation: old_value (X) + delta (Y) = new_value (Z)}
+  </Analysis>
+  <JSONPatch>
+  [
+    { "op": "replace", "path": "${/path/to/variable}", "value": ${new_value} },
+    { "op": "add", "path": "${/path/to/object/newKey}", "value": ${content} },
+    { "op": "remove", "path": "${/path/to/array/0}" },
+    ...
+  ]
+  </JSONPatch>
+  </UpdateVariable>
+</update_variable_rules>

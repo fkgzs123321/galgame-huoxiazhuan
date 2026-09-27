@@ -1,0 +1,44 @@
+[
+ {
+  "名": "李青照_NSFW_陌生",
+  "角色": "李青照",
+  "档": "陌生",
+  "file": "世界书/角色/底座_yingxiong/李青照/NSFW_陌生.yaml",
+  "条件": "getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '陌生'"
+ },
+ {
+  "名": "李青照_NSFW_相识",
+  "角色": "李青照",
+  "档": "相识",
+  "file": "世界书/角色/底座_yingxiong/李青照/NSFW_相识.yaml",
+  "条件": "getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '相识'"
+ },
+ {
+  "名": "李青照_NSFW_一见如故",
+  "角色": "李青照",
+  "档": "一见如故",
+  "file": "世界书/角色/底座_yingxiong/李青照/NSFW_一见如故.yaml",
+  "条件": "getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '一见如故'"
+ },
+ {
+  "名": "李青照_NSFW_亲密",
+  "角色": "李青照",
+  "档": "亲密",
+  "file": "世界书/角色/底座_yingxiong/李青照/NSFW_亲密.yaml",
+  "条件": "getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '亲密'"
+ },
+ {
+  "名": "李青照_NSFW_热情如火",
+  "角色": "李青照",
+  "档": "热情如火",
+  "file": "世界书/角色/底座_yingxiong/李青照/NSFW_热情如火.yaml",
+  "条件": "getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '热情如火'"
+ },
+ {
+  "名": "李青照_NSFW_可婚",
+  "角色": "李青照",
+  "档": "可婚",
+  "file": "世界书/角色/底座_yingxiong/李青照/NSFW_可婚.yaml",
+  "条件": "getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '可婚'"
+ }
+]

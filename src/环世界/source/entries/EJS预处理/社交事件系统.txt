@@ -1,0 +1,112 @@
+@@generate_before
+<%_
+/* 社交事件系统 - 殖民者间的人际互动 */
+var SOCIAL_EVENT_DB = {
+  '聊天': {心情: 2, 关系: 1, 经验: 1, 描述: '轻松的闲聊增进了感情', 触发: 0.25},
+  '争吵': {心情: -5, 关系: -3, 经验: 0, 描述: '一场不愉快的口角', 触发: 0.10},
+  '深度交谈': {心情: 3, 关系: 5, 经验: 2, 描述: '真诚的对话拉近了距离', 触发: 0.08},
+  '友谊建立': {心情: 5, 关系: 8, 经验: 0, 描述: '两人成为了朋友', 触发: 0.05},
+  '恋爱萌芽': {心情: 8, 关系: 12, 经验: 0, 描述: '心动的感觉悄然萌生', 触发: 0.03},
+  '背叛': {心情: -10, 关系: -15, 经验: 0, 描述: '信任被打破，关系破裂', 触发: 0.02},
+  '安慰': {心情: 5, 关系: 3, 经验: 1, 描述: '温暖的安慰化解了悲伤', 触发: 0.08},
+  '互相嘲讽': {心情: -3, 关系: -2, 经验: 0, 描述: '恶意的玩笑伤了感情', 触发: 0.10}
+};
+
+var SOCIAL_SKILL_MOD = {
+  '社交0-3': 0.5,
+  '社交4-6': 1.0,
+  '社交7-9': 1.3,
+  '社交10-14': 1.5,
+  '社交15-20': 2.0
+};
+
+function _socialChance(charA, charB){
+  var sa = Number(getvar('stat_data.' + charA + '.社交', {scope:'local',defaults:5}))||5;
+  var sb = Number(getvar('stat_data.' + charB + '.社交', {scope:'local',defaults:5}))||5;
+  var avg = (sa + sb) / 2;
+  var mod = 1.0;
+  if(avg <= 3) mod = 0.5;
+  else if(avg <= 6) mod = 1.0;
+  else if(avg <= 9) mod = 1.3;
+  else if(avg <= 14) mod = 1.5;
+  else mod = 2.0;
+  return Math.min(1.0, 0.4 * mod);
+}
+
+function _socialEffect(eventType, charA, charB){
+  var ev = SOCIAL_EVENT_DB[eventType] || SOCIAL_EVENT_DB['聊天'];
+  var sa = Number(getvar('stat_data.' + charA + '.社交', {scope:'local',defaults:5}))||5;
+  var mod = 1.0;
+  if(sa <= 3) mod = 0.5;
+  else if(sa <= 6) mod = 1.0;
+  else if(sa <= 9) mod = 1.3;
+  else if(sa <= 14) mod = 1.5;
+  else mod = 2.0;
+  return {
+    心情: Math.round(ev.心情 * mod),
+    关系: Math.round(ev.关系 * mod),
+    经验: ev.经验,
+    描述: ev.描述
+  };
+}
+
+function _dailySocial(colonistCount, seed){
+  if(colonistCount < 2) return [];
+  var pairs = Math.floor(colonistCount / 2);
+  var events = [];
+  for(var i = 0; i < pairs; i++){
+    var roll = _lcgRoll((seed||'social') + '_' + i, 1, 100)[0] / 100;
+    var cum = 0;
+    for(var k in SOCIAL_EVENT_DB){
+      cum += SOCIAL_EVENT_DB[k].触发;
+      if(roll < cum){
+        events.push(k);
+        break;
+      }
+    }
+    if(events.length <= i) events.push('聊天');
+  }
+  return events;
+}
+
+function _socialMoodModifier(relationLevel){
+  var mod = {心情: 0, 描述: '无特殊影响'};
+  if(relationLevel === '亲密') mod = {心情: 5, 描述: '亲密关系带来温暖'};
+  else if(relationLevel === '恋爱') mod = {心情: 8, 描述: '恋爱的甜蜜'};
+  else if(relationLevel === '暧昧') mod = {心情: 4, 描述: '暧昧的悸动'};
+  else if(relationLevel === '友好') mod = {心情: 2, 描述: '友好的陪伴'};
+  else if(relationLevel === '初识') mod = {心情: 0, 描述: '初识阶段尚无特殊情感影响'};
+  else if(relationLevel === '敌对') mod = {心情: -5, 描述: '敌意令人不安'};
+  else if(relationLevel === '决裂') mod = {心情: -8, 描述: '关系的破裂带来痛苦'};
+  else if(relationLevel === '疏远') mod = {心情: -3, 描述: '疏远的关系令人失落'};
+  return mod;
+}
+_%>
+
+<社交事件校验>
+[社交事件校验]
+殖民者数量: <%= arguments[0] || '未指定' %>
+今日社交事件: <%= JSON.stringify(_dailySocial(3)) %>
+当前关系心情修正: <%= JSON.stringify(_socialMoodModifier(getvar('stat_data.殖民者_主角.关系阶段', {scope:'local',defaults:'初识'}))) %>
+</社交事件校验>
+
+[社交事件系统 · 系统控制器]
+## 社交事件表（查SOCIAL_EVENT_DB）
+聊天(心情+2/关系+1/概率25%) | 争吵(心情-5/关系-3/概率10%) | 深度交谈(心情+3/关系+5/概率8%) | 友谊建立(心情+5/关系+8/概率5%) | 恋爱萌芽(心情+8/关系+12/概率3%) | 背叛(心情-10/关系-15/概率2%) | 安慰(心情+5/关系+3/概率8%) | 互相嘲讽(心情-3/关系-2/概率10%)
+
+## 社交技能修正（查SOCIAL_SKILL_MOD）
+社交0-3(系数0.5) | 社交4-6(系数1.0) | 社交7-9(系数1.3) | 社交10-14(系数1.5) | 社交15-20(系数2.0)
+
+## 触发规则
+- 每游戏日生成 N/2 个社交事件（N=殖民者数量）
+- 社交事件效果受双方社交技能平均值修正
+- 关系阶段影响日常心情（亲密+5/恋爱+8/友好+2/敌对-5/决裂-8）
+- 背叛事件仅当关系阶段≥暧昧时可触发
+- 恋爱萌芽仅当关系阶段=友好时可触发
+
+## 叙事要求
+- 社交事件须以对话/动作描写呈现，不得仅陈述结果
+- 争吵事件须描写冲突的起因和过程
+- 友谊/恋爱建立须有情感铺垫，不得突兀
+- 背叛事件须有深刻的心理描写和后果
+- 安慰事件须体现温暖和关怀

@@ -1,0 +1,388 @@
+// 状态栏填充 v2
+// 为什么这样写：独立界面渲染在 iframe 里，iframe 内的内联 script 不执行；
+// 而本脚本跑在主文档（Mvu 在这里可用）→ 所以在主文档取数据，再对每个文档各填充一次。
+(function () {
+  async function 取数据() {
+    /* 照 src/暗黑地牢 的取法（生产卡验证过的实现）：
+       - 从 getLastMessageId() 往回找最多 15 层
+       - 只认 role === 'assistant' 的楼层：用户消息层没有变量
+       - getChatMessages / Mvu.getMvuData 都要 await
+       - 全找不到 → 兜底空对象 */
+    try {
+      let maxId = 0;
+      try { maxId = getLastMessageId(); } catch (e0) {}
+      for (let i = 0; i < 15; i++) {
+        let cid = maxId - i;
+        if (cid < 0) break;
+        let msg = null;
+        try { msg = await getChatMessages(cid); } catch (e1) { continue; }
+        if (Array.isArray(msg)) msg = msg[0];
+        if (!msg) continue;
+        if (msg.role && msg.role !== 'assistant') continue;
+        let v = null;
+        try {
+          if (window.Mvu && Mvu.getMvuData) v = await Mvu.getMvuData({ type: 'message', message_id: msg.message_id });
+          else if (typeof getVariables === 'function') v = await getVariables({ type: 'message', message_id: msg.message_id });
+        } catch (e2) {}
+        if (v && v.stat_data) return v.stat_data;
+      }
+    } catch (e) {}
+    try { if (typeof getVariables === 'function') { var c = await getVariables({ type: 'chat' }); if (c && c.stat_data) return c.stat_data; } } catch (e3) {}
+    return {};
+  }
+
+  async function 填充(DOC, WIN, 数据) {
+    
+      var NS = 'gg2';
+      var ROOT = DOC.getElementById(NS + '-root');
+      if (!ROOT || ROOT.getAttribute('data-' + NS + '-init') === '1') return;
+      ROOT.setAttribute('data-' + NS + '-init', '1');
+    
+      var LV = {
+        微: { label: '微', cost: [3, 5],   rate: 90 },
+    
+        中: { label: '中', cost: [10, 15], rate: 60 },
+    
+        强: { label: '强', cost: [25, 35], rate: 30 },
+    
+        极: { label: '极', cost: [50, 60], rate: 10 },
+    
+        锁: { label: '锁', cost: null,     rate: 0 }
+      };
+      /* 等级统一为中文；CSS 类名保留英文（改动会破坏样式）；英文写法保留兼容 */
+      var 类名映射 = { 微: 'micro', 中: 'mid', 强: 'strong', 极: 'extreme', 锁: 'lock' };
+      var 中文映射 = { micro: '微', mid: '中', strong: '强', extreme: '极', lock: '锁' };
+      function 归一(v) { v = String(v || ''); return LV[v] ? v : (中文映射[v] || '微'); }
+      var STAGE = ['陌生', '警惕', '动摇', '依附', '崩坏'];
+      var PROF = ['', '新手', '上手', '沉浸', '狂热', '收官'];
+      var PREV = {};
+    
+      /* MVU 变量读法（@types/iframe/exported.mvu.d.ts）：
+         Mvu.getMvuData({ type: 'message', message_id: 'latest' }) 是「最新消息楼层的 mvu 数据」；
+         getVariables({type:'chat'}) 是酒馆变量，不是 MVU 的。逐级兜底。 */
+      function allVars() {
+        try { if (typeof Mvu !== 'undefined' && Mvu.getMvuData) { var d = Mvu.getMvuData({ type: 'message', message_id: 'latest' }); if (d) return d; } } catch (e) {}
+        try { if (typeof getVariables === 'function') { var m = getVariables({ type: 'message', message_id: 'latest' }); if (m && m.stat_data) return m; } } catch (e) {}
+        try { if (typeof getVariables === 'function') return getVariables({ type: 'chat' }) || {}; } catch (e) {}
+        return {};
+      }
+      function walk(o, path) {
+        var p = String(path || '').replace(/^stat_data\./, '').split('.');
+        var c = (o && o.stat_data !== undefined) ? o.stat_data : o;
+        for (var i = 0; i < p.length && c != null; i++) c = c[p[i]];
+        return c;
+      }
+      function get(path, dflt) { var v = walk(allVars(), path); return v === undefined || v === null ? dflt : v; }
+      function setLocal(o, path, val) {
+        var p = String(path).replace(/^stat_data\./, '').split('.');
+        if (o.stat_data === undefined) o.stat_data = {};
+        var c = o.stat_data;
+        for (var i = 0; i < p.length - 1; i++) { if (typeof c[p[i]] !== 'object' || c[p[i]] === null) c[p[i]] = {}; c = c[p[i]]; }
+        c[p[p.length - 1]] = val;
+      }
+      function set(path, val) {
+        var full = 'stat_data.' + String(path).replace(/^stat_data\./, '');
+        try { if (typeof updateVariablesWith === 'function') updateVariablesWith(function (v) { v = v || {}; setLocal(v, full, val); return v; }, { type: 'chat' }); } catch (e) {}
+        try {
+          if (typeof updateVariablesWith === 'function' && typeof getCurrentMessageId === 'function')
+            updateVariablesWith(function (v) { v = v || {}; setLocal(v, full, val); return v; }, { type: 'message', message_id: getCurrentMessageId() });
+        } catch (e) {}
+        try { if (typeof triggerSlash === 'function') triggerSlash('/setvar ' + full + ' ' + JSON.stringify(JSON.stringify(val))); } catch (e) {}
+      }
+    
+      var A = 1664525, C = 1013904223, M = 4294967296;
+      function nxt(s) { return (A * s + C) % M; }
+    
+      function num(id, v) {
+        var el = DOC.getElementById(NS + '-' + id); if (!el) return;
+        var nv = Math.round(Number(v) || 0), old = PREV[id];
+        el.textContent = nv;
+        if (old !== undefined && old !== nv) {
+          el.className = 'v ' + (nv > old ? 'up' : 'dn');
+          setTimeout(function () { el.className = 'v'; }, 1200);
+        }
+        PREV[id] = nv;
+      }
+      function bar(id, v) { var el = DOC.getElementById(NS + '-' + id); if (el) el.style.width = Math.max(0, Math.min(100, Number(v) || 0)) + '%'; }
+      function txt(id, s) { var el = DOC.getElementById(NS + '-' + id); if (el) el.textContent = s; }
+      function chips(id, arr) {
+        var el = DOC.getElementById(NS + '-' + id); if (!el) return;
+        el.innerHTML = arr.map(function (x) {
+          return '<span' + (x.cls ? ' class="' + x.cls + '"' : '') + '>' + x.k + '<b>' + x.v + '</b></span>';
+        }).join('');
+      }
+    
+    
+      var TAB = ['概览', '日程', '账本'];
+      function renderTabs() {
+        var box = DOC.getElementById(NS + '-tabs'); if (!box) return;
+        var cur = PREV.tab || '概览';   /* 重绘时保留用户选的 Tab */
+        box.innerHTML = TAB.map(function (t) {
+          return '<button type="button" data-t="' + t + '" aria-selected="' + (t === cur) + '">' + t + '</button>';
+        }).join('');
+        Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) {
+          b.addEventListener('click', function () { PREV.tab = b.getAttribute('data-t'); renderPanels(); renderTabs(); });
+        });
+        TAB.forEach(function (t) { var el = DOC.getElementById(NS + '-p-' + t); if (el) el.hidden = (t !== cur); });
+      }
+      function renderPanels() {
+        var t = get('时间', {}) || {}, sc = get('场景', {}) || {}, p = get('主角', {}) || {};
+        var she = get('她', {}) || {}, ec = get('经济', {}) || {}, pr = get('过程', {}) || {};
+        var cash = Number(ec.现金) || 0, save = Number(ec.累计储蓄) || 0, dl = Number(ec.当日盈亏) || 0;
+        var g = DOC.getElementById(NS + '-p-概览');
+        if (g) {
+          g.innerHTML = '<div class="kv">'
+            + '<span class="k">日期</span><span>' + (t.当前日期 || '—') + ' · 第 ' + (Number(t.天数) || 1) + ' 天</span><span class="v">' + (t.天气 || '') + '</span>'
+            + '<span class="k">时段</span><span>' + (t.时段 || '—') + ' · ' + (sc.场景模式 || '') + '</span><span class="v">' + (t.章节 || '') + '</span>'
+            + '<span class="k">她的状态</span><span>' + (p.状态 || '在线') + ' · 熟练度 ' + (PROF[Number(she.熟练度) || 1] || '—') + '</span><span class="v">' + (she.人设 || '—') + '</span>'
+            + '<span class="k">目的进度</span><span class="goalbar"><i style="width:' + Math.min(100, Number(she.目的进度) || 0) + '%"></i></span><span class="v">' + Math.round(Number(she.目的进度) || 0) + '%</span>'
+            + '</div>';
+        }
+        var d = DOC.getElementById(NS + '-p-日程');
+        if (d) {
+          var day = Number(t.天数) || 1, cells = '';
+          for (var i = 1; i <= 17; i++) cells += '<i class="' + (i === day ? 'now' : (i < day ? 'on' : '')) + '">' + i + '</i>';
+          d.innerHTML = '<div class="day17">' + cells + '</div><div class="kv">'
+            + '<span class="k">当前地点</span><span>' + (sc.当前地点 || '—') + '</span><span class="v">' + (sc.在场 || '') + '</span>'
+            + '<span class="k">今日指令</span><span>' + (局.今日指令 || '已发布') + '</span><span class="v">' + (pr.当前难度 || '') + '</span>'
+            + '</div>';
+        }
+        var b = DOC.getElementById(NS + '-p-账本');
+        if (b) {
+          var neg = Number(pr.连续无收入天数) || 0;
+          b.innerHTML = '<div class="kv">'
+            + '<span class="k">现金</span><span class="v">¥' + cash.toLocaleString() + '</span><span></span>'
+            + '<span class="k">累计储蓄</span><span class="v">' + save.toLocaleString() + ' / 50000</span><span class="v">' + (save >= 50000 ? '达到 True End 硬条件' : '') + '</span>'
+            + '<span class="k">今日盈亏</span><span class="v">' + (dl >= 0 ? '+' : '') + dl + '</span><span class="v">' + (dl < 0 ? '赤字' : '') + '</span>'
+            + '<span class="k">无收入天数</span><span class="v">' + neg + ' / 3</span><span class="v">' + (neg >= 2 ? '逼近破产' : '') + '</span>'
+            + '</div>';
+        }
+      }
+      function render() {
+        var t = get('时间', {}) || {}, sc = get('场景', {}) || {}, p = get('主角', {}) || {};
+        var she = get('她', {}) || {}, pr = get('过程', {}) || {}, ec = get('经济', {}) || {}, nws = get('当前女角状态', {}) || {};
+    
+        var day = Number(t.天数) || 1;
+        txt('date', (t.当前日期 || '—') + ' · 第 ' + day + ' 天');
+        txt('sub', [t.章节, sc.场景模式, t.天气].filter(Boolean).join(' · '));
+        txt('left', Math.max(0, 18 - day));
+        var ring = DOC.getElementById(NS + '-ring');
+        if (ring) ring.style.setProperty('--p', Math.round(day / 17 * 100));
+    
+        var slots = ['早', '上午', '下午', '晚', '深夜'], slot = String(t.时段 || '早'), at = slots.indexOf(slot), h = '';
+        for (var i = 0; i < slots.length; i++) h += '<i class="' + (i === at ? 'now' : (i < at ? 'on' : '')) + '"></i>';
+        var sl = DOC.getElementById(NS + '-slots'); if (sl) sl.innerHTML = h;
+    
+        bar('hp', p.身体状态); num('hpv', p.身体状态);
+        bar('re', p.反抗值); num('rev', p.反抗值);
+        var exv = (she.兴奋度 !== undefined ? she.兴奋度 : nws.兴奋度);
+        bar('ex', exv); num('exv', exv);
+    
+        chips('attr', [
+          { k: '说话', v: Math.round(Number(p.说话) || 0) },
+          { k: '做事', v: Math.round(Number(p.做事) || 0) },
+          { k: '懂东西', v: Math.round(Number(p.懂东西) || 0) }
+        ]);
+        var sk = p.技能 || {};
+        chips('skill', [
+          { k: '打工', v: Math.round(Number(sk.打工) || 0), cls: 'sk' },
+          { k: '学业', v: Math.round(Number(sk.学业) || 0), cls: 'sk' },
+          { k: '机车', v: Math.round(Number(sk.机车) || 0), cls: 'sk' }
+        ]);
+        var cash = Number(ec.现金) || 0, save = Number(ec.累计储蓄) || 0, dl = Number(ec.当日盈亏) || 0;
+        chips('money', [
+          { k: '现金', v: cash.toLocaleString(), cls: 'mn' },
+          { k: '累计储蓄', v: save.toLocaleString(), cls: 'mn' },
+          { k: '当日', v: (dl >= 0 ? '+' : '') + dl, cls: 'mn' }
+        ]);
+    
+        txt('who', she.人设 || '—');
+        txt('goal', Math.round(Number(she.目的进度) || 0) + '%');
+        txt('prof', PROF[Number(she.熟练度) || 1] || '—');
+        var know = Math.round(Number(p.对她的了解) || 0), dots = '';
+        for (var d = 0; d < 5; d++) dots += '<i class="' + (know >= (d + 1) * 20 ? 'on' : '') + '"></i>';
+        var kd = DOC.getElementById(NS + '-knowdots'); if (kd) kd.innerHTML = dots;
+        txt('know', (STAGE[Math.min(4, Math.floor(know / 20))] || '陌生') + ' ' + know);
+        txt('place', sc.当前地点 || '—');
+        txt('cast', sc.在场 || '—');
+    
+        var win = DOC.getElementById(NS + '-win');
+        if (win) { var st = p.状态 || '在线'; win.className = 'win' + (st === '暂停' ? ' pause' : (st === '离线' ? ' off' : '')); win.textContent = st; }
+    
+        renderGirls();
+        renderPanels();
+        renderTabs();
+        renderWorld();
+        renderDraw(know);
+      }
+    
+      /* ★ 女角多阶段矩阵 */
+      function renderGirls() {
+        var rel = get('女角', {}) || {};
+        var closed = (get('世界', {}) || {}).关系封闭 || {};
+        var box = DOC.getElementById(NS + '-girls'); if (!box) return;
+        var keys = Object.keys(rel);
+        if (!keys.length) { box.innerHTML = '<div class="foot">（女角变量未加载）</div>'; return; }
+        box.innerHTML = keys.map(function (n) {
+          var v = rel[n] || {};
+          var af = Math.max(-100, Math.min(100, Number(v.好感度) || 0));
+          var si = STAGE.indexOf(v.关系阶段);
+          if (si < 0) si = Math.max(0, Math.min(4, Math.floor((af + 100) / 40)));
+          var w = Math.abs(af) / 2;
+          var lock = closed[n] ? ' locked' : '';
+          return '<div class="g' + lock + '" data-s="' + si + '">'
+            + '<span class="nm">' + n + '</span>'
+            + '<span class="st">' + (STAGE[si] || '陌生') + '</span>'
+            + '<span class="dual">' + (af >= 0
+                ? '<i class="p" style="width:' + w + '%"></i>'
+                : '<i class="n" style="width:' + w + '%"></i>') + '</span>'
+            + '<span class="af ' + (af > 0 ? 'p' : (af < 0 ? 'n' : '')) + '">' + (af > 0 ? '+' : '') + af + '</span>'
+            + '</div>';
+        }).join('');
+      }
+    
+      function renderWorld() {
+        var pr = get('过程', {}) || {};
+        var parts = [];
+        if (pr.世界的裂缝) parts.push('世界的裂缝 ' + pr.世界的裂缝);
+        var used = pr['她用过的手段'];
+        if (used && Object.keys(used).length) parts.push('她用过的手段 ' + Object.keys(used).length + ' 次');
+        var dmg = get('主角.不可逆损伤', {});
+        if (dmg && Object.keys(dmg).length) parts.push('不可逆损伤 ' + Object.keys(dmg).length + ' 处');
+        var sec = DOC.getElementById(NS + '-worldsec'), box = DOC.getElementById(NS + '-world');
+        if (!sec || !box) return;
+        if (!parts.length) { sec.hidden = true; box.hidden = true; return; }
+        sec.hidden = false; box.hidden = false; box.textContent = parts.join(' · ');
+      }
+    
+      function renderDraw(know) {
+        var 局 = get('局面', {}) || {};
+        var opts = 局.当前选项;
+        var wrap = DOC.getElementById(NS + '-draw'), box = DOC.getElementById(NS + '-opts');
+        if (!wrap || !box) return;
+        if (!opts || !Object.keys(opts).length) { wrap.hidden = true; return; }
+        wrap.hidden = false;
+        var hint;
+        if (know >= 60 && 局.她的倾向) hint = '她的光标停在第 ' + 局.她的倾向 + ' 个上，看得不太真切';
+        else if (know >= 30) hint = '她像是中意这一类，但还没定';
+        else hint = '光标在几个之间来回走，看不出来';
+        txt('hint', '｜ ' + hint);
+    
+        var keys = Object.keys(opts), html = '';
+        keys.forEach(function (k, i) {
+          var o = opts[k] || {}, lv = LV[o.等级] || LV.micro;
+          var cost = lv.cost ? ('<b>' + lv.cost[0] + '~' + lv.cost[1] + '</b>拒绝') : '<b>—</b>锁';
+          var tip = (know >= 60 && String(局.她的倾向) === String(k)) ? ' tip' : '';
+          html += '<div class="opt' + tip + '">'
+            + '<span class="lv ' + (类名映射[等] || 'micro') + '">' + lv.label + '</span>'
+            + '<span class="txt">' + (o.文本 || ('选项 ' + (i + 1))) + '</span>'
+            + '<span class="cost">' + cost + '</span>'
+            + '<button type="button" data-refuse="' + k + '">拒绝这个</button></div>';
+        });
+        box.innerHTML = html;
+        Array.prototype.forEach.call(box.querySelectorAll('button[data-refuse]'), function (b) {
+          b.addEventListener('click', function () { refuse(b.getAttribute('data-refuse')); });
+        });
+      }
+    
+      function refuse(key) {
+        var 局 = get('局面', {}) || {}, opts = 局.当前选项 || {}, o = opts[key];
+        if (!o) return;
+        var lv = LV[o.等级] || LV.micro, p = get('主角', {}) || {}, she = get('她', {}) || {};
+        var re = Number(p.反抗值) || 0, need = lv.cost ? lv.cost[0] : 0;
+        var res = DOC.getElementById(NS + '-res'); if (!res) return;
+        res.hidden = false;
+        if (!lv.cost) { res.className = 'res'; res.innerHTML = '这一条的拒绝按钮是灰的。'; return; }
+        if (re < need) { res.className = 'res bad'; res.innerHTML = '<b>反抗值不够</b>　需要 ' + need + '，你只有 ' + Math.round(re) + '。'; return; }
+    
+        var aim = String(局.她的倾向 || ''), hit = aim !== '' && String(key) === aim;
+        var rate = lv.rate * (1 + (Number(she.兴奋度) || 0) / 100 * 0.5);
+        rate = rate * (1 - ({ 新手: 0, 上手: .1, 沉浸: .2, 狂热: .3, 收官: .4 }[she.熟练度] || 0));
+        var pw = ((Number(p.说话) || 0) + (Number(p.做事) || 0) + (Number(p.懂东西) || 0)) / 3;
+        var 三维系数 = 0.6 + 0.8 * (pw / 100);
+        rate = rate * 三维系数;
+    
+        var seed = Number(get('主角.$骰子种子', 20260915)) || 20260915;
+        var s1 = nxt(seed), r1 = s1 / M, s2 = nxt(s1), r2 = s2 / M, s3 = nxt(s2);
+        var ok = r1 * 100 < rate, spent = lv.cost[0] + Math.round((lv.cost[1] - lv.cost[0]) * r2);
+        var R, MSG;
+        if (!hit) { R = '未命中'; MSG = '<b>你拒绝的不是她要点的那个。</b>反抗值照扣，什么也没有发生，她甚至没注意到。'; }
+        else if (ok) { R = '成功'; MSG = '<b>她点了没反应。</b>她会当成一次卡顿，重试一次，或者换一个。'; }
+        else { R = '失败'; MSG = '<b>她看到你动了一下，然后还是做了。</b>'; }
+    
+        set('主角.反抗值', Math.max(0, re - spent));
+        set('主角.$骰子种子', s3);
+        set('局面.判定结果', { 选项: String(o.文本 || key), 等级: lv.label, 消耗: spent,
+          成功率: Math.round(rate * 100) / 100, 掷值: Math.round(r1 * 10000) / 100,
+          三维系数: Math.round(三维系数 * 1000) / 1000, 结果: R, 档位: (hit && ok) ? '成功' : '失败', 效果倍数: 1, 命中: hit });
+        set('局面.玩家拒绝', String(key));
+    
+        res.className = 'res ' + ((hit && ok) ? 'ok' : 'bad');
+        res.innerHTML = MSG + '<br><small>扣 ' + spent + '　掷 ' + Math.round(r1 * 100) + ' / 需 ' + Math.round(rate)
+          + '　三维 ×' + (Math.round(三维系数 * 100) / 100) + '　结果 ' + R + '</small>';
+        Array.prototype.forEach.call(DOC.querySelectorAll('#' + NS + '-opts button'), function (b) { b.disabled = true; });
+        PREV.rev = undefined;
+        render();
+      }
+    
+      render();
+      /* ── 生命周期：挂载 + 变量变化时重绘（按 skills：跟随 runtime lifecycle）── */
+      var 指纹 = '';
+      function 指纹取() {
+        var v = allVars();
+        var s = v && v.stat_data ? v.stat_data : v;
+        try { return JSON.stringify(s); } catch (e) { return String(Date.now()); }
+      }
+      function 可能重绘(强制) {
+        var f = 指纹取();
+        if (强制 || f !== 指纹) { 指纹 = f; try { render(); } catch (e) {} }
+      }
+      try { if (typeof waitGlobalInitialized === 'function') await waitGlobalInitialized('Mvu'); } catch (e) {}
+      render();
+      try {
+        var ctx = (typeof SillyTavern !== 'undefined' && SillyTavern.getContext) ? SillyTavern.getContext() : null;
+        if (ctx && ctx.eventSource && ctx.eventTypes) {
+          var T = ctx.eventTypes;
+          [T.MESSAGE_UPDATED, T.MESSAGE_RENDERED, T.MESSAGE_SWIPED, T.CHAT_CHANGED, T.GENERATION_ENDED,
+           T.VARIABLES_UPDATED, T.VARIABLE_CHANGED]
+            .forEach(function (t) { if (t) ctx.eventSource.on(t, function () { 可能重绘(false); }); });
+        }
+      } catch (e) {}
+      /* MVU 自己的变量事件（比酒馆的 VARIABLES_UPDATED 更准） */
+      try {
+        if (typeof Mvu !== 'undefined' && Mvu.eventOn && Mvu.events) {
+          Mvu.eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, function () { 可能重绘(true); });
+        }
+      } catch (e) {}
+      /* ③ 兜底轮询：MVU 的变量写入未必派发事件，指纹变了才重绘（避免无谓重排） */
+      try { setInterval(function () { 可能重绘(false); }, 1500); } catch (e) {}
+    
+  }
+
+  async function 全跑() {
+    var 数据 = await 取数据();
+    var 跑过 = 0;
+    // ① 主文档
+    try { if (document.getElementById('gg2-root')) { 填充(document, window, 数据); 跑过++; } } catch (e) { console.log('[状态栏] 主文档失败：' + e.message); }
+    // ② 每个 iframe（同源可直接访问 contentDocument）
+    var ifr = document.querySelectorAll('iframe');
+    for (var i = 0; i < ifr.length; i++) {
+      try {
+        var d = ifr[i].contentDocument;
+        if (d && d.getElementById('gg2-root')) { 填充(d, ifr[i].contentWindow || window, 数据); 跑过++; }
+      } catch (e) {}
+    }
+    if (!跑过) console.log('[状态栏] 未找到 #gg2-root（状态栏可能还没渲染）');
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(全跑, 300);
+  else document.addEventListener('DOMContentLoaded', function () { setTimeout(全跑, 300); });
+  try {
+    if (typeof eventOn === 'function' && typeof tavern_events !== 'undefined') {
+      [tavern_events.MESSAGE_RENDERED, tavern_events.MESSAGE_UPDATED, tavern_events.CHAT_CHANGED, tavern_events.MESSAGE_SWIPED]
+        .forEach(function (t) { if (t) eventOn(t, function () { setTimeout(全跑, 150); }); });
+    }
+  } catch (e) {}
+  try { new MutationObserver(function () { 全跑(); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  try { setInterval(全跑, 2000); } catch (e) {}
+}());

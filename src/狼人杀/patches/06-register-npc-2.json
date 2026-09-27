@@ -1,0 +1,67 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/陆霜霜",
+    "value": {
+      "path": "世界书/NPC/陆霜霜.yaml",
+      "scope": "specific",
+      "keywords": ["陆霜霜", "霜霜"],
+      "abstract": "27 岁摄影师闺蜜：警觉护主记仇失眠，苏黎指谁她咬谁（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 207 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/闻人夏",
+    "value": {
+      "path": "世界书/NPC/闻人夏.yaml",
+      "scope": "specific",
+      "keywords": ["闻人夏"],
+      "abstract": "22 岁植物系大学生：社交迟钝对草木话多，狼毒草专家（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 208 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/程郁",
+    "value": {
+      "path": "世界书/NPC/程郁.yaml",
+      "scope": "specific",
+      "keywords": ["程郁", "刑警"],
+      "abstract": "29 岁休假刑警：沉稳审讯腔，腰际空枪套——枪对狼没用对人有全用（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 209 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/顾青芜",
+    "value": {
+      "path": "世界书/NPC/顾青芜.yaml",
+      "scope": "specific",
+      "keywords": ["顾青芜", "青芜"],
+      "abstract": "31 岁姐姐：温柔牺牲型偏执护短，为妹妹可以钉死任何人（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 210 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/顾青黛",
+    "value": {
+      "path": "世界书/NPC/顾青黛.yaml",
+      "scope": "specific",
+      "keywords": ["顾青黛", "青黛"],
+      "abstract": "18 岁妹妹：沉默怯生恋姐夜惧，最近夜里有梦游自己不知道（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 211 }
+    }
+  }
+]

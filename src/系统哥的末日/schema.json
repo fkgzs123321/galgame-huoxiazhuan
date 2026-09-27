@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "世界": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "时间": {
+          "default": "2026/09/21-22:40",
+          "type": "string"
+        },
+        "地点": {
+          "default": "家",
+          "type": "string"
+        },
+        "章节": {
+          "default": 1,
+          "type": "number"
+        },
+        "回合": {
+          "default": 1,
+          "type": "number"
+        }
+      }
+    },
+    "镜头": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "对象": {
+          "default": "苏婉",
+          "type": "string"
+        },
+        "绑定深度": {
+          "$ref": "#/$defs/__schema0"
+        }
+      }
+    },
+    "反派状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "财富等级": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "资产": {
+          "default": 500000000,
+          "$ref": "#/$defs/__schema2"
+        },
+        "交涉": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "气势": {
+              "default": 85,
+              "$ref": "#/$defs/__schema0"
+            },
+            "口才": {
+              "default": 88,
+              "$ref": "#/$defs/__schema0"
+            },
+            "情报": {
+              "default": 92,
+              "$ref": "#/$defs/__schema0"
+            },
+            "地位": {
+              "default": 90,
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        },
+        "评价值": {
+          "default": 80,
+          "$ref": "#/$defs/__schema0"
+        },
+        "绑定名额上限": {
+          "default": 8,
+          "type": "number"
+        },
+        "已绑定数": {
+          "default": 8,
+          "type": "number"
+        },
+        "系统暴走次数": {
+          "default": 0,
+          "type": "number"
+        },
+        "时停剩余": {
+          "default": 3,
+          "$ref": "#/$defs/__schema2"
+        },
+        "预感剩余": {
+          "default": 3,
+          "$ref": "#/$defs/__schema2"
+        },
+        "掌控剩余": {
+          "default": 3,
+          "$ref": "#/$defs/__schema2"
+        },
+        "救场剩余": {
+          "default": 1,
+          "$ref": "#/$defs/__schema2"
+        },
+        "强制洗白可用": {
+          "default": true,
+          "type": "boolean"
+        },
+        "财富积分": {
+          "default": 500,
+          "$ref": "#/$defs/__schema2"
+        },
+        "第四面墙剩余": {
+          "default": 3,
+          "$ref": "#/$defs/__schema2"
+        }
+      }
+    },
+    "绑定花名册": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "时期": {
+            "default": "当前目标",
+            "type": "string",
+            "enum": [
+              "当前目标",
+              "刚被控制",
+              "绑定瞬间",
+              "绑定深化",
+              "完全绑定",
+              "濒临解绑",
+              "已解绑"
+            ]
+          },
+          "绑定深度": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "清醒频率": {
+            "$ref": "#/$defs/__schema0"
+          },
+          "最近一次清醒": {
+            "default": "无",
+            "type": "string"
+          },
+          "身体状态": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "湿润": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "乳尖": {
+                "default": false,
+                "type": "boolean"
+              }
+            }
+          },
+          "占有印记": {
+            "default": "无",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "玩家": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "财富等级": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "资产": {
+          "default": 500000000,
+          "$ref": "#/$defs/__schema2"
+        },
+        "公司状态": {
+          "default": "正常",
+          "type": "string",
+          "enum": [
+            "正常",
+            "承压",
+            "濒临破产",
+            "已失去"
+          ]
+        },
+        "觉醒度": {
+          "default": 10,
+          "$ref": "#/$defs/__schema0"
+        },
+        "反抗力": {
+          "default": 20,
+          "$ref": "#/$defs/__schema0"
+        },
+        "交涉": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "气势": {
+              "default": 30,
+              "$ref": "#/$defs/__schema0"
+            },
+            "口才": {
+              "default": 30,
+              "$ref": "#/$defs/__schema0"
+            },
+            "情报": {
+              "default": 15,
+              "$ref": "#/$defs/__schema0"
+            },
+            "地位": {
+              "default": 40,
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        },
+        "证据链": {
+          "default": "",
+          "type": "string"
+        },
+        "与妻子关系": {
+          "default": "亲密",
+          "type": "string",
+          "enum": [
+            "亲密",
+            "疏远",
+            "敌对",
+            "断裂"
+          ]
+        }
+      }
+    },
+    "交涉状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "进行中": {
+          "default": false,
+          "type": "boolean"
+        },
+        "对象": {
+          "default": "",
+          "type": "string"
+        },
+        "回合": {
+          "$ref": "#/$defs/__schema2"
+        },
+        "幕次": {
+          "default": "结束",
+          "type": "string",
+          "enum": [
+            "寒暄",
+            "辞锋",
+            "共识",
+            "结束"
+          ]
+        },
+        "玩家共识分": {
+          "$ref": "#/$defs/__schema2"
+        },
+        "对手共识分": {
+          "$ref": "#/$defs/__schema2"
+        },
+        "能力值": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "要求值": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "成功率": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "掷值": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "上轮判定": {
+          "default": "无",
+          "type": "string"
+        },
+        "效果倍数": {
+          "default": 1,
+          "type": "number"
+        },
+        "本轮判定": {
+          "default": "",
+          "type": "string"
+        },
+        "交涉历史": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "评论": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "倾向": {
+          "default": "叫好",
+          "type": "string",
+          "enum": [
+            "叫好",
+            "中性偏叫好",
+            "中性偏吐槽",
+            "吐槽",
+            "弃书"
+          ]
+        },
+        "热门": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "设置": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "骰子种子": {
+          "default": 20260915,
+          "$ref": "#/$defs/__schema2"
+        },
+        "主题": {
+          "default": "夜间",
+          "type": "string",
+          "enum": [
+            "夜间",
+            "浅色"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "default": 0,
+      "type": "number"
+    },
+    "__schema1": {
+      "default": "A9",
+      "type": "string",
+      "enum": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15"
+      ]
+    },
+    "__schema2": {
+      "default": 0,
+      "type": "number"
+    }
+  }
+}

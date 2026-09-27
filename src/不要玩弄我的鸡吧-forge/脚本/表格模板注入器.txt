@@ -1,0 +1,547 @@
+/* ============================================================
+ * SP Database Template Injector  (Universal / 通用轮子版)
+ * 适配：不要玩弄我的鸡吧-forge（bookName=不要玩弄我的鸡吧, entryName=[SPV]表格模板JSON）
+ * Flow : read WI entry -> extract single-line JSON -> create template -> conflict check
+ * Mount: window.parent.document (visible from iframe) + class toggle
+ * Done : mobile layout reflow / perf guard / memory release (AbortController)
+ * FIX  : 移动端软键盘把 fixed 弹窗顶飞且不归位 -> visualViewport 动态居中复位
+ * NEW  : 三大数据源(世界书名/条目名/预设名) 改为脚本变量存储, 面板内可改 -> 通用轮子
+ * Orig : discord @hzy9527 (raft_13) — 二创需署名
+ * ============================================================ */
+
+/* ========= DEFAULTS (仅作首次/重置时的兜底, 实际值从脚本变量读取) ========= */
+const DEFAULTS = {
+  bookName  : '不要玩弄我的鸡吧',     // worldbook holding the template JSON（与角色卡同名）
+  entryName : '[SPV]表格模板JSON',   // target entry comment/name (keep it DISABLED)
+  presetName: 'byd',                 // preset name for the created template
+};
+
+const BTN_NAME      = '📦 创建不要玩弄我的鸡吧表格模板';     // script button name
+const DEFAULT_SCOPE = 'global';                  // 'chat' | 'global'
+
+const CONFIG_VAR_KEY = '__byd_tpl_config__';    // 脚本变量里存配置用的键名
+
+const PANEL_ID      = 'byd-tpl-panel';
+const CSS_ID        = 'byd-tpl-style';
+const INSTANCE_FLAG = '__bydTplInjectorAC__';   // perf: re-init guard key
+const API_RETRY     = 20;
+const API_INTERVAL  = 300;
+
+const topDocument = window.parent.document;
+const topWindow   = window.parent;
+const topBody     = topDocument.body;
+
+/* ========= runtime config (从脚本变量加载, 可被面板修改) ========= */
+let CFG = { ...DEFAULTS };
+
+/* 读取脚本变量中的配置, 合并到 CFG; 缺项用默认值兜底 */
+function loadConfig() {
+  try {
+    const vars = getVariables({ type: 'script' });
+    const saved = vars && vars[CONFIG_VAR_KEY];
+    if (saved && typeof saved === 'object') {
+      CFG = {
+        bookName  : (saved.bookName   || DEFAULTS.bookName),
+        entryName : (saved.entryName  || DEFAULTS.entryName),
+        presetName: (saved.presetName || DEFAULTS.presetName),
+      };
+    }
+  } catch (_) { /* 读取失败则保持默认值 */ }
+}
+
+/* 把当前 CFG 写回脚本变量(持久化) */
+async function saveConfig() {
+  try {
+    await insertOrAssignVariables({ [CONFIG_VAR_KEY]: { ...CFG } }, { type: 'script' });
+    return true;
+  } catch (e) {
+    notify('保存配置失败: ' + (e && e.message), 'err');
+    return false;
+  }
+}
+
+/* ========= PERF: tear down previous instance before re-init ========= */
+function disposePrevious() {
+  try { topWindow[INSTANCE_FLAG]?.abort?.(); } catch (_) {}
+  topDocument.getElementById(CSS_ID)?.remove();
+  topDocument.getElementById(PANEL_ID)?.remove();
+  topDocument.getElementById(`${PANEL_ID}-overlay`)?.remove();
+  topDocument.getElementById(`${PANEL_ID}-confirm`)?.remove();
+  topDocument.getElementById(`${PANEL_ID}-config`)?.remove();
+  try { eventClearEvent(getButtonEvent(BTN_NAME)); } catch (_) {}
+}
+disposePrevious();
+
+/* MEMORY: every listener tied to this controller; one abort() frees them all */
+const ac  = new AbortController();
+const SIG = { signal: ac.signal };
+topWindow[INSTANCE_FLAG] = ac;
+
+/* ========= STYLE (with @media reflow for mobile) ========= */
+/* 浮层不再用 CSS top:50% 硬居中, 居中交给 placeOne()/reposition() (visualViewport) */
+const STYLE = `
+#${PANEL_ID}-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100000; display:none; }
+#${PANEL_ID}-overlay.is-open { display:block; }
+#${PANEL_ID} {
+  position:fixed; top:0; left:0;
+  background:var(--SmartThemeBotMesBlurTintColor,#1a1a2e);
+  border:1px solid var(--SmartThemeBorderColor,#444); border-radius:12px;
+  padding:20px; z-index:100001; box-sizing:border-box;
+  width:min(460px, calc(100vw - 32px)); max-height:82dvh;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
+  box-shadow:0 8px 32px rgba(0,0,0,.5); display:none;
+  font-family:var(--mainFontFamily,sans-serif); color:var(--SmartThemeBodyColor,#ccc);
+}
+#${PANEL_ID}.is-open { display:block; }
+#${PANEL_ID} .pt-title { font-size:16px; font-weight:bold; text-align:center; margin-bottom:6px; color:var(--SmartThemeBodyColor,#eee); }
+#${PANEL_ID} .pt-sub { font-size:12px; opacity:.65; text-align:center; margin-bottom:14px; word-break:break-all; }
+#${PANEL_ID} .pt-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; align-items:center; }
+#${PANEL_ID} .pt-btn { flex:1 1 auto; min-height:42px; padding:10px 12px; border:none; border-radius:8px; color:#fff; cursor:pointer; font-size:13px; }
+#${PANEL_ID} .pt-btn.primary { background:#3b82f6; }
+#${PANEL_ID} .pt-btn.green { background:#10b981; }
+#${PANEL_ID} .pt-btn.gray { background:#6b7280; }
+#${PANEL_ID} .pt-btn.amber { background:#d97706; }
+#${PANEL_ID} .pt-scope { font-size:12.5px; display:inline-flex; align-items:center; gap:5px; user-select:none; margin-bottom:12px; }
+#${PANEL_ID} .pt-scope input { width:18px; height:18px; accent-color:var(--SmartThemeQuoteColor,#5a9); }
+#${PANEL_ID} .pt-listlabel { font-size:12.5px; opacity:.7; margin-bottom:6px; }
+#${PANEL_ID} .pt-list { background:var(--SmartThemeBlurTintColor,#14161c); border:1px solid var(--SmartThemeBorderColor,#2a2e38);
+  border-radius:8px; padding:8px 10px; min-height:40px; max-height:30dvh; overflow-y:auto;
+  font-size:13px; white-space:pre-wrap; word-break:break-all; -webkit-overflow-scrolling:touch; }
+#${PANEL_ID} .pt-status { margin-top:12px; font-size:12.5px; color:#9ca3af; min-height:18px; word-break:break-all; }
+#${PANEL_ID} .pt-close { display:block; margin:14px auto 0; padding:7px 26px; border:1px solid var(--SmartThemeBorderColor,#555);
+  border-radius:6px; background:var(--SmartThemeBlurTintColor,#2a2a3e); color:var(--SmartThemeBodyColor,#ccc); cursor:pointer; font-size:13px; }
+
+/* ===== 通用浮层(确认框 / 配置框) 共用样式 ===== */
+#${PANEL_ID}-confirm, #${PANEL_ID}-config { position:fixed; inset:0; z-index:100002; display:none; }
+#${PANEL_ID}-confirm.is-open, #${PANEL_ID}-config.is-open { display:block; }
+#${PANEL_ID}-confirm .cf-box, #${PANEL_ID}-config .cf-box { position:fixed; top:0; left:0;
+  width:min(440px, calc(100vw - 32px)); max-height:82dvh; overflow-y:auto; box-sizing:border-box;
+  background:var(--SmartThemeBotMesBlurTintColor,#20242c); border:1px solid var(--SmartThemeBorderColor,#444);
+  border-radius:12px; padding:18px; color:var(--SmartThemeBodyColor,#eee); font-size:15px; -webkit-overflow-scrolling:touch; }
+#${PANEL_ID}-confirm .cf-input, #${PANEL_ID}-config .cf-input { width:100%; box-sizing:border-box; padding:10px; margin:6px 0 12px; font-size:16px; border-radius:6px;
+  background:var(--SmartThemeBlurTintColor,#14161c); border:1px solid var(--SmartThemeBorderColor,#2a2e38); color:var(--SmartThemeBodyColor,#eee); }
+#${PANEL_ID}-config .cf-label { font-size:12.5px; opacity:.75; margin-top:6px; display:block; }
+#${PANEL_ID}-config .cf-title { font-size:15px; font-weight:bold; margin-bottom:10px; text-align:center; }
+#${PANEL_ID}-confirm .cf-row, #${PANEL_ID}-config .cf-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; margin-top:6px; }
+#${PANEL_ID}-confirm .cf-btn, #${PANEL_ID}-config .cf-btn { min-height:42px; padding:10px 14px; border:none; border-radius:8px; color:#fff; cursor:pointer; font-size:13px; }
+
+/* ===== mobile reflow ===== */
+@media (max-width:480px) {
+  #${PANEL_ID} { padding:14px; width:calc(100vw - 20px); border-radius:10px; }
+  #${PANEL_ID} .pt-title { font-size:15px; }
+  #${PANEL_ID} .pt-row { flex-direction:column; gap:8px; }
+  #${PANEL_ID} .pt-btn { width:100%; flex:none; min-height:44px; }
+  #${PANEL_ID} .pt-list { max-height:26dvh; }
+  #${PANEL_ID}-confirm .cf-box, #${PANEL_ID}-config .cf-box { padding:14px; width:calc(100vw - 20px); }
+  #${PANEL_ID}-confirm .cf-row, #${PANEL_ID}-config .cf-row { justify-content:stretch; }
+  #${PANEL_ID}-confirm .cf-btn, #${PANEL_ID}-config .cf-btn { flex:1 1 calc(50% - 8px); }
+}
+@media (max-height:480px) {
+  #${PANEL_ID} { max-height:92dvh; }
+  #${PANEL_ID} .pt-list { max-height:22dvh; }
+}
+`;
+
+/* ========= helpers ========= */
+function getApi() {
+  return window.AutoCardUpdaterAPI || (window.parent && window.parent.AutoCardUpdaterAPI) || null;
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+async function waitApi(retry = API_RETRY, interval = API_INTERVAL) {
+  for (let i = 0; i < retry; i++) {
+    const api = getApi();
+    if (api) return api;
+    await sleep(interval);
+  }
+  return null;
+}
+function requireMethod(api, name) {
+  if (!api || typeof api[name] !== 'function') {
+    throw new Error(`plugin missing method ${name}() — version mismatch or not ready`);
+  }
+  return api[name].bind(api);
+}
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function notify(text, kind) {
+  try {
+    if (typeof toastr !== 'undefined') {
+      (toastr[kind === 'ok' ? 'success' : kind === 'err' ? 'error' : 'info'])(text, '不要玩弄我的鸡吧模板');
+    }
+  } catch (_) {}
+  const el = topDocument.getElementById(`${PANEL_ID}-status`);
+  if (el) el.textContent = text;
+}
+
+/* ========= inject CSS once ========= */
+(() => {
+  const tag = topDocument.createElement('style');
+  tag.id = CSS_ID;
+  tag.textContent = STYLE;
+  topDocument.head.appendChild(tag);
+})();
+
+/* ============================================================
+ * FIX CORE: visualViewport 实时居中浮层, 抵消软键盘顶屏
+ * ============================================================ */
+const vv = topWindow.visualViewport || null;
+
+function placeOne(el) {
+  if (!el) return;
+  let w, h, ox, oy;
+  if (vv) { w = vv.width; h = vv.height; ox = vv.offsetLeft; oy = vv.offsetTop; }
+  else    { w = topWindow.innerWidth; h = topWindow.innerHeight; ox = 0; oy = 0; }
+  el.style.maxHeight = Math.max(160, Math.floor(h - 24)) + 'px';
+  el.style.left = (ox + w / 2) + 'px';
+  el.style.top  = (oy + h / 2) + 'px';
+  el.style.transform = 'translate(-50%,-50%)';
+}
+function reposition() {
+  if (panelEl && panelEl.classList.contains('is-open')) placeOne(panelEl);
+  if (confirmEl && confirmEl.classList.contains('is-open')) {
+    const box = confirmEl.querySelector('.cf-box'); if (box) placeOne(box);
+  }
+  if (configEl && configEl.classList.contains('is-open')) {
+    const box = configEl.querySelector('.cf-box'); if (box) placeOne(box);
+  }
+}
+let rafPending = false;
+function onViewportChange() {
+  if (rafPending) return;
+  rafPending = true;
+  topWindow.requestAnimationFrame(() => { rafPending = false; reposition(); });
+}
+if (vv) {
+  vv.addEventListener('resize', onViewportChange, SIG);
+  vv.addEventListener('scroll', onViewportChange, SIG);
+} else {
+  topWindow.addEventListener('resize', onViewportChange, SIG);
+}
+/* 给浮层内输入框统一挂 focus/blur 复位 */
+function bindInputReposition(scope) {
+  scope.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('focus', () => setTimeout(reposition, 300), SIG);
+    inp.addEventListener('blur',  () => setTimeout(reposition, 300), SIG);
+  });
+}
+
+/* ========= build panel once ========= */
+let panelEl = null, overlayEl = null, confirmEl = null, configEl = null;
+let scopeState = DEFAULT_SCOPE;
+
+/* 刷新主面板上展示当前数据源的副标题 */
+function renderSubline() {
+  const sub = topDocument.getElementById(`${PANEL_ID}-sub`);
+  if (sub) sub.innerHTML = `来源：${escapeHtml(CFG.bookName)} / ${escapeHtml(CFG.entryName)}　→　预设：${escapeHtml(CFG.presetName)}`;
+}
+
+function buildPanel() {
+  overlayEl = topDocument.createElement('div');
+  overlayEl.id = `${PANEL_ID}-overlay`;
+  topBody.appendChild(overlayEl);
+
+  panelEl = topDocument.createElement('div');
+  panelEl.id = PANEL_ID;
+  panelEl.innerHTML = `
+    <div class="pt-title">📦 表格模板创建器</div>
+    <div class="pt-sub" id="${PANEL_ID}-sub"></div>
+    <div class="pt-row"><button class="pt-btn primary" data-act="create">读取条目并创建模板</button></div>
+    <div class="pt-row">
+      <button class="pt-btn gray" data-act="refTpl">刷新预设列表</button>
+      <button class="pt-btn green" data-act="refWi">刷新世界书</button>
+    </div>
+    <div class="pt-row">
+      <button class="pt-btn amber" data-act="config">⚙️ 设置数据源</button>
+    </div>
+    <label class="pt-scope"><input type="checkbox" id="${PANEL_ID}-scope" ${DEFAULT_SCOPE === 'global' ? 'checked' : ''}/> 全局作用域(否则仅当前聊天)</label>
+    <div class="pt-listlabel">现有模板预设：</div>
+    <div class="pt-list" id="${PANEL_ID}-list">点开自动加载…</div>
+    <div class="pt-status" id="${PANEL_ID}-status">就绪。</div>
+    <button class="pt-close" data-act="close">关闭</button>
+  `;
+  topBody.appendChild(panelEl);
+
+  confirmEl = topDocument.createElement('div');
+  confirmEl.id = `${PANEL_ID}-confirm`;
+  topBody.appendChild(confirmEl);
+
+  configEl = topDocument.createElement('div');
+  configEl.id = `${PANEL_ID}-config`;
+  topBody.appendChild(configEl);
+
+  renderSubline();
+
+  /* MEMORY+PERF: delegated listeners, all tied to SIG */
+  overlayEl.addEventListener('click', closePanel, SIG);
+  panelEl.querySelector(`#${PANEL_ID}-scope`).addEventListener('change', e => {
+    scopeState = e.target.checked ? 'global' : 'chat';
+  }, SIG);
+  panelEl.addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    const act = btn.getAttribute('data-act');
+    if (act === 'create') createTemplate();
+    else if (act === 'refTpl') refreshPresetList();
+    else if (act === 'refWi') refreshWorldbook();
+    else if (act === 'config') openConfig();
+    else if (act === 'close') closePanel();
+  }, SIG);
+  confirmEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-r]');
+    if (!b || !pendingResolve) return;
+    const r = b.getAttribute('data-r');
+    if (r === 'rename') {
+      const name = (confirmEl.querySelector(`#${PANEL_ID}-rn`)?.value || '').trim();
+      if (!name) { notify('新名称不能为空', 'err'); return; }
+      finishConfirm({ action: 'rename', name });
+    } else {
+      finishConfirm({ action: r });
+    }
+  }, SIG);
+  configEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-cfg]');
+    if (!b) return;
+    const act = b.getAttribute('data-cfg');
+    if (act === 'save') saveConfigFromForm();
+    else if (act === 'reset') resetConfigForm();
+    else if (act === 'cancel') closeConfig();
+  }, SIG);
+}
+
+function openPanel() {
+  if (!panelEl) return;
+  try { topDocument.activeElement?.blur?.(); } catch (_) {}
+  loadConfig();          // 每次打开都重新读取, 保证显示最新配置
+  renderSubline();
+  panelEl.classList.add('is-open');
+  overlayEl.classList.add('is-open');
+  placeOne(panelEl);
+  refreshPresetList();
+}
+function closePanel() {
+  try { topDocument.activeElement?.blur?.(); } catch (_) {}
+  panelEl?.classList.remove('is-open');
+  overlayEl?.classList.remove('is-open');
+  confirmEl?.classList.remove('is-open');
+  configEl?.classList.remove('is-open');
+  if (pendingResolve) finishConfirm({ action: 'cancel' });
+}
+
+/* ========= 配置弹窗 ========= */
+function openConfig() {
+  configEl.innerHTML = `
+    <div class="cf-box">
+      <div class="cf-title">⚙️ 设置数据源（保存到脚本变量）</div>
+      <label class="cf-label">世界书名称 (worldbook)</label>
+      <input class="cf-input" id="${PANEL_ID}-cf-book" autocomplete="off" autocapitalize="off" value="${escapeHtml(CFG.bookName)}"/>
+      <label class="cf-label">条目名称 / comment (保持禁用但可读)</label>
+      <input class="cf-input" id="${PANEL_ID}-cf-entry" autocomplete="off" autocapitalize="off" value="${escapeHtml(CFG.entryName)}"/>
+      <label class="cf-label">目标预设名 (preset)</label>
+      <input class="cf-input" id="${PANEL_ID}-cf-preset" autocomplete="off" autocapitalize="off" value="${escapeHtml(CFG.presetName)}"/>
+      <div class="cf-row">
+        <button class="cf-btn" style="background:#10b981" data-cfg="save">保存</button>
+        <button class="cf-btn" style="background:#6b7280" data-cfg="reset">恢复默认</button>
+        <button class="cf-btn" style="background:#374151" data-cfg="cancel">取消</button>
+      </div>
+    </div>`;
+  configEl.classList.add('is-open');
+  const box = configEl.querySelector('.cf-box');
+  placeOne(box);
+  bindInputReposition(configEl);
+}
+function closeConfig() {
+  try { topDocument.activeElement?.blur?.(); } catch (_) {}
+  configEl?.classList.remove('is-open');
+}
+function resetConfigForm() {
+  const b = configEl.querySelector(`#${PANEL_ID}-cf-book`);
+  const e = configEl.querySelector(`#${PANEL_ID}-cf-entry`);
+  const p = configEl.querySelector(`#${PANEL_ID}-cf-preset`);
+  if (b) b.value = DEFAULTS.bookName;
+  if (e) e.value = DEFAULTS.entryName;
+  if (p) p.value = DEFAULTS.presetName;
+  notify('已填入默认值, 记得点保存', 'info');
+}
+async function saveConfigFromForm() {
+  const book   = (configEl.querySelector(`#${PANEL_ID}-cf-book`)?.value   || '').trim();
+  const entry  = (configEl.querySelector(`#${PANEL_ID}-cf-entry`)?.value  || '').trim();
+  const preset = (configEl.querySelector(`#${PANEL_ID}-cf-preset`)?.value || '').trim();
+  if (!book || !entry || !preset) { notify('三项都不能为空', 'err'); return; }
+  CFG = { bookName: book, entryName: entry, presetName: preset };
+  const ok = await saveConfig();
+  if (ok) {
+    renderSubline();
+    closeConfig();
+    notify('数据源已保存', 'ok');
+  }
+}
+
+/* ========= conflict dialog: overwrite / rename / cancel ========= */
+let pendingResolve = null;
+function finishConfirm(res) {
+  try { topDocument.activeElement?.blur?.(); } catch (_) {}
+  confirmEl.classList.remove('is-open');
+  const fn = pendingResolve;
+  pendingResolve = null;
+  if (fn) fn(res);
+}
+function askOnConflict(name) {
+  return new Promise(resolve => {
+    pendingResolve = resolve;
+    confirmEl.innerHTML = `
+      <div class="cf-box">
+        <div>预设「<b>${escapeHtml(name)}</b>」已存在，如何处理？</div>
+        <input class="cf-input" id="${PANEL_ID}-rn" autocomplete="off" autocapitalize="off" value="${escapeHtml(name)}_new"/>
+        <div class="cf-row">
+          <button class="cf-btn" style="background:#ef4444" data-r="overwrite">覆盖</button>
+          <button class="cf-btn" style="background:#3b82f6" data-r="rename">重命名为</button>
+          <button class="cf-btn" style="background:#374151" data-r="cancel">取消</button>
+        </div>
+      </div>`;
+    confirmEl.classList.add('is-open');
+    placeOne(confirmEl.querySelector('.cf-box'));
+    bindInputReposition(confirmEl);
+  });
+}
+
+/* ========= refresh preset list ========= */
+async function refreshPresetList() {
+  const box = topDocument.getElementById(`${PANEL_ID}-list`);
+  try {
+    const api = getApi();
+    if (!api) { if (box) box.textContent = '插件未就绪'; return; }
+    const names = await requireMethod(api, 'getTemplatePresetNames')();
+    if (box) box.textContent = (Array.isArray(names) && names.length) ? names.join('\n') : '(暂无预设)';
+  } catch (e) {
+    if (box) box.textContent = '读取失败';
+    notify('刷新预设失败: ' + (e && e.message), 'err');
+  }
+}
+
+/* ========= refresh worldbook ========= */
+async function refreshWorldbook() {
+  try {
+    const api = await waitApi();
+    if (!api) throw new Error('插件未就绪');
+    if (typeof api.refreshDataAndWorldbook === 'function') await api.refreshDataAndWorldbook();
+    else if (typeof api.syncWorldBookEntries === 'function') await api.syncWorldBookEntries({ createIfNeeded: true });
+    else throw new Error('缺少 refreshDataAndWorldbook / syncWorldBookEntries 接口');
+    notify('世界书已刷新并重新注入', 'ok');
+  } catch (e) {
+    notify('刷新世界书失败: ' + (e && e.message), 'err');
+  }
+}
+
+/* ========= read WI entry -> extract single-line JSON ========= */
+async function readTemplateObject() {
+  let entries;
+  try {
+    entries = await getWorldbook(CFG.bookName);
+  } catch (e) {
+    throw new Error(`read worldbook "${CFG.bookName}" failed: ${e && e.message}`);
+  }
+  if (!Array.isArray(entries) || !entries.length) {
+    throw new Error(`worldbook "${CFG.bookName}" empty or missing`);
+  }
+  const hit = entries.find(en => (en.comment || en.name || '') === CFG.entryName);
+  if (!hit) {
+    throw new Error(`entry "${CFG.entryName}" not found (it should stay DISABLED but still readable)`);
+  }
+  let raw = String(hit.content == null ? '' : hit.content).replace(/^\uFEFF/, '').trim();
+  if (raw[0] !== '{' && raw[0] !== '[') {
+    const s = raw.indexOf('{'), e = raw.lastIndexOf('}');
+    if (s !== -1 && e !== -1 && e > s) raw = raw.slice(s, e + 1);
+  }
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    throw new Error(`template JSON parse failed (single-line compact JSON? no {{macro}}?): ${e && e.message}`);
+  }
+}
+
+/* ========= core: read entry JSON -> create template -> conflict -> verify ========= */
+let busy = false;
+async function createTemplate() {
+  if (busy) return;
+  busy = true;
+  try {
+    notify('读取条目中…', 'info');
+    const api = await waitApi();
+    if (!api) throw new Error('插件未就绪(等待超时)');
+    const importTpl = requireMethod(api, 'importTemplateFromData');
+    const listTpl   = requireMethod(api, 'getTemplatePresetNames');
+
+    const tplData = await readTemplateObject();
+
+    let presetName = CFG.presetName;   // 预设名取自配置
+
+    const existing = await listTpl();
+    if (Array.isArray(existing) && existing.includes(presetName)) {
+      const r = await askOnConflict(presetName);
+      if (r.action === 'cancel') { notify('已取消创建', 'info'); return; }
+      if (r.action === 'rename') presetName = r.name;
+    }
+
+    notify('创建模板中…', 'info');
+    const res = await importTpl(tplData, { scope: scopeState, presetName });
+    if (res && res.success === false) throw new Error(res.message || '插件返回 success:false');
+
+    const verify = await listTpl();
+    const ok = Array.isArray(verify) && verify.includes(presetName);
+    if (ok && typeof api.switchTemplatePreset === 'function') {
+      try { await api.switchTemplatePreset(presetName, { scope: scopeState }); } catch (_) {}
+    }
+    await refreshPresetList();
+    notify(ok ? `已创建并切换: ${presetName} (${scopeState})` : `已提交但未校验到, 请点"刷新预设列表"复查`, ok ? 'ok' : 'err');
+  } catch (e) {
+    notify('创建失败: ' + (e && e.message), 'err');
+  } finally {
+    busy = false;
+  }
+}
+
+/* ========= register button ========= */
+loadConfig();            // 启动即加载已保存配置
+buildPanel();
+replaceScriptButtons([{ name: BTN_NAME, visible: true }]);
+eventOn(getButtonEvent(BTN_NAME), openPanel);
+
+/* ========= CLEANUP: 移除SPV运行时注册的通用"创建表格模板"按钮 ========= */
+/* SPV远程脚本(shujuku@spv8.4)异步从CDN加载，加载完成后会追加
+   "📦 创建表格模板"通用按钮，与本卡专用按钮"📦 创建不要玩弄我的鸡吧表格模板"
+   功能重复。轮询重新断言按钮列表，确保只保留专用按钮。 */
+let _spvCleanupTimer = null;
+(function spvBtnCleanup() {
+  let attempts = 0;
+  const MAX = 15;
+  _spvCleanupTimer = setInterval(() => {
+    attempts++;
+    try {
+      // replaceScriptButtons 覆盖全部按钮，重新断言只保留专用按钮
+      // 如果 SPV 已追加通用按钮，此处会将其清除
+      replaceScriptButtons([{ name: BTN_NAME, visible: true }]);
+    } catch (_) {}
+    if (attempts >= MAX) { clearInterval(_spvCleanupTimer); _spvCleanupTimer = null; }
+  }, 2000);
+})();
+
+/* ========= MEMORY: pagehide -> abort all listeners + drop DOM + clear refs ========= */
+$(window).on('pagehide.bydTpl', () => {
+  try { if (_spvCleanupTimer) { clearInterval(_spvCleanupTimer); _spvCleanupTimer = null; } } catch (_) {}
+  try { ac.abort(); } catch (_) {}
+  try { eventClearEvent(getButtonEvent(BTN_NAME)); } catch (_) {}
+  topDocument.getElementById(CSS_ID)?.remove();
+  topDocument.getElementById(PANEL_ID)?.remove();
+  topDocument.getElementById(`${PANEL_ID}-overlay`)?.remove();
+  topDocument.getElementById(`${PANEL_ID}-confirm`)?.remove();
+  topDocument.getElementById(`${PANEL_ID}-config`)?.remove();
+  if (topWindow[INSTANCE_FLAG] === ac) delete topWindow[INSTANCE_FLAG];
+  panelEl = overlayEl = confirmEl = configEl = null;
+  pendingResolve = null;
+  $(window).off('pagehide.bydTpl');
+});
+
+console.log('[byd template injector] ready (universal + viewport-keyboard fix)');

@@ -1,0 +1,40 @@
+// 开局表单 v2（同样：在主文档跑，对每个文档各填充一次）
+(function () {
+  async function 填充(DOC, WIN) {
+    
+          try {
+            if (typeof setChatMessages === 'function') {
+              await setChatMessages([{ message_id: 0, swipe_id: swipe_id }]);
+              var d = DOC.getElementById(NS + '-done');
+              d.className = 'done on';
+              d.textContent = '已确认「' + 选中 + '」，切到它的开局。这条消息往上滑一层就是开局正文。';
+            } else throw new Error('没有 setChatMessages');
+          } catch (e) {
+            // 兜底：切不了 swipe 时，退回让 AI 按这套人设开始
+            try {
+              if (typeof generate === 'function') {
+                generate({ user_input: '【开局】屏幕外的她选了「' + 选中 + '」这一套。按这一套人设开始第一天。', should_stream: true });
+                var d2 = DOC.getElementById(NS + '-done');
+                d2.className = 'done on';
+                d2.textContent = '已确认「' + 选中 + '」，由她开第一局。';
+                return;
+              }
+            } catch (e2) {}
+            var d3 = DOC.getElementById(NS + '-done');
+            d3.className = 'done on';
+            d3.textContent = '变量已写入，但没能自动跳转（' + e.message + '）。请手动切开场白到「' + 选中 + '」那一段。';
+          }
+          var ok2 = DOC.getElementById(NS + '-ok');
+          ok2.disabled = true;
+        
+  }
+  function 全跑() {
+    try { if (document.getElementById('gg3-root')) 填充(document, window); } catch (e) {}
+    var ifr = document.querySelectorAll('iframe');
+    for (var i = 0; i < ifr.length; i++) { try { var d = ifr[i].contentDocument; if (d && d.getElementById('gg3-root')) 填充(d, ifr[i].contentWindow || window); } catch (e) {} }
+  }
+  if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(全跑, 300);
+  else document.addEventListener('DOMContentLoaded', function () { setTimeout(全跑, 300); });
+  try { new MutationObserver(function () { 全跑(); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  try { setInterval(全跑, 2000); } catch (e) {}
+}());

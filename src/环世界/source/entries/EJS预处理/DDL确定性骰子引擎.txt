@@ -1,0 +1,283 @@
+@@generate_before
+<%_
+function _hashSeed(seed) {
+  var s = String(seed);
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) {
+    h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h) || 1;
+}
+
+function _lcgRoll(seed, count, sides) {
+  var a = 1103515245;
+  var c = 12345;
+  var m = 2147483648;
+  var state = _hashSeed(seed) & 0x7FFFFFFF;
+  var results = [];
+  for (var i = 0; i < count; i++) {
+    state = ((Math.imul(a, state) + c) >>> 0) & 0x7FFFFFFF;
+    results.push((state % sides) + 1);
+  }
+  return results;
+}
+
+function _check(attributeValue, seed, difficulty) {
+  var val = Number(attributeValue) || 0;
+  var threshold;
+  if (difficulty === '困难') {
+    threshold = val / 2;
+  } else if (difficulty === '极难') {
+    threshold = val / 5;
+  } else {
+    threshold = val;
+  }
+  var rolls = _lcgRoll(seed, 1, 100);
+  var roll = rolls[0];
+  var result;
+  if (roll <= 5) {
+    result = '大成功';
+  } else if (roll <= threshold / 5) {
+    result = '大成功';
+  } else if (roll <= threshold / 2) {
+    result = '极难成功';
+  } else if (roll <= threshold) {
+    result = '普通成功';
+  } else if (roll >= 96) {
+    result = '大失败';
+  } else {
+    result = '失败';
+  }
+  return { roll: roll, threshold: Math.round(threshold * 100) / 100, result: result };
+}
+
+function _butcherYield(animalType, skillLevel, seed) {
+  var baseMeat = {
+    '鸡': 0.10, '兔': 0.15, '猪': 1.20, '牛': 2.00, '羊': 0.80,
+    '驼羊': 0.60, '鹿': 0.70, '野猪': 1.00, '狼': 0.30, '熊': 1.50,
+    '水牛': 1.80
+  };
+  var base = baseMeat[animalType] || 0;
+  var skl = Number(skillLevel) || 0;
+  var mod;
+  if (skl === 0) { mod = 0.5; }
+  else if (skl <= 3) { mod = 0.7; }
+  else if (skl <= 6) { mod = 1.0; }
+  else if (skl <= 9) { mod = 1.2; }
+  else if (skl <= 14) { mod = 1.5; }
+  else { mod = 1.8; }
+  var rolls = _lcgRoll('butcher_' + String(seed), 1, 100);
+  var variation = 0.9 + (rolls[0] / 100) * 0.2;
+  var yieldAmount = Math.round(base * mod * variation * 100) / 100;
+  return { base: base, mod: mod, variation: Math.round(variation * 100) / 100, yield: yieldAmount };
+}
+
+function _shootSkill(skill, weaponDamage, weaponAccMod) {
+  var skl = Number(skill) || 0;
+  var wDmg = Number(weaponDamage) || 0;
+  var accMod = Number(weaponAccMod) || 0;
+  var hit = Math.min(95, 35 + skl * 3 + accMod);
+  var dmg = wDmg * (0.5 + skl * 0.025);
+  var crit = Math.max(0, (skl - 10) * 2);
+  var critDmg = dmg * 2;
+  var aim = Math.max(0.3, 1.2 - skl * 0.05);
+  return {
+    命中: hit,
+    伤害: Math.round(dmg * 100) / 100,
+    暴击率: crit,
+    暴击伤害: Math.round(critDmg * 100) / 100,
+    瞄准轮数: Math.round(aim * 100) / 100
+  };
+}
+
+function _meleeSkill(skill, weaponDamage) {
+  var skl = Number(skill) || 0;
+  var wDmg = Number(weaponDamage) || 0;
+  var hit = Math.min(90, 40 + skl * 2.5);
+  var wDmgFinal = wDmg * (0.5 + skl * 0.025);
+  var unarmed = 5 + skl * 0.8;
+  var dodge = Math.min(60, skl * 3);
+  var parry = Math.min(40, skl * 2);
+  return {
+    命中: hit,
+    武器伤害: Math.round(wDmgFinal * 100) / 100,
+    徒手伤害: Math.round(unarmed * 100) / 100,
+    闪避: dodge,
+    格档: parry
+  };
+}
+
+function _socialSkill(skill) {
+  var skl = Number(skill) || 0;
+  return {
+    招募: Math.min(80, 10 + skl * 3.5),
+    贸易修正: skl * 0.5,
+    谈判: Math.min(85, 20 + skl * 3),
+    派系修正: skl * 0.5,
+    俘虏转化: Math.min(70, 5 + skl * 3),
+    安抚: Math.min(75, 15 + skl * 3)
+  };
+}
+
+function _cookSkill(skill) {
+  var skl = Number(skill) || 0;
+  var yieldMod;
+  var timeMod;
+  if (skl === 0) { yieldMod = 0.5; timeMod = 1.5; }
+  else if (skl <= 3) { yieldMod = 0.7; timeMod = 1.2; }
+  else if (skl <= 6) { yieldMod = 1.0; timeMod = 1.0; }
+  else if (skl <= 9) { yieldMod = 1.2; timeMod = 0.8; }
+  else if (skl <= 14) { yieldMod = 1.5; timeMod = 0.6; }
+  else { yieldMod = 1.8; timeMod = 0.5; }
+  var extraHide = (skl >= 15 && skl <= 20) ? 1 : 0;
+  return {
+    烹饪速度: Math.round((1 + skl * 0.1) * 100) / 100,
+    优秀率: Math.min(95, skl * 4.5),
+    中毒率: Math.max(1, 20 - skl * 1.5),
+    屠宰系数: yieldMod,
+    耗时系数: timeMod,
+    额外皮张: extraHide,
+    酿酒品质: Math.min(90, skl * 4)
+  };
+}
+
+function _buildSkill(skill) {
+  var skl = Number(skill) || 0;
+  return {
+    建造速度: Math.round((1 + skl * 0.08) * 100) / 100,
+    优秀率: Math.min(90, skl * 4),
+    失败率: Math.max(2, 30 - skl * 1.8),
+    修理速度: Math.round((1 + skl * 0.05) * 100) / 100,
+    修理HP: skl * 2,
+    拆除速度: Math.round((1 + skl * 0.08) * 100) / 100,
+    拆除回收: Math.min(75, 25 + skl * 2.5)
+  };
+}
+
+function _cropSkill(skill) {
+  var skl = Number(skill) || 0;
+  var graftRate = (skl >= 3) ? Math.min(85, 30 + skl * 3) : 0;
+  return {
+    播种速度: Math.round((1 + skl * 0.06) * 100) / 100,
+    收获速度: Math.round((1 + skl * 0.06) * 100) / 100,
+    产量修正: Math.round((1 + skl * 0.03) * 100) / 100,
+    生长加速: Math.round((1 + skl * 0.02) * 100) / 100,
+    防治率: Math.min(80, skl * 4),
+    接枝率: graftRate
+  };
+}
+
+function _tameMod(difficulty) {
+  var mods = { '极易': 0, '易': 5, '中': 10, '难': 15, '极难': 20, '不可能': 100 };
+  return mods[difficulty] !== undefined ? mods[difficulty] : 100;
+}
+
+function _animalSkill(skill, tameDifficulty) {
+  var skl = Number(skill) || 0;
+  var tameModVal = _tameMod(tameDifficulty);
+  var tame = Math.max(0, Math.min(70, 5 + skl * 3 - tameModVal));
+  return {
+    驯服: tame,
+    训练: Math.min(85, 10 + skl * 3.5),
+    心情: 50 + skl * 1.5,
+    产物修正: Math.round((1 + skl * 0.05) * 100) / 100,
+    繁殖: Math.min(80, 40 + skl * 2)
+  };
+}
+
+function _craftSkill(skill, reqSkill) {
+  var skl = Number(skill) || 0;
+  var req = Number(reqSkill) || 0;
+  var speed = 1 + skl * 0.1;
+  var fine = Math.min(80, skl * 3.5);
+  var rare = Math.max(0, skl - 8) * 2.5;
+  var legend = Math.max(0, skl - 15) * 0.5;
+  var successRate = Math.min(100, 100 + (skl - req) * 3);
+  var quality = '普通';
+  if (skl >= req + 15) { quality = '传说'; }
+  else if (skl >= req + 10) { quality = '史诗'; }
+  else if (skl >= req + 6) { quality = '稀有'; }
+  else if (skl >= req + 3) { quality = '优秀'; }
+  return {
+    制造速度: Math.round(speed * 100) / 100,
+    优秀: fine,
+    稀有: rare,
+    传说: legend,
+    成功率: successRate,
+    品质等级: quality
+  };
+}
+
+function _artSkill(skill) {
+  var skl = Number(skill) || 0;
+  var commonPlus = Math.min(95, skl * 4);
+  var rarePlus = Math.max(0, skl - 8) * 2.5;
+  var legend = Math.max(0, skl - 16) * 0.3;
+  var valueMod = 1 + skl * 0.1;
+  var beauty = skl * 0.5;
+  var timeMod = 1 / (1 + skl * 0.08);
+  return {
+    普通以上: commonPlus,
+    稀有以上: rarePlus,
+    传说: legend,
+    价值修正: Math.round(valueMod * 100) / 100,
+    美观: beauty,
+    耗时修正: Math.round(timeMod * 100) / 100
+  };
+}
+
+function _medSkill(skill) {
+  var skl = Number(skill) || 0;
+  return {
+    治疗率: Math.min(95, 30 + skl * 3),
+    治疗量: 20 + skl * 2,
+    手术率: Math.min(90, 20 + skl * 3.2),
+    防疫率: Math.min(80, skl * 4),
+    感染率: Math.max(0, 10 - skl * 0.8),
+    接生率: Math.min(95, 40 + skl * 3)
+  };
+}
+
+function _researchSkill(skill) {
+  var skl = Number(skill) || 0;
+  return {
+    研发速度: Math.round((1 + skl * 0.12) * 100) / 100,
+    高科技解锁: skl >= 8,
+    飞船解锁: skl >= 14,
+    逆向点数: skl * 10,
+    台效修正: Math.round((1 + skl * 0.12) * 100) / 100
+  };
+}
+
+function _mineSkill(skill) {
+  var skl = Number(skill) || 0;
+  return {
+    速度: Math.round((1 + skl * 0.08) * 100) / 100,
+    产量: Math.round((1 + skl * 0.04) * 100) / 100,
+    稀有率: Math.min(30, skl * 1.2),
+    深层解锁: skl >= 5
+  };
+}
+
+_%>
+<骰子引擎就绪>
+[核心骰子函数]
+_hashSeed(seed) → 正整数 (djb2哈希，确定性可复现)
+_lcgRoll(seed, count, sides) → 骰子数组 (LCG伪随机，同种子同结果)
+_check(attributeValue, seed, difficulty=普通/困难/极难) → {roll, threshold, result}
+_butcherYield(animalType, skillLevel, seed) → {base, mod, variation, yield}
+
+[12技能行为公式] (skill范围0-20)
+_shootSkill(skill, weaponDamage, weaponAccMod) → {命中,伤害,暴击率,暴击伤害,瞄准轮数}
+_meleeSkill(skill, weaponDamage) → {命中,武器伤害,徒手伤害,闪避,格档}
+_socialSkill(skill) → {招募,贸易修正,谈判,派系修正,俘虏转化,安抚}
+_cookSkill(skill) → {烹饪速度,优秀率,中毒率,屠宰系数,耗时系数,额外皮张,酿酒品质}
+_buildSkill(skill) → {建造速度,优秀率,失败率,修理速度,修理HP,拆除速度,拆除回收}
+_cropSkill(skill) → {播种速度,收获速度,产量修正,生长加速,防治率,接枝率}
+_animalSkill(skill, tameDifficulty=极易/易/中/难/极难/不可能) → {驯服,训练,心情,产物修正,繁殖}
+_craftSkill(skill, reqSkill) → {制造速度,优秀,稀有,传说,成功率,品质等级}
+_artSkill(skill) → {普通以上,稀有以上,传说,价值修正,美观,耗时修正}
+_medSkill(skill) → {治疗率,治疗量,手术率,防疫率,感染率,接生率}
+_researchSkill(skill) → {研发速度,高科技解锁,飞船解锁,逆向点数,台效修正}
+_mineSkill(skill) → {速度,产量,稀有率,深层解锁}
+</骰子引擎就绪>

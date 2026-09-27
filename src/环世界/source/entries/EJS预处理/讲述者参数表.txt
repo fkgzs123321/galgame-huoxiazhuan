@@ -1,0 +1,107 @@
+@@generate_before
+<%_
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var wealth = Number(getvar('stat_data.殖民地.财富总值', { scope: 'local', defaults: 800 })) || 800;
+var threat = Number(getvar('stat_data.殖民地.威胁点数', { scope: 'local', defaults: 0 })) || 0;
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+
+function _storytellerMod(storyteller, phase, seed) {
+  if (storyteller === '卡桑德拉') {
+    var cass = { '拓荒期': 0.3, '发展期': 0.6, '繁荣期': 1.0, '终局期': 1.8 };
+    return cass[phase] || 0.3;
+  }
+  if (storyteller === '菲比') {
+    var phoe = { '拓荒期': 0.1, '发展期': 0.3, '繁荣期': 0.6, '终局期': 1.0 };
+    return phoe[phase] || 0.1;
+  }
+  /* 兰迪随机区间 */
+  var roll = _lcgRoll(seed + '_randy', 1, 100)[0];
+  var range = { '拓荒期': [0.1, 0.8], '发展期': [0.2, 1.2], '繁荣期': [0.3, 2.0], '终局期': [0.5, 3.0] };
+  var r = range[phase] || range['拓荒期'];
+  return Math.round((r[0] + roll / 100 * (r[1] - r[0])) * 100) / 100;
+}
+
+function _baseCooldown(storyteller, seed) {
+  if (storyteller === '卡桑德拉') { return 4; }
+  if (storyteller === '菲比') { return 7; }
+  /* 兰迪1-10天完全不可预测 */
+  return _lcgRoll(seed + '_randy_cd', 1, 10)[0];
+}
+
+function _threatPoints(wealth, stMod, gameDay) {
+  var wealthPart = (Number(wealth) || 0) / 1000 * stMod;
+  var timeBonus = Number(gameDay) * 0.5;
+  return Math.round((wealthPart + timeBonus) * 100) / 100;
+}
+
+function _raidSize(threatPoints) {
+  var t = Number(threatPoints) || 0;
+  if (t <= 20) { return { tier: '微弱', headcount: '1-3人', note: '小型野兽或散兵' }; }
+  if (t <= 50) { return { tier: '小型', headcount: '3-5人', note: '掠夺者小队' }; }
+  if (t <= 100) { return { tier: '中型', headcount: '5-8人', note: '部族袭击' }; }
+  if (t <= 200) { return { tier: '大型', headcount: '8-15人', note: '精锐佣兵团' }; }
+  if (t <= 500) { return { tier: '巨型', headcount: '15-30人', note: '大型围攻' }; }
+  return { tier: '终末', headcount: '30+大军', note: '全方位战争' };
+}
+
+var stMod = _storytellerMod(storyteller, phase, 'storyteller_' + gameDay);
+var baseCd = _baseCooldown(storyteller, 'cd_' + gameDay);
+var computedThreat = _threatPoints(wealth, stMod, gameDay);
+var raidSize = _raidSize(threat);
+_%>
+<讲述者系统就绪>
+[当前讲述者]
+故事讲述者: <%= storyteller %>
+殖民地阶段: <%= phase %>
+财富总值: <%= wealth %>
+威胁点数: <%= threat %>
+游戏日: <%= gameDay %>
+
+[三讲述者参数]
+1. 卡桑德拉 (稳定型)
+   拓荒期×0.3 / 发展期×0.6 / 繁荣期×1.0 / 终局期×1.8
+   基础冷却: 4天 (稳定递增)
+   特性: 均衡叙事,难度随阶段平稳上升
+
+2. 菲比 (宽松型)
+   拓荒期×0.1 / 发展期×0.3 / 繁荣期×0.6 / 终局期×1.0
+   基础冷却: 7天 (冷却×1.5)
+   特性: 偏向建设,给玩家喘息空间,事件频率最低
+
+3. 兰迪 (随机型)
+   拓荒期0.1-0.8 / 发展期0.2-1.2 / 繁荣期0.3-2.0 / 终局期0.5-3.0
+   基础冷却: 1-10天随机 (完全不可预测)
+   特性: 纯随机,可能连续袭击或长期平静
+
+[袭击强度规则]
+威胁点数公式: (财富总值÷1000) × 讲述者系数 × 阶段系数 + 时间加成(每天+0.5)
+- 袭击强度只与财富+时间绑定
+- 叙事只影响频率不影响强度
+- 当前计算威胁点数: <%= computedThreat %> (讲述者系数×<%= stMod %>)
+
+袭击规模映射6档:
+  0-20   → 微弱 (1-3人)    小型野兽或散兵
+  21-50  → 小型 (3-5人)    掠夺者小队
+  51-100 → 中型 (5-8人)    部族袭击
+  101-200→ 大型 (8-15人)   精锐佣兵团
+  201-500→ 巨型 (15-30人)  大型围攻
+  500+   → 终末 (30+大军)  全方位战争
+
+当前威胁<%= threat %> → 规模档位: <%= raidSize.tier %> / <%= raidSize.headcount %> / <%= raidSize.note %>
+
+频率规则:
+- 卡桑德拉: 基础4天冷却,稳定递增
+- 菲比: 基础7天冷却×1.5=10.5天,事件最稀疏
+- 兰迪: 1-10天随机冷却,本轮=<%= baseCd %>天
+- 当前讲述者修正系数: ×<%= stMod %>
+
+[行为校验要求]
+讲述者参数应用必须输出行为校验块:
+<讲述者参数校验>
+- 讲述者名称 / 阶段系数 / 基础冷却
+- 威胁点数计算 (财富/讲述者系数/时间加成)
+- 袭击规模档位 (威胁值/规模/人数/类型)
+- 频率应用 (冷却值/下次触发预估)
+</讲述者参数校验>
+</讲述者系统就绪>

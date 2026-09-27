@@ -1,0 +1,51 @@
+# 05 · 道具与秘宝总表
+# conf: ★ 多源一致 ｜ ☆ 单一来源 ｜ ? 存疑（中文整理清单独有，日文原作与攻略站未核到）
+
+items:
+  - { name: 止水桶, alias: 定水桶, effect: 以此桶打的水成「定貌之水」；浇在已入溺泉者身上，永久锁定当前形态，热水无效, owner: 麝香王朝秘宝, first: 卷24-25, extra: 同时是寻找开水壶的雷达，仅 1 公里内有反应, conf: ★ }
+  - { name: 开水壶, effect: 煮沸之水浇身，即时解除止水桶效果, owner: 麝香王朝另一秘宝，封于蓬莱山，后流落日本宝来山, first: 卷24-25, conf: ★ }
+  - { name: 咒泉乡地图, effect: 标示咒泉洞真正入口与路径；浸热水后显出另一张图, owner: 咒泉乡导游, first: 卷37, extra: 可伦曾撕成五片保管，仍被纪玛取回, conf: ★ }
+  - { name: 印刻卵, alias: 刷入卵, effect: 破壳后吐丝裹人成巨蛋，出壳时第一眼所见者即为主人；照镜子或主人下令「随意」可解除, owner: 凤凰山秘宝，可冷藏储存, first: 卷37, conf: ★ }
+  - { name: 金蛇环, effect: 凤凰族最强古兵器，环部可脱手飞出斩岩；兼作凤凰形喷水口的开闭栓, owner: 凤凰山王家, first: 卷37-38, conf: ★ }
+  - { name: 月涡蛇, effect: 龙形喷水口的开闭栓, owner: 咒泉洞, first: 卷38, conf: ★ }
+  - { name: 猫魔铃, effect: 大铃为猫妖本体，小铃持有者即被定为「新娘」, owner: 中国猫妖猫魔铃, first: 卷14, conf: '?' }
+  - { name: 龙之鬚, effect: 面条状奇物；男性食后头发狂长至秃。须编辫并以另一根鬚扎梢方可止, owner: 中国某面馆, first: 卷14-15, extra: 乱马因误食而需要束辫, conf: ★ }
+  - { name: 圣刀满愿刃, alias: 满愿丸, effect: 向此刀许三个愿望即可实现, owner: 古董店流出, first: 卷15, extra: 九能带刀用来约会辫子姑娘, conf: ★ }
+  - { name: 反转宝珠, effect: 上下两面为笑脸／厌恶表情的胸针；正面时爱增，反转则爱转憎, owner: 女杰族, first: 卷22（第110页）, extra: 本来无爱者无效, conf: ★ }
+  - { name: 无敌镜, effect: 戴者被看者必哭着道歉；反戴则自己向对方道歉, owner: 女杰族女性与小孩的护身具, first: 卷27（第67页）, extra: 沐丝在可伦宝库中翻出, conf: ★ }
+  - { name: 破毒盾, effect: 盾面书「破」，可挡一切毒, owner: 可伦借出, first: 卷29（第70页）, extra: 对药物无效, conf: ★ }
+  - { name: 斩毒刀, effect: 刀尖附花能预知并斩断一切毒；斩后刀自毁变回普通刀, owner: 可伦借出, first: 卷29（第70页）, extra: 一次性, conf: ★ }
+  - { name: 火炎杖, effect: 龙头木杖触地即喷火, owner: 可伦借出, first: 卷29（第91页）, conf: ★ }
+  - { name: 风神扇, alias: 东风风神扇, effect: 扇出强风可吹飞毒气与物体, owner: 可伦借出, first: 卷29（第91页）, extra: 会反噬使用者, conf: ★ }
+  - { name: 傀儡菇, effect: 食用后施以暗示，他人说出关键词即主动拥抱对方, owner: 女杰族, first: 卷11（第102页）, conf: ★ }
+  - { name: 南蛮镜, effect: 泪滴镜面者可移动到心中所想的时代, owner: 女杰族，被八宝斋盗走, first: 动画第36、44话, extra: 动画原创；后为天道靡摔碎, conf: ★ }
+  - { name: 岁月菇, alias: 年の数茸, effect: 食用或入水后年龄按数目增减, owner: 中国药材, first: 卷33「岁月菇」, extra: 沐丝以火吹之术烤焦, conf: ★ }
+  - { name: 动情药手镯, effect: 镶一瞬玉／一日玉／一生玉三丸；服者对第一眼所见的异性动情，时长同名, owner: 女杰族，被八宝斋盗, first: 卷10（第23页）, extra: 不讲年龄与物种, conf: ★ }
+  - { name: 力之源, effect: 实为磁力针灸片，贴敷缓解酸痛；失去后蕗珠发不出终极奥义, owner: 蕗珠随身, first: 卷32, extra: 六臂易肩酸, conf: ★ }
+  - { name: 攻药湿布, effect: 黑白两色相吸，贴于不同人身上迫使其互攻, owner: 砒珂、琳珂, first: 卷29, conf: ★ }
+  - { name: 抗水肥皂, effect: 洗一次即不再因冷水变身, owner: 女杰族秘宝, first: 卷12「幸福的抗水肥皂」, extra: 被良牙误用, conf: ★ }
+  - { name: 即席男溺泉, effect: 粉末撒入水中，该水一次性具备男溺泉效力, owner: 珊璞从中国带来, first: 卷8「即席男溺泉」, extra: 一次性，失效后恢复原诅咒, conf: ★ }
+  - { name: 贫力虚脱灸, effect: 中灸者战力尽失如婴儿；解法记录于「破灸法人体图」, owner: 八宝斋, first: 卷13「传说的邪灸」, extra: 人体图亦被八宝斋盗走, conf: ★ }
+  - { name: 喜面斗神图, effect: 于丹田画印，战力倍增；一败则印消, owner: 喜面流拳印术师, first: 卷20, conf: ☆ }
+  - { name: 锦乃蝶, effect: 七色墨；得此墨「雷神猛笔拳」方完整, owner: 乐京斋所有，百年前被八宝斋夺走, first: 第323话, conf: ★ }
+  - { name: 凤凰蛋, effect: 置于头顶孵化可得「凤凰剑」；凤凰认定初见者为宿敌, owner: 古董店, first: 第29卷 PART1-2, extra: 巢中再产一卵, conf: ★ }
+  - { name: 春眠香, effect: 闻之者整个春天不醒, owner: 八宝斋依古书调制, first: 第34卷第10话, extra: 天道茜中香后成睡拳高手, conf: ★ }
+  - { name: 八宝大华轮, effect: 掌大花火玉投掷爆炸；另有乱射版与超大华轮版, owner: 八宝斋，无差别格斗流究极奥义, first: 卷11「炸裂！八宝大华轮」, extra: 曾因烧掉内衣一度封印, conf: ★ }
+  - { name: 铁炮豆, effect: 豆类暗器, owner: 未详, first: 卷34, conf: '?' }
+  - { name: 怒发天, effect: 生发水（试用品）, owner: 未详, first: 卷30, conf: '?' }
+  - { name: 爱情纸娃娃, effect: 代人承受伤害，仅一次, owner: 可伦借出, first: 卷29, conf: ★ }
+  - { name: 海月泳装, effect: 水母造型泳衣, owner: 未详, first: 第36卷第378话, extra: 天道茜穿着后夺冠, conf: '?' }
+  - { name: 主从丸, effect: 服者服从施药者, owner: 未详, first: 未详, conf: '?' }
+  - { name: 结缘之竹, effect: 结缘用竹, owner: 未详, first: 卷35, conf: '?' }
+  - { name: 相思伞, alias: 相合伞, effect: 传说中的成对伞，关联缘分, owner: 中国传说, first: 卷31, conf: '?' }
+  - { name: 疯狂绘马, effect: 绘马类, owner: 未详, first: 卷33, conf: '?' }
+  - { name: 恶梦香, effect: 与春眠香同类, owner: 未详, first: 未详, extra: 疑为春眠香的派生或误记, conf: '?' }
+  - { name: 超人腰带, effect: 腰带型道具, owner: 未详, first: 未详, conf: '?' }
+  - { name: 木人桩, effect: 修炼用木桩, owner: 未详, first: 未详, conf: '?' }
+  - { name: 幸福樱花印, effect: 脸上出现樱花印者注定与天道茜结合, owner: 未详, first: 卷21, conf: '?' }
+  - { name: 无敌无敌镜, effect: 见「无敌镜」, owner: 女杰族, first: 卷27「无敌的无敌镜」, conf: ☆ }
+
+# 存疑说明
+caveats:
+  - 主从丸、结缘之竹、铁炮豆、超人腰带、木人桩、疯狂绘马、恶梦香、幸福樱花印 —— 仅见于中文整理清单，日文原作与日文攻略站未核到，**写卡时不建议直接使用**
+  - 恶梦香疑为春眠香的派生或误记

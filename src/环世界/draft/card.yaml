@@ -1,0 +1,36 @@
+name: 环世界
+description: ''
+personality: ../source/fields/personality.md
+scenario: ../source/fields/scenario.md
+first_mes: ../source/fields/first_mes.md
+alternate_greetings:
+  - ../source/fields/alt_greeting_沙漠.md
+  - ../source/fields/alt_greeting_冻原.md
+  - ../source/fields/alt_greeting_热带雨林.md
+mes_example: ../source/fields/mes_example.md
+creator_notes: ../source/fields/creator_notes.md
+system_prompt: ../source/fields/system_prompt.md
+post_history_instructions: ''
+creator: 'TRAE角色卡工坊'
+character_version: '1.0'
+talkativeness: '0.5'
+fav: false
+tags:
+  - RimWorld
+  - 生存
+  - 殖民地
+  - 策略
+  - 永久死亡
+  - R-18
+  - NSFW
+  - 数值驱动
+  - EJS
+  - MVU
+  - 状态栏
+  - 沙盒
+  - 异星
+  - 建造
+  - 战斗
+worldbook:
+  include: true
+  name: 环世界

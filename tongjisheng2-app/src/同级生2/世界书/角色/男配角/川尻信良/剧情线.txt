@@ -1,0 +1,167 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 川尻信良 · 剧情线
+   ════════════════════════════════════════════════════════════
+   npc_id=N1 / 男配角 · 洋子线核心推动者 + 泉美线触发者
+   核心弧线：暗恋—告白—放弃—成全（四阶段）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 川尻信良_STORYLINE = {
+  npc_id: 'N1',
+  name: '川尻信良',
+  core_position: {
+    role: '洋子线核心推动者 — 信良的暗恋是洋子线转向主角的关键契机',
+    archetype: '憨厚柔道汉的柔情弧线 — 暗恋者的成全者',
+    function: '通过"告白失败→放弃→成全"的三段式弧线，把洋子的注意力从"哥们儿"转向"主角"，为洋子线打开攻略窗口',
+    plot_weight: 'high — 直接推动 2 条女角线（洋子线 + 泉美线）'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: 'PM/夜',
+      location: '信良家',
+      event: '日记本第 1 本事件',
+      description: '信良主动找主角倾诉暗恋洋子的烦恼，请求主角帮忙搭线；主角可在信良家借宿时翻到日记本第 1 本（记录暗恋细节）',
+      triggers_route: '洋子线 — 开启"信良暗恋"前置剧情',
+      is_reversible: true,
+      flags: ['flag_yoko_route_awareness', 'flag_nobuyoshi_diary_1']
+    },
+    {
+      date: '12-23',
+      time_slot: 'PM',
+      location: '白蛇池公园',
+      event: '信良向洋子告白',
+      description: '信良鼓起勇气在白蛇池公园向洋子告白，但洋子恋爱迟钝会把他当哥们儿；主角可在场见证或回避',
+      triggers_route: '洋子线 — 告白失败是洋子线转向主角的关键契机',
+      is_reversible: false,
+      flags: ['flag_nobuyoshi_confession_failed', 'flag_yoko_route_unlocked'],
+      note: '★ 不可逆 flag — 一旦触发，洋子线进入"信良放弃→洋子转向主角"分支'
+    },
+    {
+      date: '12-28',
+      time_slot: 'PM6:00',
+      location: '主角自宅（电话）',
+      event: '信良电话邀主角参加温泉旅行',
+      description: '信良以"散心"为名电话邀主角参加 12/29~30 温泉旅行；实际是筱原泉美线关键节点',
+      triggers_route: '泉美线 — 温泉旅行是泉美线核心触发条件',
+      is_reversible: true,
+      flags: ['flag_izumi_route_invitation', 'flag_nobuyoshi_onsen_trip']
+    },
+    {
+      date: '12-29',
+      time_slot: '全天',
+      location: '信良家',
+      event: '信良放弃洋子 + 日记本第 2 本交付',
+      description: '信良意识到洋子眼里只有运动和哥们儿，明白自己没机会，颓废一天；把诗集和日记本第 2 本交给主角，托付"替我照顾洋子"',
+      triggers_route: '洋子线 — 信良的成全是洋子线进入"主角可攻略"阶段的必要条件',
+      is_reversible: false,
+      flags: ['flag_nobuyoshi_surrender', 'flag_nobuyoshi_diary_2', 'flag_yoko_route_active'],
+      note: '★ 不可逆 flag — 信良的"成全"标志洋子线正式开放给主角'
+    },
+    {
+      date: '12-30~01-07',
+      time_slot: '全天',
+      location: '信良家 / 八十八学园',
+      event: '信良支持期 + 主动撮合主角与洋子',
+      description: '信良走出暗恋阴影，转为支持主角与洋子的剧情；若玩家走洋子线，信良会主动撮合；若主角伤害洋子，信良会翻脸',
+      triggers_route: '洋子线 — 信良的态度是洋子线结局的辅助变量',
+      is_reversible: true,
+      flags: ['flag_nobuyoshi_support_active']
+    }
+  ],
+
+  triggered_female_routes: {
+    '南川洋子线（heroine_id=6）': {
+      role: 'core — 洋子线核心推动者',
+      trigger_nodes: ['12-23 告白失败', '12-29 放弃+日记本第 2 本交付', '12-30~1-07 成全期'],
+      impact: '信良的告白失败 + 成全是洋子线开放给主角的必要前置；若信良未放弃，洋子线无法进入"主角可攻略"分支'
+    },
+    '筱原泉美线（heroine_id=12）': {
+      role: 'trigger — 温泉旅行触发者',
+      trigger_nodes: ['12-28 PM6:00 电话邀主角'],
+      impact: '信良的电话邀约是泉美线温泉旅行的唯一入口；若信良未打电话，泉美线进入"延迟触发"分支（1/3 后才开放）'
+    }
+  },
+
+  player_played_branch: {
+    condition: '玩家在开局选择扮演"川尻信良"作为操作角色',
+    initial_state: {
+      money: 4000,
+      stats: { charm: 45, academic: 40, physical: 70, social: 60, perception: 40, willpower: 55 },
+      advantage: '社交能力较强（social=60）；与南川洋子有特殊联系（同班同学，affection=10/trust=20）',
+      disadvantage: '金钱起步仅 4000；学业较差（academic=40）；与鸣泽家无家庭信任底子，唯/美佐子线难度提升'
+    },
+    exclusive_route: {
+      name: '洋子线专属：告白成功可能',
+      description: '玩家扮演信良时，洋子线进入"告白成功可能"专属分支 — 12/23 白蛇池公园告白事件不再必然失败，而是根据玩家在 12/22~12/23 的选择决定结局',
+      branch_logic: {
+        '12-22~12-23 选择正确（送运动饮料 / 聊棒球 / 表现运动能力）': '12/23 告白事件进入"暧昧接受"分支 — 洋子会红着脸说"我们...先从哥们儿做起吧"',
+        '12-22~12-23 选择错误（送甜腻蛋糕 / 聊诗歌 / 表现非运动面）': '12/23 告白事件进入"哥们儿拒绝"分支 — 洋子会拍信良肩膀说"我们永远是好哥们儿"',
+        '12-23 完全缺席告白事件': '12/23 告白事件默认失败 — 洋子线进入原作"信良放弃→洋子转向相沢诚（NPC）"分支'
+      },
+      exclusive_endings: [
+        '专属 Good End — 洋子接受告白，信良×洋子成立（仅玩家扮演信良可达）',
+        '专属 Normal End — 洋子暧昧接受，信良继续努力（开放结局）',
+        '专属 Bad End — 信良告白失败后颓废，洋子被相沢诚（NPC）攻略（信良退出）'
+      ]
+    },
+    locked_routes: '玩家扮演信良时，鸣泽唯线 / 鸣泽美佐子线难度大幅提升（无家庭信任底子）；其他女角正常开放'
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'friend — 最知心朋友',
+      detail: '三年同班 + 柔道部搭档，affection=20/trust=45 的损友关系；信良会主动找主角倾诉心事'
+    },
+    '南川洋子': {
+      type: '暗恋对象（heroine_id=6）',
+      detail: '同班同学，信良单恋；12/23 告白失败后进入放弃期，12/29 成全期；玩家扮演信良时洋子线进入专属分支'
+    },
+    '筱原泉美': {
+      type: '间接关联（heroine_id=12）',
+      detail: '通过 12/28 温泉旅行电话邀约间接关联；信良是泉美线触发者'
+    },
+    '柔道部全体部员': {
+      type: '哥们儿关系',
+      detail: '柔道部主将与部员的兄弟关系；部员是信良的眼线和情报源'
+    },
+    '主角义妹鸣泽唯（间接）': {
+      type: '不熟（heroine_id=1）',
+      detail: '玩家扮演信良时，与唯的初始关系 affection=0/trust=10（认识但不熟），唯/美佐子线难度提升'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_nobuyoshi_confession_failed',
+      trigger: '12-23 PM 白蛇池公园告白事件',
+      effect: '信良向洋子告白失败，洋子线进入"信良放弃→洋子转向主角"分支',
+      reversibility: '不可逆 — 一旦触发无法回退'
+    },
+    {
+      flag: 'flag_nobuyoshi_diary_2',
+      trigger: '12-29 信良家事件',
+      effect: '信良把诗集和日记本第 2 本交给主角，洋子线正式开放给主角',
+      reversibility: '不可逆 — 一旦交付无法回退'
+    },
+    {
+      flag: 'flag_izumi_route_invitation',
+      trigger: '12-28 PM6:00 电话邀主角温泉旅行',
+      effect: '泉美线温泉旅行入口开启；若主角接受则泉美线进入"温泉旅行触发"分支',
+      reversibility: '可逆 — 玩家可选择拒绝电话（泉美线进入延迟触发）'
+    },
+    {
+      flag: 'flag_nobuyoshi_support_active',
+      trigger: '12-30 起信良支持期',
+      effect: '信良主动撮合主角与洋子；若主角伤害洋子则信良翻脸',
+      reversibility: '可逆 — 信良的态度根据主角行为动态变化'
+    }
+  ],
+
+  summary: '信良的剧情线是"暗恋—告白—放弃—成全"四阶段弧线，核心功能是推动洋子线（通过告白失败打开攻略窗口）和触发泉美线（通过 12/28 电话邀约开启温泉旅行入口）。玩家扮演信良时，洋子线进入"告白成功可能"专属分支，解锁独有的 Good/Normal/Bad End。'
+};
+%>
+
+川尻信良 · 剧情线已加载。核心定位：洋子线核心推动者（12/23 告白失败→12/29 放弃+日记本第 2 本交付→12/30~1/7 成全期）+ 12/28 PM6:00 泉美线温泉旅行触发者。不可逆 flag：flag_nobuyoshi_confession_failed（12/23 告白失败）、flag_nobuyoshi_diary_2（12/29 日记本交付）、flag_izumi_route_invitation（12/28 电话邀约，可逆）。玩家扮演信良时洋子线进入"告白成功可能"专属分支。

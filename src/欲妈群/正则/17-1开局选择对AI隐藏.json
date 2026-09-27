@@ -1,0 +1,15 @@
+{
+  "id": "yumq-regex-101-opening-hide",
+  "scriptName": "1开局选择对AI隐藏",
+  "findRegex": "<OpeningSelectUI\\s*/>",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

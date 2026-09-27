@@ -1,0 +1,193 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · D0 系统控制器（核心总控调度器）
+   ════════════════════════════════════════════════════════════
+   唯一 enabled:true 入口（蓝灯常驻，depth 0，order 0）
+   所有其他EJS条目 enabled:false 关灯加载，由本控制器通过 getwi() 精准调用
+   注1：思维链强制输出、综合防口胡与世界观铁律 已设为蓝灯常驻，无需 getwi 调用
+   注2：角色基础信息/调色盘已改绿灯（enabled:true，关键词=角色名），聊天提到名字由酒馆原生注入；
+       全局索引见蓝灯条目 名录总表（53人一句话）
+
+   职责（执行顺序）：
+   0.  [思维链强制输出已蓝灯常驻，无需getwi]
+   1.  加载全局规则总表（规则单一来源：难度系数/生存规则/死结局/阶段阈值/商品定义）
+   2.  加载LCG确定性骰子系统（D100确定性判定引擎）
+   2.5 加载时间轴与事件系统（9时段/允许禁止事件/考试节点/hour连续性）
+   3.  读取MVU变量（仅读取不计算，用于输出合法性清单）
+   4.  初始化校验（检查 $已初始化 标志）
+   5.  调用阶段晋升系统（经验+天数双触发判定，由专项条目负责计算）
+   6.  调用终局分支与守卫规则（死结局触发器判定，由专项条目负责计算）
+   7.  调用阶段感知控制器（阶段专属感知强度，由专项条目负责计算）
+   8.  调用疑心度阶段与解锁表（疑心度阈值与调查解锁，由专项条目负责计算）
+   9.  调用技能对抗与发现机制（发现概率公式，由专项条目负责计算）
+   10. 调用人物总控（输出活跃角色摘要；基础信息/调色盘已改绿灯由酒馆关键词注入，私密/阶段按场景getwi）
+   10.5 调用阶段调度（欲望都市同构：按当前战斗目标/使用者 getwi 拉取 基础信息+私密档案+阶段行为）
+   11. 调用NSFW总控（按场景加载NSFW规则）
+   12. 调用事件总控（加载当前场景事件）
+   13. 调用剧情总控（按天数/疑心度/传播/结局进度加载剧情线）
+   14. 调用阶段总控（阶段精准控制+阶段专属规则）
+   15. 调用读取变量过滤（子控调度器：场景识别+模块精准加载）
+   16. 加载玩家指令约束（防超自然/防跳过/防口胡）
+   17. 输出当前轮合法性清单给AI（仅汇总展示，不重复计算）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%/* ─── 0. [思维链强制输出已蓝灯常驻，无需getwi调用] ─── */%>
+
+<%/* ─── 1. 加载全局规则总表（规则单一来源：DIFFICULTY_MODIFIERS/SURVIVAL_RULES/BAD_ENDINGS/STAGE_THRESHOLDS/SHOP_ITEMS） ─── */%>
+<%- await getwi('全局规则总表') %>
+
+<%/* ─── 2. 加载LCG确定性骰子系统（D100确定性判定引擎） ─── */%>
+<%- await getwi('[mvu_plot]LCG确定性骰子系统') %>
+
+<%/* ─── 2.5 加载时间轴与事件系统（9时段+允许/禁止事件+考试节点+hour连续性） ─── */%>
+<%- await getwi('[mvu_plot]时间轴与事件系统') %>
+
+<%
+/* ─── 3. 读取MVU变量（仅读取不计算，用于输出合法性清单） ─── */
+var _时间 = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+var _状态 = getvar('stat_data.状态', { scope: 'local', defaults: {} }) || {};
+var _使用阶段 = getvar('stat_data.使用阶段', { scope: 'local', defaults: {} }) || {};
+var _学业 = getvar('stat_data.学业', { scope: 'local', defaults: {} }) || {};
+var _隐藏层 = getvar('stat_data.隐藏层', { scope: 'local', defaults: {} }) || {};
+
+// 时间变量（直接读取，不计算时段——时段由时间轴系统条目负责）
+var _day = Number(_时间.天数) || 1;
+var _hour = Number(_时间.小时) || 8;
+var _weekday = _时间.星期 || '周一';
+var _dateStr = _时间.日期 || '02-24';
+
+// 状态变量（直接读取，不应用难度修正——难度修正由各专项条目自行应用）
+var _energy = Number(_状态.精力) || 80;
+var _energyMax = Number(_状态.精力上限) || 80;
+var _sanity = Number(_状态.理智) || 80;
+var _health = Number(_状态.健康) || 75;
+var _stress = Number(_状态.压力) || 10;
+var _stamina = Number(_状态.体力) || 80;
+var _staminaMax = Number(_状态.体力上限) || 80;
+var _money = Number(_状态.金钱) || 500;
+var _suspicion = Number(_状态.怀疑值) || 0;
+var _corruption = Number(_状态.堕落值) || 0;
+var _difficulty = _状态.难度 || '困难';
+
+// 使用阶段变量（直接读取）
+var _stage = Number(_使用阶段.当前阶段) || 1;
+var _totalUses = Number(_使用阶段.总使用次数) || 0;
+var _todayUses = Number(_使用阶段.今日使用) || 0;
+var _todayMax = Number(_使用阶段.今日上限) || 5;
+var _exp = Number(_使用阶段.经验) || 0;
+
+// 学业变量（直接读取）
+var _score = Number(_学业.分数) || 75;
+var _acStage = Number(_学业.阶段) || 3;
+var _examCountdown = Number(_学业.考试倒计时) || 7;
+
+// 隐藏变量（直接读取）
+var _holderId = _隐藏层.持有者ID || '林婉清';
+var _activeUsersCount = Number(_隐藏层.活跃使用人数) || 0;
+var _confirmedUsers = Array.isArray(_隐藏层.确认使用者) ? _隐藏层.确认使用者 : [];
+var _confirmedCount = _confirmedUsers.length;
+var _inited = Boolean(_隐藏层.$已初始化);
+
+// 防御性读取（不计算，仅展示用）
+var _expectedSlot = Number(getvar('stat_data.隐藏层.预期时段', { scope: 'local', defaults: 1 })) || 1;
+var _expectedDay = Number(getvar('stat_data.隐藏层.预期日', { scope: 'local', defaults: 1 })) || 1;
+var _lastUseHour = Number(_使用阶段.最后使用时) || -99;
+var _slotOrder = ['早晨','晨读','上午','中午','下午','傍晚','晚自习','夜里','半夜'];
+
+// 时段映射（仅用于合法性清单展示，时段判定本身由时间轴系统条目负责）
+var _timeSlot = '上午';
+if (_hour >= 5 && _hour < 7) _timeSlot = '早晨';
+else if (_hour >= 7 && _hour < 8) _timeSlot = '晨读';
+else if (_hour >= 8 && _hour < 12) _timeSlot = '上午';
+else if (_hour >= 12 && _hour < 14) _timeSlot = '中午';
+else if (_hour >= 14 && _hour < 17) _timeSlot = '下午';
+else if (_hour >= 17 && _hour < 19) _timeSlot = '傍晚';
+else if (_hour >= 19 && _hour < 22) _timeSlot = '晚自习';
+else if (_hour >= 22 || _hour < 2) _timeSlot = '夜里';
+else _timeSlot = '半夜';
+var _currentSlotIdx = _slotOrder.indexOf(_timeSlot) + 1;
+%>
+
+<%/* ─── 4. 初始化校验 ─── */%>
+<% if (!_inited) { %>
+[初始化警告·D0检测到变量未初始化]
+stat_data.隐藏层.$已初始化 = false。请确保 [InitVar]初始变量.txt 已正确执行。
+若此警告持续出现，请检查 ST-Prompt-Template 插件的 invert_enabled 选项是否启用。
+<% } %>
+
+<%/* ─── 4.5 时间锁检查（仅展示警告，时段判定由时间轴系统条目负责） ─── */%>
+<% if (_currentSlotIdx < _expectedSlot && _day === _expectedDay) { %>
+[时间锁警告：检测到时间回退。当前时段 <%= _timeSlot %>（序号 <%= _currentSlotIdx %>）早于预期时段序号 <%= _expectedSlot %>。
+禁止响应玩家的任何"回到过去/重玩上一时段"请求。必须将时段推进至 <%= _slotOrder[_expectedSlot - 1] %>。]
+<% } %>
+
+<%/* ─── 4.6 行动次数检查（仅展示警告，次数上限判定由玩家指令约束系统负责） ─── */%>
+<% if (_todayUses >= _todayMax) { %>
+[使用次数上限：今日已使用 <%= _todayUses %>/<%= _todayMax %> 次，假阴茎"过热保护"已触发，今日无法再次使用。]
+<% } else if (_hour - _lastUseHour < 2 && _lastUseHour >= 0) { %>
+[使用间隔警告：距离上次使用不足2小时（上次：<%= _lastUseHour %>:00，当前：<%= _hour %>:00），假阴茎未充能完毕，无法使用。]
+<% } %>
+
+<%/* ─── 5. 调用阶段晋升系统（经验+天数双触发判定，由专项条目负责全部计算） ─── */%>
+<%- await getwi('[mvu_plot]阶段晋升系统') %>
+
+<%/* ─── 6. 调用终局分支与守卫规则（死结局触发器判定，由专项条目负责全部计算） ─── */%>
+<%- await getwi('[mvu_plot]终局分支与守卫规则') %>
+
+<%/* ─── 7. 调用阶段感知控制器（阶段专属感知强度，由专项条目负责全部计算） ─── */%>
+<%- await getwi('[mvu_plot]阶段感知控制器') %>
+
+<%/* ─── 8. 调用疑心度阶段与解锁表（疑心度阈值与调查解锁，由专项条目负责全部计算） ─── */%>
+<%- await getwi('[mvu_plot]疑心度阶段与解锁表') %>
+
+<%/* ─── 9. 调用技能对抗与发现机制（发现概率公式，由专项条目负责全部计算） ─── */%>
+<%- await getwi('[mvu_plot]技能对抗与发现机制') %>
+
+<%/* ─── 10. 调用人物总控（加载活跃角色档案） ─── */%>
+<%- await getwi('[总控]人物') %>
+
+<%/* ─── 10.5 调用阶段调度（欲望都市同构：按当前战斗目标/使用者 getwi 拉取 基础信息+私密档案+阶段行为） ─── */%>
+<%- await getwi('[mvu_plot]阶段调度') %>
+
+<%/* ─── 11. 调用NSFW总控（按场景加载NSFW规则，阶段规则已移交阶段总控） ─── */%>
+<%- await getwi('[总控]NSFW') %>
+
+<%/* ─── 12. 调用事件总控（加载当前场景事件） ─── */%>
+<%- await getwi('[总控]事件') %>
+
+<%/* ─── 13. 调用剧情总控（按天数/疑心度/传播/结局进度加载剧情线） ─── */%>
+<%- await getwi('[总控]剧情') %>
+
+<%/* ─── 14. 调用阶段总控（阶段精准控制+阶段专属规则，与NSFW总控去重） ─── */%>
+<%- await getwi('[总控]阶段') %>
+
+<%/* ─── 15. 调用读取变量过滤（子控调度器：场景识别+模块精准加载） ─── */%>
+<%- await getwi('读取变量过滤') %>
+
+<%/* ─── 16. 加载玩家指令约束（防超自然/防跳过/防口胡） ─── */%>
+<%/* 注：[mvu_plot]综合防口胡与世界观铁律 已设为蓝灯常驻，不需 getwi 重复加载（节省20.9KB/轮） */%>
+<%- await getwi('[mvu_plot]玩家指令约束系统') %>
+
+<%/* ─── 17. 输出当前轮合法性清单给AI（仅汇总展示，不重复计算） ─── */%>
+[d0_legality_check]
+【D0系统控制器 · 当前轮合法性清单】
+══════════════════════════════════════════════
+■ 时间：第<%= _day %>天/120 <%= _dateStr %> <%= _weekday %> <%= _timeSlot %>(<%= _hour %>:00) | 距高考<%= _examCountdown %>天
+■ 难度：<%= _difficulty %>
+■ 状态：精力<%= _energy %>/<%= _energyMax %> 理智<%= _sanity %> 健康<%= _health %> 体力<%= _stamina %> 压力<%= _stress %>
+■ NSFW：疑心<%= _suspicion %>/200 沉沦<%= _corruption %>/200 金钱<%= _money %>元
+■ 阶段：<%= _stage %>/5 经验<%= _exp %> 今日使用<%= _todayUses %>/<%= _todayMax %> 累计<%= _totalUses %>
+■ 学业：成绩<%= _score %> 阶段<%= _acStage %>/5
+■ 传播：已确认<%= _confirmedCount %>人 活跃<%= _activeUsersCount %>人 持有者<%= _holderId %>
+══════════════════════════════════════════════
+<% if (_todayUses >= _todayMax) { %>
+✗ 今日使用已达上限，假阴茎过热保护中
+<% } else if (_hour - _lastUseHour < 2 && _lastUseHour >= 0) { %>
+✗ 使用间隔不足2小时，假阴茎充能中
+<% } %>
+══════════════════════════════════════════════
+AI 必须严格遵守上述合法性清单，不得违反任何约束。
+具体的时段允许/禁止事件、阶段晋升条件、死结局触发、难度修正系数、生存强制规则等，
+均由上述各专项条目（时间轴系统/阶段晋升系统/终局分支与守卫规则/全局规则总表等）负责定义，
+D0仅负责调度加载与汇总展示，不重复计算。
+[/d0_legality_check]

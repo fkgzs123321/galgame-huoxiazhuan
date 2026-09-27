@@ -1,0 +1,66 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/事件/事件_第一次系统暴走",
+    "value": {
+      "abstract": "评价值第一次归零时的单次事件脚本：他不笑、场内先出现生理不适、他能主动操纵巧合、四选一的重手、以及收尾与四条禁令",
+      "scope": "specific",
+      "keywords": [
+        "暴走",
+        "评价值归零",
+        "归零",
+        "系统暴走"
+      ],
+      "contents": [
+        {
+          "content": "getvar('stat_data.反派状态.系统暴走次数', { defaults: 0 }) === 0 && getvar('stat_data.反派状态.评价值', { defaults: 100 }) <= 0"
+        },
+        {
+          "file": "世界书/事件/事件_第一次系统暴走.txt"
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/事件/事件_强制洗白",
+    "value": {
+      "abstract": "评价值低于二十时的单次事件脚本：救一个与他无关的孩子或老人、三份物料当晚同时上网、后果链四件事、收尾与四条禁令",
+      "scope": "specific",
+      "keywords": [
+        "洗白",
+        "卖惨",
+        "强制洗白"
+      ],
+      "contents": [
+        {
+          "content": "getvar('stat_data.反派状态.强制洗白可用', { defaults: false }) === true && getvar('stat_data.反派状态.评价值', { defaults: 100 }) < 20"
+        },
+        {
+          "file": "世界书/事件/事件_强制洗白.txt"
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/事件/事件_终局_系统解绑",
+    "value": {
+      "abstract": "评价值第三次归零的单次事件脚本：面板说一句合约终止、十个人各一段短镜头、三条下场只落一条、末段只写谁在哪手里在做什么",
+      "scope": "specific",
+      "keywords": [
+        "终局",
+        "合约终止",
+        "第三次归零"
+      ],
+      "contents": [
+        {
+          "content": "getvar('stat_data.反派状态.评价值', { defaults: 100 }) <= 0 && getvar('stat_data.反派状态.系统暴走次数', { defaults: 0 }) >= 2"
+        },
+        {
+          "file": "世界书/事件/事件_终局_系统解绑.txt"
+        }
+      ]
+    }
+  }
+]

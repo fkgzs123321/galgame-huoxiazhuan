@@ -1,0 +1,1 @@
+var e=[{value:`zh`,label:`简体中文`,description:`使用原始中文界面文案。`},{value:`vi`,label:`Tiếng Việt`,description:`Sử dụng bản dịch giao diện tiếng Việt.`}];function t(e){return e===`zh`||e===`vi`}function n(e){return e===`en`||e===`vi`}function r(e){return e===`en`?`en`:e===`vi`?`vi`:`zh-CN`}export{n as i,r as n,t as r,e as t};

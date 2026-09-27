@@ -1,0 +1,154 @@
+# ══════════════════════════════════════════════════════════════
+# 酒馆角色卡工作区 · .gitignore
+# ══════════════════════════════════════════════════════════════
+#
+# 这个仓放的是**做卡的源码**：设计文档、schema、世界书条目、脚本、
+# 界面、正则、开场白。
+#
+# 不推两类：
+#   ① 能重新生成的 —— 构建产物、解包中间结果
+#   ② 从外部扒的素材 —— 游戏资源、wiki 图片
+#
+# ★ 为什么素材不推：活侠传一张卡就 1638 MB，99% 是从 Unity 包里解出的贴图。
+#   GitHub 单文件限 100 MB、仓库建议 1 GB 内，全推必然撞墙。
+#   素材走 CDN（galgame-huoxiazhuan 仓）；这里只留**索引与生成脚本**，
+#   clone 下来跑一遍 _work 里的脚本就能重新解出全部素材。
+
+# ── 依赖与构建产物 ──
+node_modules/
+dist/
+__pycache__/
+*.py[cod]
+.vite/
+.cache/
+*.tsbuildinfo
+
+# ── 素材（可重新生成，走 CDN）──
+#
+# ★ 不能整个忽略 _work/ —— 里面混着两类：
+#     · gen_*.py / build_data.py / install_wb.py   是**源码**，必须推
+#     · _assets / _web / _pack / _portraits        是解包产物，忽略
+#   实测 _work 的 1617 MB 全在那四个子目录里，其余脚本加起来不到 10 MB。
+#
+# ★ 每条都要带 `**/` —— 否则只在**根目录**下生效。
+#   踩过：`_work/_pack/` 没加 `**/`，而 _pack 在 `src/活侠传/_work/` 下面，
+#   于是 148 MB 的素材包全被算进「要推的文件」里。
+**/_work/_assets/
+**/_work/_web/
+**/_work/_pack/
+**/_work/_portraits/
+**/_work/_wiki_raw/
+**/_work/_shot/
+**/_work/_tmp/
+
+# ★ 从 Unity 包 dump 出的文本资产（活侠传 _dump 与 _dump2，共 137 MB / 4342 个文件）
+#
+#   这两个目录是「解包脚本的中间输出」—— 游戏里的对话文本表（含韩文版）。
+#   它们**能由 _work/*.py 重新生成**，所以不进仓；
+#   真正要留的是生成它们的脚本（那几个 .py 文件）。
+**/_work/_dump/
+**/_work/_dump2/
+**/_work/asset_dump/
+**/_work/bundle_dump/
+**/_aa_keys.txt
+**/_allchars.txt
+
+**/_assets/
+**/_portraits/
+**/_pack/
+
+# 解包中间产物（体积大且能重新生成）
+*解包*.json
+**/解包/
+extracted.json
+*.bak_*
+*.bak-*
+
+# 字体文件（几 MB 一个，不是卡的内容）
+*.ttf
+*.otf
+*.woff
+*.woff2
+
+# 从游戏/wiki 扒的原始素材（任意位置）
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.bmp
+*.mp3
+*.ogg
+*.wav
+*.mp4
+*.webm
+
+# ★ 例外：卡本身要用的不能忽略
+!src/**/正则/*.html
+!src/**/界面/**/*.html
+!src/**/*.svg
+
+# ── 浏览器测试缓存（霍格沃茨两份 chrome profile，各 60+ MB 垃圾）──
+_shelltest/
+_shelltest2/
+*-profile/
+chrome-profile/
+.puppeteer/
+playwright-report/
+test-results/
+.tmp-shot/
+.tmp-audit/
+*.tmp
+._*
+
+# ── 打包产物与备份 ──
+*.card.png
+_backup*/
+*.bak
+*.orig
+*.rej
+.patch-history/
+
+# ── 编辑器与系统 ──
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 自动生成
+auto-imports.d.ts
+components.d.ts
+
+# ── 嵌套的独立仓（各有自己的 git）──
+_tc_repo/
+_tw_repo/
+仙剑1独立端/
+_ui_repo/dist/
+
+# ── 模板上游的 CI 与其说明文档 ──
+#
+# ★ 为什么忽略 .github/workflows/：
+#   那是模板上游（StageDog/tavern_helper_template）的 CI，跟做卡无关。
+#   而且推它需要 PAT 带 `workflow` scope —— 本机这个 token 没有，
+#   带上它会**整个 push 被拒**：
+#     ! [remote rejected] refusing to allow a Personal Access Token
+#       to create or update workflow ... without `workflow` scope
+#
+# ★ 为什么忽略 README.md：
+#   本地是模板的 README（讲怎么用模板），
+#   而远端 galgame-huoxiazhuan 已有一份自己的说明（讲这是活侠传面板）。
+#   推上去会把远端的盖掉 —— 那不是我们该改的东西。
+.github/workflows/
+README.md
+.github/.templatesyncignore
+
+# ── 密钥（绝不能推）──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json

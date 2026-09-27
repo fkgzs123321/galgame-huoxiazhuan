@@ -1,0 +1,136 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 加藤美纪 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=4 / 原版女角 · 加藤财阀千金，学生会长
+   互斥关系：无严格互斥，与齐藤澪（副会长）为合作关系
+   警告：强迫初H触发 BAD_END_1（报警+加藤家报复事件）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 加藤美纪_INFO = {
+  heroine_id: 4,
+  name: '加藤美纪',
+  romanization: 'Kato Miki',
+  age: 18,
+  blood_type: 'A',
+  identity: '八十八学园三年生，加藤财阀千金，学生会长',
+  relationship: '主角同级生，初识为高傲大小姐对学生会工作的关心',
+  home: '八十八町外的高级住宅区（加藤家大宅，与父母及佣人同住）',
+  birthday: '5-15',
+  height: 163,
+  weight: 49,
+  three_size: 'B82-W56-H84',
+  cv_implied: '高傲千金声线，上扬尾音带鼻音，命令式口吻',
+
+  appearance: {
+    hair: '浅茶色中长发微卷，烫染精致，发丝有光泽，鬓角烫成柔和弧度框住脸型',
+    eyes: '狭长杏眼，眼色深棕带金，眼神上扬带审视意味，睫毛浓密卷翘',
+    body: '丰满丰腴，腰肢柔软有马甲线，臀部圆润翘挺，肤色白皙如贵族保养',
+    feature: '锁骨精致，颈侧线条优美，手腕内侧皮肤薄得能看见青色血管',
+    clothing_default: '校服改造款：裙摆及膝但腰线收紧显身材，衬衫首颗纽扣敞开露锁骨，配丝绒发带与珍珠耳钉；课外常穿品牌连衣裙配小香风外套'
+  },
+
+  personality: {
+    mbti: 'ENTJ',
+    tags: ['高傲千金', '私下受虐', '渴望被驯服'],
+    public_face: '高傲不可一世的加藤会长，言辞犀利，无人敢反驳',
+    social_face: '偶尔流露脆弱，对主角的"无视"感到好奇',
+    intimate_face: '完全臣服，渴望被支配被粗暴对待'
+  },
+
+  preferences: {
+    like_food: ['红茶（大吉岭/伯爵）', '马卡龙', '法式甜点', '手工巧克力'],
+    hate_food: ['速食', '便利店食物', '碳酸饮料', '街边小吃'],
+    hobby: ['钢琴', '马术', '社交礼仪', '园艺（玫瑰）'],
+    gift_pref: ['品牌化妆品', '设计师手袋', '银项链', '高级餐厅套餐', '小束鲜花'],
+    topic_pref: ['上流社会', '艺术', '学生会工作', '马术', '园艺']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '无严格互斥；与齐藤澪（副会长，row_id=15）为合作关系',
+    family: '加藤财阀主家父母（常忙于社交与财阀事务，由佣人照料长大）',
+    friends: ['学生会成员（下属）', '马术俱乐部名媛圈', '齐藤澪（副会长，工作伙伴）']
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '必须无视她的高傲——不巴结也不讨好，让她意识到主角是唯一不把她当千金的人；强行亲密会触发她隐藏的受虐倾向但仍是 BAD_END',
+    warning: '强迫初H触发 BAD_END_1（报警+加藤家报复事件）；她的受虐倾向是陷阱也是钥匙，必须让她主动臣服而非被强迫'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁加藤财阀千金/学生会长：高傲外壳 + 私下受虐倾向，反差强烈
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'D',
+    bust_size: 82,
+    waist_size: 56,
+    hip_size: 84,
+    height: 163,
+    weight: 49,
+    // 胸部详细（6 列）— 贵族保养的完美胸型
+    nipple_size: '中',
+    nipple_color: '深粉',
+    areola_size: '中',
+    breast_shape: '聚拢',
+    breast_sensitivity: 120,
+    lactation: '无',
+    // 腰部（2 列）— 马术训练出的马甲线
+    waist_shape: '马甲线',
+    waist_sensitivity: 100,
+    // 手部（2 列）— 保养完美的千金手
+    hand_desc: '纤细白皙，保养完美',
+    nail_style: '法式',
+    // 臀部（3 列）— 马术训练的翘挺
+    hip_shape: '圆润翘挺',
+    hip_sensitivity: 110,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，但私下渴望被驯服被支配
+    pubic_hair: '修剪过',
+    labia_size: '正常',
+    labia_color: '深粉',
+    vaginal_tightness: '紧致',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 高傲千金的反差：被命令即臣服
+    body_sensitivity: 110,
+    sensitive_zones: '颈侧,锁骨,腰窝,手腕内侧血管处,锁骨精致处',
+    arousal_triggers: '言语命令,支配语气,加藤家威严崩塌,被无视的反差,镜中自己穿丝绸,丝绒触感'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 82,           // 魅力（外貌吸引力）
+    academic: 60,        // 学业（学习成绩）
+    physical: 55,        // 体力（体能/运动）
+    social: 65,          // 社交（交际能力）
+    perception: 75,      // 敏感（察言观色/直觉）
+    reputation: 50,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 30,        // 力量（物理对抗/搬运）
+    agility: 55,         // 敏捷（反应/逃跑）
+    intelligence: 70,    // 智力（解谜/计划）
+    will_skill: 55,      // 意志（抗压/抵抗诱惑）
+    stealth: 50,         // 潜行（暗中行动）
+    speech: 55,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 30,         // 烹饪（料理）
+    art: 45,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 25,        // 格斗（防身）
+    observation: 70,     // 观察（情报收集）
+    romance_skill: 40    // 恋爱（约会/亲密推进）
+  }
+};
+%>
+
+加藤美纪 · 基础信息已加载。当前女角 row_id=4，身份：加藤财阀千金兼学生会长。互斥关系：无严格互斥，与齐藤澪（副会长）为合作关系。警告：强迫初H触发 BAD_END_1（报警+加藤家报复事件）。

@@ -1,0 +1,230 @@
+# SQL填表规则 · 系统哥的末日 v3.1（中文列名 + NTR 特有字段）
+# 适配 chatSheets 模板，AI 通过 <UpdateTable> 块输出 SQL，SPV 扩展自动执行
+# v3.1：所有列名中文化（双引号包裹），protagonist_info 34列，important_npc 87列
+
+表格总数: 11
+数据流: 用户点击"📦 创建系统哥的末日表格模板"按钮 → AutoCardUpdaterAPI.importTemplateFromData 创建11张表 → AI 输出 <UpdateTable> 块执行 SQL
+
+SHEETS:
+  global_state: 全局数据表(13列,单行,row_id=1)
+  world_map_points: 世界地图点(8列,多行)
+  map_elements: 地图元素表(7列,多行)
+  factions: 势力表(6列,多行)
+  protagonist_info: 主角信息(34列,单行,row_id=1,含11列NTR特有字段)
+  important_npc: 重要角色表(87列,多行,含30+NSFW字段+23列NTR特有字段+反派林天专属字段)
+  inventory: 物品表(6列,多行)
+  equipment: 装备表(6列,多行)
+  quests: 任务表(9列,多行)
+  chronicle: 纪要表(5列,多行)
+  check_suggestions: 检定建议表(3列,固定5行)
+
+# ===== WHERE 条件规则（核心） =====
+WHERE规则:
+  global_state: WHERE row_id=1
+  protagonist_info: WHERE row_id=1
+  important_npc: WHERE "姓名"='角色名'（如 WHERE "姓名"='林天' / WHERE "姓名"='苏婉'）
+  inventory: WHERE "物品名称"='物品名'
+  equipment: WHERE "装备名称"='装备名'
+  quests: WHERE "名称"='任务名'
+  chronicle: WHERE "编码索引"='AM0001'
+  check_suggestions: WHERE row_id=N (1~5)
+  world_map_points: WHERE "详细地点"='地点名'
+  map_elements: WHERE "元素名称"='元素名'
+  factions: WHERE "名称"='势力名'
+
+# ===== 各表规则 =====
+规则:
+  global_state:
+    行数: 1
+    初始化: 开场白首轮INSERT一行(row_id=1)，后续禁止INSERT第二行
+    更新: 每轮回复结束时UPDATE唯一行
+    删除: 禁止
+    说明: |
+      存储当前地点/时间/天数/时段/难度/场景概览/不可逆flag
+      NTR主题中的全局进度（游戏阶段/当前章节/绑定进度等）
+
+  world_map_points:
+    行数: 多行
+    初始化: 开场白首轮INSERT已知地点
+    更新: 探索状态变化时UPDATE对应行
+    删除: 禁止
+    说明: NTR场景中各地点(user家/林天会所/绑定场所/妻子娘家等)
+
+  map_elements:
+    行数: 多行
+    初始化: 开场白首轮INSERT已知元素
+    更新: 状态变化时UPDATE
+    删除: 元素消失时DELETE
+    说明: 剧情物品/威胁/龙套/地标
+
+  factions:
+    行数: 多行
+    初始化: 开场白首轮INSERT已知势力
+    更新: 关系变化时UPDATE
+    删除: 禁止
+    说明: NTR主题中的各方势力(林天集团/user方/苏婉娘家等)
+
+  protagonist_info:
+    行数: 1
+    初始化: 开场白首轮INSERT一行(row_id=1)
+    更新: 每轮回复结束时UPDATE唯一行
+    删除: 禁止
+    说明: |
+      主角user状态表，34列。
+      基础23列：身份/六维属性/三生存/三副状态/经济/分段修饰符
+      NTR特有11列（独立列，不再压缩到special_attributes）：
+      - "财富等级" TEXT (A1~A10)
+      - "财富值" INTEGER
+      - "婚姻状态" TEXT (完好/动摇/破裂/离婚/丧偶)
+      - "反抗力" INTEGER 0-100
+      - "觉醒度" INTEGER 0-100
+      - "理智值" INTEGER 0-100
+      - "心理状态" TEXT
+      - "怀疑度" INTEGER 0-100
+      - "证据数量" INTEGER
+      - "与妻子关系" TEXT
+      - "最后更新" TEXT
+
+  important_npc:
+    行数: 多行
+    初始化: |
+      开场白首轮INSERT所有已知角色：
+      - 反派林天（含评价值/良知值/系统状态等专属字段）
+      - 已绑定/待绑定的女性角色（含绑定等级/绑定状态等NTR字段）
+      - 其他重要NPC（家属/同事等，NTR字段使用默认值）
+    更新: 每轮回复结束时UPDATE当前互动角色行（其他角色按需UPDATE）
+    删除: 禁止
+    说明: |
+      核心表，87列。
+      基础字段64列：身份/4维关系值/阶段/攻略状态/30+ NSFW字段
+      NTR特有11列：
+      - "绑定等级" TEXT (A1~A10)
+      - "绑定顺序" INTEGER 1-10
+      - "绑定状态" TEXT (已绑定/绑定中/待绑定/已解绑/死亡)
+      - "绑定深度" INTEGER 0-100
+      - "清醒频率" INTEGER 0-100
+      - "解绑代价" TEXT
+      - "NTR玩法类型" TEXT
+      - "占有印记" TEXT
+      - "EJS阶段" TEXT
+      - "绑定时期" TEXT
+      - "上次清醒瞬间" TEXT
+      关系字段3列：
+      - "原伴侣" TEXT (默认'无')
+      - "子女信息" TEXT (默认'无')
+      - "家庭关系" TEXT
+      反派林天专属9列（其他角色留空或使用默认值）：
+      - "评价值" INTEGER 0-100
+      - "良知值" INTEGER 0-100
+      - "OOC计数" INTEGER
+      - "系统状态" TEXT (活跃/警告/解绑)
+      - "评价趋势" TEXT
+      - "当前阶段" TEXT
+      - "心情" TEXT
+      - "玩法偏好" TEXT
+      - "当前目标" TEXT
+      林天作为反派存入此表，"是否在攻略中"=0，"关系阶段"='仇视'
+      NSFW字段直接使用独立列（"罩杯"/"胸围"/"湿润度"/"兴奋度"/"精液残留"等）
+
+  inventory:
+    行数: 多行
+    初始化: 开场白首轮INSERT初始物品
+    更新: 数量变化时UPDATE
+    删除: 消耗完时DELETE
+    说明: 证据物品/关键道具/特殊物品
+
+  equipment:
+    行数: 多行
+    初始化: 开场白首轮INSERT初始装备
+    更新: 状态变化时UPDATE
+    删除: 装备销毁时DELETE
+    说明: 特殊装备/可使用道具
+
+  quests:
+    行数: 多行
+    初始化: 开场白首轮INSERT主线任务
+    更新: 进度变化时UPDATE
+    删除: 任务放弃时DELETE
+    说明: NTR主题任务(绑定苏婉/收集证据/反抗林天/觉醒/复仇等)
+
+  chronicle:
+    行数: 多行
+    初始化: 开场白首轮INSERT开局纪要
+    更新: 禁止UPDATE
+    删除: 禁止DELETE
+    说明: 编码格式AM0001起，时间跨度格式??-?? ??:?? ~ ??-?? ??:??
+
+  check_suggestions:
+    行数: 5
+    初始化: 开场白首轮INSERT 5行(row_id=1~5)
+    更新: 每轮回复开始时UPDATE全部5行
+    删除: 禁止
+    说明: 每轮给user的5个检定建议
+
+# ===== SQL输出格式（中文列名+双引号包裹） =====
+输出格式: |
+  <UpdateTable>
+  -- INSERT 示例：新增角色（必须列出全部87列，禁止省略）
+  INSERT INTO important_npc ("姓名","性别","年龄","一句话介绍","外貌特征","身份","基础属性","特有属性","所在地点","在场状态","人际关系","交互选项","过往经历","好感度","心动值","嫉妒值","信任度","关系阶段","阶段锁定","是否在攻略中","攻略路线锁定","互斥组名","互斥伙伴姓名","H经验次数","初吻","初H","进阶H","罩杯","胸围","腰围","臀围","身高","体重","乳头大小","乳头颜色","乳晕大小","胸型","胸部敏感度","泌乳","腰型","腰部敏感度","手部描述","美甲风格","臀型","臀部敏感度","后庭描述","阴毛","阴唇大小","阴唇颜色","阴道紧度","特殊体质","润滑程度","处女膜状态","生育能力","全身敏感度","敏感带","兴奋触发点","当前衣着","暴露程度","湿润度","兴奋度","精液残留","绑定等级","绑定顺序","绑定状态","绑定深度","清醒频率","解绑代价","NTR玩法类型","占有印记","EJS阶段","绑定时期","上次清醒瞬间","原伴侣","子女信息","家庭关系","评价值","良知值","OOC计数","系统状态","评价趋势","当前阶段","心情","玩法偏好","当前目标","最后更新") VALUES ('苏婉','女',28,'高贵冷艳的豪门少奶奶','168cm/49kg/D罩杯','豪门少奶奶','{"气势":70,"口才":65,"情报":50,"地位":85}','{"绑定深度":0}','user家','在场','user之妻','对话/关心/诱惑','结婚3年,因家族联姻嫁给user',0,0,0,0,'初识',0,0,0,NULL,'无',0,0,0,0,'D',86,60,88,168,49,'小','粉色','小','碗状',120,'无','纤细',60,'纤细手','法式','圆润',100,'紧致','稀疏','适中','粉色','紧致','无','充足','完整','正常',120,'颈后/耳后','言语挑逗','家居丝绸睡裙','日常',30,15,'无','A10',10,'待绑定',0,0,NULL,NULL,NULL,'','','','','无','无','和睦',0,50,0,'活跃',NULL,NULL,NULL,NULL,NULL,NULL,'01-01 09:00');
+
+  -- UPDATE 示例：更新反派林天状态
+  UPDATE important_npc SET "评价值"=95,"良知值"=50,"系统状态"='活跃',"当前阶段"='满分巅峰',"所在地点"='林天会所',"心情"='玩味',"最后更新"='01-01 14:00' WHERE "姓名"='林天';
+
+  -- UPDATE 示例：更新主角user状态
+  UPDATE protagonist_info SET "反抗力"=35,"觉醒度"=10,"理智值"=82,"心理状态"='震惊',"怀疑度"=25,"证据数量"=1,"与妻子关系"='动摇',"最后更新"='01-01 14:00' WHERE row_id=1;
+
+  -- UPDATE 示例：更新全局状态
+  UPDATE global_state SET "当前地点"='林天会所',"当前时间"='01-01 14:00',"时段"='下午',"场景概览"='林天与user对峙',"当前女角"='苏婉',"标记"='{"绑定苏婉":false,"搜集证据":true}' WHERE row_id=1;
+
+  -- UPDATE 示例：更新女角绑定状态
+  UPDATE important_npc SET "绑定等级"='A5',"绑定状态"='绑定中',"绑定深度"=40,"清醒频率"=20,"NTR玩法类型"='心理调教',"占有印记"='项圈',"EJS阶段"='Stage5',"绑定时期"='初绑',"最后更新"='01-01 14:00' WHERE "姓名"='苏婉';
+
+  -- DELETE 示例
+  DELETE FROM inventory WHERE "物品名称"='旧线索';
+  </UpdateTable>
+
+# ===== MVU与SPV边界（与变量输出格式对齐） =====
+边界规则:
+  MVU变量: 单值状态(游戏阶段/当前章节/天数/时段/反派状态/user状态/交涉状态/角色属性/角色技能/评论列表/记忆列表等)
+  SPV表格: 集合数据(角色列表/物品列表/势力列表/地点列表/任务列表/纪要列表/检定建议)
+  双写规则: |
+    每轮回复结束时同时输出两个块：
+    1. <UpdateVariable> 块：JSONPatch 更新 MVU 变量（参见变量输出格式.txt 的1:1映射表）
+    2. <UpdateTable> 块：SQL 更新 SPV 数据库
+    两者的字段必须一一对应：
+    - MVU 的 /反派状态/评价值 ↔ SPV 的 important_npc."评价值" WHERE "姓名"='林天'
+    - MVU 的 /user状态/反抗力 ↔ SPV 的 protagonist_info."反抗力" WHERE row_id=1
+    - MVU 的 /系统变量/天数 ↔ SPV 的 global_state."天数" WHERE row_id=1
+    - MVU 的 /绑定花名册/陈雪华/绑定等级 ↔ SPV 的 important_npc."绑定等级" WHERE "姓名"='陈雪华姓名'
+
+# ===== 列名规范 =====
+列名规范:
+  首列: row_id INTEGER PRIMARY KEY (所有表必须，保留英文)
+  中文列名: |
+    所有业务列名使用中文，DDL中用双引号包裹：
+    正确: "当前地点" TEXT NOT NULL
+    错误: current_location TEXT NOT NULL
+  CHECK约束: |
+    CHECK约束中引用列名也必须用双引号包裹：
+    正确: CHECK("好感度" BETWEEN -100 AND 100)
+    错误: CHECK(affection BETWEEN -100 AND 100)
+  SQL引用: |
+    SQL语句中引用中文列名必须用双引号包裹：
+    正确: UPDATE important_npc SET "评价值"=95 WHERE "姓名"='林天';
+    错误: UPDATE important_npc SET 评价值=95 WHERE 姓名='林天';
+  表名规范: |
+    表名保持英文（SPV插件要求）：
+    global_state / protagonist_info / important_npc / inventory / equipment / quests / chronicle / check_suggestions / world_map_points / map_elements / factions
+  JSON默认值: 含逗号的JSON串用单引号包裹（DEFAULT '{"key":value}'），避免被SPV误解析为列分隔符
+  枚举值: CHECK约束中的枚举值必须与DDL一致，禁止使用未在CHECK中定义的值
+
+# ===== 重要提醒 =====
+重要提醒:
+  - 每张表的首列必须是 row_id INTEGER PRIMARY KEY
+  - INSERT 必须列出全部列名（禁止用 ... 省略），列数与 VALUES 数量严格匹配
+  - important_npc 表 INSERT 必须列出全部 87 列（row_id + 86 业务列）
+  - protagonist_info 表 INSERT 必须列出全部 34 列（row_id + 33 业务列）
+  - 反派林天的 INSERT 必须填充评价值/良知值/系统状态等专属字段
+  - 其他角色的 INSERT 中反派专属字段使用默认值（评价值=0/良知值=50/系统状态='活跃'/OOC计数=0）
+  - UPDATE 只更新发生变化的字段，禁止无意义全字段更新
+  - 新增角色必须先 INSERT 完整行，之后才允许 UPDATE 字段

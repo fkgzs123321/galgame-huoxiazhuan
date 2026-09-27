@@ -1,0 +1,20 @@
+[
+  {
+    "op": "add",
+    "path": "/extensions/tavern_helper/scripts/血月裁判",
+    "value": {
+      "type": "script",
+      "script_file": "脚本/血月裁判.js",
+      "enabled": true,
+      "id": "7f3c9a2e-8b4d-4e6f-9a1c-2d5e8f0a3b6c",
+      "info": "血月裁判：指派/夜结算/毒杀/投票处决/胜负/重开。身份真相只在 $ 层与脚本变量，AI 永不可见。",
+      "button": {
+        "enabled": true,
+        "buttons": [
+          { "name": "重开一局", "visible": true }
+        ]
+      },
+      "data": {}
+    }
+  }
+]

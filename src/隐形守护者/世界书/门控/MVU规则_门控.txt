@@ -1,0 +1,8 @@
+@@generate_before
+<%- await getwi(null, '变量列表') %>
+<%- await getwi(null, '[mvu_update]变量更新规则') %>
+<%- await getwi(null, '[mvu_update]判定公式总表') %>
+【变量块 · 默认额外模型】
+- 世界书 **已启用** `[mvu_update]变量输出格式（额外模型）`；**已关闭** `[mvu_update]变量输出格式`（主模型随楼写变量）。
+- 须在酒馆勾选 **「使用额外模型解析」**；主模型只写正文 + branches + StatusPlaceHolder，**禁止**再写 <UpdateVariable>。
+<%- await getwi(null, '[mvu_update]变量输出格式（额外模型）') %>

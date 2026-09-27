@@ -1,0 +1,17 @@
+{
+  "id": "a1b2c3d4-0005-4000-8000-000000000005",
+  "scriptName": "OMNI同步中占位展开 - 将OmniProgress标签替换为变量同步中挂载点",
+  "findRegex": "/<OmniProgress>([\\s\\S]*?)<\\/OmniProgress>/gi",
+  "replaceString": "<div class=\"fjb-omni-mount\" data-fjb-omni-progress=\"1\"><div class=\"fjb-omni-raw\" data-fjb-omni-raw style=\"white-space:pre-wrap;word-break:break-word\">$1</div></div>",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": 0,
+  "maxDepth": null
+}

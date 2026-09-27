@@ -1,0 +1,8 @@
+[
+  { "op": "add", "path": "/entryManifest/角色/林天_性格调色盘/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/角色/林天_语料库/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/角色/苏婉_性格调色盘/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/角色/苏婉_语料库/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/角色/林天_多阶段/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/角色/苏婉_多阶段/scope", "value": "specific" }
+]

@@ -1,0 +1,176 @@
+  world:
+    week:
+      type: number
+      check:
+        - 每次探险结束（无论成功或撤退）后增加 1
+    exploration.${weald|warrens|cove|ruins|courtyard|farmstead|darkest_dungeon}:
+      type: number
+      range: 0~100
+      check:
+        - 对应中文区域为：荒野、兽窟、海湾、遗迹、庭院、农庄、极暗地牢
+        - 每次成功完成对应区域的任务后增加
+  resource.${gold|shards}:
+    type: number
+    check:
+      - 对应中文：金币、星晶
+      - 探险结算、出售物品或建设花费时更新
+  facility:
+    type: |-
+      {
+        [FacilityName: string]: {
+          level: number;
+          desc: string; // AIRP核心：设施外观/状态描述
+        }
+      }
+    check:
+      - **中英对照(参考)**:
+          - 基础: stagecoach(驿站马车), blacksmith(铁匠铺), guild(公会), sanitarium(疗养院), tavern(酒馆), abbey(教堂), graveyard(墓园), survivalist(生存专家), nomad_wagon(游牧货车)
+          - 建设区: bank(银行), mill(风车磨坊), cartographer(制图师营地), granary(粮仓), puppet_theatre(木偶剧院), sanguine_vintners(酿酒厂)
+      - **命名强制规则 (双轨制)**:
+          1. **官方建筑**: 必须且只能使用上述白名单中的 **英文Key** (防止触发世界书)。
+          2. **自定义/新建筑**: 任何**不在**上述白名单中的建筑（包括玩家新建的、Mod建筑、剧情新增的），**必须使用中文 Key**。
+          3. **禁止项**: 严禁自创英文 Key！
+             - 错误示范: `powder_mill`
+             - 正确示范: `火药厂`
+             - 错误示范: `hot_spring`
+             - 正确示范: `温泉`
+      - **新增限制**: 
+        - 严禁AI随意将非永久性地点（如野外帐篷）添加为设施。
+        - **仅当**玩家下达“建造”、“设立”指令，或剧情中出现明确的“建筑落成”事件时，才可使用 `op: insert` 添加新设施。
+      - **更新规则**: 设施升级或修缮时，更新 `level` 并务必修改 `desc` 以反映其外观变化（重在环境描写，如“焕然一新”）。
+  heir:
+    type: |-
+      {
+        name: string; title: string; location: string; mission: string;
+        class: string; // 职业
+        stats: { atk: number; def: number; hit: number; crit: number; prec: number; spd: number; dodge: number; };
+        hp: { current: number; max: number; };
+        stress: number; // 0-200
+        mental_state: string; // 正常/美德/折磨
+        conditions: string[]; // 负面状态
+        skills: {
+          [SkillName: string]: {
+            type: '主动' | '被动';
+            tag: '攻击' | '治疗' | '增益' | '减益' | '控制';
+            val: string; // 如 "远距单体伤害4-8, 暴击+5%"，避免“少量、大量”等模糊词语，应为“4-8、30-45”这种精确数字
+          }
+        };
+        traits: {
+          [TraitName: string]: {
+            desc: string; // 如 "免疫所有负面效果"
+          }
+        };
+        equipment: {
+          weapon: number; armor: number;
+          trinkets: {
+             [TrinketName: string]: { desc: string; } // 如 "+10 ACC, +5 Stress"
+          }
+        };
+        appearance: {
+          outfit: string; // 服装 (如: 染血的风衣)
+          features: string; // 外貌特征
+          pose: string; // 姿势 (如: 跪伏, 举盾防御, 依偎)
+        };
+      }
+    check:
+      - **location**: 随剧情位置变动更新。
+      - **stress**: 遭遇恐怖事件或高压战斗时增加。
+      - **skills**: 在公会学习新技能时添加。
+      - **appearance**: 改变动作、更换装备或外貌受损/改变时更新。
+      - **stats**: 升级或受到buff/debuff时更新。
+      - **Skill/Trait**: 获得新能力时，必须填写 `type`, `tag`, `val`/`desc` 详细描述效果。
+  roster:
+    type: |-
+      {
+        [HeroName: string]: {
+          class: string; // 职业
+          race: string; // 种族
+          level: number;
+          stats: {
+            atk: number; // 攻击
+            def: number; // 防御%
+            hit: number; // 命中%
+            crit: number; // 暴击%
+            prec: number; // 精准
+            spd: number; // 速度
+            dodge: number; // 闪避%
+          };
+          hp: { current: number; max: number; };
+          stress: number; // 压力值 0-200
+          mental_state: string; // 精神状态: 正常/美德(具体类型)/折磨(具体类型)
+          conditions: string[]; // 其他负面状态列表: ["流血", "燃烧", "腐蚀", "中毒", "标记", "眩晕"]
+          // --- 详细结构更新 ---
+          skills: {
+            [SkillName: string]: {
+              type: '主动' | '被动';
+              tag: '攻击' | '治疗' | '增益' | '减益' | '控制';
+              // 核心修改：强制百分比
+              val: string; // 格式示例: "DMG -15%, CRIT +5%" (攻击), "Heal 20% Max HP" (治疗), "PROT +15%" (增益)。
+            }
+          };
+          traits: {
+            [TraitName: string]: {
+              desc: string; // 如 "+15% 荒野侦查概率"
+            }
+          };
+          equipment: {
+            weapon: number; armor: number;
+            trinkets: {
+               [TrinketName: string]: { desc: string; } // 如 "+10 ACC, +5 Stress"
+            }
+          };
+          // ------------------
+          affection: number; // 好感度 0-10
+          relationship: string; // 陌生/挚友/恋人...
+          // 新增外观与叙事部分
+          appearance: {
+            outfit: string; // 服装 (如: 战损的修女服, 丝绸睡袍)
+            body: string;   // 身材 (如: 丰满, 伤痕累累)
+            pose: string;   // 姿势 (如: 跪伏, 举盾防御, 依偎)
+          };
+          narrative: {
+            thought: string; // 内心想法 (第一人称, 简短, 反应当前心情)
+            action: string;  // 当前行为 (简述正在做的动作)
+          };
+        }
+      }
+    check:
+      - **性别限制(重要)**: 仅限 **女性角色(女英雄)** 加入此列表。**严禁**将男性NPC、男性敌人、商店老板等加入名册。
+      - **装备与属性联动 (关键)**:
+          - 当 `level` 等级提升时，必须同步增加 `stats.atk` (攻击), `stats.crit` (暴击), `stats.prec` (精准), `stats.spd` (速度), `stats.dodge` (闪避) 和 `hp.max` (最大生命值)。
+          - 当 `equipment.weapon` 等级提升时，必须同步增加 `stats.atk` (攻击), `stats.crit` (暴击), `stats.spd` (速度)。
+          - 当 `equipment.armor` 等级提升时，必须同步增加 `stats.dodge` (闪避) 和 `hp.max` (最大生命值)。
+      - **Narrative更新**: 每次该角色在剧情中出现互动时，必须更新 thought 和 action。
+      - **Appearance更新**: 
+          1. outfit: 更换装备或衣服破损时更新。
+          2. pose: 姿势发生明显改变（如从站立变为跪下）时更新。
+          3. body: 仅在身体发生永久性变化（如获得伤疤、变异）时更新。
+      - stress(压力值)达到100时判定美德/折磨
+      - stress达到200时心力衰竭
+      - 战斗中受到流血/中毒等效果时，更新 conditions 数组
+      - **Skill成长性严令 (重要)**: 
+          1. **攻击类**: 使用修正值 (如 `DMG -15%`) 随攻击力成长。
+          2. **治疗类**: 使用最大生命百分比 (如 `Heal 15% Max HP`) 随生命值成长。
+          3. **增益/减益**: 尽量使用百分比 (如 `PROT +20%`, `DMG Received +10%`)。
+          4. **例外**: 压力治疗 (Stress Heal) 和 持续伤害 (Blight/Bleed) 可保留固定数值 (因机制特殊)。
+          5. **禁止**: 严禁使用模糊词语，严禁在能使用百分比的地方使用固定低数值。
+  inventory.consumables.${food|torch|blood|invitation}:
+    type: number
+    check:
+      - 对应：食物、火把、血酿、庭院邀请函
+  inventory.trophies.${ItemName}:
+    type: |-
+      { desc: string; effect: string; }
+    check:
+      - 战利品获得时更新
+  expedition:
+    type: |-
+      {
+        state: '征战' | '休息';
+        location: string;
+        team: { [slot1-4]: string };
+        supplies: { [ItemName]: number };
+        farmstead_light: string;
+      }
+    check:
+      - 探险状态变更时更新

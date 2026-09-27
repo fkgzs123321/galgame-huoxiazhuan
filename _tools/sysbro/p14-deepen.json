@@ -1,0 +1,71 @@
+[
+  {
+    "op": "add",
+    "path": "/typeLists/depth/-",
+    "value": "事件"
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/事件",
+    "value": {}
+  },
+  {
+    "op": "add",
+    "path": "/strategyThresholds/事件",
+    "value": 0
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/阶段指导/系统商店",
+    "value": {
+      "path": "世界书/阶段指导/系统商店.txt",
+      "abstract": "系统商店：积分口径（资产除以一百万，每轮恢复到资产除以八百万）、每章限购三件、九件商品的价目与效果、买不到的四类东西、以及一条经济压力线（压 <user> 和推深度抢同一份钱）",
+      "strategy": {
+        "type": "constant"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/事件/事件_第一次系统暴走",
+    "value": {
+      "path": "世界书/事件/事件_第一次系统暴走.txt",
+      "abstract": "评价值第一次归零时的单次事件脚本：他不笑、场内先出现生理不适、他能主动操纵巧合、四选一的重手、以及收尾与四条禁令",
+      "scope": "specific",
+      "keywords": [
+        "暴走",
+        "评价值归零",
+        "归零",
+        "系统暴走"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/事件/事件_强制洗白",
+    "value": {
+      "path": "世界书/事件/事件_强制洗白.txt",
+      "abstract": "评价值低于二十时的单次事件脚本：救一个与他无关的孩子或老人、三份物料当晚同时上网、后果链四件事、收尾与四条禁令",
+      "scope": "specific",
+      "keywords": [
+        "洗白",
+        "卖惨",
+        "强制洗白"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/事件/事件_终局_系统解绑",
+    "value": {
+      "path": "世界书/事件/事件_终局_系统解绑.txt",
+      "abstract": "评价值第三次归零的单次事件脚本：面板说一句合约终止、十个人各一段短镜头、三条下场只落一条、末段只写谁在哪手里在做什么",
+      "scope": "specific",
+      "keywords": [
+        "终局",
+        "合约终止",
+        "第三次归零"
+      ]
+    }
+  }
+]

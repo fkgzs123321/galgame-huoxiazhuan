@@ -1,0 +1,241 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 角色性格控制器（v1.0 · 16人物×4件套·场景精准加载）
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 读取当前场景与人物信息（MVU 变量）
+   2. 16 人物清单定义（ID 1-16）
+   3. 人物关系网映射（用于"未出场但有关系"判定）
+   4. 计算加载集：
+      - 当前场景包含的人物 → 全量加载 4 件套
+      - 队伍成员 → 全量加载 4 件套
+      - 未出场但有关系的人物 → 仅加载基础信息
+   5. 输出本轮人物加载清单给 AI
+   6. 调用 getwi() 加载对应人物条目（16×4=64 条目池中按需加载）
+
+   4 件套路径模板：
+   - 世界书/角色/{name}/基础信息
+   - 世界书/角色/{name}/性格调色盘
+   - 世界书/角色/{name}/三面性
+   - 世界书/角色/{name}/NSFW反差
+
+   16 人物清单（按 ID 1-16）：
+   1. 李逍遥（主角）        2. 赵灵儿              3. 林月如              4. 阿奴
+   5. 刘晋元                6. 酒剑仙              7. 姥姥                8. 圣姑
+   9. 剑圣                  10. 拜月教主           11. 巫王               12. 彩依
+   13. 毒娘子               14. 镇狱明王           15. 青儿(巫后)         16. 水魔兽
+
+   引用关系：
+   - 依赖 MVU 变量：stat_data.当前场景 / stat_data.当前人物 / stat_data.场景人物 / stat_data.队伍成员
+   - getwi() 加载角色条目（路径格式：世界书/角色/{name}/{piece}）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 1：读取当前场景与人物信息（MVU 变量，含兜底默认值）
+   ════════════════════════════════════════════════════════════ */
+if (typeof _currentScene === 'undefined') {
+  var _currentScene = getvar('stat_data.当前场景', { scope: 'local', defaults: '余杭镇' }) || '余杭镇';
+}
+if (typeof _currentActor === 'undefined') {
+  var _currentActor = getvar('stat_data.当前人物', { scope: 'local', defaults: '李逍遥' }) || '李逍遥';
+}
+/* 场景人物：当前场景中出场的所有人物姓名数组 */
+if (typeof _sceneChars === 'undefined') {
+  var _sceneChars = getvar('stat_data.场景人物', { scope: 'local', defaults: [] }) || [];
+}
+if (!Array.isArray(_sceneChars)) _sceneChars = [];
+/* 队伍成员：当前玩家队伍中的成员姓名数组 */
+if (typeof _partyMembers === 'undefined') {
+  var _partyMembers = getvar('stat_data.队伍成员', { scope: 'local', defaults: [] }) || [];
+}
+if (!Array.isArray(_partyMembers)) _partyMembers = [];
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 2：16 人物清单定义（ID → 姓名 + 别名）
+   ════════════════════════════════════════════════════════════ */
+const _characterList = [
+  { id: 1,  name: '李逍遥',     aliases: ['逍遥', '主角', '李公子'] },
+  { id: 2,  name: '赵灵儿',     aliases: ['灵儿', '女娲后人'] },
+  { id: 3,  name: '林月如',     aliases: ['月如', '林家大小姐'] },
+  { id: 4,  name: '阿奴',       aliases: ['阿奴', '白苗族少女'] },
+  { id: 5,  name: '刘晋元',     aliases: ['晋元', '刘公子'] },
+  { id: 6,  name: '酒剑仙',     aliases: ['酒剑仙', '酒鬼', '莫一兮'] },
+  { id: 7,  name: '姥姥',       aliases: ['姥姥', '灵月宫主'] },
+  { id: 8,  name: '圣姑',       aliases: ['圣姑', '白苗族长老'] },
+  { id: 9,  name: '剑圣',       aliases: ['剑圣', '蜀山掌门'] },
+  { id: 10, name: '拜月教主',   aliases: ['拜月', '教主'] },
+  { id: 11, name: '巫王',       aliases: ['巫王', '黑苗族族长'] },
+  { id: 12, name: '彩依',       aliases: ['彩依', '蝶精'] },
+  { id: 13, name: '毒娘子',     aliases: ['毒娘子', '蛛精'] },
+  { id: 14, name: '镇狱明王',   aliases: ['镇狱明王', '明王'] },
+  { id: 15, name: '青儿',       aliases: ['青儿', '巫后', '女娲后人'] },
+  { id: 16, name: '水魔兽',     aliases: ['水魔兽', '魔兽'] }
+];
+
+/* 姓名/别名 → ID 反查表 */
+const _nameToId = {};
+for (var _i = 0; _i < _characterList.length; _i++) {
+  var _c = _characterList[_i];
+  _nameToId[_c.name] = _c.id;
+  for (var _j = 0; _j < _c.aliases.length; _j++) {
+    _nameToId[_c.aliases[_j]] = _c.id;
+  }
+}
+
+/* ID → 姓名速查表 */
+const _idToName = {};
+for (var _k = 0; _k < _characterList.length; _k++) {
+  _idToName[_characterList[_k].id] = _characterList[_k].name;
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 3：人物关系网映射（用于"未出场但有关系"判定）
+   - 仅列出强关系（亲情/师徒/恋人/主从/同门/挚友/敌对）
+   - 关系为双向，但映射仅写一遍（步骤 4 会双向遍历）
+   ════════════════════════════════════════════════════════════ */
+const _relationshipMap = {
+  1:  [2, 3, 4, 5, 6],            /* 李逍遥 → 灵儿/月如/阿奴/晋元/酒剑仙 */
+  2:  [1, 7, 8, 11, 15],          /* 赵灵儿 → 李逍遥/姥姥/圣姑/巫王/青儿(母) */
+  3:  [1, 5],                     /* 林月如 → 李逍遥/晋元(表兄) */
+  4:  [1, 8, 11],                 /* 阿奴 → 李逍遥/圣姑(母)/巫王 */
+  5:  [1, 3],                     /* 刘晋元 → 李逍遥/林月如 */
+  6:  [1, 9],                     /* 酒剑仙 → 李逍遥(徒)/剑圣(同门) */
+  7:  [2, 8],                     /* 姥姥 → 灵儿(孙)/圣姑 */
+  8:  [2, 4, 7, 11],              /* 圣姑 → 灵儿/阿奴/姥姥/巫王 */
+  9:  [6, 14],                    /* 剑圣 → 酒剑仙(同门)/镇狱明王 */
+  10: [11, 16],                   /* 拜月教主 → 巫王(弟)/水魔兽(召唤) */
+  11: [2, 4, 8, 10, 15],          /* 巫王 → 灵儿(女)/阿奴(族)/圣姑/拜月(兄)/青儿(妻) */
+  12: [13],                       /* 彩依 → 毒娘子(敌对姐妹) */
+  13: [12],                       /* 毒娘子 → 彩依(敌对姐妹) */
+  14: [9],                        /* 镇狱明王 → 剑圣(同门) */
+  15: [2, 8, 11],                 /* 青儿(巫后) → 灵儿(女)/圣姑/巫王(夫) */
+  16: [10]                        /* 水魔兽 → 拜月教主(主) */
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 4：计算加载集
+   - _fullLoadSet：Object { id: name }，全量加载 4 件套
+   - _basicOnlySet：Object { id: name }，仅加载基础信息
+   ════════════════════════════════════════════════════════════ */
+
+/* 反查辅助：姓名/别名 → 数字 ID */
+function _resolveCharId(name) {
+  if (!name) return 0;
+  const direct = _nameToId[name];
+  if (direct) return direct;
+  return 0;
+}
+
+const _fullLoadSet = {};     /* id → name，全量加载 */
+const _basicOnlySet = {};   /* id → name，仅基础信息 */
+
+/* 4.1 当前人物强制全量加载（主角或当前对话对象） */
+const _currentActorId = _resolveCharId(_currentActor);
+if (_currentActorId > 0) _fullLoadSet[_currentActorId] = _idToName[_currentActorId];
+
+/* 4.2 场景出场人物全量加载 */
+for (var _si = 0; _si < _sceneChars.length; _si++) {
+  const _sid = _resolveCharId(_sceneChars[_si]);
+  if (_sid > 0) _fullLoadSet[_sid] = _idToName[_sid];
+}
+
+/* 4.3 队伍成员全量加载 */
+for (var _pi = 0; _pi < _partyMembers.length; _pi++) {
+  const _pid = _resolveCharId(_partyMembers[_pi]);
+  if (_pid > 0) _fullLoadSet[_pid] = _idToName[_pid];
+}
+
+/* 4.4 未出场但有关系的人物 → 仅加载基础信息
+   双向遍历关系网：已全量加载人物的关系网中，未被全量加载的，进 basic-only */
+for (const _fid in _fullLoadSet) {
+  const _related = _relationshipMap[_fid] || [];
+  for (var _ri = 0; _ri < _related.length; _ri++) {
+    const _rid = _related[_ri];
+    if (!_fullLoadSet[_rid] && _idToName[_rid]) {
+      _basicOnlySet[_rid] = _idToName[_rid];
+    }
+  }
+}
+
+/* 4.5 排序输出（按 ID 升序，便于阅读） */
+const _fullLoadIds = Object.keys(_fullLoadSet).map(function(n) { return Number(n); }).sort(function(a, b) { return a - b; });
+const _basicOnlyIds = Object.keys(_basicOnlySet).map(function(n) { return Number(n); }).sort(function(a, b) { return a - b; });
+
+/* 4.6 统计未加载人物（既不在 full 也不在 basic 中） */
+const _loadedIds = {};
+for (var _li = 0; _li < _fullLoadIds.length; _li++) _loadedIds[_fullLoadIds[_li]] = true;
+for (var _bi = 0; _bi < _basicOnlyIds.length; _bi++) _loadedIds[_basicOnlyIds[_bi]] = true;
+const _unloadedIds = [];
+for (var _ui = 1; _ui <= 16; _ui++) {
+  if (!_loadedIds[_ui]) _unloadedIds.push(_ui);
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 5：输出本轮人物加载清单给 AI
+   ════════════════════════════════════════════════════════════ */
+function _formatCharList(ids) {
+  if (!ids || ids.length === 0) return '无';
+  return ids.map(function(id) { return _idToName[id] + '(id:' + id + ')'; }).join('、');
+}
+
+const _loadListOutput = [
+  '【本轮人物加载清单】',
+  '当前场景：' + _currentScene + ' | 当前人物：' + _currentActor + ( _currentActorId > 0 ? '(id:' + _currentActorId + ')' : '' ),
+  '场景出场人物：' + (_sceneChars.length > 0 ? _sceneChars.join('、') : '未指定'),
+  '队伍成员：' + (_partyMembers.length > 0 ? _partyMembers.join('、') : '未指定'),
+  '────────────────────────',
+  '★ 全量加载（4 件套）：' + _formatCharList(_fullLoadIds),
+  '○ 仅基础信息：' + _formatCharList(_basicOnlyIds),
+  '─ 未加载：' + _formatCharList(_unloadedIds),
+  '────────────────────────',
+  '加载统计：全量 ' + _fullLoadIds.length + ' 位 | 基础 ' + _basicOnlyIds.length + ' 位 | 未加载 ' + _unloadedIds.length + ' 位 | 总计 16 位',
+  '说明：全量加载含 基础信息/性格调色盘/三面性/NSFW反差 四件套；仅基础信息用于维系未出场关系人物的存在感。',
+  ''
+].join('\n');
+%><%= _loadListOutput %>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 6：调用 getwi() 加载对应人物条目
+   - 仅在有聊天消息时加载（避免初始化空载）
+   - 全量加载 → 4 件套（基础信息/性格调色盘/三面性/NSFW反差）
+   - 仅基础信息 → 1 条目（基础信息）
+   - 4 件套路径模板：世界书/角色/{name}/{piece}
+   ════════════════════════════════════════════════════════════ */
+%>
+<% if (typeof lastMessageId !== 'undefined' && lastMessageId > 0) { %>
+
+<%/* ─── 6.1 全量加载 4 件套（按 ID 1-16 顺序遍历）─── */%>
+<% for (var _fi2 = 0; _fi2 < _characterList.length; _fi2++) { %>
+<%   var _fc = _characterList[_fi2]; %>
+<%   if (_fullLoadSet[_fc.id]) { %>
+<%-     await getwi('世界书/角色/' + _fc.name + '/基础信息') %>
+<%-     await getwi('世界书/角色/' + _fc.name + '/性格调色盘') %>
+<%-     await getwi('世界书/角色/' + _fc.name + '/三面性') %>
+<%-     await getwi('世界书/角色/' + _fc.name + '/NSFW反差') %>
+<%   } %>
+<% } %>
+
+<%/* ─── 6.2 仅加载基础信息（未出场但有关系的人物）─── */%>
+<% for (var _bi2 = 0; _bi2 < _characterList.length; _bi2++) { %>
+<%   var _bc = _characterList[_bi2]; %>
+<%   if (_basicOnlySet[_bc.id] && !_fullLoadSet[_bc.id]) { %>
+<%-     await getwi('世界书/角色/' + _bc.name + '/基础信息') %>
+<%   } %>
+<% } %>
+
+<% } /* end if lastMessageId > 0 */ %>
+
+<%/* ════════════════════════════════════════════════════════════
+   步骤 7：输出角色性格控制器状态摘要
+   ════════════════════════════════════════════════════════════ */%>
+[角色性格控制器 v1.0 已加载。本控制器管理 16 人物 × 4 件套（共 64 角色条目池），按场景精准加载：当前场景人物/队伍成员全量加载 4 件套，未出场但有关系的人物仅加载基础信息以维系存在感。AI 应根据已加载的人物条目内容进行角色塑造，禁止虚构未加载人物的性格细节。]

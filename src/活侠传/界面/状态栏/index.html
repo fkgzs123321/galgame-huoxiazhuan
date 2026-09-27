@@ -1,0 +1,9 @@
+<head>
+  <!-- ★ charset 必须声明：产物内联了大量中文（变量名、文案、演示数据），
+       缺它时浏览器可能按本地编码解析，中文串断裂 → SyntaxError → 整块脚本不执行。
+       酒馆里 iframe 会继承父文档编码，但独立预览/file:// 打开时没有这层保障。 -->
+  <meta charset="utf-8" />
+</head>
+<body>
+  <div id="app"></div>
+</body>

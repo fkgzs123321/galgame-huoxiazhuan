@@ -1,0 +1,18 @@
+[
+  {"op":"add","path":"/entryManifest/世界观/世界设定","value":{"path":"世界书/世界观/世界设定.yaml","abstract":"1937-1945上海谍战背景与四大结局","keywords":[]}},
+  {"op":"add","path":"/entryManifest/世界观/特工能力边界","value":{"path":"世界书/世界观/特工能力边界.yaml","abstract":"肖途能力硬上限、行动级别、情感信任分工","keywords":["能力","伪装","口胡"]}},
+  {"op":"add","path":"/entryManifest/扮演准则/扮演准则","value":{"path":"世界书/扮演准则/扮演准则.yaml","abstract":"全局扮演准则","keywords":[]}},
+  {"op":"add","path":"/entryManifest/扮演准则/防谍战口胡","value":{"path":"世界书/扮演准则/防谍战口胡.yaml","abstract":"谍战防口胡清单与自检","keywords":["口胡","能力"]}},
+  {"op":"add","path":"/entryManifest/扮演准则/抉择呈现规范","value":{"path":"世界书/扮演准则/抉择呈现规范.yaml","abstract":"关键节点选项呈现格式","keywords":["抉择","选项"]}},
+  {"op":"add","path":"/entryManifest/扮演准则/死亡结局处理","value":{"path":"世界书/扮演准则/死亡结局处理.yaml","abstract":"BE触发与重来规则","keywords":["死亡","BE","结局"]}},
+  {"op":"add","path":"/entryManifest/时间线/主线章节表","value":{"part":"plot","path":"世界书/时间线/主线章节表.yaml","abstract":"章节与路线分叉表","keywords":["章节","路线"]}},
+  {"op":"add","path":"/entryManifest/角色/肖途-基础信息","value":{"part":"basic","path":"世界书/角色/肖途/基础信息.yaml","abstract":"肖途基础档案","keywords":["肖途","胡蜂"]}},
+  {"op":"add","path":"/entryManifest/角色/肖途-三面性","value":{"part":"tri_faceted","path":"世界书/角色/肖途/三面性.yaml","abstract":"肖途三面面具","keywords":["肖途","伪装"]}},
+  {"op":"add","path":"/entryManifest/阶段指导/阶段指导","value":{"path":"世界书/阶段指导/阶段指导.txt","abstract":"按章节与死亡状态的主持指导","keywords":[]}},
+  {"op":"add","path":"/entryManifest/事件/序章-事件","value":{"path":"世界书/事件/序章.yaml","abstract":"序章事件序与抉择","keywords":["序章"]}},
+  {"op":"add","path":"/entryManifest/事件/第一章-太阳之影","value":{"path":"世界书/事件/第一章.yaml","abstract":"第一章太阳之影要点","keywords":["第一章","太阳之影","武藤"]}},
+  {"op":"add","path":"/entryManifest/MVU/变量列表","value":{"part":"variable_list","path":"世界书/MVU/变量列表.yaml","abstract":"MVU变量权威定义含谍战双轨","keywords":[]}},
+  {"op":"add","path":"/entryManifest/MVU/[mvu_update]变量更新规则","value":{"part":"update_rules","path":"世界书/MVU/变量更新规则.yaml","abstract":"变量delta规则含能力禁止升级","keywords":[]}},
+  {"op":"add","path":"/entryManifest/MVU/变量输出格式","value":{"part":"output_format","path":"世界书/MVU/变量输出格式.yaml","abstract":"UpdateVariable输出格式","keywords":[]}},
+  {"op":"add","path":"/entryManifest/MVU/[InitVar]请勿打开","value":{"part":"initvar","path":"世界书/MVU/initvar.yaml","abstract":"初始变量","keywords":[]}}
+]

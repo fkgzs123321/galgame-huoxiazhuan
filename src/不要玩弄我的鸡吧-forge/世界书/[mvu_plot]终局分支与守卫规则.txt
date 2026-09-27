@@ -1,0 +1,70 @@
+@@generate_before
+# [系统]终局分支与守卫规则
+# enabled: false（关灯加载，由 D0 步骤6 通过 getwi 调用）
+
+<%
+if (typeof stage === 'undefined') var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+if (typeof sanity === 'undefined') var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+if (typeof corruptionV === 'undefined') var corruptionV = Number(getvar('stat_data.状态.堕落值', {scope:'local', defaults:0})) || 0;
+if (typeof suspicion === 'undefined') var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+if (typeof academicStage === 'undefined') var academicStage = Number(getvar('stat_data.学业.阶段', {scope:'local', defaults:3})) || 3;
+if (typeof examLeft === 'undefined') var examLeft = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) || 103;
+if (typeof totalUses === 'undefined') var totalUses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+// 加守卫避免与阶段晋升系统/读取变量过滤冲突（阶段晋升先加载，已声明confirmedUsers/confirmedCount）
+if (typeof confirmedUsers === 'undefined') var confirmedUsers = getvar('stat_data.隐藏层.确认使用者', {scope:'local', defaults:[]}) || [];
+if (typeof confirmedCount === 'undefined') var confirmedCount = Array.isArray(confirmedUsers) ? confirmedUsers.length : 0;
+if (typeof awakeningProgress === 'undefined') var awakeningProgress = Number(getvar('stat_data.隐藏层.觉醒进度', {scope:'local', defaults:0})) || 0;
+%>
+【终局分支与守卫规则 — 当前可触发的结局】
+
+<%/* ━━ 4个死结局（BAD_ENDINGS，高优先级·统一中文键名）━━ */%>
+<% if (sanity <= 0 || corruptionV >= 200) { %>
+┃ ✅ 崩坏结局：理智归零或腐化满 → endings['崩坏'] = true（最高优先级）
+<% } %>
+<% if (suspicion >= 200 && confirmedCount >= 15) { %>
+┃ ✅ 黑市掌控结局：疑心度≥200且传播≥15人 → endings['黑市掌控'] = true
+<% } %>
+<% if (suspicion >= 150 && stage >= 4) { %>
+┃ ⚠️ 同归于尽结局可触发：疑心度≥150+阶段≥4+选择摧毁 → endings['同归于尽'] = true（需玩家选择摧毁）
+<% } %>
+<% if (examLeft <= 0 && stage >= 4) { %>
+┃ ⚠️ 未解之谜结局：高考后未达成其他结局 → endings['未解之谜'] = true（兜底）
+<% } %>
+
+<%/* ━━ 4个好结局（GOOD_ENDINGS·统一中文键名）━━ */%>
+<% if (academicStage >= 4 && stage <= 2 && examLeft <= 0 && suspicion < 60 && sanity > 50) { %>
+┃ ✅ 健康结局：学业优+阶段低+高考已过+理智正常 → endings['健康'] = true
+<% } %>
+<% if (academicStage >= 3 && stage <= 4 && examLeft <= 0) { %>
+┃ ✅ 平庸结局：学业可+阶段中+高考已过 → endings['平庸'] = true
+<% } %>
+<% if (suspicion >= 100 && stage >= 4 && confirmedCount >= 8) { %>
+┃ ✅ 真相揭示结局：疑心度≥100+阶段≥4+传播≥8 → endings['真相揭示'] = true（三路线：反向掌控/谈判交易/彻底摧毁/接受命运）
+<% } %>
+<% if (stage >= 3 && academicStage <= 2 && examLeft <= 0) { %>
+┃ ✅ 坠落结局：阶段高+学业差+高考已过 → endings['坠落'] = true
+<% } %>
+
+<% if (sanity <= 30) { %>
+┃ ⚠️ 理智过低（<%=sanity%>），崩坏结局将在理智归零时触发
+<% } %>
+
+【守卫规则 — 当前生效】
+┃ 阶段锁：AI不得跳跃推进（当前阶段<%=stage%>）
+<% if (sanity > 30) { %>
+┃ 理智警卫：sanity>30（当前<%=sanity%>），崩坏结局锁定中
+<% } else { %>
+┃ 理智警卫：sanity≤30，崩坏结局可能触发
+<% } %>
+<% if (examLeft > 30) { %>
+┃ 学习警卫：距高考<%=examLeft%>天，终局不得在高考前触发
+<% } else if (examLeft > 0) { %>
+┃ 学习警卫：距高考<%=examLeft%>天，终局倒数窗口
+<% } else { %>
+┃ 学习警卫：高考已过，学业结局可触发
+<% } %>
+┃ 传播链警卫：不得一次新增多名知情者（逐轮判定）
+┃ 身份警卫：服从阶段感知规则，不得泄露使用者身份
+
+【终局执行优先级】（与全局规则总表 ENDING_PRIORITY 一致·单一来源·全中文键名）
+崩坏 > 黑市掌控 > 同归于尽 > 真相揭示 > 健康 > 平庸 > 坠落 > 未解之谜

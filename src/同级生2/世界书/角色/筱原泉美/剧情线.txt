@@ -1,0 +1,194 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 筱原泉美 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=5 / 原版女角 · 文学少女系弓箭部女角
+   互斥关系：无
+   核心弧线：弓箭场偶遇—文学共鸣—温泉旅行—恋人成立（四阶段）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 筱原泉美_STORYLINE = {
+  heroine_id: 5,
+  name: '筱原泉美',
+  core_position: {
+    role: '泉美线核心女角 — 温泉旅行是泉美线核心触发条件',
+    archetype: '文静文学少女的恋爱觉醒弧线 — 社恐外壳下的耽美反差',
+    function: '通过"弓箭场偶遇→文学共鸣→温泉旅行→恋人成立"四阶段弧线，让玩家以耐心突破社恐外壳，温泉旅行是关系质变的核心触发点',
+    plot_weight: 'high — 温泉旅行事件是泉美线不可替代的核心节点'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: '全天',
+      location: '（未登场）',
+      event: '寒假第一天 · 泉美锁定',
+      description: '12/22 寒假第一天，泉美未登场（人物出现总表 day1 locked 锁定）；此时玩家无法遇到泉美，泉美线尚未开放',
+      triggers_route: '泉美线 — 尚未开启',
+      is_reversible: true,
+      flags: ['flag_izumi_locked_day1']
+    },
+    {
+      date: '12-23',
+      time_slot: 'PM',
+      location: '八十八学园 · 弓箭场 / 图书馆',
+      event: '校园开放日 · 弓箭场偶遇',
+      description: '12/23 校园开放日，下午泉美在八十八学园出现（人物出现总表 day2 解锁，DEFAULT_SCHEDULE.下午.八十八学园含 id=5）；玩家可在弓箭场或图书馆偶遇泉美，初次搭话机会；选择文学话题（古典文学/书评）可微幅提升好感',
+      triggers_route: '泉美线 — 初遇节点，开启"认识泉美"前置',
+      is_reversible: true,
+      flags: ['flag_izumi_first_met', 'flag_izumi_route_awareness']
+    },
+    {
+      date: '12-24 ~ 12-27',
+      time_slot: 'PM',
+      location: '八十八学园 · 弓箭场 / 图书馆',
+      event: '日常相遇 · 文学共鸣累积期',
+      description: '12/24~12/27 期间，下午泉美固定在八十八学园出现；玩家通过文学话题（古典文学/书评/图书馆）切入，耐心突破社恐外壳；赠送文学书/和果子/手工巧克力可加速好感累积；强行亲密会让她彻底崩溃',
+      triggers_route: '泉美线 — 文学共鸣累积期，为温泉旅行邀请做铺垫',
+      is_reversible: true,
+      flags: ['flag_izumi_literature_resonance']
+    },
+    {
+      date: '12-28',
+      time_slot: 'PM6:00',
+      location: '主角自宅（电话）',
+      event: '川尻信良电话邀主角参加温泉旅行',
+      description: '12/28 PM6:00，川尻信良以"散心"为名电话邀主角参加 12/29~30 温泉旅行；这是泉美线核心入口——信良是泉美线触发者；若主角接受邀请，泉美线进入"温泉旅行触发"分支；若拒绝，泉美线进入"延迟触发"分支（1/3 后才开放）',
+      triggers_route: '泉美线 — 温泉旅行入口开启（核心触发点）',
+      is_reversible: true,
+      flags: ['flag_izumi_route_invitation', 'flag_nobuyoshi_onsen_trip'],
+      note: '★ 泉美线核心触发条件 — 信良的电话邀约是温泉旅行的唯一入口'
+    },
+    {
+      date: '12-29',
+      time_slot: '全天',
+      location: '温泉乡',
+      event: '温泉旅行第一天 · 泉美线核心事件',
+      description: '12/29 温泉旅行第一天，泉美作为同行成员出现；温泉旅行的封闭环境让泉美放下社防，与主角的文学共鸣在旅行中深化；玩家选择正确（聊古典文学/陪她读书/温柔耐心）可大幅提升好感；选择错误（强行亲密/聊非文学话题）会让泉美退缩',
+      triggers_route: '泉美线 — 温泉旅行核心事件，关系质变前期',
+      is_reversible: true,
+      flags: ['flag_izumi_onsen_day1']
+    },
+    {
+      date: '12-30',
+      time_slot: 'AM',
+      location: '温泉乡 · 弓箭场（临时）',
+      event: '温泉旅行第二天上午 · 弓箭场对话（好感+3）',
+      description: '12/30 上午，温泉旅行第二天，泉美在温泉乡附近的临时弓箭场练习；玩家与之对话可触发"弓箭场对话"事件，好感+3；这是泉美展示弓箭部一面的关键节点，也是下午温泉邀请的前置好感累积点',
+      triggers_route: '泉美线 — 弓箭场对话事件，好感提升节点',
+      is_reversible: true,
+      flags: ['flag_izumi_archery_talk']
+    },
+    {
+      date: '12-30',
+      time_slot: 'PM',
+      location: '温泉乡 · 温泉事件',
+      event: '温泉旅行第二天下午 · 泉美邀请温泉之旅（需好感≥30）',
+      description: '12/30 下午，温泉旅行第二天，泉美主动邀请主角共赴温泉（需好感≥30，含上午弓箭场对话+3）；温泉事件是泉美线核心质变点——泉美的敏感体质（1.5倍敏感）被触发，耽美反差显现；玩家需温柔耐心，强行突破（强迫初H）会触发 BAD_END_1_报警 + 关系破裂（泉美转学）；正确处理后恋人关系成立',
+      triggers_route: '泉美线 — 温泉事件→恋人成立（核心质变点）',
+      is_reversible: false,
+      flags: ['flag_izumi_onsen_event', 'flag_izumi_lover_established'],
+      note: '★ 不可逆 flag — 温泉事件正确处理后，泉美×主角恋人关系成立；强行突破触发 BAD_END_1_报警 + 转学'
+    },
+    {
+      date: '12-31 ~ 01-06',
+      time_slot: '全天',
+      location: '八十八学园 / 八十八町商业区 / 自宅周边',
+      event: '泉美线深化期 · 恋人关系深化',
+      description: '12/31~1/6 期间，泉美与主角恋人关系深化；泉美在下午固定出现在八十八学园，商业区书店也会偶遇；玩家可通过约会/赠礼/文学话题进一步累积好感；此阶段泉美的敏感体质依赖加深，为最终判定累积好感至≥60',
+      triggers_route: '泉美线 — 恋人深化期，为最终判定累积好感',
+      is_reversible: true,
+      flags: ['flag_izumi_lover_deepening']
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '八十八学园 / 主角自宅',
+      event: '寒假最后一天 · 最终判定',
+      description: '1/7 深夜触发结局判定（人物出现总表 day17 最终判定）：若泉美好感≥60，达成泉美线 Good End（泉美×主角恋人关系成立，文学少女的恋爱觉醒完成）；若好感<60但≥30，达成 Normal End（暧昧开放结局）；若好感<30或触发 BAD_END_1_报警，达成 Bad End（泉美转学/关系破裂）',
+      triggers_route: '泉美线 — 最终结局判定',
+      is_reversible: false,
+      flags: ['flag_izumi_final_judgment', 'flag_izumi_good_end'],
+      note: '★ 不可逆 flag — 最终判定一旦触发无法回退；好感≥60达成 Good End'
+    }
+  ],
+
+  triggered_routes: {
+    '川尻信良线（npc_id=N1）': {
+      role: 'trigger — 川尻信良是泉美线触发者',
+      trigger_nodes: ['12-28 PM6:00 电话邀主角温泉旅行'],
+      impact: '信良的电话邀约是泉美线温泉旅行的唯一入口；若信良未打电话或主角拒绝，泉美线进入"延迟触发"分支（1/3 后才开放）'
+    },
+    '南川洋子线（heroine_id=6）': {
+      role: 'parallel — 泉美线与洋子线并行，无互斥',
+      trigger_nodes: ['12-29~30 温泉旅行期间'],
+      impact: '泉美线与洋子线无明确互斥关系；玩家可同时推进，但温泉旅行期间（12/29~30）专注泉美线；信良同时是洋子线推动者和泉美线触发者，两条线在温泉旅行期间交叉'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'lover — 恋人关系（温泉事件后成立）',
+      detail: '初始 affection=0/trust=0 完全陌生；通过文学话题切入耐心突破社恐外壳；12/30 温泉事件后恋人关系成立；泉美敏感体质（1.5倍敏感）被开发后产生强烈依赖'
+    },
+    '川尻信良': {
+      type: 'trigger — 泉美线触发者（npc_id=N1）',
+      detail: '信良通过 12/28 PM6:00 电话邀主角参加温泉旅行，间接关联泉美线；信良是泉美线温泉旅行入口的唯一触发者'
+    },
+    '南川洋子': {
+      type: 'parallel — 并行女角（heroine_id=6）',
+      detail: '泉美线与洋子线无互斥；温泉旅行期间（12/29~30）信良同时是洋子线推动者和泉美线触发者，两条线在温泉旅行期间交叉'
+    },
+    '图书委员同事': {
+      type: 'acquaintance — 工作交流',
+      detail: '泉美作为图书委员，与同事仅工作交流；非剧情关键关系'
+    },
+    '商业区书店店主': {
+      type: 'acquaintance — 熟客关系',
+      detail: '泉美是商业区书店熟客；玩家可在书店偶遇泉美，是文学话题切入的辅助地点'
+    },
+    '弓箭部全体部员': {
+      type: 'club — 部员关系',
+      detail: '泉美是弓箭部成员，与部员有社团交流；弓箭场是泉美主要出现地点'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_izumi_first_met',
+      trigger: '12-23 PM 八十八学园弓箭场/图书馆偶遇',
+      effect: '主角与泉美初次相遇，泉美线"认识泉美"前置开启',
+      reversibility: '可逆 — 初遇仅开启前置，不影响后续'
+    },
+    {
+      flag: 'flag_izumi_route_invitation',
+      trigger: '12-28 PM6:00 川尻信良电话邀主角温泉旅行',
+      effect: '泉美线温泉旅行入口开启；若主角接受则泉美线进入"温泉旅行触发"分支',
+      reversibility: '可逆 — 玩家可选择拒绝电话（泉美线进入延迟触发）'
+    },
+    {
+      flag: 'flag_izumi_onsen_event',
+      trigger: '12-30 PM 温泉事件（需好感≥30）',
+      effect: '温泉事件触发，泉美线核心质变点；正确处理后恋人关系成立，强行突破触发 BAD_END_1_报警 + 转学',
+      reversibility: '不可逆 — 一旦触发无法回退；正确处理=恋人成立，错误处理=BAD_END_1'
+    },
+    {
+      flag: 'flag_izumi_lover_established',
+      trigger: '12-30 PM 温泉事件正确处理后',
+      effect: '泉美×主角恋人关系正式成立；泉美线进入恋人深化期',
+      reversibility: '不可逆 — 恋人关系一旦成立无法回退'
+    },
+    {
+      flag: 'flag_izumi_final_judgment',
+      trigger: '01-07 深夜最终判定',
+      effect: '泉美线最终结局判定：好感≥60 Good End / 好感≥30 Normal End / 好感<30 或 BAD_END_1 Bad End',
+      reversibility: '不可逆 — 最终判定一旦触发无法回退'
+    }
+  ],
+
+  summary: '泉美的剧情线是"弓箭场偶遇—文学共鸣—温泉旅行—恋人成立"四阶段弧线，核心功能是通过温泉旅行事件实现关系质变。12/28 川尻信良的电话邀约是泉美线温泉旅行的唯一入口（核心触发点），12/30 PM 温泉事件是泉美线核心质变点（需好感≥30，正确处理后恋人关系成立）。1/7 最终判定：泉美好感≥60达成 Good End。泉美线无互斥关系，可与其他女角线并行推进。警告：强迫初H触发 BAD_END_1_报警 + 关系破裂（泉美转学）。'
+};
+%>
+
+筱原泉美 · 剧情线已加载。核心定位：泉美线核心女角（heroine_id=5）— 温泉旅行是核心触发条件。核心弧线：12/23 弓箭场偶遇→12/24~27 文学共鸣累积→12/28 信良电话邀约（泉美线入口）→12/29~30 温泉旅行核心事件→12/30 PM 温泉事件恋人成立（需好感≥30）→1/7 最终判定（好感≥60 Good End）。不可逆 flag：flag_izumi_onsen_event（12/30 温泉事件）、flag_izumi_lover_established（12/30 恋人成立）、flag_izumi_final_judgment（1/7 最终判定）。可逆 flag：flag_izumi_route_invitation（12/28 信良电话邀约，可拒绝）。警告：强迫初H触发 BAD_END_1_报警 + 转学。

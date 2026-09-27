@@ -1,0 +1,116 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 西御寺有友 · 基础信息
+   ════════════════════════════════════════════════════════════
+   npc_id=N3 / 男配角 · 财阀独生子，反派枢纽
+   互斥关系：无（不可攻略 NPC，作为剧情核心反派存在）
+   底色：傲慢 — 从介入到阴谋到关键误会到被反击，财阀恶少的覆灭弧线
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 西御寺有友_INFO = {
+  npc_id: 'N3',
+  name: '西御寺有友',
+  romanization: 'Nishimiji Yutomo',
+  age: 18,
+  gender: '男',
+  blood_type: 'O',
+  identity: '西御寺财阀独生子，八十八学园三年生（留级一年，实际 19 岁心理年龄却傲慢如顽童）',
+  relationship: '主角关系极差，反派对手；自以为世上女人都喜欢他',
+  home: '西御寺家豪宅（八十八町商业区最高档住宅区，与父母及管家同住）',
+  birthday: '04-15',
+  height: 178,
+  weight: 68,
+  cv_implied: '傲慢系少爷声线，语调高傲拖长尾音，被反击时会陡然尖利失态',
+
+  appearance: {
+    hair: '染成深栗色的中长发，用发胶向后梳成油头，发质软但造型硬挺',
+    eyes: '细长狐狸眼，眼色浅褐，眼神居高临下睥睨一切，被唯拒绝时会眯起威胁',
+    body: '西装革履下是匀称但缺乏锻炼的身体，皮肤白皙，手指修长无茧（不事生产）',
+    feature: '右耳戴一颗小钻石耳钉（财阀少爷标配）；嘴角常挂嘲讽的冷笑',
+    clothing_default: '永远穿定制西装上学（校规不允许但校方不敢管）；冬天加羊毛大衣；跟班永远跟在身后拎书包'
+  },
+
+  personality: {
+    mbti: 'ESTJ',
+    tags: ['财阀恶少', '傲慢自大', '报复心强'],
+    public_face: '西御寺财阀少爷，对所有人颐指气使；跟班成群，老师都让三分',
+    social_face: '被唯拒绝后会阴险报复；对美纪纠缠不清；对久美子下药迷奸未遂',
+    intimate_face: '本质是没长大的巨婴，对女性有病态占有欲；性功能正常但靠金钱和权势压人'
+  },
+
+  preferences: {
+    like_food: ['法式料理', '红酒（未成年却常喝）', '进口巧克力', '神户牛肉'],
+    hate_food: ['平民食物', '便利店便当', '速食'],
+    hobby: ['骑马', '高尔夫', '收集名表', '调戏女学生', '报复得罪他的人'],
+    gift_pref: ['名表', '红酒', '定制西装', '进口雪茄'],
+    topic_pref: ['自家财阀实力', '名车名表', '女学生八卦', '报复计划']
+  },
+
+  schedule_default: {
+    '早': '西御寺家豪宅（管家叫醒，西式早餐，豪车接送上学）',
+    '上午': '八十八学园（教室后排，跟班环绕，对女生指指点点）',
+    '下午': '商业区高档咖啡厅或西御寺家私会地点（策划阴谋）',
+    '晚': '商业区居酒屋或自家豪宅（与跟班密谋 / 跟踪唯 / 纠缠美纪）',
+    '深夜': '西御寺家豪宅（策划下一步报复 / 看侮辱主角的幻想日记）'
+  },
+
+  relations: {
+    mutual_exclusion: '无（不可攻略 NPC，作为剧情核心反派存在，不触发锁链）',
+    family: '西御寺财阀家族（父亲是财阀掌门，母亲是名门闺秀；独生子继承家业；父母对他溺爱无度）',
+    friends: [
+      '跟班三人组（西御寺家雇佣的"朋友"，实际是保镖兼跟班）',
+      '长冈芳树（共谋关系，1/2 起结成利益同盟）'
+    ],
+    enemies: [
+      '主角（关系极差，多次冲突；1/1 被主角痛打）',
+      '鸣泽唯（heroine_id=1，被唯拒绝后阴险报复，affection=-20/trust=-30）',
+      '加藤美纪（heroine_id=4，被纠缠过，affection=-10/trust=-20）',
+      '片桐美铃（heroine_id=10，师生关系紧张，affection=-15/trust=-25）',
+      '永岛久美子（heroine_id=8，1/2 AM9:15 公寓迷路遭其侮辱）'
+    ]
+  },
+
+  /* personality_stages 已迁移至「剧情线.txt」的 key_plot_nodes（含 flags/is_reversible/triggers_route 等扩展字段，单一来源，避免重复） */
+
+  function_in_plot: {
+    core_role: '唯线主要反派 — 1/3 PM5:05 旅馆大厅误会事件→1/5 88 公园救唯（heroine_id=1 唯线核心反派）',
+    sub_roles: [
+      '美纪线干预者 — 12/24~12/29 连续纠缠美纪，12/29 美纪告白时搅局（heroine_id=4 美纪线反派）',
+      '美铃线情报源破坏者 — 12/31 告知美铃其男友存在（heroine_id=10 美铃线反派）',
+      '永岛久美子线反派 — 1/2 AM9:15 公寓久美子迷路遭其侮辱（heroine_id=8 久美子线反派节点）'
+    ],
+    triggers_female_routes: ['鸣泽唯线（heroine_id=1，1/3 误会 + 1/5 救唯）', '加藤美纪线（heroine_id=4，12/24~29 干预）', '片桐美铃线（heroine_id=10，12/31 情报源破坏）', '永岛久美子线（heroine_id=8，1/2 AM9:15 侮辱）']
+  },
+
+  mutex: '无（不可攻略 NPC，无互斥；不影响任何女角互斥锁链）',
+
+  note: '西御寺是"反派枢纽" — 干预唯/美纪/美铃/久美子 4 条女角线的核心反派；玩家选择扮演西御寺时，可触发独特的反派视角剧情分支（金钱碾压 + 跟班指挥 + 阴谋布局），但可攻略女角大幅限制（详见剧情线.txt）。扮演西御寺会解锁独特的"反派结局"分支。'
+};
+%>
+
+西御寺有友 · 基础信息已加载。当前男配角 npc_id=N3，无互斥关系（不可攻略 NPC）。他是西御寺财阀独生子·八十八学园三年生（留级），反派枢纽，主角关系极差。功能定位：唯线主要反派（1/3 PM5:05 旅馆误会事件→1/5 88 公园救唯）+ 美纪线干预者（12/24~12/29）+ 美铃线情报源破坏者（12/31）+ 永岛久美子线反派（1/2 AM9:15 侮辱）。干预 4 条女角线，是"反派枢纽"。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 西御寺有友_INFO.name %>（<%- 西御寺有友_INFO.age %>岁）
+- 身份: <%- 西御寺有友_INFO.identity %>
+- 关系: <%- 西御寺有友_INFO.relationship %>
+- 住所: <%- 西御寺有友_INFO.home %>
+<%_ if (西御寺有友_INFO.appearance) { _%>
+- 外貌: <%- [西御寺有友_INFO.appearance.hair, 西御寺有友_INFO.appearance.eyes, 西御寺有友_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (西御寺有友_INFO.personality) { _%>
+- 性格: <%- 西御寺有友_INFO.personality.tags ? 西御寺有友_INFO.personality.tags.join('、') : 西御寺有友_INFO.personality.public_face %>
+<%_ if (西御寺有友_INFO.personality.public_face) { _%>- 表面: <%- 西御寺有友_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (西御寺有友_INFO.personality.intimate_face) { _%>- 亲密面: <%- 西御寺有友_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (西御寺有友_INFO.preferences) { _%>- 喜好: <%- [(西御寺有友_INFO.preferences.like_food || []).join('/'), '爱好：' + (西御寺有友_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (西御寺有友_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(西御寺有友_INFO.relations) %>
+<%_ } _%>
+<%_ if (西御寺有友_INFO.strategy) { _%>- 攻略要点: <%- 西御寺有友_INFO.strategy.best_approach %>
+<%_ if (西御寺有友_INFO.strategy.warning) { _%>- 警告: <%- 西御寺有友_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

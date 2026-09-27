@@ -1,0 +1,30 @@
+[
+  {
+    "op": "move",
+    "from": "/entryManifest/unknown/变量~1变量更新规则",
+    "path": "/entryManifest/unknown/[mvu_update]变量~1变量更新规则"
+  },
+  {
+    "op": "move",
+    "from": "/entryManifest/unknown/变量~1变量输出格式",
+    "path": "/entryManifest/unknown/[mvu_update]变量~1变量输出格式"
+  },
+  {
+    "op": "move",
+    "from": "/entryManifest/unknown/仅在新建聊天时开启一次，用于初始化MVU变量",
+    "path": "/entryManifest/unknown/[InitVar]仅在新建聊天时开启一次，用于初始化MVU变量"
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/unknown/[config_override]",
+    "value": {
+      "abstract": "MVU 卡内配置：强制采用额外模型解析更新变量",
+      "enabled": false,
+      "position": { "type": "before_character_definition", "order": 4 },
+      "display_index": 9,
+      "recursion": { "prevent_incoming": false, "prevent_outgoing": false },
+      "keywords": [],
+      "path": "世界书\\[config_override].json"
+    }
+  }
+]

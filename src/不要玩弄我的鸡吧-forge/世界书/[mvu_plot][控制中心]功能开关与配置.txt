@@ -1,0 +1,104 @@
+# [控制中心]功能开关与配置
+# 条目名：[控制中心]功能开关与配置
+# 激活策略：蓝灯
+
+<control_center_config>
+// 控制中心配置 - 与助手脚本"控制中心.js"配合使用
+// 开关状态持久化在 getVariables({type:'script'}).dildo_cc 中
+
+【控制中心 v2.0.0 架构】（完全对齐星月私立高等学院 v3.9.6）
+1. 助手脚本（脚本/控制中心.js）：
+   - 悬浮球入口（右下角粉色✦球）
+   - 控制中心面板（点击悬浮球展开）
+   - 主题切换（粉/紫/深色）+ 持久化
+   - 功能开关I/O（6个开关）+ 持久化
+   - 云端 runtime 多源容错加载（3 CDN 源 + AbortController 超时 + 卡内兜底）
+   - 状态栏注入（14 tab iframe srcdoc 注入）
+   - 开局页注入（3 视图 iframe srcdoc 注入）
+   - OMNI 变量流 UI 注入（预分析/同步中/完成 三态）
+   - 对话气泡 CSS 注入（用户/NPC/旁白三态）
+   - 生成前提示词注入（监听 generation_started 事件）
+   - postMessage通信（与状态栏iframe双向通信）
+
+【EJS全关+精准调用架构 v3.1.0】（2026-07-24）
+⚠️ 必须在酒馆助手(ST-Prompt-Template插件)中正确配置以下选项：
+  - "Treat Disabled GENERATE/RENDER/INJECT Entries as Enabled" = OFF（必须关闭！）
+  (插件设置中的 invert_enabled 选项)
+  - 开启此选项会导致199条关灯条目全部注入提示词（20万token）
+  - 关闭后只有7条蓝灯常驻条目自动注入，其余由D0通过getwi()精准调用（~10万token）
+
+架构说明：
+  - 总控制器：世界书/D0系统控制器.txt（唯一蓝灯入口 enabled:true + @@generate_before）
+  - 分控层：[总控]人物/[总控]NSFW/[总控]事件/[总控]剧情/[总控]阶段（5个，关灯）
+  - 子控层：各角色档案/各事件系统/各剧情线/各阶段专属规则（关灯，由分控动态调用）
+  - 关灯机制：enabled:false 的 @@generate_before 条目，酒馆原生跳过不注入提示词
+    invert_enabled=false 时扩展也不会自动注入，但 getwi() 绕过所有激活逻辑可直接调用
+  - 精准调用：D0通过 getwi('[总控]xxx') 链式加载分控，分控再按条件加载子控
+    getwi() 无视 enabled 和 invert_enabled，直接加载条目并执行EJS
+  - 场景模式：日常/使用/调查/社交/学业/终局/开局（7种）
+  - 每轮只加载当前场景必需的6-15个模块，而非全部
+  - Token节省：从20万/轮 降至 ~10万/轮（-50%）
+
+2. 正则占位展开：
+   - 开局页占位展开.json：<OpeningPage>...</OpeningPage> → data-fjb-opening 挂载点
+   - omni-progress占位展开.json：<OmniProgress>...</OmniProgress> → data-fjb-omni-progress 挂载点
+   - omni-done占位展开.json：<OmniDone>...</OmniDone> → data-fjb-omni-done 挂载点
+   - omni-analysis占位展开.json：<OmniAnalysis>...</OmniAnalysis> → data-fjb-omni-analysis 挂载点
+
+3. 状态栏集成（正则/状态栏.html）：
+   - 14 tab 页面架构（状态/环境/角色/技能/雷达/事件/任务/规则/资产/制造/载具/居所/商店/设置）
+   - SVG 六维属性雷达图
+   - 通用记录渲染器（展开折叠+批量删除）
+   - 事件重要性色阶（high/mid/low）
+   - 通过 postMessage 与控制中心脚本通信
+
+4. 开局页（正则/开局页.html）：
+   - 3 视图：boot（封面+依赖检测）/ wizard（6步向导）/ workshop（创意工坊）
+   - 25 角色预设 + SVG 雷达图
+   - postMessage 通信 + localStorage 草稿持久化
+
+5. OMNI 变量流 UI（omni-*.html）：
+   - omni-analysis.html：变量预分析面板（粉色主题）
+   - omni-progress.html：同步中状态（omni-pulse + omni-blink 动画）
+   - omni-done.html：同步完成 UI（omni-pulse 动画）
+
+6. 对话气泡（正则/bubble.css）：
+   - 用户/NPC/旁白三种气泡
+   - 46×46 头像 + 粉色边框
+
+【云端 runtime 配置】
+- 仓库：fkgzs123321/sillytavern
+- 路径：/runtime/byd/2.0.0/
+- CDN 源：jsdelivr / testingcf.jsdelivr / raw.githubusercontent
+- 模块清单：status-bar.html / opening-page.html / omni×3 / bubble.css / control-center.js / manifest.json
+
+【功能开关清单】
+- floatball: 悬浮球（默认开）
+- opening: 开局页（默认开）
+- media_lib: 媒体库（默认关，预留）
+- diy: DIY设置（默认关，预留）
+- auto_refresh: 状态栏自动刷新（默认开）
+- event_notify: 事件通知（默认开）
+
+【主题清单】
+- pink: 粉色（默认）
+- purple: 紫色
+- dark: 深色
+
+【通信协议】
+- fjb-set-theme: 设置主题（控制中心→状态栏）
+- fjb-cc-get-state: 请求开关状态（状态栏→控制中心）
+- fjb-cc-state: 返回开关状态（控制中心→状态栏）
+- fjb-cc-set-switch: 设置开关（状态栏→控制中心）
+- fjb-mvu-stat-request: 请求MVU数据（状态栏→控制中心）
+- fjb-mvu-stat-data: 返回MVU数据（控制中心→状态栏）
+
+【占位符使用方式】
+1. 开局页：<OpeningPage>内容</OpeningPage>
+2. OMNI 同步中：<OmniProgress>内容</OmniProgress>
+3. OMNI 同步完成：<OmniDone>内容</OmniDone>
+4. OMNI 预分析：<OmniAnalysis>内容</OmniAnalysis>
+5. 状态栏：<StatusPlaceHolderImpl/>（由正文美化脚本处理）
+
+控制中心脚本会自动识别这些挂载点并注入云端 HTML。
+</control_center_config>

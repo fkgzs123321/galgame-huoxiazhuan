@@ -1,0 +1,257 @@
+@@generate_before
+<%_
+// ===== [mvu_plot] 生理周期与生育系统 =====
+// EJS 预处理条目：每日推进女性生理周期、受孕判定、怀孕进程、分娩判定
+// 关键设定：假阴茎连接 {{user}}，精液来自 {{user}}，但女性不知精液来源
+// 信息隔离铁律：父亲UID 始终为 'user'，严禁在正文中提及
+
+var day = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 1 })) || 1;
+var hour = Number(getvar('stat_data.时间.小时', { scope: 'local', defaults: 8 })) || 8;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', { scope: 'local', defaults: 1 })) || 1;
+var femaleUsers = getvar('stat_data.女性角色', { scope: 'local', defaults: {} }) || {};
+var uidOrder = femaleUsers.UID顺序 || [];
+var prevDay = Number(getvar('stat_data.隐藏层.上一日', { scope: 'local', defaults: 0 })) || 0;
+
+// ===== LCG 确定性骰子（内联，NR LCG，与 [mvu_plot]LCG确定性骰子系统.txt 统一）=====
+// 参数：a=1664525, c=1013904223, m=2^32 (Numerical Recipes)
+function _lcg(seed) {
+  var a = 1664525;
+  var c = 1013904223;
+  var m = 4294967296; // 2^32
+  var state = seed >>> 0;
+  state = (state * a + c) >>> 0;
+  return state;
+}
+function _roll(seed) {
+  return _lcg(seed) / 4294967296;
+}
+function _check(seed, threshold) {
+  // threshold: 0.0 ~ 1.0，返回 true 表示判定通过
+  return _roll(seed) < threshold;
+}
+
+// ===== 生理周期阶段：28天4阶段 =====
+function _cycleStage(cycleDay) {
+  var d = Number(cycleDay) || 1;
+  if (d <= 5)  { return { 阶段: '行经期', NSFW权限: 0, 受孕概率: 0.00 }; }
+  if (d <= 13) { return { 阶段: '卵泡期', NSFW权限: 1, 受孕概率: 0.05 }; }
+  if (d <= 16) { return { 阶段: '排卵期', NSFW权限: 1, 受孕概率: 0.30 }; }
+  return { 阶段: '黄体期', NSFW权限: 1, 受孕概率: 0.05 };
+}
+
+// ===== 怀孕阶段：D0未孕/D1-3无症状/D4-15孕吐/D16-30行动受限/D31-45临产/D45+分娩触发 =====
+function _pregnancyStage(pregnancyDay) {
+  var d = Number(pregnancyDay) || 0;
+  if (d <= 0)  { return { 阶段: '未孕',     女性知情: 0, 行动修正: 1.0 }; }
+  if (d <= 3)  { return { 阶段: '无症状',   女性知情: 0, 行动修正: 1.0 }; }
+  if (d <= 15) { return { 阶段: '孕吐期',   女性知情: 1, 行动修正: 0.9 }; }
+  if (d <= 30) { return { 阶段: '行动受限', 女性知情: 1, 行动修正: 0.7 }; }
+  if (d <= 45) { return { 阶段: '临产期',   女性知情: 1, 行动修正: 0.5 }; }
+  return { 阶段: '分娩触发', 女性知情: 1, 行动修正: 0.3 };
+}
+
+// ===== 受孕判定：基于周期阶段概率 + LCG 骰子 =====
+// 行经期0%/卵泡期5%/排卵期30%/黄体期5%
+function _conceptionCheck(cycleDay, seed) {
+  var st = _cycleStage(cycleDay);
+  var prob = st.受孕概率;
+  if (prob <= 0) { return { 可受孕: 0, 原因: '行经期无法受孕', 概率: 0, 骰值: -1 }; }
+  var r = _roll(seed);
+  var pass = r < prob;
+  return {
+    可受孕: pass ? 1 : 0,
+    原因: st.阶段 + '受孕概率' + Math.round(prob * 100) + '%',
+    概率: prob,
+    骰值: Math.round(r * 10000) / 10000
+  };
+}
+
+// ===== 分娩判定：医疗≥5且有药→95%，否则70% =====
+function _deliveryCheck(medicalSkill, hasMedicine, seed) {
+  var med = Number(medicalSkill) || 0;
+  var threshold = (med >= 5 && hasMedicine) ? 0.95 : 0.70;
+  var r = _roll(seed);
+  var pass = r < threshold;
+  return {
+    成功率: Math.round(threshold * 100),
+    骰值: Math.round(r * 10000) / 10000,
+    结果: pass ? '成功' : '风险',
+    风险: pass ? '无' : '产妇/婴儿风险'
+  };
+}
+
+// ===== 每日推进：周期日+1（到28归1），怀孕状态>0时+1，产后天数>0时-1 =====
+var dayAdvanced = (day !== prevDay);
+var activeFemaleList = [];
+var deliveryEvents = [];
+var conceptionEvents = [];
+
+for (var i = 0; i < uidOrder.length; i++) {
+  var uid = uidOrder[i];
+  if (uid === 'UID顺序') continue;
+  var fu = femaleUsers[uid];
+  if (!fu || !fu.生育) continue;
+
+  var rep = fu.生育;
+  var cycleDay = Number(rep.周期日) || 1;
+  var pregState = Number(rep.怀孕状态) || 0;
+  var postpartum = Number(rep.产后天数) || 0;
+  var childCount = Number(rep.孩子数) || 0;
+  var lastConception = Number(rep.最后受孕日) || 0;
+
+  // 每游戏日开始时推进
+  if (dayAdvanced) {
+    // 周期日推进
+    cycleDay = cycleDay + 1;
+    if (cycleDay > 28) { cycleDay = 1; }
+
+    // 怀孕进程推进
+    if (pregState > 0) {
+      pregState = pregState + 1;
+      // 分娩触发：怀孕状态 >= 45
+      if (pregState >= 45) {
+        // 注：schema 无独立 medical 字段，暂用 洞察.等级 代替医疗判定，后续如新增 medical 字段需替换
+        var medSkill = Number(getvar('stat_data.技能.洞察.等级', { scope: 'local', defaults: 1 })) || 1;
+        // UID 为中文姓名，用字符编码累加转数字（保证不同姓名种子不同）
+        var _uidSum = 0; var _uidS = String(uid || ''); for (var _ui = 0; _ui < _uidS.length; _ui++) { _uidSum += _uidS.charCodeAt(_ui); }
+        var _uidNum = _uidSum || (i + 1);
+        var deliverySeed = (((((day * 7 + hour * 13) * 7919 + _uidNum) * 11 + stage) * 17 + 500) * 31) >>> 0;
+        var delivery = _deliveryCheck(medSkill, 0, deliverySeed);
+        if (delivery.结果 === '成功') {
+          childCount = childCount + 1;
+          pregState = 0;
+          postpartum = 10;
+          rep.分娩结果 = '成功';
+          deliveryEvents.push({ uid: uid, name: fu.基础 && fu.基础.姓名 || uid, 结果: '成功', 孩子数: childCount });
+        } else {
+          // 分娩失败：重置 pregState 避免无限重试，进入产后恢复
+          pregState = 0;
+          postpartum = 10;
+          rep.分娩结果 = '风险';
+          deliveryEvents.push({ uid: uid, name: fu.基础 && fu.基础.姓名 || uid, 结果: '风险', 并发症: true });
+        }
+      }
+    }
+
+    // 产后恢复推进
+    if (postpartum > 0) {
+      postpartum = Math.max(0, postpartum - 1);
+    }
+  }
+
+  // 派生阶段
+  var cycleInfo = _cycleStage(cycleDay);
+  var pregInfo = _pregnancyStage(pregState);
+
+  rep.周期日 = cycleDay;
+  rep.周期阶段 = cycleInfo.阶段;
+  rep.怀孕状态 = pregState;
+  rep.怀孕阶段 = pregInfo.阶段;
+  rep.产后天数 = postpartum;
+  rep.孩子数 = childCount;
+
+  // ★关键：必须setvar写回，否则生育系统每日演化失效
+  setvar('stat_data.女性角色.' + uid + '.生育', rep, {scope:'local'});
+
+  // 计算受孕概率展示（不执行判定，判定在使用假阴茎时由其他条目触发）
+  var conceptionProb = Math.round(cycleInfo.受孕概率 * 100);
+  var conceptionSeed = 'conception_' + uid + '_d' + day;
+
+  activeFemaleList.push({
+    uid: uid,
+    name: fu.基础 && fu.基础.姓名 || uid,
+    周期日: cycleDay,
+    周期阶段: cycleInfo.阶段,
+    NSFW权限: cycleInfo.NSFW权限,
+    受孕概率: conceptionProb,
+    怀孕状态: pregState,
+    怀孕阶段: pregInfo.阶段,
+    产后天数: postpartum,
+    孩子数: childCount,
+    分娩结果: rep.分娩结果 || '未分娩',
+    女性知情: pregInfo.女性知情
+  });
+}
+
+// 写回 上一日
+if (dayAdvanced) {
+  setvar('stat_data.隐藏层.上一日', day, { scope: 'local' });
+}
+
+// 构建活跃女性周期状态行
+var cycleStatusLines = [];
+for (var j = 0; j < activeFemaleList.length; j++) {
+  var af = activeFemaleList[j];
+  var line = '- ' + af.name + '(' + af.uid + '): 周期日' + af.周期日 + ' ' + af.周期阶段;
+  if (!af.NSFW权限) { line += ' NSFW禁用'; }
+  line += ' 受孕概率' + af.受孕概率 + '%';
+  if (af.怀孕状态 > 0) {
+    line += ' 怀孕' + af.怀孕状态 + '日(' + af.怀孕阶段 + ')';
+  } else {
+    line += ' 未孕';
+  }
+  if (af.产后天数 > 0) { line += ' 产后恢复' + af.产后天数 + '日'; }
+  if (af.孩子数 > 0) { line += ' 已育' + af.孩子数 + '子'; }
+  cycleStatusLines.push(line);
+}
+
+// 构建分娩事件行
+var deliveryLines = [];
+for (var k = 0; k < deliveryEvents.length; k++) {
+  var de = deliveryEvents[k];
+  deliveryLines.push('- ' + de.name + '(' + de.uid + '): 分娩' + de.结果 + (de.孩子数 ? ' 孩子数→' + de.孩子数 : ' 触发并发症'));
+}
+_%>
+<reproduction_system>
+[生理周期与生育系统 - AI内部参考，严禁在正文中提及数值或父亲UID]
+
+当前活跃女性周期状态：
+<%= cycleStatusLines.join(String.fromCharCode(10)) %>
+
+[周期阶段说明]
+行经期(D1-5): NSFW禁用, 受孕0%
+卵泡期(D6-13): 受孕5%
+排卵期(D14-16): 受孕30%(高受孕)
+黄体期(D17-28): 受孕5%
+
+[怀孕阶段说明]
+D0: 未孕
+D1-3: 无症状(女性不知情)
+D4-15: 孕吐期(女性开始怀疑)
+D16-30: 行动受限(明显孕相)
+D31-45: 临产期
+D45+: 分娩触发
+
+[受孕判定规则 - 假阴茎使用时触发]
+- 女性使用假阴茎后，若当前 周期阶段 为排卵期/卵泡期/黄体期，执行 _conceptionCheck(周期日, seed)
+- seed = (((((day*7 + hour*13)*7919 + 女性序号)*11 + stage)*17 + 500)*31) >>> 0
+- 受孕成功：怀孕状态=1, 怀孕阶段='无症状', 受孕种子=当前seed, 父亲UID='user', 最后受孕日=当前day
+- 行经期受孕概率0%，不执行判定
+- 假阴茎始终连接 {{user}}，精液来自 {{user}} → 父亲UID 始终为 'user'
+
+[分娩判定规则]
+- 怀孕状态 >= 45 时触发分娩事件
+- _deliveryCheck(medicalSkill, hasMedicine, seed)
+- 医疗≥5且有药→成功率95%，否则70%
+- 成功：孩子数+1, 怀孕状态=0, 怀孕阶段='未孕', 产后天数=10, 分娩结果='成功'
+- 失败：分娩结果='风险'，触发并发症事件（需AI叙事处理）
+
+[每日推进规则]
+- 每游戏日开始时：所有女性 周期日+1（到28归1）
+- 怀孕状态>0 时 +1，并更新 怀孕阶段
+- 产后天数>0 时 -1
+
+[信息隔离铁律 - 凌驾于所有规则之上]
+- 父亲UID 始终为 'user'，但严禁在正文中提及
+- 女性不知道精液来源，只知道"用了那个东西后怀孕了"
+- {{user}} 完全不知道自己有孩子
+- 孩子的存在只能在阶段4-5后通过调查发现
+- 女性怀孕后只表现为"身体异常"，不会主动告知 {{user}}
+- 女性之间的怀孕信息互相隔离（除非剧情驱动）
+- 分娩事件不进入 {{user}} 视角，仅在后台推进
+<% if (deliveryLines.length > 0) { %>
+
+[本日分娩事件]
+<%= deliveryLines.join(String.fromCharCode(10)) %>
+<% } %>
+</reproduction_system>

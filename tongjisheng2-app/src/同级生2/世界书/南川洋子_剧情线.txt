@@ -1,0 +1,169 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 南川洋子 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=6 / 原版女角 · 田径部主将爽朗女汉子
+   核心弧线：信良暗恋→信良告白失败→洋子转向主角→运动共鸣→恋爱迟钝觉醒→恋人成立
+   互斥关系：无（洋子是独立可攻略角色，不与其他女角形成锁链）
+   推动者：川尻信良（N1）— 暗恋→告白失败→成全，是洋子线开放给主角的必要前置
+   攻略要点：必须通过运动话题切入，恋爱迟钝需主角直白表达
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 南川洋子_STORYLINE = {
+  heroine_id: 6,
+  name: '南川洋子',
+  core_position: {
+    role: '洋子线女主角 — 从哥们儿到恋人的迟钝觉醒弧线',
+    archetype: '爽朗女汉子的恋爱迟钝觉醒 — 运动共鸣型恋爱',
+    function: '通过运动话题切入建立共鸣，在信良放弃后从哥们儿关系转向恋人；恋爱迟钝需主角直白表达才能觉醒',
+    plot_weight: 'high — 独立可攻略女角，无互斥锁链；信良的告白失败+成全是线开放给主角的必要前置'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: '全天',
+      location: '—（未登场）',
+      event: '寒假第一天 · 洋子锁定',
+      description: '12/22 寒假第一天（day_count=1），洋子在人物出现总表 DATE_OVERRIDES[1].locked 中被锁定（id=6），未登场；主角仅可遇唯/美佐子/友美',
+      triggers_route: '洋子线 — 未开启（角色未登场）',
+      is_reversible: true,
+      flags: ['flag_yoko_locked_day1']
+    },
+    {
+      date: '12-23',
+      time_slot: 'PM',
+      location: '白蛇池公园',
+      event: '川尻信良向洋子告白失败',
+      description: '信良鼓起勇气在白蛇池公园向洋子告白，但洋子恋爱迟钝把他当哥们儿；洋子会拍信良肩膀说"我们永远是好哥们儿"；主角可在场见证或回避；此事件是洋子线开启的前置节点',
+      triggers_route: '洋子线 — 告白失败是洋子线转向主角的关键契机（前置条件）',
+      is_reversible: false,
+      flags: ['flag_nobuyoshi_confession_failed', 'flag_yoko_route_prerequisite'],
+      note: '★ 不可逆 flag — 信良告白失败，洋子线进入"信良放弃→洋子转向主角"预备分支；但此时尚未开放给主角'
+    },
+    {
+      date: '12-27',
+      time_slot: 'PM',
+      location: '八十八海岸 / 机车行',
+      event: '主角偶遇洋子',
+      description: '12/27 正常寒假日（day_count=6），洋子默认下午在八十八海岸出现（DEFAULT_SCHEDULE[下午][八十八海岸] 含 id=6）；主角可在海岸偶遇正在跑步的洋子，或于机车行附近碰面；聊运动话题/送运动饮料可加好感+3',
+      triggers_route: '洋子线 — 偶遇是主角与洋子建立初步交集的入口',
+      is_reversible: true,
+      flags: ['flag_yoko_first_encounter', 'flag_yoko_affection_+3'],
+      note: '好感+3 — 运动话题切入是最快路径'
+    },
+    {
+      date: '12-29',
+      time_slot: '全天',
+      location: '信良家',
+      event: '信良放弃洋子 + 日记本第 2 本交付',
+      description: '信良意识到洋子眼里只有运动和哥们儿，明白自己没机会，颓废一天；把诗集和日记本第 2 本交给主角，托付"替我照顾洋子"；此事件后洋子线正式开放给主角',
+      triggers_route: '洋子线 — 信良的成全是洋子线进入"主角可攻略"阶段的必要条件',
+      is_reversible: false,
+      flags: ['flag_nobuyoshi_surrender', 'flag_nobuyoshi_diary_2', 'flag_yoko_route_active'],
+      note: '★ 不可逆 flag — 信良"成全"标志洋子线正式开放给主角；此前所有与洋子的互动仅停留在哥们儿层面'
+    },
+    {
+      date: '12-30~01-06',
+      time_slot: '全天（PM 为主）',
+      location: '八十八海岸 / 八十八学园田径场 / 机车行',
+      event: '洋子线深化期 · 运动共鸣建立',
+      description: '洋子线深化期：主角必须通过运动话题切入（跑步/棒球/肌肉训练/饮食营养），证明能跟上洋子的节奏；约跑步、聊棒球、送运动饮料是最快路径；强行亲密会让她震惊但不一定崩溃（运动型的坦然）；她对恋爱信号极度迟钝，主角需要把"我喜欢你"说得很直白才能让她意识到',
+      triggers_route: '洋子线 — 运动共鸣是好感度累积的核心路径',
+      is_reversible: true,
+      flags: ['flag_yoko_sport_resonance', 'flag_yoko_deepening'],
+      note: '攻略要点：恋爱迟钝需主角直白表达，暧昧暗示无效；运动话题是唯一有效切入路径'
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '—（结局判定）',
+      event: '洋子线最终判定',
+      description: '01-07 寒假最后一天深夜触发结局判定：洋子好感≥60 达成 Good End（恋人成立）；好感 40~59 为 Normal End（暧昧未决）；好感 <40 为 Bad End（回到哥们儿）；强迫初H触发 BAD_END_1_报警（洋子反应为震惊而非崩溃）',
+      triggers_route: '洋子线 — 结局分支判定',
+      is_reversible: false,
+      flags: ['flag_yoko_final_judgment'],
+      note: '★ 不可逆 flag — 结局判定一旦触发无法回退'
+    }
+  ],
+
+  triggered_routes: {
+    '洋子线（heroine_id=6）': {
+      role: 'self — 洋子是本线女主角',
+      phase_division: {
+        'phase_1_未开启': '12-22 洋子锁定未登场（day_count=1），线无法开启',
+        'phase_2_前置': '12-23 信良告白失败，洋子线进入预备状态（但仍未开放给主角）',
+        'phase_3_开放': '12-29 信良放弃+日记本第 2 本交付，洋子线正式开放给主角',
+        'phase_4_深化': '12-30~01-06 运动共鸣建立期，好感度累积',
+        'phase_5_判定': '01-07 深夜最终判定，根据好感度分支结局'
+      },
+      good_end_condition: '洋子好感≥60 — 恋人成立',
+      normal_end_condition: '洋子好感 40~59 — 暧昧未决（开放结局）',
+      bad_end_condition: '洋子好感 <40 — 回到哥们儿关系',
+      forced_bad_end: '强迫初H触发 BAD_END_1_报警（洋子反应为震惊而非崩溃）',
+      impact: '洋子线是独立可攻略线，无互斥锁链；信良的告白失败+成全是必要前置'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: '同级生 → 哥们儿 → 恋人（heroine_id=6 攻略对象）',
+      detail: '同班但极少交集；12/27 偶遇后建立初步交集；12/29 信良放弃后进入可攻略阶段；初始 affection=0/trust=0，需通过运动共鸣累积'
+    },
+    '川尻信良（N1）': {
+      type: '哥们儿 → 暗恋者 → 成全者',
+      detail: '同班同学，洋子把信良当哥们儿；12/23 信良告白失败，洋子把他当哥们儿拒绝；12/29 信良放弃并成全主角；洋子线核心推动者'
+    },
+    '田径部全体部员': {
+      type: '哥们儿关系（部员 × 主将）',
+      detail: '洋子是田径部主将，与部员是爽朗大姐头关系；部员是洋子的眼线和情报源'
+    },
+    '体育老师佐藤': {
+      type: '教练兼导师',
+      detail: '洋子的田径教练，亦师亦友；是洋子运动话题的重要参考人'
+    },
+    '弟弟南川翔': {
+      type: '家人（弟弟）',
+      detail: '小学六年生，洋子很宠他；是洋子少女心的流露出口'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_yoko_route_prerequisite',
+      trigger: '12-23 PM 白蛇池公园信良告白失败事件',
+      effect: '洋子线进入"信良放弃→洋子转向主角"预备分支',
+      reversibility: '不可逆 — 信良告白失败一旦触发无法回退'
+    },
+    {
+      flag: 'flag_yoko_route_active',
+      trigger: '12-29 信良放弃+日记本第 2 本交付',
+      effect: '洋子线正式开放给主角，进入"主角可攻略"阶段',
+      reversibility: '不可逆 — 信良成全一旦触发无法回退'
+    },
+    {
+      flag: 'flag_yoko_first_encounter',
+      trigger: '12-27 PM 海岸/机车行偶遇',
+      effect: '主角与洋子建立初步交集，好感+3',
+      reversibility: '可逆 — 偶遇仅影响好感度，不锁定后续分支'
+    },
+    {
+      flag: 'flag_yoko_sport_resonance',
+      trigger: '12-30~01-06 深化期运动共鸣建立',
+      effect: '洋子对主角的好感度累积加速；运动共鸣是 Good End 的核心路径',
+      reversibility: '可逆 — 运动共鸣程度根据主角行为动态变化'
+    },
+    {
+      flag: 'flag_yoko_final_judgment',
+      trigger: '01-07 深夜结局判定',
+      effect: '根据洋子好感度分支结局（≥60 Good End / 40~59 Normal End / <40 Bad End）',
+      reversibility: '不可逆 — 结局判定一旦触发无法回退'
+    }
+  ],
+
+  summary: '洋子的剧情线是"信良暗恋→信良告白失败→洋子转向主角→运动共鸣→恋爱迟钝觉醒→恋人成立"六阶段弧线，核心功能是独立可攻略女角线（heroine_id=6，无互斥锁链）。信良的告白失败（12/23）+成全（12/29）是洋子线开放给主角的必要前置；12/27 海岸/机车行偶遇是初步交集入口（好感+3）；12/30~1/6 深化期需通过运动话题切入建立共鸣；1/7 深夜最终判定（好感≥60 Good End）。攻略要点：必须通过运动话题切入，恋爱迟钝需主角直白表达。'
+};
+%>
+
+南川洋子 · 剧情线已加载。核心定位：洋子线女主角（heroine_id=6，独立可攻略，无互斥锁链）。核心弧线：信良暗恋→信良告白失败（12/23）→洋子转向主角→运动共鸣→恋爱迟钝觉醒→恋人成立。关键节点：12/22 锁定未登场 / 12/23 信良告白失败（前置）/ 12/27 PM 海岸机车行偶遇（好感+3）/ 12/29 信良放弃+日记本第2本交付（洋子线正式开放）/ 12/30~1/6 深化期运动共鸣 / 01/07 深夜最终判定（好感≥60 Good End）。不可逆 flag：flag_yoko_route_prerequisite（12/23 前置）、flag_yoko_route_active（12/29 开放）、flag_yoko_final_judgment（01/07 判定）。攻略要点：运动话题切入，恋爱迟钝需主角直白表达。

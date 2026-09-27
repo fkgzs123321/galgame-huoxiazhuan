@@ -1,0 +1,449 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 章节触发器（CHAPTER_TRIGGER）
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 读取 MVU 章节进度变量（stat_data.章节进度 / stat_data.当前章节 / stat_data.章节事件完成表）
+   2. 注册 CHAPTER_TRIGGER 全局常量，集中管理 6 章节触发器配置
+   3. 校验 6 章节切换触发条件：
+      - 第1章→第2章：完成「灵儿被掳」事件
+      - 第2章→第3章：完成「比武招亲」事件 + 林月如入队
+      - 第3章→第4章：完成「彩依事件」事件
+      - 第4章→第5章：完成「锁妖塔逃脱」事件 + 灵儿被救
+      - 第5章→第6章：完成「女娲血脉觉醒」事件
+   4. 章节关键事件表（每章 5 个事件，每完成 1 个事件进度 +1，共 30 事件，进度 1-30）
+   5. 触发后效果：
+      - 章节进度变量更新（incvar / setvar）
+      - 解锁新地点（activatewi 联动场景条目）
+      - 触发剧情事件（输出剧情提示给 AI）
+      - 输出剧情提示（章节切换 / 事件完成提示文本）
+   6. 输出当前章节触发器状态摘要给 AI
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明
+   define() 模式：注册 CHAPTER_TRIGGER 全局常量，供主调度控制器/世界观场景控制器调用
+   变量路径（与 schema.ts 对齐）：
+      stat_data.章节进度         当前章节进度（1-30）
+      stat_data.当前章节        当前所在章节（1-6）
+      stat_data.章节事件完成表   已完成的关键事件名集合（数组）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取 MVU 章节进度变量 ─── */
+const _ct_progress  = Number(getvar('stat_data.章节进度', { scope: 'local', defaults: 1 })) || 1;
+const _ct_chapter    = Number(getvar('stat_data.当前章节', { scope: 'local', defaults: 1 })) || 1;
+const _ct_completed  = getvar('stat_data.章节事件完成表', { scope: 'local', defaults: [] }) || [];
+const _ct_world      = getvar('stat_data.世界', { scope: 'local', defaults: {} }) || {};
+const _ct_partyLingEr = Number(getvar('stat_data.临时.灵儿入队', { scope: 'local', defaults: 0 })) === 1;
+const _ct_partyYueRu = Number(getvar('stat_data.临时.月如入队', { scope: 'local', defaults: 0 })) === 1;
+const _ct_lingErSaved = Number(getvar('stat_data.临时.灵儿被救', { scope: 'local', defaults: 0 })) === 1;
+
+/* ─── 2. 构建 CHAPTER_TRIGGER 全局常量 ─── */
+const CHAPTER_TRIGGER = {
+  /* 总配置：6 章节，每章 5 事件，进度 1-30 */
+  meta: {
+    total_chapters: 6,
+    events_per_chapter: 5,
+    total_events: 30,
+    progress_range: [1, 30],
+    progress_clamp: '章节进度钳制范围 [1, 30]',
+    chapter_clamp: '当前章节钳制范围 [1, 6]'
+  },
+
+  /* ─── 3. 章节切换触发条件（6 条规则） ─── */
+  switch_rules: {
+    '1->2': {
+      from: 1, to: 2,
+      name: '第1章→第2章',
+      required_events: ['灵儿被掳'],
+      required_party: [],
+      desc: '完成「灵儿被掳」事件后，进入第2章·苏州比武招亲'
+    },
+    '2->3': {
+      from: 2, to: 3,
+      name: '第2章→第3章',
+      required_events: ['比武招亲'],
+      required_party: ['林月如'],
+      desc: '完成「比武招亲」事件且林月如入队后，进入第3章·京城彩依事件'
+    },
+    '3->4': {
+      from: 3, to: 4,
+      name: '第3章→第4章',
+      required_events: ['彩依事件'],
+      required_party: [],
+      desc: '完成「彩依事件」事件后，进入第4章·蜀山锁妖塔'
+    },
+    '4->5': {
+      from: 4, to: 5,
+      name: '第4章→第5章',
+      required_events: ['锁妖塔逃脱'],
+      required_party: [],
+      required_flags: ['灵儿被救'],
+      desc: '完成「锁妖塔逃脱」事件且灵儿被救后，进入第5章·苗疆决战'
+    },
+    '5->6': {
+      from: 5, to: 6,
+      name: '第5章→第6章',
+      required_events: ['女娲血脉觉醒'],
+      required_party: [],
+      desc: '完成「女娲血脉觉醒」事件后，进入第6章·结局分支'
+    },
+    '6->end': {
+      from: 6, to: null,
+      name: '第6章终章',
+      required_events: ['结局分支'],
+      required_party: [],
+      desc: '第6章为终章，结局分支触发后游戏收束，不再切换章节'
+    }
+  },
+
+  /* ─── 4. 章节关键事件表（30 事件，进度 1-30） ─── */
+  chapter_events: {
+    1: {
+      name: '第1章·仙灵岛结缘',
+      progress_range: [1, 5],
+      region: '余杭镇/仙灵岛',
+      events: [
+        { progress: 1,  name: '婶婶中毒',      desc: '李逍遥婶婶突中奇毒，逍遥外出求药',           effect: '主线启动',         unlock: [] },
+        { progress: 2,  name: '酒剑仙指点',    desc: '酒剑仙指点逍遥渡海仙灵岛求药之法',           effect: '解锁仙灵岛路线',   unlock: ['仙灵岛'] },
+        { progress: 3,  name: '渡海仙灵岛',    desc: '逍遥渡海登仙灵岛，遇赵灵儿',                 effect: '灵儿登场',         unlock: ['仙灵岛·灵月宫'] },
+        { progress: 4,  name: '姥姥托孤',      desc: '姥姥将灵儿托付逍遥，赠女娲遗物',             effect: '灵儿入队',         unlock: [] },
+        { progress: 5,  name: '灵儿被掳',      desc: '拜月教徒突袭掳走灵儿',                       effect: '触发章节切换→第2章', unlock: [] }
+      ]
+    },
+    2: {
+      name: '第2章·苏州比武招亲',
+      progress_range: [6, 10],
+      region: '苏州/隐龙窟',
+      events: [
+        { progress: 6,  name: '抵达苏州',       desc: '逍遥抵达苏州城，林家堡比武招亲在即',         effect: '解锁苏州场景',     unlock: ['苏州', '林家堡'] },
+        { progress: 7,  name: '比武招亲',       desc: '林家堡比武招亲，逍遥登台胜出',               effect: '月如登场',         unlock: ['比武擂台'] },
+        { progress: 8,  name: '月如入队',       desc: '林月如以"输者随行"为由加入队伍',            effect: '月如入队',         unlock: [] },
+        { progress: 9,  name: '隐龙窟探索',     desc: '查探隐龙窟蛇妖作祟之事',                   effect: '解锁隐龙窟场景',   unlock: ['隐龙窟'] },
+        { progress: 10, name: '蛇妖BOSS',      desc: '击败隐龙窟蛇妖BOSS',                         effect: '触发章节切换→第3章', unlock: [] }
+      ]
+    },
+    3: {
+      name: '第3章·京城彩依事件',
+      progress_range: [11, 15],
+      region: '京城/长安',
+      events: [
+        { progress: 11, name: '抵达京城',       desc: '一行人抵达京城长安',                         effect: '解锁京城场景',     unlock: ['京城', '长安'] },
+        { progress: 12, name: '刘府遇刘晋元',   desc: '于刘府结交书生刘晋元',                       effect: '刘晋元登场',       unlock: ['刘府'] },
+        { progress: 13, name: '彩依事件',       desc: '揭彩依化形为人与刘晋元之缘',                 effect: '触发章节切换→第4章', unlock: [] },
+        { progress: 14, name: '毒娘子BOSS',     desc: '对战毒娘子BOSS',                             effect: '中期BOSS战',       unlock: [] },
+        { progress: 15, name: '刘晋元解毒',     desc: '为刘晋元解毒，京城事件收束',                 effect: '章节收束',         unlock: [] }
+      ]
+    },
+    4: {
+      name: '第4章·蜀山锁妖塔',
+      progress_range: [16, 20],
+      region: '蜀山/锁妖塔',
+      events: [
+        { progress: 16, name: '蜀山求神器',     desc: '逍遥上蜀山求借神器救灵儿',                   effect: '解锁蜀山场景',     unlock: ['蜀山', '蜀山大殿'] },
+        { progress: 17, name: '剑圣拒借',       desc: '剑圣以天规为由拒绝借神器',                   effect: '主线转折',         unlock: [] },
+        { progress: 18, name: '锁妖塔囚禁',     desc: '众人闯锁妖塔，灵儿曾被囚于此',               effect: '解锁锁妖塔场景',   unlock: ['锁妖塔', '塔顶', '九层塔'] },
+        { progress: 19, name: '镇狱明王BOSS',   desc: '对战锁妖塔镇狱明王BOSS',                     effect: '中期BOSS战',       unlock: [] },
+        { progress: 20, name: '锁妖塔逃脱',     desc: '灵儿获救后众人逃脱锁妖塔',                   effect: '触发章节切换→第5章', unlock: [] }
+      ]
+    },
+    5: {
+      name: '第5章·苗疆决战',
+      progress_range: [21, 25],
+      region: '苗疆',
+      events: [
+        { progress: 21, name: '苗疆重逢',       desc: '苗疆与灵儿重逢，牵出女娲一脉身世',           effect: '解锁苗疆场景',     unlock: ['苗疆', '白苗族村'] },
+        { progress: 22, name: '拜月教主现身',   desc: '拜月教主正式现身，图谋水魔兽',               effect: '主线反派登场',     unlock: ['祭坛'] },
+        { progress: 23, name: '水魔兽觉醒',     desc: '拜月唤醒水魔兽，祸乱苗疆',                   effect: '危机升级',         unlock: ['水魔兽巢穴'] },
+        { progress: 24, name: '女娲血脉觉醒',   desc: '灵儿女娲血脉之力觉醒',                       effect: '触发章节切换→第6章', unlock: ['女娲祭坛'] },
+        { progress: 25, name: '巫王被控',       desc: '巫王被拜月控制，苗疆局势恶化',               effect: '主线推进',         unlock: ['王宫'] }
+      ]
+    },
+    6: {
+      name: '第6章·结局分支',
+      progress_range: [26, 30],
+      region: '苗疆/女娲祭坛',
+      events: [
+        { progress: 26, name: '灵儿补天',       desc: '灵儿以女娲血脉补天，牺牲己身',               effect: '主线高潮',         unlock: [] },
+        { progress: 27, name: '月如牺牲',       desc: '月如为护逍遥而牺牲',                         effect: '主线高潮',         unlock: [] },
+        { progress: 28, name: '月如复活(条件)', desc: '条件：月如好感 ≥ 80 且 女娲血脉觉醒阶段 ≥ 3', effect: '分支判定',         unlock: [] },
+        { progress: 29, name: '水魔兽决战',     desc: '与水魔兽最终决战',                           effect: '终章BOSS战',       unlock: [] },
+        { progress: 30, name: '结局分支',       desc: '依月如复活条件分歧，进入对应结局',           effect: '终章收束',         unlock: [] }
+      ]
+    }
+  },
+
+  /* ─── 5. 触发后效果配置 ─── */
+  effects: {
+    /* 5.1 章节进度变量更新（incvar/setvar） */
+    progress_update: {
+      on_event_complete: 'incvar stat_data.章节进度 +1',
+      on_chapter_switch: 'setvar stat_data.当前章节 to next_chapter；setvar stat_data.章节进度 to next_chapter_range[0]',
+      clamp: '章节进度 [1, 30]；当前章节 [1, 6]'
+    },
+    /* 5.2 解锁新地点（事件 effect 字段标记 unlock 列表，AI 推进剧情时联动场景条目激活） */
+    location_unlock: {
+      method: '事件 effect.unlock 中列出的地点在事件完成时通过 activewi 激活对应地理条目',
+      rule: 'AI 不可私自解锁未在事件 unlock 列表中的地点'
+    },
+    /* 5.3 触发剧情事件（输出剧情提示文本给 AI） */
+    story_event: {
+      method: '事件完成时输出 [剧情触发] 提示文本，引导 AI 生成对应剧情叙事',
+      rule: 'AI 须按事件 desc 描述推进剧情，禁止跳过事件或捏造未触发的事件'
+    },
+    /* 5.4 输出剧情提示（章节切换专属提示） */
+    chapter_switch_prompt: {
+      method: '章节切换条件满足时，输出章节切换提示文本，包含下一章节名/区域/关键事件概要',
+      rule: 'AI 必须在 <UpdateVariable> 中输出 JSONPatch 更新章节相关变量'
+    }
+  },
+
+  /* ─── 6. 工具函数 ─── */
+  utils: {
+    /* 判定关键事件是否已完成 */
+    isEventCompleted: function (eventName) {
+      if (!Array.isArray(_ct_completed)) return false;
+      return _ct_completed.indexOf(eventName) !== -1;
+    },
+    /* 根据进度返回章节序号 1-6 */
+    getChapterIndexByProgress: function (progress) {
+      var p = Number(progress) || 0;
+      var ce = CHAPTER_TRIGGER.chapter_events;
+      for (var k = 1; k <= 6; k++) {
+        var r = ce[k].progress_range;
+        if (p >= r[0] && p <= r[1]) return k;
+      }
+      if (p < 1) return 1;
+      return 6;
+    },
+    /* 根据进度返回当前章节对象 */
+    getChapterByProgress: function (progress) {
+      var idx = CHAPTER_TRIGGER.utils.getChapterIndexByProgress(progress);
+      return CHAPTER_TRIGGER.chapter_events[idx];
+    },
+    /* 根据进度返回当前事件对象 */
+    getEventByProgress: function (progress) {
+      var p = Number(progress) || 0;
+      var ce = CHAPTER_TRIGGER.chapter_events;
+      for (var k = 1; k <= 6; k++) {
+        for (var i = 0; i < ce[k].events.length; i++) {
+          if (ce[k].events[i].progress === p) return ce[k].events[i];
+        }
+      }
+      return null;
+    },
+    /* 判定章节切换条件是否满足 */
+    canSwitchChapter: function (fromChapter) {
+      var ruleKey = fromChapter + '->' + (fromChapter + 1);
+      var rule = CHAPTER_TRIGGER.switch_rules[ruleKey];
+      if (!rule) return false;
+      if (fromChapter >= 6) return false;
+      var eventsOk = rule.required_events.every(function (ev) {
+        return CHAPTER_TRIGGER.utils.isEventCompleted(ev);
+      });
+      var partyOk = true;
+      if (rule.required_party && rule.required_party.indexOf('林月如') !== -1) {
+        partyOk = partyOk && _ct_partyYueRu;
+      }
+      var flagsOk = true;
+      if (rule.required_flags && rule.required_flags.indexOf('灵儿被救') !== -1) {
+        flagsOk = flagsOk && _ct_lingErSaved;
+      }
+      return eventsOk && partyOk && flagsOk;
+    },
+    /* 返回下一章节起始进度值 */
+    nextChapterStartProgress: function (fromChapter) {
+      var next = fromChapter + 1;
+      var ce = CHAPTER_TRIGGER.chapter_events[next];
+      if (!ce) return null;
+      return ce.progress_range[0];
+    },
+    /* 当前章节已完成事件数 */
+    completedEventCountInCurrentChapter: function () {
+      var ch = CHAPTER_TRIGGER.chapter_events[_ct_chapter];
+      if (!ch) return 0;
+      var cnt = 0;
+      for (var i = 0; i < ch.events.length; i++) {
+        if (CHAPTER_TRIGGER.utils.isEventCompleted(ch.events[i].name)) cnt++;
+      }
+      return cnt;
+    },
+    /* 当前章节事件总数 */
+    totalEventCountInCurrentChapter: function () {
+      var ch = CHAPTER_TRIGGER.chapter_events[_ct_chapter];
+      if (!ch) return 0;
+      return ch.events.length;
+    }
+  }
+};
+
+/* 注册全局常量，供主调度控制器/世界观场景控制器调用 */
+define('CHAPTER_TRIGGER', CHAPTER_TRIGGER);
+
+/* 运行时计算：当前章节是否可切换 */
+var _ct_canSwitch = CHAPTER_TRIGGER.utils.canSwitchChapter(_ct_chapter);
+var _ct_nextProgress = _ct_canSwitch ? CHAPTER_TRIGGER.utils.nextChapterStartProgress(_ct_chapter) : null;
+var _ct_curChapObj = CHAPTER_TRIGGER.chapter_events[_ct_chapter] || CHAPTER_TRIGGER.chapter_events[1];
+var _ct_completedInChap = CHAPTER_TRIGGER.utils.completedEventCountInCurrentChapter();
+var _ct_totalInChap = CHAPTER_TRIGGER.utils.totalEventCountInCurrentChapter();
+var _ct_curEvent = CHAPTER_TRIGGER.utils.getEventByProgress(_ct_progress);
+%>
+
+<%/* ─── 7. 章节切换触发提示（条件满足时输出） ─── */%>
+<% if (_ct_canSwitch && _ct_chapter < 6) { %>
+<%
+  var _ct_nextRule = CHAPTER_TRIGGER.switch_rules[_ct_chapter + '->' + (_ct_chapter + 1)];
+  var _ct_nextChap = CHAPTER_TRIGGER.chapter_events[_ct_chapter + 1];
+%>
+[章节切换触发：第<%= _ct_chapter %>章 → 第<%= _ct_chapter + 1 %>章]
+[触发依据：<%= _ct_nextRule.desc %>]
+[下一章节：<%= _ct_nextChap.name %>（区域：<%= _ct_nextChap.region %>，进度范围：<%= _ct_nextChap.progress_range[0] %>-<%= _ct_nextChap.progress_range[1] %>）]
+[下一章节关键事件：<%= _ct_nextChap.events.map(function(e){ return e.name; }).join(' / ') %>]
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch：
+- replace /当前章节 的值为 <%= _ct_chapter + 1 %>
+- replace /章节进度 的值为 <%= _ct_nextProgress %>
+- 追加 /章节事件完成表：将当前章节最后事件名追加至完成表数组
+【剧情触发提示】请生成章节切换叙事文本：
+- 描述当前章节收束（关键事件完成后的过渡）
+- 描述下一章节开场（新区域登场、新角色介绍、新主线铺陈）
+- 禁止跳章推进，禁止捏造未触发事件
+<% } else if (_ct_chapter >= 6) { %>
+[终章锁定：当前已处于第6章·结局分支（终章），不再触发章节切换。结局分支判定依月如好感与女娲血脉觉醒阶段执行。]
+<% } else { %>
+[章节切换未触发：第<%= _ct_chapter %>章关键事件尚未全部完成（已完成 <%= _ct_completedInChap %>/<%= _ct_totalInChap %> 个事件）。继续推进当前章节剧情。]
+<% } %>
+
+<%/* ─── 8. 当前事件触发提示 ─── */%>
+<% if (_ct_curEvent) { %>
+[当前章节进度事件：第<%= _ct_chapter %>章·进度 <%= _ct_progress %>（<%= _ct_curEvent.name %>）]
+[事件描述：<%= _ct_curEvent.desc %>]
+[事件效果：<%= _ct_curEvent.effect %>]
+<% if (_ct_curEvent.unlock && _ct_curEvent.unlock.length > 0) { %>
+[解锁地点：<%= _ct_curEvent.unlock.join(' / ') %>]
+<% } %>
+<% if (!CHAPTER_TRIGGER.utils.isEventCompleted(_ct_curEvent.name)) { %>
+[剧情触发提示：当玩家完成「<%= _ct_curEvent.name %>」事件后，AI 须在 <UpdateVariable> 中：
+- incvar /章节进度 +1
+- 追加 /章节事件完成表：追加事件名「<%= _ct_curEvent.name %>」
+- 若 unlock 列表非空：通过 activewi 激活对应地理条目
+- 输出事件完成剧情叙事文本]
+<% } else { %>
+[事件已完成：「<%= _ct_curEvent.name %>」已在章节事件完成表中。]
+<% } %>
+<% } %>
+
+<%/* ─── 9. 输出当前章节触发器状态摘要给 AI ─── */%>
+<%= JSON.stringify({
+  chapter_trigger_state: {
+    current_chapter: _ct_chapter,
+    current_chapter_name: _ct_curChapObj.name,
+    current_region: _ct_curChapObj.region,
+    current_progress: _ct_progress,
+    progress_range: _ct_curChapObj.progress_range,
+    progress_ratio: _ct_progress + '/30',
+    total_chapters: 6,
+    total_events: 30,
+    completed_events_count: Array.isArray(_ct_completed) ? _ct_completed.length : 0,
+    completed_events: _ct_completed,
+    current_chapter_completed: _ct_completedInChap,
+    current_chapter_total: _ct_totalInChap,
+    current_event: _ct_curEvent ? {
+      progress: _ct_curEvent.progress,
+      name: _ct_curEvent.name,
+      desc: _ct_curEvent.desc,
+      effect: _ct_curEvent.effect,
+      unlock: _ct_curEvent.unlock,
+      is_completed: CHAPTER_TRIGGER.utils.isEventCompleted(_ct_curEvent.name)
+    } : null,
+    chapter_switch: {
+      can_switch: _ct_canSwitch,
+      from_chapter: _ct_chapter,
+      to_chapter: _ct_canSwitch ? (_ct_chapter + 1) : null,
+      next_progress: _ct_nextProgress,
+      next_chapter_name: _ct_canSwitch && CHAPTER_TRIGGER.chapter_events[_ct_chapter + 1] ? CHAPTER_TRIGGER.chapter_events[_ct_chapter + 1].name : null
+    },
+    party_flags: {
+      ling_er_in_party: _ct_partyLingEr,
+      yue_ru_in_party: _ct_partyYueRu,
+      ling_er_saved: _ct_lingErSaved
+    }
+  },
+  trigger_rules_summary: {
+    '1->2': '完成「灵儿被掳」事件',
+    '2->3': '完成「比武招亲」事件 + 林月如入队',
+    '3->4': '完成「彩依事件」事件',
+    '4->5': '完成「锁妖塔逃脱」事件 + 灵儿被救',
+    '5->6': '完成「女娲血脉觉醒」事件',
+    '6->end': '终章，结局分支触发后游戏收束'
+  },
+  chapter_events_summary: {
+    1: { name: '第1章·仙灵岛结缘', range: [1, 5],  events: ['婶婶中毒','酒剑仙指点','渡海仙灵岛','姥姥托孤','灵儿被掳'] },
+    2: { name: '第2章·苏州比武招亲', range: [6, 10], events: ['抵达苏州','比武招亲','月如入队','隐龙窟探索','蛇妖BOSS'] },
+    3: { name: '第3章·京城彩依事件', range: [11,15], events: ['抵达京城','刘府遇刘晋元','彩依事件','毒娘子BOSS','刘晋元解毒'] },
+    4: { name: '第4章·蜀山锁妖塔', range: [16,20], events: ['蜀山求神器','剑圣拒借','锁妖塔囚禁','镇狱明王BOSS','锁妖塔逃脱'] },
+    5: { name: '第5章·苗疆决战', range: [21,25], events: ['苗疆重逢','拜月教主现身','水魔兽觉醒','女娲血脉觉醒','巫王被控'] },
+    6: { name: '第6章·结局分支', range: [26,30], events: ['灵儿补天','月如牺牲','月如复活(条件)','水魔兽决战','结局分支'] }
+  },
+  effects_rules: {
+    progress_update: '事件完成 → incvar /章节进度 +1；章节切换 → setvar /当前章节 + setvar /章节进度',
+    location_unlock: '事件 unlock 列表 → activewi 激活对应地理条目',
+    story_event: '事件完成 → 输出剧情提示文本引导 AI 生成叙事',
+    chapter_switch_prompt: '章节切换 → 输出 JSONPatch 更新指令 + 章节切换叙事文本'
+  },
+  global_constant: {
+    name: 'CHAPTER_TRIGGER',
+    registered: true,
+    callable_by: ['主调度控制器', '世界观场景控制器', '角色性格控制器']
+  }
+}, null, 2) %>
+
+<%_ /* ─── 10. 人类可读状态摘要（供 AI 决策） ─── */ _%>
+【章节触发器 · 状态摘要】
+
+■ 当前章节
+- 章节：<%= _ct_chapter %> / 6（<%= _ct_curChapObj.name %>）
+- 区域：<%= _ct_curChapObj.region %>
+- 章节进度：<%= _ct_progress %> / 30（章节内进度范围 <%= _ct_curChapObj.progress_range[0] %>-<%= _ct_curChapObj.progress_range[1] %>）
+- 章节事件完成：<%= _ct_completedInChap %> / <%= _ct_totalInChap %>
+- 累计已完成事件：<%= Array.isArray(_ct_completed) ? _ct_completed.length : 0 %> / 30
+
+■ 章节切换状态
+<% if (_ct_canSwitch && _ct_chapter < 6) { %>
+- 状态：✅ 可切换至第 <%= _ct_chapter + 1 %> 章
+- 下一章节：<%= CHAPTER_TRIGGER.chapter_events[_ct_chapter + 1].name %>
+- 下一进度起点：<%= _ct_nextProgress %>
+- 请按章节切换提示输出 <UpdateVariable> JSONPatch 与章节切换叙事
+<% } else if (_ct_chapter >= 6) { %>
+- 状态：🔒 终章锁定（第6章结局分支）
+- 结局分支判定：依月如好感与女娲血脉觉醒阶段执行
+<% } else { %>
+- 状态：⏳ 未满足切换条件（第<%= _ct_chapter %>章事件完成 <%= _ct_completedInChap %>/<%= _ct_totalInChap %>）
+- 请继续推进当前章节剧情
+<% } %>
+
+■ 6 章节切换触发条件
+- 第1章→第2章：完成「灵儿被掳」事件
+- 第2章→第3章：完成「比武招亲」事件 + 林月如入队
+- 第3章→第4章：完成「彩依事件」事件
+- 第4章→第5章：完成「锁妖塔逃脱」事件 + 灵儿被救
+- 第5章→第6章：完成「女娲血脉觉醒」事件
+- 第6章终章：结局分支触发后游戏收束
+
+■ 章节关键事件表（30 事件，进度 1-30）
+- 第1章（1-5）：婶婶中毒 / 酒剑仙指点 / 渡海仙灵岛 / 姥姥托孤 / 灵儿被掳
+- 第2章（6-10）：抵达苏州 / 比武招亲 / 月如入队 / 隐龙窟探索 / 蛇妖BOSS
+- 第3章（11-15）：抵达京城 / 刘府遇刘晋元 / 彩依事件 / 毒娘子BOSS / 刘晋元解毒
+- 第4章（16-20）：蜀山求神器 / 剑圣拒借 / 锁妖塔囚禁 / 镇狱明王BOSS / 锁妖塔逃脱
+- 第5章（21-25）：苗疆重逢 / 拜月教主现身 / 水魔兽觉醒 / 女娲血脉觉醒 / 巫王被控
+- 第6章（26-30）：灵儿补天 / 月如牺牲 / 月如复活(条件) / 水魔兽决战 / 结局分支
+
+■ 触发后效果
+- 章节进度变量更新：事件完成 → incvar /章节进度 +1；章节切换 → setvar /当前章节 + setvar /章节进度
+- 解锁新地点：事件 unlock 列表 → activewi 激活对应地理条目
+- 触发剧情事件：事件完成 → 输出剧情提示文本引导 AI 生成叙事
+- 输出剧情提示：章节切换 → 输出 JSONPatch 更新指令 + 章节切换叙事文本
+
+■ 全局常量 CHAPTER_TRIGGER
+- 已通过 define('CHAPTER_TRIGGER', ...) 注册
+- 可被主调度控制器/世界观场景控制器/角色性格控制器调用
+- 工具函数：isEventCompleted / getChapterIndexByProgress / getChapterByProgress / getEventByProgress / canSwitchChapter / nextChapterStartProgress / completedEventCountInCurrentChapter / totalEventCountInCurrentChapter
+
+[章节触发器摘要结束。AI 须按当前章节推进剧情：事件完成时按提示输出 <UpdateVariable> JSONPatch；章节切换条件满足时输出章节切换叙事；禁止跳章推进，禁止捏造未触发事件；第6章结局分支须依月如好感与女娲血脉觉醒阶段判定。]

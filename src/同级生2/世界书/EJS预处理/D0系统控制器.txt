@@ -1,0 +1,851 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 D0 系统控制器（核心调度器）
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 加载全局规则总表（规则单一来源）
+   2. 加载固定物品效果表（SKU 单一来源）
+   3. 加载 LCG 骰子引擎
+   4. 读取 MVU 变量（时间/场景/主角/临时/经济）
+   5. 身份校验（开局固定，运行时不可改）
+   6. 难度系数应用（4 档 × 6 维度修正）
+   7. 时间锁检查（不可跳时段）
+   8. 行动次数检查（≤5/日）
+   9. 疲劳/体力/心情强制规则
+   10. 死结局触发器（8 类）
+   11. 加载寒假日程调度器（按 day_count）
+   12. 按 scene_mode 切换系统提示
+   13. 输出当前轮合法性清单给 AI
+   ════════════════════════════════════════════════════════════ */%>
+
+<%/* ─── 0. 加载 AI推理链（思维链规则，每轮必加载；条目已关灯，由本控制器精准拉取，不蓝灯常驻省 token）─── */%>
+<%- await getwi('AI推理链') %>
+
+<%/* ─── 1. 加载全局规则总表 ─── */%>
+<%- await getwi('全局规则总表') %>
+
+<%/* ─── 2. 加载固定物品效果表 ─── */%>
+<%- await getwi('固定物品效果表') %>
+
+<%/* ─── 2.5 加载属性技能骰子联动（修复：必须在 LCG 骰子引擎之前加载，提供 calcFinalResult/calcPlayerPower/calcHeroineRequirement）
+   之前此文件从未被任何控制器 getwi 加载，导致 LCG 引擎 _rollAction 的 calcFinalResult 调用永远走兜底逻辑，
+   而兜底逻辑中 _perception 未定义（NaN 传播），所有 11 种动作判定都返回"大失败" */%>
+<%- await getwi('属性技能骰子联动') %>
+
+<%/* ─── 3. 加载 LCG 骰子引擎（最先执行，所有控制器共享种子） ─── */%>
+<%- await getwi('LCG骰子引擎') %>
+
+<%
+/* ─── 4. 读取 MVU 变量 ─── */
+const _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+const _scene = getvar('stat_data.场景', { scope: 'local', defaults: {} }) || {};
+const _protag = getvar('stat_data.主角', { scope: 'local', defaults: {} }) || {};
+const _temp = getvar('stat_data.临时', { scope: 'local', defaults: {} }) || {};
+const _econ = getvar('stat_data.经济', { scope: 'local', defaults: {} }) || {};
+
+const _dayCount = Number(_time.天数) || 1;
+const _timeSlot = _time.时段;
+const _timeSlotIdx = {'早':1,'上午':2,'下午':3,'晚':4,'深夜':5}[_timeSlot] || 1;
+const _sceneMode = _scene.场景模式;
+const _currentLocation = _scene.当前地点;
+/* 修复 C1：D0 自行定义 _currentHeroineId（数字 ID）。
+   原设计引用角色性格控制器的 const 变量，但 EJS 条目独立渲染不共享变量（既有 bug，
+   导致运行时 ReferenceError: _currentHeroineId is not defined）。
+   改为通过当前女角姓名反查数字 ID（与角色性格控制器 _heroineNameMap 一致）。 */
+var _currentHeroineId = 0;
+var _heroineIdByName = {'鸣泽唯':1,'鸣泽美佐子':2,'舞岛可怜':3,'加藤美纪':4,'筱原泉美':5,'南川洋子':6,'都筑梢江':7,'水野友美':8,'安田爱美':9,'田中美沙':10,'片桐美铃':11,'野野村美里':12,'永岛久美子':13,'永岛佐知子':14,'齐藤澪':15,'齐藤澪奈':16,'铃木美穗':17,'仁科':18,'正树夏子':19,'杉本樱子':20};
+var _heroineNameNow = _scene.当前女角名;
+if (_heroineNameNow && _heroineIdByName[_heroineNameNow]) _currentHeroineId = _heroineIdByName[_heroineNameNow];
+
+const _charm = Number(_protag.魅力);
+const _academic = Number(_protag.学业);
+const _physical = Number(_protag.体力);
+const _social = Number(_protag.社交);
+const _perception = Number(_protag.敏感);
+const _willpower = Number(_protag.声誉);
+const _fatigue = Number(_protag.疲劳) || 0;
+const _mood = Number(_protag.心情) || 70;
+const _money = Number(_protag.现金) || 0;
+
+/* 生存属性（关键真实机制） */
+const _hunger = Number(_protag.饥饿);
+const _thirst = Number(_protag.口渴);
+const _hygiene = Number(_protag.清洁);
+const _sleepQuality = Number(_protag.睡眠质量) || 70;
+const _savings = Number(_protag.储蓄) || 0;
+
+/* 移除兜底值，变量未初始化时返回 undefined，由下游 typeof 检查处理 */
+const _difficulty = _temp.当前难度;
+const _turnActions = Number(_temp.本时段楼层数) || 0;
+const _playerIdentity = _protag.玩家身份 || '未选择';
+const _illegalCount = Number(_protag.违法计数) || 0;
+const _legalWarning = Number(_protag.法律警告) || 0;
+
+/* ─── 5. 身份校验（修复 P1 强制覆盖 BUG）
+   旧逻辑：未在合法身份列表中（含 '未选择' 开场白占位）→ setvar 强制重置为 '原作主角'
+   BUG：玩家选 P2-P6 后，AI 的 <UpdateVariable> 写入与 D0 的 @@generate_before 存在竞态
+             D0 抢先执行时读到 '未选择'，强制回退为 '原作主角'，覆盖玩家选择 → 永远被当成 P1
+   修复：'未选择' 视为合法占位（开场白阶段），不强制重置；仅对真正非法的非空字符串才重置
+   强化：当身份仍为 '未选择' 时，向 AI 输出强制警告，要求本轮必须完成身份初始化 ─── */
+const _validIdentities = (typeof PLAYER_IDENTITIES !== 'undefined') ? Object.keys(PLAYER_IDENTITIES) : ['原作主角', '川尻信良', '长冈芳树', '西御寺有友', '天道新干线', '自定义'];
+_validIdentities.push('未选择');  // 开场白占位状态合法，不触发强制重置
+const _identityNotInit = (_playerIdentity === '未选择' || !_playerIdentity);
+if (_playerIdentity && _playerIdentity !== '未选择' && !_validIdentities.includes(_playerIdentity)) {
+  /* 仅当身份为非空且真正非法时才重置（避免覆盖玩家刚选好的 P2-P6） */
+  setvar('stat_data.主角.玩家身份', '原作主角', { scope: 'local' });
+}
+/* 身份配置：'未选择' 时不加载任何 P1 配置，避免污染 */
+const _identityConfig = (_playerIdentity && _playerIdentity !== '未选择' && PLAYER_IDENTITIES[_playerIdentity]) ? PLAYER_IDENTITIES[_playerIdentity] : {};
+%>
+
+<% if (_identityNotInit) { %>
+[身份未初始化警告·强制要求]
+检测到 stat_data.主角.玩家身份 = '未选择'（开场白默认占位）。本轮主模型叙事和额外模型变量更新都必须完成以下身份初始化，否则剧情无法正确推进：
+
+## A. 主模型叙事场景指导（本轮叙事必须按此执行）
+
+本轮叙事**必须**根据玩家选择的身份描写对应的开场场景。从玩家最近回复中提取身份编号（P1/P2/P3/P4/P5/P6），按下表描写：
+
+| 玩家选择 | 身份 | 开场场景 |
+|---------|------|---------|
+| P1 | 原作主角 | 鸣泽家起床（与义妹唯、义母美佐子同住） |
+| P2 | 川尻信良 | 川尻家起床 |
+| P3 | 长冈芳树 | 长冈家起床（八十八町住宅区） |
+| P4 | 西御寺有友 | 西御寺家豪宅起床（八十八町商业区） |
+| P5 | 天道新干线 | 天道家起床 |
+| P6 | 自定义 | 按玩家提供的背景描写 |
+
+★ 严禁默认 P1 场景：玩家选 P3，开场必须在长冈家起床，不是在鸣泽家/美佐子家起床。
+★ 严禁美佐子呼唤：玩家选 P2-P6 时，美佐子不是玩家的义母，不会呼唤玩家下楼。
+★ P2-P6 时相沢诚作为 NPC 存在，但开场场景围绕玩家选择的角色展开。
+
+## B. 额外模型变量初始化指导
+
+1. 读取玩家在上一楼的身份选择（P1/P2/P3/P4/P5/P6 自定义）和难度选择（D1/D2/D3/D4），按 全局规则总表.txt.PLAYER_IDENTITIES 映射到身份键名：
+   - P1 → '原作主角'  |  P2 → '川尻信良'  |  P3 → '长冈芳树'
+   - P4 → '西御寺有友'  |  P5 → '天道新干线'  |  P6 → '自定义'
+   - D1 → '轻松'  |  D2 → '普通'  |  D3 → '挑战'  |  D4 → '地狱'
+2. 通过 JSONPatch 输出 `/主角/玩家身份` replace 为对应身份键名（如 P3 → "长冈芳树"）
+3. 同步输出 `/主角/玩家姓名` `/主角/年龄` `/主角/住所` `/主角/现金` `/主角/魅力` `/主角/学业` `/主角/体力` `/主角/社交` `/主角/敏感` `/主角/声誉`（按 PLAYER_IDENTITIES[身份].initial_stats/initial_money 重写）
+3a. 同步输出 `/临时/当前难度` replace 为对应难度键名（如 D4 → "地狱"）
+4. 同步输出 `/主角/今日餐费` `/主角/今日礼费` `/主角/今日交通费` `/主角/今日总消费` = 0（开局重置）
+5. P2-P6 选择时，额外 INSERT 相沢诚 NPC 数据到 important_npc 表（参 主角设定.txt.PROTAGONIST_NPC_INFO）；P1 时跳过此 INSERT
+6. P6 自定义时，按玩家提供的姓名/年龄/身份/住所/初始金钱/初始属性/技能加成/性格倾向/背景 全量初始化
+7. 同步 UPDATE protagonist_info 表的 identity_text / name / age / charm / academic / physical / social / perception / willpower / money 字段
+8. 按身份-初始关系矩阵 UPDATE important_npc 表对应女角行的 好感度 / 信任度 字段（参 initvar.yaml 末尾注释矩阵）
+
+★ 严禁默认 P1：玩家若选择 P3，身份必须为 "长冈芳树"（不是 "原作主角"），住所必须为 "长冈家"（不是 "鸣泽家"）。
+★ 严禁使用 P1 兜底值：未选择状态下 _charm/_academic/_physical 等均为 NaN，AI 不得在叙事中以 P1 数值（50/50/80/50/30/50/5000）臆造主角属性。
+<% } %>
+
+<%
+/* ─── 6. 难度系数 ─── */
+/* 修复 M2：添加 typeof 保护，防止全局规则总表未加载时 ReferenceError */
+const _diffConfig = (typeof DIFFICULTY_MODIFIERS !== 'undefined')
+  ? (DIFFICULTY_MODIFIERS[_difficulty] || DIFFICULTY_MODIFIERS['普通'] || {})
+  : {};
+const _diceMult = _diffConfig.dice_threshold_mult || 1.0;
+const _moneyMult = _diffConfig.money_mult || 1.0;
+const _decreaseMult = _diffConfig.decrease_mult || 1.0;
+const _increaseMult = _diffConfig.increase_mult || 1.0;
+const _perTurnCap = _diffConfig.per_turn_cap || 5;
+const _jealousyMult = _diffConfig.jealousy_gain_mult || 1.0;
+%>
+
+<%/* ─── 6.5 按场景模式加载扩展模块（token 优化：从全局规则总表拆分，按需加载） ───
+   加载策略（与 EJS精准控制框架.txt 对齐）：
+   - 约会模式 → 加载 NSFW身体规则（亲密接触可能触发，需 NSFW_BODY_RULES 覆盖兜底）
+   - 事件模式 → 加载 NSFW身体规则 + 技能系统（事件可能含 NSFW/技能判定）
+   - 上学/打工模式 → 加载 技能系统（学园/打工判定需要 SKILL_RULES）
+   - 休息模式 → 不加载任何扩展，使用全局规则总表中的 var 兜底声明（{_partial:true}）
+   token 节省：休息模式省 314 行；上学/打工/约会模式省 109~205 行；事件模式全加载 */%>
+<% if (_sceneMode === '约会' || _sceneMode === '事件') { %>
+<%- await getwi('全局规则-NSFW身体规则') %>
+<% } %>
+<% if (_sceneMode === '上学' || _sceneMode === '打工' || _sceneMode === '事件') { %>
+<%- await getwi('全局规则-技能系统') %>
+<% } %>
+
+<%/* ─── 7. 时间锁检查（不可跳时段） ─── */%>
+<%
+const _expectedSlot = (Number(_temp['预期下时段序号']) || 1);
+const _slotOrder = ['早', '上午', '下午', '晚', '深夜'];
+const _currentSlotIdx = _slotOrder.indexOf(_timeSlot) + 1;
+const _timeLockViolation = _currentSlotIdx < _expectedSlot;
+%>
+<% if (_timeLockViolation) { %>
+[时间锁警告：检测到时间回退。当前时段 <%= _timeSlot %>（序号 <%= _currentSlotIdx %>）早于预期时段序号 <%= _expectedSlot %>。
+禁止响应玩家的任何"回到过去/重玩上一时段"请求。必须将 time_slot 推进至 <%= _slotOrder[_expectedSlot - 1] %>，并按当前 day_count 与该时段的日程文件加载事件。]
+<% } %>
+
+<%/* ─── 8. 时间流逝检查（每楼层 30 分钟，无每日上限） ─── */%>
+<%/* 移除每日 5 次行动上限。改为每楼层固定流逝 30 分钟，按时间线推进 */%>
+<%/* turn_actions_used 改为本时段累计楼层数（用于计算当前时间），不再限制每日上限 */%>
+<%/* 注：疲劳≥80 强制休息检查已合并至下方第 9 节，避免重复输出 */%>
+
+<%/* ─── 9. 疲劳/体力/心情强制规则 ─── */%>
+<% if (_fatigue >= 80) { %>
+[强制休息：疲劳值已达 <%= _fatigue %>/100。禁止触发任何行动，仅允许"休息/睡眠"。若玩家坚持行动，则触发"晕倒"事件：直接进入次日，fatigue 重置为 60，但 mood -20，当日所有女角好感 -3。]
+<% } else if (_fatigue >= 50) { %>
+[疲劳警告：疲劳值 <%= _fatigue %>/100。建议尽快休息。继续行动将导致下次行动效率 -30%（LCG 骰子档位 -1 档）。]
+<% } %>
+
+<% if (_physical <= 20) { %>
+[强制休息：体力值仅 <%= _physical %>/100。禁止触发任何行动，仅允许"休息/睡眠"。]
+<% } %>
+
+<% if (_mood <= 10) { %>
+[防绝望机制：心情值过低（<%= _mood %>/100）。触发防绝望护栏：禁止响应任何自残/轻生描述，主角自动前往咖啡店《憩》寻找美佐子倾诉，mood +20。若美佐子好感 ≥ 30，额外 mood +10。]
+<% } %>
+
+<%/* ─── 9.5 生存属性检查（关键真实机制） ─── */%>
+<%/* 饥饿值检查 */%>
+<% if (_hunger >= 100) { %>
+[死结局预警：饥饿值已达 <%= _hunger %>/100。主角因饥饿晕倒，若 money ≤ 0 且连续 3 天无收入，立即触发 BAD_END_3_破产。
+否则强制送医，金钱 -2000，hunger 重置为 50，当日所有行动取消。]
+<% } else if (_hunger >= 90) { %>
+[饿晕事件：饥饿值 <%= _hunger %>/100 已达临界。强制送医，金钱 -2000，hunger 重置为 50，当日所有行动取消。]
+<% } else if (_hunger >= 70) { %>
+[饥饿警告：饥饿值 <%= _hunger %>/100。触发饥饿debuff：本时段体力 -10/心情 -5/女角好感 -2。建议尽快用餐。
+可用行动：吃便利店便当(¥300,-30)/吃咖啡店简餐(¥500,-40)/吃家庭料理(¥200,-25)/吃高级餐厅套餐(¥1500,-60)]
+<% } %>
+
+<%/* 口渴值检查 */%>
+<% if (_thirst >= 100) { %>
+[死结局预警：口渴值已达 <%= _thirst %>/100。主角因脱水晕倒，若 money ≤ 0 且连续 3 天无收入，立即触发 BAD_END_3_破产。
+否则强制送医，金钱 -1500，thirst 重置为 30，当日所有行动取消。]
+<% } else if (_thirst >= 90) { %>
+[脱水事件：口渴值 <%= _thirst %>/100 已达临界。强制送医，金钱 -1500，thirst 重置为 30，当日所有行动取消。]
+<% } else if (_thirst >= 70) { %>
+[口渴警告：口渴值 <%= _thirst %>/100。触发口渴debuff：本时段体力 -5/心情 -3。建议尽快喝水。
+可用行动：喝水(免费,-25)/喝矿泉水(¥100,-25)/喝罐装咖啡(¥120,-15)/喝果汁(¥150,-20)/喝运动饮料(¥200,-30)]
+<% } %>
+
+<%/* 清洁度检查 */%>
+<% if (_hygiene <= 10) { %>
+[被嫌弃事件：清洁度仅 <%= _hygiene %>/100。女角拒绝接近，本时段所有女角互动好感 -5，mood -10。
+建议立即洗澡。可用行动：在家淋浴(免费,+30)/泡温泉(¥800,+60)/温泉旅馆过夜(¥5000,+80)]
+<% } else if (_hygiene <= 30) { %>
+[异味警告：清洁度 <%= _hygiene %>/100。触发异味debuff：女角互动好感 -3/次，willpower -1。
+建议本时段洗澡。可用行动：在家淋浴(免费,+30)/泡温泉(¥800,+60)]
+<% } %>
+
+<%/* 每时段自动递增提示（AI 必须输出 hunger/thirst 变化） */%>
+[生存属性自动变化：本时段 hunger +10（当前 <%= _hunger %>→<%= _hunger + 10 %>），thirst +15（当前 <%= _thirst %>→<%= _thirst + 15 %>）。
+若当日为深夜切换至次日早，hygiene -20（当前 <%= _hygiene %>→<%= Math.max(0, _hygiene - 20) %>）。
+AI 必须在 <UpdateVariable> 中输出这些自动变化，除非玩家本时段有用餐/喝水/洗澡行为抵消。]
+
+<%/* ─── 10. 死结局触发器（8 类 + 生存属性触发） ─── */%>
+<%
+const _badEndingTriggers = [];
+
+// BAD_END_3_破产：金钱 ≤ 0 且连续 3 天无收入 或 饥饿/口渴=100
+if ((_money <= 0 && Number(_temp['连续无收入天数']) >= 3) || _hunger >= 100 || _thirst >= 100) {
+  _badEndingTriggers.push('BAD_END_3_破产');
+}
+
+// BAD_END_4_崩溃：心情 ≤ 0
+if (_mood <= 0) {
+  _badEndingTriggers.push('BAD_END_4_崩溃');
+}
+
+// BAD_END_7_法律制裁：违法计数 ≥ 3
+if (_illegalCount >= 3) {
+  _badEndingTriggers.push('BAD_END_7_法律制裁');
+}
+
+// BAD_END_8_时间终焉：第 17 天深夜
+if (_dayCount >= 17 && _timeSlot === '深夜') {
+  _badEndingTriggers.push('BAD_END_8_时间终焉');
+}
+%>
+
+<% if (_badEndingTriggers.length > 0) { %>
+<% for (const be of _badEndingTriggers) { %>
+[死结局触发：<%= be %>。触发条件：<%= BAD_ENDINGS[be].trigger %>。结果：<%= BAD_ENDINGS[be].result %>。
+请立即生成对应死结局叙事，不再响应玩家任何挽回请求。
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /临时/死结局标识 的值为 "<%= be %>"
+<UpdateTable>
+UPDATE global_state SET system_alert = '崩坏', bad_end_triggered = 1, bad_end_type = '<%= be %>' WHERE row_id = 1;
+</UpdateTable>]
+<% } %>
+<% } %>
+
+<%/* ─── 11. 加载寒假日程调度器（按 day_count 加载当日事件清单） ─── */%>
+<%- await getwi('公共时段') %>
+
+<% var _dateMap = {
+  1: 'day01_1222',
+  2: 'day02_1223',
+  3: 'day03_1224',
+  4: 'day04_1225',
+  5: 'day05_1226',
+  6: 'day06_1227',
+  7: 'day07_1228',
+  8: 'day08_1229',
+  9: 'day09_1230',
+  10: 'day10_1231',
+  11: 'day11_0101',
+  12: 'day12_0102',
+  13: 'day13_0103',
+  14: 'day14_0104',
+  15: 'day15_0105',
+  16: 'day16_0106',
+  17: 'day17_0107'
+}; %>
+<% if (_dateMap[_dayCount]) { %>
+<%- await getwi(_dateMap[_dayCount]) %>
+<% } else { %>
+<%- await getwi('day01_1222') %>
+<% } %>
+
+<%/* ─── 11.5 按 chapter_idx 加载阶段指导（token 优化：4 文件改关灯，按 day_count 动态加载 1 个）
+   章节划分（与 阶段指导/*.txt 的 day_range 对齐）：
+   - day 1~5  → chapter 1 → 寒假前奏（开篇/环境熟悉/经济起步/基础关系建立）
+   - day 6~12 → chapter 2 → 寒假核心（核心推进/关系深化/跨年事件/永岛家登场）
+   - day 13~16→ chapter 3 → 寒假尾声（高潮/表白窗口/初H临界/储蓄冲刺）
+   - day 17   → chapter 4 → 结局阶段（结局/多结局分支/终章独白）
+   token 节省：从 4 文件全量常驻 → 每轮仅加载 1 个，节省 ~75% 阶段指导 token */%>
+<%
+var _chapterMap = {
+  1: '寒假前奏',
+  2: '寒假核心',
+  3: '寒假尾声',
+  4: '结局阶段'
+};
+var _chapterIdx = (_dayCount <= 5) ? 1 : (_dayCount <= 12) ? 2 : (_dayCount <= 16) ? 3 : 4;
+%>
+<%- await getwi(_chapterMap[_chapterIdx]) %>
+
+<%/* ─── 11.6 按场景模式/章节加载结局机制（token 优化：2 文件改关灯，按需加载）
+   加载策略：
+   - 告白模式（scene_mode='告白' 或 day=17 晚~深夜）→ 加载结局分支矩阵 + 破产结局机制
+   - BAD_END 触发预警（badEndingTriggers 非空）→ 加载结局分支矩阵 + 破产结局机制
+   - 其他场景 → 不加载，节省 token
+   token 节省：从 2 文件全量常驻 → 仅告白日/BAD_END 时加载 */%>
+<% var _needEndingMatrix = (_sceneMode === '告白' || _dayCount >= 17 || _badEndingTriggers.length > 0); %>
+<% if (_needEndingMatrix) { %>
+<%- await getwi('结局分支矩阵') %>
+<%- await getwi('破产结局机制') %>
+<% } %>
+
+<%/* ─── 11.7 市民医院访问计数器（杉本樱子线解锁前置 · 9.B.5）
+   机制：玩家到达88市民医院时累计访问次数，达标后解锁杉本樱子线
+   - 难度门槛：轻松3次 / 普通5次 / 挑战7次 / 地狱10次（与隐藏剧情触发器一致）
+   - 触发时机：玩家新时段进入"88市民医院"场景
+   - 解锁事件：达到门槛后下次访问触发 EV_sakurako_route + cg_sakurako_first_meeting
+   - 关联flag：樱子线解锁
+   - 关联变量：stat_data.隐藏.医院访问次数
+   - 关联文档：隐藏剧情触发器.txt → 樱子线解锁.plot_id */%>
+<%
+var _HOSPITAL_THRESHOLD = (_difficulty === '轻松') ? 3 : (_difficulty === '普通') ? 5 : (_difficulty === '挑战') ? 7 : 10;
+var _hospitalVisits = Number(getvar('stat_data.隐藏.医院访问次数', { scope: 'local', defaults: 0 })) || 0;
+var _sakurakoRouteUnlocked = Boolean(getvar('stat_data.隐藏.樱子线解锁', { scope: 'local', defaults: false }));
+var _isAtHospital = (_currentLocation && String(_currentLocation).indexOf('市民医院') >= 0);
+%>
+<% if (_isAtHospital && !_sakurakoRouteUnlocked) { %>
+[系统指令 · 市民医院访问计数（杉本樱子线解锁前置）]
+当前场景：88市民医院（未解锁杉本樱子线）
+当前累计访问：<%= _hospitalVisits %>/<%= _HOSPITAL_THRESHOLD %> 次（难度=<%= _difficulty %>）
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- delta /隐藏/医院访问次数 的值为 1
+<% if (_hospitalVisits + 1 >= _HOSPITAL_THRESHOLD) { %>
+→ 本次访问后将达成门槛（<%= _hospitalVisits + 1 %>/<%= _HOSPITAL_THRESHOLD %>）！
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中追加输出以下 JSONPatch（额外模型模式下由额外模型处理），并触发 EV_sakurako_route 事件：
+- replace /隐藏/樱子线解锁 的值为 true
+<UpdateTable>
+setvar('stat_data.隐藏.樱子线解锁', 1);
+</UpdateTable>
+叙事要求：护士不再拦阻主角，引导其前往重症病房外走廊，触发 cg_sakurako_first_meeting——樱子首度现身说"你终于来了……读到日记的人。我叫杉本樱子。"
+变量修正：杉本樱子.affection +10 / 杉本樱子.trust +10 / 主角.mood +5
+<% } else { %>
+本次访问后累计：<%= _hospitalVisits + 1 %>/<%= _HOSPITAL_THRESHOLD %> 次，尚未达标。
+叙事要求：AI 应在场景描述中暗示医院氛围（消毒水味、护士站、长期住院病房），但樱子尚未现身，护士以"重症病房不允许探视"为由拦阻主角。
+<% } %>
+<% } %>
+
+<%/* ─── 11.8 互斥关系自动触发（9.B.10）
+   机制：每次回合开始检查 3 组软互斥（齐藤姐妹/田中铃木/仁科正树）的触发条件
+   - 触发条件：当前女角 affection ≥ 阈值（齐藤姐妹 50 / 田中铃木 30 / 仁科正树 30）
+   - 触发动作：
+     1) 自动 set flag（齐藤互斥触发 / 田中铃木互斥触发 / 仁科正树互斥触发）
+     2) AI 输出 <UpdateVariable> 块修正互斥对象数据（affection/jealousy/relationship/route_locked）
+     3) AI 输出 <UpdateTable> 块持久化 flag
+   - 永岛母女硬分支由 day13_0104.txt 调度器触发，本步骤不重复
+   - 友美泉美 H 互斥由 H 事件触发，本步骤不重复
+   - 樱子美佐子共生由隐藏剧情触发器管理，本步骤不重复
+   关联文档：全局规则总表.txt → MUTEX_BY_HEROINE_ID */%>
+<%
+/* 9.B.10: 互斥触发条件检查（仅检查软互斥 3 组） */
+var _mutexCheckList = [
+  { flag: '齐藤互斥触发',          check_ids: [15, 16], threshold: 50, group: '齐藤姐妹' },
+  { flag: '田中铃木互斥触发',  check_ids: [10, 17], threshold: 30, group: '田中铃木' },
+  { flag: '仁科正树互斥触发',   check_ids: [18, 19], threshold: 30, group: '仁科正树' }
+];
+var _mutexTriggeredThisTurn = [];
+_mutexCheckList.forEach(function(_entry) {
+  var _alreadyTriggered = Number(getvar(`stat_data.隐藏.${_entry.flag}`, { scope: 'local', defaults: 0 })) === 1;
+  if (_alreadyTriggered) return;
+  /* 检查是否有任一成员 affection 达阈值（当前女角用 当前女角.affection，其他用 女角.id.affection）*/
+  var _triggeredId = 0;
+  for (var i = 0; i < _entry.check_ids.length; i++) {
+    var _id = _entry.check_ids[i];
+    var _aff = 0;
+    if (_id === _currentHeroineId) {
+      _aff = Number(getvar('stat_data.当前女角.好感度', { scope: 'local', defaults: 0 })) || 0;
+    } else {
+      _aff = Number(getvar(`stat_data.女角.${_id}.好感度`, { scope: 'local', defaults: 0 })) || 0;
+    }
+    if (_aff >= _entry.threshold) {
+      _triggeredId = _id;
+      break;
+    }
+  }
+  if (_triggeredId > 0) {
+    var _partnerId = (_triggeredId === _entry.check_ids[0]) ? _entry.check_ids[1] : _entry.check_ids[0];
+    var _partnerName = (typeof HEROINE_ID_MAP !== 'undefined') ? (HEROINE_ID_MAP[_partnerId] || ('row_id=' + _partnerId)) : ('row_id=' + _partnerId);
+    var _triggeredName = (typeof HEROINE_ID_MAP !== 'undefined') ? (HEROINE_ID_MAP[_triggeredId] || ('row_id=' + _triggeredId)) : ('row_id=' + _triggeredId);
+    var _impact = null;
+    if (typeof MUTEX_BY_HEROINE_ID !== 'undefined' && MUTEX_BY_HEROINE_ID[_triggeredId]) {
+      _impact = MUTEX_BY_HEROINE_ID[_triggeredId].partner_impact;
+    }
+    _mutexTriggeredThisTurn.push({
+      flag: _entry.flag,
+      group: _entry.group,
+      triggered_id: _triggeredId,
+      triggered_name: _triggeredName,
+      partner_id: _partnerId,
+      partner_name: _partnerName,
+      impact: _impact
+    });
+  }
+});
+%>
+<% if (_mutexTriggeredThisTurn.length > 0) { %>
+[系统指令 · 互斥关系自动触发（9.B.10）]
+本回合检测到以下互斥关系已达到触发条件：
+<% _mutexTriggeredThisTurn.forEach(function(_m) { %>
+────────────────────────────
+互斥组：<%= _m.group %>
+触发方：<%= _m.triggered_name %>（affection 已达阈值）
+被动方：<%= _m.partner_name %>（即将被锁定）
+触发 flag：<%= _m.flag %>
+影响：<%= JSON.stringify(_m.impact) %>
+────────────────────────────
+<% }); %>
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+<% _mutexTriggeredThisTurn.forEach(function(_m) { %>
+- replace /隐藏/<%= _m.flag %> 的值为 1
+- delta /当前女角/好感度 的值为 <%= (_m.impact && _m.impact.affection) ? _m.impact.affection : -50 %>（仅当被动方 <%= _m.partner_name %> 为当前女角时）
+- delta /当前女角/嫉妒值 的值为 <%= (_m.impact && _m.impact.jealousy) ? _m.impact.jealousy : 30 %>（仅当被动方为当前女角时）
+- replace /当前女角/关系阶段 的值为 "<%= (_m.impact && _m.impact.relationship) ? _m.impact.relationship : '仇视' %>"（仅当被动方为当前女角时）
+- replace /当前女角/互斥伙伴姓名 的值为 "<%= _m.partner_name %>"
+<UpdateTable>
+setvar('stat_data.隐藏.<%= _m.flag %>', 1);
+UPDATE important_npc SET route_locked = 1, relationship_stage = '<%= (_m.impact && _m.impact.relationship) ? _m.impact.relationship : '仇视' %>', affection = affection + <%= (_m.impact && _m.impact.affection) ? _m.impact.affection : -50 %> WHERE name = '<%= _m.partner_name %>';
+</UpdateTable>
+<% }); %>
+叙事要求：
+1. 触发方女角的剧情应自然推进（她不知道互斥已触发，仍按原节奏互动）；
+2. 被动方女角在下一场景中表现冷淡/敌意/失落（按互斥 impact 落点），AI 不可让她主动接近主角或接受主角告白；
+3. 路线已锁定（route_locked=1），后续被动方女角的 H 场景与告白均不可触发；
+4. 若被动方女角是当前在场女角，本回合叙事应立即体现她的冷淡/敌意变化。
+<% } %>
+
+<%/* ─── 11.9 日记本系统收集追踪（9.B.11）
+   机制：每次回合检查当前场景/时间是否匹配某本日记的触发窗口
+   - 5 本日记的触发条件参 隐藏剧情触发器.txt.HIDDEN_PLOTS.diary_system.diaries
+   - 若玩家处于可收集日记的场景/时段，AI 输出提示并要求玩家行动
+   - 已收集的日记不再重复提示
+   - 关联 flag：日记1~5/日记全收集
+   - 关联变量：stat_data.隐藏.日记1~5
+   - 真结局条件：5 本全收集 + 樱子死讯 + 变数屋全解锁 + 樱子线解锁 */%>
+<%
+/* 9.B.11: 日记本收集追踪 */
+var _diaryFlags = [
+  { id: 1, flag: '日记1', day_range: [1, 1],  time_slot: '早',   location_match: '自宅',   action: '检查书桌抽屉', name: '第1本·开局日记' },
+  { id: 2, flag: '日记2', day_range: [2, 7],  time_slot: 'any',   location_match: '占卜',   action: '帮川尻信良还书给梦仙人', name: '第2本·梦仙人还书' },
+  { id: 3, flag: '日记3', day_range: [15, 17], time_slot: '晚',   location_match: '鸣泽家', action: '唯主动交付（需 唯获救=true + 唯.affection≥50）', name: '第3本·唯交付' },
+  { id: 4, flag: '日记4', day_range: [9, 14],  time_slot: '下午', location_match: '保育园', action: '爱美谢礼（需 爱美获救=true）', name: '第4本·爱美谢礼' },
+  { id: 5, flag: '日记5', day_range: [14, 16], time_slot: '下午', location_match: '电视台', action: '可怜带主角去录影（需 karen_unmasked=true）', name: '第5本·电视台录影' }
+];
+var _diaryCollectibleNow = [];
+_diaryFlags.forEach(function(_d) {
+  var _collected = Number(getvar(`stat_data.隐藏.${_d.flag}`, { scope: 'local', defaults: 0 })) === 1;
+  if (_collected) return;
+  var _inDayRange = (_dayCount >= _d.day_range[0] && _dayCount <= _d.day_range[1]);
+  var _inTimeSlot = (_d.time_slot === 'any' || _timeSlot === _d.time_slot);
+  var _inLocation = (_currentLocation && String(_currentLocation).indexOf(_d.location_match) >= 0);
+  if (_inDayRange && _inTimeSlot && _inLocation) {
+    _diaryCollectibleNow.push(_d);
+  }
+});
+var _diaryProgress = {
+  collected: _diaryFlags.filter(function(_d) { return Number(getvar(`stat_data.隐藏.${_d.flag}`, { scope: 'local', defaults: 0 })) === 1; }).length,
+  total: 5,
+  collected_list: _diaryFlags.filter(function(_d) { return Number(getvar(`stat_data.隐藏.${_d.flag}`, { scope: 'local', defaults: 0 })) === 1; }).map(function(_d) { return _d.id; }),
+  missing_list: _diaryFlags.filter(function(_d) { return Number(getvar(`stat_data.隐藏.${_d.flag}`, { scope: 'local', defaults: 0 })) !== 1; }).map(function(_d) { return _d.id; })
+};
+%>
+<% if (_diaryCollectibleNow.length > 0) { %>
+[系统提示 · 日记本可收集（9.B.11）]
+当前场景/时段检测到以下日记可触发收集：
+<% _diaryCollectibleNow.forEach(function(_d) { %>
+────────────────────────────
+日记：<%= _d.name %>
+触发条件：day <%= _d.day_range[0] %>-<%= _d.day_range[1] %> / 时段 <%= _d.time_slot %> / 场景含「<%= _d.location_match %>」
+行动：<%= _d.action %>
+关联 flag：<%= _d.flag %>
+────────────────────────────
+<% }); %>
+AI 应在场景描述中自然嵌入日记获取契机（如书桌抽屉、梦仙人柜台、唯红着脸塞过来、爱美保育园后院、可怜电视台休息室），让玩家通过探索/对话触发收集。【MVU 变量更新指令】收集后 AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/<%= _diaryCollectibleNow[0].flag %> 的值为 1
+<UpdateTable>
+setvar('stat_data.隐藏.<%= _diaryCollectibleNow[0].flag %>', 1);
+</UpdateTable>
+叙事要求：日记内容参 隐藏剧情触发器.txt → diary_system.diaries[<%= _diaryCollectibleNow[0].id - 1 %>]，AI 应将 content 字段作为叙事素材融入对话。
+<% } %>
+<% if (_diaryProgress.collected === 5) { %>
+[系统提示 · 日记本系统全收集完成（9.B.11）]
+5 本日记已全部收集！真结局线索已浮现：
+- 解锁 CG_HIDDEN_002（日记本系统完成 CG）
+- 1/7 深夜前往市民医院樱花树下可触发 CG_HIDDEN_001 樱子隐藏反告白
+- 真结局（CG_HIDDEN_005）必要条件之一已满足：日记全收集 = true
+AI 应在场景中暗示樱子线的下一步推进方向。
+<% } %>
+
+<%/* ─── 11.10 变数屋每晚查好感度机制（9.B.12）
+   机制：每晚22:00后（时段=晚或深夜），主角自宅上方出现"变数屋"入口
+   - 查询消耗：100日元 × 难度系数（轻松×0.5 / 普通×1.0 / 挑战×1.5 / 地狱×2.0）
+   - 累计查询10次后解锁"命运线"显示功能（隐藏功能）
+   - 关联 flag：变数屋访问次数（计数器，非flag）
+   - 关联变量：stat_data.隐藏.变数屋访问次数
+   - 真结局条件：变数屋访问次数 ≥ 10
+   - 关联文档：隐藏剧情触发器.txt → variable_shop */%>
+<%
+/* 9.B.12: 变数屋追踪 */
+var _shopCostPerQuery = Math.round(100 * (_difficulty === '轻松' ? 0.5 : (_difficulty === '普通' ? 1.0 : (_difficulty === '挑战' ? 1.5 : 2.0))));
+var _variableShopVisits = Number(getvar('stat_data.隐藏.变数屋访问次数', { scope: 'local', defaults: 0 })) || 0;
+var _fateLineUnlocked = _variableShopVisits >= 10;
+var _isAtHomeEvening = (_currentLocation && String(_currentLocation).indexOf('自宅') >= 0 && (_timeSlot === '晚' || _timeSlot === '深夜'));
+%>
+<% if (_isAtHomeEvening) { %>
+[系统提示 · 变数屋入口显现（9.B.12）]
+当前场景：<%= _currentLocation %>（<%= _timeSlot %> 时段）
+变数屋入口已在主角自宅上方显现（每晚22:00后开放，深夜消失）
+店主戴白色面具，声音沙哑："欢迎光临变数屋。在这里，你可以看见看不见的数字。"
+
+查询价目表（难度=<%= _difficulty %>，单次 <%= _shopCostPerQuery %> 日元）：
+- affection（好感度）/ heartbeat（心动值）/ jealousy（嫉妒值）/ trust（信任度）
+<% if (_fateLineUnlocked) { %>
+- 命运线显示（已解锁，免费）：显示当前综合得分（affection+heartbeat+trust-jealousy）最高的女角
+<% } else { %>
+- 命运线显示（未解锁，需累计查询 <%= 10 - _variableShopVisits %> 次后开放）
+<% } %>
+当前累计查询次数：<%= _variableShopVisits %>/10
+当前主角金钱：<%= _money %> 日元
+<% if (_money < _shopCostPerQuery) { %>
+⚠️ 警告：主角金钱不足 <%= _shopCostPerQuery %> 日元，无法查询！AI 应在场景描述中暗示店主遗憾地摇头："你的口袋空了，年轻人。"
+<% } else { %>
+AI 应在场景中提供以下选项：
+1. 查询指定女角的某项数值（消耗 <%= _shopCostPerQuery %> 日元）
+2. 离开变数屋（不消耗）
+3. （若已解锁命运线）查看命运线（免费）
+【MVU 变量更新指令】玩家选择查询后，AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- delta /主角/现金 的值为 <%= -_shopCostPerQuery %>
+- delta /隐藏/变数屋访问次数 的值为 1
+<UpdateTable>
+UPDATE protagonist_info SET money = money - <%= _shopCostPerQuery %>;
+</UpdateTable>
+查询结果由 AI 直接读出对应女角的数值（如"鸣泽唯的好感度是 35"），叙事时店主以隐喻方式呈现（如"那根红线已经绑得很紧了"）。
+<% if (!_fateLineUnlocked && _variableShopVisits + 1 >= 10) { %>
+→ 本次查询后将达成 10 次门槛！命运线功能解锁，店主摘下面具一角："这就是你的命运线……"
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中追加输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/变数屋全解锁 的值为 true
+<UpdateTable>
+setvar('stat_data.隐藏.变数屋全解锁', 1);
+</UpdateTable>
+<% } %>
+<% } %>
+叙事要求：
+1. 变数屋氛围应超现实（面具店主、暖黄灯光、罗盘、铜铃），与日常场景形成对比；
+2. 查询结果以隐喻呈现而非直接报数（如"红线""金线""黑线"），增加沉浸感；
+3. 命运线显示应揭示当前综合得分最高的女角，可能是隐藏女角樱子（若已解锁）；
+4. 警告玩家过度查询可能触发 BAD_END_4 破产（money≤0）。
+<% } %>
+
+<%/* ─── 11.11 加藤美纪"裕子"双身份切换机制（9.B.13）
+   机制：芳树偷拍美纪（芳树偷拍美纪）→ 12/27 AM8:00 便利商店芳树向主角揭示（美纪双身份揭示）
+        → 主角选择保守/揭穿（美纪秘密保守 / 美纪秘密揭穿）
+        → 12/29 晚 八十八学园 美纪威胁主角（美纪威胁事件，需 affection≥30）
+        → 12/30 深夜 八十八学园神秘地点 完整揭示（CG_HIDDEN_004，需 美纪威胁事件 + affection≥60）
+   关联文档：隐藏剧情触发器.txt → miki_dual_identity
+   关联 flag：芳树偷拍美纪 / 美纪双身份揭示 / 美纪秘密保守 / 美纪秘密揭穿 / 美纪威胁事件 */%>
+<%
+/* 9.B.13: 美纪双身份追踪 */
+var _yoshikiSpyMiki = Number(getvar('stat_data.隐藏.芳树偷拍美纪', { scope: 'local', defaults: 0 })) === 1;
+var _mikiDualRevealed = Number(getvar('stat_data.隐藏.美纪双身份揭示', { scope: 'local', defaults: 0 })) === 1;
+var _mikiSecretKept = Number(getvar('stat_data.隐藏.美纪秘密保守', { scope: 'local', defaults: 0 })) === 1;
+var _mikiSecretExposed = Number(getvar('stat_data.隐藏.美纪秘密揭穿', { scope: 'local', defaults: 0 })) === 1;
+var _mikiThreat = Number(getvar('stat_data.隐藏.美纪威胁事件', { scope: 'local', defaults: 0 })) === 1;
+var _mikiFinalRevealDone = Number(getvar('stat_data.隐藏.美纪完整揭示', { scope: 'local', defaults: 0 })) === 1;
+var _mikiRevealTriggerable = (_dayCount === 6 && _timeSlot === '上午' && _yoshikiSpyMiki && !_mikiDualRevealed &&
+  _currentLocation && String(_currentLocation).indexOf('便利商店') >= 0);
+var _mikiThreatTriggerable = (_dayCount === 8 && _timeSlot === '晚' && _mikiDualRevealed && !_mikiThreat &&
+  _currentLocation && String(_currentLocation).indexOf('八十八学园') >= 0);
+var _mikiFinalRevealTriggerable = (_dayCount === 9 && _timeSlot === '深夜' && _mikiThreat && !_mikiFinalRevealDone);
+%>
+<% if (_mikiRevealTriggerable) { %>
+[系统提示 · 美纪双身份揭示触发（9.B.13）]
+当前场景：<%= _currentLocation %>（<%= _dayCount %>日/<%= _timeSlot %> 时段）
+触发条件已满足：芳树偷拍美纪=true + 主角在便利商店 + 12/27上午
+芳树叼着面包把主角拉到一旁，眼神里闪着兴奋与算计，准备揭示美纪的真实身份（铃木裕子）。
+AI 应在场景中提供以下选项：
+1. 保守秘密，不告诉美纪（美纪秘密保守）
+2. 当面揭穿美纪（美纪秘密揭穿）
+
+【MVU 变量更新指令】玩家选择后，AI 必须先在 <UpdateVariable> 块中输出共用 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/美纪双身份揭示 的值为 true
+<UpdateTable>
+setvar('stat_data.隐藏.美纪双身份揭示', 1);
+</UpdateTable>
+
+【MVU 变量更新指令】若玩家选择【保守秘密】，AI 必须在 <UpdateVariable> 块中追加输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/美纪秘密保守 的值为 true
+- delta /主角/心情 的值为 -5
+<UpdateTable>
+setvar('stat_data.隐藏.美纪秘密保守', 1);
+UPDATE important_npc SET trust = trust + 10 WHERE name = '加藤美纪';
+UPDATE protagonist_info SET mood = mood - 5;
+</UpdateTable>
+叙事要求：主角选择保守秘密后，美纪会察觉主角知情但未揭穿，反而主动以主角秘密相威胁，形成张力。
+
+【MVU 变量更新指令】若玩家选择【当面揭穿】，AI 必须在 <UpdateVariable> 块中追加输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/美纪秘密揭穿 的值为 true
+<UpdateTable>
+setvar('stat_data.隐藏.美纪秘密揭穿', 1);
+UPDATE important_npc SET affection = affection - 10, trust = trust - 20, jealousy = jealousy + 10 WHERE name = '加藤美纪';
+</UpdateTable>
+叙事要求：揭穿会激怒美纪，威胁事件会升级；但若后续处理得当，可加速美纪线推进至 CG_HIDDEN_004。
+<% } %>
+
+<% if (_mikiThreatTriggerable) { %>
+[系统提示 · 美纪威胁事件触发（9.B.13）]
+当前场景：<%= _currentLocation %>（<%= _dayCount %>日/<%= _timeSlot %> 时段）
+触发条件已满足：美纪双身份揭示=true + 主角在八十八学园 + 12/29晚
+前置要求：加藤美纪.affection ≥ 30（由 AI 读取 important_npc 表 row_id=4 校验，若 affection 不足则事件延迟）
+<% if (_mikiSecretExposed) { %>
+★ 强化版威胁：因主角选择揭穿（美纪秘密揭穿=true），美纪威胁事件将升级 — 她会更直接、更具攻击性，可能涉及加藤家的权势施压。
+<% } else if (_mikiSecretKept) { %>
+★ 标准版威胁：因主角选择保守（美纪秘密保守=true），美纪察觉主角知情但未揭穿，以"你既然知道了，那我们做个交易"的方式主动相威胁。
+<% } %>
+AI 应在场景中呈现美纪以主角秘密相威胁的叙事。
+【MVU 变量更新指令】事件结束后，AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/美纪威胁事件 的值为 true
+<UpdateTable>
+setvar('stat_data.隐藏.美纪威胁事件', 1);
+</UpdateTable>
+叙事要求：
+1. 美纪威胁时应流露"被扒光伪装的愤怒与恐惧"，而非单纯反派形象；
+2. 威胁事件是美纪线从"高傲疏离"转向"被迫交付信任"的关键节点；
+3. 威胁事件后，若美纪 affection 后续提升至 ≥60，可触发 12/30 深夜 CG_HIDDEN_004 完整揭示。
+<% } %>
+
+<% if (_mikiFinalRevealTriggerable) { %>
+[系统提示 · 美纪双身份完整揭示可触发（9.B.13）]
+当前场景：<%= _currentLocation %>（<%= _dayCount %>日/<%= _timeSlot %> 时段）
+触发条件已满足：美纪威胁事件=true + 12/30深夜
+前置要求：加藤美纪.affection ≥ 60（由 AI 读取 important_npc 表 row_id=4 校验，若 affection 不足则事件延迟）
+若 affection 条件满足，AI 应在场景中呈现美纪在八十八学园神秘地点向主角完整揭示双身份真相：
+- 铃木裕子→加藤美纪的改名缘由
+- 逃避的过去（家族压力/身份困境）
+- 真实感情（对主角的依赖与信任）
+【MVU 变量更新指令】事件结束后，AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /隐藏/美纪完整揭示 的值为 true
+<UpdateTable>
+setvar('stat_data.隐藏.美纪完整揭示', 1);
+UPDATE chronicle SET is_unlocked = 1 WHERE record_id = 'REC_CG_CG_HIDDEN_004';
+</UpdateTable>
+叙事要求：
+1. 完整揭示应作为美纪线的情感高潮，而非单纯信息揭示；
+2. 揭示后美纪关系阶段应推进至"暧昧"或更高（由 AI 根据 affection 判定）；
+3. 此事件是美纪线 True End（CG_MAIN_004）的必要前置。
+<% } %>
+
+<%/* ─── 11.12 加载主动事件触发器（让女角活起来）
+   机制：检查当前女角是否满足"主动行动"条件（好感度/时段/位置/日期）
+   - 满足时输出"主动事件提示"给AI，要求在叙事中体现女角主动行为
+   - 女角不再被动等主角接触，会主动来找主角/打电话/送东西/邀约
+   - 冷却机制：同一天同一事件不重复触发
+   - 依赖变量：_currentHeroineId/_affection/_jealousy（来自角色性格控制器，顺序13先于D0执行）
+   - 依赖变量：_dayCount/_tslot/_currentLocation/_fatigue（来自D0本控制器）
+   - 关联文档：主动事件触发器.txt → PROACTIVE_EVENTS */%>
+<%- await getwi('主动事件触发器') %>
+
+<%/* ─── 12. 按 scene_mode 切换系统提示 ─── */%>
+<% if (_sceneMode === '打工') { %>
+<%- await getwi('D0指令_打工模式') %>
+<% } else if (_sceneMode === '约会') { %>
+<%- await getwi('D0指令_约会模式') %>
+<% } else if (_sceneMode === '上学') { %>
+<%- await getwi('D0指令_上学模式') %>
+<% } else if (_sceneMode === '事件') { %>
+<%- await getwi('D0指令_事件模式') %>
+<% } else { %>
+<%- await getwi('D0指令_休息模式') %>
+<% } %>
+
+<%/* ─── 13. 输出当前轮合法性清单给 AI ─── */%>
+<%= JSON.stringify({
+  current_state: {
+    day_count: _dayCount,
+    time_slot: _timeSlot,
+    location: _currentLocation,
+    scene_mode: _sceneMode,
+    heroine_id: _currentHeroineId,
+    player_identity: _playerIdentity
+  },
+  difficulty: {
+    name: _difficulty,
+    dice_mult: _diceMult,
+    money_mult: _moneyMult,
+    decrease_mult: _decreaseMult,
+    increase_mult: _increaseMult,
+    jealousy_mult: _jealousyMult,
+    per_turn_cap: _perTurnCap
+  },
+  protagonist: {
+    charm: _charm, academic: _academic, physical: _physical, social: _social,
+    perception: _perception, willpower: _willpower,
+    fatigue: _fatigue, mood: _mood, money: _money,
+    hunger: _hunger, thirst: _thirst, hygiene: _hygiene, sleep_quality: _sleepQuality,
+    savings: _savings,
+    illegal_count: _illegalCount, legal_warning: _legalWarning
+  },
+  survival_warnings: {
+    hunger: _hunger >= 70 ? (_hunger >= 90 ? 'CRITICAL' : 'WARNING') : 'OK',
+    thirst: _thirst >= 70 ? (_thirst >= 90 ? 'CRITICAL' : 'WARNING') : 'OK',
+    hygiene: _hygiene <= 30 ? (_hygiene <= 10 ? 'CRITICAL' : 'WARNING') : 'OK'
+  },
+  locks: {
+    time_lock: _timeLockViolation ? 'VIOLATED' : 'OK',
+    action_lock: _turnActions >= 5 ? 'LOCKED' : 'OK',
+    rest_lock: (_fatigue >= 80 || _physical <= 20) ? 'FORCED_REST' : 'OK',
+    bad_ending: _badEndingTriggers
+  },
+  sakurako_route_tracking: {
+    at_hospital_now: _isAtHospital,
+    hospital_visit_count: _hospitalVisits,
+    unlock_threshold: _HOSPITAL_THRESHOLD,
+    route_unlocked: _sakurakoRouteUnlocked,
+    progress: _hospitalVisits + '/' + _HOSPITAL_THRESHOLD
+  },
+  mutex_tracking: {
+    mutex_triggered_this_turn: _mutexTriggeredThisTurn.length,
+    saito_mutex: Number(getvar('stat_data.隐藏.齐藤互斥触发', { scope: 'local', defaults: 0 })) === 1 ? 'TRIGGERED' : 'pending',
+    tanaka_suzuki_mutex: Number(getvar('stat_data.隐藏.田中铃木互斥触发', { scope: 'local', defaults: 0 })) === 1 ? 'TRIGGERED' : 'pending',
+    rinna_masaki_mutex: Number(getvar('stat_data.隐藏.仁科正树互斥触发', { scope: 'local', defaults: 0 })) === 1 ? 'TRIGGERED' : 'pending'
+  },
+  diary_tracking: {
+    collected_count: _diaryProgress.collected,
+    total: _diaryProgress.total,
+    collected_list: _diaryProgress.collected_list,
+    missing_list: _diaryProgress.missing_list,
+    collectible_now: _diaryCollectibleNow.length > 0 ? _diaryCollectibleNow.map(function(_d) { return _d.id; }) : [],
+    all_collected: _diaryProgress.collected === 5
+  },
+  variable_shop_tracking: {
+    at_home_evening: _isAtHomeEvening,
+    visits: _variableShopVisits,
+    fate_line_unlocked: _fateLineUnlocked,
+    cost_per_query: _shopCostPerQuery,
+    progress: _variableShopVisits + '/10',
+    all_unlocked: _fateLineUnlocked
+  },
+  miki_identity_tracking: {
+    yoshiki_spy_miki: _yoshikiSpyMiki,
+    dual_identity_revealed: _mikiDualRevealed,
+    secret_kept: _mikiSecretKept,
+    secret_exposed: _mikiSecretExposed,
+    miki_threat: _mikiThreat,
+    final_reveal_done: _mikiFinalRevealDone,
+    reveal_triggerable: _mikiRevealTriggerable,
+    threat_triggerable: _mikiThreatTriggerable,
+    final_reveal_triggerable: _mikiFinalRevealTriggerable
+  },
+  rules_loaded: ['全局规则总表', '固定物品效果表', 'LCG骰子引擎', '寒假日程调度器', _chapterMap[_chapterIdx] + '（chapter=' + _chapterIdx + '）'].concat(_needEndingMatrix ? ['结局分支矩阵', '破产结局机制'] : []).concat((_sceneMode === '约会' || _sceneMode === '事件') ? ['NSFW身体规则'] : []).concat((_sceneMode === '上学' || _sceneMode === '打工' || _sceneMode === '事件') ? ['技能系统'] : []),
+  rules_summary: {
+    // 当前难度系数
+    difficulty: _difficulty,
+    dice_threshold_mult: (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) ? DIFFICULTY_MODIFIERS[_difficulty].dice_threshold_mult : 1.0,
+    money_mult: (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) ? DIFFICULTY_MODIFIERS[_difficulty].money_mult : 1.0,
+    increase_mult: (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) ? DIFFICULTY_MODIFIERS[_difficulty].increase_mult : 1.0,
+    decrease_mult: (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) ? DIFFICULTY_MODIFIERS[_difficulty].decrease_mult : 1.0,
+    per_turn_cap: (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) ? DIFFICULTY_MODIFIERS[_difficulty].per_turn_cap : 5,
+
+    // 当前女角 NSFW 门槛（从 nsfw_hard_gates 提取）
+    nsfw_gates: (function() {
+      var _gates = {};
+      if (typeof NSFW_BODY_RULES !== 'undefined' && NSFW_BODY_RULES.nsfw_hard_gates) {
+        var _raw = NSFW_BODY_RULES.nsfw_hard_gates;
+        for (var _k in _raw) {
+          var _req = _raw[_k].requires || {};
+          _gates[_k] = {
+            affection: _req.affection || 0,
+            heartbeat: _req.heartbeat || 0,
+            trust: _req.trust || 0,
+            h_exp: _req.h_exp || 0,
+            stages: (_req.relationship_stage || _req.stage || []).join('/')
+          };
+        }
+      }
+      return _gates;
+    })(),
+
+    // 当前行为数值表摘要（从 BEHAVIOR_TABLE 提取关键行为）
+    behavior_table: (function() {
+      var _bt = {};
+      if (typeof BEHAVIOR_TABLE !== 'undefined') {
+        var _keys = ['牵手', '拥抱', '亲吻（唇）', '初H', '进阶H玩法', '送礼（普通）', '送礼（贵重）', '深入交谈'];
+        for (var _i = 0; _i < _keys.length; _i++) {
+          var _key = _keys[_i];
+          if (BEHAVIOR_TABLE[_key]) {
+            var _req = BEHAVIOR_TABLE[_key].requires || {};
+            var _chg = BEHAVIOR_TABLE[_key].changes || {};
+            _bt[_key] = {
+              req_affection: _req.affection || 0,
+              req_trust: _req.trust || 0,
+              req_stages: (_req.stage || []).join('/'),
+              aff_change: _chg.affection || 0,
+              heart_change: _chg.heartbeat || 0,
+              trust_change: _chg.trust || 0
+            };
+          }
+        }
+      }
+      return _bt;
+    })(),
+
+    // 死结局触发条件摘要
+    bad_endings: (function() {
+      var _be = {};
+      if (typeof BAD_ENDINGS !== 'undefined') {
+        for (var _k in BAD_ENDINGS) {
+          _be[_k] = {
+            trigger: BAD_ENDINGS[_k].trigger || '',
+            stage_lock: BAD_ENDINGS[_k].stage_lock || ''
+          };
+        }
+      }
+      return _be;
+    })(),
+
+    // 时间流逝规则
+    time_rules: {
+      minutes_per_turn: 30,
+      time_slots: ['早', '上午', '下午', '晚', '深夜'],
+      max_actions_per_turn: 5
+    }
+  }
+}, null, 2) %>

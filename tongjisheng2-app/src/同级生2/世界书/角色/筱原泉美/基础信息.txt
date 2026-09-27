@@ -1,0 +1,142 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 筱原泉美 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=5 / 原版女角 · 文学少女系
+   互斥关系：无
+   核心矛盾：社恐外壳 + 耽美反差 + 1.5倍敏感体质
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 筱原泉美_INFO = {
+  heroine_id: 5,
+  name: '筱原泉美',
+  romanization: 'Shinohara Izumi',
+  age: 17,
+  blood_type: 'A',
+  identity: '八十八学园二年生，图书委员，文学少女',
+  relationship: '主角学妹，初识为图书馆里安静的图书委员；隐藏重度耽美爱好者',
+  home: '八十八町住宅区（与父母同住）',
+  birthday: '11-12',
+  height: 154,
+  weight: 40,
+  three_size: 'B76-W54-H78',
+  cv_implied: '气声系文学少女声线，音量小但尾音绵软',
+
+  appearance: {
+    hair: '黑色长直发及腰，常编一条松松的麻花辫垂在肩前，鬓角碎发垂落遮住半边脸颊',
+    eyes: '圆框眼镜后的圆眼，眼色深褐偏黑，眼神常低垂躲闪，谈起文学时会突然抬眼发亮',
+    body: '肤色苍白得近乎透明（常年图书馆不见阳光），身材纤细娇小，肩背微缩，锁骨明显',
+    feature: '左手腕内侧有一粒浅色痣，书读久了会无意识咬下唇；耳尖极易泛红，一紧张就红到脖颈',
+    clothing_default: '校服穿得过于规矩：领口扣到最上一颗、袖子长到盖住指节、裙摆及膝以下；课外常配米白色开衫与斜挎书袋，怀里永远抱着一本书'
+  },
+
+  personality: {
+    mbti: 'INFP',
+    tags: ['文静文学少女', '耽美反差', '极度敏感体质'],
+    public_face: '沉默寡言的图书委员，不敢与人眼神接触',
+    social_face: '谈起文学时眼睛发亮，会推荐书单',
+    intimate_face: '耽美幻想成真，敏感体质被开发后无法自控，反差极大'
+  },
+
+  preferences: {
+    like_food: ['抹茶', '和果子', '文学书（可作礼物）'],
+    hate_food: ['辛辣', '咖啡'],
+    hobby: ['读书（古典文学+耽美小说）', '写作', '收集书签'],
+    gift_pref: ['文学书（特别是古典文学）', '保育绘本', '手工巧克力', '银项链'],
+    topic_pref: ['古典文学', '耽美小说（隐晦）', '书评', '图书馆']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '无',
+    family: '父母（八十八町普通家庭，父亲上班族，母亲主妇，对泉美关心但不深入）',
+    friends: ['图书委员同事（仅工作交流）', '商业区书店店主（熟客关系）']
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '通过文学话题切入，需要耐心突破她的社恐外壳；强行亲密会让她彻底崩溃；泉美敏感体质被开发后会产生强烈依赖',
+    warning: '强迫初H触发 BAD_END_1_报警 + 关系破裂（泉美会转学）—— 她的处女之身与心理防线绑定，强行突破=报警转学'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁文学少女/图书委员：社恐外壳 + 耽美反差，1.5倍敏感体质
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'B',
+    bust_size: 76,
+    waist_size: 54,
+    hip_size: 78,
+    height: 154,
+    weight: 40,
+
+    // 胸部详细（6 列）— 纤细娇小，苍白得近乎透明
+    nipple_size: '小',
+    nipple_color: '粉嫩',
+    areola_size: '小',
+    breast_shape: '挺拔',
+    breast_sensitivity: 150,
+    lactation: '性欲起来后出奶',
+
+    // 腰部（2 列）— A4腰，纤细得能一手握住
+    waist_shape: 'A4腰',
+    waist_sensitivity: 150,
+
+    // 手部（2 列）— 长年握笔的文学少女手
+    hand_desc: '纤细白皙，常沾墨渍',
+    nail_style: '无',
+
+    // 臀部（3 列）— 纤细身形的圆润
+    hip_shape: '圆润',
+    hip_sensitivity: 150,
+    anal_desc: '未开发',
+
+    // 下体详细（8 列）— 处女之身与心理防线绑定，极紧虹吸
+    pubic_hair: '无毛',
+    labia_size: '偏小',
+    labia_color: '粉嫩',
+    vaginal_tightness: '极紧',
+    vaginal_special: '虹吸',
+    lubrication_level: '常年出水',
+    hymen_status: '完整',
+    fertility: '极易孕',
+
+    // 敏感度综合（3 列）— 文学少女的智性恋：文字即前戏
+    body_sensitivity: 150,
+    sensitive_zones: '耳尖,颈侧,锁骨,手指(常沾墨),发际线,腰窝',
+    arousal_triggers: '书页翻动声,耽美段落朗读,被理解,眼镜后眼神接触,文字挑逗,墨水味'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 65,           // 魅力（外貌吸引力）
+    academic: 75,        // 学业（学习成绩）
+    physical: 45,        // 体力（体能/运动）
+    social: 40,          // 社交（交际能力）
+    perception: 60,      // 敏感（察言观色/直觉）
+    reputation: 70,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 25,        // 力量（物理对抗/搬运）
+    agility: 40,         // 敏捷（反应/逃跑）
+    intelligence: 75,    // 智力（解谜/计划）
+    will_skill: 50,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 40,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 35,         // 烹饪（料理）
+    art: 70,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 15,        // 格斗（防身）
+    observation: 60,     // 观察（情报收集）
+    romance_skill: 25    // 恋爱（约会/亲密推进）
+  }
+};
+%>
+
+筱原泉美 · 基础信息已加载。当前女角 row_id=5，互斥关系：无。初始关系：affection=0, heartbeat=0, jealousy=0, trust=0（完全陌生）。警告：强迫初H触发 BAD_END_1_报警 + 关系破裂（泉美会转学）。

@@ -1,0 +1,1 @@
+var e=new Set,t=new Set;function n(){for(let e of t)e()}function r(t,r){let i=e.has(t);r?e.add(t):e.delete(t),i!==r&&n()}function i(t){return Array.from(e).some(e=>e!==t)}function a(e){return t.add(e),()=>{t.delete(e)}}export{r as n,a as r,i as t};

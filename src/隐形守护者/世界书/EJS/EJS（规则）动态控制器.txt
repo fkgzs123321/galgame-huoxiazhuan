@@ -1,0 +1,7 @@
+@@generate_before
+<%_
+// Lovelive 无单独「规则控制器」；本卡仅 getwi 可选说明类灰灯（不占常驻 token）
+_%>
+<%- await getwi(null, '开局初始化SQL') %>
+<%- await getwi(null, '全局正则导入说明') %>
+<%- await getwi(null, '前端面板说明') %>

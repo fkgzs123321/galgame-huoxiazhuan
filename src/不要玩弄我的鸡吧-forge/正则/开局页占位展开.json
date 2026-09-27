@@ -1,0 +1,17 @@
+{
+  "id": "a1b2c3d4-0009-4000-8000-000000000009",
+  "scriptName": "开局页占位展开 - 将开局页标签替换为粉色磨砂玻璃加载界面",
+  "findRegex": "<OpeningPage\\s*></OpeningPage>|<OpeningPage\\s*/?>",
+  "replaceString": "<div data-fjb-opening=\"1\" data-fjb-remote-state=\"loading\" aria-busy=\"true\" style=\"position:relative;min-height:min(480px,max(320px,calc(100dvh - 160px)));width:100%;box-sizing:border-box;padding:24px 18px;display:grid;place-items:center;text-align:center;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#fff0f5;background:radial-gradient(circle at 22% 0%,rgba(255,182,193,.28),transparent 34%),linear-gradient(180deg,#fff0f5 0%,#ffe4ec 54%,#ffd1dc 100%);border:1px solid rgba(255,105,180,.25);border-radius:16px;overflow:hidden\">\n  <div style=\"position:relative;z-index:1;width:min(560px,100%);display:grid;gap:14px;place-items:center;padding:24px 16px;box-sizing:border-box;background:linear-gradient(180deg,rgba(255,240,245,.72),rgba(255,228,236,.64));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,105,180,.22);border-radius:14px;box-shadow:0 12px 36px rgba(255,105,180,.18)\">\n    <div aria-hidden=\"true\" style=\"width:44px;height:44px;box-sizing:border-box;border-radius:50%;border:3px solid rgba(255,182,193,.3);border-top-color:#ff69b4;animation:fjbOpeningSpin 1s linear infinite\"></div>\n    <div style=\"font-size:20px;color:#ff69b4;letter-spacing:2px;font-weight:700\">✦ 不要玩弄我的鸡吧</div>\n    <div style=\"font-size:11px;color:rgba(139,58,82,.6);letter-spacing:1.6px;font-weight:500\">OPENING · 控制中心加载中</div>\n    <div role=\"status\" aria-live=\"polite\" style=\"font-size:13px;line-height:1.85;color:rgba(139,58,82,.85);max-width:480px\">开局界面加载中…<br>正在初始化控制中心与状态栏，请稍候。<br>首次打开或切换存档时可能需要一点时间。</div>\n    <div aria-hidden=\"true\" style=\"width:min(320px,88%);height:4px;border-radius:999px;background:rgba(255,182,193,.18);overflow:hidden\"><div style=\"width:42%;height:100%;border-radius:inherit;background:linear-gradient(90deg,rgba(255,105,180,.7),#ff1493);animation:fjbOpeningProgress 1.6s ease-in-out infinite\"></div></div>\n    <button type=\"button\" data-fjb-opening-retry hidden style=\"min-width:140px;min-height:44px;padding:10px 22px;border:1px solid rgba(255,105,180,.58);border-radius:9px;color:#fff4df;background:linear-gradient(180deg,rgba(255,105,180,.88),rgba(193,51,128,.92));font-weight:700;cursor:pointer\">重新加载开局页</button>\n  </div>\n</div>\n<style>@keyframes fjbOpeningSpin{to{transform:rotate(360deg)}}@keyframes fjbOpeningProgress{0%{transform:translateX(-110%)}55%{transform:translateX(100%)}100%{transform:translateX(250%)}}@media(max-width:560px){[data-fjb-opening]{min-height:min(420px,max(280px,calc(100dvh - 112px)));padding:18px 10px;border-radius:12px}}@media(prefers-reduced-motion:reduce){[data-fjb-opening] [aria-hidden=\"\"]{animation:none}}</style>\n",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": null,
+  "maxDepth": null
+}

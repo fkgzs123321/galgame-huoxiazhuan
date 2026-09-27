@@ -1,0 +1,182 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 世界观场景控制器
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 读取场景 MVU 变量
+   2. 按 current_location 加载区域场景描述（7 区域选 1）
+   3. 商店物品查表：当前区域可购买的商品 SKU 列表
+   4. 按 day_count 加载日期专属场景（圣诞/跨年/元日）
+   5. 时段专属场景描述（5 时段）
+   6. 天气场景叠加
+   7. 经济打工固定金额查表（基础日薪 × 难度系数 × LCG 档位）
+   8. 强制人物锁定（核心 token 控制）
+   9. 输出本轮场景合法性清单给 AI
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取场景 MVU 变量 ─── */
+const _scene = getvar('stat_data.场景', { scope: 'local', defaults: {} }) || {};
+const _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+const _protag = getvar('stat_data.主角', { scope: 'local', defaults: {} }) || {};
+const _temp = getvar('stat_data.临时', { scope: 'local', defaults: {} }) || {};
+
+const _location = _scene.当前地点 || '主角自宅客厅';
+const _dayCount = Number(_time.天数) || 1;
+const _tslot = _time.时段;
+const _weather = _time.天气 || '晴';
+const _hid = _scene.当前女角名 || '无';
+const _sceneMode = _scene.场景模式 || '休息';
+const _difficulty = _temp.当前难度;
+
+/* 主角状态（移除兜底值，变量未初始化时返回 NaN，避免掩盖 P1 默认值问题） */
+const _physical = Number(_protag.体力);
+const _fatigue = Number(_protag.疲劳) || 0;
+const _academic = Number(_protag.学业);
+const _charm = Number(_protag.魅力);
+
+/* ─── 2. 区域判定 ─── */
+function _resolveRegion(loc) {
+  if (loc.includes('自宅') || loc.includes('鸣泽家') || loc.includes('水野家') || loc.includes('信良家') || loc.includes('芳树家')) return '自宅周边';
+  if (loc.includes('学园') || loc.includes('校庭') || loc.includes('体育馆') || loc.includes('弓箭') || loc.includes('校舍') || loc.includes('屋顶')) return '八十八学园';
+  if (loc.includes('车站') || loc.includes('旅行代理店') || loc.includes('便利店') || loc.includes('咖啡店') || loc.includes('88公园') || loc.includes('白蛇池') || loc.includes('商业')) return '八十八町商业区';
+  if (loc.includes('海岸') || loc.includes('海水浴场') || loc.includes('灯塔')) return '八十八海岸';
+  if (loc.includes('温泉') || loc.includes('旅馆') || loc.includes('如月神宫') || loc.includes('游园地') || loc.includes('电影院') || loc.includes('游乐中心') || loc.includes('才艺中心')) return '温泉乡';
+  if (loc.includes('医院') || loc.includes('病栋') || loc.includes('病房')) return '88市民医院';
+  if (loc.includes('保育园') || loc.includes('花园')) return '保育园';
+  return '八十八町商业区';
+}
+const _region = _resolveRegion(_location);
+
+/* ─── 3. 商店物品查表 ─── */
+const _shopItems = (typeof SHOP_BY_REGION !== 'undefined' && SHOP_BY_REGION[_region]) || [];
+const _shopItemList = _shopItems.map(name => {
+  const item = (typeof SHOP_ITEMS !== 'undefined' && SHOP_ITEMS[name]) || {};
+  return { name, price: item.price, category: item.category, requirement: item.requirement };
+});
+
+/* ─── 4. 经济打工固定金额查表 ─── */
+const _jobByRegion = {
+  '八十八町商业区': ['便利店打工', '咖啡店帮忙', '家教', '车站搬运'],
+  '温泉乡': ['温泉旅馆服务'],
+  '自宅周边': [],
+  '八十八学园': ['家教'],
+  '八十八海岸': [],
+  '88市民医院': [],
+  '保育园': []
+};
+
+const _jobRequirements = {
+  '便利店打工':    { physical: 20, fatigue_max: 80, extra: {} },
+  '咖啡店帮忙':    { physical: 20, fatigue_max: 80, extra: { '鸣泽美佐子': { affection: 20 } } },
+  '家教':          { physical: 30, fatigue_max: 70, academic: 50, extra: {} },
+  '车站搬运':      { physical: 40, fatigue_max: 60, extra: {} },
+  '温泉旅馆服务':  { physical: 30, fatigue_max: 70, extra: {} },
+  '偶像助理':      { physical: 25, fatigue_max: 70, extra: { '舞岛可怜': { affection: 40 } } }
+};
+
+function _checkJobRequirements(jobName) {
+  const req = _jobRequirements[jobName];
+  if (!req) return { allowed: false, reason: '未知工作' };
+  if (_physical < req.physical) return { allowed: false, reason: `体力不足 ${_physical}/${req.physical}` };
+  if (_fatigue > req.fatigue_max) return { allowed: false, reason: `疲劳过高 ${_fatigue}/${req.fatigue_max}` };
+  if (req.academic && _academic < req.academic) return { allowed: false, reason: `学业不足 ${_academic}/${req.academic}` };
+  return { allowed: true, reason: '通过' };
+}
+
+const _availableJobs = (_jobByRegion[_region] || []).map(job => {
+  const base = (typeof BASE_SALARY !== 'undefined' && BASE_SALARY[job]) || 0;
+  const check = _checkJobRequirements(job);
+  return {
+    job,
+    base_salary: base,
+    requirements: _jobRequirements[job],
+    check
+  };
+});
+
+/* ─── 5. 难度系数 ─── */
+const _diffConfig = (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) || { money_mult: 1.0, dice_threshold_mult: 1.0 };
+%>
+
+<%/* ─── 6. 加载对应区域条目（7 选 1） ─── */%>
+<% if (_region === '自宅周边') { %>
+<%- await getwi('自宅周边') %>
+<% } else if (_region === '八十八学园') { %>
+<%- await getwi('八十八学园') %>
+<% } else if (_region === '八十八町商业区') { %>
+<%- await getwi('八十八町商业区') %>
+<% } else if (_region === '八十八海岸') { %>
+<%- await getwi('八十八海岸') %>
+<% } else if (_region === '温泉乡') { %>
+<%- await getwi('温泉乡') %>
+<% } else if (_region === '88市民医院') { %>
+<%- await getwi('88市民医院') %>
+<% } else if (_region === '保育园') { %>
+<%- await getwi('保育园') %>
+<% } %>
+
+<%/* ─── 7. 日期专属场景（关键节点） ─── */%>
+<% if (_dayCount === 4) { %>
+<%- await getwi('圣诞夜') %>
+<% } else if (_dayCount === 10) { %>
+<%- await getwi('跨年') %>
+<% } else if (_dayCount === 11) { %>
+<%- await getwi('元日') %>
+<% } %>
+
+<%/* ─── 8. 时段专属场景描述 ─── */%>
+<% if (_tslot === '深夜') { %>
+[时段设定：深夜（22:00 ~ 06:00）。多数商铺已关门，街道冷清。可触发深夜醉酒/浴室偶遇/卧室偷情等 NSFW 场景。但需注意噪音控制，过大声响会引来邻居或家人。深夜不强制睡眠，由生存属性决定（fatigue≥80 才强制休息）。]
+<% } else if (_tslot === '晚') { %>
+[时段设定：晚（17:00 ~ 22:00）。晚餐时段，多数女角已回家。可邀请约会或共进晚餐。咖啡店《憩》营业至 21:00。]
+<% } else if (_tslot === '下午') { %>
+[时段设定：下午（12:00 ~ 17:00）。最适合约会与外出的时段。商业区与海岸活动高峰。]
+<% } else if (_tslot === '上午') { %>
+[时段设定：上午（09:00 ~ 12:00）。学园开放时段，可去打工或上学。便利店/咖啡店开始营业。]
+<% } else { %>
+[时段设定：早（06:00 ~ 09:00）。起床时段，多数人在家或上学路上。早餐由美佐子准备。]
+<% } %>
+
+<%/* ─── 9. 天气场景叠加 ─── */%>
+<% if (_weather === '雪') { %>
+[天气：飘雪/暴雪。街道积雪，行走速度减慢。海岸与商业区人流减少。温泉乡更受欢迎。户外约会需注意保暖。暴雪时学校停课，多数店铺关门，仅自宅与咖啡店可活动。NSFW 触发率上升。打工取消，无收入。]
+<% } else if (_weather === '雨') { %>
+[天气：下雨。户外活动受限，遮蔽场所（咖啡店/便利店/学园）人流增加。海岸无人。]
+<% } %>
+
+<%/* ─── 10. 强制人物锁定（核心 token 控制） ─── */%>
+[人物锁定指令：本时段（day=<%= _dayCount %>, slot=<%= _tslot %>, loc=<%= _location %>, region=<%= _region %>）只能出现寒假日程调度器中明确列出的女角。
+禁止引入未在调度器中列出的任何女角。如玩家试图主动接触未列出女角，必须用以下方式拒绝：
+- 若该女角当前位置不在此地点：以"她不在这里"为由拒绝
+- 若该女角当前时段不在可遭遇列表：以"现在这个时间遇不到她"为由拒绝
+- 若该女角尚未在剧情中登场：以"主角还不认识她"为由拒绝
+强行违反此锁定将触发死结局机制（详见防口胡条目）。
+
+区域商店：当前区域可购买商品已通过固定物品效果表锁定，AI 不可私自生成商品。商品 SKU 见下方 JSON 输出。
+经济打工：当前区域可打工工作已通过固定金额表锁定，AI 不可私自设定日薪。实际收入 = 基础日薪 × 难度系数（<%= _diffConfig.money_mult %>）× LCG档位（灰×0.8/绿×1.0/蓝×1.2/紫×1.5/金×2.0）。]
+
+<%/* ─── 11. 输出本轮场景合法性清单给 AI ─── */%>
+<%= JSON.stringify({
+  scene: {
+    region: _region,
+    location: _location,
+    time_slot: _tslot,
+    weather: _weather,
+    day_count: _dayCount,
+    scene_mode: _sceneMode
+  },
+  shop: {
+    available_items: _shopItemList,
+    rule: 'AI 不可私自生成物品，必须从此 SKU 列表选择。价格固定，难度不影响价格。'
+  },
+  jobs: {
+    available: _availableJobs,
+    salary_formula: '基础日薪 × 难度系数(' + _diffConfig.money_mult + ') × LCG档位',
+    rule: 'AI 不可私自设定日薪，必须按公式计算。'
+  },
+  character_lock: {
+    rule: '只能出现调度器列出的女角',
+    violation_bad_ending: '强行违反触发死结局'
+  }
+}, null, 2) %>

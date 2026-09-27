@@ -1,0 +1,388 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 主调度控制器（核心调度器）
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 加载全局规则总表（规则单一来源）
+   2. 加载固定物品效果表（SKU 单一来源）
+   3. 加载 LCG 骰子引擎（最先执行，所有控制器共享种子）
+   4. 读取 MVU 变量（时间/场景/主角/临时/经济）
+   5. 身份校验（开局固定为李逍遥，运行时不可改）
+   6. 难度系数应用（4 档：简单/普通/困难/噩梦 × 6 维度修正）
+   7. 时间锁检查（每楼层固定流逝 30 分钟，超时事件拆分多楼层）
+   8. 行动次数检查（≤5/日）
+   9. 体力/灵力/心情强制规则
+   10. 死结局触发器（8 类）
+   11. 加载章节调度（按 stat_data.世界.当前章节，6 章节）
+   12. 按 scene_mode 切换系统提示（探索/战斗/对话/炼丹/休憩）
+   13. 输出本轮合法性清单给 AI
+   ════════════════════════════════════════════════════════════ */%>
+
+<%/* ─── 1. 加载全局规则总表 ─── */%>
+<%- await getwi('EJS预处理/全局规则总表') %>
+
+<%/* ─── 2. 加载固定物品效果表 ─── */%>
+<%- await getwi('EJS预处理/固定物品效果表') %>
+
+<%/* ─── 3. 加载 LCG 骰子引擎（最先执行，所有控制器共享种子） ─── */%>
+<%- await getwi('EJS预处理/LCG骰子/引擎') %>
+
+<%
+/* ─── 4. 读取 MVU 变量 ─── */
+const _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+const _scene = getvar('stat_data.场景', { scope: 'local', defaults: {} }) || {};
+const _protag = getvar('stat_data.主角', { scope: 'local', defaults: {} }) || {};
+const _temp = getvar('stat_data.临时', { scope: 'local', defaults: {} }) || {};
+const _econ = getvar('stat_data.经济', { scope: 'local', defaults: {} }) || {};
+
+/* 时间变量 */
+const _gameDate = _time.游戏日期 || '仙剑历0001年01月01日';
+const _timeSlot = _time.时间段 || '上午';
+const _timeSlotIdx = {'黎明':1,'早晨':2,'上午':3,'中午':4,'下午':5,'傍晚':6,'夜晚':7,'深夜':8}[_timeSlot] || 3;
+const _dayCount = Number(_time.天数) || 1;
+
+/* 场景变量 */
+const _sceneMode = _scene.场景模式 || '探索';
+const _currentLocation = _scene.当前地点 || '余杭镇客栈';
+const _currentChapter = _scene.当前章节 || '仙灵岛';
+const _currentChapterIdx = {'仙灵岛':1,'苏州':2,'京城':3,'蜀山锁妖塔':4,'苗疆':5,'结局':6}[_currentChapter] || 1;
+
+/* 主角变量（开局固定为李逍遥） */
+const _heroName = _protag.姓名 || '李逍遥';
+const _heroLevel = Number(_protag.等级) || 1;
+const _heroExp = Number(_protag.经验值) || 0;
+const _heroHP = Number(_protag.HP) || 300;
+const _heroMaxHP = Number(_protag.HP上限) || 300;
+const _heroMP = Number(_protag.MP) || 50;
+const _heroMaxMP = Number(_protag.MP上限) || 50;
+
+/* 六维属性 */
+const _martial = Number(_protag.武术) || 10;
+const _physique = Number(_protag.体质) || 10;
+const _spirit = Number(_protag.灵力) || 10;
+const _root = Number(_protag.根骨) || 10;
+const _agility = Number(_protag.身法) || 10;
+const _luck = Number(_protag.吉运) || 10;
+
+/* 生存属性（体力/灵力/心情） */
+const _stamina = Number(_protag.体力) || 100;
+const _spiritPower = Number(_protag.灵力值) || 100;
+const _mood = Number(_protag.心情) || 70;
+
+/* 经济变量 */
+const _copper = Number(_econ.铜钱) || 500;
+
+/* 临时变量 */
+const _difficulty = _temp.当前难度 || '普通';
+const _turnActions = Number(_temp.本日行动次数) || 0;
+const _floorCount = Number(_temp.本时段楼层数) || 0;
+
+/* 死结局追踪变量 */
+const _poisonDays = Number(_temp.中毒天数) || 0;
+const _lockTowerDays = Number(_temp.锁妖塔停留天数) || 0;
+const _lingErDead = Number(_temp.灵儿死亡) === 1;
+const _yueRuDead = Number(_temp.月如死亡) === 1;
+const _shushanHostile = Number(_temp.蜀山派敌对) === 1;
+const _waterDemonSealed = Number(_temp.水魔兽已封印) === 1;
+const _nuwaBloodlineAwakened = Number(_temp.女娲血脉已觉醒) === 1;
+const _attemptedDeicide = Number(_temp.妄图弑神) === 1;
+
+/* ─── 5. 身份校验（开局固定为李逍遥，运行时不可改） ─── */
+const _VALID_HERO = '李逍遥';
+if (_heroName !== _VALID_HERO) {
+  /* 异常身份，强制重置为李逍遥 */
+  setvar('stat_data.主角.姓名', _VALID_HERO, { scope: 'local' });
+}
+const _playerIdentity = _VALID_HERO;
+
+/* ─── 6. 难度系数应用（4 档：简单/普通/困难/噩梦 × 6 维度修正） ─── */
+const DIFFICULTY_MODIFIERS = {
+  '简单': { dice_threshold_mult: 0.8, money_mult: 1.5, decrease_mult: 0.5, increase_mult: 1.5, per_turn_cap: 7, exp_mult: 1.3 },
+  '普通': { dice_threshold_mult: 1.0, money_mult: 1.0, decrease_mult: 1.0, increase_mult: 1.0, per_turn_cap: 5, exp_mult: 1.0 },
+  '困难': { dice_threshold_mult: 1.2, money_mult: 0.7, decrease_mult: 1.5, increase_mult: 0.8, per_turn_cap: 5, exp_mult: 0.8 },
+  '噩梦': { dice_threshold_mult: 1.5, money_mult: 0.5, decrease_mult: 2.0, increase_mult: 0.6, per_turn_cap: 4, exp_mult: 0.6 }
+};
+const _diffConfig = DIFFICULTY_MODIFIERS[_difficulty] || DIFFICULTY_MODIFIERS['普通'];
+const _diceMult = _diffConfig.dice_threshold_mult;
+const _moneyMult = _diffConfig.money_mult;
+const _decreaseMult = _diffConfig.decrease_mult;
+const _increaseMult = _diffConfig.increase_mult;
+const _perTurnCap = _diffConfig.per_turn_cap;
+const _expMult = _diffConfig.exp_mult;
+%>
+
+<%/* ─── 6.5 按场景模式加载扩展模块（token 优化：从全局规则总表拆分，按需加载）
+   加载策略（与 EJS精准控制框架.txt 对齐）：
+   - 战斗模式 → 加载 五灵法术体系 + 剑法绝技系统（战斗需法术伤害/剑法判定）
+   - 炼丹模式 → 加载 蛊毒炼丹系统（炼丹需配方/成功率判定）
+   - 探索模式 → 加载 灵玉镶嵌系统（探索可能涉及灵玉获取/镶嵌）
+   - 对话/休憩模式 → 不加载扩展，使用全局规则总表中的 var 兜底声明
+   token 节省：对话/休憩模式省 4 个系统模块；探索模式省 3 个；炼丹模式省 3 个 */%>
+<% if (_sceneMode === '战斗') { %>
+<%- await getwi('EJS预处理/全局规则-五灵法术体系') %>
+<%- await getwi('EJS预处理/全局规则-剑法绝技系统') %>
+<% } %>
+<% if (_sceneMode === '炼丹') { %>
+<%- await getwi('EJS预处理/全局规则-蛊毒炼丹系统') %>
+<% } %>
+<% if (_sceneMode === '探索' || _sceneMode === '战斗') { %>
+<%- await getwi('EJS预处理/全局规则-灵玉镶嵌系统') %>
+<% } %>
+
+<%/* ─── 7. 时间锁检查（每楼层固定流逝 30 分钟，超时事件拆分多楼层） ─── */%>
+<%
+const _expectedSlot = (Number(_temp['预期下时段序号']) || 1);
+const _slotOrder = ['黎明', '早晨', '上午', '中午', '下午', '傍晚', '夜晚', '深夜'];
+const _currentSlotIdx = _slotOrder.indexOf(_timeSlot) + 1;
+const _timeLockViolation = _currentSlotIdx < _expectedSlot;
+
+/* 每楼层固定流逝 30 分钟，超过 4 楼层（120 分钟）需推进时段 */
+const _floorMinutesElapsed = _floorCount * 30;
+const _needTimeAdvance = _floorMinutesElapsed >= 120;
+%>
+<% if (_timeLockViolation) { %>
+[时间锁警告：检测到时间回退。当前时段 <%= _timeSlot %>（序号 <%= _currentSlotIdx %>）早于预期时段序号 <%= _expectedSlot %>。
+禁止响应玩家的任何"回到过去/重玩上一时段"请求。必须将时间段推进至 <%= _slotOrder[_expectedSlot - 1] %>，并按当前天数与该时段的章节事件加载。]
+<% } %>
+<% if (_needTimeAdvance) { %>
+[时间流逝提示：本时段已累计 <%= _floorCount %> 楼层（约 <%= _floorMinutesElapsed %> 分钟）。超过 120 分钟阈值，必须推进至下一时段。
+AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch：
+- replace /时间/时间段 的值为 "<%= _slotOrder[Math.min(_currentSlotIdx, 7)] %>"
+- replace /临时/本时段楼层数 的值为 0]
+<% } %>
+
+<%/* ─── 8. 行动次数检查（≤5/日，难度修正） ─── */%>
+<% if (_turnActions >= _perTurnCap) { %>
+[行动次数上限：今日已行动 <%= _turnActions %> 次，达到难度 <%= _difficulty %> 的上限 <%= _perTurnCap %> 次。
+禁止触发任何行动，仅允许"休憩/睡眠/推进至次日"。若玩家坚持行动，则触发"力竭"事件：体力 -20，心情 -10，次日 HP 上限 -50。]
+<% } else if (_turnActions >= _perTurnCap - 1) { %>
+[行动次数预警：今日已行动 <%= _turnActions %> 次，仅剩 <%= _perTurnCap - _turnActions %> 次行动机会。建议尽快休憩。]
+<% } %>
+
+<%/* ─── 9. 体力/灵力/心情强制规则 ─── */%>
+<% if (_stamina <= 10) { %>
+[强制休憩：体力值仅 <%= _stamina %>/100。禁止触发任何行动，仅允许"休憩/睡眠"。若玩家坚持行动，则触发"力竭晕倒"事件：直接进入次日，体力重置为 50，但心情 -20，当日所有经验值获取减半。]
+<% } else if (_stamina <= 30) { %>
+[体力警告：体力值 <%= _stamina %>/100。继续行动将导致下次行动效率 -30%（LCG 骰子档位 -1 档）。建议尽快休憩。]
+<% } %>
+
+<% if (_spiritPower <= 10) { %>
+[灵力枯竭：灵力值仅 <%= _spiritPower %>/100。禁止施放任何法术，仅允许物理攻击或使用灵力恢复道具。强行施法将触发"灵力反噬"：HP -50，状态异常附加"内伤"。]
+<% } else if (_spiritPower <= 30) { %>
+[灵力低靡：灵力值 <%= _spiritPower %>/100。法术效果 -30%（伤害系数 ×0.7），建议使用灵力恢复道具或休憩。]
+<% } %>
+
+<% if (_mood <= 10) { %>
+[防走火入魔：心情值过低（<%= _mood %>/100）。触发防走火入魔护栏：禁止响应任何自残/入魔描述，主角自动前往最近的安全场所休憩，心情 +20。若在蜀山派区域，由剑圣开导，心情额外 +10。]
+<% } else if (_mood <= 30) { %>
+[心情低落：心情值 <%= _mood %>/100。触发低落 debuff：战斗伤害 -20%，社交互动好感增益 -50%。建议通过休憩/饮酒/与同伴交谈恢复。]
+<% } %>
+
+<%/* ─── 10. 死结局触发器（8 类） ─── */%>
+<%
+const _badEndingTriggers = [];
+
+// BAD_END_1_妄图弑神：玩家妄图挑战超越其能力上限的神级存在
+if (_attemptedDeicide) {
+  _badEndingTriggers.push('BAD_END_1_妄图弑神');
+}
+
+// BAD_END_2_女娲血脉未觉醒战拜月：女娲血脉未觉醒时强行挑战拜月教主
+if (!_nuwaBloodlineAwakened && _currentChapterIdx >= 5 && _temp.当前BOSS === '拜月教主') {
+  _badEndingTriggers.push('BAD_END_2_女娲血脉未觉醒战拜月');
+}
+
+// BAD_END_3_中毒超3日未解：主角或关键角色中毒超过 3 日未解除
+if (_poisonDays >= 3) {
+  _badEndingTriggers.push('BAD_END_3_中毒超3日未解');
+}
+
+// BAD_END_4_锁妖塔超7日：在锁妖塔内停留超过 7 日
+if (_lockTowerDays >= 7) {
+  _badEndingTriggers.push('BAD_END_4_锁妖塔超7日');
+}
+
+// BAD_END_5_灵儿死亡未救：赵灵儿死亡且未及时使用还魂术/圣灵珠救援
+if (_lingErDead) {
+  _badEndingTriggers.push('BAD_END_5_灵儿死亡未救');
+}
+
+// BAD_END_6_月如死亡未救：林月如死亡且未及时使用傀儡虫/圣灵珠救援
+if (_yueRuDead) {
+  _badEndingTriggers.push('BAD_END_6_月如死亡未救');
+}
+
+// BAD_END_7_蜀山派敌对：与蜀山派关系彻底破裂，无法获得锁妖塔通行与剑圣支援
+if (_shushanHostile && _currentChapterIdx >= 4) {
+  _badEndingTriggers.push('BAD_END_7_蜀山派敌对');
+}
+
+// BAD_END_8_水魔兽未封印：最终决战时水魔兽未被封印，导致天下大乱
+if (!_waterDemonSealed && _currentChapterIdx >= 6) {
+  _badEndingTriggers.push('BAD_END_8_水魔兽未封印');
+}
+%>
+
+<% if (_badEndingTriggers.length > 0) { %>
+<% for (const be of _badEndingTriggers) { %>
+[死结局触发：<%= be %>。
+请立即生成对应死结局叙事，不再响应玩家任何挽回请求。
+【MVU 变量更新指令】AI 必须在 <UpdateVariable> 块中输出以下 JSONPatch（额外模型模式下由额外模型处理）：
+- replace /临时/死结局标识 的值为 "<%= be %>"
+<UpdateTable>
+UPDATE global_state SET system_alert = '崩坏', bad_end_triggered = 1, bad_end_type = '<%= be %>' WHERE row_id = 1;
+</UpdateTable>]
+<% } %>
+<% } %>
+
+<%/* ─── 11. 加载章节调度（按 stat_data.世界.当前章节，6 章节） ─── */%>
+<%
+var _chapterMap = {
+  1: 'EJS预处理/章节调度/仙灵岛',
+  2: 'EJS预处理/章节调度/苏州',
+  3: 'EJS预处理/章节调度/京城',
+  4: 'EJS预处理/章节调度/蜀山锁妖塔',
+  5: 'EJS预处理/章节调度/苗疆',
+  6: 'EJS预处理/章节调度/结局'
+};
+%>
+<% if (_chapterMap[_currentChapterIdx]) { %>
+<%- await getwi(_chapterMap[_currentChapterIdx]) %>
+<% } else { %>
+<%- await getwi('EJS预处理/章节调度/仙灵岛') %>
+<% } %>
+
+<%/* ─── 11.5 按章节加载结局机制（token 优化：仅结局章/BAD_END 触发时加载） ─── */%>
+<% var _needEndingMatrix = (_currentChapterIdx >= 6 || _badEndingTriggers.length > 0); %>
+<% if (_needEndingMatrix) { %>
+<%- await getwi('事件/结局分支矩阵') %>
+<% } %>
+
+<%/* ─── 12. 按 scene_mode 切换系统提示（探索/战斗/对话/炼丹/休憩） ─── */%>
+<% if (_sceneMode === '战斗') { %>
+<%- await getwi('D0指令/战斗模式') %>
+<% } else if (_sceneMode === '对话') { %>
+<%- await getwi('D0指令/对话模式') %>
+<% } else if (_sceneMode === '炼丹') { %>
+<%- await getwi('D0指令/炼丹模式') %>
+<% } else if (_sceneMode === '休憩') { %>
+<%- await getwi('D0指令/休憩模式') %>
+<% } else { %>
+<%- await getwi('D0指令/探索模式') %>
+<% } %>
+
+<%/* ─── 13. 输出本轮合法性清单给 AI ─── */%>
+<%= JSON.stringify({
+  current_state: {
+    game_date: _gameDate,
+    day_count: _dayCount,
+    time_slot: _timeSlot,
+    time_slot_idx: _timeSlotIdx,
+    location: _currentLocation,
+    scene_mode: _sceneMode,
+    chapter: _currentChapter,
+    chapter_idx: _currentChapterIdx,
+    hero_name: _playerIdentity
+  },
+  difficulty: {
+    name: _difficulty,
+    dice_threshold_mult: _diceMult,
+    money_mult: _moneyMult,
+    decrease_mult: _decreaseMult,
+    increase_mult: _increaseMult,
+    per_turn_cap: _perTurnCap,
+    exp_mult: _expMult
+  },
+  protagonist: {
+    name: _heroName,
+    level: _heroLevel,
+    exp: _heroExp,
+    hp: _heroHP,
+    max_hp: _heroMaxHP,
+    mp: _heroMP,
+    max_mp: _heroMaxMP,
+    martial: _martial,
+    physique: _physique,
+    spirit: _spirit,
+    root: _root,
+    agility: _agility,
+    luck: _luck,
+    stamina: _stamina,
+    spirit_power: _spiritPower,
+    mood: _mood,
+    copper: _copper
+  },
+  survival_warnings: {
+    stamina: _stamina <= 30 ? (_stamina <= 10 ? 'CRITICAL' : 'WARNING') : 'OK',
+    spirit_power: _spiritPower <= 30 ? (_spiritPower <= 10 ? 'CRITICAL' : 'WARNING') : 'OK',
+    mood: _mood <= 30 ? (_mood <= 10 ? 'CRITICAL' : 'WARNING') : 'OK'
+  },
+  locks: {
+    time_lock: _timeLockViolation ? 'VIOLATED' : 'OK',
+    time_advance_needed: _needTimeAdvance ? 'YES' : 'NO',
+    action_lock: _turnActions >= _perTurnCap ? 'LOCKED' : 'OK',
+    rest_lock: (_stamina <= 10) ? 'FORCED_REST' : 'OK',
+    bad_ending: _badEndingTriggers
+  },
+  death_ending_tracking: {
+    attempted_deicide: _attemptedDeicide,
+    nuwa_bloodline_awakened: _nuwaBloodlineAwakened,
+    poison_days: _poisonDays,
+    lock_tower_days: _lockTowerDays,
+    ling_er_dead: _lingErDead,
+    yue_ru_dead: _yueRuDead,
+    shushan_hostile: _shushanHostile,
+    water_demon_sealed: _waterDemonSealed
+  },
+  chapter_tracking: {
+    current_chapter: _currentChapter,
+    chapter_idx: _currentChapterIdx,
+    total_chapters: 6,
+    chapter_progress: _currentChapterIdx + '/6',
+    ending_matrix_loaded: _needEndingMatrix
+  },
+  rules_loaded: ['全局规则总表', '固定物品效果表', 'LCG骰子引擎', '章节调度/' + _chapterMap[_currentChapterIdx].split('/')[2] + '（chapter=' + _currentChapterIdx + '）'].concat(_needEndingMatrix ? ['结局分支矩阵'] : []).concat(_sceneMode === '战斗' ? ['五灵法术体系', '剑法绝技系统', '灵玉镶嵌系统'] : []).concat(_sceneMode === '炼丹' ? ['蛊毒炼丹系统'] : []).concat(_sceneMode === '探索' ? ['灵玉镶嵌系统'] : []),
+  rules_summary: {
+    // 当前难度系数
+    difficulty: _difficulty,
+    dice_threshold_mult: _diceMult,
+    money_mult: _moneyMult,
+    increase_mult: _increaseMult,
+    decrease_mult: _decreaseMult,
+    per_turn_cap: _perTurnCap,
+    exp_mult: _expMult,
+
+    // 时间流逝规则
+    time_rules: {
+      minutes_per_floor: 30,
+      time_slots: ['黎明', '早晨', '上午', '中午', '下午', '傍晚', '夜晚', '深夜'],
+      max_actions_per_day: _perTurnCap,
+      time_advance_threshold_minutes: 120
+    },
+
+    // 章节划分
+    chapters: {
+      1: '仙灵岛',
+      2: '苏州',
+      3: '京城',
+      4: '蜀山锁妖塔',
+      5: '苗疆',
+      6: '结局'
+    },
+
+    // 死结局清单
+    bad_endings: {
+      'BAD_END_1_妄图弑神': '玩家妄图挑战超越其能力上限的神级存在',
+      'BAD_END_2_女娲血脉未觉醒战拜月': '女娲血脉未觉醒时强行挑战拜月教主',
+      'BAD_END_3_中毒超3日未解': '主角或关键角色中毒超过 3 日未解除',
+      'BAD_END_4_锁妖塔超7日': '在锁妖塔内停留超过 7 日',
+      'BAD_END_5_灵儿死亡未救': '赵灵儿死亡且未及时使用还魂术/圣灵珠救援',
+      'BAD_END_6_月如死亡未救': '林月如死亡且未及时使用傀儡虫/圣灵珠救援',
+      'BAD_END_7_蜀山派敌对': '与蜀山派关系彻底破裂，无法获得锁妖塔通行与剑圣支援',
+      'BAD_END_8_水魔兽未封印': '最终决战时水魔兽未被封印，导致天下大乱'
+    },
+
+    // 场景模式
+    scene_modes: ['探索', '战斗', '对话', '炼丹', '休憩']
+  }
+}, null, 2) %>

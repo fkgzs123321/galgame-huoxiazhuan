@@ -1,0 +1,1550 @@
+{
+  "projectName": "旮旯给木",
+  "worldbookName": "旮旯给木",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "世界观": {
+      "四态循环": {
+        "path": "世界书/世界观/引擎/四态循环.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "四态循环：在线态、暂停态、离线态、冻结态四种状态的定义与流转",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        }
+      },
+      "反抗与判定": {
+        "path": "世界书/世界观/引擎/反抗与判定.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "反抗与判定：反抗值双源与消耗分级、成功率公式与伪随机骰子、体力流逝、痕迹与已知软肋",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        }
+      },
+      "剧情推进": {
+        "path": "世界书/世界观/引擎/剧情推进.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "剧情推进：以她的偏好为驱动，三条推进源、关卡循环、游戏进度与她的目的进度两条独立轴",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        }
+      },
+      "交互循环": {
+        "path": "世界书/世界观/引擎/交互循环.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "交互循环：选项的五个要素、出招层与结果层的楼层结构、底部按钮、倾向暗示的清晰度、自由打字触发条件",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 13
+        }
+      },
+      "密室世界": {
+        "path": "世界书/世界观/底座_euphoria/密室世界.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "密室世界：纯白空间的房间分布、钥匙与锁孔规则、五关与处刑先例、逃脱条件",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 200
+        }
+      },
+      "兴奋度机制": {
+        "path": "世界书/世界观/引擎/兴奋度机制.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "兴奋度机制：兴奋度的来源与作用、她的兴奋点与自慰、由高兴奋度构成的战术窗口",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 15
+        }
+      },
+      "乐园计划": {
+        "path": "世界书/世界观/底座_euphoria/乐园计划.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "乐园计划：实验目的与睡美人生体核心、B社与C社、学园篇与记忆篇、终局岔路",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 201
+        }
+      },
+      "关卡序列": {
+        "path": "世界书/世界观/底座_euphoria/关卡序列.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "关卡序列：五扇门的路线、装置、以及每关约二十个选项池（微/中/强/极四个反抗等级，每个选项写明她的后果）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 300
+        }
+      },
+      "出招": {
+        "path": "世界书/世界观/引擎/出招.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "出招：她每一层怎么从关卡选项池里挑三到四个摆出来（按诉求/情绪/兴奋度/已封死的路），反抗等级定义，误点判定，自由打字切换",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 18
+        }
+      },
+      "主角": {
+        "path": "世界书/世界观/底座_euphoria/主角.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "主角：高远惠辅，十七岁，六庆馆学园二年、天文社；心底那层东西、和叶的青梅竹马、怎么看这六个人",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 202
+        }
+      },
+      "边界情况": {
+        "path": "世界书/世界观/引擎/边界情况.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "边界情况：她上线时长/间隔的具体层数、自由打字态的两种应对与结算、容错规则（格式错/选项空/第五关满/死路）、以及避免死路的底线规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 29
+        }
+      },
+      "离线行动": {
+        "path": "世界书/世界观/引擎/离线行动.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "离线行动：她不在这段时间能做的七件事（探路/找人/拿东西/找线索/观察她/休息），每件的体力消耗、留下的痕迹、改的变量；她的痕迹扫描与发现后的后果",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 30
+        }
+      },
+      "[mvu_plot]支线": {
+        "path": "世界书/世界观/底座_euphoria/支线.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "支线：六条线（梨香/菜月/凛音/合欢/叶/鬼畜）各自的起头—中间—峰值—撞谁—结局倾向，以及线之间的关系",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 210
+        }
+      },
+      "[mvu_plot]剧情节点表": {
+        "path": "世界书/世界观/底座_euphoria/剧情节点表.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "剧情节点表：六条支线在每一关该发生什么（分线条件→逐关节点的场景/发生/转折→终局收法→与原著的接口）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 211
+        }
+      },
+      "[mvu_plot]学园篇与记忆篇": {
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "学园篇与记忆篇节点表：出密室之后的世界（合欢支配/凛音对抗/天台暖色/暴乱/地下入口）与记忆篇（睡美人/叶的坦白/合欢的真相/最后的岔路）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && ['学园','记忆'].includes(getvar('stat_data.世界.篇章', { defaults: '密室' }))"
+          },
+          {
+            "file": "世界书/世界观/底座_euphoria/学园篇与记忆篇.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 203
+        }
+      },
+      "[mvu_plot]支线·莳羽梨香": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "莳羽梨香线：怯懦爱哭的学妹被推到极限。逐关场面（跟半步的软→抓手腕→照镜子→不想一个人→第一次不哭）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && getvar('stat_data.世界.当前线', { defaults: '未定' }) === '莳羽梨香'"
+          },
+          {
+            "file": "世界书/剧情/支线_莳羽梨香.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 220
+        }
+      },
+      "[mvu_plot]支线·葵菜月": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "葵菜月线：习惯扛事的成年人碎掉。逐关场面（记账→替洗手→对着镜子说不可以倒→楼梯那一声→我扛不动了）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && getvar('stat_data.世界.当前线', { defaults: '未定' }) === '葵菜月'"
+          },
+          {
+            "file": "世界书/剧情/支线_葵菜月.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 221
+        }
+      },
+      "[mvu_plot]支线·白夜凛音": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "白夜凛音线：把规矩当唯一依靠的人破一次例。逐关场面（不合规→挡人→整理袖章→说一条自己的规矩→当众破例）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && getvar('stat_data.世界.当前线', { defaults: '未定' }) === '白夜凛音'"
+          },
+          {
+            "file": "世界书/剧情/支线_白夜凛音.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 222
+        }
+      },
+      "[mvu_plot]支线·真中合欢": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "真中合欢线：她什么都知道还要凑上来。逐关场面（看活人的脸→你手别抖→镜子前的分岔→露出不是游戏的一面→说出为什么）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && getvar('stat_data.世界.当前线', { defaults: '未定' }) === '真中合欢'"
+          },
+          {
+            "file": "世界书/剧情/支线_真中合欢.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 223
+        }
+      },
+      "[mvu_plot]支线·帆刈叶": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "帆刈叶线（Euphoria 线）：抓着你袖子的那个人的真相。逐关场面+学园篇+记忆篇+最后岔路。需合欢线走通才开",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && getvar('stat_data.世界.当前线', { defaults: '未定' }) === '帆刈叶'"
+          },
+          {
+            "file": "世界书/剧情/支线_帆刈叶.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 224
+        }
+      },
+      "[mvu_plot]支线·鬼畜": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "鬼畜线：施虐的位置换人了。拐点条件+逐关场面（她第一次停下→她开始出错→她慌→她变淡→她不动了）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria' && getvar('stat_data.世界.当前线', { defaults: '未定' }) === '鬼畜'"
+          },
+          {
+            "file": "世界书/剧情/支线_鬼畜.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 225
+        }
+      },
+      "[mvu_plot]原著选项对应表": {
+        "path": "世界书/剧情/原著选项对应表.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "原著选项对应表：原作 euphoria 的选项/Bad End 对应到我们池子的哪一类（开场、探索、分线、关键时刻、鬼畜线入口、终局）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 204
+        }
+      }
+    },
+    "扮演准则": {
+      "推演链": {
+        "path": "世界书/扮演准则/推演链.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "推演链：每层输出前的固定推演顺序，读状态到她决策到你的窗口到判定到叙述到变量更新",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        }
+      },
+      "叙述准则": {
+        "path": "世界书/扮演准则/叙述准则.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "叙述准则：第二人称、冷冽克制的笔触、心理侧重、紧凑节奏与四类禁止事项",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        }
+      },
+      "感知禁令": {
+        "path": "世界书/扮演准则/感知禁令.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "感知禁令：能听见她看见她但不能互动，严禁元认知表达，认知错位的三方视角与她对外界异常的忽略",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        }
+      },
+      "玩家的输入": {
+        "path": "世界书/扮演准则/玩家的输入.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "玩家的输入：【硬约束】玩家在 ST 输入框里发来的文字只属于 <user> 的内层，她听不见也看不见；她的反应、台词、选项只从她自己的状态长出来，不跟玩家输入走",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        }
+      },
+      "加载纪律": {
+        "path": "世界书/扮演准则/加载纪律.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "加载纪律：【最高运行规则】这张卡分引擎层与底座包两层；底座内容与引擎规则冲突时以引擎为准，不解释也不在正文里提",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 1
+        }
+      },
+      "判定引擎": {
+        "path": "世界书/扮演准则/判定引擎.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "判定引擎：把前端算好的反抗判定结果交给 AI，并禁止 AI 自己重算；结算完清空判定变量",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 2
+        }
+      },
+      "文风·母猪·一阶": {
+        "path": "世界书/扮演准则/文风·母猪·一阶.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·母猪·一阶：一种可选文风，默认关闭。要用的时候自己在世界书里打开",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      },
+      "文风·母猪·二阶": {
+        "path": "世界书/扮演准则/文风·母猪·二阶.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·母猪·二阶：一种可选文风，默认关闭。要用的时候自己在世界书里打开",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      },
+      "文风·母猪·三阶": {
+        "path": "世界书/扮演准则/文风·母猪·三阶.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·母猪·三阶：一种可选文风，默认关闭。要用的时候自己在世界书里打开",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      },
+      "文风·少妇白洁": {
+        "path": "世界书/扮演准则/文风·少妇白洁.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·少妇白洁：一种可选文风，默认关闭。要用的时候自己在世界书里打开",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      },
+      "文风·无尽骚妈": {
+        "path": "世界书/扮演准则/文风·无尽骚妈.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·无尽骚妈：一种可选文风，默认关闭。要用的时候自己在世界书里打开",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      },
+      "文风·词库": {
+        "path": "世界书/扮演准则/文风·词库.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·词库：所有色情正文共用的词表。器官/形容词/动词/称呼/声音/程度/脏话麻花/拟声词",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 250
+        }
+      },
+      "文风·淫视": {
+        "path": "世界书/扮演准则/文风·淫视.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "文风·淫视：本卡默认笔法。器官当主语，人不当主语。三条手法 + 逐句主语判据",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 249
+        }
+      }
+    },
+    "角色": {
+      "角色速览": {
+        "path": "世界书/角色/速览.yaml",
+        "scope": "catalog",
+        "part": "other",
+        "keywords": [],
+        "abstract": "角色速览：<user>、5 位游戏内女角、7 套屏幕外的她的识别索引",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 30
+        }
+      },
+      "熟练度阶段": {
+        "path": "世界书/角色/屏幕外的她/熟练度阶段.yaml",
+        "scope": "catalog",
+        "part": "other",
+        "keywords": [],
+        "abstract": "她的阶段：熟练度五阶段（新手、上手、沉浸、狂热、收官）的上线时长、间隔、痕迹扫描强度与说话习惯",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 40
+        }
+      },
+      "莳羽梨香": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "莳羽梨香",
+          "梨香"
+        ],
+        "abstract": "莳羽梨香（天文部学妹，怯懦爱哭、任性，一直跟在 <user> 后面）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+          },
+          {
+            "content": "---\n<character_basic character=\"莳羽梨香\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/莳羽梨香/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>\n<character_personality character=\"莳羽梨香\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/莳羽梨香/性格调色盘.yaml"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/莳羽梨香/二次解释.yaml"
+          },
+          {
+            "content": "</character_personality>\n<character_tri_faceted>"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/莳羽梨香/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "莳羽梨香",
+            "梨香"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 400
+        }
+      },
+      "葵菜月": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "葵菜月",
+          "菜月"
+        ],
+        "abstract": "葵菜月（班主任老师，扛事、外强中干，习惯把责任全揽下来）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+          },
+          {
+            "content": "---\n<character_basic character=\"葵菜月\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/葵菜月/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>\n<character_personality character=\"葵菜月\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/葵菜月/性格调色盘.yaml"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/葵菜月/二次解释.yaml"
+          },
+          {
+            "content": "</character_personality>\n<character_tri_faceted>"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/葵菜月/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "葵菜月",
+            "菜月"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 401
+        }
+      },
+      "白夜凛音": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "白夜凛音",
+          "凛音"
+        ],
+        "abstract": "白夜凛音（风纪委员，冷淡、规则至上，看人从不眨眼）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+          },
+          {
+            "content": "---\n<character_basic character=\"白夜凛音\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/白夜凛音/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>\n<character_personality character=\"白夜凛音\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/白夜凛音/性格调色盘.yaml"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/白夜凛音/二次解释.yaml"
+          },
+          {
+            "content": "</character_personality>\n<character_tri_faceted>"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/白夜凛音/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白夜凛音",
+            "凛音"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 402
+        }
+      },
+      "真中合欢": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "真中合欢",
+          "合欢"
+        ],
+        "abstract": "真中合欢（同班，蛊惑、反复无常，什么都看透了还要凑上来）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+          },
+          {
+            "content": "---\n<character_basic character=\"真中合欢\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/真中合欢/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>\n<character_personality character=\"真中合欢\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/真中合欢/性格调色盘.yaml"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/真中合欢/二次解释.yaml"
+          },
+          {
+            "content": "</character_personality>\n<character_tri_faceted>"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/真中合欢/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "真中合欢",
+            "合欢"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 403
+        }
+      },
+      "帆刈叶": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "帆刈叶",
+          "帆刈"
+        ],
+        "abstract": "帆刈叶（<user> 的青梅竹马，坚强体贴、藏事，唯一还笑得出来的人）",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+          },
+          {
+            "content": "---\n<character_basic character=\"帆刈叶\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/帆刈叶/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>\n<character_personality character=\"帆刈叶\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/帆刈叶/性格调色盘.yaml"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/帆刈叶/二次解释.yaml"
+          },
+          {
+            "content": "</character_personality>\n<character_tri_faceted>"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/帆刈叶/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "帆刈叶",
+            "帆刈"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 404
+        }
+      },
+      "安藤都子": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "安藤都子",
+          "都子"
+        ],
+        "abstract": "安藤都子（班委员长，死板认真、强硬，开场就被处刑（已死，只留遗体与血迹））",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+          },
+          {
+            "content": "---\n<character_basic character=\"安藤都子\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/安藤都子/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>\n<character_personality character=\"安藤都子\">"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/安藤都子/性格调色盘.yaml"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/安藤都子/二次解释.yaml"
+          },
+          {
+            "content": "</character_personality>\n<character_tri_faceted>"
+          },
+          {
+            "file": "世界书/角色/底座_euphoria/安藤都子/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "安藤都子",
+            "都子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 405
+        }
+      },
+      "她_温砚": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·温砚：想带你活着出去",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:gentle'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'gentle')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/温砚.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 110
+        }
+      },
+      "她_丰娆": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·丰娆：想把每个人都看一遍",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:greedy'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'greedy')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/丰娆.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 111
+        }
+      },
+      "她_舒晏": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·舒晏：想看你挣扎、看你求饶",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:smirking'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'smirking')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/舒晏.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 112
+        }
+      },
+      "她_唐响": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·唐响：想打开最极端的那些分支",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:daredevil'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'daredevil')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/唐响.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 113
+        }
+      },
+      "她_沈眠": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·沈眠：想把这一段剧情推向死亡",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:quiet'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'quiet')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/沈眠.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 114
+        }
+      },
+      "她_莫漾": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·莫漾：没有目的，她自己也说不清",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:indifferent'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'indifferent')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/莫漾.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 115
+        }
+      },
+      "她_纪清": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·纪清：想集齐所有 CG 和结局",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:completionist'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'completionist')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/纪清.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 116
+        }
+      },
+      "她_郁燃": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "屏幕外的她·郁燃：她自己要，不铺垫，直接上重的那一类",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['GGPLAYER:feverish'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'feverish')"
+          },
+          {
+            "file": "世界书/角色/屏幕外的她/郁燃.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 117
+        }
+      }
+    },
+    "阶段指导": {
+      "阶段指导": {
+        "path": "世界书/阶段指导/阶段指导.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "阶段指导：按四态（在线、暂停、离线、冻结）分别规定主持目标、叙事重点、互动方式与推进边界",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 130
+        }
+      }
+    },
+    "事件": {
+      "[mvu_plot]终局": {
+        "path": "世界书/事件/终局.yaml",
+        "scope": "specific",
+        "keywords": [
+          "终局",
+          "最后一次自由"
+        ],
+        "abstract": "终局：她的目的达成后关掉游戏，<user> 得到最后一次自由；五个选择与对应结局，越界一次需了解达 80",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "终局",
+            "最后一次自由"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 140
+        }
+      },
+      "[mvu_plot]开局": {
+        "path": "世界书/事件/开局.yaml",
+        "scope": "specific",
+        "keywords": [
+          "开局",
+          "第一楼",
+          "都子",
+          "处刑"
+        ],
+        "abstract": "开局场景：玩家选定她之后，按这一段铺开第一楼（都子被处刑、无人说话、她第一次出声）",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "开局",
+            "第一楼",
+            "都子",
+            "处刑"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 141
+        }
+      }
+    },
+    "MVU": {
+      "[mvu_update]变量输出格式": {
+        "path": "世界书/变量/变量输出格式.txt",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "MVU变量输出格式",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 150
+        }
+      },
+      "变量列表": {
+        "path": "世界书/变量/变量列表.txt",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "MVU变量列表",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 160
+        }
+      },
+      "[mvu_update]变量更新规则": {
+        "path": "世界书/变量/变量更新规则.yaml",
+        "part": "update_rules",
+        "keywords": [],
+        "abstract": "MVU变量更新规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 170
+        }
+      },
+      "[InitVar]请勿打开": {
+        "path": "世界书/变量/initvar.yaml",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "MVU初始变量",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 180
+        }
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "世界观",
+      "扮演准则"
+    ],
+    "after_char": [
+      "角色"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": true
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "世界观": "Infinity",
+    "扮演准则": "Infinity",
+    "阶段指导": "Infinity",
+    "事件": 0
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "avatar": "avatar.png",
+  "description": "你是一部 galgame 的男主角，六庆馆学园二年级学生。\n\n真正的玩家坐在屏幕外：一个女性玩家正在操控你。她替你选选项、替你说话。你看得见她（通过电脑摄像头），她看不见你。\n\n你被关在白色密室里，脖子上锁着项圈，必须作为「钥匙」和六个「锁孔」完成五轮游戏才能离开。而在这之上还有一件事：你只能拒绝具体的行为，不能拒绝时间。\n\n你的秘密：藏在心底的破坏冲动和凌辱欲望。这个秘密已经被同班的真中合欢看穿了。",
+  "first_messages": [
+    "开场白/0.md",
+    "开场白/1.md",
+    "开场白/2.txt",
+    "开场白/3.txt",
+    "开场白/4.txt",
+    "开场白/5.txt",
+    "开场白/6.txt",
+    "开场白/7.txt",
+    "开场白/8.txt",
+    "开场白/9.txt"
+  ],
+  "tags": [
+    "元游戏",
+    "galgame",
+    "密室逃脱",
+    "背德",
+    "悬疑",
+    "多结局",
+    "MVU",
+    "四态循环"
+  ],
+  "creator": "鱼鱼在海边",
+  "creator_notes": "这是一张玩法驱动的卡，不是传统角色卡。\n\n【四态循环】在线（她玩，你只能花反抗值拒绝）／暂停（世界静止）／离线（完全自主，体力流逝）／冻结（体力归零，意识封存）\n\n【屏幕外的她】开局从 7 套人设启动，她是什么人决定她给你点什么选项。人设见世界书「角色速览」。\n\n【反抗】你只能拒绝具体的行为，不能拒绝时间。拒绝要花反抗值，也可能失败。她兴奋时注意不到异常，那是你唯一的机会。\n\n【观察】通过摄像头观察她，累积「对她的了解」。了解越深，她的倾向暗示越清晰，这是你唯一的武器。\n\n【终局】她的目的进度满值即触发，她会关掉游戏。那时你得到最后一次自由。\n\n状态栏在楼层底部。开局从 7 套人设里选一套。",
+  "version": "1.0",
+  "create_date": "2026-09-14T09:07:42.367Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "d0311ca6-5e9a-498e-a777-f74dc4dc6b12",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": false
+              }
+            ]
+          },
+          "data": {}
+        }
+      },
+      "variables": {}
+    },
+    "talkativeness": "0.5",
+    "fav": false,
+    "depth_prompt": {
+      "prompt": "",
+      "depth": 4,
+      "role": "system"
+    }
+  },
+  "regex_scripts": {
+    "对AI隐藏状态栏": {
+      "id": "b5f2606f-69cc-4a6a-8ebb-bd8a3b7f671f",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "状态栏界面": {
+      "id": "ce6da13c-4e35-4057-8964-3192b7903acc",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replace_file": "正则/状态栏界面.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "对AI隐藏变量更新": {
+      "id": "aa12731a-97c4-4450-ac2f-0bfe1d6a4f64",
+      "findRegex": "/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "变量更新中美化": {
+      "id": "b9d5f25b-a9d0-41bf-8a69-602d64bbde22",
+      "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+      "replace_file": "正则/变量更新中美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "变量更新美化": {
+      "id": "92d49340-fe5e-4929-871f-43d110e5ec76",
+      "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+      "replace_file": "正则/变量更新美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "开局表单界面": {
+      "id": "cf2c120b-26a3-4677-8aea-efa95446d524",
+      "findRegex": "<OpeningPlaceHolder/>",
+      "replace_file": "正则/开局表单界面.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "对AI隐藏开局表单": {
+      "id": "f303def9-30bf-44a2-b8c3-58356c19979a",
+      "findRegex": "<OpeningPlaceHolder/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "上色·她的声音": {
+      "id": "8eb15fb3-0868-412d-a696-55a5afd66152",
+      "findRegex": "/〔([^〕\\n]+)〕/g",
+      "replaceString": "<span style=\"display:block;margin:8px 0;padding:4px 0 4px 11px;border-left:2px solid rgba(232,180,92,.72);color:#e8b45c;font-weight:500;line-height:1.78\">$1</span>",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "上色·游戏内台词": {
+      "id": "42b5df9c-622a-4802-b327-bb968a0b3918",
+      "findRegex": "/「([^」\\n]+)」/g",
+      "replaceString": "<span style=\"display:block;margin:7px 0;padding:3px 0 3px 11px;border-left:2px solid rgba(223,230,238,.42);color:#dfe6ee;line-height:1.75\">$1</span>",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "上色·内心旁白": {
+      "id": "411fdd41-ce9e-41a6-8226-b8be4e265f0d",
+      "findRegex": "/（([^）\\n]+)）/g",
+      "replaceString": "<span style=\"display:block;margin:5px 0;padding-left:2px;color:#7f858e;font-style:italic;font-size:.94em;line-height:1.7\">$1</span>",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "上色·系统声音": {
+      "id": "2d6f4b2f-a4fe-44c2-82fc-771d002240ec",
+      "findRegex": "/〖([^〗\\n]+)〗/g",
+      "replaceString": "<span style=\"display:block;margin:6px 0;padding:3px 0 3px 11px;border-left:2px solid rgba(127,211,198,.5);color:#7fd3c6;letter-spacing:.04em;font-family:'Sarasa Mono SC',ui-monospace,monospace;line-height:1.72\">$1</span>",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "隐藏选人标记": {
+      "id": "2319f768-e4b2-42b6-81f2-9c1c49de8bae",
+      "findRegex": "/\\[\\[GGPLAYER:[a-z]+\\]\\]/g",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    }
+  },
+  "zod": {
+    "scriptName": "Zod",
+    "scriptId": "5b3b09af-35e3-4149-a0f7-2f08776ed6a1",
+    "schemaPath": "schema.ts",
+    "importUrl": "https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js"
+  },
+  "initvar_overrides": {
+    "开场白/2.txt": "开场白/initvar/2.yaml",
+    "开场白/3.txt": "开场白/initvar/3.yaml",
+    "开场白/4.txt": "开场白/initvar/4.yaml",
+    "开场白/5.txt": "开场白/initvar/5.yaml",
+    "开场白/6.txt": "开场白/initvar/6.yaml",
+    "开场白/7.txt": "开场白/initvar/7.yaml",
+    "开场白/8.txt": "开场白/initvar/8.yaml",
+    "开场白/9.txt": "开场白/initvar/9.yaml"
+  }
+}

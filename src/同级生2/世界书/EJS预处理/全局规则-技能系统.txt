@@ -1,0 +1,238 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 全局规则-技能系统（扩展模块·按需加载）
+   ════════════════════════════════════════════════════════════
+   职责：技能系统规则（13 核心技能 + 骰子判定 + NSFW 技能门槛 + 属性联动）
+   保留 fighting（格斗）+ 新增 romance（恋爱技巧），共 13 维
+   来源：从「全局规则总表.txt」拆分（任务 6.6 · token 优化）
+   加载策略：由 D0 系统控制器按 scene_mode 条件加载
+     - 上学模式：加载（需要技能训练规则）
+     - 打工模式：加载（需要技能工作规则）
+     - 事件模式：加载（可能涉及技能判定）
+     - 休息/约会模式：不加载（节省 token）
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ───────── 二·补2、技能系统规则（13 核心技能 · 保留 fighting + 新增 romance）───────── */
+// 覆盖全局规则总表中的兜底声明（var SKILL_RULES = { _partial: true }）
+// 技能是后天学习的专精能力，与 6 维基础属性正交（属性=天赋，技能=熟练度）
+// 范围 0-100，门槛档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师
+// 存储位置：MVU.技能（运行时变化，zod 校验，stat_data.技能.* 命名空间）
+SKILL_RULES = {
+  threshold_stages: {
+    0: { name: '生疏', range: [0, 29] },
+    1: { name: '入门', range: [30, 49] },
+    2: { name: '熟练', range: [50, 69] },
+    3: { name: '精通', range: [70, 89] },
+    4: { name: '大师', range: [90, 100] }
+  },
+  skills: {
+    strength: {
+      name: '力量', desc: '物理对抗/搬运/威慑', default: 30,
+      training: [
+        { action: '健身/举重', gain: 3, time_cost: '1 时段' },
+        { action: '搬运工作（车站搬运）', gain: 2, time_cost: '1 时段' },
+        { action: '武道馆训练', gain: 5, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '强迫物理对抗', requires: 'strength ≥ 对方 strength × 1.2 AND fighting ≥ 50', fail: '骰子大失败 → BAD_END_1_报警' },
+        { action: '搬运重物', requires: 'strength ≥ 30', fail: '搬不动，fatigue +10' },
+        { action: '威慑对方', requires: 'strength ≥ 50', fail: '威慑失败，对方轻视' }
+      ]
+    },
+    agility: {
+      name: '敏捷', desc: '逃跑/反应/潜行基础', default: 40,
+      training: [
+        { action: '跑步/慢跑', gain: 2, time_cost: '1 时段' },
+        { action: '球类运动', gain: 3, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '逃跑成功', requires: 'agility ≥ 对方 agility', fail: '逃跑失败，被抓住' },
+        { action: '反应躲闪', requires: 'agility ≥ 40', fail: '反应不及' }
+      ]
+    },
+    intelligence: {
+      name: '智力', desc: '学业/解谜/计划', default: 50,
+      training: [
+        { action: '学习/读书', gain: 3, time_cost: '1 时段' },
+        { action: '解谜/智力游戏', gain: 2, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '解开谜题', requires: 'intelligence ≥ 50', fail: '解不开' },
+        { action: '识破谎言', requires: 'intelligence ≥ 60 AND observation ≥ 50', fail: '被骗过' },
+        { action: '制定完美计划', requires: 'intelligence ≥ 70', fail: '计划有破绽' }
+      ]
+    },
+    willpower: {
+      name: '意志', desc: '抵抗诱惑/坚持/抗压', default: 40,
+      training: [
+        { action: '拒绝诱惑', gain: 2, time_cost: '即时' },
+        { action: '坚持原则', gain: 1, time_cost: '即时' }
+      ],
+      hard_gates: [
+        { action: '抵抗女角诱惑', requires: 'willpower ≥ 50', fail: '沦陷，触发 NSFW 链' },
+        { action: '抗压坚持', requires: 'willpower ≥ 60', fail: '崩溃，mood -20' },
+        { action: '拒绝 NTR', requires: 'willpower ≥ 70', fail: '被 NTR（永久标记）' }
+      ]
+    },
+    stealth: {
+      name: '潜行', desc: '尾随/偷窥/暗中行动', default: 20,
+      training: [
+        { action: '暗中行动练习', gain: 2, time_cost: '1 时段' },
+        { action: '尾随（成功）', gain: 3, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '尾随不被发现', requires: 'stealth ≥ 30', fail: '被发现，关系暴跌' },
+        { action: '偷窥', requires: 'stealth ≥ 40 AND observation ≥ 30', fail: '被发现 → BAD_END_1 预警' },
+        { action: '夜间潜入', requires: 'stealth ≥ 60', fail: '被警报触发' }
+      ]
+    },
+    speech: {
+      name: '口才', desc: '说服/表白/调情/谈判', default: 40,
+      training: [
+        { action: '社交聊天', gain: 2, time_cost: '1 时段' },
+        { action: '演讲/辩论', gain: 3, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '表白', requires: 'speech ≥ 30 AND affection ≥ 60', fail: '表白失败，relation 退一档' },
+        { action: '说服女角', requires: 'speech ≥ 50', fail: '说服失败' },
+        { action: '调情成功', requires: 'speech ≥ 40 AND relation ≥ 暧昧', fail: '调情失败，好感 -3' }
+      ]
+    },
+    medical: {
+      name: '医学', desc: '诊疗/急救/药物', default: 10,
+      training: [
+        { action: '医院实习', gain: 5, time_cost: '1 时段' },
+        { action: '读医书', gain: 2, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '基础急救', requires: 'medical ≥ 30', fail: '急救失败，病人恶化' },
+        { action: '高级急救', requires: 'medical ≥ 50', fail: '急救失败' },
+        { action: '使用药物', requires: 'medical ≥ 70', fail: '用错药，触发法律' }
+      ]
+    },
+    cooking: {
+      name: '烹饪', desc: '料理质量/家庭料理效果', default: 20,
+      training: [
+        { action: '在家练习', gain: 2, time_cost: '1 时段' },
+        { action: '跟美佐子学（需美佐子好感≥20）', gain: 5, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '做家庭料理', requires: 'cooking ≥ 30', fail: '料理失败，hunger 仅 -10' },
+        { action: '美佐子级料理', requires: 'cooking ≥ 70', fail: '差距大，效果减半' },
+        { action: '宴会料理', requires: 'cooking ≥ 80', fail: '无法完成' }
+      ]
+    },
+    art: {
+      name: '艺术', desc: '画作/音乐/审美/手工', default: 20,
+      training: [
+        { action: '画画/弹琴', gain: 2, time_cost: '1 时段' },
+        { action: '参观展览', gain: 1, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '画女角肖像', requires: 'art ≥ 50', fail: '画作失败，关系无变化' },
+        { action: '演奏乐器', requires: 'art ≥ 60', fail: '演奏失败' }
+      ]
+    },
+    driving: {
+      name: '驾驶', desc: '开车/修学旅行', default: 0,
+      training: [
+        { action: '驾校（寒假后才能）', gain: 5, time_cost: '1 时段' },
+        { action: '实路练习（需驾校基础）', gain: 3, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '合法驾驶', requires: 'driving ≥ 50 AND 持驾照', fail: '违法驾驶，illegal_count +1' },
+        { action: '修学旅行驾驶', requires: 'driving ≥ 70', fail: '车祸风险' }
+      ]
+    },
+    fighting: {
+      name: '格斗', desc: '战斗/防身/威慑', default: 25,
+      training: [
+        { action: '武道馆训练', gain: 5, time_cost: '1 时段' },
+        { action: '打架（赢）', gain: 3, time_cost: '即时' }
+      ],
+      hard_gates: [
+        { action: '防身反击', requires: 'fighting ≥ 40', fail: '反击失败，受伤' },
+        { action: '威慑对方', requires: 'fighting ≥ 60 AND strength ≥ 50', fail: '威慑失败' }
+      ]
+    },
+    observation: {
+      name: '观察', desc: '察言观色/情报收集/破绽发现', default: 40,
+      training: [
+        { action: '观察女角', gain: 2, time_cost: '即时' },
+        { action: '侦探游戏', gain: 3, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '察觉女角说谎', requires: 'observation ≥ 60', fail: '被骗过' },
+        { action: '发现女角暗示', requires: 'observation ≥ 50', fail: '错过暗示' },
+        { action: '识破伪装', requires: 'observation ≥ 70 AND intelligence ≥ 60', fail: '被蒙蔽' }
+      ]
+    },
+    romance: {
+      name: '恋爱', desc: '约会策划/表白时机/亲密推进', default: 25,
+      training: [
+        { action: '与女角约会（成功）', gain: 3, time_cost: '1 时段' },
+        { action: '互赠礼物', gain: 2, time_cost: '即时' },
+        { action: '看电影/散步（女角好感≥20）', gain: 2, time_cost: '1 时段' }
+      ],
+      hard_gates: [
+        { action: '策划完美约会', requires: 'romance ≥ 40 AND speech ≥ 30', fail: '约会平淡，好感仅 +1' },
+        { action: '把握表白时机', requires: 'romance ≥ 50 AND observation ≥ 40 AND affection ≥ 60', fail: '时机错位，relation 退一档' },
+        { action: '亲密推进（初H前）', requires: 'romance ≥ 60 AND relation ≥ 心动', fail: '推进失败，jealousy +5' },
+        { action: '维持长期关系', requires: 'romance ≥ 70', fail: '关系淡化' }
+      ]
+    }
+  },
+  // 行动骰子判定规则（NSFW/技能行为前先过骰子，由 LCG 骰子引擎执行）
+  dice_check_rules: {
+    formula: '骰子值 = LCG.d20(1-20) + skill_value - threshold × dice_threshold_mult',
+    success_threshold: 15,           // ≥15 成功
+    partial_success: [10, 14],      // 10-14 部分成功
+    fail: [5, 9],                    // 5-9 失败
+    critical_fail: [0, 4],           // 0-4 大失败
+    critical_success: 25,            // ≥25 大成功
+    difficulty_mult_applied: 'DIFFICULTY_MODIFIERS.dice_threshold_mult（轻松×0.8/普通×1.0/挑战×1.2/地狱×2.0）',
+    note: '骰子值越低，门槛越高，越难成功。地狱档位 dice_threshold_mult=2.0 时，threshold 翻倍，几乎必失败'
+  },
+  // NSFW 行为的技能门槛（在 NSFW_BODY_RULES.nsfw_hard_gates 关系门槛之前先判定技能门槛）
+  nsfw_skill_gates: {
+    '强迫初H': {
+      requires_skill: { strength: 50, fighting: 50 },
+      fail: '力量/格斗不足 → 骰子大失败 → BAD_END_1_报警'
+    },
+    '偷窥': {
+      requires_skill: { stealth: 40, observation: 30 },
+      fail: '潜行/观察不足 → 被发现 → 关系暴跌'
+    },
+    '尾随': {
+      requires_skill: { stealth: 30 },
+      fail: '潜行不足 → 被发现'
+    },
+    '调情': {
+      requires_skill: { speech: 40 },
+      fail: '调情失败 → 好感 -3'
+    },
+    '表白': {
+      requires_skill: { speech: 30 },
+      fail: '表白失败 → relation 退一档'
+    },
+    '说服': {
+      requires_skill: { speech: 50 },
+      fail: '说服失败'
+    },
+    '急救': {
+      requires_skill: { medical: 30 },
+      fail: '急救失败 → 病人恶化'
+    }
+  },
+  // 技能与属性联动（属性是天赋，技能是熟练度，相辅相成）
+  attribute_synergy: {
+    charm_boosts_speech: 'charm ≥ 70 时，speech 学习效率 +1（社交天赋）',
+    academic_boosts_intelligence: 'academic ≥ 70 时，intelligence 学习效率 +1',
+    perception_boosts_observation: 'perception ≥ 70 时，observation 学习效率 +1（知觉敏锐）',
+    social_boosts_speech: 'social ≥ 70 时，speech 学习效率 +1',
+    physical_boosts_strength: 'physical ≥ 70 时，strength 训练效率 +1'
+  }
+};
+%>

@@ -1,0 +1,367 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 变量变化幅度控制（防极端数值波动 · 单一来源）
+   ════════════════════════════════════════════════════════════
+   职责：限制每次/每日/每周变量变化幅度，防止 AI 一次性给女角
+         +30 affection 或一次性扣光金钱等极端波动。
+
+   本表是细粒度补充层，与 全局规则总表.txt 中既有规则的关系：
+     - 全局规则总表.DIFFICULTY_MODIFIERS：宏观难度修正（骰子/金钱倍数/生存速率）
+     - 本表.CHANGE_LIMITS：按变量类型的单次变化上限（防单次爆涨/暴跌）
+     - 本表.DAILY_TOTAL_LIMITS：每日累计上限（防一天刷满）
+     - 本表.WEEKLY_TOTAL_LIMITS：每周累计上限（防一周刷满）
+     - 本表.DIFFICULTY_CHANGE_MODIFIERS：按变量类型的变化方向修正（细粒度）
+
+   思维链.txt 第 6 步"变量变化校验"必须调用本表 validateChange()，
+   超限则截断为 single_change_max/single_change_min 并在思维链输出警告。
+
+   引用关系：
+     - 思维链.txt → 第 6 步调用 validateChange() 强制校验所有数值变化
+     - D0系统控制器.txt → 应用本表限制后调用 setvar/incvar 写入变量
+     - 角色性格控制器.txt → 女角关系变量变化前查询本表 CHANGE_LIMITS.heroines
+     - 全局规则总表.txt → BEHAVIOR_TABLE.changes 必须在本表限制范围内
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ───────── 一、单次变化上限（按变量类型，行为表每次执行校验） ─────────
+   说明：
+     - single_change_max：单次变化最大正向值
+     - single_change_min：单次变化最大负向值（负数）
+     - 行为表（BEHAVIOR_TABLE）中所有 changes 必须在此限制内
+     - AI 不得擅自突破，否则思维链第 6 步截断并警告
+─────────────────────────────────────────────────────────────── */
+const CHANGE_LIMITS = {
+  /* 第 1 层：主角 6 维属性（天赋维度）- 单次 ±10
+     属性是天赋，单次变化不应过大，避免一日爆涨 */
+  protagonist_stats: {
+    charm:        { single_change_max: 10, single_change_min: -10 },
+    academic:     { single_change_max: 10, single_change_min: -10 },
+    physical:      { single_change_max: 10, single_change_min: -10 },
+    social:       { single_change_max: 10, single_change_min: -10 },
+    perception:  { single_change_max: 10, single_change_min: -10 },
+    willpower:   { single_change_max: 10, single_change_min: -10 }
+  },
+
+  /* 第 2 层：主角性格倾向（更慢，单次 ±5）
+     性格比属性更难改变，需要长时间累积 */
+  protagonist_personality: {
+    gentleness:    { single_change_max: 5, single_change_min: -5 },
+    decisiveness:  { single_change_max: 5, single_change_min: -5 },
+    humor:         { single_change_max: 5, single_change_min: -5 },
+    cautiousness:  { single_change_max: 5, single_change_min: -5 },
+    extraversion:  { single_change_max: 5, single_change_min: -5 },
+    rationality:   { single_change_max: 5, single_change_min: -5 }
+  },
+
+  /* 第 3 层：技能（12 核心技能）- 单次 +5（训练增长，不自动衰减）
+     技能是熟练度，只增不减（除非剧情强制遗忘） */
+  skills: {
+    strength:     { single_change_max: 5, single_change_min: 0 },
+    agility:      { single_change_max: 5, single_change_min: 0 },
+    intelligence: { single_change_max: 5, single_change_min: 0 },
+    willpower:    { single_change_max: 5, single_change_min: 0 },
+    stealth:      { single_change_max: 5, single_change_min: 0 },
+    speech:       { single_change_max: 5, single_change_min: 0 },
+    medical:      { single_change_max: 5, single_change_min: 0 },
+    cooking:      { single_change_max: 5, single_change_min: 0 },
+    art:          { single_change_max: 5, single_change_min: 0 },
+    driving:      { single_change_max: 5, single_change_min: 0 },
+    romance:      { single_change_max: 5, single_change_min: 0 },
+    observation:  { single_change_max: 5, single_change_min: 0 }
+  },
+
+  /* 女角关系变量（4 维）- 单次 ±5（防一次亲密就 +30 affection）
+     jealousy 增长较快（+10），trust 下降较快（-8） */
+  heroines: {
+    affection:  { single_change_max: 5,  single_change_min: -5  },
+    heartbeat:  { single_change_max: 8,  single_change_min: -3  },
+    trust:      { single_change_max: 5,  single_change_min: -8  },
+    jealousy:   { single_change_max: 10, single_change_min: -3  }
+  },
+
+  /* 经济变量 - 单次 ±2000~5000 日元
+     money：日常打工/购物，单次 +5000/-3000
+     savings：存款变动，单次 +10000/-5000（大额存取） */
+  economy: {
+    money:   { single_change_max: 5000,  single_change_min: -3000  },
+    savings: { single_change_max: 10000, single_change_min: -5000  }
+  },
+
+  /* 生存变量 - 单次幅度较大（生存属性本就快速波动）
+     hunger/thirst 单次 +30/-50（吃大餐-60，喝运动饮料-30）
+     fatigue 单次 ±30（深度休息-40 但需配合睡眠规则）
+     mood 单次 +15/-20（心情波动幅度有限）
+     sleep_quality 单次 ±30 */
+  survival: {
+    hunger:        { single_change_max: 30, single_change_min: -50 },
+    thirst:        { single_change_max: 30, single_change_min: -50 },
+    hygiene:       { single_change_max: 30, single_change_min: -30 },
+    fatigue:       { single_change_max: 30, single_change_min: -30 },
+    mood:          { single_change_max: 15, single_change_min: -20 },
+    sleep_quality: { single_change_max: 30, single_change_min: -30 }
+  }
+};
+
+/* ───────── 二、每日累计变化上限（防一天刷满） ─────────
+   说明：
+     - 每日累计 = 当日所有 actions 的 changes 累加值
+     - max_increase：当日正向累计上限
+     - max_decrease：当日负向累计下限（负数）
+     - 超限时截断，并在思维链输出"已达到每日上限"警告
+─────────────────────────────────────────────────────────────── */
+const DAILY_TOTAL_LIMITS = {
+  /* 女角每日累计上限（每女角独立计算，防一天刷满 affection） */
+  heroines_daily: {
+    affection: { max_increase: 10,  max_decrease: -10 },
+    trust:     { max_increase: 8,   max_decrease: -10 },
+    jealousy:  { max_increase: 15,  max_decrease: -5  },
+    heartbeat: { max_increase: 15,  max_decrease: -5  }
+  },
+
+  /* 主角属性每日累计上限
+     - 体质/意志衰减更快（每日可 -10），其他每日 ±5 */
+  protagonist_daily: {
+    charm:        { max_increase: 5,  max_decrease: -5   },
+    academic:     { max_increase: 5,  max_decrease: -5   },
+    physical:      { max_increase: 5,  max_decrease: -10  },
+    social:       { max_increase: 5,  max_decrease: -5   },
+    perception:  { max_increase: 5,  max_decrease: -5   },
+    willpower:   { max_increase: 5,  max_decrease: -10  }
+  },
+
+  /* 技能每日累计上限 - 每个技能每日最多 +5（训练强度限制） */
+  skills_daily: {
+    any_skill: { max_increase: 5, max_decrease: 0 }
+  },
+
+  /* 经济每日上限 - 防一天打工暴富或一掷千金
+     money_earned：当日赚钱上限 10000
+     money_spent：当日花钱上限 -15000（含特殊购买允许超额） */
+  economy_daily: {
+    money_earned: { max_increase: 10000 },
+    money_spent:  { max_decrease: -15000 }
+  }
+};
+
+/* ───────── 三、每周累计变化上限（防一周刷满，整个寒假 17 天 ≈ 2.5 周） ─────────
+   说明：
+     - 每周累计 = 当周（7 天）所有 actions 的 changes 累加值
+     - 每周上限是每日上限的 ~3 倍（7 天但允许波动）
+─────────────────────────────────────────────────────────────── */
+const WEEKLY_TOTAL_LIMITS = {
+  /* 女角每周累计上限 */
+  heroines_weekly: {
+    affection: { max_increase: 30, max_decrease: -20 },
+    trust:     { max_increase: 25, max_decrease: -30 },
+    jealousy:  { max_increase: 50, max_decrease: -10 }
+  },
+
+  /* 主角属性每周累计上限 - 任意属性每周 ±20 */
+  protagonist_weekly: {
+    any_stat: { max_increase: 20, max_decrease: -20 }
+  },
+
+  /* 技能每周累计上限 - 每个技能每周最多 +15 */
+  skills_weekly: {
+    any_skill: { max_increase: 15, max_decrease: 0 }
+  }
+};
+
+/* ───────── 四、难度修正系数（按变量类型，细粒度方向修正） ─────────
+   说明：
+     - 与 全局规则总表.DIFFICULTY_MODIFIERS 是补充关系：
+       * 全局表：宏观难度修正（骰子/金钱/生存速率）
+       * 本表：变化方向修正（增减幅 ×N 倍）
+     - 应用顺序：基础值 → 全局表.diff_mult → 本表.type_mult → CHANGE_LIMITS 截断
+     - 用户强调"数值判定要特别严谨"，难度差异必须明显 */
+const DIFFICULTY_CHANGE_MODIFIERS = {
+  '轻松': {
+    affection_gain_mult: 1.5,   // 好感增长 ×1.5
+    affection_loss_mult: 0.5,   // 好感下降 ×0.5
+    skill_gain_mult:     1.3,   // 技能增长 ×1.3
+    money_gain_mult:     1.5,   // 赚钱 ×1.5
+    jealousy_gain_mult:  0.5    // 嫉妒增长 ×0.5
+  },
+  '普通': {
+    affection_gain_mult: 1.0,
+    affection_loss_mult: 1.0,
+    skill_gain_mult:     1.0,
+    money_gain_mult:     1.0,
+    jealousy_gain_mult:  1.0
+  },
+  '挑战': {
+    affection_gain_mult: 0.7,   // 好感增长 ×0.7（更难）
+    affection_loss_mult: 1.3,   // 好感下降 ×1.3（更容易掉）
+    skill_gain_mult:     0.8,
+    money_gain_mult:     0.7,
+    jealousy_gain_mult:  1.5
+  },
+  '地狱': {
+    affection_gain_mult: 0.4,   // 好感增长 ×0.4（极难）
+    affection_loss_mult: 1.8,   // 好感下降 ×1.8（极易掉）
+    skill_gain_mult:     0.5,
+    money_gain_mult:     0.5,
+    jealousy_gain_mult:  2.0    // 嫉妒增长 ×2.0
+  }
+};
+
+/* ───────── 五、变量类型映射表（辅助函数查询） ─────────
+   说明：将具体变量名映射到 CHANGE_LIMITS 的分类 key */
+const VARIABLE_TYPE_MAP = {
+  // 主角属性
+  charm: 'protagonist_stats', academic: 'protagonist_stats',
+  physical: 'protagonist_stats', social: 'protagonist_stats',
+  perception: 'protagonist_stats', willpower: 'protagonist_stats',
+  // 主角性格
+  gentleness: 'protagonist_personality', decisiveness: 'protagonist_personality',
+  humor: 'protagonist_personality', cautiousness: 'protagonist_personality',
+  extraversion: 'protagonist_personality', rationality: 'protagonist_personality',
+  // 技能
+  strength: 'skills', agility: 'skills', intelligence: 'skills',
+  willpower: 'skills', stealth: 'skills', speech: 'skills',
+  medical: 'skills', cooking: 'skills', art: 'skills',
+  driving: 'skills', romance: 'skills', observation: 'skills',
+  // 女角关系
+  affection: 'heroines', heartbeat: 'heroines',
+  trust: 'heroines', jealousy: 'heroines',
+  // 经济
+  money: 'economy', savings: 'economy',
+  // 生存
+  hunger: 'survival', thirst: 'survival', hygiene: 'survival',
+  fatigue: 'survival', mood: 'survival', sleep_quality: 'survival'
+};
+
+/* ───────── 六、变化校验函数（思维链第 6 步强制调用） ─────────
+   参数：
+     variable_type    - 变量分类（CHANGE_LIMITS 的 key）
+     variable_name    - 具体变量名（如 'affection'）
+     current_value    - 当前值
+     change_amount    - 拟变化量（正/负）
+     difficulty       - 难度（'轻松'/'普通'/'挑战'/'地狱'）
+   返回：
+     { valid, adjusted, clamped, reason }
+     - valid=true 时 adjusted 为难度修正后的最终变化量
+     - valid=false 时 clamped 为截断后的变化量，reason 为警告 */
+function validateChange(variable_type, variable_name, current_value, change_amount, difficulty) {
+  const _limits = CHANGE_LIMITS[variable_type];
+  if (!_limits || !_limits[variable_name]) {
+    return { valid: true, adjusted: change_amount, reason: '无限制（变量未注册）' };
+  }
+  const _limit = _limits[variable_name];
+
+  // 应用难度修正（按变量类型 + 变化方向）
+  const _diffMod = DIFFICULTY_CHANGE_MODIFIERS[difficulty] || DIFFICULTY_CHANGE_MODIFIERS['普通'];
+  let _adjustedChange = change_amount;
+
+  if (change_amount > 0) {
+    // 正向变化（增长）
+    if (variable_name === 'affection') {
+      _adjustedChange = change_amount * _diffMod.affection_gain_mult;
+    } else if (variable_name === 'money' && variable_type === 'economy') {
+      _adjustedChange = change_amount * _diffMod.money_gain_mult;
+    } else if (variable_type === 'skills') {
+      _adjustedChange = change_amount * _diffMod.skill_gain_mult;
+    } else if (variable_name === 'jealousy') {
+      _adjustedChange = change_amount * _diffMod.jealousy_gain_mult;
+    }
+  } else if (change_amount < 0) {
+    // 负向变化（下降）
+    if (variable_name === 'affection') {
+      _adjustedChange = change_amount * _diffMod.affection_loss_mult;
+    }
+    // 其他变量负向变化暂不应用难度修正，由 全局表.decrease_mult 统一处理
+  }
+
+  // 四舍五入到整数（避免浮点误差）
+  _adjustedChange = Math.round(_adjustedChange);
+
+  // 校验单次上限（截断而非拒绝，保证剧情流畅）
+  if (_adjustedChange > _limit.single_change_max) {
+    return {
+      valid: false,
+      clamped: _limit.single_change_max,
+      reason: `单次变化超限：${variable_name} 拟变化 ${_adjustedChange} > 上限 ${_limit.single_change_max}，已截断`
+    };
+  }
+  if (_adjustedChange < _limit.single_change_min) {
+    return {
+      valid: false,
+      clamped: _limit.single_change_min,
+      reason: `单次变化超限：${variable_name} 拟变化 ${_adjustedChange} < 下限 ${_limit.single_change_min}，已截断`
+    };
+  }
+
+  return { valid: true, adjusted: _adjustedChange, reason: '通过' };
+}
+
+/* ───────── 七、每日/每周累计校验函数（思维链第 6 步辅助调用） ─────────
+   参数：
+     scope         - 'daily' 或 'weekly'
+     category      - DAILY_TOTAL_LIMITS / WEEKLY_TOTAL_LIMITS 的 key
+     variable_name - 具体变量名（或 'any_skill'/'any_stat' 通配）
+     accumulated   - 已累计的变化量
+   返回：
+     { within_limit, remaining, reason } */
+function validateAccumulation(scope, category, variable_name, accumulated) {
+  const _table = (scope === 'daily') ? DAILY_TOTAL_LIMITS : WEEKLY_TOTAL_LIMITS;
+  const _cat = _table[category];
+  if (!_cat || !_cat[variable_name]) {
+    return { within_limit: true, remaining: null, reason: '无累计限制' };
+  }
+  const _limit = _cat[variable_name];
+
+  if (accumulated > _limit.max_increase) {
+    return {
+      within_limit: false,
+      remaining: 0,
+      reason: `${scope}累计正向超限：${variable_name} 已累计 ${accumulated} > 上限 ${_limit.max_increase}`
+    };
+  }
+  if (accumulated < _limit.max_decrease) {
+    return {
+      within_limit: false,
+      remaining: 0,
+      reason: `${scope}累计负向超限：${variable_name} 已累计 ${accumulated} < 下限 ${_limit.max_decrease}`
+    };
+  }
+  const _remaining = Math.min(_limit.max_increase - accumulated, accumulated - _limit.max_decrease);
+  return {
+    within_limit: true,
+    remaining: _remaining,
+    reason: '通过'
+  };
+}
+
+/* ───────── 八、思维链第 6 步强制执行规则 ─────────
+   思维链.txt 第 6 步"变量变化校验"必须按以下流程执行：
+
+   1. 列出本轮所有 changes（来自 BEHAVIOR_TABLE 或自定义行为）
+   2. 对每个 change 调用 validateChange(variable_type, variable_name, current_value, change_amount, difficulty)
+      - variable_type 通过 VARIABLE_TYPE_MAP[variable_name] 查询
+      - 若返回 valid=false，使用 clamped 替换 change_amount，并在思维链输出：
+        "[警告] {variable_name} 单次变化超限，已截断为 {clamped}（原拟 {_adjustedChange}）"
+   3. 累计当日所有 changes，对受 DAILY_TOTAL_LIMITS 限制的变量调用 validateAccumulation('daily', ...)
+      - 若 within_limit=false，剩余变化量设为 0，并在思维链输出：
+        "[警告] {variable_name} 已达每日累计上限，本轮不再变化"
+   4. 累计当周所有 changes，对受 WEEKLY_TOTAL_LIMITS 限制的变量调用 validateAccumulation('weekly', ...)
+      - 若 within_limit=false，剩余变化量设为 0
+   5. 输出最终 changes 表，调用 setvar/incvar 写入变量
+
+   强制约束：
+     - 任何 AI 不得绕过 validateChange() 直接写入变量
+     - 任何超限截断必须在思维链中显式记录（用于审计）
+     - D0 系统控制器在调用 setvar 前必须再次校验（防御性编程） */
+%>
+
+[变量变化幅度控制已加载。思维链第 6 步必须调用 validateChange() 校验所有变化，超限则截断并警告。]
+
+<%= JSON.stringify({
+  change_limits_categories: Object.keys(CHANGE_LIMITS),
+  change_limits_var_count: Object.values(CHANGE_LIMITS).reduce((sum, cat) => sum + Object.keys(cat).length, 0),
+  daily_limit_categories: Object.keys(DAILY_TOTAL_LIMITS),
+  weekly_limit_categories: Object.keys(WEEKLY_TOTAL_LIMITS),
+  difficulty_modifiers: Object.keys(DIFFICULTY_CHANGE_MODIFIERS),
+  validate_functions: ['validateChange', 'validateAccumulation'],
+  thought_chain_step: 6,
+  note: '思维链第6步强制调用 validateChange()，超限截断并警告'
+}, null, 2) %>

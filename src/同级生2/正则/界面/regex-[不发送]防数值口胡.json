@@ -1,0 +1,17 @@
+{
+  "id": "d2a1f001-0002-4000-8000-000000000013",
+  "scriptName": "防数值口胡·禁止 AI 输出关系值数字",
+  "findRegex": "(好感度|心动值|嫉妒值|信任度|affection|heartbeat|jealousy|trust)\\s*[=＝:]\\s*-?\\d+",
+  "replaceString": "[数值由数据库管理，禁止 AI 在叙事中输出]",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

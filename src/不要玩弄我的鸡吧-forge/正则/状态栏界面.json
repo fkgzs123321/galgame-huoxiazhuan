@@ -1,0 +1,15 @@
+{
+  "id": "fjb-yds-statusbar-ui",
+  "scriptName": "状态栏界面",
+  "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": -100,
+  "maxDepth": 100,
+  "replace_file": "正则/状态栏.html"
+}

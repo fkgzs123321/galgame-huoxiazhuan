@@ -1,0 +1,158 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 温泉乡 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionOnsen = {
+  region_name: '温泉乡',
+  scenes: [
+    '温泉旅馆',
+    '温泉浴场',
+    '土产店',
+    '神社',
+    '山林步道'
+  ],
+  time_slot_access: {
+    '早':   { accessible: true,  note: '温泉 24 小时营业，早晨人少清静' },
+    '上午': { accessible: true,  note: '疗养/散步高峰' },
+    '下午': { accessible: true,  note: '土产店营业，约会推荐时段' },
+    '晚':   { accessible: true,  note: '夜汤时段，NSFW 高发场景' },
+    '深夜': { accessible: true,  note: '温泉 24 小时，但需旅馆住宿才能停留' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["温泉乡"]（10件）：矿泉水/丝绸睡衣/性感内衣/按摩油/温泉特产点心/高级餐厅套餐/温泉券/温泉旅馆住宿/新年参拜签/温泉明信片',
+  special_events: [
+    { day: 9,  slot: '晚',   event_id: 'day09晚_温泉乡偶遇佐知子',   note: '夜汤偶遇永岛佐知子，暧昧期推进' },
+    { day: 14, slot: '下午', event_id: 'day14下午_温泉约会',         note: '温泉约会通用事件，可邀约女角' },
+    { day: 16, slot: '晚',   event_id: 'day16晚_跨年神社参拜',       note: '神社跨年参拜，新年参拜签事件' }
+  ],
+  description: '八十八町郊外温泉乡，冬季是温泉旺季，适合疗愈和约会。温泉 24 小时营业，全时段可访问。永岛佐知子（14）常驻疗养，永岛久美子（13）母女同行。神社为跨年参拜（day16）场景。商店售温泉特产与禁忌礼物（丝绸睡衣/性感内衣/按摩油需暧昧以上阶段）。深夜需旅馆住宿才能停留。',
+  location_details: {
+    '温泉旅馆': {
+      aliases: ['旅馆','温泉旅馆','宿泊'],
+      description: '温泉乡旅馆，可住宿，带女角住宿场景（需高关系），深夜停留必需',
+      ambient_sounds: '木屐声/旅馆铃声/低声交谈',
+      default_activities: ['住宿','带女角住宿','休息','温泉'],
+      time_slot_descriptions: { '早':'退房/晨汤','上午':'疗养','下午':'入住','晚':'夜汤','深夜':'住宿停留必需' },
+      weather_modifiers: { '晴':'明亮','雨':'雨声','雪':'雪景温泉','暴风雪':'暖意' },
+      heroines_likely: [13, 14],
+      bad_end_risk: 'medium',
+      time_lock: '带女角住宿需暧昧期以上',
+      exclusive_choices: ['单人住宿(安全)','带女角住宿(需高关系)'],
+      flags_set: ['onsen_stay_count'],
+      events_triggered: ['day09晚_温泉乡偶遇佐知子','day14下午_温泉约会']
+    },
+    '温泉浴场': {
+      aliases: ['浴场','大浴场','温泉浴池'],
+      description: '温泉大浴场，24小时开放，夜汤为NSFW高发场景',
+      ambient_sounds: '水声/蒸汽/远处低语',
+      default_activities: ['泡汤','疗愈','夜汤偶遇'],
+      time_slot_descriptions: { '早':'晨汤人少','上午':'疗养','下午':'人少','晚':'夜汤NSFW高发','深夜':'需住宿' },
+      weather_modifiers: { '晴':'露天风吕','雨':'雨音温泉','雪':'雪景温泉','暴风雪':'室内风吕' },
+      heroines_likely: [13, 14],
+      bad_end_risk: 'high',
+      time_lock: '夜汤NSFW需关系阶段达标',
+      exclusive_choices: ['混浴(需高关系)','分开(安全)'],
+      events_triggered: ['day09晚_温泉乡偶遇佐知子']
+    },
+    '土产店': {
+      aliases: ['土产店','特产店','温泉特产'],
+      description: '温泉土产店，售卖温泉特产与禁忌礼物（丝绸睡衣/性感内衣/按摩油）',
+      ambient_sounds: '叫卖声/包装声/闲聊',
+      default_activities: ['购物','买礼物','买特产','选购禁忌礼物'],
+      time_slot_descriptions: { '早':'准备','上午':'营业','下午':'营业高峰','晚':'打烊前','深夜':'已关门' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [],
+      bad_end_risk: 'medium',
+      flags_set: ['forbidden_gift_count'],
+      events_triggered: ['day14下午_温泉约会'],
+      time_lock: '禁忌礼物需暧昧以上阶段，否则触发反感'
+    },
+    '神社': {
+      aliases: ['神社','神社参拜','八十八神社'],
+      description: '温泉乡神社，跨年参拜场景，可求签/许愿/触发神灵事件',
+      ambient_sounds: '铃铛声/拍手声/低语/风声',
+      default_activities: ['参拜','求签','许愿','跨年','触发事件'],
+      time_slot_descriptions: { '早':'清静','上午':'参拜','下午':'参拜','晚':'夜参','深夜':'跨年参拜' },
+      weather_modifiers: { '晴':'神圣','雨':'神秘','雪':'银装神圣','暴风雪':'异象' },
+      heroines_likely: [1, 5, 14],
+      bad_end_risk: 'medium',
+      flags_set: ['shrine_omikuji_count','new_year_visit'],
+      events_triggered: ['day16晚_跨年神社参拜'],
+      time_lock: 'day16晚跨年参拜为关键节点'
+    },
+    '山林步道': {
+      aliases: ['山林步道','山道','林间小径'],
+      description: '温泉乡山林步道，散步/疗愈/独处推荐地，偶有神秘事件',
+      ambient_sounds: '鸟鸣/树叶沙沙/溪水声',
+      default_activities: ['散步','独处','疗愈','偶遇','触发事件'],
+      time_slot_descriptions: { '早':'晨雾','上午':'散步推荐','下午':'散步','晚':'黄昏','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光斑驳','雨':'湿润','雪':'银白','暴风雪':'禁入' },
+      heroines_likely: [13, 14],
+      bad_end_risk: 'low'
+    },
+    '占卜馆': {
+      aliases: ['占卜馆','占い館','占卜小屋'],
+      description: '温泉乡占卜馆，可占卜运势/解锁隐藏剧情/获取稀有情报',
+      ambient_sounds: '神秘铃声/低语/风铃',
+      default_activities: ['占卜','获取情报','解锁隐藏剧情','购买护符'],
+      time_slot_descriptions: { '早':'关闭','上午':'营业','下午':'营业高峰','晚':'营业','深夜':'关闭' },
+      weather_modifiers: { '晴':'普通','雨':'神秘','雪':'寂静','暴风雪':'异象' },
+      heroines_likely: [],
+      bad_end_risk: 'medium',
+      hidden_location: true,
+      unlock_condition: '特定剧情flag触发或占卜次数达标',
+      flags_set: ['fortune_count','hidden_plot_unlocked'],
+      events_triggered: ['占卜馆特殊事件'],
+      time_lock: '占卜结果影响后续剧情走向'
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 6 个地点） */
+const _currentLocationDetail = _regionOnsen.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出 ─── */%>
+[区域：温泉乡。八十八町郊外，冬季温泉旺季，全时段可访问（温泉 24 小时）。永岛佐知子（14）常驻疗养，永岛久美子（13）母女同行。夜汤时段为 NSFW 高发场景。商店售禁忌礼物（丝绸睡衣/性感内衣/按摩油），需暧昧以上关系阶段，否则触发 REFUSAL_RULE 反感效果。跨年神社参拜（day16）为关键节点。深夜需旅馆住宿才能停留。当前时段下可遭遇 NPC 已锁定，禁止引入未列出的女角。]
+
+<%= JSON.stringify({
+  region: _regionOnsen.region_name,
+  scenes: _regionOnsen.scenes,
+  time_slot_access: _regionOnsen.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["温泉乡"]',
+  shop_items_count: 10,
+  special_events: _regionOnsen.special_events,
+  description: _regionOnsen.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

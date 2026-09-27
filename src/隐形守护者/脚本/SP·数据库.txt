@@ -1,0 +1,221 @@
+import 'https://gcore.jsdelivr.net/gh/AlbusKen/shujuku@spv3.9.8.1/index.js';
+
+const ACU_PREFIX = 'shujuku_v120';
+const ACU_NS = `${ACU_PREFIX}__userscript_settings_v1`;
+const CARD_NAME_RE = /隐形守护者/;
+const ISOLATION_CODE = '隐形守护者';
+const PRESET_NAME = '隐形守护者·骰子SQL_v4.3';
+const SCRIPT_NAME = 'SP·数据库';
+const BOOT_DATA_VERSION = 1;
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function getHostWin() {
+  return typeof window.parent !== 'undefined' && window.parent !== window ? window.parent : window;
+}
+
+function getShujukuStore() {
+  const ctx = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext?.() : null;
+  const root = ctx?.extensionSettings;
+  if (!root) return null;
+  root.__userscripts = root.__userscripts || {};
+  const ns = (root.__userscripts[ACU_NS] = root.__userscripts[ACU_NS] || {});
+  return { ns, save: ctx.saveSettingsDebounced };
+}
+
+function profileKey(kind, isolationCode = ISOLATION_CODE) {
+  const slot =
+    typeof isolationCode === 'string' && isolationCode.trim()
+      ? encodeURIComponent(isolationCode.trim())
+      : '__default__';
+  return `${ACU_PREFIX}_profile_v1__${slot}__${kind}`;
+}
+
+function findSpDbScriptEntry(scriptList) {
+  if (!Array.isArray(scriptList)) return null;
+  return scriptList.find((s) => s?.name === SCRIPT_NAME) ?? null;
+}
+
+function extractTemplateFromTavernHelper(th) {
+  if (!th) return null;
+  if (th.scripts && typeof th.scripts === 'object' && !Array.isArray(th.scripts)) {
+    const direct = th.scripts[SCRIPT_NAME]?.data?.chatSheetsTemplate;
+    if (direct) return direct;
+  }
+  let scripts = th.scripts;
+  if (Array.isArray(th)) {
+    for (const pair of th) {
+      if (Array.isArray(pair) && pair[0] === 'scripts') scripts = pair[1];
+    }
+  }
+  const entry = findSpDbScriptEntry(scripts);
+  return entry?.data?.chatSheetsTemplate ?? null;
+}
+
+async function readEmbeddedTemplate() {
+  try {
+    const char = await getCharacter('current');
+    const th = char?.扩展?.tavern_helper ?? char?.extensions?.tavern_helper;
+    const fromChar = extractTemplateFromTavernHelper(th);
+    if (fromChar) return fromChar;
+  } catch (e) {
+    console.warn('[隐形守护者·SP·数据库] getCharacter 读取模板失败', e);
+  }
+  try {
+    const ctx = SillyTavern?.getContext?.();
+    const chid = ctx?.characterId ?? ctx?.this_chid;
+    const chars = ctx?.characters;
+    if (chars != null && chid != null && chars[chid]) {
+      const ext = chars[chid].extensions;
+      const fromCtx = extractTemplateFromTavernHelper(ext?.tavern_helper ?? ext);
+      if (fromCtx) return fromCtx;
+    }
+  } catch (e) {
+    console.warn('[隐形守护者·SP·数据库] getContext 读取模板失败', e);
+  }
+  return null;
+}
+
+function presetExistsInStore(store) {
+  try {
+    const raw = store.ns[`${ACU_PREFIX}_templatePresets_v1`];
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return !!parsed?.presets?.[PRESET_NAME]?.templateStr;
+  } catch {
+    return false;
+  }
+}
+
+function applyBootstrapToStore(store, templateObj) {
+  const templateStr = JSON.stringify(templateObj);
+  const presetsKey = `${ACU_PREFIX}_templatePresets_v1`;
+  let presets = { version: 1, presets: {} };
+  try {
+    const raw = store.ns[presetsKey];
+    if (raw) presets = { ...presets, ...JSON.parse(raw) };
+  } catch {
+    /* keep default */
+  }
+  if (!presets.presets || typeof presets.presets !== 'object') presets.presets = {};
+  presets.presets[PRESET_NAME] = { templateStr, updatedAt: Date.now() };
+  store.ns[presetsKey] = JSON.stringify(presets);
+
+  const metaKey = `${ACU_PREFIX}_globalMeta_v1`;
+  let meta = {
+    version: 1,
+    activeIsolationCode: ISOLATION_CODE,
+    isolationCodeList: [ISOLATION_CODE],
+    migratedLegacySingleStore: true,
+  };
+  try {
+    const rawMeta = store.ns[metaKey];
+    if (rawMeta) meta = { ...meta, ...JSON.parse(rawMeta) };
+  } catch {
+    /* keep default */
+  }
+  meta.activeIsolationCode = ISOLATION_CODE;
+  const list = Array.isArray(meta.isolationCodeList) ? meta.isolationCodeList : [];
+  if (!list.includes(ISOLATION_CODE)) meta.isolationCodeList = [ISOLATION_CODE, ...list];
+  store.ns[metaKey] = JSON.stringify(meta);
+
+  const settingsKey = profileKey('settings');
+  let settings = {};
+  try {
+    const raw = store.ns[settingsKey];
+    if (raw) settings = JSON.parse(raw);
+  } catch {
+    /* keep default */
+  }
+  settings.dataIsolationEnabled = true;
+  settings.dataIsolationCode = ISOLATION_CODE;
+  settings.promptTemplateSettings = {
+    enabled: true,
+    maxNestingDepth: settings.promptTemplateSettings?.maxNestingDepth ?? 10,
+    debugMode: settings.promptTemplateSettings?.debugMode ?? false,
+  };
+  settings.currentTemplatePresetName = PRESET_NAME;
+  store.ns[settingsKey] = JSON.stringify(settings);
+  store.ns[profileKey('template')] = templateStr;
+
+  if (typeof store.save === 'function') store.save();
+  getHostWin().AutoCardUpdaterAPI?._notifyTableUpdate?.();
+}
+
+async function waitForShujukuReady(maxMs = 90000) {
+  const host = getHostWin();
+  const started = Date.now();
+  while (Date.now() - started < maxMs) {
+    const store = getShujukuStore();
+    const menu = host.document?.getElementById?.(`${ACU_PREFIX}-menu-item`);
+    if (store && (menu || host.AutoCardUpdaterAPI)) {
+      await sleep(2000);
+      return { host, store: getShujukuStore() ?? store };
+    }
+    await sleep(500);
+  }
+  return null;
+}
+
+async function bootstrapCardDatabase(force = false) {
+  const charName = typeof getCurrentCharacterName === 'function' ? getCurrentCharacterName() : null;
+  if (!charName || !CARD_NAME_RE.test(charName)) return;
+
+  const scriptVars = getVariables({ type: 'script' });
+  if (!force && scriptVars.__dbBootstrapVersion === BOOT_DATA_VERSION && scriptVars.__dbPresetOk === true) {
+    return;
+  }
+
+  const templateObj = await readEmbeddedTemplate();
+  if (!templateObj || typeof templateObj !== 'object') {
+    console.warn(
+      '[隐形守护者·SP·数据库] 未读到内嵌 chatSheetsTemplate。请重新 pack/导入最新卡，或点击「应用本卡SQL模板」。',
+    );
+    return;
+  }
+
+  const ready = await waitForShujukuReady();
+  if (!ready?.store) {
+    console.warn('[隐形守护者·SP·数据库] 等待 shujuku 就绪超时');
+    return;
+  }
+
+  applyBootstrapToStore(ready.store, templateObj);
+  await sleep(800);
+  applyBootstrapToStore(getShujukuStore() ?? ready.store, templateObj);
+
+  const ok = presetExistsInStore(getShujukuStore() ?? ready.store);
+  insertOrAssignVariables(
+    { __dbBootstrapVersion: BOOT_DATA_VERSION, __dbPresetOk: ok },
+    { type: 'script' },
+  );
+
+  if (typeof toastr !== 'undefined') {
+    if (ok) {
+      toastr.success(
+        `已写入隔离「${ISOLATION_CODE}」并选用「${PRESET_NAME}」，条件模板已开启。`,
+        'SP·数据库',
+      );
+    } else {
+      toastr.warning('模板可能未写入成功，请点击「应用本卡SQL模板」重试', 'SP·数据库');
+    }
+  }
+  console.info(`[隐形守护者·SP·数据库] bootstrap v${BOOT_DATA_VERSION} presetOk=${ok}`);
+}
+
+$(() => {
+  appendInexistentScriptButtons([{ name: '应用本卡SQL模板', visible: true }]);
+  eventOn(getButtonEvent('应用本卡SQL模板'), () => {
+    void bootstrapCardDatabase(true);
+  });
+
+  void bootstrapCardDatabase(false);
+  eventOn(tavern_events.CHAT_CHANGED, () => {
+    void bootstrapCardDatabase(false);
+  });
+  eventOn(tavern_events.CHARACTER_PAGE_LOADED, () => {
+    void bootstrapCardDatabase(false);
+  });
+});

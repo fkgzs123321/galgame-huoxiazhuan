@@ -1,0 +1,149 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 铃木美穗 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=17 / 跨界客串自《同级生1 Remake》(2022) · 转校生
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，于 2022 年同级生1 Remake 中重现
+   本次项目作为「跨界客串」福利配置，与同级生2 原作设定无直接关联
+   互斥关系：田中铃木（与田中美沙 row_id=10 互斥，同级生1 vs 同级生2 女主对位）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 铃木美穗_INFO = {
+  heroine_id: 17,
+  name: '铃木美穗',
+  romanization: 'Suzuki Miho',
+  age: 18,
+  blood_type: 'B',
+  identity: '八十八学园三年生，本学期从东京转来的转校生',
+  relationship: '主角同级生，初识为略带疏离的都市派女生',
+  home: '八十八町商业区附近公寓（独居，父母留在东京）',
+  birthday: '07-20',
+  height: 162,
+  weight: 48,
+  three_size: 'B84-W57-H86',
+  cv_implied: '都市自信系女声，略低沉，咬字清晰',
+
+  appearance: {
+    hair: '浅栗色齐肩直发，挑染几缕亚麻色，发尾略微内扣',
+    eyes: '细长丹凤眼，眼色浅棕，常化淡妆（眼线+睫毛膏）',
+    body: '纤细但有曲线，肩膀端正，走姿带都市感（步幅大、节奏稳）',
+    feature: '左锁骨下方有一颗小痣；右耳有两个耳洞，常戴不对称耳钉',
+    clothing_default: '校服改穿：解开顶部两颗纽扣，裙摆改短及大腿中部；配机车风衣或oversize西装外套；冬天配皮质短靴与丝绒围巾'
+  },
+
+  personality: {
+    mbti: 'ENTP',
+    tags: ['时尚自信', '开放独立', '都市派现代女生'],
+    public_face: '自信从容的转校生，时髦但不傲慢',
+    social_face: '直接坦率的朋友，喜欢交流新鲜事物',
+    intimate_face: '逃离东京的脆弱女孩，渴望被理解而非被定义'
+  },
+
+  preferences: {
+    like_food: ['抹茶拿铁', '法式薄饼', '红酒（少量）', '外国家常菜'],
+    hate_food: ['便利店速食', '学校食堂的咖喱'],
+    hobby: ['时尚杂志', '独立电影', '爵士酒吧探店', '摄影（胶片）', '咖啡品鉴'],
+    gift_pref: ['独立电影DVD', '胶片相机配件', '咖啡器具', '设计感饰品'],
+    topic_pref: ['东京见闻', '独立文化', '时尚趋势', '电影评论', '逃离东京的原因']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '田中美沙（row_id=10）—— 田中铃木互斥，重制版新女主 vs 原作女主',
+    family: '父母（留在东京，父亲在公司调职失败后分居）；独自搬到八十八町',
+    friends: ['商业区咖啡店店员', '电影院售票员', '少数几位三年级同班同学']
+  },
+
+  /* 9.B.10: 互斥触发条件细化 */
+  mutex_trigger: {
+    group_name: '田中铃木',
+    partner_id: 10,
+    partner_name: '田中美沙',
+    affection_threshold: 30,
+    stage_threshold: '熟悉',
+    flag_auto_set: '田中铃木互斥触发',
+    description: '与铃木美穗 affection ≥ 30（达熟悉临界）即触发互斥；田中美沙锁定失恋（affection -30 / jealousy +20 / route_locked=1）',
+    narrative_hint: '触发后美沙会以"原本只是来八十八町散心"为由疏远主角，但仍保留一线希望；她不会主动敌对，但每次见面都隐约流露失落'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '在商业区咖啡店/电影院偶遇接触，以独立电影/时尚/咖啡为话题切入；展现对她"逃离东京"原因的理解；不评判她的开放与独立',
+    warning: '与田中美沙同时推进会触发互斥锁；她看似开放实则戒备，强行亲密会触发她的"东京男人都这样"反射；需要先建立"懂她"而非"追她"的关系'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁转校生/ENTP：都市派外壳 + 逃离东京的脆弱，异乡孤独
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'C',
+    bust_size: 84,
+    waist_size: 57,
+    hip_size: 86,
+    height: 162,
+    weight: 48,
+    // 胸部详细（6 列）— 都市时尚的纤细有曲线
+    nipple_size: '小',
+    nipple_color: '粉嫩',
+    areola_size: '小',
+    breast_shape: '挺拔',
+    breast_sensitivity: 90,
+    lactation: '无',
+    // 腰部（2 列）— 都市感走姿训练的端正
+    waist_shape: '纤细',
+    waist_sensitivity: 100,
+    // 手部（2 列）— 都市美甲 + 胶片相机
+    hand_desc: '纤细白皙，都市美甲，常持胶片相机',
+    nail_style: '都市简约美甲（裸色+金线）',
+    // 臀部（3 列）— 走姿带都市感的曲线
+    hip_shape: '翘挺',
+    hip_sensitivity: 90,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，看似开放实则戒备
+    pubic_hair: '修剪过',
+    labia_size: '偏小',
+    labia_color: '粉嫩',
+    vaginal_tightness: '紧致',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 都市派的反差：被理解即融化
+    body_sensitivity: 90,
+    sensitive_zones: '颈侧,左锁骨下方痣,腰窝,右耳双耳洞处,手指(都市美甲),发际线',
+    arousal_triggers: '爵士乐,胶片相机快门声,异乡孤独,被理解逃离东京,都市霓虹,胶片冲洗药水味'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 68,           // 魅力（外貌吸引力）
+    academic: 65,        // 学业（学习成绩）
+    physical: 50,        // 体力（体能/运动）
+    social: 45,          // 社交（交际能力）
+    perception: 55,      // 敏感（察言观色/直觉）
+    reputation: 65,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 25,        // 力量（物理对抗/搬运）
+    agility: 40,         // 敏捷（反应/逃跑）
+    intelligence: 65,    // 智力（解谜/计划）
+    will_skill: 50,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 45,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 40,         // 烹饪（料理）
+    art: 50,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 15,        // 格斗（防身）
+    observation: 50,     // 观察（情报收集）
+    romance_skill: 25    // 恋爱（约会/亲密推进）
+  }
+};
+%>
+
+铃木美穗 · 基础信息已加载。当前女角 row_id=17，互斥关系：田中铃木（攻略后田中美沙锁定失恋，row_id=10）。

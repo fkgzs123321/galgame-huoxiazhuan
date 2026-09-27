@@ -1,0 +1,14 @@
+[
+  {"op":"add","path":"/entryManifest/数据库","value":{
+    "插件栈与分工":{"path":"世界书/数据库/插件栈与分工.yaml","abstract":"SP·数据库+骰子+MVU+EJS四层分工","keywords":[]},
+    "开局初始化SQL":{"path":"世界书/数据库/开局初始化SQL.yaml","abstract":"1939序章方家SQL初始化","keywords":["开局","初始化"]},
+    "SQL填表规则":{"path":"世界书/数据库/SQL填表规则.yaml","abstract":"tableEdit与角色属性表同步","keywords":[]},
+    "条件模板说明":{"path":"世界书/数据库/条件模板说明.yaml","abstract":"启用if cell条件模板","keywords":[]}
+  }},
+  {"op":"add","path":"/entryManifest/EJS预处理/EJS变量定义片段","value":{"path":"世界书/EJS/EJS变量定义片段.txt","abstract":"EJS补充变量片段","keywords":[]}},
+  {"op":"add","path":"/entryManifest/角色/方敏-基础信息","value":{"path":"世界书/角色/方敏/基础信息.yaml","part":"basic","abstract":"方敏基础档案","keywords":["方敏","敏敏"]}},
+  {"op":"add","path":"/entryManifest/角色/方敏-调色盘","value":{"path":"世界书/角色/方敏/调色盘.yaml","part":"personality","abstract":"方敏EJS序章至三章调色","keywords":["方敏"]}},
+  {"op":"add","path":"/entryManifest/角色/方敏-分阶段-数据库条件","value":{"path":"世界书/角色/方敏/分阶段-数据库条件.txt","part":"personality","abstract":"方敏数据库if cell分阶段","keywords":["方敏"]}},
+  {"op":"add","path":"/typeLists/depth/-","value":"数据库"},
+  {"op":"add","path":"/strategyThresholds/数据库","value":"Infinity"}
+]

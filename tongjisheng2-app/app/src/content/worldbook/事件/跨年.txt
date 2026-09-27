@@ -1,0 +1,336 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 事件 · 跨年
+   ════════════════════════════════════════════════════════════
+   触发条件：01-01 晚→深夜时段（day_count=11，大晦日跨年参拜）
+   事件类型：季节性
+   影响范围：所有已相遇女角（affection≥20）
+   关联调度器：day11_0101.txt → event_day11_new_year_kumiko_lost / event_day11_kumiko_stay
+   关联规则：全局规则总表.txt → DIFFICULTY_MODIFIERS / GLOBAL_IMPACT / TIME_LOCATION_RULES
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ── 读取运行时全局变量（用于难度修正与触发校验） ── */
+const _diff = String(getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' })) || '普通';
+const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 11 })) || 11;
+const _date = String(getvar('stat_data.时间.当前日期', { scope: 'local', defaults: '01-01' })) || '01-01';
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '晚' })) || '晚';
+const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+const _mood = Number(getvar('stat_data.主角.心情', { scope: 'local', defaults: 70 })) || 0;
+const _fatigue = Number(getvar('stat_data.主角.疲劳', { scope: 'local', defaults: 0 })) || 0;
+
+/* ── 难度修正系数（引用 全局规则总表.txt → DIFFICULTY_MODIFIERS）──
+   轻松：increase×1.5 / jealousy×0.5
+   普通：increase×1.0 / jealousy×1.0
+   挑战：increase×0.9 / jealousy×1.5
+   地狱：increase×0.3 / jealousy×2.5（同行女角其他 affection≥40 女角嫉妒+15） */
+const _DIFF = {
+  '轻松': { increase_mult: 1.5, jealousy_mult: 0.5, hell_jealousy_high: false, note: '休闲向，跨年好感加成放大' },
+  '普通': { increase_mult: 1.0, jealousy_mult: 1.0, hell_jealousy_high: false, note: '原作难度' },
+  '挑战': { increase_mult: 0.9, jealousy_mult: 1.5, hell_jealousy_high: false, note: '好感增长受限，嫉妒易累积' },
+  '地狱': { increase_mult: 0.3, jealousy_mult: 2.5, hell_jealousy_high: true, note: '跨年同行女角，其他 affection≥40 女角 jealousy +15' }
+};
+const _dm = _DIFF[_diff] || _DIFF['普通'];
+
+function _adj(base) { return Math.round(base * _dm.increase_mult); }
+function _jea(base) { return Math.round(base * _dm.jealousy_mult); }
+
+/* ── 跨年事件主对象（与 chronicle 表结构对齐）── */
+const new_year_eve = {
+  /* ═══ chronicle 表登记字段 ═══ */
+  event_id: 'event_seasonal_new_year_eve',
+  event_type: '季节性',
+  date: '01-01',
+  time_slot: '晚→深夜',          // 跨年倒计时横跨两时段
+  location: '温泉乡 · 如月神宫 / 温泉旅馆',
+  heroine_id: null,
+  title: '跨年神社参拜',
+  description: '大晦日夜晚，八十八町温泉乡如月神宫举行跨年参拜。主角可选择与谁一起去神社倒数，迎接新年到来。',
+  choice_made: '',
+  is_completed: 0,
+
+  /* ═══ 触发条件 ═══ */
+  trigger: {
+    day_count: 11,
+    date: '01-01',
+    time_slot: '晚',
+    prerequisite: '至少 1 位女角 affection ≥ 20（可发起参拜邀约）；无邀约可独自参拜',
+    auto_trigger: true,
+    time_span: '晚(17:00) → 深夜(00:00 跨年倒计时)'
+  },
+
+  /* ═══ 影响范围 ═══ */
+  scope: {
+    heroines: [1, 8, 10, 14, 11],   // 唯/友美/美沙/佐知子/美铃
+    condition: 'affection ≥ 20（已相遇且有交情）；佐知子需 affection≥20；美铃需 affection≥40（师生禁忌公开场合）',
+    mutex_note: '单选一人同行；跨年倒计时时刻（23:59→00:00）若有女角同行，触发"新年第一个拥抱"特殊事件'
+  },
+
+  /* ═══ 分支设计 ═══ */
+  branches: [
+    /* ── 分支 1：与鸣泽唯参拜 ── */
+    {
+      heroine_id: 1,
+      heroine_name: '鸣泽唯',
+      condition: '唯 affection ≥ 30（心动期阈值）',
+      trigger_threshold: { affection_唯: 30 },
+      scene: '如月神宫参道 / 神社本殿前',
+      invitation: '唯穿着淡粉色和服外套，黑色长发挽成低马尾，发带是新的。她在自宅玄关等你，攥着袖口说："哥哥……一起参拜吧。今年最后一天，想和你一起跨年。"她不敢看你的眼睛，但递来一条编织绳结——平安夜的回礼。',
+      choices: [
+        {
+          option: '与唯一起去如月神宫跨年参拜',
+          consequences: {
+            variables: {
+              '鸣泽唯.affection': _adj(20),
+              '鸣泽唯.heartbeat': _adj(15),
+              '鸣泽唯.trust': _adj(5),
+              '主角.mood': _adj(8)
+            },
+            events: ['event_seasonal_new_year_hug'],
+            special_event: '新年第一个拥抱（heartbeat +10）',
+            cg_unlock: 'cg_new_year_eve_yui',
+            bad_ending: null,
+            first_handhold_possible: true
+          },
+          narrative: '如月神宫的参道上挂满提灯，人来人往却奇迹般地安静。唯走在你身边，和服下摆随着步伐轻摆，每走一步她就离你近一点。参拜队列很长，你们并肩站着，她哈出的白气在冷空气里散开。"哥哥，"她忽然小声说，"今年发生了很多事……西御寺的事，还有……你。"她没说完，耳朵红透了。23:50 神社敲响除夜钟，悠长的钟声一声一声地数过一百零八下。唯闭眼许愿，睫毛上沾着细碎的雪。当倒计时数到最后一声钟响，00:00 准时到来，新年的第一秒。唯睁开眼，望向你，眼眶湿润。她没有说话，只是轻轻握住了你的手——这是义妹第一次主动的肢体接触。她的指尖冰凉，掌心却滚烫。你们就这样握着手，在神宫前迎接了新年。她靠过来，你顺势将她拥入怀中，这是新年的第一个拥抱。她在你怀里说："今年……也要在一起。"声音轻得像雪。'
+        }
+      ]
+    },
+
+    /* ── 分支 2：与水野友美参拜 ── */
+    {
+      heroine_id: 8,
+      heroine_name: '水野友美',
+      condition: '友美 affection ≥ 30（心动期阈值）',
+      trigger_threshold: { affection_友美: 30 },
+      scene: '如月神宫参道 / 白蛇池公园（归途）',
+      invitation: '友美敲开你家门，黑色长发披散着，没像平时那样用发卡别起。她围着你送的围巾，捧着一本书作为礼物。"那个……今晚要参拜吧？一起？"她声音很轻，但眼神坚定得不像她。',
+      choices: [
+        {
+          option: '与友美一起去如月神宫跨年参拜',
+          consequences: {
+            variables: {
+              '水野友美.affection': _adj(20),
+              '水野友美.heartbeat': _adj(15),
+              '水野友美.trust': _adj(5),
+              '主角.mood': _adj(8)
+            },
+            events: ['event_seasonal_new_year_hug'],
+            special_event: '新年第一个拥抱（heartbeat +10）+ 青梅告白可能',
+            cg_unlock: 'cg_new_year_eve_tomomi',
+            bad_ending: null,
+            confession_possible: true
+          },
+          narrative: '青梅竹马的你与友美走在熟悉的参道上，提灯的光把她的影子拉长又缩短。她今晚话格外少，只是偶尔抬眼看你，又赶紧低头。参拜时她投下硬币，合掌许愿的时间比任何人都长。你问许了什么愿，她摇头不肯说，耳尖却红了。除夜钟响到第八十声时，她忽然拉住你的袖子，把你拉到神社角落的梅树下。雪落进她黑发里，像撒了一层糖霜。"{{user}}，"她第一次直呼你的名字而不是"那个……"，声音颤抖，"我从小就在你身边。一直……一直在。"她抬起头，眼里盛着提灯的暖光与泪光，"新的一年，能不能……不只是青梅竹马？"这是青梅竹马多年的友美第一次主动告白。倒计时的钟声敲响最后一声，她没有等你回答，只是踮起脚尖，在你怀里完成了新年的第一个拥抱。她的心跳隔着围巾传过来，快得像要蹦出来。'
+        }
+      ]
+    },
+
+    /* ── 分支 3：与田中美沙参拜 ── */
+    {
+      heroine_id: 10,
+      heroine_name: '田中美沙',
+      condition: '美沙 affection ≥ 30（心动期阈值）',
+      trigger_threshold: { affection_美沙: 30 },
+      scene: '如月神宫参道 / 神社境内',
+      invitation: '美沙穿着运动品牌羽绒服，短发利落，活力十足。"喂！跨年不去参拜太亏了吧！我查了，温泉乡的神宫最灵！走走走！"她一把拽住你的手臂，力气大得不像 20 岁的女生。',
+      choices: [
+        {
+          option: '与美沙一起去如月神宫跨年参拜',
+          consequences: {
+            variables: {
+              '田中美沙.affection': _adj(20),
+              '田中美沙.heartbeat': _adj(15),
+              '田中美沙.trust': _adj(5),
+              '主角.mood': _adj(10)
+            },
+            events: ['event_seasonal_new_year_hug'],
+            special_event: '新年第一个拥抱（heartbeat +10）',
+            cg_unlock: 'cg_new_year_eve_misa',
+            bad_ending: null
+          },
+          narrative: '《同级生1》的女主美沙，今年寒假来八十八町找朋友玩，意外与你重逢。她拉着你在参道上奔跑，活力四射得像回到了高中时代。"还记得吗？那时候我们也这样跑过！"她回头笑，短发在风里飞扬。参拜时她学你合掌，却偷看你有没有睁眼。除夜钟响时她忽然安静下来，盯着雪说："其实……这次来八十八町，一半是为了找你。"她转向你，眼神直率得没有一丝闪躲，"我们那时候没成，我一直……有点不甘心。"钟声数到一百零八，新年的第一秒，她猛地扑过来抱住你，力气大得你踉跄了一步。"新年快乐！"她闷闷地说，脸埋在你胸口，"这次……别再错过了。"她的体温透过羽绒服传过来，像个小太阳。这是重逢后她第一次这么近，也是新年的第一个拥抱。'
+        }
+      ]
+    },
+
+    /* ── 分支 4：与永岛佐知子参拜 ── */
+    {
+      heroine_id: 14,
+      heroine_name: '永岛佐知子',
+      condition: '佐知子 affection ≥ 20（感激期阈值，孤独长辈被陪伴）',
+      trigger_threshold: { affection_佐知子: 20 },
+      scene: '如月神宫境内 / 温泉乡小径',
+      invitation: '佐知子在温泉乡旅馆前遇到你，职业装外罩了一件深色大衣，疲惫但坚强。她怀里的久美子已经睡着。"真巧……你也来参拜？"她勉强笑了笑，眼神却流露出一丝渴望陪伴。',
+      choices: [
+        {
+          option: '陪佐知子母女一起跨年参拜',
+          consequences: {
+            variables: {
+              '永岛佐知子.affection': _adj(15),
+              '永岛佐知子.heartbeat': _adj(8),
+              '永岛佐知子.trust': _adj(8),
+              '永岛久美子.affection': _adj(3),
+              '主角.mood': _adj(6)
+            },
+            events: ['event_seasonal_new_year_hug'],
+            special_event: '新年第一个拥抱（佐知子版，长辈被陪伴的感动）',
+            cg_unlock: 'cg_new_year_eve_sachiko',
+            bad_ending: null
+          },
+          narrative: '佐知子是个 32 岁的单身母亲，独自抚养久美子。跨年夜她本想独自带女儿参拜，却在你出现时眼眶微红。她抱着熟睡的久美子，你接过孩子让她能合掌许愿——这个小小的举动让她愣了很久。除夜钟响时，她站在你身边，轻声说："自从离婚后……很久没人这样帮过我了。"她不是少女，不会脸红心跳，但那种被陪伴的安心感让她卸下了坚强的壳。倒计时结束，她没有拥抱你，只是深深鞠了一躬："谢谢你，今年……因为有你在，久美子也笑得多了。"然后她侧过脸，借着神社的阴影偷偷擦了擦眼角。久美子在你怀里动了一下，嘟囔着"新年快乐"，又沉沉睡去。这一刻三个没有血缘关系的人，在雪夜里像一家人。佐知子望向新年的天空，第一次觉得来年也许不会太孤单。'
+        }
+      ]
+    },
+
+    /* ── 分支 5：与片桐美铃参拜（师生禁忌公开场合）── */
+    {
+      heroine_id: 11,
+      heroine_name: '片桐美铃',
+      condition: '美铃 affection ≥ 40（暧昧期阈值，师生禁忌公开场合）',
+      trigger_threshold: { affection_美铃: 40 },
+      scene: '如月神宫偏僻侧门 / 神社后山梅林',
+      invitation: '美铃老师穿便装——这本身就罕见。长发披散，眼镜下的眼神温柔又挣扎。"{{user}}同学……不，今晚只有我们的话。"她顿了顿，"一起参拜吧。但、要保持距离，被人看到会出问题。"她的手指无意识地绞着围巾。',
+      choices: [
+        {
+          option: '与美铃老师偷偷一起跨年参拜',
+          consequences: {
+            variables: {
+              '片桐美铃.affection': _adj(25),
+              '片桐美铃.heartbeat': _adj(15),
+              '片桐美铃.trust': _adj(10),
+              '主角.mood': _adj(8),
+              '主角.willpower': _adj(-3)  // 师生公开场合风险
+            },
+            events: ['event_seasonal_new_year_hug'],
+            special_event: '新年第一个拥抱（师生禁忌版，必须避开人群）',
+            cg_unlock: 'cg_new_year_eve_misuzu',
+            bad_ending: null,
+            risk_note: '若被其他女角或学生目击，触发 willpower -3 与该女角 jealousy +15'
+          },
+          narrative: '美铃是八十八学园的美人教师，25 岁，你的导师。师生关系让这场跨年参拜充满禁忌感。她特意选了偏僻的侧门进入，避开参道上的人群。你们保持着两步距离走在梅林里，雪落满枝头。她低声解释："我本来不该来的……但今年最后一天，我想见你。"这是她第一次承认。除夜钟响时她躲在后山梅树下，不敢与你并肩。倒数到最后一声，她忽然抓住你的手，指尖冰凉："{{user}}……新年快乐。"声音哽咽。她望向你，眼镜后的眼睛湿漉漉的，挣扎了很久才轻轻靠进你怀里——这是新年的第一个拥抱，也是师生之间第一次越界的肢体接触。她抱着你时浑身发抖，既是越界的恐惧，也是压抑许久的释放。"明天……我们还是师生。"她轻声说，像在告诫自己。但今夜，她只是个渴望被爱的女人。'
+        }
+      ]
+    },
+
+    /* ── 分支 6：独自参拜 ── */
+    {
+      heroine_id: null,
+      heroine_name: '独自参拜',
+      condition: '无任何女角 affection ≥ 20，或玩家主动独自前往',
+      trigger_threshold: { fallback: true },
+      scene: '如月神宫参道（独自）',
+      invitation: '跨年夜的参道人来人往，情侣成双成对。你独自一人裹紧围巾，融入人潮。没有邀约，或者都婉拒了。神社的钟声即将敲响。',
+      choices: [
+        {
+          option: '独自一人去神宫跨年参拜',
+          consequences: {
+            variables: {
+              '主角.mood': _adj(-10),
+              '主角.sleep_quality': _adj(3)
+            },
+            events: ['event_seasonal_special_npc_encounter'],
+            special_event: '可能偶遇特殊 NPC（永岛久美子迷路前置 / 田中美沙重逢前置）',
+            cg_unlock: 'cg_new_year_eve_alone',
+            bad_ending: null,
+            random_encounter: true
+          },
+          narrative: '你独自走在参道上，提灯的光把你的影子拉得很孤单。身边的情侣、家庭、朋友成群结队，你像个局外人。参拜时你投下一枚硬币，合掌却不知该许什么愿。除夜钟一声一声敲响，悠长地回荡在雪夜里。每一声都像在数着这一年的遗憾——没追到的女孩、没解的误会、没说出口的话。00:00 倒计时结束，人群爆发出"三！二！一！新年快乐！"的欢呼，你站在原地，被欢乐包围却格格不入。就在这时，神社角落传来一阵骚动——一个小女孩在雪地里迷路了，哭着想找妈妈。你走过去，蹲下问她名字。她抽噎着说："我叫……永岛久美子……"这是元日事件的前置。又或者你转身时撞上一个短发女生，她惊喜地喊你名字——是田中美沙，多年未见的旧友。无论哪种偶遇，这个独自的跨年夜，命运都为你埋下了新的伏笔。'
+        }
+      ]
+    },
+
+    /* ── 分支 7：温泉旅馆跨年（消费向）── */
+    {
+      heroine_id: null,
+      heroine_name: '温泉旅馆跨年',
+      condition: 'money ≥ 3000，无女角邀约或玩家选择不去参拜',
+      trigger_threshold: { money: 3000, fallback: true },
+      scene: '温泉乡旅馆（包间过夜）',
+      invitation: '不去参拜的话，温泉乡旅馆有跨年套餐。泡着温泉看雪，比挤神社舒服多了。前台小姐推荐了 3000 日元的跨年特惠，含一泊二食与露天温泉。',
+      choices: [
+        {
+          option: '在温泉旅馆包间跨年（消费 3000）',
+          consequences: {
+            variables: {
+              '主角.money': -3000,
+              '主角.mood': _adj(30),
+              '主角.sleep_quality': _adj(20),
+              '主角.fatigue': _adj(-15),
+              '主角.hygiene': _adj(80)
+            },
+            events: [],
+            special_event: '无跨年拥抱（无同行女角），但 mood/sleep_quality 大幅恢复',
+            cg_unlock: 'cg_new_year_eve_onsen',
+            bad_ending: null
+          },
+          narrative: '你放弃了神社参拜，选了温泉旅馆的跨年套餐。3000 日元换一泊二食加露天温泉，划算。傍晚入住，先泡了露天温泉，雪花落在温泉池面上，一触即化。你仰面躺在温泉里，看灰蒙蒙的天空飘雪，一整年的疲惫似乎都在热水里融化了。晚饭是跨年特制怀石，有红白鲤鱼昆布卷与年越しそば。老板娘说跨年そば寓意长寿，你独享一整份。23:50 旅馆大厅组织跨年倒计时，你端着热清酒参与，与陌生旅客互相道贺"新年快乐"。00:00 钟响，窗外烟花绽开，你独自在温泉乡迎接了新年，没有女角在侧，但身心都被温泉与料理治愈了。深夜回到房间，被褥松软，窗外雪声簌簌。这一夜你睡得格外沉，sleep_quality 大幅回升，为元日的初诣积攒了精力。'
+        }
+      ]
+    }
+  ],
+
+  /* ═══ 特殊机制：新年第一个拥抱（跨年倒计时 23:59→00:00）═══ */
+  special_hug: {
+    name: '新年第一个拥抱',
+    trigger: '跨年倒计时时刻（23:59→00:00）若有女角同行',
+    effect: { heartbeat: _adj(10) },
+    condition: '选择了分支 1-5（有女角同行）',
+    note: '倒计时结束瞬间触发，无论关系阶段，均自动追加 heartbeat +10（参考 BEHAVIOR_TABLE.拥抱 基础值）'
+  },
+
+  /* ═══ 难度修正 ═══ */
+  difficulty_modifiers: {
+    '轻松': '好感加成 ×1.5，嫉妒抑制 ×0.5；新年拥抱 heartbeat +15（×1.5）',
+    '普通': '标准数值；新年拥抱 heartbeat +10',
+    '挑战': '好感增长 ×0.9，嫉妒 ×1.5；同行女角外，其余已相遇女角 jealousy +5',
+    '地狱': '好感增长 ×0.3，嫉妒 ×2.5；跨年若与某女角同行，其他 affection≥40 的女角 jealousy +15（参考 GLOBAL_IMPACT）'
+  },
+
+  /* ═══ CG 解锁总表（5 种 + 独自/温泉 2 种）═══ */
+  cg_unlocks: [
+    { cg_id: 'cg_new_year_eve_yui',      branch: 1, condition: '与唯参拜',         rarity: '稀有' },
+    { cg_id: 'cg_new_year_eve_tomomi',   branch: 2, condition: '与友美参拜',       rarity: '稀有' },
+    { cg_id: 'cg_new_year_eve_misa',     branch: 3, condition: '与美沙参拜',       rarity: '稀有' },
+    { cg_id: 'cg_new_year_eve_sachiko',   branch: 4, condition: '与佐知子参拜',     rarity: '精良' },
+    { cg_id: 'cg_new_year_eve_misuzu',    branch: 5, condition: '与美铃参拜',       rarity: '传说' },
+    { cg_id: 'cg_new_year_eve_alone',     branch: 6, condition: '独自参拜',         rarity: '普通' },
+    { cg_id: 'cg_new_year_eve_onsen',     branch: 7, condition: '温泉旅馆跨年',     rarity: '精良' }
+  ],
+
+  /* ═══ 时间连续性 ═══ */
+  continuity: {
+    prev_event: 'event_seasonal_christmas_eve',
+    prev_date: '12-25',
+    next_event: 'event_seasonal_hatsu_moude',
+    next_date: '01-02',
+    note: '跨年同行的女角将在元日早晨触发延续剧情（affection +5/heartbeat +5）；独自跨年者元日可独自初诣抽御签；温泉旅馆跨年者元日早晨直接在温泉乡活动'
+  }
+};
+
+const _trigger_ok = (_dayCount === 11 && _date === '01-01' && (_timeSlot === '晚' || _timeSlot === '深夜'));
+%>
+
+[同级生2 · 季节性事件 · 跨年 已加载]
+触发校验：day_count=<%= _dayCount %> / date=<%= _date %> / time_slot=<%= _timeSlot %> / 难度=<%= _diff %>
+触发状态：<%= _trigger_ok ? '✓ 满足' : '✗ 未到时机' %>
+当前难度修正：好感增益 ×<%= _dm.increase_mult %> / 嫉妒系数 ×<%= _dm.jealousy_mult %><% if (_dm.hell_jealousy_high) { %> / 地狱同行触发高好感女角嫉妒+15 已启用<% } %>
+
+【事件摘要】
+- event_id：event_seasonal_new_year_eve
+- 日期：01-01（day_count=11）晚→深夜时段
+- 标题：跨年神社参拜
+- 分支数：7（唯/友美/美沙/佐知子/美铃/独自/温泉旅馆）
+- 影响范围：所有已相遇女角（affection≥20）；美铃需≥40
+- 特殊机制：跨年倒计时 23:59→00:00 同行触发"新年第一个拥抱"（heartbeat+10）
+- CG 可解锁：7 张
+- 后续衔接：元日（01-02）
+
+【执行规则】
+1. AI 必须先列出当前 affection≥20 的女角清单（按 row_id 排序），仅这些女角可发起参拜邀约；美铃需≥40 且标注"师生禁忌"。
+2. 玩家选定同行女角后，应用该分支 consequences.variables；倒计时时刻自动追加新年拥抱 heartbeat +10。
+3. 地狱难度下，若与某女角同行，其他 affection≥40 的女角 jealousy +15。
+4. 独自参拜分支可随机偶遇永岛久美子（元日事件前置）或田中美沙（重逢前置），由 LCG 骰子决定。
+5. 温泉旅馆跨年分支消耗 money 3000，需校验 money≥3000，否则无法选择。
+6. 事件横跨晚→深夜两时段，完成后 time_slot 推进至深夜，在 chronicle 表插入纪要记录（code_index/time_span/summary/chronicle_text）。
+7. 跨年同行的女角 choice_made 将作为元日延续剧情的判定依据。

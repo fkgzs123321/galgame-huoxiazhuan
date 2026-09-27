@@ -1,0 +1,264 @@
+@@generate_before
+# [mvu_plot]RPG资产系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.物品栏 / stat_data.仓库 / stat_data.已放置物品 / stat_data.状态.金钱
+
+<%
+// ===== 读取玩家金钱（用于购买力判定）=====
+var money = Number(getvar('stat_data.状态.金钱', {scope:'local', defaults:500})) || 0;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var insight = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+
+// ===== 持有物 inventory（随身携带，书包里）=====
+// 容量上限：20 格（每件物品占1格，可堆叠物品合并占1格）
+var _rawInventory = getvar('stat_data.物品栏', {scope:'local', defaults:[
+  { id:'item001', name:'高中课本(数学)', count:1, type:'材料', quality:'普通', state:'完好', location:'inventory', owner:'{{user}}' },
+  { id:'item002', name:'高中课本(语文)', count:1, type:'材料', quality:'普通', state:'完好', location:'inventory', owner:'{{user}}' },
+  { id:'item003', name:'文具盒', count:1, type:'材料', quality:'普通', state:'完好', location:'inventory', owner:'{{user}}' },
+  { id:'item004', name:'校园卡', count:1, type:'钥匙', quality:'普通', state:'完好', location:'inventory', owner:'{{user}}' },
+  { id:'item005', name:'水杯', count:1, type:'材料', quality:'普通', state:'完好', location:'inventory', owner:'{{user}}' }
+]}) || [];
+var inventory = Array.isArray(_rawInventory) ? _rawInventory : (function(){ var a=[]; if(_rawInventory && typeof _rawInventory==='object'){ for(var k in _rawInventory){ if(Object.prototype.hasOwnProperty.call(_rawInventory,k)) a.push(_rawInventory[k]); } } return a; })();
+
+// ===== 仓库 storage（储物柜/宿舍柜子）=====
+// 容量上限：50 格
+var _rawStorage = getvar('stat_data.仓库', {scope:'local', defaults:[
+  { id:'store001', name:'备用校服', count:2, type:'材料', quality:'普通', state:'完好', location:'女生宿舍A栋三楼高三2班4人宿舍{{user}}储物柜', owner:'{{user}}' },
+  { id:'store002', name:'运动鞋', count:1, type:'装备', quality:'普通', state:'完好', location:'女生宿舍A栋三楼高三2班4人宿舍{{user}}储物柜', owner:'{{user}}' }
+]}) || [];
+var storage = Array.isArray(_rawStorage) ? _rawStorage : (function(){ var a=[]; if(_rawStorage && typeof _rawStorage==='object'){ for(var k in _rawStorage){ if(Object.prototype.hasOwnProperty.call(_rawStorage,k)) a.push(_rawStorage[k]); } } return a; })();
+
+// ===== 放置物 items_placed（在教室/宿舍/其他地点放置）=====
+var _rawItemsPlaced = getvar('stat_data.已放置物品', {scope:'local', defaults:[]}) || [];
+var itemsPlaced = Array.isArray(_rawItemsPlaced) ? _rawItemsPlaced : (function(){ var a=[]; if(_rawItemsPlaced && typeof _rawItemsPlaced==='object'){ for(var k in _rawItemsPlaced){ if(Object.prototype.hasOwnProperty.call(_rawItemsPlaced,k)) a.push(_rawItemsPlaced[k]); } } return a; })();
+
+// ===== 物品类型定义 =====
+// 消耗品：食物/饮料/药品/一次性道具（使用后消失）
+// 材料：可堆叠的原料/书本/纸张
+// 装备：可穿戴/可使用的工具（如运动鞋、护腕、笔记本）
+// 钥匙：关键道具（如校园卡、宿舍钥匙、特殊房间通行证）
+// 任务物品：剧情触发道具，不可丢弃/赠与
+// 特殊物品：假阴茎相关线索物品（仅在 stage>=3 出现）
+
+// ===== 物品品质 =====
+// 普通 / 良好 / 优秀 / 精良 / 史诗 / 传说
+// 校园背景适配：普通(日常用品) / 良好(品牌货) / 优秀(限量款) / 精良(老师赠送) / 史诗(罕见)
+
+// ===== 物品状态 =====
+// 完好 / 轻微磨损 / 明显磨损 / 损坏 / 即将报废 / 已报废
+
+// ===== 获得途径 =====
+// 购买（食堂/小卖部/校医室，参金钱与补给系统）
+// 拾取（教室遗失物/走廊捡到/操场遗落）
+// 赠与（NPC主动赠送/任务奖励）
+// 制造（参制造系统，需配方和材料）
+// 任务奖励（完成任务获得）
+
+// ===== 消耗途径 =====
+// 使用（消耗品/装备使用磨损）
+// 丢弃（在任意位置丢弃，转为 items_placed）
+// 赠与（送给NPC，需NPC同意接受）
+// 制造消耗（作为材料被消耗）
+
+// ===== 物品ID命名规则 =====
+// inventory: item001 起递增
+// storage: store001 起递增
+// items_placed: placed001 起递增
+// 编号稳定不重用
+
+// ===== 容量计算 =====
+var inventoryUsed = inventory.length;
+var inventoryMax = 20;
+var storageUsed = storage.length;
+var storageMax = 50;
+%>
+
+<inventory_system>
+【RPG资产系统 - AI内部参考，严禁外露元数据】
+
+---
+■ 当前资产概览
+---
+金钱余额：<%= money %> 元
+持有物（inventory）：<%= inventoryUsed %>/<%= inventoryMax %> 格
+仓库（storage）：<%= storageUsed %>/<%= storageMax %> 格
+放置物（items_placed）：<%= itemsPlaced.length %> 件
+
+---
+■ 持有物 inventory（随身携带，书包里）
+---
+<% if (inventory.length === 0) { %>
+（空）
+<% } else { %>
+| ID | 名称 | 数量 | 类型 | 品质 | 状态 |
+<% inventory.forEach(function(i) { %>
+| <%= i.编号 || i.id || '' %> | <%= i.名称 || i.name || '' %> | <%= i.数量 || i.count || 0 %> | <%= i.类型 || i.type || '' %> | <%= i.品质 || i.quality || '' %> | <%= i.状态 || i.state || '' %> |
+<% }); %>
+<% } %>
+
+---
+■ 仓库 storage（储物柜/宿舍柜子）
+---
+<% if (storage.length === 0) { %>
+（空）
+<% } else { %>
+| ID | 名称 | 数量 | 类型 | 品质 | 状态 | 位置 |
+<% storage.forEach(function(s) { %>
+| <%= s.编号 || s.id || '' %> | <%= s.名称 || s.name || '' %> | <%= s.数量 || s.count || 0 %> | <%= s.类型 || s.type || '' %> | <%= s.品质 || s.quality || '' %> | <%= s.状态 || s.state || '' %> | <%= s.位置 || s.location || '' %> |
+<% }); %>
+<% } %>
+
+---
+■ 放置物 items_placed（在教室/宿舍/其他地点放置）
+---
+<% if (itemsPlaced.length === 0) { %>
+（空）
+<% } else { %>
+| ID | 名称 | 数量 | 类型 | 品质 | 状态 | 位置 | 归属 |
+<% itemsPlaced.forEach(function(p) { %>
+| <%= p.编号 || p.id || '' %> | <%= p.名称 || p.name || '' %> | <%= p.数量 || p.count || 0 %> | <%= p.类型 || p.type || '' %> | <%= p.品质 || p.quality || '' %> | <%= p.状态 || p.state || '' %> | <%= p.位置 || p.location || '' %> | <%= p.所有者 || p.owner || '' %> |
+<% }); %>
+<% } %>
+
+---
+■ 物品属性定义
+---
+- 名称：物品的显示名称（如"功能饮料""高中课本(数学)"）
+- 数量：堆叠数量（可堆叠物品按名称+类型+品质合并，最多99/格）
+- 类型：
+  · 消耗品：食物/饮料/药品/一次性道具（使用后消失）
+  · 材料：可堆叠的原料/书本/纸张
+  · 装备：可穿戴/可使用的工具（运动鞋、护腕、笔记本）
+  · 钥匙：关键道具（校园卡、宿舍钥匙、特殊通行证）
+  · 任务物品：剧情道具，不可丢弃/赠与
+  · 特殊物品：假阴茎相关线索物品（仅 stage>=3 出现）
+- 品质：普通 / 良好 / 优秀 / 精良 / 史诗 / 传说
+- 状态：完好 / 轻微磨损 / 明显磨损 / 损坏 / 即将报废 / 已报废
+- 位置：inventory / storage 位置描述 / items_placed 具体地点
+- 归属：{{user}} / NPC名 / 无主
+
+---
+■ 可堆叠物品合并规则
+---
+- 同名称 + 同类型 + 同品质 的物品自动合并到一格
+- 数量上限：99/格
+- 不同品质的同名物品不可合并（如"功能饮料 普通"和"功能饮料 优秀"分开存放）
+- 装备类物品不可堆叠（每件占1格）
+- 钥匙类物品不可堆叠
+- 任务物品不可堆叠
+
+---
+■ 物品获得途径
+---
+1. 购买（受金钱与补给系统约束）：
+   - 食堂：营养餐（消耗品，20元）
+   - 小卖部：功能饮料/维生素片（消耗品，15-30元）
+   - 校医室：安眠药/高级补剂/特制药膳（消耗品，25-150元，需沈雨桐在场）
+   - 严禁其他购买途径（网购、校外、代购等）
+2. 拾取（需合理场景）：
+   - 教室遗失物（无人认领超过3天）
+   - 走廊捡到（如丢失的校园卡）
+   - 操场遗落（如运动手帕）
+   - 拾取的物品归属原为"无主"，{{user}} 可选择保管或上交
+   - 严禁凭空拾取高价值物品（手机、钱包等需上交或归还）
+3. 赠与（NPC主动赠送）：
+   - NPC好感度达到阈值后可能赠送物品
+   - 节日/生日礼物（如情人节巧克力）
+   - 任务奖励（参任务系统）
+4. 制造（参制造系统）：
+   - 需要配方 + 材料 + 技能等级
+   - 失败时消耗部分材料
+5. 任务奖励（参任务系统）：
+   - 完成任务后由发布人给予
+
+---
+■ 物品消耗途径
+---
+1. 使用（消耗品）：
+   - 食物/饮料：恢复精力/体力（参金钱与补给系统效果）
+   - 药品：恢复sanity/energy，需注意副作用
+   - 一次性道具：使用后消失
+2. 丢弃：
+   - 在任意位置丢弃，转为 items_placed
+   - 任务物品不可丢弃
+   - 钥匙物品不可丢弃（除非有备用）
+3. 赠与（送给NPC）：
+   - NPC 可拒绝接受（如不喜欢该物品）
+   - 任务物品不可赠与
+   - 赠与后归属改为 NPC 名
+4. 制造消耗（作为材料）：
+   - 配方要求的材料被消耗
+   - 失败时消耗部分（约50%）
+
+---
+■ 物品存放与切换规则
+---
+1. inventory（随身）→ storage（仓库）：
+   - 需要 {{user}} 在宿舍或储物柜附近
+   - 不消耗时段
+2. storage → inventory：
+   - 需要 {{user}} 在宿舍或储物柜附近
+   - 受 inventory 容量上限约束（满则无法取出）
+3. inventory → items_placed（放置）：
+   - 在任意地点可放置
+   - 转为该地点的放置物，归属保持 {{user}}
+4. items_placed → inventory：
+   - 需要 {{user}} 在该地点
+   - 受 inventory 容量上限约束
+5. storage → items_placed：
+   - 禁止（必须先取出到 inventory）
+
+---
+■ 装备磨损与维修
+---
+1. 装备类物品（运动鞋/护腕/文具盒等）使用过程中磨损：
+   - 每次使用后 state 退化概率：完好→轻微磨损(10%)→明显磨损(20%)→损坏(30%)→报废
+   - 普通物品耐久度低，品牌物品耐久度高
+2. 维修：
+   - 在宿舍自行维修（消耗1时段，恢复1级状态）
+   - 找校医室/后勤维修（消耗金钱，恢复至完好）
+3. 报废物品：
+   - 已报废物品无法维修，只能丢弃
+   - 报废前会有效果衰减（如运动鞋损坏后锻炼经验-50%）
+
+---
+■ 特殊物品（假阴茎相关线索，stage>=3 才可能获得）
+---
+1. 仅在 stage>=3 且 insight>=30 时可能感知/拾取
+2. 类型：任务物品（不可丢弃/赠与）
+3. 获取途径：
+   - 女生遗失物（如可疑包装、说明书残页）
+   - 调查女生宿舍时发现（需高疑心度+合理时机）
+   - 监控/日记中获取线索
+4. 这类物品进入 inventory 后：
+   - {{user}} 会感到不安但无法完全理解
+   - 持有该物品时疑心度 +1/天
+   - 被NPC发现持有时风险极高
+
+---
+■ AI 执行铁律
+---
+1. 玩家获得/消耗物品时变量 AI 自动 patch 对应字段：
+   - 获得：stat_data.物品栏/storage/items_placed 新增条目
+   - 消耗：减少 count 或删除条目
+   - 移动：更新 location 字段
+2. 容量上限硬约束：
+   - inventory 满（20格）时无法获得新物品（除非可堆叠到已有格）
+   - storage 满（50格）时无法存入新物品
+   - AI 必须在叙事中告知"包满了/柜子满了"
+3. 物品ID稳定不重用：
+   - 已消耗/丢弃的物品ID不可再次分配给新物品
+   - AI 自增ID时必须读取现有最大值+1
+4. 严禁凭空创造物品：
+   - 不可让玩家"突然发现"高价值物品
+   - 不可让NPC"无缘无故"赠送贵重物品
+   - 任务物品必须有明确任务来源
+5. 严禁在正文中输出"inventory""storage""items_placed""item001"等元术语
+6. 物品转化为叙事：
+   - "你打开书包，里面有..."（inventory）
+   - "回到宿舍打开柜子，看到..."（storage）
+   - "讲台上还放着你昨天落下的..."（items_placed）
+7. 食物/药品类消耗品的效果必须与金钱与补给系统的效果对齐
+8. 任务物品一旦获得，{{user}} 在任务完成前不得丢弃/赠与/出售
+</inventory_system>

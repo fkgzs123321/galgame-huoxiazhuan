@@ -1,0 +1,204 @@
+@@generate_before
+<%_
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Plant = Number(getvar('stat_data.殖民者_主角.种植', { scope: 'local', defaults: 5 })) || 5;
+var p1Animal = Number(getvar('stat_data.殖民者_主角.畜牧', { scope: 'local', defaults: 5 })) || 5;
+
+var p2Name = getvar('stat_data.殖民者_2.姓名', { scope: 'local', defaults: '' }) || '';
+var p2Plant = Number(getvar('stat_data.殖民者_2.种植', { scope: 'local', defaults: 5 })) || 5;
+
+var temperature = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var season = getvar('stat_data.殖民地.季节', { scope: 'local', defaults: '春' }) || '春';
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+
+var a1Type = getvar('stat_data.动物_1.类型', { scope: 'local', defaults: '' }) || '';
+var a1Name = getvar('stat_data.动物_1.姓名', { scope: 'local', defaults: '' }) || '';
+var a1Gender = getvar('stat_data.动物_1.性别', { scope: 'local', defaults: '雄' }) || '雄';
+var a1Age = Number(getvar('stat_data.动物_1.年龄', { scope: 'local', defaults: 1 })) || 1;
+var a1Health = Number(getvar('stat_data.动物_1.健康', { scope: 'local', defaults: 100 })) || 100;
+var a1Mood = Number(getvar('stat_data.动物_1.心情', { scope: 'local', defaults: 50 })) || 50;
+var a1Tame = Number(getvar('stat_data.动物_1.驯服度', { scope: 'local', defaults: 100 })) || 100;
+var a1Train = Number(getvar('stat_data.动物_1.训练等级', { scope: 'local', defaults: 0 })) || 0;
+var a1Product = getvar('stat_data.动物_1.产物计时', { scope: 'local', defaults: '0' }) || '0';
+
+var FERTILITY_DB = {
+  '贫瘠': 0.6,
+  '普通': 0.8,
+  '肥沃': 1.2,
+  '施肥': 1.2,
+  '水培': 1.5
+};
+
+var LIGHT_DB = {
+  '室外白天': 1.0,
+  '夜间': 0.0,
+  '温室太阳灯': 1.0,
+  '温室无灯': 0.5,
+  '火山冬天': 0.2
+};
+
+/* 公式以DDL骰子引擎为准，禁止本地修改 */
+function _cropGrowth(baseSpeed, plantSkill, temp, fertility, light, water) {
+  var base = Number(baseSpeed) || 1;
+  var skl = Number(plantSkill) || 0;
+  var t = Number(temp) || 20;
+  var fert = FERTILITY_DB[fertility] != null ? FERTILITY_DB[fertility] : 0.8;
+  var lt = LIGHT_DB[light] != null ? LIGHT_DB[light] : 1.0;
+  var w = Number(water) || 1.0;
+  var skillMod = (1 + skl * 0.06) * (1 + skl * 0.02);
+  var tempMod = 1.0;
+  if (t >= 16 && t <= 26) { tempMod = 1.0; }
+  else if ((t >= 10 && t <= 15) || (t >= 27 && t <= 35)) { tempMod = 0.7; }
+  else { tempMod = 0.0; }
+  var result = base * skillMod * tempMod * fert * lt * w;
+  return Math.round(result * 100) / 100;
+}
+
+function _tempMod(temp) {
+  var t = Number(temp) || 20;
+  if (t >= 16 && t <= 26) { return 1.0; }
+  if ((t >= 10 && t <= 15) || (t >= 27 && t <= 35)) { return 0.7; }
+  return 0.0;
+}
+
+function _tameChance(animalSkill, seed, difficulty) {
+  var val = (Number(animalSkill) || 0) * 5;
+  var r = _check(val, seed, difficulty);
+  return { 检定值: val, 骰值: r.roll, 阈值: r.threshold, 结果: r.result };
+}
+
+function _trainTime(baseTime, animalSkill) {
+  var base = Number(baseTime) || 1;
+  var skl = Number(animalSkill) || 0;
+  var mod = Math.max(0.3, 1 - skl * 0.03);
+  return Math.round(base * mod * 100) / 100;
+}
+
+function _trainChance(animalSkill, seed) {
+  var val = (Number(animalSkill) || 0) * 4;
+  var r = _check(val, seed, '普通');
+  return { 检定值: val, 骰值: r.roll, 阈值: r.threshold, 结果: r.result };
+}
+
+function _breedCheck(foodPct, mood, hasMale, hasFemale) {
+  var food = Number(foodPct) || 0;
+  var m = Number(mood) || 0;
+  if (!hasMale || !hasFemale) { return { 可繁殖: false, 原因: '需1公1母' }; }
+  if (food <= 80) { return { 可繁殖: false, 原因: '食物满足度需>80%' }; }
+  if (m < 40) { return { 可繁殖: false, 原因: '心情需>40' }; }
+  return { 可繁殖: true, 原因: '条件满足', 妊娠食量: 1.5, 哺乳加成: 0.5 };
+}
+
+function _animalMood(foodPct, hasShelter, hasCompanion, trainLevel) {
+  var food = Number(foodPct) || 0;
+  var base = 50;
+  var foodBonus = food >= 80 ? 20 : (food >= 50 ? 10 : 0);
+  var shelterBonus = hasShelter ? 10 : 0;
+  var compBonus = hasCompanion ? 10 : 0;
+  var trainBonus = (Number(trainLevel) || 0) * 5;
+  var mood = base + foodBonus + shelterBonus + compBonus + trainBonus;
+  var status = '正常';
+  if (mood < 15) { status = '暴走'; }
+  else if (mood < 30) { status = '可能逃跑'; }
+  return { 心情: mood, 状态: status };
+}
+
+function _productCollect(animalType, animalSkill, lastProductDay) {
+  var skl = Number(animalSkill) || 0;
+  var mod = 1 + skl * 0.05;
+  var days = Number(lastProductDay) || 0;
+  var ready = days >= 1;
+  return { 产物修正: Math.round(mod * 100) / 100, 可收集: ready };
+}
+
+var growthSample = _cropGrowth(1.0, p1Plant, temperature, '肥沃', '室外白天', 1.0);
+var tempModVal = _tempMod(temperature);
+var tameSample = _tameChance(p1Animal, 'tame_demo', '普通');
+var trainSample = _trainChance(p1Animal, 'train_demo');
+var moodSample = _animalMood(85, true, true, a1Train);
+_%>
+<种植畜牧系统就绪>
+[当前种植状态]
+温度: <%= temperature %>°C (温度修正:<%= tempModVal %>)
+季节: <%= season %> 时段: <%= timeSlot %>
+生态群落: <%= biome %>
+
+殖民者技能:
+1. <%= p1Name %> - 种植:<%= p1Plant %> 畜牧:<%= p1Animal %>
+2. <%= p2Name %> - 种植:<%= p2Plant %>
+
+动物状态:
+1. <%= a1Type %>(<%= a1Name %>) 性别:<%= a1Gender %> 年龄:<%= a1Age %>
+   健康:<%= a1Health %> 心情:<%= a1Mood %> 驯服度:<%= a1Tame %> 训练等级:<%= a1Train %> 产物计时:<%= a1Product %>
+
+[种植规则]
+生长公式: 实际速度 = 基础速度 × 技能修正((1+种植×0.06)×(1+种植×0.02)) × 温度修正 × 肥力修正 × 光照修正 × 水分修正
+  示例: <%= p1Name %>种植<%= p1Plant %>,温度<%= temperature %>°C,肥沃,室外白天 → 生长速度×<%= growthSample %>
+
+温度修正:
+  16-26°C: 1.0 (最佳)
+  10-15°C或27-35°C: 0.7 (可生长非最佳)
+  其他: 0.0 (无法生长)
+
+肥力修正:
+  贫瘠: ×0.6
+  普通: ×0.8
+  肥沃: ×1.2
+  施肥: ×1.2
+  水培: ×1.5
+
+光照修正:
+  室外白天: ×1.0
+  夜间: ×0.0
+  温室太阳灯: ×1.0
+  温室无灯: ×0.5
+  火山冬天: ×0.2
+
+水分修正: 根据灌溉情况0.0-1.5
+配方查询: 查CROP_DB获取作物基础生长速度/生长天数/产量/温度区间
+
+[畜牧规则]
+驯服公式: _check(畜牧技能×5, seed, 难度)
+  难度等级: 极易/易/中/难/极难
+  极难(6-7级难度): 阈值=检定值÷5
+  示例: <%= p1Name %>畜牧<%= p1Animal %> → 阈值:<%= tameSample.阈值 %> 结果:<%= tameSample.结果 %>
+
+训练公式:
+  每级时间 = 基础时间 × (1 - 畜牧×0.03), 最低0.3
+  训练率 = _check(畜牧×4, seed, '普通')
+  示例: <%= p1Name %>畜牧<%= p1Animal %> → 训练检定阈值:<%= trainSample.阈值 %> 结果:<%= trainSample.结果 %>
+
+繁殖条件:
+  必要: 1公1母 + 食物满足度>80% + 心情>40
+  妊娠期间: 食量×1.5
+  产后哺乳: +0.5N/天
+
+动物心情:
+  基础: 50
+  食物(+20 if >80% / +10 if >50%)
+  住所(+10)
+  陪伴(+10)
+  训练度(每级+5)
+  心情<30: 可能逃跑
+  心情<15: 暴走
+  示例: 食物85%+有住所+有陪伴+训练<%= a1Train %>级 → 心情:<%= moodSample.心情 %> 状态:<%= moodSample.状态 %>
+
+产物收集:
+  产出修正: 1 + 畜牧×0.05
+  查ANIMAL_DB获取产物类型/周期/基础产量
+
+[行为校验要求]
+种植/畜牧行为必须输出行为校验块:
+  行为类型: 播种/浇水/施肥/收获/驯服/训练/喂食/挤奶/剪毛/屠宰/繁殖
+  执行者: 殖民者姓名
+  技能等级: 种植或畜牧技能值
+  目标: 作物名称(查CROP_DB)或动物类型(查ANIMAL_DB)
+  生长计算: _cropGrowth()结果(种植类)
+  驯服检定: _tameChance()结果(驯服类)
+  训练检定: _trainChance()结果(训练类)
+  繁殖检查: _breedCheck()结果(繁殖类)
+  心情判定: _animalMood()结果(动物相关)
+  产物收集: _productCollect()结果(产物类)
+  温度影响: 当前温度修正系数
+</种植畜牧系统就绪>

@@ -1,0 +1,5 @@
+import{d as e,lh as t}from"./data/store-DimW4mmP.js";function n(e){return e.length>0?e.map(e=>`${e.itemName}×${e.quantity}`).join(`、`):`无`}function r(e){return[e.lowGrade?t(e.lowGrade,`lowGrade`):``,e.midGrade?t(e.midGrade,`midGrade`):``,e.highGrade?t(e.highGrade,`highGrade`):``,e.topGrade?t(e.topGrade,`topGrade`):``].filter(Boolean).join(`、`)||`无`}function i(e){return[`- 类型：${e.kind===`quickSell`?`快速变卖`:`与${e.counterpartyName}交易`}`,`- 玩家交出物品：${n(e.playerGave.items)}`,`- 玩家交出灵石：${r(e.playerGave.spiritStones)}`,`- 玩家获得物品：${n(e.playerReceived.items)}`,`- 玩家获得灵石：${r(e.playerReceived.spiritStones)}`].join(`
+`)}function a(t){var n;let r=t??e.getState().archive;if(!(!(r==null||(n=r.pendingTradeContext)==null)&&n.length))return``;let a=new Set(r.pendingTradeContext.map(e=>e.tradeId)),o=(r.tradeLedger??[]).filter(e=>a.has(e.id));return o.length===0?``:[`【代码已结算交易】`,`以下交易已由代码完成库存和灵石结算。正文只需自然承接，不得再次增删物品、重复收付款或改写成交价格。`,o.map(i).join(`
+
+`)].join(`
+`)}function o(){var t;let n=e.getState().archive;!(n==null||(t=n.pendingTradeContext)==null)&&t.length&&e.getState().updateArchive(e=>({...e,pendingTradeContext:[]}))}export{a as n,o as t};

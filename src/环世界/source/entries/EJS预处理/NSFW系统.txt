@@ -1,0 +1,163 @@
+@@generate_before
+<%_
+var pName = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var pGender = getvar('stat_data.殖民者_主角.性别', { scope: 'local', defaults: '男' }) || '男';
+var pAge = Number(getvar('stat_data.殖民者_主角.年龄', { scope: 'local', defaults: 25 })) || 25;
+var pEnergy = Number(getvar('stat_data.殖民者_主角.精力值', { scope: 'local', defaults: 100 })) || 100;
+var pSensRaw = getvar('stat_data.殖民者_主角.NSFW敏感度', { scope: 'local', defaults: '{}' }) || '{}';
+var pExpRaw = getvar('stat_data.殖民者_主角.NSFW经验值', { scope: 'local', defaults: '{}' }) || '{}';
+
+var sensObj = {};
+try { sensObj = JSON.parse(pSensRaw) || {}; } catch (e) { sensObj = {}; }
+var expObj = {};
+try { expObj = JSON.parse(pExpRaw) || {}; } catch (e) { expObj = {}; }
+
+var SENS_PARTS = [
+  '唇', '颈', '耳垂', '胸', '腋', '腰', '腹', '臀',
+  '大腿内侧', '膝窝', '脚底', '前阴', '后庭', 'G点', 'A点'
+];
+
+var EXP_TYPES = [
+  '接吻', '爱抚上', '爱抚下', '口给', '口收', '胸服', '手活',
+  '正常位', '后入', '骑乘', '侧位', '后庭', '群交', '调教'
+];
+
+function _sensLevel(val) {
+  var v = Number(val) || 0;
+  if (v <= 9) { return '麻木'; }
+  if (v <= 29) { return '迟钝'; }
+  if (v <= 49) { return '普通'; }
+  if (v <= 69) { return '敏感'; }
+  if (v <= 89) { return '极敏感'; }
+  return '超敏感';
+}
+
+function _expLevel(val) {
+  var v = Number(val) || 0;
+  if (v <= 9) { return '初学'; }
+  if (v <= 29) { return '略懂'; }
+  if (v <= 49) { return '普通'; }
+  if (v <= 69) { return '熟练'; }
+  if (v <= 89) { return '精通'; }
+  return '大师';
+}
+
+function _energyCheck(energy) {
+  var e = Number(energy) || 0;
+  if (e < 30) { return { 可进行: false, 原因: '精力不足(<30)', 消耗: 0 }; }
+  var after = e - 20;
+  if (after < 0) { after = 0; }
+  return { 可进行: true, 消耗: 20, 剩余: after, 原因: '精力充足' };
+}
+
+function _energyRecover(energy, mode, hours) {
+  var e = Number(energy) || 0;
+  var h = Number(hours) || 0;
+  var rate = 0;
+  if (mode === '睡眠') { rate = 10; }
+  else if (mode === '休息') { rate = 5; }
+  var gain = rate * h;
+  var after = e + gain;
+  if (after > 100) { after = 100; }
+  return { 恢复速率: rate, 恢复量: gain, 剩余: after };
+}
+
+function _getSens(part) {
+  var v = sensObj[part];
+  if (v == null) { v = 30; }
+  var n = Number(v) || 0;
+  return { 部位: part, 数值: n, 等级: _sensLevel(n) };
+}
+
+function _getExp(type) {
+  var v = expObj[type];
+  if (v == null) { v = 0; }
+  var n = Number(v) || 0;
+  return { 类型: type, 数值: n, 等级: _expLevel(n) };
+}
+
+var isFemale = (pGender === '女');
+var energyChk = _energyCheck(pEnergy);
+var sensLip = _getSens('唇');
+var sensChest = _getSens('胸');
+var sensFront = _getSens('前阴');
+var expKiss = _getExp('接吻');
+var expNormal = _getExp('正常位');
+var recoverSleep = _energyRecover(pEnergy, '睡眠', 1);
+var recoverRest = _energyRecover(pEnergy, '休息', 1);
+_%>
+<NSFW系统就绪>
+[当前NSFW状态]
+姓名: <%= pName %> / 性别: <%= pGender %> / 年龄: <%= pAge %>
+精力值: <%= pEnergy %>/100 (可进行NSFW: <%= energyChk.可进行 ? '是' : '否' %>, <%= energyChk.原因 %>)
+NSFW敏感度(JSON): <%= pSensRaw %>
+NSFW经验值(JSON): <%= pExpRaw %>
+<%_ if (isFemale) { _%>
+(女性身体: 含G点/A点专属敏感部位)
+<%_ } else { _%>
+(男性身体: G点/A点不适用)
+<%_ } _%>
+
+[身体测量字段]
+基础: 身高/体重/体型/肤色/体毛/体味
+胸部: 罩杯/胸型/乳晕颜色大小/乳头形状颜色敏感度/弹性/特殊
+腰腹: 腰围/腹型/肚脐/特殊
+臀部: 臀型/臀围/肤质/特殊
+私密(女性): 阴阜/大阴唇/小阴唇/阴蒂/阴道/子宫/特殊
+私密(男性): 阴茎长度粗细/包皮/龟头/睾丸/特殊
+后庭: 紧致度/褶皱/特殊
+
+[敏感度系统] (0-100, 共15部位, G点/A点仅女性)
+部位清单: <%= SENS_PARTS.join('/') %>
+等级映射:
+  0-9   麻木
+  10-29 迟钝
+  30-49 普通
+  50-69 敏感
+  70-89 极敏感
+  90-100 超敏感
+当前示例:
+  <%= sensLip.部位 %>: <%= sensLip.数值 %> (<%= sensLip.等级 %>)
+  <%= sensChest.部位 %>: <%= sensChest.数值 %> (<%= sensChest.等级 %>)
+  <%= sensFront.部位 %>: <%= sensFront.数值 %> (<%= sensFront.等级 %>)
+查询函数: _getSens(部位名) → { 部位, 数值, 等级 }
+等级判定: _sensLevel(数值) → 麻木/迟钝/普通/敏感/极敏感/超敏感
+
+[经验值系统] (0-100, 共14类型)
+类型清单: <%= EXP_TYPES.join('/') %>
+等级映射:
+  0-9   初学
+  10-29 略懂
+  30-49 普通
+  50-69 熟练
+  70-89 精通
+  90-100 大师
+当前示例:
+  <%= expKiss.类型 %>: <%= expKiss.数值 %> (<%= expKiss.等级 %>)
+  <%= expNormal.类型 %>: <%= expNormal.数值 %> (<%= expNormal.等级 %>)
+查询函数: _getExp(类型名) → { 类型, 数值, 等级 }
+等级判定: _expLevel(数值) → 初学/略懂/普通/熟练/精通/大师
+
+[精力系统] (0-100)
+消耗规则: 每次NSFW行为消耗精力值-20
+拒绝阈值: 精力值<30时拒绝NSFW行为
+恢复规则:
+  睡眠恢复: +10/小时 (示例: 1h恢复<%= recoverSleep.恢复量 %> → <%= recoverSleep.剩余 %>)
+  休息恢复: +5/小时 (示例: 1h恢复<%= recoverRest.恢复量 %> → <%= recoverRest.剩余 %>)
+上限: 100
+检查函数: _energyCheck(精力值) → { 可进行, 消耗, 剩余, 原因 }
+恢复函数: _energyRecover(精力值, 模式, 小时) → { 恢复速率, 恢复量, 剩余 }
+
+[行为校验要求]
+NSFW行为必须输出行为校验块:
+  行为类型: NSFW互动
+  执行者: 殖民者姓名
+  性别: 男/女 (决定私密部位字段)
+  精力检查: _energyCheck()结果 (精力值/可进行/消耗/剩余)
+  敏感部位: _getSens()查询受刺激部位 (部位/数值/等级)
+  经验类型: _getExp()查询对应行为经验 (类型/数值/等级)
+  身体测量: 引用对应字段(基础/胸/腰/臀/私密/后庭)
+  精力变化: 消耗-20 → 写入stat_data.殖民者_主角.精力值
+  经验变化: 对应类型经验+1~5 → 写回NSFW经验值JSON
+  敏感变化: 受刺激部位敏感度+1~3 → 写回NSFW敏感度JSON
+</NSFW系统就绪>

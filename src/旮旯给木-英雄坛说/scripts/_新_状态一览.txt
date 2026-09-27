@@ -1,0 +1,38 @@
+  /* ════════════════════════════════════════════════════════════
+     状态一览（★ 之前那张表是空的 —— 因为状态表按「变量分组」两层没抽对）
+     做法：直接遍历 stat_data 的所有块，一层层摊开（不再依赖契约的分组结构）
+     ════════════════════════════════════════════════════════════ */
+  function 画状态一览() {
+    var 块名 = {
+      世界: "世界", 她: "她（操控者）", 局面: "局面", 时间: "时间", 场景: "场景",
+      天赋: "天赋", 技能: "技能", 资源: "资源", 背包: "背包", 强化: "强化",
+      任务: "任务", 关系网: "关系网", 关系主体: "关系主体", 关系别名表: "关系别名表",
+      主角: "主角", 身体: "身体", 关系: "关系", 战斗临时: "战斗临时", NSFW: "NSFW",
+    };
+    function 值(v, 深) {
+      if (v === null || v === undefined || v === '') return '<span class="x">—</span>';
+      if (typeof v === 'object') {
+        var ks = Object.keys(v);
+        if (!ks.length) return '<span class="x">（空）</span>';
+        if (深 >= 2) return E(JSON.stringify(v).slice(0, 60));
+        return ks.map(function (k) {
+          return '<div class="rowx"><span class="k2">' + E(k) + '</span><span class="v2">' + 值(v[k], 深 + 1) + "</span></div>";
+        }).join("");
+      }
+      if (typeof v === 'boolean') return v ? "是" : "否";
+      return E(String(v));
+    }
+    var H = "";
+    var 有 = 0;
+    Object.keys(块名).forEach(function (k) {
+      var v = 状态[k];
+      var 空 = (v === undefined || v === null || (typeof v === 'object' && !Object.keys(v).length));
+      if (空) return;
+      有++;
+      H += '<div class="yx-k2">' + E(块名[k]) + "</div>";
+      H += 值(v, 0);
+    });
+    if (!有) H = '<div class="yx-e">变量还是空的 —— 开局后就有了。</div>';
+    return H;
+  }
+

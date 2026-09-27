@@ -1,0 +1,159 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 鸣泽唯 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=1 / MVP 第一女角 · 主角义妹（无血缘）
+   互斥关系：鸣泽母女非严格互斥（攻略唯后美佐子路线复杂化，但不强制锁定仇视）
+   核心矛盾：10年同居的"义兄妹"框架是禁忌感的来源，也是她压抑情感的牢笼
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 鸣泽唯_INFO = {
+  heroine_id: 1,
+  name: '鸣泽唯',
+  romanization: 'Narisawa Yui',
+  age: 18,
+  blood_type: 'O',
+  identity: '八十八学园三年生，主角义妹（无血缘）',
+  relationship: '主角义妹，已同居10年，鸣泽家独女；表面冷淡实则依恋',
+  home: '鸣泽家（与义母美佐子、主角同住）',
+  birthday: '07-14',
+  height: 158,
+  weight: 45,
+  three_size: 'B88-W56-H86',
+  cv_implied: '傲娇系少女声线，语调冷淡但尾音发软，被戳中时声音会变高',
+
+  appearance: {
+    hair: '浅栗色齐肩短发，发尾略微外翘，常别一枚可爱发卡；早晨赖床时头发乱翘，被主角看到会炸毛',
+    eyes: '琥珀色圆眼，眼色清亮；瞪人时圆眼更圆，害羞时眼神会躲闪飘忽',
+    body: '身材匀称娇小，发育发达，E罩杯与纤细腰肢形成强烈反差；腰有马甲线，臀部翘挺水蜜桃型',
+    feature: '左锁骨下方有一颗小痣（只有亲密时才能看到）；耳后皮肤极薄，一碰就红',
+    clothing_default: '校服穿出随性风格：领口微敞、袖口卷起、裙子比标准短两寸；家居时常穿主角的旧T恤当睡衣（绝不承认是故意的）'
+  },
+
+  personality: {
+    mbti: 'ISTP',
+    tags: ['傲娇', '禁忌依恋', '表面冷淡内心柔软'],
+    public_face: '对主角客气体贴但疏离的"好妹妹"伪装，避免引人注目',
+    social_face: '会突然黏人撒娇的任性妹妹，间歇性依赖',
+    intimate_face: '完全交付的敏感体质少女，被开发后无法自拔'
+  },
+
+  preferences: {
+    like_food: ['咖喱饭', '草莓牛奶', '巧克力'],
+    hate_food: ['香菜', '苦瓜'],
+    hobby: ['购物', '时尚杂志', '偶像剧', '收集可爱发卡'],
+    gift_pref: ['流行CD', '少女漫画', '可爱发卡', '小束鲜花'],
+    topic_pref: ['校园八卦', '偶像明星', '时尚流行']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '鸣泽美佐子（义母，row_id=2）—— 非严格互斥，攻略唯后美佐子路线复杂化，但不强制锁定仇视',
+    family: '义母鸣泽美佐子（亲生母亲，咖啡店老板娘）；主角（义兄，无血缘，同居10年）',
+    friends: ['同班同学', '商业区店铺店员', '水野友美（邻居，主角青梅竹马，唯视其为情敌）']
+  },
+
+  strategy: {
+    initial_affection: 5,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 30,
+    best_approach: '先突破"义兄妹"禁忌框架，让她承认心意；以日常兄妹互动为基础，逐步越界；用零食/偶像/时尚话题切入；陪伴购物与看偶像剧是最佳相处时机',
+    warning: '强行亲密会触发关系破裂结局；唯的嫉妒值升高极快（主角与美佐子/友美/其他女角互动都+5）；强迫初H直接触发 BAD_END_1（报警）+ BAD_END_关系破裂；义妹禁忌是她的牢笼，必须由她主动松绑'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'E',
+    bust_size: 88,
+    waist_size: 56,
+    hip_size: 86,
+    height: 158,
+    weight: 45,
+    // 胸部详细（6 列）
+    nipple_size: '大',
+    nipple_color: '粉嫩',
+    areola_size: '大',
+    breast_shape: '丰满外扩',
+    breast_sensitivity: 120,
+    lactation: '性欲起来后出奶',
+    // 腰部（2 列）
+    waist_shape: '纤细',
+    waist_sensitivity: 110,
+    // 手部（2 列）
+    hand_desc: '手指修长，白皙，常年各种美甲',
+    nail_style: '常年美甲',
+    // 臀部（3 列）
+    hip_shape: '圆润翘挺',
+    hip_sensitivity: 100,
+    anal_desc: '未开发',
+    // 下体详细（8 列）
+    pubic_hair: '无毛',
+    labia_size: '偏小',
+    labia_color: '粉嫩',
+    vaginal_tightness: '紧致',
+    vaginal_special: '虹吸',
+    lubrication_level: '常年出水',
+    hymen_status: '完整',
+    fertility: '易孕',
+    // 敏感度综合（3 列）
+    body_sensitivity: 120,
+    sensitive_zones: '耳后,颈侧,锁骨,腰窝,大腿内侧',
+    arousal_triggers: '摩擦布料,言语挑逗,视觉刺激'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 75,           // 魅力（外貌吸引力）
+    academic: 55,        // 学业（学习成绩）
+    physical: 60,        // 体力（体能/运动）
+    social: 50,          // 社交（交际能力）
+    perception: 65,      // 敏感（察言观色/直觉）
+    reputation: 60,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 30,        // 力量（物理对抗/搬运）
+    agility: 55,         // 敏捷（反应/逃跑）
+    intelligence: 55,    // 智力（解谜/计划）
+    will_skill: 45,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 45,          // 口才（说服/调情）
+    medical: 10,         // 医学（诊疗/急救）
+    cooking: 30,         // 烹饪（料理）
+    art: 35,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 25,        // 格斗（防身）
+    observation: 55,     // 观察（情报收集）
+    romance_skill: 20    // 恋爱（约会/亲密推进）
+  }
+};
+%>
+
+鸣泽唯 · 基础信息已加载。当前女角 row_id=1，互斥关系：鸣泽母女非严格互斥（攻略唯后美佐子路线复杂化，但不强制锁定仇视，row_id=2）。初始 affection=5 / heartbeat=0 / jealousy=0 / trust=30（义妹已同居10年的信任底子）。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 鸣泽唯_INFO.name %>（<%- 鸣泽唯_INFO.age %>岁）
+- 身份: <%- 鸣泽唯_INFO.identity %>
+- 关系: <%- 鸣泽唯_INFO.relationship %>
+- 住所: <%- 鸣泽唯_INFO.home %>
+<%_ if (鸣泽唯_INFO.appearance) { _%>
+- 外貌: <%- [鸣泽唯_INFO.appearance.hair, 鸣泽唯_INFO.appearance.eyes, 鸣泽唯_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (鸣泽唯_INFO.personality) { _%>
+- 性格: <%- 鸣泽唯_INFO.personality.tags ? 鸣泽唯_INFO.personality.tags.join('、') : 鸣泽唯_INFO.personality.public_face %>
+<%_ if (鸣泽唯_INFO.personality.public_face) { _%>- 表面: <%- 鸣泽唯_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (鸣泽唯_INFO.personality.intimate_face) { _%>- 亲密面: <%- 鸣泽唯_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (鸣泽唯_INFO.preferences) { _%>- 喜好: <%- [(鸣泽唯_INFO.preferences.like_food || []).join('/'), '爱好：' + (鸣泽唯_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (鸣泽唯_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(鸣泽唯_INFO.relations) %>
+<%_ } _%>
+<%_ if (鸣泽唯_INFO.strategy) { _%>- 攻略要点: <%- 鸣泽唯_INFO.strategy.best_approach %>
+<%_ if (鸣泽唯_INFO.strategy.warning) { _%>- 警告: <%- 鸣泽唯_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

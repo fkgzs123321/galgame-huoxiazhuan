@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "剧情": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前章节": {
+          "default": "序章",
+          "type": "string",
+          "enum": [
+            "序章",
+            "第一章",
+            "第二章",
+            "第三章",
+            "第四章",
+            "第五章",
+            "第六章扶桑",
+            "第六章至暗",
+            "第七章丛林",
+            "第七章大风",
+            "第八章美丽",
+            "第八章规则",
+            "第九章",
+            "第十章",
+            "终章"
+          ]
+        },
+        "章节进度": {
+          "default": 0,
+          "type": "number"
+        },
+        "当前节点": {
+          "default": "序章-1",
+          "type": "string"
+        },
+        "序章已完成": {
+          "default": false,
+          "type": "boolean"
+        },
+        "主线归属": {
+          "default": "",
+          "type": "string",
+          "enum": [
+            "",
+            "扶桑安魂曲",
+            "美丽世界",
+            "红色芳华"
+          ]
+        },
+        "第二章分歧": {
+          "default": "",
+          "type": "string",
+          "enum": [
+            "",
+            "共荣圈",
+            "自保"
+          ]
+        },
+        "第五章分歧": {
+          "default": "",
+          "type": "string",
+          "enum": [
+            "",
+            "刺杀浅野",
+            "继续潜伏"
+          ]
+        },
+        "结局分支": {
+          "default": "",
+          "type": "string"
+        },
+        "已死亡": {
+          "default": false,
+          "type": "boolean"
+        },
+        "检查点": {
+          "default": "序章-1",
+          "type": "string"
+        },
+        "已触发事件": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已收集线索": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已解锁死亡结局": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "肖途": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "伪装完整度": {
+          "default": 72,
+          "type": "number"
+        },
+        "身心状态": {
+          "default": 80,
+          "type": "number"
+        },
+        "公馆资历": {
+          "default": 5,
+          "type": "number"
+        },
+        "组织信任度": {
+          "default": 67,
+          "type": "number"
+        },
+        "阵营信用": {
+          "default": 55,
+          "type": "number"
+        },
+        "能力": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "社交伪装": {
+              "default": 8,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            },
+            "情报分析": {
+              "default": 5,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            },
+            "审讯抗性": {
+              "default": 5,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            },
+            "枪械": {
+              "default": 2,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            },
+            "格斗": {
+              "default": 2,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            },
+            "潜行规避": {
+              "default": 5,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            },
+            "权衡狠决": {
+              "default": 6,
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "低",
+                    "中",
+                    "高"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "敌方": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "武藤志雄怀疑度": {
+          "default": 3,
+          "type": "number"
+        }
+      }
+    },
+    "组织": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "联络状态": {
+          "default": "正常",
+          "type": "string",
+          "enum": [
+            "正常",
+            "中断",
+            "暴露"
+          ]
+        },
+        "当前任务": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "对user": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "方敏": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "情感值": {
+              "default": 0,
+              "type": "number"
+            },
+            "信任度": {
+              "default": 40,
+              "type": "number"
+            }
+          }
+        },
+        "庄晓曼": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "情感值": {
+              "default": 0,
+              "type": "number"
+            },
+            "互信度": {
+              "default": 20,
+              "type": "number"
+            }
+          }
+        },
+        "武藤纯子": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "情感值": {
+              "default": 0,
+              "type": "number"
+            },
+            "信任度": {
+              "default": 40,
+              "type": "number"
+            }
+          }
+        },
+        "陆望舒": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "情感值": {
+              "default": 0,
+              "type": "number"
+            },
+            "信任度": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  }
+}

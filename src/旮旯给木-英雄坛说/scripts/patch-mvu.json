@@ -1,0 +1,73 @@
+[
+ {
+  "op": "add",
+  "path": "/entryManifest/MVU",
+  "value": {
+   "[InitVar]请勿打开": {
+    "path": "世界书/变量/initvar.yaml",
+    "scope": "specific",
+    "part": "initvar",
+    "keywords": [],
+    "abstract": "MVU/initvar：initvar",
+    "enabled": false,
+    "position": {
+     "type": "at_depth",
+     "role": "system",
+     "depth": 0,
+     "order": 160
+    }
+   },
+   "变量列表": {
+    "path": "世界书/变量/变量列表.yaml",
+    "scope": "specific",
+    "part": "variable_list",
+    "keywords": [],
+    "abstract": "MVU/variable_list：变量列表",
+    "enabled": true,
+    "strategy": {
+     "type": "constant"
+    },
+    "position": {
+     "type": "at_depth",
+     "role": "system",
+     "depth": 0,
+     "order": 163
+    }
+   },
+   "变量更新规则": {
+    "path": "世界书/变量/变量更新规则.yaml",
+    "scope": "specific",
+    "part": "update_rules",
+    "keywords": [],
+    "abstract": "MVU/update_rules：变量更新规则",
+    "enabled": true,
+    "strategy": {
+     "type": "constant"
+    },
+    "position": {
+     "type": "at_depth",
+     "role": "system",
+     "depth": 0,
+     "order": 164
+    }
+   },
+   "变量输出格式": {
+    "path": "世界书/变量/变量输出格式.txt",
+    "scope": "specific",
+    "part": "output_format",
+    "keywords": [],
+    "abstract": "MVU/output_format：变量输出格式",
+    "enabled": true,
+    "strategy": {
+     "type": "constant"
+    },
+    "position": {
+     "type": "at_depth",
+     "role": "system",
+     "depth": 0,
+     "order": 165
+    }
+   }
+  }
+ }
+]

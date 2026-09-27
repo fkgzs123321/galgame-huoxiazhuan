@@ -1,0 +1,884 @@
+{
+  "cove": {
+    "cove": {
+      "hall_curios": [
+        {
+          "chance": 10,
+          "types": [
+            "discarded_pack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "sconce"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "crate"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "sack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "barnacle_crusted_chest"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "brackish_tidepool"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "bas_relief"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "giant_fish_carcass"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "eerie_coral"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "shamblers_altar"
+          ]
+        }
+      ],
+      "room_curios": [
+        {
+          "chance": 3,
+          "types": [
+            "fish_idol"
+          ]
+        },
+        {
+          "chance": 2,
+          "types": [
+            "ships_figurehead"
+          ]
+        },
+        {
+          "chance": 4,
+          "types": [
+            "giant_oyster"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "eldritch_altar"
+          ]
+        }
+      ],
+      "room_treasures": [
+        {
+          "chance": 2,
+          "types": [
+            "unlocked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "heirloom_chest"
+          ]
+        }
+      ],
+      "traps": [
+        {
+          "chance": 1,
+          "types": [
+            "lurker"
+          ]
+        }
+      ],
+      "obstacles": [
+        {
+          "chance": 1,
+          "types": [
+            "shipwreck"
+          ]
+        }
+      ],
+      "secret_room_treasures": [
+        {
+          "chance": 1,
+          "types": [
+            "secret_stash"
+          ]
+        }
+      ],
+      "prison_doors": [
+        {
+          "chance": 1,
+          "types": [
+            "cove_door_shovel"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "cove_door_key"
+          ]
+        }
+      ]
+    }
+  },
+  "crypts": {
+    "crypts": {
+      "hall_curios": [
+        {
+          "chance": 10,
+          "types": [
+            "discarded_pack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "sconce"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "crate"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "sack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "stack_of_books"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "altar_of_light"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "decorative_urn"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "locked_display_cabinet"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "bookshelf"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "alchemy_table"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "confession_booth"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "iron_maiden"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "shamblers_altar"
+          ]
+        }
+      ],
+      "room_curios": [
+        {
+          "chance": 2,
+          "types": [
+            "suit_of_armor"
+          ]
+        },
+        {
+          "chance": 2,
+          "types": [
+            "holy_fountain"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "sarcophagus"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_sarcophagus"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "eldritch_altar"
+          ]
+        }
+      ],
+      "room_treasures": [
+        {
+          "chance": 2,
+          "types": [
+            "unlocked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "heirloom_chest"
+          ]
+        }
+      ],
+      "traps": [
+        {
+          "chance": 1,
+          "types": [
+            "spikes"
+          ]
+        }
+      ],
+      "obstacles": [
+        {
+          "chance": 1,
+          "types": [
+            "rubble"
+          ]
+        }
+      ],
+      "secret_room_treasures": [
+        {
+          "chance": 1,
+          "types": [
+            "secret_stash"
+          ]
+        }
+      ],
+      "prison_doors": [
+        {
+          "chance": 1,
+          "types": [
+            "crypts_door_shovel"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "crypts_door_key"
+          ]
+        }
+      ]
+    }
+  },
+  "darkestdungeon": {
+    "darkestdungeon": {
+      "hall_curios": [
+        {
+          "chance": 1,
+          "types": [
+            "stack_of_books",
+            "discarded_pack",
+            "sconce",
+            "crate",
+            "sack"
+          ]
+        }
+      ],
+      "room_curios": [
+        {
+          "chance": 1,
+          "types": [
+            "stack_of_books",
+            "discarded_pack",
+            "sconce",
+            "crate",
+            "sack"
+          ]
+        }
+      ],
+      "room_treasures": [
+        {
+          "chance": 1,
+          "types": [
+            "unlocked_strongbox",
+            "locked_strongbox",
+            "heirloom_chest"
+          ]
+        }
+      ],
+      "traps": [
+        {
+          "chance": 1,
+          "types": [
+            "spikes"
+          ]
+        }
+      ],
+      "obstacles": [
+        {
+          "chance": 1,
+          "types": [
+            "rubble"
+          ]
+        }
+      ]
+    }
+  },
+  "town": {
+    "town": {
+      "hall_curios": [
+        {
+          "chance": 10,
+          "types": [
+            "discarded_pack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "sconce"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "crate"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "sack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "stack_of_books"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "altar_of_light"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "decorative_urn"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "locked_display_cabinet"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "bookshelf"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "alchemy_table"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "confession_booth"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "iron_maiden"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "shamblers_altar"
+          ]
+        }
+      ],
+      "room_curios": [
+        {
+          "chance": 2,
+          "types": [
+            "suit_of_armor"
+          ]
+        },
+        {
+          "chance": 2,
+          "types": [
+            "holy_fountain"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "sarcophagus"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_sarcophagus"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "eldritch_altar"
+          ]
+        }
+      ],
+      "room_treasures": [
+        {
+          "chance": 2,
+          "types": [
+            "unlocked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "heirloom_chest"
+          ]
+        }
+      ],
+      "traps": [
+        {
+          "chance": 1,
+          "types": [
+            "spikes"
+          ]
+        }
+      ],
+      "obstacles": [
+        {
+          "chance": 1,
+          "types": [
+            "town_rubble"
+          ]
+        }
+      ],
+      "secret_room_treasures": [
+        {
+          "chance": 1,
+          "types": [
+            "secret_stash"
+          ]
+        }
+      ],
+      "prison_doors": [
+        {
+          "chance": 1,
+          "types": [
+            "town_door_shovel"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "town_door_key"
+          ]
+        }
+      ]
+    }
+  },
+  "warrens": {
+    "warrens": {
+      "hall_curios": [
+        {
+          "chance": 10,
+          "types": [
+            "discarded_pack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "sconce"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "crate"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "sack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "stack_of_books"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "dinner_cart"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "knife_rack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "pile_of_bones"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "occult_scrawlings"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "moonshine_barrel"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "pile_of_scrolls"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "shamblers_altar"
+          ]
+        }
+      ],
+      "room_curios": [
+        {
+          "chance": 2,
+          "types": [
+            "skull_altar"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "sacrificial_stone"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "makeshift_dining_table"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "eldritch_altar"
+          ]
+        }
+      ],
+      "room_treasures": [
+        {
+          "chance": 2,
+          "types": [
+            "unlocked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "heirloom_chest"
+          ]
+        }
+      ],
+      "traps": [
+        {
+          "chance": 1,
+          "types": [
+            "blade_wheel"
+          ]
+        }
+      ],
+      "obstacles": [
+        {
+          "chance": 1,
+          "types": [
+            "rubble"
+          ]
+        }
+      ],
+      "secret_room_treasures": [
+        {
+          "chance": 1,
+          "types": [
+            "secret_stash"
+          ]
+        }
+      ],
+      "prison_doors": [
+        {
+          "chance": 1,
+          "types": [
+            "warrens_door_shovel"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "warrens_door_key"
+          ]
+        }
+      ]
+    }
+  },
+  "weald": {
+    "weald": {
+      "hall_curios": [
+        {
+          "chance": 10,
+          "types": [
+            "discarded_pack"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "sconce"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "crate"
+          ]
+        },
+        {
+          "chance": 10,
+          "types": [
+            "sack"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "mummified_remains"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "old_tree"
+          ]
+        },
+        {
+          "chance": 8,
+          "types": [
+            "beast_carcass"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "cosmic_spiderweb"
+          ]
+        },
+        {
+          "chance": 5,
+          "types": [
+            "lost_luggage"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "shallow_grave"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "troubling_effigy"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "shallow_grave"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "shamblers_altar"
+          ]
+        }
+      ],
+      "room_curios": [
+        {
+          "chance": 2,
+          "types": [
+            "pristine_fountain"
+          ]
+        },
+        {
+          "chance": 4,
+          "types": [
+            "ancient_coffin"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "travellers_tent"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "eldritch_altar"
+          ]
+        }
+      ],
+      "room_treasures": [
+        {
+          "chance": 2,
+          "types": [
+            "unlocked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "locked_strongbox"
+          ]
+        },
+        {
+          "chance": 3,
+          "types": [
+            "heirloom_chest"
+          ]
+        }
+      ],
+      "traps": [
+        {
+          "chance": 1,
+          "types": [
+            "poison_cloud"
+          ]
+        }
+      ],
+      "obstacles": [
+        {
+          "chance": 1,
+          "types": [
+            "thorny_thicket"
+          ]
+        }
+      ],
+      "secret_room_treasures": [
+        {
+          "chance": 1,
+          "types": [
+            "secret_stash"
+          ]
+        }
+      ],
+      "prison_doors": [
+        {
+          "chance": 1,
+          "types": [
+            "weald_door_shovel"
+          ]
+        },
+        {
+          "chance": 1,
+          "types": [
+            "weald_door_key"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,3592 @@
+{
+  "projectName": "欲望都市",
+  "worldbookName": "欲望都市",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "世界观": {
+      "世界设定": {
+        "path": "世界书/世界观/世界设定.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "人大附中",
+          "京市",
+          "精英班"
+        ],
+        "abstract": "京市与人大附中背景、主角设定、假阴茎网络隐藏世界、明暗双线基调",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        }
+      },
+      "假阴茎网络规则": {
+        "path": "世界书/世界观/假阴茎网络规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "假阴茎",
+          "网络"
+        ],
+        "abstract": "38杯链接同一人、真实触觉同步、谁自由谁可用（24小时全覆盖）、可多人同时在线（伤害一致/反击叠加）、反侦察与缴械后果",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        }
+      },
+      "排班规则": {
+        "path": "世界书/世界观/排班规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "排班",
+          "场次"
+        ],
+        "abstract": "24小时按\"自由\"判定可用者（陪读妈妈/没课老师全天可用，学生/任课老师仅非在校时）、可多人同时在线、拒战=欲望积压下次更强、排班变量生成",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        }
+      },
+      "战斗系统": {
+        "path": "世界书/世界观/战斗系统.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "战斗",
+          "防守值",
+          "缴械"
+        ],
+        "abstract": "防守值血条模式、每回合攻防公式、4回合胜负判定、缴械值增减、俘虏阈值、结果块格式",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        }
+      },
+      "技能树": {
+        "path": "世界书/世界观/技能树.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "技能",
+          "螺旋",
+          "颗粒"
+        ],
+        "abstract": "主角七技能数值表（Lv1-10）、经验公式、等级倍率、她方技能体系与能力值",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        }
+      },
+      "道具与恢复系统": {
+        "path": "世界书/世界观/道具与恢复系统.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "道具",
+          "神油",
+          "伟哥",
+          "辣椒油",
+          "花露水",
+          "BUFF",
+          "恢复技能",
+          "提肛"
+        ],
+        "abstract": "双方道具栏（各自变量层）、BUFF/DEBUFF持续回合、玩家恢复技能（提肛/思维分散）、她方恢复技能",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 55
+        }
+      },
+      "生理数值规范与限制": {
+        "path": "世界书/世界观/生理数值规范与限制.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "生理",
+          "性欲",
+          "勃起",
+          "射精",
+          "体力",
+          "月经",
+          "排卵",
+          "怀孕",
+          "湿润度",
+          "敏感度",
+          "备孕"
+        ],
+        "abstract": "性欲-勃起联动、射精次数衰减与冷却、体力恢复、身体数值→外在表现映射、月经周期、怀孕概率判定（硬规则防口胡）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 56
+        }
+      },
+      "学业规则": {
+        "path": "世界书/世界观/学业规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "学业",
+          "分数",
+          "清华"
+        ],
+        "abstract": "750分体系、700清华线、730状元、分数只由战斗输赢决定（赢+1~5输-1~5）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 60
+        }
+      },
+      "现实铁律": {
+        "path": "世界书/世界观/现实铁律.yaml",
+        "enabled": true,
+        "abstract": "现实铁律：假阴茎是唯一超自然元素，防神化、防口胡、法律现实后果、伦理社会边界（优先级最高）"
+      }
+    },
+    "扮演准则": {
+      "扮演准则": {
+        "path": "世界书/扮演准则/扮演准则.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "第三人称生活化文风、明暗双线纪律、感官与重口组合保留、数值纪律、成人内容差异",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 70
+        }
+      }
+    },
+    "阶段指导": {
+      "俘虏结局": {
+        "scope": "catalog",
+        "keywords": [
+          "俘虏"
+        ],
+        "abstract": "缴械值100触发：爱上你/欲望依赖/心理臣服/资源归你/现实线五条线及纪律",
+        "contents": [
+          {
+            "content": "@@if getvar(\"stat_data.女性角色.\" + getvar(\"stat_data.排班.当前战斗目标\", { defaults: \"\" }) + \".缴械值\", { defaults: 0 }) >= 100"
+          },
+          {
+            "file": "世界书/阶段指导/俘虏结局.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 220
+        }
+      },
+      "[mvu_plot]阶段调度": {
+        "path": "世界书/阶段指导/阶段调度.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "蓝灯调度：按 stat_data.排班.当前战斗目标 getwi 拉取 私密档案→阶段行为→(缴械≥100)俘虏结局；无目标时输出自由时段提示",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 209
+        }
+      },
+      "永久沉沦结局": {
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 221
+        },
+        "contents": [
+          {
+            "content": "@@if getvar(\"stat_data.玩家.累计被缴械\", { defaults: 0 }) >= 100"
+          },
+          {
+            "file": "世界书/阶段指导/永久沉沦结局.yaml"
+          }
+        ],
+        "abstract": "玩家累计被缴械≥100触发：永久沉沦终局，身份公开/无自主行为/共享工具/精尽而亡",
+        "scope": "catalog",
+        "keywords": [
+          "永久沉沦",
+          "终局",
+          "精尽而亡"
+        ]
+      }
+    },
+    "角色": {
+      "丽莎·伊万诺娃_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "丽莎·伊万诺娃"
+        ],
+        "abstract": "丽莎·伊万诺娃的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"丽莎·伊万诺娃\">"
+          },
+          {
+            "file": "世界书/角色/丽莎·伊万诺娃/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 90,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "丽莎·伊万诺娃"
+          ]
+        }
+      },
+      "丽莎·伊万诺娃_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "丽莎·伊万诺娃"
+        ],
+        "abstract": "丽莎·伊万诺娃的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"丽莎·伊万诺娃\">"
+          },
+          {
+            "file": "世界书/角色/丽莎·伊万诺娃/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 91,
+          "depth": 6
+        }
+      },
+      "丽莎·伊万诺娃_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "丽莎·伊万诺娃"
+        ],
+        "abstract": "丽莎·伊万诺娃的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/丽莎·伊万诺娃/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 92,
+          "depth": 10
+        }
+      },
+      "何玉兰_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "何玉兰"
+        ],
+        "abstract": "何玉兰的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"何玉兰\">"
+          },
+          {
+            "file": "世界书/角色/何玉兰/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 93,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "何玉兰"
+          ]
+        }
+      },
+      "何玉兰_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "何玉兰"
+        ],
+        "abstract": "何玉兰的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"何玉兰\">"
+          },
+          {
+            "file": "世界书/角色/何玉兰/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 94,
+          "depth": 6
+        }
+      },
+      "何玉兰_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "何玉兰"
+        ],
+        "abstract": "何玉兰的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/何玉兰/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 95,
+          "depth": 10
+        }
+      },
+      "何雨珊_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "何雨珊"
+        ],
+        "abstract": "何雨珊的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"何雨珊\">"
+          },
+          {
+            "file": "世界书/角色/何雨珊/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 96,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "何雨珊"
+          ]
+        }
+      },
+      "何雨珊_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "何雨珊"
+        ],
+        "abstract": "何雨珊的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"何雨珊\">"
+          },
+          {
+            "file": "世界书/角色/何雨珊/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 97,
+          "depth": 6
+        }
+      },
+      "何雨珊_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "何雨珊"
+        ],
+        "abstract": "何雨珊的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/何雨珊/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 98,
+          "depth": 10
+        }
+      },
+      "刘晶晶_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "刘晶晶"
+        ],
+        "abstract": "刘晶晶的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"刘晶晶\">"
+          },
+          {
+            "file": "世界书/角色/刘晶晶/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 99,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "刘晶晶"
+          ]
+        }
+      },
+      "刘晶晶_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "刘晶晶"
+        ],
+        "abstract": "刘晶晶的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"刘晶晶\">"
+          },
+          {
+            "file": "世界书/角色/刘晶晶/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 100,
+          "depth": 6
+        }
+      },
+      "刘晶晶_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "刘晶晶"
+        ],
+        "abstract": "刘晶晶的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/刘晶晶/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 101,
+          "depth": 10
+        }
+      },
+      "叶春梅_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "叶春梅"
+        ],
+        "abstract": "叶春梅的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"叶春梅\">"
+          },
+          {
+            "file": "世界书/角色/叶春梅/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 102,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "叶春梅"
+          ]
+        }
+      },
+      "叶春梅_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "叶春梅"
+        ],
+        "abstract": "叶春梅的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"叶春梅\">"
+          },
+          {
+            "file": "世界书/角色/叶春梅/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 103,
+          "depth": 6
+        }
+      },
+      "叶春梅_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "叶春梅"
+        ],
+        "abstract": "叶春梅的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/叶春梅/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 104,
+          "depth": 10
+        }
+      },
+      "叶诗涵_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "叶诗涵"
+        ],
+        "abstract": "叶诗涵的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"叶诗涵\">"
+          },
+          {
+            "file": "世界书/角色/叶诗涵/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 105,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "叶诗涵"
+          ]
+        }
+      },
+      "叶诗涵_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "叶诗涵"
+        ],
+        "abstract": "叶诗涵的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"叶诗涵\">"
+          },
+          {
+            "file": "世界书/角色/叶诗涵/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 106,
+          "depth": 6
+        }
+      },
+      "叶诗涵_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "叶诗涵"
+        ],
+        "abstract": "叶诗涵的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/叶诗涵/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 107,
+          "depth": 10
+        }
+      },
+      "周桂香_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "周桂香"
+        ],
+        "abstract": "周桂香的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"周桂香\">"
+          },
+          {
+            "file": "世界书/角色/周桂香/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 108,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "周桂香"
+          ]
+        }
+      },
+      "周桂香_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "周桂香"
+        ],
+        "abstract": "周桂香的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"周桂香\">"
+          },
+          {
+            "file": "世界书/角色/周桂香/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 109,
+          "depth": 6
+        }
+      },
+      "周桂香_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "周桂香"
+        ],
+        "abstract": "周桂香的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/周桂香/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 110,
+          "depth": 10
+        }
+      },
+      "周语桐_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "周语桐"
+        ],
+        "abstract": "周语桐的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"周语桐\">"
+          },
+          {
+            "file": "世界书/角色/周语桐/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 111,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "周语桐"
+          ]
+        }
+      },
+      "周语桐_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "周语桐"
+        ],
+        "abstract": "周语桐的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"周语桐\">"
+          },
+          {
+            "file": "世界书/角色/周语桐/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 112,
+          "depth": 6
+        }
+      },
+      "周语桐_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "周语桐"
+        ],
+        "abstract": "周语桐的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/周语桐/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 113,
+          "depth": 10
+        }
+      },
+      "唐婉清_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "唐婉清"
+        ],
+        "abstract": "唐婉清的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"唐婉清\">"
+          },
+          {
+            "file": "世界书/角色/唐婉清/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 114,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐婉清"
+          ]
+        }
+      },
+      "唐婉清_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "唐婉清"
+        ],
+        "abstract": "唐婉清的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"唐婉清\">"
+          },
+          {
+            "file": "世界书/角色/唐婉清/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 115,
+          "depth": 6
+        }
+      },
+      "唐婉清_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "唐婉清"
+        ],
+        "abstract": "唐婉清的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/唐婉清/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 116,
+          "depth": 10
+        }
+      },
+      "娜塔莎·伊万诺娃_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "娜塔莎·伊万诺娃"
+        ],
+        "abstract": "娜塔莎·伊万诺娃的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"娜塔莎·伊万诺娃\">"
+          },
+          {
+            "file": "世界书/角色/娜塔莎·伊万诺娃/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 117,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "娜塔莎·伊万诺娃"
+          ]
+        }
+      },
+      "娜塔莎·伊万诺娃_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "娜塔莎·伊万诺娃"
+        ],
+        "abstract": "娜塔莎·伊万诺娃的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"娜塔莎·伊万诺娃\">"
+          },
+          {
+            "file": "世界书/角色/娜塔莎·伊万诺娃/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 118,
+          "depth": 6
+        }
+      },
+      "娜塔莎·伊万诺娃_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "娜塔莎·伊万诺娃"
+        ],
+        "abstract": "娜塔莎·伊万诺娃的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/娜塔莎·伊万诺娃/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 119,
+          "depth": 10
+        }
+      },
+      "宋丽华_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "宋丽华"
+        ],
+        "abstract": "宋丽华的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"宋丽华\">"
+          },
+          {
+            "file": "世界书/角色/宋丽华/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 120,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "宋丽华"
+          ]
+        }
+      },
+      "宋丽华_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "宋丽华"
+        ],
+        "abstract": "宋丽华的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"宋丽华\">"
+          },
+          {
+            "file": "世界书/角色/宋丽华/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 121,
+          "depth": 6
+        }
+      },
+      "宋丽华_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "宋丽华"
+        ],
+        "abstract": "宋丽华的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/宋丽华/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 122,
+          "depth": 10
+        }
+      },
+      "宋佳凝_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "宋佳凝"
+        ],
+        "abstract": "宋佳凝的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"宋佳凝\">"
+          },
+          {
+            "file": "世界书/角色/宋佳凝/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 123,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "宋佳凝"
+          ]
+        }
+      },
+      "宋佳凝_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "宋佳凝"
+        ],
+        "abstract": "宋佳凝的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"宋佳凝\">"
+          },
+          {
+            "file": "世界书/角色/宋佳凝/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 124,
+          "depth": 6
+        }
+      },
+      "宋佳凝_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "宋佳凝"
+        ],
+        "abstract": "宋佳凝的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/宋佳凝/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 125,
+          "depth": 10
+        }
+      },
+      "宋雅琴_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "宋雅琴"
+        ],
+        "abstract": "宋雅琴的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"宋雅琴\">"
+          },
+          {
+            "file": "世界书/角色/宋雅琴/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 126,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "宋雅琴"
+          ]
+        }
+      },
+      "宋雅琴_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "宋雅琴"
+        ],
+        "abstract": "宋雅琴的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"宋雅琴\">"
+          },
+          {
+            "file": "世界书/角色/宋雅琴/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 127,
+          "depth": 6
+        }
+      },
+      "宋雅琴_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "宋雅琴"
+        ],
+        "abstract": "宋雅琴的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/宋雅琴/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 128,
+          "depth": 10
+        }
+      },
+      "张慧娟_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "张慧娟"
+        ],
+        "abstract": "张慧娟的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"张慧娟\">"
+          },
+          {
+            "file": "世界书/角色/张慧娟/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 129,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "张慧娟"
+          ]
+        }
+      },
+      "张慧娟_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "张慧娟"
+        ],
+        "abstract": "张慧娟的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"张慧娟\">"
+          },
+          {
+            "file": "世界书/角色/张慧娟/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 130,
+          "depth": 6
+        }
+      },
+      "张慧娟_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "张慧娟"
+        ],
+        "abstract": "张慧娟的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/张慧娟/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 131,
+          "depth": 10
+        }
+      },
+      "李红梅_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "李红梅"
+        ],
+        "abstract": "李红梅的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"李红梅\">"
+          },
+          {
+            "file": "世界书/角色/李红梅/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 132,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李红梅"
+          ]
+        }
+      },
+      "李红梅_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "李红梅"
+        ],
+        "abstract": "李红梅的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"李红梅\">"
+          },
+          {
+            "file": "世界书/角色/李红梅/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 133,
+          "depth": 6
+        }
+      },
+      "李红梅_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "李红梅"
+        ],
+        "abstract": "李红梅的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/李红梅/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 134,
+          "depth": 10
+        }
+      },
+      "林汐瑶_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "林汐瑶"
+        ],
+        "abstract": "林汐瑶的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"林汐瑶\">"
+          },
+          {
+            "file": "世界书/角色/林汐瑶/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 135,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林汐瑶"
+          ]
+        }
+      },
+      "林汐瑶_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林汐瑶"
+        ],
+        "abstract": "林汐瑶的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"林汐瑶\">"
+          },
+          {
+            "file": "世界书/角色/林汐瑶/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 136,
+          "depth": 6
+        }
+      },
+      "林汐瑶_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林汐瑶"
+        ],
+        "abstract": "林汐瑶的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/林汐瑶/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 137,
+          "depth": 10
+        }
+      },
+      "林秀英_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "林秀英"
+        ],
+        "abstract": "林秀英的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"林秀英\">"
+          },
+          {
+            "file": "世界书/角色/林秀英/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 138,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林秀英"
+          ]
+        }
+      },
+      "林秀英_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林秀英"
+        ],
+        "abstract": "林秀英的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"林秀英\">"
+          },
+          {
+            "file": "世界书/角色/林秀英/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 139,
+          "depth": 6
+        }
+      },
+      "林秀英_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林秀英"
+        ],
+        "abstract": "林秀英的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/林秀英/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 140,
+          "depth": 10
+        }
+      },
+      "沈若兰_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "沈若兰"
+        ],
+        "abstract": "沈若兰的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"沈若兰\">"
+          },
+          {
+            "file": "世界书/角色/沈若兰/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 141,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "沈若兰"
+          ]
+        }
+      },
+      "沈若兰_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "沈若兰"
+        ],
+        "abstract": "沈若兰的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"沈若兰\">"
+          },
+          {
+            "file": "世界书/角色/沈若兰/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 142,
+          "depth": 6
+        }
+      },
+      "沈若兰_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "沈若兰"
+        ],
+        "abstract": "沈若兰的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/沈若兰/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 143,
+          "depth": 10
+        }
+      },
+      "王朵朵_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "王朵朵"
+        ],
+        "abstract": "王朵朵的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"王朵朵\">"
+          },
+          {
+            "file": "世界书/角色/王朵朵/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 144,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王朵朵"
+          ]
+        }
+      },
+      "王朵朵_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王朵朵"
+        ],
+        "abstract": "王朵朵的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"王朵朵\">"
+          },
+          {
+            "file": "世界书/角色/王朵朵/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 145,
+          "depth": 6
+        }
+      },
+      "王朵朵_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王朵朵"
+        ],
+        "abstract": "王朵朵的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/王朵朵/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 146,
+          "depth": 10
+        }
+      },
+      "王金凤_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "王金凤"
+        ],
+        "abstract": "王金凤的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"王金凤\">"
+          },
+          {
+            "file": "世界书/角色/王金凤/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 147,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王金凤"
+          ]
+        }
+      },
+      "王金凤_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王金凤"
+        ],
+        "abstract": "王金凤的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"王金凤\">"
+          },
+          {
+            "file": "世界书/角色/王金凤/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 148,
+          "depth": 6
+        }
+      },
+      "王金凤_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王金凤"
+        ],
+        "abstract": "王金凤的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/王金凤/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 149,
+          "depth": 10
+        }
+      },
+      "白秋月_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "白秋月"
+        ],
+        "abstract": "白秋月的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"白秋月\">"
+          },
+          {
+            "file": "世界书/角色/白秋月/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 150,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白秋月"
+          ]
+        }
+      },
+      "白秋月_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "白秋月"
+        ],
+        "abstract": "白秋月的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"白秋月\">"
+          },
+          {
+            "file": "世界书/角色/白秋月/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 151,
+          "depth": 6
+        }
+      },
+      "白秋月_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "白秋月"
+        ],
+        "abstract": "白秋月的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/白秋月/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 152,
+          "depth": 10
+        }
+      },
+      "白若薇_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "白若薇"
+        ],
+        "abstract": "白若薇的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"白若薇\">"
+          },
+          {
+            "file": "世界书/角色/白若薇/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 153,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白若薇"
+          ]
+        }
+      },
+      "白若薇_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "白若薇"
+        ],
+        "abstract": "白若薇的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"白若薇\">"
+          },
+          {
+            "file": "世界书/角色/白若薇/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 154,
+          "depth": 6
+        }
+      },
+      "白若薇_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "白若薇"
+        ],
+        "abstract": "白若薇的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/白若薇/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 155,
+          "depth": 10
+        }
+      },
+      "石小婉_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "石小婉"
+        ],
+        "abstract": "石小婉的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"石小婉\">"
+          },
+          {
+            "file": "世界书/角色/石小婉/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 156,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "石小婉"
+          ]
+        }
+      },
+      "石小婉_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "石小婉"
+        ],
+        "abstract": "石小婉的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"石小婉\">"
+          },
+          {
+            "file": "世界书/角色/石小婉/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 157,
+          "depth": 6
+        }
+      },
+      "石小婉_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "石小婉"
+        ],
+        "abstract": "石小婉的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/石小婉/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 158,
+          "depth": 10
+        }
+      },
+      "石巧云_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "石巧云"
+        ],
+        "abstract": "石巧云的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"石巧云\">"
+          },
+          {
+            "file": "世界书/角色/石巧云/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 159,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "石巧云"
+          ]
+        }
+      },
+      "石巧云_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "石巧云"
+        ],
+        "abstract": "石巧云的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"石巧云\">"
+          },
+          {
+            "file": "世界书/角色/石巧云/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 160,
+          "depth": 6
+        }
+      },
+      "石巧云_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "石巧云"
+        ],
+        "abstract": "石巧云的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/石巧云/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 161,
+          "depth": 10
+        }
+      },
+      "秦可心_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "秦可心"
+        ],
+        "abstract": "秦可心的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"秦可心\">"
+          },
+          {
+            "file": "世界书/角色/秦可心/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 162,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦可心"
+          ]
+        }
+      },
+      "秦可心_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "秦可心"
+        ],
+        "abstract": "秦可心的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"秦可心\">"
+          },
+          {
+            "file": "世界书/角色/秦可心/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 163,
+          "depth": 6
+        }
+      },
+      "秦可心_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "秦可心"
+        ],
+        "abstract": "秦可心的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/秦可心/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 164,
+          "depth": 10
+        }
+      },
+      "秦淑珍_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "秦淑珍"
+        ],
+        "abstract": "秦淑珍的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"秦淑珍\">"
+          },
+          {
+            "file": "世界书/角色/秦淑珍/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 165,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦淑珍"
+          ]
+        }
+      },
+      "秦淑珍_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "秦淑珍"
+        ],
+        "abstract": "秦淑珍的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"秦淑珍\">"
+          },
+          {
+            "file": "世界书/角色/秦淑珍/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 166,
+          "depth": 6
+        }
+      },
+      "秦淑珍_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "秦淑珍"
+        ],
+        "abstract": "秦淑珍的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/秦淑珍/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 167,
+          "depth": 10
+        }
+      },
+      "艾米丽·陈_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "艾米丽·陈"
+        ],
+        "abstract": "艾米丽·陈的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"艾米丽·陈\">"
+          },
+          {
+            "file": "世界书/角色/艾米丽·陈/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 168,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "艾米丽·陈"
+          ]
+        }
+      },
+      "艾米丽·陈_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "艾米丽·陈"
+        ],
+        "abstract": "艾米丽·陈的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"艾米丽·陈\">"
+          },
+          {
+            "file": "世界书/角色/艾米丽·陈/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 169,
+          "depth": 6
+        }
+      },
+      "艾米丽·陈_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "艾米丽·陈"
+        ],
+        "abstract": "艾米丽·陈的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/艾米丽·陈/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 170,
+          "depth": 10
+        }
+      },
+      "苏婉如_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "苏婉如"
+        ],
+        "abstract": "苏婉如的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"苏婉如\">"
+          },
+          {
+            "file": "世界书/角色/苏婉如/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 171,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏婉如"
+          ]
+        }
+      },
+      "苏婉如_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "苏婉如"
+        ],
+        "abstract": "苏婉如的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"苏婉如\">"
+          },
+          {
+            "file": "世界书/角色/苏婉如/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 172,
+          "depth": 6
+        }
+      },
+      "苏婉如_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "苏婉如"
+        ],
+        "abstract": "苏婉如的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/苏婉如/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 173,
+          "depth": 10
+        }
+      },
+      "苏晚晴_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "苏晚晴"
+        ],
+        "abstract": "苏晚晴的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"苏晚晴\">"
+          },
+          {
+            "file": "世界书/角色/苏晚晴/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 174,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晚晴"
+          ]
+        }
+      },
+      "苏晚晴_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "苏晚晴"
+        ],
+        "abstract": "苏晚晴的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"苏晚晴\">"
+          },
+          {
+            "file": "世界书/角色/苏晚晴/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 175,
+          "depth": 6
+        }
+      },
+      "苏晚晴_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "苏晚晴"
+        ],
+        "abstract": "苏晚晴的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/苏晚晴/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 176,
+          "depth": 10
+        }
+      },
+      "赵雪晴_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "赵雪晴"
+        ],
+        "abstract": "赵雪晴的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"赵雪晴\">"
+          },
+          {
+            "file": "世界书/角色/赵雪晴/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 177,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵雪晴"
+          ]
+        }
+      },
+      "赵雪晴_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "赵雪晴"
+        ],
+        "abstract": "赵雪晴的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"赵雪晴\">"
+          },
+          {
+            "file": "世界书/角色/赵雪晴/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 178,
+          "depth": 6
+        }
+      },
+      "赵雪晴_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "赵雪晴"
+        ],
+        "abstract": "赵雪晴的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/赵雪晴/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 179,
+          "depth": 10
+        }
+      },
+      "金顺姬_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "金顺姬"
+        ],
+        "abstract": "金顺姬的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"金顺姬\">"
+          },
+          {
+            "file": "世界书/角色/金顺姬/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 180,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "金顺姬"
+          ]
+        }
+      },
+      "金顺姬_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "金顺姬"
+        ],
+        "abstract": "金顺姬的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"金顺姬\">"
+          },
+          {
+            "file": "世界书/角色/金顺姬/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 181,
+          "depth": 6
+        }
+      },
+      "金顺姬_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "金顺姬"
+        ],
+        "abstract": "金顺姬的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/金顺姬/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 182,
+          "depth": 10
+        }
+      },
+      "陆芷晴_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "陆芷晴"
+        ],
+        "abstract": "陆芷晴的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"陆芷晴\">"
+          },
+          {
+            "file": "世界书/角色/陆芷晴/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 183,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陆芷晴"
+          ]
+        }
+      },
+      "陆芷晴_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陆芷晴"
+        ],
+        "abstract": "陆芷晴的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"陆芷晴\">"
+          },
+          {
+            "file": "世界书/角色/陆芷晴/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 184,
+          "depth": 6
+        }
+      },
+      "陆芷晴_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陆芷晴"
+        ],
+        "abstract": "陆芷晴的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/陆芷晴/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 185,
+          "depth": 10
+        }
+      },
+      "陆青霞_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "陆青霞"
+        ],
+        "abstract": "陆青霞的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"陆青霞\">"
+          },
+          {
+            "file": "世界书/角色/陆青霞/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 186,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陆青霞"
+          ]
+        }
+      },
+      "陆青霞_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陆青霞"
+        ],
+        "abstract": "陆青霞的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"陆青霞\">"
+          },
+          {
+            "file": "世界书/角色/陆青霞/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 187,
+          "depth": 6
+        }
+      },
+      "陆青霞_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陆青霞"
+        ],
+        "abstract": "陆青霞的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/陆青霞/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 188,
+          "depth": 10
+        }
+      },
+      "陈淑芬_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "陈淑芬"
+        ],
+        "abstract": "陈淑芬的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"陈淑芬\">"
+          },
+          {
+            "file": "世界书/角色/陈淑芬/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 189,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈淑芬"
+          ]
+        }
+      },
+      "陈淑芬_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陈淑芬"
+        ],
+        "abstract": "陈淑芬的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"陈淑芬\">"
+          },
+          {
+            "file": "世界书/角色/陈淑芬/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 190,
+          "depth": 6
+        }
+      },
+      "陈淑芬_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陈淑芬"
+        ],
+        "abstract": "陈淑芬的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/陈淑芬/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 191,
+          "depth": 10
+        }
+      },
+      "陈雪梨_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "陈雪梨"
+        ],
+        "abstract": "陈雪梨的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"陈雪梨\">"
+          },
+          {
+            "file": "世界书/角色/陈雪梨/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 192,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈雪梨"
+          ]
+        }
+      },
+      "陈雪梨_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陈雪梨"
+        ],
+        "abstract": "陈雪梨的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"陈雪梨\">"
+          },
+          {
+            "file": "世界书/角色/陈雪梨/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 193,
+          "depth": 6
+        }
+      },
+      "陈雪梨_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陈雪梨"
+        ],
+        "abstract": "陈雪梨的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/陈雪梨/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 194,
+          "depth": 10
+        }
+      },
+      "韩美娜_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "韩美娜"
+        ],
+        "abstract": "韩美娜的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"韩美娜\">"
+          },
+          {
+            "file": "世界书/角色/韩美娜/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 195,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩美娜"
+          ]
+        }
+      },
+      "韩美娜_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "韩美娜"
+        ],
+        "abstract": "韩美娜的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"韩美娜\">"
+          },
+          {
+            "file": "世界书/角色/韩美娜/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 196,
+          "depth": 6
+        }
+      },
+      "韩美娜_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "韩美娜"
+        ],
+        "abstract": "韩美娜的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/韩美娜/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 197,
+          "depth": 10
+        }
+      },
+      "黎嘉欣_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "黎嘉欣"
+        ],
+        "abstract": "黎嘉欣的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"黎嘉欣\">"
+          },
+          {
+            "file": "世界书/角色/黎嘉欣/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 198,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黎嘉欣"
+          ]
+        }
+      },
+      "黎嘉欣_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "黎嘉欣"
+        ],
+        "abstract": "黎嘉欣的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"黎嘉欣\">"
+          },
+          {
+            "file": "世界书/角色/黎嘉欣/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 199,
+          "depth": 6
+        }
+      },
+      "黎嘉欣_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "黎嘉欣"
+        ],
+        "abstract": "黎嘉欣的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/黎嘉欣/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 200,
+          "depth": 10
+        }
+      },
+      "黎桂芳_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "黎桂芳"
+        ],
+        "abstract": "黎桂芳的基础信息：身份/家乡/方言/外貌/性格/关系/气味等",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"黎桂芳\">"
+          },
+          {
+            "file": "世界书/角色/黎桂芳/基础.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 201,
+          "depth": 15
+        },
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黎桂芳"
+          ]
+        }
+      },
+      "黎桂芳_私密档案": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "黎桂芳"
+        ],
+        "abstract": "黎桂芳的私密档案：三大件细节/名器/战斗档案/能力值/特质/缺陷/分泌物/性偏好/NSFW语料",
+        "contents": [
+          {
+            "content": "---\n<character_other character=\"黎桂芳\">"
+          },
+          {
+            "file": "世界书/角色/黎桂芳/私密.yaml"
+          },
+          {
+            "content": "</character_other>"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 202,
+          "depth": 6
+        }
+      },
+      "黎桂芳_阶段行为": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "黎桂芳"
+        ],
+        "abstract": "黎桂芳的5阶段行为（缴械值0-19/20-39/40-59/60-79/80-99）+俘虏态，EJS按本人缴械值段落控制",
+        "contents": [
+          {
+            "file": "世界书/角色/黎桂芳/阶段.yaml"
+          }
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 203,
+          "depth": 10
+        }
+      },
+      "名录总表": {
+        "path": "世界书/角色/名录总表.yaml",
+        "scope": "catalog",
+        "part": "basic",
+        "keywords": [],
+        "abstract": "38人角色速览（学生/老师/妈妈 索引）：名字/身份/家乡/一句话特征+母女关联；只识别用，详细档案按需加载",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 89
+        }
+      }
+    },
+    "MVU": {
+      "[InitVar]请勿打开": {
+        "path": "世界书/变量/initvar.yaml",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "初始变量：时间、玩家状态、排班、38名女性角色建档（名器/技能/能力值/心理状态）",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 230
+        }
+      },
+      "[mvu_update]变量更新规则": {
+        "path": "世界书/变量/变量更新规则.yaml",
+        "part": "update_rules",
+        "keywords": [],
+        "abstract": "全部变量的更新时机与规则：战斗公式结算、技能经验、心理状态、缴械值等",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 240
+        }
+      },
+      "[mvu_update]变量字典与范围": {
+        "path": "世界书/变量/变量字典与范围.yaml",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "变量字典：全部字段路径、取值范围与示例，供AI更新时对照",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 241
+        }
+      },
+      "[mvu_plot]叙事输出规范": {
+        "path": "世界书/变量/叙事输出规范.yaml",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "主模型叙事职责、状态栏占位符（只出现在正文 content 末尾、禁止进思维链）、战斗交互协议与输赢判定流程",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 242
+        }
+      },
+      "[mvu_plot]思维链强制输出": {
+        "path": "世界书/变量/思维链强制输出.yaml",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "蓝灯常驻：AI 每轮输出 <thinking> 块，做战斗/缴械阶段/学业/信息隔离/规则遵守检查（折叠由 ST 原生 reasoning 处理；界面标签禁止出现在思维链内）",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 244
+        }
+      },
+      "[mvu_plot]情境上下文EJS": {
+        "path": "世界书/变量/情境上下文EJS.yaml",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "生成前注入当前时间/学业/目标角色/战斗状态概览（EJS动态）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 243
+        }
+      },
+      "[mvu_update]变量输出格式": {
+        "path": "世界书/变量/变量输出格式.txt",
+        "part": "update_format",
+        "keywords": [],
+        "abstract": "更新模型必须输出的 <UpdateVariable>/<JSONPatch> 协议格式（MagVarUpdate 解析）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 245
+        }
+      },
+      "主模型变量更新模式(备用)": {
+        "path": "世界书/变量/主模型变量更新模式.yaml",
+        "part": "update_rules",
+        "keywords": [
+          "主模型更新",
+          "单模型",
+          "备用模式",
+          "无副模型"
+        ],
+        "abstract": "单模型备用模式：主模型同时叙事与更新变量的纪律与回退逻辑（仅当副模型不可用时启用）",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "主模型更新",
+            "单模型",
+            "备用模式",
+            "无副模型"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 244
+        }
+      },
+      "变量列表": {
+        "path": "世界书/变量/变量列表.txt",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "变量总览（字段速查）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 246
+        }
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": false
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "事件": 0,
+    "地理": {
+      "faction": {
+        "threshold": 4,
+        "required": false
+      },
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "世界观": "Infinity",
+    "阶段指导": "Infinity"
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "【欲望都市】虚构成人向角色扮演卡（18+）。\n京市人大附中高三精英班。你从广西小城插班而来，目标是考上清华（700 分线，730 全国状元）。班里 15 名女生、7 位女老师，小区里住着 15 位陪读妈妈，加上你的妈妈——共 38 名女性，各自握着一枚\"假阴茎\"，而所有假阴茎都秘密链接着你一个人：每次被使用，真实感受同步；你必须对抗，否则被缴械会掉成绩。\n校园日常与隐秘对抗双线并行：白天上课、晚自习、考试；全天 24 小时 4 时段自动排班（上午=陪读妈妈+没课老师、下午场=放学后全体、晚场=学生为主、深夜=全体），自由时段的女性轮番\"使用\"。量化战斗（防守值/缴械值）、技能树、五阶段沉沦、俘虏结局，全部由 MVU 变量实时驱动，状态栏为内联前端（正则注入，不走 CDN）。\n全虚构、纯文字、无真实人物。",
+  "first_messages": [
+    "开场白/0.txt",
+    "开场白/1.txt",
+    "开场白/2.txt",
+    "开场白/3.txt"
+  ],
+  "creator": "",
+  "creator_notes": "使用说明：\n1. 在 SillyTavern 中导入 欲望都市.json（角色卡），需启用酒馆助手（Tavern Helper）插件与 MVU 运行环境。\n2. 开场白 0 为普通开局；1/2/3 为进阶开局（分别预设林秀英/苏晚晴/沈若兰已被俘虏）。\n3. 战斗协议：主模型只负责叙事并输出 <updatevariable> 块，由 MVU 脚本解析变量；公式见世界书【战斗系统】。\n4. 状态栏由正则【状态栏界面】注入内联前端，若界面未显示请确认该正则已启用。\n5. Zod 脚本由卡内 schema.ts 重建，推荐在支持 MVU/Zod 的酒馆助手环境下运行。",
+  "version": "1.0",
+  "create_date": "2026-08-05T03:30:23.283Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "d0311ca6-5e9a-498e-a777-f74dc4dc6b12",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "刷新变量面板",
+                "visible": true
+              },
+              {
+                "name": "刷新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "删除楼层",
+                "visible": false
+              },
+              {
+                "name": "新增楼层",
+                "visible": false
+              },
+              {
+                "name": "发送额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "保存楼层截图",
+                "visible": false
+              }
+            ]
+          },
+          "data": {}
+        },
+        "战斗系统": {
+          "type": "script",
+          "script_file": "脚本/战斗系统.js",
+          "enabled": true,
+          "id": "8bbeae28-6c71-4fdb-a28b-8308f0a19b5c",
+          "info": "每日排班生成、战斗状态清理、俘虏触发（依赖 MVU 脚本）",
+          "button": {
+            "enabled": false,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "战斗系统UI": {
+          "type": "script",
+          "script_file": "脚本/战斗面板UI.js",
+          "enabled": true,
+          "id": "3ba3b8a2-734b-4dcb-83f1-c169a0898a1d",
+          "info": "战斗面板 UI 注入（挂载点 + Shadow DOM，替代消息正则 88KB HTML）",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "战斗API设置",
+                "visible": true
+              }
+            ]
+          },
+          "data": {}
+        }
+      },
+      "variables": {}
+    }
+  },
+  "regex_scripts": {
+    "隐藏AI状态栏": {
+      "id": "b5f2606f-69cc-4a6a-8ebb-bd8a3b7f671f",
+      "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "隐藏AI更新变量": {
+      "id": "aa12731a-97c4-4450-ac2f-0bfe1d6a4f64",
+      "findRegex": "/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "隐藏AI战斗面板": {
+      "id": "e216c671-ea4d-46e3-aca7-3f86b05537ba",
+      "findRegex": "/<BattleUI\\s*\\/>/gi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "状态栏界面": {
+      "id": "ce6da13c-4e35-4057-8964-3192b7903acc",
+      "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+      "replace_file": "正则/状态栏界面.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "战斗面板界面": {
+      "id": "86e0a3b4-c749-4e01-80cd-0dbd9a53301e",
+      "findRegex": "/<BattleUI\\s*\\/>/gi",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100,
+      "replace_file": "正则/战斗面板界面.html"
+    },
+    "变量更新中美化": {
+      "id": "b9d5f25b-a9d0-41bf-8a69-602d64bbde22",
+      "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+      "replace_file": "正则/变量更新中美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "变量更新美化": {
+      "id": "92d49340-fe5e-4929-871f-43d110e5ec76",
+      "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+      "replace_file": "正则/变量更新美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    }
+  },
+  "initvar_overrides": {
+    "开场白/1.txt": "开场白/initvar/1.yaml",
+    "开场白/2.txt": "开场白/initvar/2.yaml",
+    "开场白/3.txt": "开场白/initvar/3.yaml"
+  },
+  "zod": {
+    "scriptName": "Zod",
+    "scriptId": "5b3b09af-35e3-4149-a0f7-2f08776ed6a1",
+    "schemaPath": "schema.ts",
+    "importUrl": "https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js"
+  },
+  "avatar": "头像.png"
+}

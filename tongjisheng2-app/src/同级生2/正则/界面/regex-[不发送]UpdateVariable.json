@@ -1,0 +1,17 @@
+{
+  "id": "d2a1f001-0002-4000-8000-000000000011",
+  "scriptName": "对 AI 隐藏 UpdateVariable 块",
+  "findRegex": "<UpdateVariable>[\\s\\S]*?</UpdateVariable>",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [
+    1
+  ],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

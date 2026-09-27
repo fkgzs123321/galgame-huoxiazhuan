@@ -1,0 +1,54 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/守庄之物",
+    "value": {
+      "path": "世界书/机制/守庄之物.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "四物物性叙事层：铜镜/药囊/银匕/草汁——AI 可感知层，无数值掷骰；谁持有什么永不写",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 50, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/死状与取证",
+    "value": {
+      "path": "世界书/机制/死状与取证.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "六种死状线索表+雪地脚印时效+搜尸搜房+疑听不可验证+写尸体的规矩",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 51, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/话术世界",
+    "value": {
+      "path": "世界书/机制/话术世界.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "五信息源/三招（述梦验身指认链）/三阶段/硬规则：永不陈述昨夜+无依据断言不理睬",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 52, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/血月历",
+    "value": {
+      "path": "世界书/机制/血月历.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "七夜倒计时的算术恐怖：开局的算术/每天的算术/平安日净亏/数字要进 NPC 的嘴",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 53, "role": "system" }
+    }
+  }
+]

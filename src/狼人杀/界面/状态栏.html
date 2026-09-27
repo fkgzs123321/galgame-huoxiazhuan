@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · 血月七夜</title>
+<style>
+:root{
+  --bg-0:#080507;--bg-1:#140a0d;--bg-card:rgba(30,12,14,.88);
+  --c-text:#f2e6e0;--c-dim:#9a8f8a;--c-border:rgba(220,80,60,.25);
+  --c-blood:#dc2626;--c-moon:#fbbf24;--c-frost:#93c5fd;--c-safe:#10b981;--c-warn:#f59e0b;--c-accent:#c084fc;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.55}
+.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin:6px 0;box-shadow:0 4px 16px rgba(0,0,0,.55)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:5px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:800;letter-spacing:1px;color:var(--c-blood)}
+.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(220,80,60,.12);border:1px solid var(--c-border);color:#f0b4a8;white-space:nowrap}
+.pill.moon{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.35);color:var(--c-moon)}
+.pill.frost{background:rgba(147,197,253,.1);border-color:rgba(147,197,253,.3);color:var(--c-frost)}
+.pill.wolf{background:rgba(220,38,38,.18);border-color:rgba(220,38,38,.55);color:#fca5a5;font-weight:700}
+.pill.god{background:rgba(192,132,252,.14);border-color:rgba(192,132,252,.4);color:var(--c-accent);font-weight:700}
+.pill.civ{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);color:var(--c-safe);font-weight:700}
+.pill.dead{background:rgba(0,0,0,.4);border-color:rgba(154,143,138,.4);color:var(--c-dim);text-decoration:line-through}
+.btn{background:rgba(220,80,60,.14);border:1px solid var(--c-border);color:#f0b4a8;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:var(--fs-sm);transition:all .2s;white-space:nowrap}
+.btn:hover{background:rgba(220,80,60,.3);color:#fff}
+.btn.primary{background:rgba(220,38,38,.35);border-color:rgba(220,38,38,.6);color:#fff;font-weight:700}
+.btn.ghost{background:transparent;border-color:rgba(154,143,138,.3);color:var(--c-dim)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+details.block{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:0;margin-bottom:8px;overflow:hidden}
+details.block>summary{font-size:var(--fs-sm);font-weight:700;padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none}
+details.block>summary::-webkit-details-marker{display:none}
+details.block[open]>summary{border-bottom:1px solid var(--c-border)}
+details.block[open]>summary .caret{transform:rotate(90deg)}
+details.block>summary .caret{margin-left:auto;transition:transform .2s}
+.t.identity{color:var(--c-moon)}.t.broadcast{color:#f0b4a8}.t.action{color:var(--c-accent)}.t.vote{color:var(--c-blood)}.t.roster{color:var(--c-frost)}.t.mirror{color:var(--c-accent)}.t.end{color:var(--c-blood)}
+.block-body{padding:8px 10px 10px}
+.muted{color:var(--c-dim);font-size:var(--fs-xs)}
+.bline{font-size:var(--fs-sm);white-space:pre-wrap;word-break:break-all;line-height:1.6}
+.bline b{color:#f0b4a8}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:var(--fs-xs);padding:2px 8px;border-radius:8px;background:rgba(147,197,253,.08);border:1px solid rgba(147,197,253,.2);color:var(--c-frost)}
+.chip.dead{background:rgba(0,0,0,.3);border-color:rgba(154,143,138,.3);color:var(--c-dim);text-decoration:line-through}
+.chip.self{border-color:rgba(251,191,36,.5);color:var(--c-moon)}
+.dream{background:rgba(251,191,36,.05);border-left:2px solid var(--c-moon);padding:6px 9px;margin:5px 0;font-size:var(--fs-sm);line-height:1.7;white-space:pre-wrap}
+.opt{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.03);border:1px solid rgba(154,143,138,.18);border-radius:7px;padding:7px 9px;margin-bottom:5px;cursor:pointer;transition:all .15s;font-size:var(--fs-sm)}
+.opt:hover{border-color:var(--c-border);background:rgba(220,80,60,.07)}
+.opt.sel{border-color:rgba(220,80,60,.65);background:rgba(220,38,38,.13)}
+.opt input{accent-color:#dc2626;flex-shrink:0}
+.opt .sub{margin-left:auto;font-size:var(--fs-xs);color:var(--c-dim)}
+.opt .sub.safe{color:var(--c-safe)}.opt .sub.warn{color:var(--c-warn)}
+.sect{font-size:var(--fs-xs);color:var(--c-dim);margin:9px 0 5px;font-weight:700;border-bottom:1px solid rgba(220,80,60,.12);padding-bottom:2px}
+.act-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.hint{font-size:var(--fs-xs);color:var(--c-warn);margin:5px 0;line-height:1.5}
+.hint.moon{color:var(--c-moon)}
+.modal-mask{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);z-index:9999;display:none;align-items:center;justify-content:center;padding:12px}
+.modal-mask.show{display:flex}
+.modal{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;max-width:420px;width:100%;padding:14px}
+.modal h3{font-size:var(--fs-md);color:var(--c-blood);margin-bottom:8px}
+.modal p{font-size:var(--fs-sm);color:var(--c-text);margin-bottom:12px;line-height:1.6;white-space:pre-wrap}
+.modal .act-row{justify-content:flex-end}
+.loading{text-align:center;padding:28px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+.err{padding:10px;color:#fca5a5;font-size:12px;line-height:1.6;word-break:break-all}
+@media(max-width:420px){.hd{flex-wrap:wrap}.hd-l{width:100%}}
+/* 控制中心浮层模式（?cc=1）：满高布局 + 内滚动 */
+html.cc-mode,html.cc-mode body{height:100%;overflow-y:auto;background:#0d0a0c}
+html.cc-mode body{padding:10px}
+html.cc-mode .sb{margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="sb" id="xueyue-sb"><div class="loading">血月正在升起…</div></div>
+<script>
+(function () {
+  var ccMode = /[?&]cc=1/.test(location.search);
+  if (ccMode) { try { document.documentElement.classList.add('cc-mode'); } catch (e) {} }
+  // 幂等：同页重复注入时只刷新，不重复注册（skill：Make binding idempotent）
+  if (window.__xyCCAlive) {
+    try { if (window.__xyCCRerender) window.__xyCCRerender(); } catch (e) {}
+    return;
+  }
+  window.__xyCCAlive = true;
+  /* ===== 酒馆助手接口兼容层（照同级生2 实测可用模式：接口在 window/parent/top 三层找）===== */
+  var TH_HOSTS = [window, window.parent, window.top].filter(function (w, i, arr) { return w && arr.indexOf(w) === i; });
+  function pickHostFn(name) {
+    if (typeof window[name] === 'function') return function () { return window[name].apply(window, arguments); };
+    for (var i = 0; i < TH_HOSTS.length; i++) { try { var h = TH_HOSTS[i]; if (typeof h[name] === 'function') return function (host, n) { return function () { return host[n].apply(host, arguments); }; }(h, name); } catch (e) {} }
+    return null;
+  }
+  function pickHostValue(name) {
+    if (window[name] !== undefined) return window[name];
+    for (var i = 0; i < TH_HOSTS.length; i++) { try { if (TH_HOSTS[i][name] !== undefined) return TH_HOSTS[i][name]; } catch (e) {} }
+    return undefined;
+  }
+  function getV(o) { var f = pickHostFn('getVariables'); if (!f) throw new Error('getVariables 不可用（酒馆助手接口未找到）'); return f(o); }
+  function emitEvt(n, p) { var f = pickHostFn('eventEmit'); if (!f) throw new Error('eventEmit 不可用'); return f(n, p); }
+  function onEvt(n, f) { var g = pickHostFn('eventOn'); if (!g) return; try { g(n, f); } catch (e) {} }
+  function getHost$() { return pickHostValue('$') || pickHostValue('jQuery'); }
+  function wait裁判() { var f = pickHostFn('waitGlobalInitialized'); if (!f) return Promise.reject(new Error('waitGlobalInitialized 不可用')); return f('血月裁判'); }
+  function slash(c) { var f = pickHostFn('triggerSlash'); if (!f) return Promise.reject(new Error('triggerSlash 不可用')); return f(c); }
+  // 控制中心动作：结算（裁判接口）→ 以玩家身份 send 行动 → trigger 生成（原生全链路：正则/MVU/面板渲染自动）
+  async function 推进(sendText) { await slash('/send ' + String(sendText).replace(/\|/g, '∣').replace(/"/g, '”') + ' | /trigger await=true'); }
+
+  var SB = '#xueyue-sb';
+  var 神职名 = { 铜镜: '狼感铜镜', 药囊: '药炉药囊', 银匕: '祖传银匕', 草汁: '狼毒草汁' };
+  var 身份说明 = {
+    狼: '血月之子。夜里与同伴围猎，白天伪装成人。',
+    铜镜: '镜照一人，雾聚为狼。全庄唯一的真话在你手里。',
+    药囊: '一瓶毒药，一份麻沸散。生杀与守护都是你。',
+    银匕: '唯一的杀狼之刃。搏命，或以银代众。',
+    草汁: '涂门可挡一夜狼牙。存量有限，续采进禁区。',
+    民: '你什么都没有，只有脑子和命。',
+    未: '血梦未至。今夜月升之后，一切开始。'
+  };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+
+  function 读变量() {
+    var mvu = getV({ type: 'message', message_id: 'latest' }) || {};
+    var sv = {};
+    var SID = '7f3c9a2e-8b4d-4e6f-9a1c-2d5e8f0a3b6c';
+    try { sv = getV({ type: 'script', script_id: SID }) || {}; }
+    catch (e1) { try { sv = getV({ type: 'script' }) || {}; } catch (e2) { sv = {}; } }
+    return { s: mvu.stat_data || null, v: sv };
+  }
+  function 徽章身份(身) {
+    if (身 === '未指派' || !身) return '<span class="pill">身份未指派</span>';
+    if (身 === '狼') return '<span class="pill wolf">狼</span>';
+    if (身 === '民') return '<span class="pill civ">民</span>';
+    return '<span class="pill god">持物 · ' + (神职名[身] || 身) + '</span>';
+  }
+
+  function render() {
+    var D = 读变量();
+    var s = D.s, v = D.v;
+    if (!s || !s._世界) { $(SB).html('<div class="loading">变量未就绪——发送第一条消息后开始</div>'); return; }
+    var W = s._世界, P = s._玩家;
+    var 存活 = W.存活名单.split('|').filter(Boolean);
+    var 是夜 = W.阶段 === '夜';
+    var 已终局 = /【终局】/.test(W.公开事实 || '');
+    var 我 = P.身份, 未指派 = P.身份 === '未指派';
+    var 我死 = P.存活 === '死亡';
+    var 我持 = function (职) { return s.$物品 && s.$物品[职 + '在身'] === '旅人'; };
+
+    var h = '';
+    h += '<div class="hd"><div class="hd-l"><span class="hd-t">血月七夜</span>';
+    h += '<span class="pill ' + (是夜 ? 'moon' : 'frost') + '">第 ' + W.天数 + ' ' + (是夜 ? '夜' : '昼') + '</span>';
+    h += 徽章身份(未指派 ? '' : 我);
+    h += (我死 ? '<span class="pill dead">你死了</span>' : '<span class="pill safe">存活 ' + (存活.length + (我死 ? 0 : 1)) + '/12</span>');
+    h += '</div><div style="display:flex;gap:5px;flex-shrink:0">';
+    h += '<button class="btn ghost" id="xy-rfr">↻</button>';
+    if (ccMode) h += '<button class="btn ghost" id="xy-cc-close">✕</button>';
+    if (!已终局 && !未指派) h += '<button class="btn ghost" id="xy-rst">重开</button>';
+    h += '</div></div>';
+
+    h += '<details class="block" open><summary><span class="t identity">☰ 你的身份</span><span class="caret">▸</span></summary><div class="block-body">';
+    if (未指派) {
+      h += '<div class="hint moon">身份说明：' + esc(身份说明.未) + '</div>';
+      h += '<div class="hint">发第一条消息，血梦会在月升时找到你。</div>';
+      h += '<div class="act-row"><button class="btn primary" id="xy-start">☾ 开始 · 迎接血梦</button></div>';
+      h += '<div class="hint">点开始：身份指派 → 第一夜降临 → 面板切换为行动界面</div>';
+    } else {
+      var 职显示 = 我 === '狼' ? '狼' : 我 === '民' ? '民' : 神职名[我];
+      h += '<div class="muted">你是 —— <b style="color:#fbbf24">' + esc(职显示) + '</b></div>';
+      h += '<div class="hint">' + esc(身份说明[我] || '') + '</div>';
+      if (我 === '狼' && v.同伴) h += '<div class="hint moon">你的同伴：' + esc(v.同伴) + '</div>';
+      if (四物在身(s)) h += '<div class="hint">「' + esc(神职名[我]) + '」' + (s.$物品[我 + '在身'] === '旅人' ? '在你身上。' : '藏在：' + esc(v.玩家藏处 || '血梦里那个地方') + '。</div>');
+      if (我 === '草汁') h += '<div class="hint">草汁存量：' + (s.$物品.草汁存量 || 0) + '</div>';
+      if (v.血梦) h += '<details style="margin-top:4px"><summary class="muted" style="cursor:pointer">▸ 血梦原文</summary><div class="dream">' + esc(v.血梦) + '</div></details>';
+      if (v.玩家被种夜 > 0 && !已终局) h += '<div class="hint">你身上有什么东西在发烫。它一天比一天明显。</div>';
+    }
+    h += '</div></details>';
+
+    if (未指派 || ccMode) {
+      h += '<details class="block"' + (未指派 ? ' open' : '') + '><summary><span class="t broadcast">❖ 玩法说明（血月七夜 · 生存局）</span><span class="caret">▸</span></summary><div class="block-body">';
+      h += '<div class="sect">你是谁</div><div class="bline">你是十二人之一：四狼、四民、四持物。你的身份在第一夜的血梦里揭晓——揭晓前，你和所有人一样只是个客人。</div>';
+      h += '<div class="sect">每一夜</div><div class="bline">在「入夜行动」里安排：狼选猎物；持物人涂门、下麻沸散、镜验、带不带银匕；任何人都可以约人同屋（好感 ≥60 才会被接纳）。点「闭眼入睡」结算——夜里发生的事，明早谁都不记得，只有身体和尸体记得。</div>';
+      h += '<div class="sect">每一个白天</div><div class="bline">尸体、脚印、尸检结论、各人的梦——在对话里讨论、质询、结盟、撒谎。然后在「白天行动」里投票处决：过半即刑，不可逆，死状验真伪。持药囊者还可以下毒。</div>';
+      h += '<div class="sect">胜负</div><div class="bline">狼全灭=好人胜；狼数追平好人数或七夜耗尽=狼胜；你死了=死档（可随时重开重掷）。</div>';
+      h += '<div class="hint">操作都走这个面板。变量数值不进正文——面板是你的仪表盘，不是剧本。</div>';
+      h += '</div></details>';
+    }
+
+    var 终局匹配 = (W.公开事实 || '').match(/【终局】(\{.*\})/);
+    if (终局匹配 || 我死) {
+      var 终 = null;
+      try { 终 = 终局匹配 ? JSON.parse(终局匹配[1]) : null; } catch (e) {}
+      var 终名 = 终 ? 终.类型 : (我死 ? '死档' : '');
+      h += '<details class="block" open><summary><span class="t end">☠ 终局</span><span class="caret">▸</span></summary><div class="block-body">';
+      h += '<div class="bline"><b>' + esc(终名) + '</b></div>';
+      if (我死 && 终 && 终.死因) h += '<div class="hint">' + esc(终.死因) + '</div>';
+      h += '<div class="act-row"><button class="btn primary" id="xy-rst">重开一局</button></div>';
+      h += '</div></details>';
+    }
+
+    if (W.今日广播) {
+      h += '<details class="block" open><summary><span class="t broadcast">❖ ' + (是夜 ? '今夜' : '今晨') + '</span><span class="caret">▸</span></summary><div class="block-body">';
+      h += '<div class="bline">' + esc(W.今日广播).replace(/^(「?\[)([^\]]+\])(」?)/gm, '<b>$1$2$3</b>') + '</div>';
+      h += '</div></details>';
+    }
+
+    h += '<details class="block"><summary><span class="t roster">◎ 存活名单（' + (存活.length + (我死 ? 0 : 1)) + '）</span><span class="caret">▸</span></summary><div class="block-body"><div class="chips">';
+    for (var i = 0; i < 存活.length; i++) h += '<span class="chip">' + esc(存活[i]) + '</span>';
+    if (!我死) h += '<span class="chip self">你</span>';
+    var 死者们 = (s.$人物 ? Object.keys(s.$人物) : []).filter(function (n) { return s.$人物[n].存活 !== '存活'; });
+    for (var j = 0; j < 死者们.length; j++) h += '<span class="chip dead">' + esc(死者们[j]) + '</span>';
+    h += '</div></div></details>';
+
+    // ── 关系网（好感/怀疑可视化·控制中心专属）──
+    if (ccMode && !未指派 && s.人物) {
+      h += '<details class="block"><summary><span class="t mirror">♥ 她们与你的关系</span><span class="caret">▸</span></summary><div class="block-body">';
+      for (const n of Object.keys(s.人物)) {
+        var g = s.人物[n].好感 || 0, w2 = s.人物[n].怀疑 || 0;
+        var 死名 = 存活.indexOf(n) < 0;
+        h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:52px;font-size:11px;color:' + (死名 ? '#9a8f8a' : '#f0b4a8') + ';flex-shrink:0' + (死名 ? ';text-decoration:line-through' : '') + '">' + esc(n) + '</span>';
+        h += '<span style="width:34px;font-size:10px;color:' + (g >= 60 ? '#10b981' : '#9a8f8a') + '">♥' + g + '</span>';
+        h += '<div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + g + '%;background:linear-gradient(90deg,#7f1d1d,#f472b6)"></div></div>';
+        h += '<span style="width:34px;font-size:10px;color:' + (w2 >= 40 ? '#f59e0b' : '#9a8f8a') + '">疑' + w2 + '</span>';
+        h += '<div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + w2 + '%;background:linear-gradient(90deg,#78350f,#f59e0b)"></div></div></div>';
+      }
+      h += '<div class="hint">♥ 好感（高=她会护你/信你）· 疑 怀疑（高=投票时她第一个指你）。好感 ≥60 才会答应同屋。</div>';
+      h += '</div></details>';
+    }
+
+    if (ccMode && 是夜 && !未指派 && !我死 && !已终局) {
+      h += '<details class="block" open><summary><span class="t action">☾ 入夜行动</span><span class="caret">▸</span></summary><div class="block-body">';
+      h += 夜行动HTML(s, v, 我, 存活);
+      h += '<div class="act-row"><button class="btn primary" id="xy-sleep">闭眼 · 入睡</button></div>';
+      h += '<div class="hint moon">提交后，夜就属于它们了。明早你不会记得任何事。</div>';
+      h += '</div></details>';
+    }
+
+    if (ccMode && !是夜 && !未指派 && !我死 && !已终局) {
+      h += '<details class="block" open><summary><span class="t vote">⚖ 白天行动</span><span class="caret">▸</span></summary><div class="block-body">';
+      if (四物在身(s) && s.$物品[我 + '在身'] !== '旅人' && v.玩家藏处) h += '<div class="act-row" style="margin:0 0 8px"><button class="btn" id="xy-take">取回藏物（' + esc(v.玩家藏处) + '）</button></div>';
+      var 银在身 = s.$物品.银匕在身 === '旅人';
+      h += '<div class="sect">处决投票（过半即刑 · 不可逆）</div>';
+      for (var c = 0; c < 存活.length; c++) h += radio('vote', 存活[c], esc(存活[c]), '');
+      if (银在身) h += '<label class="opt"><input type="checkbox" id="xy-yin"><span>以银代众 —— 一人一刀免了众刑（银匕将消耗，从此消失）</span></label>';
+      h += '<div class="act-row"><button class="btn primary" id="xy-vote">投票</button></div>';
+      var 毒可用 = 我持('药囊') && s.$物品.毒药已用 === '否';
+      if (毒可用) {
+        h += '<div class="sect">毒药（一次性 · 无声无息 · 但死状骗不了验尸的人）</div>';
+        for (var d = 0; d < 存活.length; d++) h += radio('poison', 存活[d], esc(存活[d]), '');
+        h += '<div class="act-row"><button class="btn" id="xy-poison">下毒</button></div>';
+      }
+      h += '</div></details>';
+    }
+
+    if (ccMode && 我 === '铜镜' && v.镜验 && v.镜验['旅人']) {
+      h += '<details class="block"><summary><span class="t mirror">◉ 镜验记录（只属于你）</span><span class="caret">▸</span></summary><div class="block-body"><div class="bline muted">' + esc(v.镜验['旅人']) + '</div></div></details>';
+    }
+
+    // ── 你的行动（自由输入·控制中心专属——直接推进，不用回输入框）──
+    if (ccMode && !未指派 && !我死 && !已终局) {
+      h += '<div class="sect" style="margin:10px 0 5px">你的行动</div><div style="display:flex;gap:6px"><input id="xy-act" placeholder="输入你要做的事，如：检查尸体 / 质询庄晚棠 / 回房锁门…" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(154,143,138,.3);border-radius:6px;padding:7px 9px;color:#f2e6e0;font-size:12px"><button class="btn primary" id="xy-actsend">行动</button></div>';
+    }
+
+    if (W.公开事实) {
+      h += '<details class="block"' + (ccMode ? ' open' : '') + '><summary><span class="t roster">✦ 本局大事记</span><span class="caret">▸</span></summary><div class="block-body"><div class="bline muted">' + esc(W.公开事实).replace(/^(「?\[)([^\]]+\])(」?)/gm, '<b>$1$2$3</b>') + '</div></div></details>';
+    }
+
+    // ── HUD 模式：指向控制中心（双入口兜底）──
+    if (!ccMode && !我死 && !已终局) {
+      h += '<div class="act-row"><button class="btn primary" id="xy-opencc" style="width:100%">☾ 打开控制中心 · 完整操作</button></div>';
+    }
+
+    $(SB).html(h);
+    绑定事件(s, v, 我, 存活);
+  }
+
+  function 四物在身(s) { return ['铜镜', '药囊', '银匕', '草汁'].indexOf(s._玩家.身份) >= 0; }
+  function radio(name, val, label, sub) {
+    return '<label class="opt"><input type="radio" name="' + name + '" value="' + esc(val) + '"><span>' + label + '</span>' + (sub ? '<span class="sub ' + (sub.k || '') + '">' + esc(sub.t) + '</span>' : '') + '</label>';
+  }
+
+  function 夜行动HTML(s, v, 我, 存活) {
+    var h = '';
+    if (我 === '狼') {
+      var 同伴 = (v.同伴 || '').split('、').filter(Boolean);
+      var 猎池 = 存活.filter(function (n) { return 同伴.indexOf(n) < 0; });
+      h += '<div class="sect">狼队夜议 · 选猎物</div>';
+      if (同伴.length) h += '<div class="hint moon">同伴：' + esc(v.同伴) + ' ——你的票是建议，多数定夺。</div>';
+      for (var i = 0; i < 猎池.length; i++) h += radio('prey', 猎池[i], esc(猎池[i]), '');
+      if (!猎池.length) h += '<div class="hint">没有人可猎。</div>';
+    }
+    if (我 === '草汁' && s.$物品.草汁在身 === '旅人' && s.$物品.草汁存量 > 0) {
+      h += '<div class="sect">草汁涂门（存量 ' + s.$物品.草汁存量 + ' · 选一处门窗，今夜狼嗅之不碰）</div>';
+      h += radio('door', '旅人', '自己的屋', { k: 'safe', t: '守自己' });
+      for (var a = 0; a < 存活.length; a++) h += radio('door', 存活[a], esc(存活[a]) + ' 的屋', '');
+    }
+    if (我 === '药囊' && s.$物品.药囊在身 === '旅人' && s.$物品.麻沸散已用 === '否') {
+      h += '<div class="sect">麻沸散（一次性 · 整屋沉睡，狼嗅不到活人）</div>';
+      h += radio('anesthesia', '旅人', '自己的屋', { k: 'safe', t: '守自己' });
+      for (var b = 0; b < 存活.length; b++) h += radio('anesthesia', 存活[b], esc(存活[b]) + ' 的屋', '');
+    }
+    if (我 === '铜镜' && s.$物品.铜镜在身 === '旅人') {
+      h += '<div class="sect">铜镜夜验（每夜一人 · 结果只有你知道）</div>';
+      for (var m = 0; m < 存活.length; m++) h += radio('mirror', 存活[m], esc(存活[m]), '');
+    }
+    if (我 === '银匕' && s.$物品.银匕在身 === '旅人') {
+      h += '<div class="sect">银匕</div><label class="opt"><input type="checkbox" id="xy-dagger" checked><span>随身携带（遇袭可搏命 / 留屋会被搜出）</span></label>';
+    }
+    var 可同屋 = 存活.filter(function (n) { return (s.人物[n] && s.人物[n].好感 >= 60); });
+    if (可同屋.length) {
+      h += '<div class="sect">同屋申报（好感 ≥60 才会被接纳 · 风险共担）</div>';
+      for (var r = 0; r < 可同屋.length; r++) h += radio('room', 可同屋[r], esc(可同屋[r]) + '（好感 ' + s.人物[可同屋[r]].好感 + '）', '');
+    } else {
+      h += '<div class="hint">没有人对你的好感足以与你同屋（需 ≥60）。今夜，各自闭门。</div>';
+    }
+    return h;
+  }
+
+  function 取值(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
+
+  function 绑定事件(s, v, 我, 存活) {
+    $('#xy-rfr').off('click').on('click', render);
+    $('#xy-cc-close').off('click').on('click', function () {
+      try { var r = document.getElementById('xy-cc-root'); if (r) { r.remove(); return; } } catch (e) {}
+      try { window.parent.postMessage({ type: 'xy-cc-close' }, '*'); } catch (e) {}
+    });
+    $('#xy-start').off('click').on('click', function () {
+      var el = document.getElementById('xy-start');
+      if (el) { el.disabled = true; el.textContent = '血月升起中…'; }
+      (async function () {
+        try {
+          var 裁判 = await wait裁判();
+          await 裁判.指派();
+          await 推进('夜深了，我躺下，任由困意把我拖进梦里。');
+          setTimeout(render, 1500);
+        } catch (e) {
+          try { if (el) { el.disabled = false; el.textContent = '启动失败：' + (e && e.message || e) + '（点↻重试）'; } } catch (e2) {}
+        }
+      })();
+    });
+    $('#xy-take').off('click').on('click', async function () {
+      try { var 裁判 = await wait裁判(); await 裁判.取物(); }
+      catch (e) { emitEvt('血月-取物', {}); }
+      setTimeout(render, 600);
+    });
+    $('#xy-sleep').off('click').on('click', function () {
+      var 行动 = {
+        狼票: 取值('prey'), 涂门: 取值('door'), 麻沸散: 取值('anesthesia'),
+        镜验: 取值('mirror'), 银匕随身: $('#xy-dagger').is(':checked'), 同屋: 取值('room')
+      };
+      确认弹窗('闭眼入睡', '今夜的行动就此定下。\n夜里的你不会记得这一切。', async function () {
+        try {
+          var 裁判 = await wait裁判();
+          await 裁判.夜结算(行动);
+          await 推进('我依着白日的安排，闩好了门，闭上了眼。');
+          setTimeout(render, 1200);
+        } catch (e) { emitEvt('血月-入睡', 行动); setTimeout(render, 800); }
+      });
+    });
+    $('#xy-vote').off('click').on('click', function () {
+      var 目标 = 取值('vote');
+      if (!目标) { 弹窗('未投票', '你没有选择任何人。'); return; }
+      var 以银 = $('#xy-yin').is(':checked');
+      确认弹窗('处决投票', '你将投票处决 ' + 目标 + '。\n处决不可逆。若是冤案，你是凶手之一。', async function () {
+        try {
+          var 裁判 = await wait裁判();
+          await 裁判.投票处决({ 目标: 目标, 以银: 以银 });
+          await 推进('我把票投给了 ' + 目标 + '，看着她被带上审判台。');
+          setTimeout(render, 1200);
+        } catch (e) { emitEvt('血月-投票', { 目标: 目标, 以银: 以银 }); setTimeout(render, 800); }
+      });
+    });
+    $('#xy-poison').off('click').on('click', function () {
+      var 目标 = 取值('poison');
+      if (!目标) { 弹窗('未选择', '你没有选择目标。'); return; }
+      确认弹窗('下毒', '你将毒杀 ' + 目标 + '。\n无声无息——除了你没人知道是谁下的。\n但死状骗不了验尸的人。', async function () {
+        try {
+          var 裁判 = await wait裁判();
+          await 裁判.下毒('旅人', 目标);
+          await 推进('我在无人注意的时候，把东西下进了 ' + 目标 + ' 的饮食里。');
+          setTimeout(render, 1200);
+        } catch (e) { emitEvt('血月-下毒', { 目标: 目标 }); setTimeout(render, 800); }
+      });
+    });
+    $('#xy-rst').off('click').on('click', function () {
+      确认弹窗('重开一局', '清除所有进度，回到投宿之夜，身份重新洗牌。\n确定？', async function () {
+        try { var 裁判 = await wait裁判(); await 裁判.重开(); }
+        catch (e) { emitEvt('血月-重开', {}); }
+        setTimeout(render, 800);
+      });
+    });
+    $('#xy-actsend').off('click').on('click', function () {
+      var t = $('#xy-act').val();
+      if (!t || !t.trim()) return;
+      $('#xy-act').val('');
+      推进(t.trim());
+    });
+    $('#xy-act').off('keydown').on('keydown', function (e) { if (e.key === 'Enter') $('#xy-actsend').click(); });
+    // HUD → 控制中心（同页注入；脚本没注入入口时的兜底通道）
+    $('#xy-opencc').off('click').on('click', function () { emitEvt('血月-开控制中心', {}); });
+  }
+
+  function 弹窗(标题, 正文) {
+    var m = '<div class="modal-mask show" id="xy-modal"><div class="modal"><h3>' + esc(标题) + '</h3><p>' + esc(正文) + '</p><div class="act-row"><button class="btn" id="xy-mclose">好</button></div></div></div>';
+    $('body').append(m);
+    $('#xy-mclose').on('click', function () { $('#xy-modal').remove(); });
+  }
+  function 确认弹窗(标题, 正文, onOk) {
+    var m = '<div class="modal-mask show" id="xy-modal"><div class="modal"><h3>' + esc(标题) + '</h3><p>' + esc(正文) + '</p><div class="act-row"><button class="btn ghost" id="xy-mno">取消</button><button class="btn primary" id="xy-mok">确定</button></div></div></div>';
+    $('body').append(m);
+    $('#xy-mno').on('click', function () { $('#xy-modal').remove(); });
+    $('#xy-mok').on('click', function () { $('#xy-modal').remove(); onOk(); });
+  }
+
+  // ── 启动（$ 从宿主层找；渲染错误上屏）──
+  var 启动 = function () {
+    try {
+      var $ = getHost$();
+      if (!$) { setTimeout(启动, 300); return; }
+      render();
+    } catch (e) {
+      try { document.getElementById('xueyue-sb').innerHTML = '<div class="err">面板错误：' + esc(e && e.message || e) + '</div>'; } catch (e2) {}
+    }
+  };
+  启动();
+  window.__xyCCRerender = function () { try { render(); } catch (e) {} };
+  // 状态变化自动刷新（防抖）——操作后/新楼层生成后面板自动更新，无需手动 ↻
+  var 刷新计时 = null;
+  function 排定刷新() { if (刷新计时) clearTimeout(刷新计时); 刷新计时 = setTimeout(function () { try { render(); } catch (e) {} }, 700); }
+  ['generation_ended', 'GENERATION_ENDED', 'message_received', 'MESSAGE_RECEIVED'].forEach(function (n) { onEvt(n, 排定刷新); });
+  onEvt('血月-终局', 排定刷新);
+  onEvt('血月-已重开', 排定刷新);
+})();
+</script>
+</body>
+</html>

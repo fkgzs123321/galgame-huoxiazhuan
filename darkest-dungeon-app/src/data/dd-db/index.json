@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-08-10T03:47:12.502Z",
+  "ddRoot": "E:\\SteamLibrary\\steamapps\\common\\DarkestDungeon",
+  "extractor": "extract-dd-data-v3.mjs",
+  "files": {
+    "heroes": 15,
+    "monsters": 254,
+    "trinkets": 490,
+    "buildings": 11,
+    "curios": 60,
+    "provisions": 4,
+    "districts": 15,
+    "quirks": 170,
+    "diseases": 23,
+    "effects": 1215,
+    "campingSkills": 64,
+    "townEvents": 51,
+    "lootTables": 4,
+    "encounterAreas": 7,
+    "raidAi": 165,
+    "startingRoster": 18,
+    "localizationStrings": 10015
+  }
+}

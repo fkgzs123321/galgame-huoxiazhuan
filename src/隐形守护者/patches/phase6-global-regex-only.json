@@ -1,0 +1,11 @@
+[
+  {"op":"replace","path":"/creator_notes","value":"必开：MVU、Zod。角色卡正则：状态栏+变量美化。数据库HTML：酒馆「全局正则」导入 正则/全局/ 三文件，配套正则1须在配套正则2之上。可选：SP·数据库+骰子+SQL模板。建议额外模型解析。"},
+  {"op":"add","path":"/entryManifest/数据库/全局正则导入说明","value":{"path":"世界书/数据库/全局正则导入说明.yaml","abstract":"数据库召回三条全局正则导入顺序","keywords":["全局正则","配套正则1"]}},
+  {"op":"replace","path":"/regex_scripts","value":{
+    "对AI隐藏状态栏":{"id":"a1b2c3d4-e5f6-4a6a-8ebb-bd8a3b7f671f","findRegex":"<StatusPlaceHolderImpl/>","replaceString":"","trimStrings":[],"placement":[2],"disabled":false,"markdownOnly":false,"promptOnly":true,"runOnEdit":true,"substituteRegex":0,"minDepth":null,"maxDepth":null},
+    "状态栏界面":{"id":"b2c3d4e5-f6a7-4057-8964-3192b7903acc","findRegex":"<StatusPlaceHolderImpl\\/>","replace_file":"正则/界面/状态栏.html","trimStrings":[],"placement":[2],"disabled":false,"markdownOnly":true,"promptOnly":false,"runOnEdit":true,"substituteRegex":0,"minDepth":null,"maxDepth":null},
+    "对AI隐藏变量更新":{"id":"c3d4e5f6-a7b8-4450-ac1f-0bfe1d6a4f64","findRegex":"/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi","replaceString":"","trimStrings":[],"placement":[1,2],"disabled":false,"markdownOnly":false,"promptOnly":true,"runOnEdit":false,"substituteRegex":0,"minDepth":null,"maxDepth":null},
+    "变量更新中美化":{"id":"d4e5f6a7-b8c9-46bf-8a69-602d64bbde22","findRegex":"/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi","replace_file":"正则/变量更新中美化.html","trimStrings":[],"placement":[1,2],"disabled":false,"markdownOnly":true,"promptOnly":false,"runOnEdit":false,"substituteRegex":0,"minDepth":null,"maxDepth":null},
+    "变量更新美化":{"id":"e5f6a7b8-c9d0-4929-871f-43d110e5ec76","findRegex":"/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi","replace_file":"正则/变量更新美化.html","trimStrings":[],"placement":[1,2],"disabled":false,"markdownOnly":true,"promptOnly":false,"runOnEdit":false,"substituteRegex":0,"minDepth":null,"maxDepth":null}
+  }}
+]

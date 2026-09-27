@@ -1,0 +1,70 @@
+[
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/离线行动/strategy",
+  "value": {
+   "type": "selective",
+   "keys": [
+    "挂机",
+    "离开",
+    "不在",
+    "离线",
+    "她自己玩",
+    "她没在看"
+   ]
+  }
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/离线行动/keywords",
+  "value": [
+   "挂机",
+   "离开",
+   "不在",
+   "离线"
+  ]
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/边界情况/strategy",
+  "value": {
+   "type": "selective",
+   "keys": [
+    "卡住",
+    "说不清",
+    "死了",
+    "失踪",
+    "没人",
+    "僵住"
+   ]
+  }
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/边界情况/keywords",
+  "value": [
+   "卡住",
+   "说不清",
+   "死了",
+   "失踪",
+   "没人",
+   "僵住"
+  ]
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/扮演准则/文风_母猪中/path"
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/文风_母猪中/contents",
+  "value": [
+   {
+    "content": "<% if (getvar('stat_data.局面.当前选项', { defaults: [] }) || []).length { %>"
+   },
+   {
+    "content": "<% } %>"
+   }
+  ]
+ }
+]

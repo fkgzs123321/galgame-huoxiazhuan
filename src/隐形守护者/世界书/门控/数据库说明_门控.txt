@@ -1,0 +1,5 @@
+@@generate_before
+<%- await getwi(null, 'SQL填表规则') %>
+<%- await getwi(null, '条件模板说明') %>
+<%- await getwi(null, '开局初始化SQL') %>
+<%- await getwi(null, '插件栈与分工') %>

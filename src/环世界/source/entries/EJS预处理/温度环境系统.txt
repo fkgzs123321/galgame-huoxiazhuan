@@ -1,0 +1,290 @@
+@@generate_before
+<%_
+/* 温度环境系统控制器 P1-12
+   读取殖民地温度状态，输出温度规则与行为校验要求 */
+
+/* _hashSeed/_lcgRoll 定义在DDL确定性骰子引擎.txt，此处通过EJS执行顺序保证可用 */
+
+/* WALL_MATERIAL_DB 墙体材料隔热系数 */
+function _wallMaterialDB() {
+  return {
+    '木墙':  { 隔热: 0.3, 造价: '低',   耐久: 100 },
+    '砖墙':  { 隔热: 0.6, 造价: '中',   耐久: 150 },
+    '钢墙':  { 隔热: 0.5, 造价: '中',   耐久: 200 },
+    '石墙':  { 隔热: 0.8, 造价: '高',   耐久: 300 },
+    '铀墙':  { 隔热: 0.9, 造价: '极高', 耐久: 500 }
+  };
+}
+
+/* ROOM_TEMP_FACTORS 室温影响因子
+   外部温度(biome+季节+天气) / 墙体隔热(材料系数×墙壁数) / 暖气设备 / 冷气设备
+   门窗数量(每门-0.1隔热) / 殖民者体温(每人+0.5°C) */
+function _roomTempFactors() {
+  return {
+    外部温度: { 权重: 1.0, 说明: 'biome基础+季节修正+天气修正' },
+    墙体隔热: { 权重: 0.8, 说明: '材料系数×墙壁数-门窗泄漏' },
+    暖气设备: { 权重: 1.0, 说明: '营火/电暖器/地热 累加' },
+    冷气设备: { 权重: 1.0, 说明: '空调/冷风机 累减' },
+    门窗泄漏: { 权重: 0.1, 说明: '每门-0.1隔热系数' },
+    殖民者体温: { 权重: 0.5, 说明: '每人+0.5°C' }
+  };
+}
+
+/* 综合室温计算
+   inside=室内基础温度, outside=外部温度, walls=墙体隔热总系数
+   heater=暖气总功率°C/h, cooler=冷气总功率°C/h, colonists=室内人数 */
+function _roomTemp(inside, outside, walls, heater, cooler, colonists) {
+  var wallInsulation = Number(walls) || 0;
+  var heatGain = Number(heater) || 0;
+  var heatLoss = Number(cooler) || 0;
+  var bodyHeat = (Number(colonists) || 0) * 0.5;
+  /* 墙体隔热让室内向外部靠拢的速度放缓，温差衰减 = (1 - 隔热系数) */
+  var tempDiff = outside - inside;
+  var leakedTemp = tempDiff * (1 - Math.min(1, Math.max(0, wallInsulation)));
+  var roomTemp = inside + leakedTemp + heatGain - heatLoss + bodyHeat;
+  return Math.round(roomTemp * 10) / 10;
+}
+
+/* 失温判定 (temp<5°C时每小时HP-1~-5)
+   colonist=殖民者对象, temp=暴露温度, duration=暴露小时数 */
+function _hypothermia(colonist, temp, duration) {
+  var t = Number(temp) || 20;
+  var d = Number(duration) || 0;
+  if (t >= 5) { return { risk: false, note: '温度安全' }; }
+  /* 越冷越严重: 0~5°C -> -1/h, -5~0°C -> -3/h, <-5°C -> -5/h */
+  var hpLossPerHour = 0;
+  var severity = '轻微';
+  if (t >= 0 && t < 5) { hpLossPerHour = 1; severity = '轻微'; }
+  else if (t >= -5 && t < 0) { hpLossPerHour = 3; severity = '中度'; }
+  else if (t < -5) { hpLossPerHour = 5; severity = '严重'; }
+  /* 衣物保温抵消 */
+  var insulation = _insulationValue(colonist.衣物);
+  var effectiveLoss = Math.max(0, hpLossPerHour - Math.floor(insulation / 5));
+  var totalLoss = effectiveLoss * d;
+  return {
+    risk: true,
+    severity: severity,
+    hpLossPerHour: effectiveLoss,
+    totalHpLoss: totalLoss,
+    duration: d,
+    note: '失温(' + severity + ') ' + t + '°C 暴露' + d + 'h HP-' + totalLoss
+  };
+}
+
+/* 中暑判定 (temp>35°C时每小时HP-1~-5)
+   colonist=殖民者对象, temp=暴露温度, duration=暴露小时数 */
+function _heatstroke(colonist, temp, duration) {
+  var t = Number(temp) || 20;
+  var d = Number(duration) || 0;
+  if (t <= 35) { return { risk: false, note: '温度安全' }; }
+  /* 越热越严重: 35~40°C -> -1/h, 40~45°C -> -3/h, >45°C -> -5/h */
+  var hpLossPerHour = 0;
+  var severity = '轻微';
+  if (t > 35 && t <= 40) { hpLossPerHour = 1; severity = '轻微'; }
+  else if (t > 40 && t <= 45) { hpLossPerHour = 3; severity = '中度'; }
+  else if (t > 45) { hpLossPerHour = 5; severity = '严重'; }
+  /* 疲劳影响体温调节 */
+  var fatigue = Number(colonist.疲劳) || 0;
+  var fatiguePenalty = fatigue > 80 ? 1 : 0;
+  var effectiveLoss = hpLossPerHour + fatiguePenalty;
+  var totalLoss = effectiveLoss * d;
+  return {
+    risk: true,
+    severity: severity,
+    hpLossPerHour: effectiveLoss,
+    totalHpLoss: totalLoss,
+    duration: d,
+    note: '中暑(' + severity + ') ' + t + '°C 暴露' + d + 'h HP-' + totalLoss
+  };
+}
+
+/* 舒适温度区间 (基于衣物+特质)
+   默认 16~28°C，衣物保温值扩展下限，防热特质扩展上限 */
+function _comfortTemp(colonist) {
+  var lower = 16;
+  var upper = 28;
+  var insulation = _insulationValue(colonist.衣物);
+  /* 每点保温值扩展下限1°C */
+  lower = lower - insulation;
+  /* 寒冷特质扩展上限+5°C, 耐热特质扩展上限+10°C */
+  if (colonist.特质 === '耐热') { upper = upper + 10; }
+  if (colonist.特质 === '寒血') { upper = upper + 5; lower = lower - 3; }
+  if (colonist.特质 === '温暖') { lower = lower - 5; upper = upper + 3; }
+  return { lower: lower, upper: upper, range: lower + '~' + upper + '°C' };
+}
+
+/* 衣物保温值 (布衣+2 / 皮衣+5 / 防寒服+10) */
+function _insulationValue(clothing) {
+  if (!clothing) { return 0; }
+  var total = 0;
+  /* clothing可为字符串或数组 */
+  if (typeof clothing === 'string') {
+    var map = { '布衣': 2, '皮衣': 5, '防寒服': 10, '裸体': 0 };
+    return map[clothing] || 0;
+  }
+  if (Array.isArray(clothing)) {
+    var db = { '布衣': 2, '皮衣': 5, '防寒服': 10, '裸体': 0 };
+    for (var i = 0; i < clothing.length; i++) {
+      total += db[clothing[i]] || 0;
+    }
+  }
+  return total;
+}
+
+/* 暖气功率 (营火+5°C/h, 电暖器+10°C/h, 地热+20°C/h)
+   device=设备类型, fuel=燃料/电力是否充足 */
+function _heaterPower(device, fuel) {
+  var power = 0;
+  if (device === '营火') { power = 5; }
+  else if (device === '电暖器') { power = 10; }
+  else if (device === '地热') { power = 20; }
+  /* 燃料/电力不足则功率减半 */
+  if (!fuel) { power = Math.floor(power / 2); }
+  return { power: power, device: device, fueled: !!fuel };
+}
+
+/* 冷气功率 (空调-8°C/h, 冷风机-15°C/h)
+   device=设备类型, electricity=电力是否充足 */
+function _coolerPower(device, electricity) {
+  var power = 0;
+  if (device === '空调') { power = -8; }
+  else if (device === '冷风机') { power = -15; }
+  /* 电力不足则功率减半 */
+  if (!electricity) { power = Math.floor(power / 2); }
+  return { power: power, device: device, powered: !!electricity };
+}
+
+var outsideTemp = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+var season = getvar('stat_data.殖民地.季节', { scope: 'local', defaults: '春' }) || '春';
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+
+var wallDB = _wallMaterialDB();
+var tempFactors = _roomTempFactors();
+
+/* 季节修正 */
+var seasonMod = 0;
+if (season === '春') { seasonMod = -2; }
+else if (season === '夏') { seasonMod = 8; }
+else if (season === '秋') { seasonMod = 0; }
+else if (season === '冬') { seasonMod = -15; }
+
+/* biome基础温度修正 */
+var biomeMod = 0;
+if (biome === '热带雨林') { biomeMod = 10; }
+else if (biome === '温带森林') { biomeMod = 0; }
+else if (biome === '沙漠') { biomeMod = 15; }
+else if (biome === '冻原') { biomeMod = -20; }
+else if (biome === '极地') { biomeMod = -25; }
+else if (biome === '灌木丛') { biomeMod = 5; }
+else if (biome === '干草原') { biomeMod = -5; }
+else if (biome === '海洋') { biomeMod = -3; }
+
+var effectiveOutsideTemp = outsideTemp + seasonMod + biomeMod;
+_%>
+<温度环境系统就绪>
+[当前温度状态]
+游戏日: <%= gameDay %> / 时段: <%= timeSlot %> / 季节: <%= season %>
+生物群落: <%= biome %> (修正 <%= biomeMod > 0 ? '+' : '' %><%= biomeMod %>°C)
+外部环境温度: <%= outsideTemp %>°C
+季节修正: <%= seasonMod > 0 ? '+' : '' %><%= seasonMod %>°C
+有效外部温度: <%= effectiveOutsideTemp %>°C
+
+[WALL_MATERIAL_DB 墙体材料隔热系数]
+<%_ for (var k in wallDB) { _%>
+- <%= k %>: 隔热<%= wallDB[k].隔热 %> / 造价<%= wallDB[k].造价 %> / 耐久<%= wallDB[k].耐久 %>
+<%_ } _%>
+
+[ROOM_TEMP_FACTORS 室温影响因子]
+<%_ for (var f in tempFactors) { _%>
+- <%= f %>: 权重<%= tempFactors[f].权重 %> (<%= tempFactors[f].说明 %>)
+<%_ } _%>
+
+[室温平衡公式]
+室内温度 = 室内基础 + (外部-室内)×(1-隔热系数) + 暖气 - 冷气 + 人数×0.5
+墙体隔热系数 = Sigma(材料隔热 × 墙壁数) - 门窗数 × 0.1
+隔热系数范围: 0(完全通透) ~ 1(完全隔热)
+
+[暖气设备表]
+- 营火: +5°C/h (需木材燃料，成本5木材/h)
+- 电暖器: +10°C/h (耗电200W)
+- 地热: +20°C/h (需地热蒸汽泉，恒定输出)
+燃料/电力不足时功率减半
+
+[冷气设备表]
+- 空调: -8°C/h (耗电200W，可将热量排至室外)
+- 冷风机: -15°C/h (耗电300W，需通风管路)
+电力不足时功率减半
+
+[舒适温度区间]
+默认: 16~28°C
+衣物保温值扩展下限 (布衣+2 / 皮衣+5 / 防寒服+10)
+耐热特质扩展上限+10°C / 寒血特质下限-3上限+5 / 温暖特质下限-5上限+3
+低于下限: 失温风险 / 高于上限: 中暑风险
+
+[失温判定规则]
+触发条件: 暴露温度 < 5°C
+- 0~5°C: 轻度失温 HP-1/h
+- -5~0°C: 中度失温 HP-3/h
+- <-5°C: 严重失温 HP-5/h
+衣物保温值每5点抵消1点/h损失
+影响部位: 头部/躯干/左臂/右臂/左腿/右腿 (随机分配HP损失)
+疲劳>80时体温调节能力下降
+
+[中暑判定规则]
+触发条件: 暴露温度 > 35°C
+- 35~40°C: 轻度中暑 HP-1/h
+- 40~45°C: 中度中暑 HP-3/h
+- >45°C: 严重中暑 HP-5/h
+疲劳>80时额外 HP-1/h (体温调节负担)
+影响部位: 头部/躯干/左臂/右臂/左腿/右腿 (随机分配HP损失)
+
+[行为校验要求]
+温度相关行为(建造营火/安装空调/搭建墙体/更换衣物/开启地热)必须输出行为校验块:
+- 行为类型: 建造/拆除/切换/穿戴
+- 执行者: 殖民者姓名 + 建设技能等级
+- 目标设施: 设施名称/位置
+- 输入材料: 材料清单(查BUILDING_DB)
+- 耗时: 基础耗时 / (1 + 建设技能x0.08)
+- 温度变化: 旧室温 -> 新室温
+- 隔热变化: 旧系数 -> 新系数
+</温度环境系统就绪>
+
+<温度环境校验>
+行为名: 计算室温
+执行者: 系统
+目标: 营地住房
+输入: 外部温度=-5°C, 木墙×4(隔热0.3), 营火×1(+5°C/h), 人数=2
+计算: 室内基础=15°C, 泄漏=(−5−15)×(1−0.3)=−14, 营火+5, 人体+1
+输出: 室内温度=15−14+5+1=7°C
+耗时: 即时
+判定: 失温风险(温度<5°C触发临界，7°C暂安全但接近)
+修正: 木墙隔热0.3, 营火+5°C/h, 人体+0.5°C/人
+</温度环境校验>
+
+<温度环境校验>
+行为名: 失温判定
+执行者: 系统
+目标: 殖民者(裸体, 防寒服未穿戴)
+输入: 暴露温度=-8°C, 持续3h, 衣物=裸体(保温0)
+计算: 严重失温(-8°C<-5°C) HP-5/h, 衣物抵消0, 3h总损失HP-15
+输出: 失温(严重) HP-15, 影响部位随机分配
+耗时: 3h
+判定: 严重失温, 需立即转移至温暖室内或穿戴防寒服
+修正: 防寒服保温+10可完全抵消(-5/h < +10/5=2)
+</温度环境校验>
+
+<温度环境校验>
+行为名: 中暑判定
+执行者: 系统
+目标: 殖民者(皮衣, 疲劳90)
+输入: 暴露温度=42°C, 持续2h, 衣物=皮衣(保温5), 疲劳=90
+计算: 中度中暑(40<42≤45) HP-3/h, 疲劳>80额外HP-1/h, 2h总损失HP-8
+输出: 中暑(中度) HP-8, 影响部位随机分配
+耗时: 2h
+判定: 中度中暑, 需转移至空调室内或脱去衣物
+修正: 皮衣保温值影响失温而非中暑, 疲劳加剧中暑
+</温度环境校验>
+
+[温度环境系统 · 系统控制器]

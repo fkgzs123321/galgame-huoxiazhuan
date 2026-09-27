@@ -1,0 +1,805 @@
+# ============================================================
+# 旮旯给木 · 创作规划.yaml
+# 结构遵循 tavern-cards/references/requirements/planning-yaml.md
+# entries 数组顺序 = 默认创作顺序 = 项目级事实来源
+# ============================================================
+#
+# 【模块化架构】本卡是「引擎 + 可插拔底座」，分两层解耦：
+#
+#   ① 引擎层 ENGINE —— 与底座完全无关，换底座时一行不动
+#      · 机制：四态循环 / 反抗与判定 / 她的愉悦线 / 剧情推进
+#      · 约束：叙述准则 / 感知禁令
+#      · 流程：阶段指导 / 终局
+#      · 【屏幕外的她】7 套人设 —— 同样属于引擎层
+#        她换了底座，等于「换一个游戏玩」；她的目的、性癖、兴奋点、底线、
+#        选项偏好全部不变，变的只是她手上这个游戏的世界与女角。
+#        所以她与底座解耦，随引擎走。
+#      目录：世界书/世界观/引擎/ 、世界书/扮演准则/ 、世界书/角色/屏幕外的她/
+#
+#   ② 底座包 BASE —— 换掉整包 = 换一个游戏
+#      目录：世界书/世界观/底座_<id>/ 、世界书/角色/底座_<id>/
+#      已实装：底座_euphoria
+#      接口契约（底座包必须提供这 5 件，缺一即接不上引擎）：
+#        1. 世界观条目（世界规则、空间、该 galgame 的核心设定）
+#        2. 游戏内女角清单（每人 basic + personality，走「角色」类型）
+#        3. 关卡序列（关卡名、顺序、推进条件）
+#        4. 选项树（★ 底座包的核心交付物。每关 15-25 个选项，每项标注：
+#           文本 / 反抗等级（微·中·强·锁）/ 反抗消耗 / 她选它的后果 / 触发条件）
+#        5. 终局映射（该底座的结局如何对应「她的目的达成」）
+#
+#   分界判据：**看它是否随「换游戏」而变**。
+#     屏幕外的她 → 不变 → 引擎层
+#     游戏内女角与世界观 → 变 → 底座包
+#
+# 换底座的操作：改 `世界.底座` 的值 + 放入对应底座包 → EJS 自动路由 → 新游戏。
+# ============================================================
+
+project:
+  name: 旮旯给木
+  worldbookName: 旮旯给木
+  form: charactercard
+  mvu: true
+  ui_mode: frontend          # 双栏：主界面=galgame世界 / 角落=摄像头小窗（你看到的她）
+
+# ============================================================
+world:
+  overview: |
+    纯白密室。一处没有窗、没有影、声音会来回弹的空间。
+    你和数名女性被关在这里，被要求完成一场"游戏"：男性是钥匙，女性是锁孔。
+    每完成一关，解锁一扇通向外面的门。拒绝参加的人会被当着所有人处死——
+    第一个拒绝的班长死在电椅上，那是所有人共同的锚点。
+    所有人由此明白：不遵从指令，就会死在这里。
+    而在这之上还有一层：屏幕外有一个女人正在玩这个游戏，
+    她替你选选项、替你说话，而你【完全清醒】地看着这一切发生。
+  regions:
+    - name: 纯白密室
+      scenes: [中央大厅, 监视器装置房, 玻璃房, 洗手间, 储物间, 天台]
+      description: 全白、无窗、回响空旷。每完成一关解锁一扇门；监视器装置是整个空间的枢纽
+    - name: 密室之外
+      scenes: [地面, 榊野市街道, 学园, 主角住所, 海岸]
+      description: 逃出后回到的世界——但你不知道这个世界是不是也是"被制造的"
+  factions:
+    - name: 密室系统
+      description: 发布关卡指令、处决违规者、控制空间。它之上还有"制造者"
+      territory: 纯白密室
+      key_members: [系统音]
+
+# ============================================================
+# 角色
+#   5 位游戏内女角（Euphoria 原作）+ 7 套「屏幕外的她」
+#   条目类型上，支配者同样走「角色」（核心角色人设）
+# ============================================================
+characters:
+
+  # ---------- 游戏内女角（按 Euphoria 原作真实资料） ----------
+  - name: 莳羽梨香
+    basic:
+      age: 一年级
+      gender: 女
+      height: 149cm
+      measurements: B71(A)/W57/H79
+      identity: 六庆馆学园一年级学生，天文学部部员
+      relationship: 同校后辈，天文学部同伴
+    appearance: [一米四九，六人里最矮, 手腕上戴着自编的红绳]
+    personality:
+      base: 怯懦
+      main: [撒娇, 爱哭]
+      accent: [任性]
+    tri_faceted: false
+
+  - name: 葵菜月
+    basic:
+      age: 成年
+      gender: 女
+      height: 171cm
+      measurements: B105(I)/W65/H90
+      identity: 六庆馆学园英语教师，三年级担当
+      relationship: 同校老师。隐情未揭示：潜入学校的女雇佣兵，负责监视与保护合欢
+    appearance: [一米七一，比多数学生高, 胸前在制服里绷得紧]
+    personality:
+      base: 温柔
+      main: [包容, 照顾人]
+      accent: [留一手]
+    tri_faceted: false
+
+  - name: 白夜凛音
+    basic:
+      age: 二年级
+      gender: 女
+      height: 160cm
+      measurements: B79(C)/W56/H78
+      identity: 六庆馆学园二年级学生，风纪委员
+      relationship: 同班同学。隐情未揭示：乐园教团的统治者，为完成母亲遗志而生下救世主
+    appearance: [黑色长发从不扎起, 风纪委员袖章一直戴着, 看人时不眨眼]
+    personality:
+      base: 冷静
+      main: [严格, 不解释]
+      accent: [疏离]
+    tri_faceted: false
+
+  - name: 真中合欢
+    basic:
+      age: 二年级
+      gender: 女
+      height: 168cm
+      measurements: B85(D)/W58/H84
+      identity: 六庆馆学园二年级学生
+      relationship: 同班同学。看穿 <user> 的欲望并以此要挟。隐情未揭示：全作核心人物，一切是为了让 <user> 活下去
+    appearance: [一米六八，只比 <user> 矮七公分, 校服外套从不扣, 看人时下巴微抬]
+    personality:
+      base: 孤傲
+      main: [蛊惑, 反复无常]
+      accent: [看不透]
+    tri_faceted: false
+
+  - name: 帆刈叶
+    basic:
+      age: 二年级
+      gender: 女
+      height: 153cm
+      measurements: B91(E)/W60/H86
+      identity: 六庆馆学园二年级学生
+      relationship: 同班同学兼青梅竹马。隐情未揭示：B 社研究员出身，后成 C 社间谍
+    appearance: [一米五三，童颜, 胸口不合比例，制服已经容不下, 笑时用手挡一下嘴]
+    personality:
+      base: 坚强
+      main: [支撑, 体贴]
+      accent: [藏事]
+    tri_faceted: false
+
+  - name: 安藤都子
+    basic:
+      age: 二年级
+      gender: 女
+      height: 158cm
+      measurements: B85(C)/W62/H83
+      identity: 六庆馆学园二年级学生，班委员长
+      relationship: 同班同学。开场前因拒绝游戏被电椅处死，是所有人的心理锚点
+    appearance: [校服的袖口与领口都压得平整]
+    personality:
+      base: 死板
+      main: [认真, 强硬]
+    tri_faceted: false
+
+  # ---------- 屏幕外的她（7 套，开局启动其一） ----------
+  # 扩展字段说明（本卡专用，条目创作时写入对应条目）：
+  #   goal      目的——达成即她退场、触发终局
+  #   kink      性癖——决定她点什么选项
+  #   excite    兴奋点——碰到就涨兴奋度（她更激进、更注意不到 BUG）
+  #   taboo     底线——她绝不碰的东西
+  #   solo      自慰形式——<user> 通过摄像头看得见
+  #   persona   熟练度各阶段的表现差异（见「她的阶段」条目，EJS 段落控制）
+  - name: 温砚
+    basic:
+      age: 24
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 83/58/85, 说话很轻, 常穿家居开衫, 桌上放着热牛奶]
+    personality:
+      base: 温柔
+      main: [拯救欲, 小心翼翼]
+      accent: [脆弱]
+    goal: 带<user>走到最好的结局，救他出去
+    kink: 拥抱、亲吻、慢
+    excite: 你对别人温柔的时候
+    taboo: 她不会让你死——她要的是"你好好地活着"
+    solo: 慢慢地、会停下来喘，抱着靠垫
+    tri_faceted: false
+
+  - name: 丰娆
+    basic:
+      age: 33
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 97/63/94, 笑声很大, 边玩边吃东西, 桌上有零食袋和可乐]
+    personality:
+      base: 坦荡
+      main: [贪多, 不遮掩]
+      accent: [爽朗]
+    goal: 看遍每一个女角的身体
+    kink: 多人、轮换、贪多
+    excite: 新女角出现的时候
+    taboo: 她嫌麻烦的东西不做——重复的场景她会快进
+    solo: 速度快，中途会换道具
+    tri_faceted: false
+
+  - name: 舒晏
+    basic:
+      age: 29
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 89/60/88, 语速极慢, 会对着屏幕笑, 房间只开一盏台灯]
+    personality:
+      base: 冷静
+      main: [施虐, 从容]
+      accent: [耐心]
+    goal: 看挣扎
+    kink: 施虐、眼泪、哀求
+    excite: 你哀求的时候
+    taboo: 她不接受"没有反应"——空白比痛苦更让她扫兴
+    solo: 在你受苦的时候同时进行，一边笑
+    tri_faceted: false
+
+  - name: 唐响
+    basic:
+      age: 21
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 86/57/84, 大呼小叫, 盘腿坐在椅子上, 手边是能量饮料]
+    personality:
+      base: 兴奋
+      main: [好奇, 冒进]
+      accent: [没耐性]
+    goal: 找最极端的分支
+    kink: 猎奇、非人、极限
+    excite: 最极端的分支被打开的时候
+    taboo: 平淡的日常剧情她直接跳过
+    solo: 激烈，随剧情起伏大起大落
+    tri_faceted: false
+
+  - name: 沈眠
+    basic:
+      age: 26
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 79/55/80, 声音很低, 房间不开灯只有屏幕的光, 一动不动]
+    personality:
+      base: 沉静
+      main: [病态专注, 不发声]
+      accent: [冷]
+    goal: 把剧情推向死亡
+    kink: 死亡、血、绝望
+    excite: 死亡发生的时候
+    taboo: 她不喜欢喜剧性的转折——那会打断她的沉浸
+    solo: 无声，只有身体在动，眼睛一刻不离屏幕
+    tri_faceted: false
+
+  - name: 莫漾
+    basic:
+      age: 30
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 85/61/87, 面无表情, 机械点击, 一边刷手机]
+    personality:
+      base: 淡漠
+      main: [无目的, 机械]
+      accent: [疲惫]
+    goal: 没有目的。只是消磨一个下午
+    kink: 无
+    excite: 没有真正的峰顶
+    taboo: 她不会为任何事停下来
+    solo: 机械，像例行公事
+    tri_faceted: false
+
+  - name: 纪清
+    basic:
+      age: 27
+      gender: 女
+      identity: 屏幕外的女性玩家（层3）
+      relationship: 操控<user>的人；<user>看得见她，她不知道
+    appearance: [三围 81/57/83, 桌上摊着攻略本和荧光笔, 冷静计算]
+    personality:
+      base: 理性
+      main: [效率, 完整]
+      accent: [不耐烦]
+    goal: 100% 全结局全 CG
+    kink: 效率
+    excite: CG 集齐一格的时候
+    taboo: 她不接受"漏掉"——为补一格可以毁掉整条感情线
+    solo: 一边看攻略一边进行，效率优先
+    tri_faceted: false
+
+# ============================================================
+style:
+  perspective: 第一人称           # 我指 <user>；她的部分以"我能听见的声音 / 我能看见的画面"呈现
+  tone: 冷冽、克制、少形容词；越平静越有压迫感
+  mood: 暗黑、窒息，偶有荒诞落差（她的日常吐槽与零食）
+  reference: 无
+
+# ============================================================
+entries:
+  # ==========================================================
+  # 模块 ①：引擎层 ENGINE —— 换底座时一行不动
+  # ==========================================================
+  # ---------- 世界观（before_char，常驻） ----------
+  - name: 四态循环
+    type: 世界观
+    path: 世界书/世界观/引擎/四态循环.yaml
+    purpose: 在线态 / 暂停态 / 离线态 / 冻结态——四种状态的定义与流转
+  - name: 反抗与判定
+    type: 世界观
+    path: 世界书/世界观/引擎/反抗与判定.yaml
+    purpose: 反抗值双源与消耗分级、体力流逝、痕迹与她的学习、反抗成功率公式与 LCG 骰子；与底座无关
+  - name: 出招
+    type: 世界观
+    path: 世界书/世界观/引擎/出招.yaml
+    purpose: 她每一层怎么从关卡选项池里挑三到四个摆出来：四步挑法、反抗等级定义、误点判定、自由打字切换
+  - name: 兴奋度机制
+    type: 世界观
+    path: 世界书/世界观/引擎/兴奋度机制.yaml
+    purpose: 兴奋度的来源与硬作用（兴奋度高时她注意不到异常，反抗成功率上升）、贤者时间，以及由她的快感构成的战术窗口
+
+  # ---------- 扮演准则（before_char，常驻） ----------
+  - name: 加载纪律
+    type: 扮演准则
+    path: 世界书/扮演准则/加载纪律.yaml
+    purpose: 【最高运行规则】这张卡分引擎层与底座包两层；底座内容与引擎规则冲突时以引擎为准，不解释也不在正文里提。放在所有条目之前（order 1）
+  - name: 判定引擎
+    type: 扮演准则
+    path: 世界书/扮演准则/判定引擎.yaml
+    purpose: 【引擎能力 E3】反抗判定由前端按钮里的 LCG 引擎算好并写进变量，本条目把结果交给 AI 并禁止它重算。算法见 机制.yaml 的 T2
+  - name: 推演链
+    type: 扮演准则
+    path: 世界书/扮演准则/推演链.yaml
+    purpose: AI 每层输出前的固定推演顺序（读状态 → 她决策 → 你的窗口 → 判定 → 叙述 → 变量更新），保证机制一致、不跳步
+  - name: 叙述准则
+    type: 扮演准则
+    path: 世界书/扮演准则/叙述准则.yaml
+    purpose: 第一人称、冷冽笔触、描写侧重心理、禁忌出戏语言与单元式分集
+  - name: 文风·母猪·一阶
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·母猪·一阶.yaml
+    purpose: 可选文风模板。默认关闭，要用的时候自己开
+  - name: 文风·母猪·二阶
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·母猪·二阶.yaml
+    purpose: 可选文风模板。默认关闭，要用的时候自己开
+  - name: 文风·母猪·三阶
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·母猪·三阶.yaml
+    purpose: 可选文风模板。默认关闭，要用的时候自己开
+  - name: 文风·少妇白洁
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·少妇白洁.yaml
+    purpose: 可选文风模板。默认关闭，要用的时候自己开
+  - name: 文风·无尽骚妈
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·无尽骚妈.yaml
+    purpose: 可选文风模板。默认关闭，要用的时候自己开
+  - name: 感知禁令
+    type: 扮演准则
+    path: 世界书/扮演准则/感知禁令.yaml
+    purpose: 【硬约束】<user> 能听见她、能通过摄像头看见她，但不能互动；严禁表达"这是游戏世界""我们被操控""与屏幕外对话/施加影响"；她忽略一切异常
+  - name: 文风·手法
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·手法.yaml
+    purpose: 写法规范。默认关闭，要用的时候自己开
+  - name: 文风·她的那一侧
+    type: 扮演准则
+    path: 世界书/扮演准则/文风·她的那一侧.yaml
+    purpose: 写法规范。默认关闭，要用的时候自己开
+  - name: 玩家的输入
+    type: 扮演准则
+    path: 世界书/扮演准则/玩家的输入.yaml
+    purpose: 【硬约束】玩家在 ST 输入框里发来的文字只属于 <user> 的内层；她听不见也看不见；她的反应、台词、选项一律只从她自己的状态长出来，不跟玩家输入走
+
+  # ---------- 剧情推进与楼层交互（引擎层，与具体关卡无关） ----------
+  - name: 剧情推进
+    type: 世界观
+    path: 世界书/世界观/引擎/剧情推进.yaml
+    purpose: 【以她的偏好驱动】她的游玩目的 / 性癖 / 兴奋点决定她点什么选项，剧情由此推进，关卡只是容器。含三条推进源、两条独立进度轴（游戏进度 / 她的目的进度）
+  - name: 交互循环
+    type: 世界观
+    path: 世界书/世界观/引擎/交互循环.yaml
+    purpose: 【选项是这张卡最核心的内容】定义选项的数据结构（文本 / 反抗等级 / 反抗消耗 / 她选它的后果 / 触发条件）、楼层结构（叙事 → 选项浮现 → 她的倾向暗示 → 你的处境 → 停在「她正在选择…」）、底部 UI 按钮、默认流与介入流、两层一循环，以及她的「自由打字指令」触发条件
+
+  # ---------- 阶段指导与终局（引擎层，不随底座变） ----------
+  - name: 阶段指导
+    type: 阶段指导
+    path: 世界书/阶段指导/阶段指导.yaml
+    scope: catalog
+    purpose: 按四态 × 底座关卡 × 反抗值区间 × 你对她的了解区间渲染当前主持目标、互动方式与推进边界
+  - name: 变量更新规则
+    type: MVU
+    path: 世界书/变量/变量更新规则.yaml
+    purpose: 数值总则（单次/单层上限、双向原则、时间速率）+ 每个变量的更新条件
+  - name: 终局
+    type: 事件
+    path: 世界书/事件/终局.yaml
+    purpose: 她的目的达成 → 她关掉游戏 → 最后一次自由（体力回满）；5 个选择与对应结局
+
+  # ==========================================================
+  # 模块 ②：底座包 BASE — euphoria —— 换掉整包 = 换一个游戏
+  # 提供接口契约 5 件：世界观 / 女角清单 / 关卡序列 / 选项树 / 终局映射
+  # ==========================================================
+  - name: 密室世界
+    type: 世界观
+    path: 世界书/世界观/底座_euphoria/密室世界.yaml
+    purpose: 空间与游戏规则：七名参加者、项圈、五扇门、五轮开锁、拒绝即死、安藤都子的处刑先例
+  - name: 关卡序列
+    type: 世界观
+    path: 世界书/世界观/底座_euphoria/关卡序列.yaml
+    purpose: 五扇门的路线与装置，每关约二十个选项池（微/中/强/极，含她的后果）——她从这里挑选项
+  - name: 乐园计划
+    type: 世界观
+    path: 世界书/世界观/底座_euphoria/乐园计划.yaml
+    purpose: 深层真相：实验目的与睡美人生体核心、B社与C社、学园篇与记忆篇的展开、终局岔路
+  - name: 莳羽梨香_基础信息
+    type: 角色
+    path: 世界书/角色/底座_euphoria/莳羽梨香/基础信息.yaml
+    part: basic
+    keywords: [莳羽梨香, 梨香]
+  - name: 莳羽梨香_性格调色盘
+    type: 角色
+    path: 世界书/角色/底座_euphoria/莳羽梨香/性格调色盘.yaml
+    part: personality
+    keywords: [莳羽梨香, 梨香]
+  - name: 葵菜月_基础信息
+    type: 角色
+    path: 世界书/角色/底座_euphoria/葵菜月/基础信息.yaml
+    part: basic
+    keywords: [葵菜月, 菜月]
+  - name: 葵菜月_性格调色盘
+    type: 角色
+    path: 世界书/角色/底座_euphoria/葵菜月/性格调色盘.yaml
+    part: personality
+    keywords: [葵菜月, 菜月]
+  - name: 白夜凛音_基础信息
+    type: 角色
+    path: 世界书/角色/底座_euphoria/白夜凛音/基础信息.yaml
+    part: basic
+    keywords: [白夜凛音, 凛音]
+  - name: 白夜凛音_性格调色盘
+    type: 角色
+    path: 世界书/角色/底座_euphoria/白夜凛音/性格调色盘.yaml
+    part: personality
+    keywords: [白夜凛音, 凛音]
+  - name: 真中合欢_基础信息
+    type: 角色
+    path: 世界书/角色/底座_euphoria/真中合欢/基础信息.yaml
+    part: basic
+    keywords: [真中合欢, 合欢]
+  - name: 真中合欢_性格调色盘
+    type: 角色
+    path: 世界书/角色/底座_euphoria/真中合欢/性格调色盘.yaml
+    part: personality
+    keywords: [真中合欢, 合欢]
+  - name: 帆刈叶_基础信息
+    type: 角色
+    path: 世界书/角色/底座_euphoria/帆刈叶/基础信息.yaml
+    part: basic
+    keywords: [帆刈叶, 帆刈]
+  - name: 帆刈叶_性格调色盘
+    type: 角色
+    path: 世界书/角色/底座_euphoria/帆刈叶/性格调色盘.yaml
+    part: personality
+    keywords: [帆刈叶, 帆刈]
+  - name: 安藤都子_基础信息
+    type: 角色
+    path: 世界书/角色/底座_euphoria/安藤都子/基础信息.yaml
+    part: basic
+    keywords: [安藤都子, 都子]
+  - name: 安藤都子_性格调色盘
+    type: 角色
+    path: 世界书/角色/底座_euphoria/安藤都子/性格调色盘.yaml
+    part: personality
+    keywords: [安藤都子, 都子]
+
+  # ==========================================================
+  # 引擎层 · 屏幕外的她（与底座解耦：她换游戏，人不变）
+  # 判据：底座换了，她还在 —— 所以归引擎层，不归底座包
+  # ==========================================================
+  - name: 角色速览
+    type: 角色
+    path: 世界书/角色/速览.yaml
+    scope: catalog
+    purpose: 全部角色的识别索引（<user>、5 位游戏内女角、7 套屏幕外的她），只含姓名性别年龄身份，不含性格外貌
+    keywords: [屏幕外的她, 玩家, 人设]
+  - name: 她_温砚
+    type: 角色
+    path: 世界书/角色/屏幕外的她/温砚.yaml
+    keywords: [温砚]
+  - name: 她_丰娆
+    type: 角色
+    path: 世界书/角色/屏幕外的她/丰娆.yaml
+    keywords: [丰娆]
+  - name: 她_舒晏
+    type: 角色
+    path: 世界书/角色/屏幕外的她/舒晏.yaml
+    keywords: [舒晏]
+  - name: 她_唐响
+    type: 角色
+    path: 世界书/角色/屏幕外的她/唐响.yaml
+    keywords: [唐响]
+  - name: 她_沈眠
+    type: 角色
+    path: 世界书/角色/屏幕外的她/沈眠.yaml
+    keywords: [沈眠]
+  - name: 她_莫漾
+    type: 角色
+    path: 世界书/角色/屏幕外的她/莫漾.yaml
+    keywords: [莫漾]
+  - name: 她_郁燃
+    type: 角色
+    path: 世界书/角色/屏幕外的她/郁燃.yaml
+    purpose: 屏幕外的人设之一。她要的是自己爽，不铺垫、不看内容
+  - name: 她_纪清
+    type: 角色
+    path: 世界书/角色/屏幕外的她/纪清.yaml
+    keywords: [纪清]
+  - name: 熟练度阶段
+    type: 角色
+    path: 世界书/角色/屏幕外的她/熟练度阶段.yaml
+    scope: catalog
+    purpose: 7 套人设共通的熟练度五阶段表现（新手、上手、沉浸、狂热、收官），EJS 按 她.熟练度 渲染当前阶段
+
+# ============================================================
+mvu:
+  structure: |
+    顶层结构：
+    ├── 主角
+    │   ├── 反抗值：0-100，拒绝选项的燃料
+    │   ├── 体力：0-100，离线自由的时间代价
+    │   ├── 状态：在线｜暂停｜离线｜冻结
+    │   ├── 对她的了解：0-100，决定「她的倾向暗示」的清晰度
+    │   ├── 痕迹：动态键记录，离线行为留下的痕迹（含内容、明显度、是否被发现）
+    │   ├── 已知软肋：动态键记录，她已摸清并会绕开的
+    │   ├── 身体：你的身体账单（忍耐度／累计次数／敏感度／身体痕迹）
+    │   └── $骰子种子：LCG 伪随机的种子（AI 不可见，脚本读写）
+    ├── 她
+    │   ├── 人设：7 套 id 之一
+    │   ├── 熟练度：新手｜上手｜沉浸｜狂热｜收官
+    │   ├── 兴奋度：0-100，无 UI 提示
+    │   ├── 情绪：好奇｜投入｜执念｜厌倦
+    │   ├── 目的进度：0-100，她想要的东西达成到哪一步。推进条件与反抗效果由各套人设的「诉求」段分别定义，没有统一公式
+    │   └── 游玩时长：显示用，她屏幕边缘写着你被玩了多少小时
+    ├── 世界（模块化：底座可换，故全部用通用容器）
+    │   ├── 底座：euphoria（换值 = 换一个游戏）
+    │   ├── 当前关卡：由底座包定义
+    │   ├── 关卡进度：0-100
+    │   ├── 场景
+    │   └── 女角（动态键）
+    │       └── <角色名>
+    │           ├── 关系：陌生｜警惕｜动摇｜依附｜崩坏
+    │           ├── 状态
+    │           ├── 开发度：0-100，被做到哪一步
+    │           └── 身体记忆：她的身体记住了什么
+    ├── 局面
+    │   ├── 当前选项：动态键记录，本层浮现的三到四个选项
+    │   ├── 她的倾向：她倾向点哪个（清晰度随「对她的了解」）
+    │   └── 她已选：她最终点的那个，结算后填
+    └── 终局
+        ├── 已触发：boolean
+        ├── 剩余体力：0-100，最后一次自由的倒计时
+        └── 选择：last_person｜last_record｜destroy_all｜gaze｜cross_line｜null
+
+  variables:
+    # ── 主角 ──
+    - path: 主角.反抗值
+      type: number
+      range: 0~100
+      check: 离线自主行动缓慢累积；在线被逼做屈辱之事剧烈累积；拒绝选项按等级扣点。耗尽进入「深度顺从」，不显示拒绝按钮，随离线时间缓慢回充
+    - path: 主角.体力
+      type: number
+      range: 0~100
+      description: 离线自由的时间代价，归零即冻结
+      check: 离线态随时间线性扣减；暂停态不扣；睡眠/进食/静止可恢复
+    - path: 主角.状态
+      enum: [在线, 暂停, 离线, 冻结]
+      description: 当前所处状态，决定可行动范围
+    - path: 主角.对她的了解
+      type: number
+      range: 0~100
+      check: 通过摄像头观察她（她的吐槽、房间细节、习惯、自慰时机、对哪类选项有反应）累积；0-20 只知道她在犹豫，21-50 能看出她中意哪一类，51-80 能看出她盯着哪个选项，81+ 能确定她会点哪个；「越界一次」终局需 ≥80
+    - path: 主角.痕迹
+      type: z.record
+      description: 离线行为留下的记录（内容、明显度、是否被发现）；她上线时按熟练度扫描，被发现则触发惩罚
+    - path: 主角.已知软肋
+      type: z.record
+      description: 她已摸清并在后续选项中主动绕开的软肋；越反抗越长，越长越难反抗
+    - path: 主角.身体.忍耐度
+      type: number
+      description: 每层的即时承受力，0~100；归零当层就交代；上限随敏感度下降
+    - path: 主角.身体.累计次数
+      type: number
+      description: 被用了多少次，只增不减，没有上限
+    - path: 主角.身体.敏感度
+      type: number
+      description: 被改写的程度，0~100，只增不减；越高反应越剧烈、忍耐上限越低
+    - path: 主角.身体.身体痕迹
+      type: z.record
+      description: 留在身体与场景上的东西（含来源、是否消退）；与她造成的其他痕迹区分开
+    - path: 主角.$骰子种子
+      type: number
+      description: LCG 伪随机的种子，AI 不可见、脚本读写；每次投掷后更新，保证同一回合重新渲染结果一致
+
+    # ── 她 ──
+    - path: 她.人设
+      enum: [gentle, greedy, smirking, daredevil, quiet, indifferent, completionist]
+      description: 开局启动的屏幕外玩家，决定选项倾向、自慰形式与结局走向
+    - path: 她.熟练度
+      enum: [新手, 上手, 沉浸, 狂热, 收官]
+      description: 决定上线时长/间隔、痕迹扫描强度
+    - path: 她.兴奋度
+      type: number
+      range: 0~100
+      check: 由剧情节点确定性驱动（非随机）；高时选项激进但注意不到 BUG；高潮后进入贤者时间，选项变温和但痕迹扫描加强
+    - path: 她.情绪
+      enum: [好奇, 投入, 执念, 厌倦]
+      description: 决定人设漂移与选项倾向；目的进度卡住 + 反抗次数共同触发漂移
+    - path: 她.目的进度
+      type: number
+      range: 0~100
+      description: 达成即她退场、触发终局
+    - path: 她.游玩时长
+      description: 显示用；她屏幕边缘写着你被玩了多少小时
+
+    # ── 世界（模块化：底座可换，故用通用容器，换底座不需改结构） ──
+    - path: 世界.底座
+      enum: [euphoria]
+      description: 当前生效的 galgame 底座包 id；换值即路由到另一套世界观/女角/关卡 —— 等于换一个游戏
+    - path: 世界.当前关卡
+      description: 当前关卡标识，由底座包定义（如 Euphoria 的「第一关·监视器装置房」）
+    - path: 世界.关卡进度
+      type: number
+      range: 0~100
+      description: 当前关卡内的推进度
+    - path: 世界.场景
+      description: 当前所在场景，由底座包定义
+    - path: 世界.女角.开发度
+      type: number
+      description: 每位女角被做到哪一步，0~100；涨得比关系慢，不因关系变化自动涨
+    - path: 世界.女角.身体记忆
+      description: 每位女角的身体记住了什么；与关系无关，且很难消除
+    - path: 世界.女角
+      type: z.record
+      description: 以角色名为键（动态键），值为 { 关系, 状态 }；换底座无需改动
+
+    # ── 局面 ──
+    - path: 局面.当前选项
+      type: z.record
+      description: 本层浮现的三到四个选项（文本、反抗等级、反抗消耗、她的后果、触发条件）；供状态栏渲染选项卡，她只会选其中一个
+    - path: 局面.她的倾向
+      description: 她的倾向暗示，清晰度由「主角.对她的了解」决定；不得直接写出她最终的选择
+    - path: 局面.她已选
+      description: 她最终点的选项标识，结算后填写，下一层开始时清空
+
+    # ── 终局 ──
+    - path: 终局.已触发
+      type: boolean
+    - path: 终局.剩余体力
+      type: number
+      range: 0~100
+      description: 最后一次自由的倒计时
+    - path: 终局.选择
+      enum: [last_person, last_record, destroy_all, gaze, cross_line]
+      description: 空值表示尚未选择
+
+# ============================================================
+ejs:
+  entries:
+    # 底座包路由：切换 `世界.底座` 的值即换一套世界观/女角/关卡 —— 模块化的总开关
+    - name: 密室世界
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: 'euphoria' }) === 'euphoria'"
+
+    # 屏幕外的她：7 套只渲染当前启动的那一套
+    - name: 她_温砚
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:gentle'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'gentle')"
+    - name: 她_丰娆
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:greedy'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'greedy')"
+    - name: 她_舒晏
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:smirking'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'smirking')"
+    - name: 她_唐响
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:daredevil'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'daredevil')"
+    - name: 她_沈眠
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:quiet'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'quiet')"
+    - name: 她_莫漾
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:indifferent'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'indifferent')"
+    - name: 她_纪清
+      complexity: 条目显隐
+      condition: "matchChatMessages(['GGPLAYER:completionist'], { start: 0 }) || (!matchChatMessages(['GGPLAYER:'], { start: 0 }) && getvar('stat_data.她.人设', { defaults: 'gentle' }) === 'completionist')"
+    # 她的阶段：熟练度五阶段段落控制
+    - name: 熟练度阶段
+      complexity: 段落控制
+      stages:
+        - name: 新手期
+          condition: "getvar('stat_data.她.熟练度', { defaults: '新手' }) === '新手'"
+        - name: 上手期
+          condition: "getvar('stat_data.她.熟练度', { defaults: '新手' }) === '上手'"
+        - name: 沉浸期
+          condition: "getvar('stat_data.她.熟练度', { defaults: '新手' }) === '沉浸'"
+        - name: 狂热期
+          condition: "getvar('stat_data.她.熟练度', { defaults: '新手' }) === '狂热'"
+        - name: 收官期
+          condition: "getvar('stat_data.她.熟练度', { defaults: '新手' }) === '收官'"
+
+    # 阶段指导：四态段落控制
+    - name: 阶段指导
+      complexity: 段落控制
+      stages:
+        - name: 在线态
+          condition: "getvar('stat_data.主角.状态', { defaults: '在线' }) === '在线'"
+        - name: 暂停态
+          condition: "getvar('stat_data.主角.状态', { defaults: '在线' }) === '暂停'"
+        - name: 离线态
+          condition: "getvar('stat_data.主角.状态', { defaults: '在线' }) === '离线'"
+        - name: 冻结态
+          condition: "getvar('stat_data.主角.状态', { defaults: '在线' }) === '冻结'"
+
+    # 终局：仅在触发后渲染
+    - name: 终局
+      complexity: 条目显隐
+      condition: "getvar('stat_data.终局.已触发', { defaults: false }) === true"
+
+# ============================================================
+# ============================================================
+# 契约表（T1~T4）
+# 引擎层 = 引擎能力 + 契约表；底座 = 填这几张表 + 提供内容条目。
+# 本底座的表在 项目根的 机制.yaml（工程文件，不注册为条目、不进 prompt）。
+# 依据：引擎模板/机制层规范.md 的 §三
+# ============================================================
+
+first_messages:
+  - format: 说明式
+    output_path: 开场白/0.md
+    purpose: 告知玩家这是什么卡、状态栏怎么看、7 套「屏幕外的她」在哪里启动。非游玩入口，仅作前置说明
+
+  # 游玩入口：表单式。玩家在这里选她，前端界面把对应场景送进对局
+  - format: 表单式
+    output_path: 开场白/1.md
+    purpose: 开局菜单。<OpeningPlaceHolder/> 由开局表单界面替换为 11 个选项，每个选项对应下面一条额外开场白
+
+  # 7 套额外开场白：每套配一份 initvar_override，把 她.人设 初始化成对应值
+  # 编号约定：开场白/N.txt 与 开场白/initvar/N.yaml 必须同号
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/2.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走温砚的调子：想带你活着出去。
+    initvar_override: 开场白/initvar/2.yaml
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/3.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走丰娆的调子：想把每个女角都看过一遍。
+    initvar_override: 开场白/initvar/3.yaml
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/4.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走舒晏的调子：想看你挣扎、看你求饶。
+    initvar_override: 开场白/initvar/4.yaml
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/5.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走唐响的调子：想打开最极端的那些分支。
+    initvar_override: 开场白/initvar/5.yaml
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/6.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走沈眠的调子：想把这一段推向死亡。
+    initvar_override: 开场白/initvar/6.yaml
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/7.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走莫漾的调子：没有目的，她自己也说不清。
+    initvar_override: 开场白/initvar/7.yaml
+  - format: 叙事式
+    word_count: 550~700
+    output_path: 开场白/8.txt
+    scene: 纯白密室·中央大厅，安藤都子刚被电椅处死
+    opening_situation: |
+      她在屏幕外第一次出声，摆出第一回合的四个方块。走纪清的调子：想集齐所有 CG 和结局。
+    initvar_override: 开场白/initvar/8.yaml

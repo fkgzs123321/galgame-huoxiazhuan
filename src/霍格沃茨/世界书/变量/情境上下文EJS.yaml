@@ -1,0 +1,57 @@
+# 情境上下文调度器（常驻，唯一内容入口）
+# 职责：按当前状态 getwi 加载 3 类按需条目 —— 标签条目（当前目标）/ 学年剧情 / 魔力阶位
+# 依据：EJS 规范（getvar 带 stat_data 前缀、getwi 动态加载、@@private 防变量冲突）
+# 铁律：所有素材条目 enabled:false，只被此处 getwi 拉取，不占常驻 token
+
+@@generate_before
+@@private
+<%_
+// ============ 第 1 层：人设路由（当前目标的性格标签 2~3 + 性癖标签 4~5） ============
+// 当前目标：课表.当前目标（对抗）或 双修.对象（亲密），取其一
+const active = getvar('stat_data.课表.当前目标', { defaults: '' }) || getvar('stat_data.双修.对象', { defaults: '' });
+_%>
+<%_ if (active) { _%>
+  <%_
+  const w = getvar('stat_data.女巫角色.' + active, { defaults: {} });
+  const traits = (w && w.性格标签) || [];
+  const kinks = (w && w.性癖标签) || [];
+  const desire = (w && w.心理状态 && w.心理状态.欲望度) || 0;
+  const favor = (w && w.好感度) || 0;
+  _%>
+  【当前目标】<%= active %> ｜ 好感度 <%= favor %> ｜ 欲望度 <%= desire %> ｜ 缴械值 <%= (w && w.缴械值) || 0 %> ｜ 堕落值 <%= (w && w.堕落值) || 0 %>
+  <%_ for (const t of traits) { _%>
+    <%- await getwi(t + '_人设') %>
+  <%_ } _%>
+  <%_ for (const k of kinks) { _%>
+    <%- await getwi(k) %>
+  <%_ } _%>
+<%_ } else { _%>
+  【当前目标】无——你在城堡里自由活动，可结识任意女巫（见名录总表）
+<%_ } _%>
+
+<%_
+// ============ 第 2 层：学年路由（7 学年 + 假期，各独立条目） ============
+const year = getvar('stat_data.时间.学年', { defaults: 5 });
+const term = getvar('stat_data.时间.学期', { defaults: '第一学期' });
+_%>
+<%_ if (term === '假期') { _%>
+<%- await getwi('剧情_假期') %>
+<%_ } else { _%>
+<%- await getwi('剧情_' + year + '年_' + term) %>
+<%_ } _%>
+
+<%_
+// ============ 第 3 层：阶位路由（9 大境界 × 3 层 = 27 条，按当前层加载 1 条） ============
+const realm = getvar('stat_data.玩家.魔力阶位.大境界', { defaults: 1 });
+const layer = getvar('stat_data.玩家.魔力阶位.层', { defaults: 1 });
+const REALMS = ['初醒', '凝聚', '贯通', '掌控', '精纯', '结晶', '化形', '领域', '本源'];
+const realmName = REALMS[Math.max(0, Math.min(8, realm - 1))];
+_%>
+<%- await getwi('阶位_' + realmName + '_' + layer) %>
+
+# 条目命名规范（素材库注册名必须与此一致）：
+#   性格条目：{标签}_人设（如 傲娇型_人设、大小姐型_人设）——角色档案 性格标签 数组引用
+#   性癖条目：{性癖名}（如 反差婊、口嫌体正直）——角色档案 性癖标签 数组引用
+#   学年条目：剧情_{学年}年_{学期}（如 剧情_5年_第一学期）/ 剧情_假期
+#   阶位条目：阶位_{大境界}_{层}（如 阶位_初醒_1、阶位_本源_3）
+# 所有素材条目注册参数：enabled:false, strategy=constant, position=before_character_definition, order=200~500

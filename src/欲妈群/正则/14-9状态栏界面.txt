@@ -1,0 +1,14 @@
+# 正则条目: 9状态栏界面
+# id: yumq-regex-070-statbar-ui
+# disabled: false
+# placement: [2]
+# markdownOnly: true
+# promptOnly: false
+# runOnEdit: true
+# substituteRegex: 0
+
+=== findRegex ===
+<StatusPlaceHolderImpl/>
+
+=== replaceString ===
+@@replace_file: 正则/状态栏.html

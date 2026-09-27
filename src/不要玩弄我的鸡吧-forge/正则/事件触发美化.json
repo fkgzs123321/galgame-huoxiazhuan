@@ -1,0 +1,15 @@
+{
+  "id": "fjb-event-trigger-beautify",
+  "scriptName": "事件触发美化",
+  "findRegex": "/<EventTrigger\\s+type=\"([^\"]+)\"\\s+importance=\"([^\"]+)\"\\s+desc=\"([^\"]+)\"\\/>/g",
+  "replaceString": "<div class=\"fjb-eventtrigger\" data-importance=\"$2\"><div class=\"fjb-eventtrigger-dot\"></div><div class=\"fjb-eventtrigger-body\"><div class=\"fjb-eventtrigger-type\">$1</div><div class=\"fjb-eventtrigger-desc\">$3</div></div><div class=\"fjb-eventtrigger-importance\">$2</div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

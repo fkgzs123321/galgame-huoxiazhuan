@@ -1,0 +1,2 @@
+@@generate_before
+<%- await getwi(null, '阶段指导') %>

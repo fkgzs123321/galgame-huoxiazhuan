@@ -1,0 +1,3870 @@
+{
+  "projectName": "霍格沃茨",
+  "worldbookName": "霍格沃茨",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "世界观": {
+      "魔法学校设定": {
+        "path": "世界书/世界观/魔法学校设定.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "霍格沃茨",
+          "魔法学校",
+          "世界观",
+          "学院",
+          "血统",
+          "时间"
+        ],
+        "abstract": "魔法学校设定",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        }
+      },
+      "战斗系统": {
+        "path": "世界书/世界观/战斗系统.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "战斗",
+          "决斗",
+          "缴械",
+          "防线",
+          "咒语",
+          "对抗"
+        ],
+        "abstract": "战斗系统",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        }
+      },
+      "双修系统": {
+        "path": "世界书/世界观/双修系统.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "双修",
+          "做爱",
+          "亲密",
+          "五维",
+          "高潮",
+          "动作编排"
+        ],
+        "abstract": "双修系统",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        }
+      },
+      "课表规则": {
+        "path": "世界书/世界观/课表规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "课表",
+          "时段",
+          "在线",
+          "拒战",
+          "欲望积压"
+        ],
+        "abstract": "课表规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 13
+        }
+      },
+      "学业规则": {
+        "path": "世界书/世界观/学业规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "学业",
+          "OWL",
+          "NEWT",
+          "考试",
+          "魔咒学"
+        ],
+        "abstract": "学业规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 14
+        }
+      },
+      "魔药与道具系统": {
+        "path": "世界书/世界观/魔药与道具系统.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "魔药",
+          "材料",
+          "金加隆",
+          "炼药",
+          "道具",
+          "对角巷"
+        ],
+        "abstract": "魔药与道具系统",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 15
+        }
+      },
+      "生理数值规范与限制": {
+        "path": "世界书/世界观/生理数值规范与限制.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "生理",
+          "射精",
+          "冷却",
+          "体力",
+          "不应期"
+        ],
+        "abstract": "生理数值规范与限制",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 16
+        }
+      },
+      "禁林生态": {
+        "path": "世界书/世界观/禁林生态.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "禁林",
+          "夜骐",
+          "八眼巨蛛",
+          "独角兽",
+          "马人",
+          "巨蛛"
+        ],
+        "abstract": "禁林生态（原著生物）：夜骐/八眼巨蛛/独角兽/马人/鹰头马身有翼兽，5-7 年级禁林主线支撑",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 17
+        }
+      },
+      "淫秽文风与描写规范": {
+        "path": "世界书/世界观/淫秽文风与描写规范.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "文风",
+          "露骨",
+          "淫秽",
+          "描写",
+          "强度",
+          "淫语",
+          "声效"
+        ],
+        "abstract": "淫秽文风与描写规范：3级强度体系/身体词汇库/淫语声效/堕落阶段语言表现",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 18
+        }
+      },
+      "胜点与念头植入规则": {
+        "path": "世界书/世界观/胜点与念头植入规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "胜点",
+          "植入",
+          "念头",
+          "改造",
+          "契合度",
+          "潜伏"
+        ],
+        "abstract": "胜点与念头植入规则：战斗胜点→性癖念头植入（契合度/成功率/潜伏期/三阶段/转化评价）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 19
+        }
+      }
+    },
+    "扮演准则": {
+      "扮演准则": {
+        "path": "世界书/扮演准则/扮演准则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "扮演",
+          "准则",
+          "叙事",
+          "不越权"
+        ],
+        "abstract": "扮演准则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        }
+      },
+      "占位符输出铁律": {
+        "path": "世界书/扮演准则/占位符输出铁律.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "占位符",
+          "结算块",
+          "写回",
+          "铁律"
+        ],
+        "abstract": "占位符输出铁律",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        }
+      }
+    },
+    "变量": {
+      "情境上下文EJS": {
+        "path": "世界书/变量/情境上下文EJS.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "调度",
+          "路由",
+          "getwi",
+          "标签"
+        ],
+        "abstract": "情境上下文EJS",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        }
+      },
+      "变量更新规则": {
+        "path": "世界书/变量/变量更新规则.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "变量",
+          "写回",
+          "更新规则"
+        ],
+        "abstract": "变量更新规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 31
+        }
+      }
+    },
+    "阶段指导": {
+      "阶段调度": {
+        "path": "世界书/阶段指导/阶段调度.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶段",
+          "结局",
+          "调度"
+        ],
+        "abstract": "阶段调度",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 250
+        }
+      },
+      "完全堕落结局": {
+        "path": "世界书/阶段指导/完全堕落结局.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "堕落",
+          "结局",
+          "召唤"
+        ],
+        "abstract": "完全堕落结局",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 251
+        }
+      }
+    },
+    "角色": {
+      "名录总表": {
+        "path": "世界书/角色/名录总表.yaml",
+        "scope": "catalog",
+        "part": "basic",
+        "keywords": [
+          "名录",
+          "女巫",
+          "角色"
+        ],
+        "abstract": "女巫名录总表",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 240
+        }
+      }
+    },
+    "标签库": {
+      "依存型_人设": {
+        "path": "世界书/角色/标签库/性格/依存型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "依存型",
+          "性格"
+        ],
+        "abstract": "依存型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        }
+      },
+      "倔强型_人设": {
+        "path": "世界书/角色/标签库/性格/倔强型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "倔强型",
+          "性格"
+        ],
+        "abstract": "倔强型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 41
+        }
+      },
+      "偶像型_人设": {
+        "path": "世界书/角色/标签库/性格/偶像型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "偶像型",
+          "性格"
+        ],
+        "abstract": "偶像型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 42
+        }
+      },
+      "傲娇型_人设": {
+        "path": "世界书/角色/标签库/性格/傲娇型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "傲娇型",
+          "性格"
+        ],
+        "abstract": "傲娇型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 43
+        }
+      },
+      "元气型_人设": {
+        "path": "世界书/角色/标签库/性格/元气型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "元气型",
+          "性格"
+        ],
+        "abstract": "元气型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 44
+        }
+      },
+      "冰山型_人设": {
+        "path": "世界书/角色/标签库/性格/冰山型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "冰山型",
+          "性格"
+        ],
+        "abstract": "冰山型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 45
+        }
+      },
+      "冷静型_人设": {
+        "path": "世界书/角色/标签库/性格/冷静型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "冷静型",
+          "性格"
+        ],
+        "abstract": "冷静型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 46
+        }
+      },
+      "利己型_人设": {
+        "path": "世界书/角色/标签库/性格/利己型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "利己型",
+          "性格"
+        ],
+        "abstract": "利己型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 47
+        }
+      },
+      "叛逆型_人设": {
+        "path": "世界书/角色/标签库/性格/叛逆型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "叛逆型",
+          "性格"
+        ],
+        "abstract": "叛逆型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 48
+        }
+      },
+      "大小姐型_人设": {
+        "path": "世界书/角色/标签库/性格/大小姐型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "大小姐型",
+          "性格"
+        ],
+        "abstract": "大小姐型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 49
+        }
+      },
+      "天然呆型_人设": {
+        "path": "世界书/角色/标签库/性格/天然呆型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "天然呆型",
+          "性格"
+        ],
+        "abstract": "天然呆型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        }
+      },
+      "女王型_人设": {
+        "path": "世界书/角色/标签库/性格/女王型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "女王型",
+          "性格"
+        ],
+        "abstract": "女王型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 51
+        }
+      },
+      "好胜型_人设": {
+        "path": "世界书/角色/标签库/性格/好胜型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "好胜型",
+          "性格"
+        ],
+        "abstract": "好胜型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 52
+        }
+      },
+      "孤僻型_人设": {
+        "path": "世界书/角色/标签库/性格/孤僻型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "孤僻型",
+          "性格"
+        ],
+        "abstract": "孤僻型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 53
+        }
+      },
+      "学霸型_人设": {
+        "path": "世界书/角色/标签库/性格/学霸型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "学霸型",
+          "性格"
+        ],
+        "abstract": "学霸型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 54
+        }
+      },
+      "控制狂型_人设": {
+        "path": "世界书/角色/标签库/性格/控制狂型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "控制狂型",
+          "性格"
+        ],
+        "abstract": "控制狂型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 55
+        }
+      },
+      "敏感型_人设": {
+        "path": "世界书/角色/标签库/性格/敏感型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "敏感型",
+          "性格"
+        ],
+        "abstract": "敏感型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 56
+        }
+      },
+      "母性型_人设": {
+        "path": "世界书/角色/标签库/性格/母性型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "母性型",
+          "性格"
+        ],
+        "abstract": "母性型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 57
+        }
+      },
+      "毒舌型_人设": {
+        "path": "世界书/角色/标签库/性格/毒舌型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "毒舌型",
+          "性格"
+        ],
+        "abstract": "毒舌型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 58
+        }
+      },
+      "沉稳型_人设": {
+        "path": "世界书/角色/标签库/性格/沉稳型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "沉稳型",
+          "性格"
+        ],
+        "abstract": "沉稳型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 59
+        }
+      },
+      "活泼型_人设": {
+        "path": "世界书/角色/标签库/性格/活泼型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "活泼型",
+          "性格"
+        ],
+        "abstract": "活泼型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 60
+        }
+      },
+      "浪漫型_人设": {
+        "path": "世界书/角色/标签库/性格/浪漫型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "浪漫型",
+          "性格"
+        ],
+        "abstract": "浪漫型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 61
+        }
+      },
+      "温柔型_人设": {
+        "path": "世界书/角色/标签库/性格/温柔型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "温柔型",
+          "性格"
+        ],
+        "abstract": "温柔型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 62
+        }
+      },
+      "热情型_人设": {
+        "path": "世界书/角色/标签库/性格/热情型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "热情型",
+          "性格"
+        ],
+        "abstract": "热情型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 63
+        }
+      },
+      "现实型_人设": {
+        "path": "世界书/角色/标签库/性格/现实型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "现实型",
+          "性格"
+        ],
+        "abstract": "现实型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 64
+        }
+      },
+      "病娇型_人设": {
+        "path": "世界书/角色/标签库/性格/病娇型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "病娇型",
+          "性格"
+        ],
+        "abstract": "病娇型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 65
+        }
+      },
+      "神秘型_人设": {
+        "path": "世界书/角色/标签库/性格/神秘型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "神秘型",
+          "性格"
+        ],
+        "abstract": "神秘型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 66
+        }
+      },
+      "腹黑型_人设": {
+        "path": "世界书/角色/标签库/性格/腹黑型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "腹黑型",
+          "性格"
+        ],
+        "abstract": "腹黑型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 67
+        }
+      },
+      "运动型_人设": {
+        "path": "世界书/角色/标签库/性格/运动型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "运动型",
+          "性格"
+        ],
+        "abstract": "运动型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 68
+        }
+      },
+      "顺从型_人设": {
+        "path": "世界书/角色/标签库/性格/顺从型_人设.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "顺从型",
+          "性格"
+        ],
+        "abstract": "顺从型_人设（性格条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 69
+        }
+      },
+      "NTR": {
+        "path": "世界书/角色/标签库/性癖/NTR.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "NTR",
+          "性癖"
+        ],
+        "abstract": "NTR（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 70
+        }
+      },
+      "丝袜": {
+        "path": "世界书/角色/标签库/性癖/丝袜.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "丝袜",
+          "性癖"
+        ],
+        "abstract": "丝袜（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 71
+        }
+      },
+      "中出": {
+        "path": "世界书/角色/标签库/性癖/中出.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "中出",
+          "性癖"
+        ],
+        "abstract": "中出（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 72
+        }
+      },
+      "主奴": {
+        "path": "世界书/角色/标签库/性癖/主奴.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "主奴",
+          "性癖"
+        ],
+        "abstract": "主奴（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 73
+        }
+      },
+      "义妹": {
+        "path": "世界书/角色/标签库/性癖/义妹.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "义妹",
+          "性癖"
+        ],
+        "abstract": "义妹（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 74
+        }
+      },
+      "乳交": {
+        "path": "世界书/角色/标签库/性癖/乳交.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "乳交",
+          "性癖"
+        ],
+        "abstract": "乳交（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 75
+        }
+      },
+      "乳汁": {
+        "path": "世界书/角色/标签库/性癖/乳汁.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "乳汁",
+          "性癖"
+        ],
+        "abstract": "乳汁（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 76
+        }
+      },
+      "人妻": {
+        "path": "世界书/角色/标签库/性癖/人妻.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "人妻",
+          "性癖"
+        ],
+        "abstract": "人妻（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 77
+        }
+      },
+      "偷窥": {
+        "path": "世界书/角色/标签库/性癖/偷窥.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "偷窥",
+          "性癖"
+        ],
+        "abstract": "偷窥（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 78
+        }
+      },
+      "催眠": {
+        "path": "世界书/角色/标签库/性癖/催眠.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "催眠",
+          "性癖"
+        ],
+        "abstract": "催眠（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 79
+        }
+      },
+      "公开调教": {
+        "path": "世界书/角色/标签库/性癖/公开调教.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "公开调教",
+          "性癖"
+        ],
+        "abstract": "公开调教（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 80
+        }
+      },
+      "共妻": {
+        "path": "世界书/角色/标签库/性癖/共妻.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "共妻",
+          "性癖"
+        ],
+        "abstract": "共妻（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 81
+        }
+      },
+      "内射": {
+        "path": "世界书/角色/标签库/性癖/内射.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "内射",
+          "性癖"
+        ],
+        "abstract": "内射（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 82
+        }
+      },
+      "冰火": {
+        "path": "世界书/角色/标签库/性癖/冰火.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "冰火",
+          "性癖"
+        ],
+        "abstract": "冰火（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 83
+        }
+      },
+      "反差": {
+        "path": "世界书/角色/标签库/性癖/反差.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "反差",
+          "性癖"
+        ],
+        "abstract": "反差（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 84
+        }
+      },
+      "发情": {
+        "path": "世界书/角色/标签库/性癖/发情.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "发情",
+          "性癖"
+        ],
+        "abstract": "发情（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 85
+        }
+      },
+      "口交": {
+        "path": "世界书/角色/标签库/性癖/口交.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "口交",
+          "性癖"
+        ],
+        "abstract": "口交（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 86
+        }
+      },
+      "口水": {
+        "path": "世界书/角色/标签库/性癖/口水.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "口水",
+          "性癖"
+        ],
+        "abstract": "口水（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 87
+        }
+      },
+      "口爆": {
+        "path": "世界书/角色/标签库/性癖/口爆.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "口爆",
+          "性癖"
+        ],
+        "abstract": "口爆（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 88
+        }
+      },
+      "口球": {
+        "path": "世界书/角色/标签库/性癖/口球.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "口球",
+          "性癖"
+        ],
+        "abstract": "口球（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 89
+        }
+      },
+      "吊缚": {
+        "path": "世界书/角色/标签库/性癖/吊缚.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "吊缚",
+          "性癖"
+        ],
+        "abstract": "吊缚（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 90
+        }
+      },
+      "吞精": {
+        "path": "世界书/角色/标签库/性癖/吞精.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "吞精",
+          "性癖"
+        ],
+        "abstract": "吞精（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 91
+        }
+      },
+      "堕落": {
+        "path": "世界书/角色/标签库/性癖/堕落.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "堕落",
+          "性癖"
+        ],
+        "abstract": "堕落（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 92
+        }
+      },
+      "失禁": {
+        "path": "世界书/角色/标签库/性癖/失禁.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "失禁",
+          "性癖"
+        ],
+        "abstract": "失禁（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 93
+        }
+      },
+      "契约": {
+        "path": "世界书/角色/标签库/性癖/契约.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "契约",
+          "性癖"
+        ],
+        "abstract": "契约（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 94
+        }
+      },
+      "女仆": {
+        "path": "世界书/角色/标签库/性癖/女仆.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "女仆",
+          "性癖"
+        ],
+        "abstract": "女仆（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 95
+        }
+      },
+      "奶牛": {
+        "path": "世界书/角色/标签库/性癖/奶牛.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "奶牛",
+          "性癖"
+        ],
+        "abstract": "奶牛（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 96
+        }
+      },
+      "姐妹": {
+        "path": "世界书/角色/标签库/性癖/姐妹.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "姐妹",
+          "性癖"
+        ],
+        "abstract": "姐妹（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 97
+        }
+      },
+      "学狗叫": {
+        "path": "世界书/角色/标签库/性癖/学狗叫.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "学狗叫",
+          "性癖"
+        ],
+        "abstract": "学狗叫（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 98
+        }
+      },
+      "宠物": {
+        "path": "世界书/角色/标签库/性癖/宠物.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "宠物",
+          "性癖"
+        ],
+        "abstract": "宠物（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 99
+        }
+      },
+      "家具化": {
+        "path": "世界书/角色/标签库/性癖/家具化.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "家具化",
+          "性癖"
+        ],
+        "abstract": "家具化（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        }
+      },
+      "寸止": {
+        "path": "世界书/角色/标签库/性癖/寸止.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "寸止",
+          "性癖"
+        ],
+        "abstract": "寸止（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 101
+        }
+      },
+      "射精管理": {
+        "path": "世界书/角色/标签库/性癖/射精管理.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "射精管理",
+          "性癖"
+        ],
+        "abstract": "射精管理（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 102
+        }
+      },
+      "尿PLAY": {
+        "path": "世界书/角色/标签库/性癖/尿PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "尿PLAY",
+          "性癖"
+        ],
+        "abstract": "尿PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 103
+        }
+      },
+      "展品": {
+        "path": "世界书/角色/标签库/性癖/展品.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "展品",
+          "性癖"
+        ],
+        "abstract": "展品（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 104
+        }
+      },
+      "展览": {
+        "path": "世界书/角色/标签库/性癖/展览.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "展览",
+          "性癖"
+        ],
+        "abstract": "展览（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 105
+        }
+      },
+      "巨乳": {
+        "path": "世界书/角色/标签库/性癖/巨乳.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "巨乳",
+          "性癖"
+        ],
+        "abstract": "巨乳（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 106
+        }
+      },
+      "师生": {
+        "path": "世界书/角色/标签库/性癖/师生.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "师生",
+          "性癖"
+        ],
+        "abstract": "师生（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 107
+        }
+      },
+      "强制高潮": {
+        "path": "世界书/角色/标签库/性癖/强制高潮.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "强制高潮",
+          "性癖"
+        ],
+        "abstract": "强制高潮（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 108
+        }
+      },
+      "当众自慰": {
+        "path": "世界书/角色/标签库/性癖/当众自慰.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "当众自慰",
+          "性癖"
+        ],
+        "abstract": "当众自慰（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 109
+        }
+      },
+      "性奴": {
+        "path": "世界书/角色/标签库/性癖/性奴.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "性奴",
+          "性癖"
+        ],
+        "abstract": "性奴（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 110
+        }
+      },
+      "憋尿": {
+        "path": "世界书/角色/标签库/性癖/憋尿.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "憋尿",
+          "性癖"
+        ],
+        "abstract": "憋尿（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 111
+        }
+      },
+      "拍摄": {
+        "path": "世界书/角色/标签库/性癖/拍摄.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "拍摄",
+          "性癖"
+        ],
+        "abstract": "拍摄（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 112
+        }
+      },
+      "拘束": {
+        "path": "世界书/角色/标签库/性癖/拘束.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "拘束",
+          "性癖"
+        ],
+        "abstract": "拘束（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 113
+        }
+      },
+      "捆绑": {
+        "path": "世界书/角色/标签库/性癖/捆绑.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "捆绑",
+          "性癖"
+        ],
+        "abstract": "捆绑（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 114
+        }
+      },
+      "敏感化": {
+        "path": "世界书/角色/标签库/性癖/敏感化.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "敏感化",
+          "性癖"
+        ],
+        "abstract": "敏感化（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 115
+        }
+      },
+      "教室PLAY": {
+        "path": "世界书/角色/标签库/性癖/教室PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "教室PLAY",
+          "性癖"
+        ],
+        "abstract": "教室PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 116
+        }
+      },
+      "暗示": {
+        "path": "世界书/角色/标签库/性癖/暗示.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "暗示",
+          "性癖"
+        ],
+        "abstract": "暗示（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 117
+        }
+      },
+      "更衣室": {
+        "path": "世界书/角色/标签库/性癖/更衣室.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "更衣室",
+          "性癖"
+        ],
+        "abstract": "更衣室（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 118
+        }
+      },
+      "月经PLAY": {
+        "path": "世界书/角色/标签库/性癖/月经PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "月经PLAY",
+          "性癖"
+        ],
+        "abstract": "月经PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 119
+        }
+      },
+      "条件反射": {
+        "path": "世界书/角色/标签库/性癖/条件反射.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "条件反射",
+          "性癖"
+        ],
+        "abstract": "条件反射（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 120
+        }
+      },
+      "梦境": {
+        "path": "世界书/角色/标签库/性癖/梦境.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "梦境",
+          "性癖"
+        ],
+        "abstract": "梦境（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 121
+        }
+      },
+      "母女": {
+        "path": "世界书/角色/标签库/性癖/母女.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "母女",
+          "性癖"
+        ],
+        "abstract": "母女（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 122
+        }
+      },
+      "母狗": {
+        "path": "世界书/角色/标签库/性癖/母狗.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "母狗",
+          "性癖"
+        ],
+        "abstract": "母狗（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 123
+        }
+      },
+      "母猪": {
+        "path": "世界书/角色/标签库/性癖/母猪.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "母猪",
+          "性癖"
+        ],
+        "abstract": "母猪（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 124
+        }
+      },
+      "汗味": {
+        "path": "世界书/角色/标签库/性癖/汗味.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "汗味",
+          "性癖"
+        ],
+        "abstract": "汗味（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 125
+        }
+      },
+      "泪痣": {
+        "path": "世界书/角色/标签库/性癖/泪痣.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "泪痣",
+          "性癖"
+        ],
+        "abstract": "泪痣（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 126
+        }
+      },
+      "洗脑": {
+        "path": "世界书/角色/标签库/性癖/洗脑.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "洗脑",
+          "性癖"
+        ],
+        "abstract": "洗脑（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 127
+        }
+      },
+      "浣肠": {
+        "path": "世界书/角色/标签库/性癖/浣肠.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "浣肠",
+          "性癖"
+        ],
+        "abstract": "浣肠（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 128
+        }
+      },
+      "浴室": {
+        "path": "世界书/角色/标签库/性癖/浴室.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "浴室",
+          "性癖"
+        ],
+        "abstract": "浴室（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 129
+        }
+      },
+      "淫乱": {
+        "path": "世界书/角色/标签库/性癖/淫乱.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "淫乱",
+          "性癖"
+        ],
+        "abstract": "淫乱（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 130
+        }
+      },
+      "淫水": {
+        "path": "世界书/角色/标签库/性癖/淫水.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "淫水",
+          "性癖"
+        ],
+        "abstract": "淫水（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 131
+        }
+      },
+      "淫纹": {
+        "path": "世界书/角色/标签库/性癖/淫纹.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "淫纹",
+          "性癖"
+        ],
+        "abstract": "淫纹（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 132
+        }
+      },
+      "淫语": {
+        "path": "世界书/角色/标签库/性癖/淫语.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "淫语",
+          "性癖"
+        ],
+        "abstract": "淫语（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 133
+        }
+      },
+      "深喉": {
+        "path": "世界书/角色/标签库/性癖/深喉.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "深喉",
+          "性癖"
+        ],
+        "abstract": "深喉（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 134
+        }
+      },
+      "游街": {
+        "path": "世界书/角色/标签库/性癖/游街.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "游街",
+          "性癖"
+        ],
+        "abstract": "游街（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 135
+        }
+      },
+      "滴蜡": {
+        "path": "世界书/角色/标签库/性癖/滴蜡.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "滴蜡",
+          "性癖"
+        ],
+        "abstract": "滴蜡（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 136
+        }
+      },
+      "潮吹": {
+        "path": "世界书/角色/标签库/性癖/潮吹.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "潮吹",
+          "性癖"
+        ],
+        "abstract": "潮吹（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 137
+        }
+      },
+      "灌肠": {
+        "path": "世界书/角色/标签库/性癖/灌肠.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "灌肠",
+          "性癖"
+        ],
+        "abstract": "灌肠（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 138
+        }
+      },
+      "熟女": {
+        "path": "世界书/角色/标签库/性癖/熟女.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "熟女",
+          "性癖"
+        ],
+        "abstract": "熟女（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 139
+        }
+      },
+      "爬行": {
+        "path": "世界书/角色/标签库/性癖/爬行.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "爬行",
+          "性癖"
+        ],
+        "abstract": "爬行（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 140
+        }
+      },
+      "物化": {
+        "path": "世界书/角色/标签库/性癖/物化.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "物化",
+          "性癖"
+        ],
+        "abstract": "物化（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 141
+        }
+      },
+      "电击": {
+        "path": "世界书/角色/标签库/性癖/电击.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "电击",
+          "性癖"
+        ],
+        "abstract": "电击（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 142
+        }
+      },
+      "痴女": {
+        "path": "世界书/角色/标签库/性癖/痴女.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "痴女",
+          "性癖"
+        ],
+        "abstract": "痴女（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 143
+        }
+      },
+      "皮拍": {
+        "path": "世界书/角色/标签库/性癖/皮拍.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "皮拍",
+          "性癖"
+        ],
+        "abstract": "皮拍（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 144
+        }
+      },
+      "直播": {
+        "path": "世界书/角色/标签库/性癖/直播.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "直播",
+          "性癖"
+        ],
+        "abstract": "直播（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 145
+        }
+      },
+      "眼镜": {
+        "path": "世界书/角色/标签库/性癖/眼镜.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "眼镜",
+          "性癖"
+        ],
+        "abstract": "眼镜（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 146
+        }
+      },
+      "睡眠PLAY": {
+        "path": "世界书/角色/标签库/性癖/睡眠PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "睡眠PLAY",
+          "性癖"
+        ],
+        "abstract": "睡眠PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 147
+        }
+      },
+      "精液PLAY": {
+        "path": "世界书/角色/标签库/性癖/精液PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "精液PLAY",
+          "性癖"
+        ],
+        "abstract": "精液PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 148
+        }
+      },
+      "精液浴": {
+        "path": "世界书/角色/标签库/性癖/精液浴.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "精液浴",
+          "性癖"
+        ],
+        "abstract": "精液浴（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 149
+        }
+      },
+      "细腰": {
+        "path": "世界书/角色/标签库/性癖/细腰.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "细腰",
+          "性癖"
+        ],
+        "abstract": "细腰（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 150
+        }
+      },
+      "绿帽": {
+        "path": "世界书/角色/标签库/性癖/绿帽.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "绿帽",
+          "性癖"
+        ],
+        "abstract": "绿帽（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 151
+        }
+      },
+      "美腿": {
+        "path": "世界书/角色/标签库/性癖/美腿.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "美腿",
+          "性癖"
+        ],
+        "abstract": "美腿（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 152
+        }
+      },
+      "美臀": {
+        "path": "世界书/角色/标签库/性癖/美臀.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "美臀",
+          "性癖"
+        ],
+        "abstract": "美臀（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 153
+        }
+      },
+      "羞辱": {
+        "path": "世界书/角色/标签库/性癖/羞辱.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "羞辱",
+          "性癖"
+        ],
+        "abstract": "羞辱（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 154
+        }
+      },
+      "肉便器": {
+        "path": "世界书/角色/标签库/性癖/肉便器.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "肉便器",
+          "性癖"
+        ],
+        "abstract": "肉便器（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 155
+        }
+      },
+      "脖颈": {
+        "path": "世界书/角色/标签库/性癖/脖颈.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "脖颈",
+          "性癖"
+        ],
+        "abstract": "脖颈（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 156
+        }
+      },
+      "腋下": {
+        "path": "世界书/角色/标签库/性癖/腋下.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "腋下",
+          "性癖"
+        ],
+        "abstract": "腋下（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 157
+        }
+      },
+      "自慰观赏": {
+        "path": "世界书/角色/标签库/性癖/自慰观赏.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "自慰观赏",
+          "性癖"
+        ],
+        "abstract": "自慰观赏（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 158
+        }
+      },
+      "舌吻": {
+        "path": "世界书/角色/标签库/性癖/舌吻.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "舌吻",
+          "性癖"
+        ],
+        "abstract": "舌吻（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 159
+        }
+      },
+      "药物PLAY": {
+        "path": "世界书/角色/标签库/性癖/药物PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "药物PLAY",
+          "性癖"
+        ],
+        "abstract": "药物PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 160
+        }
+      },
+      "蒙眼": {
+        "path": "世界书/角色/标签库/性癖/蒙眼.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "蒙眼",
+          "性癖"
+        ],
+        "abstract": "蒙眼（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 161
+        }
+      },
+      "被看": {
+        "path": "世界书/角色/标签库/性癖/被看.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "被看",
+          "性癖"
+        ],
+        "abstract": "被看（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 162
+        }
+      },
+      "裸体围裙": {
+        "path": "世界书/角色/标签库/性癖/裸体围裙.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "裸体围裙",
+          "性癖"
+        ],
+        "abstract": "裸体围裙（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 163
+        }
+      },
+      "观众点播": {
+        "path": "世界书/角色/标签库/性癖/观众点播.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "观众点播",
+          "性癖"
+        ],
+        "abstract": "观众点播（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 164
+        }
+      },
+      "调教": {
+        "path": "世界书/角色/标签库/性癖/调教.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "调教",
+          "性癖"
+        ],
+        "abstract": "调教（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 165
+        }
+      },
+      "贞操锁": {
+        "path": "世界书/角色/标签库/性癖/贞操锁.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "贞操锁",
+          "性癖"
+        ],
+        "abstract": "贞操锁（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 166
+        }
+      },
+      "贫乳": {
+        "path": "世界书/角色/标签库/性癖/贫乳.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "贫乳",
+          "性癖"
+        ],
+        "abstract": "贫乳（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 167
+        }
+      },
+      "足控": {
+        "path": "世界书/角色/标签库/性癖/足控.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "足控",
+          "性癖"
+        ],
+        "abstract": "足控（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 168
+        }
+      },
+      "跪舔": {
+        "path": "世界书/角色/标签库/性癖/跪舔.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "跪舔",
+          "性癖"
+        ],
+        "abstract": "跪舔（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 169
+        }
+      },
+      "身体改造": {
+        "path": "世界书/角色/标签库/性癖/身体改造.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "身体改造",
+          "性癖"
+        ],
+        "abstract": "身体改造（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 170
+        }
+      },
+      "远程调教": {
+        "path": "世界书/角色/标签库/性癖/远程调教.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "远程调教",
+          "性癖"
+        ],
+        "abstract": "远程调教（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 171
+        }
+      },
+      "连续高潮": {
+        "path": "世界书/角色/标签库/性癖/连续高潮.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "连续高潮",
+          "性癖"
+        ],
+        "abstract": "连续高潮（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 172
+        }
+      },
+      "醉酒PLAY": {
+        "path": "世界书/角色/标签库/性癖/醉酒PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "醉酒PLAY",
+          "性癖"
+        ],
+        "abstract": "醉酒PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 173
+        }
+      },
+      "钳夹": {
+        "path": "世界书/角色/标签库/性癖/钳夹.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "钳夹",
+          "性癖"
+        ],
+        "abstract": "钳夹（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 174
+        }
+      },
+      "锁链": {
+        "path": "世界书/角色/标签库/性癖/锁链.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "锁链",
+          "性癖"
+        ],
+        "abstract": "锁链（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 175
+        }
+      },
+      "锁骨架": {
+        "path": "世界书/角色/标签库/性癖/锁骨架.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "锁骨架",
+          "性癖"
+        ],
+        "abstract": "锁骨架（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 176
+        }
+      },
+      "阿嘿颜": {
+        "path": "世界书/角色/标签库/性癖/阿嘿颜.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阿嘿颜",
+          "性癖"
+        ],
+        "abstract": "阿嘿颜（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 177
+        }
+      },
+      "雌堕": {
+        "path": "世界书/角色/标签库/性癖/雌堕.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "雌堕",
+          "性癖"
+        ],
+        "abstract": "雌堕（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 178
+        }
+      },
+      "露出": {
+        "path": "世界书/角色/标签库/性癖/露出.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "露出",
+          "性癖"
+        ],
+        "abstract": "露出（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 179
+        }
+      },
+      "青梅": {
+        "path": "世界书/角色/标签库/性癖/青梅.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "青梅",
+          "性癖"
+        ],
+        "abstract": "青梅（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 180
+        }
+      },
+      "鞭打": {
+        "path": "世界书/角色/标签库/性癖/鞭打.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "鞭打",
+          "性癖"
+        ],
+        "abstract": "鞭打（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 181
+        }
+      },
+      "项圈": {
+        "path": "世界书/角色/标签库/性癖/项圈.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "项圈",
+          "性癖"
+        ],
+        "abstract": "项圈（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 182
+        }
+      },
+      "颜射": {
+        "path": "世界书/角色/标签库/性癖/颜射.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "颜射",
+          "性癖"
+        ],
+        "abstract": "颜射（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 183
+        }
+      },
+      "马娘": {
+        "path": "世界书/角色/标签库/性癖/马娘.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "马娘",
+          "性癖"
+        ],
+        "abstract": "马娘（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 184
+        }
+      },
+      "驯服": {
+        "path": "世界书/角色/标签库/性癖/驯服.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "驯服",
+          "性癖"
+        ],
+        "abstract": "驯服（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 185
+        }
+      },
+      "魁地奇场PLAY": {
+        "path": "世界书/角色/标签库/性癖/魁地奇场PLAY.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "魁地奇场PLAY",
+          "性癖"
+        ],
+        "abstract": "魁地奇场PLAY（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 186
+        }
+      },
+      "龟甲缚": {
+        "path": "世界书/角色/标签库/性癖/龟甲缚.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "龟甲缚",
+          "性癖"
+        ],
+        "abstract": "龟甲缚（性癖条目，调度器 getwi 加载）",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 187
+        }
+      },
+      "阶位_凝聚_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_凝聚_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_凝聚_1",
+          "阶位"
+        ],
+        "abstract": "阶位_凝聚_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 188
+        }
+      },
+      "阶位_凝聚_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_凝聚_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_凝聚_2",
+          "阶位"
+        ],
+        "abstract": "阶位_凝聚_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 189
+        }
+      },
+      "阶位_凝聚_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_凝聚_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_凝聚_3",
+          "阶位"
+        ],
+        "abstract": "阶位_凝聚_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 190
+        }
+      },
+      "阶位_初醒_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_初醒_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_初醒_1",
+          "阶位"
+        ],
+        "abstract": "阶位_初醒_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 191
+        }
+      },
+      "阶位_初醒_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_初醒_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_初醒_2",
+          "阶位"
+        ],
+        "abstract": "阶位_初醒_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 192
+        }
+      },
+      "阶位_初醒_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_初醒_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_初醒_3",
+          "阶位"
+        ],
+        "abstract": "阶位_初醒_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 193
+        }
+      },
+      "阶位_化形_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_化形_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_化形_1",
+          "阶位"
+        ],
+        "abstract": "阶位_化形_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 194
+        }
+      },
+      "阶位_化形_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_化形_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_化形_2",
+          "阶位"
+        ],
+        "abstract": "阶位_化形_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 195
+        }
+      },
+      "阶位_化形_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_化形_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_化形_3",
+          "阶位"
+        ],
+        "abstract": "阶位_化形_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 196
+        }
+      },
+      "阶位_掌控_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_掌控_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_掌控_1",
+          "阶位"
+        ],
+        "abstract": "阶位_掌控_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 197
+        }
+      },
+      "阶位_掌控_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_掌控_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_掌控_2",
+          "阶位"
+        ],
+        "abstract": "阶位_掌控_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 198
+        }
+      },
+      "阶位_掌控_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_掌控_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_掌控_3",
+          "阶位"
+        ],
+        "abstract": "阶位_掌控_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 199
+        }
+      },
+      "阶位_本源_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_本源_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_本源_1",
+          "阶位"
+        ],
+        "abstract": "阶位_本源_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 200
+        }
+      },
+      "阶位_本源_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_本源_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_本源_2",
+          "阶位"
+        ],
+        "abstract": "阶位_本源_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 201
+        }
+      },
+      "阶位_本源_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_本源_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_本源_3",
+          "阶位"
+        ],
+        "abstract": "阶位_本源_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 202
+        }
+      },
+      "阶位_精纯_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_精纯_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_精纯_1",
+          "阶位"
+        ],
+        "abstract": "阶位_精纯_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 203
+        }
+      },
+      "阶位_精纯_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_精纯_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_精纯_2",
+          "阶位"
+        ],
+        "abstract": "阶位_精纯_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 204
+        }
+      },
+      "阶位_精纯_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_精纯_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_精纯_3",
+          "阶位"
+        ],
+        "abstract": "阶位_精纯_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 205
+        }
+      },
+      "阶位_结晶_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_结晶_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_结晶_1",
+          "阶位"
+        ],
+        "abstract": "阶位_结晶_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 206
+        }
+      },
+      "阶位_结晶_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_结晶_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_结晶_2",
+          "阶位"
+        ],
+        "abstract": "阶位_结晶_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 207
+        }
+      },
+      "阶位_结晶_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_结晶_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_结晶_3",
+          "阶位"
+        ],
+        "abstract": "阶位_结晶_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 208
+        }
+      },
+      "阶位_贯通_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_贯通_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_贯通_1",
+          "阶位"
+        ],
+        "abstract": "阶位_贯通_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 209
+        }
+      },
+      "阶位_贯通_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_贯通_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_贯通_2",
+          "阶位"
+        ],
+        "abstract": "阶位_贯通_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 210
+        }
+      },
+      "阶位_贯通_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_贯通_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_贯通_3",
+          "阶位"
+        ],
+        "abstract": "阶位_贯通_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 211
+        }
+      },
+      "阶位_领域_1": {
+        "path": "世界书/角色/标签库/阶位/阶位_领域_1.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_领域_1",
+          "阶位"
+        ],
+        "abstract": "阶位_领域_1",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 212
+        }
+      },
+      "阶位_领域_2": {
+        "path": "世界书/角色/标签库/阶位/阶位_领域_2.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_领域_2",
+          "阶位"
+        ],
+        "abstract": "阶位_领域_2",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 213
+        }
+      },
+      "阶位_领域_3": {
+        "path": "世界书/角色/标签库/阶位/阶位_领域_3.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "阶位_领域_3",
+          "阶位"
+        ],
+        "abstract": "阶位_领域_3",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 214
+        }
+      }
+    },
+    "MVU": {
+      "变量列表": {
+        "path": "世界书/变量/变量列表.txt",
+        "scope": "catalog",
+        "keywords": [
+          "变量列表"
+        ],
+        "abstract": "MVU 变量列表模板",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 260
+        }
+      },
+      "变量输出格式": {
+        "path": "世界书/变量/变量输出格式.txt",
+        "scope": "catalog",
+        "keywords": [
+          "变量输出"
+        ],
+        "abstract": "MVU 变量输出格式模板",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 270
+        }
+      },
+      "[InitVar]请勿打开": {
+        "path": "世界书/变量/initvar.yaml",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "初始变量：时间、玩家（学业/属性/魔力阶位/咒语/装备/材料/财产/魔药）、课表、双修、6 女巫建档（性格/性癖标签、名器/技能/能力值/心理状态）",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 271
+        }
+      }
+    },
+    "学年": {
+      "剧情_1年_第一学期": {
+        "path": "世界书/学年/剧情_1年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_1年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_1年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 220
+        }
+      },
+      "剧情_1年_第二学期": {
+        "path": "世界书/学年/剧情_1年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_1年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_1年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 221
+        }
+      },
+      "剧情_2年_第一学期": {
+        "path": "世界书/学年/剧情_2年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_2年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_2年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 222
+        }
+      },
+      "剧情_2年_第二学期": {
+        "path": "世界书/学年/剧情_2年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_2年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_2年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 223
+        }
+      },
+      "剧情_3年_第一学期": {
+        "path": "世界书/学年/剧情_3年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_3年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_3年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 224
+        }
+      },
+      "剧情_3年_第二学期": {
+        "path": "世界书/学年/剧情_3年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_3年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_3年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 225
+        }
+      },
+      "剧情_4年_第一学期": {
+        "path": "世界书/学年/剧情_4年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_4年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_4年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 226
+        }
+      },
+      "剧情_4年_第二学期": {
+        "path": "世界书/学年/剧情_4年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_4年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_4年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 227
+        }
+      },
+      "剧情_5年_第一学期": {
+        "path": "世界书/学年/剧情_5年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_5年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_5年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 228
+        }
+      },
+      "剧情_5年_第二学期": {
+        "path": "世界书/学年/剧情_5年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_5年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_5年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 229
+        }
+      },
+      "剧情_6年_第一学期": {
+        "path": "世界书/学年/剧情_6年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_6年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_6年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 230
+        }
+      },
+      "剧情_6年_第二学期": {
+        "path": "世界书/学年/剧情_6年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_6年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_6年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 231
+        }
+      },
+      "剧情_7年_第一学期": {
+        "path": "世界书/学年/剧情_7年_第一学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_7年_第一学期",
+          "学年"
+        ],
+        "abstract": "剧情_7年_第一学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 232
+        }
+      },
+      "剧情_7年_第二学期": {
+        "path": "世界书/学年/剧情_7年_第二学期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_7年_第二学期",
+          "学年"
+        ],
+        "abstract": "剧情_7年_第二学期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 233
+        }
+      },
+      "剧情_假期": {
+        "path": "世界书/学年/剧情_假期.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "剧情_假期",
+          "学年"
+        ],
+        "abstract": "剧情_假期",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 234
+        }
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理",
+      "变量",
+      "标签库",
+      "学年"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": true
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "事件": 0,
+    "地理": {
+      "faction": {
+        "threshold": 4,
+        "required": false
+      },
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "世界观": "Infinity",
+    "阶段指导": "Infinity",
+    "变量": "Infinity",
+    "标签库": "Infinity",
+    "学年": "Infinity"
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "霍格沃茨·同层卡（MVU）。原著世界观 + 原创人物：完整亲历哈利波特七部曲（魔法石→密室→阿兹卡班→火焰杯→凤凰社→混血王子→死亡圣器）。成年入学制（17 岁入学），你是 1991 年与女巫们同届入学的一年级新生——不是主角，但每一年的原著事件都会卷过你身边。\n\n【同层卡】所有界面（状态/课表/名录/战斗/做爱/炼药）由酒馆助手脚本注入式渲染（右下角「霍格沃茨」按钮）。战斗=魔法决斗（咒语对轰、防线归零缴械）；做爱=亲密（五维推进）；炼药=生产。面板写数值→stat_data（唯一事实源）→你只读并叙事，绝不自行编造或重算数值。\n\n【世界基调】你是同届同学里的\"路人\"，不是世界中心。女巫的欲望/生活有自己的轨道：课表=谁此刻在线（可接触性），不是谁来找你；她主动找你的前提是你已建立关系（好感≥60/已亲密/堕落≥60）。拒战是常态。原著主角团（哈利/罗恩/赫敏）是背景同学，你的故事在他们身边展开。\n\n【调度】情境上下文EJS按 课表.当前目标 getwi 加载她的性格标签（2~3）与性癖标签（4~5）条目；按 时间.学年/学期 加载对应学年剧情（1年级=魔法石篇…5年级=凤凰社篇…7年级=死亡圣器篇）；按 玩家.魔力阶位 加载阶位条目。性格条目按好感度13阶段（可降），性癖条目按欲望度5阶段。\n\n【结算块】面板生成的【对抗结算】【双修结算】【突破结算】块是既成事实：把数值写成生动的场面，然后按【变量更新规则】写回变量。",
+  "first_messages": [
+    "开场白/0.txt"
+  ],
+  "creator": "",
+  "creator_notes": "",
+  "version": "1.0",
+  "create_date": "2026-08-11T03:53:11.538Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "390affeb-2d16-4216-8184-c98023b90606",
+          "info": "MVU 变量框架支持",
+          "button": {
+            "enabled": false,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "同层前端": {
+          "type": "script",
+          "script_file": "脚本/同层前端.js",
+          "enabled": true,
+          "id": "e26aaaab-36ca-4d8b-87dc-3f744974c84b",
+          "info": "C5 同层 shell：0 号楼楼层内应用（剧情镜像/输入/路由/展示适配）",
+          "button": {
+            "enabled": false,
+            "buttons": []
+          },
+          "data": {}
+        }
+      }
+    }
+  },
+  "regex_scripts": {
+    "不发送变量更新与思维链": {
+      "id": "2b2c6b02-1055-4f3f-ba37-ffd8939253db",
+      "findRegex": "/<Analysis>[\\s\\S]+?<\\/Analysis>|<UpdateVariable>[\\s\\S]*?<\\/UpdateVariable>|<analysis>[\\s\\S]+?<\\/analysis>/g",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "不发送世界书水印": {
+      "id": "84204126-58c5-47d0-894f-8528c56915b7",
+      "findRegex": "/<!--[\\s\\S]*?-->\\n?/g",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        5
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "不发送前端代码": {
+      "id": "754e90ab-78b9-4947-b6d7-e22e566bfc8c",
+      "findRegex": "/```[\\s\\S]*?```|html[\\s\\S]*?<\\/html>/gi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    },
+    "同层挂载展开": {
+      "id": "feb26b9f-0f22-4614-8c29-01cfcdbf3659",
+      "findRegex": "/\\*霍格沃茨·同层\\*[\\s\\S]*?(?=^#|$)/m",
+      "replaceString": "<div class=\\\"hgw-fallback\\\" data-same-floor-shell=\\\"1\\\" data-shell-state=\\\"loading\\\" aria-busy=\\\"true\\\"><p>游玩界面加载中……</p></div>",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": -100,
+      "maxDepth": 100
+    }
+  },
+  "initvar_overrides": {
+    "0": "开场白/initvar/0.yaml"
+  },
+  "zod": {
+    "scriptName": "变量结构",
+    "scriptId": "8d1d7af5-f5a3-4923-a54c-d16d3fc77936",
+    "schemaPath": "schema.ts",
+    "importUrl": "https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js",
+    "info": "霍格沃茨同层卡 MVU 变量结构"
+  }
+}

@@ -1,0 +1,218 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 西御寺有友 · 剧情线
+   ════════════════════════════════════════════════════════════
+   npc_id=N3 / 男配角 · 反派枢纽，干预 4 条女角线
+   核心弧线：介入—阴谋—关键误会—被反击—干预（五阶段）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 西御寺有友_STORYLINE = {
+  npc_id: 'N3',
+  name: '西御寺有友',
+  core_position: {
+    role: '反派枢纽 — 干预唯/美纪/美铃/久美子 4 条女角线的核心反派',
+    archetype: '财阀恶少的覆灭弧线 — 傲慢者的报应',
+    function: '通过"介入→阴谋→关键误会→被反击→干预"五阶段弧线，在 4 条女角线上扮演反派角色，是剧情中干预范围最广的反派',
+    plot_weight: 'high — 推动 4 条女角线（唯线 + 美纪线 + 美铃线 + 久美子线）'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22~12-25',
+      time_slot: '全天',
+      location: '鸣泽家附近 / 商业区 / 八十八学园门口',
+      event: '介入期',
+      description: '西御寺寒假首日起加大对唯的骚扰力度，同时介入美纪线；常带跟班在唯回家路上拦截',
+      triggers_route: '唯线 / 美纪线 — 西御寺的介入是后续阴谋期的前置',
+      is_reversible: true,
+      flags: ['flag_yutomo_intervention_active']
+    },
+    {
+      date: '12-24~12-29',
+      time_slot: '全天',
+      location: '美纪常去地点',
+      event: '美纪线干预',
+      description: '西御寺连续纠缠美纪，12/29 美纪告白时西御寺到场搅局；试图破坏美纪线进展',
+      triggers_route: '美纪线 — 西御寺的干预是美纪线反派节点',
+      is_reversible: false,
+      flags: ['flag_yutomo_miki_interference', 'flag_miki_route_blocked'],
+      note: '★ 不可逆 flag — 西御寺搅局美纪告白后，美纪线进入"被搅局失败"分支；若主角在场可保护美纪'
+    },
+    {
+      date: '12-26~01-02',
+      time_slot: '全天',
+      location: '西御寺家豪宅 / 商业区高档私会地点',
+      event: '阴谋期',
+      description: '西御寺被唯拒绝后转入阴险阶段，策划报复主角和唯的阴谋；联合芳树准备 1/3 关键误会事件',
+      triggers_route: '唯线 — 阴谋期是 1/3 旅馆误会事件的前置',
+      is_reversible: true,
+      flags: ['flag_yutomo_conspiracy_active', 'flag_yutomo_yoshiki_alliance']
+    },
+    {
+      date: '12-31',
+      time_slot: '全天',
+      location: '片桐美铃出现地点',
+      event: '美铃线情报源破坏',
+      description: '西御寺告知片桐美铃其男友存在，破坏美铃线情报源；试图让美铃放弃主角',
+      triggers_route: '美铃线 — 西御寺的情报破坏是美铃线反派节点',
+      is_reversible: false,
+      flags: ['flag_yutomo_misuzu_info_break', 'flag_misuzu_route_blocked'],
+      note: '★ 不可逆 flag — 西御寺告知美铃男友存在后，美铃线进入"情报源被破坏"分支；若主角在场可阻止'
+    },
+    {
+      date: '01-01',
+      time_slot: '全天',
+      location: '西御寺家自宅',
+      event: '被反击期',
+      description: '西御寺被主角在西御寺家自宅痛打，跟班全部逃跑；暂时收敛',
+      triggers_route: '唯线 — 主角反击是唯线主角立威节点',
+      is_reversible: true,
+      flags: ['flag_yutomo_defeated']
+    },
+    {
+      date: '01-02',
+      time_slot: 'AM9:15',
+      location: '永岛久美子公寓',
+      event: '久美子侮辱事件',
+      description: '西御寺在永岛久美子公寓附近遇到迷路的久美子，将其侮辱；是久美子线核心反派节点',
+      triggers_route: '久美子线 — 西御寺的侮辱是久美子线反派节点',
+      is_reversible: false,
+      flags: ['flag_yutomo_kumiko_assault', 'flag_kumiko_route_blocked'],
+      note: '★ 不可逆 flag — 西御寺侮辱久美子后，久美子线进入"被侮辱"分支；若主角在场可阻止'
+    },
+    {
+      date: '01-03',
+      time_slot: 'PM5:05',
+      location: '旅馆大厅',
+      event: '关键误会事件',
+      description: '西御寺在旅馆大厅设局，制造唯与西御寺的"误会现场"让主角撞见；是唯线核心反派节点',
+      triggers_route: '唯线 — 旅馆误会事件是唯线核心反派节点',
+      is_reversible: false,
+      flags: ['flag_yutomo_yui_misunderstanding', 'flag_yui_route_blocked'],
+      note: '★ 不可逆 flag — 若主角缺席则唯线进入"被西御寺设局毁谤"分支；若主角识破则西御寺被反击'
+    },
+    {
+      date: '01-05',
+      time_slot: '全天',
+      location: '88 公园',
+      event: '88 公园救唯',
+      description: '若主角识破 1/3 误会事件，1/5 在 88 公园救唯是唯线结局分支的关键节点',
+      triggers_route: '唯线 — 88 公园救唯是唯线 Good End 的关键节点',
+      is_reversible: true,
+      flags: ['flag_yui_rescued']
+    }
+  ],
+
+  triggered_female_routes: {
+    '鸣泽唯线（heroine_id=1）': {
+      role: 'core — 唯线主要反派',
+      trigger_nodes: ['12-22~12-25 介入期', '12-26~1-2 阴谋期', '1-1 被反击期', '1-3 PM5:05 关键误会事件', '1-5 88 公园救唯'],
+      impact: '西御寺的干预是唯线核心反派弧线 — 1/3 旅馆误会事件→1/5 88 公园救唯是唯线结局分支的关键；若主角缺席 1/3 事件，唯线进入"被毁谤"分支'
+    },
+    '加藤美纪线（heroine_id=4）': {
+      role: 'antagonist — 美纪线干预者',
+      trigger_nodes: ['12-24~12-29 美纪线干预'],
+      impact: '西御寺连续纠缠美纪，12/29 美纪告白时搅局；若主角未保护美纪，美纪线进入"被搅局失败"分支'
+    },
+    '片桐美铃线（heroine_id=10）': {
+      role: 'antagonist — 美铃线情报源破坏者',
+      trigger_nodes: ['12-31 美铃线情报源破坏'],
+      impact: '西御寺告知美铃其男友存在，破坏美铃线情报源；若主角未阻止，美铃线进入"情报源被破坏"分支'
+    },
+    '永岛久美子线（heroine_id=8）': {
+      role: 'antagonist — 久美子线反派',
+      trigger_nodes: ['1-2 AM9:15 久美子侮辱事件'],
+      impact: '西御寺在公寓附近遇到迷路的久美子，将其侮辱；若主角未阻止，久美子线进入"被侮辱"分支'
+    }
+  },
+
+  player_played_branch: {
+    condition: '玩家在开局选择扮演"西御寺有友"作为操作角色',
+    initial_state: {
+      money: 50000,
+      stats: { charm: 60, academic: 30, physical: 50, social: 70, perception: 20, willpower: 40 },
+      advantage: '金钱极多（50000，无需打工）；社交能力强（social=70）；魅力较高（charm=60）；可指挥跟班执行任务',
+      disadvantage: '名声差（willpower=40）；部分女角初始敌意；学业极差（academic=30）；无需打工但错过打工线事件；可攻略女角大幅限制'
+    },
+    exclusive_route: {
+      name: '反派视角剧情线 — 金钱碾压 + 跟班指挥 + 阴谋布局',
+      description: '玩家扮演西御寺时，可触发独特的反派视角剧情分支 — 通过金钱碾压、跟班指挥和阴谋布局操控剧情走向',
+      branch_logic: {
+        '金钱碾压路径': '用金钱收买女角周围的人（朋友/家人/老师），制造孤立；但部分女角（唯/美铃）对金钱免疫',
+        '跟班指挥路径': '派遣跟班执行任务（跟踪/威胁/情报收集），可同时操控多条线；但跟班能力有限，失败会暴露',
+        '阴谋布局路径': '策划 1/3 旅馆误会事件、12/29 美纪搅局、12/31 美铃情报破坏、1/2 久美子侮辱等多线阴谋；但每个阴谋都有失败风险',
+        '改邪归正路径（隐藏路线，极低概率）': '主动放弃财阀身份和阴谋，真诚追求某位女角；但需要极高决心和赎罪行动，且大多数女角仍不信任'
+      },
+      exclusive_endings: [
+        '专属反派 Bad End — 西御寺的阴谋被主角和所有女角联手揭穿，身败名裂被家族剥夺继承权',
+        '专属反派 Normal End — 西御寺通过金钱和权势暂时得逞，但孤独终老（众叛亲离）',
+        '专属反派 Good End（极低概率）— 西御寺改邪归正后获得某位女角的原谅（需在 1/3 前完成所有赎罪条件）'
+      ]
+    },
+    locked_routes: '玩家扮演西御寺时，唯线/美纪线/美铃线/久美子线初始敌意极高（affection=-10~-20/trust=-20~-30），攻略难度地狱级；其他女角也因西御寺名声差而初始印象负面'
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'enemy — 关系极差，反派对手',
+      detail: '多次正面冲突，1/1 被主角在西御寺家自宅痛打；是主角学生时代的宿敌'
+    },
+    '鸣泽唯（heroine_id=1）': {
+      type: 'enemy — 唯线主要反派',
+      detail: '被唯拒绝后阴险报复（affection=-20/trust=-30）；1/3 旅馆误会事件是唯线核心反派节点'
+    },
+    '加藤美纪（heroine_id=4）': {
+      type: 'enemy — 美纪线干预者',
+      detail: '被纠缠过（affection=-10/trust=-20）；12/24~29 连续纠缠搅局美纪告白'
+    },
+    '片桐美铃（heroine_id=10）': {
+      type: 'enemy — 美铃线情报源破坏者',
+      detail: '师生关系紧张（affection=-15/trust=-25）；12/31 告知美铃其男友存在'
+    },
+    '永岛久美子（heroine_id=8）': {
+      type: 'enemy — 久美子线反派',
+      detail: '1/2 AM9:15 公寓久美子迷路遭其侮辱；是久美子线核心反派节点'
+    },
+    '长冈芳树（N2）': {
+      type: 'ally — 共谋关系（1/2 起）',
+      detail: '西御寺提供金钱和权势，芳树提供偷拍情报；利益同盟非友谊'
+    },
+    '跟班三人组': {
+      type: 'subordinate — 雇佣的"朋友"',
+      detail: '西御寺家雇佣的保镖兼跟班；玩家扮演西御寺时可指挥跟班执行任务'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_yutomo_miki_interference',
+      trigger: '12-24~12-29 美纪线干预（12/29 搅局美纪告白）',
+      effect: '西御寺搅局美纪告白后，美纪线进入"被搅局失败"分支',
+      reversibility: '不可逆 — 搅局行为无法撤回'
+    },
+    {
+      flag: 'flag_yutomo_misuzu_info_break',
+      trigger: '12-31 美铃线情报源破坏',
+      effect: '西御寺告知美铃其男友存在后，美铃线进入"情报源被破坏"分支',
+      reversibility: '不可逆 — 情报告知无法撤回'
+    },
+    {
+      flag: 'flag_yutomo_kumiko_assault',
+      trigger: '1-2 AM9:15 久美子侮辱事件',
+      effect: '西御寺侮辱久美子后，久美子线进入"被侮辱"分支',
+      reversibility: '不可逆 — 侮辱行为无法撤回'
+    },
+    {
+      flag: 'flag_yutomo_yui_misunderstanding',
+      trigger: '1-3 PM5:05 旅馆大厅关键误会事件',
+      effect: '若主角缺席则唯线进入"被西御寺设局毁谤"分支；若主角识破则西御寺被反击',
+      reversibility: '不可逆 — 误会事件一旦发生无法撤回（但结局可分支）'
+    }
+  ],
+
+  summary: '西御寺的剧情线是"介入—阴谋—关键误会—被反击—干预"五阶段弧线，核心功能是干预唯/美纪/美铃/久美子 4 条女角线，是剧情中干预范围最广的反派枢纽。玩家扮演西御寺时，解锁独特的"反派视角剧情线"（金钱碾压 + 跟班指挥 + 阴谋布局），可同时操控多条线，但唯/美纪/美铃/久美子初始敌意极高，攻略难度地狱级。'
+};
+%>
+
+西御寺有友 · 剧情线已加载。核心定位：反派枢纽 — 干预唯/美纪/美铃/久美子 4 条女角线的核心反派。五阶段弧线：介入期（12/22~25）→阴谋期（12/26~1/2）→关键误会事件（1/3 PM5:05 旅馆大厅）→被反击期（1/1 自宅）→美纪线干预（12/24~29）+美铃线情报破坏（12/31）+久美子侮辱（1/2 AM9:15）。不可逆 flag 4 个。玩家扮演西御寺时解锁独特的"反派视角剧情线"。

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "target": "E:\\Games\\写卡\\tavern_helper_template\\src\\旮旯给木-英雄坛说\\旮旯给木-英雄坛说.json",
+  "filesScanned": 1,
+  "skipped": [],
+  "findings": [
+    {
+      "ruleId": "TWSEC-REMOTE-001",
+      "severity": "medium",
+      "file": "旮旯给木-英雄坛说.json",
+      "line": 47,
+      "column": 68,
+      "message": "Remote JavaScript dependency requires provenance and runtime review"
+    },
+    {
+      "ruleId": "TWSEC-DOM-001",
+      "severity": "medium",
+      "file": "旮旯给木-英雄坛说.json",
+      "line": 240,
+      "column": 4815,
+      "message": "HTML assignment sink requires an inert-data boundary"
+    },
+    {
+      "ruleId": "TWSEC-REMOTE-001",
+      "severity": "medium",
+      "file": "旮旯给木-英雄坛说.json",
+      "line": 261,
+      "column": 33,
+      "message": "Remote JavaScript dependency requires provenance and runtime review"
+    },
+    {
+      "ruleId": "TWSEC-REMOTE-001",
+      "severity": "medium",
+      "file": "旮旯给木-英雄坛说.json",
+      "line": 298,
+      "column": 60,
+      "message": "Remote JavaScript dependency requires provenance and runtime review"
+    }
+  ],
+  "summary": {
+    "high": 0,
+    "medium": 4,
+    "low": 0,
+    "byRule": {
+      "TWSEC-REMOTE-001": 3,
+      "TWSEC-DOM-001": 1
+    }
+  }
+}

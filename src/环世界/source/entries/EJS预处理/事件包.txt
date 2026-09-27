@@ -1,0 +1,97 @@
+@@generate_before
+<%_
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var lastRaidDay = Number(getvar('stat_data.事件计时器.上次袭击日', { scope: 'local', defaults: 0 })) || 0;
+var lastTradeDay = Number(getvar('stat_data.事件计时器.上次贸易日', { scope: 'local', defaults: 0 })) || 0;
+var lastDiseaseDay = Number(getvar('stat_data.事件计时器.上次疾病日', { scope: 'local', defaults: 0 })) || 0;
+var lastMentalDay = Number(getvar('stat_data.事件计时器.上次精神事件日', { scope: 'local', defaults: 0 })) || 0;
+var lastSpecialDay = Number(getvar('stat_data.事件计时器.上次特殊事件日', { scope: 'local', defaults: 0 })) || 0;
+var lastMeteorDay = Number(getvar('stat_data.事件计时器.上次陨石日', { scope: 'local', defaults: 0 })) || 0;
+var lastMigrationDay = Number(getvar('stat_data.事件计时器.上次动物迁徙日', { scope: 'local', defaults: 0 })) || 0;
+var currentEvent = getvar('stat_data.事件计时器.当前事件', { scope: 'local', defaults: '无' }) || '无';
+
+function _cd(gameDay, lastDay, min, max) {
+  var elapsed = gameDay - lastDay;
+  var threshold = (min + max) / 2;
+  return { elapsed: elapsed, ready: elapsed >= threshold, remaining: Math.max(0, Math.round(threshold - elapsed)) };
+}
+
+var eventTypes = [
+  { type: '袭击', cooldown: '另计', handler: '袭击触发器', note: '由袭击触发器独立处理' },
+  { type: '自然灾害', cooldown: '10-20天', examples: '寒潮/热浪/火山冬天/闪电风暴/虫害' },
+  { type: '贸易', cooldown: '7-15天', examples: '商队到访/轨道交易' },
+  { type: '疾病', cooldown: '15-30天', examples: '流感/瘟疫/感染/疟疾' },
+  { type: '精神事件', cooldown: '每轮检查', examples: '崩溃/灵感/通灵' },
+  { type: '特殊', cooldown: '20-40天', examples: '陨石/难民/逃亡者/远古危险' },
+  { type: '机械族', cooldown: '30-60天', examples: '机械族袭击/机械集群 (需触发条件)' }
+];
+
+var diseases = [
+  { name: '流感', contRate: 30, hpLoss: 3, duration: 5 },
+  { name: '瘟疫', contRate: 50, hpLoss: 8, duration: 7 },
+  { name: '感染', contRate: 0, hpLoss: 3, duration: 999 },
+  { name: '疟疾', contRate: 20, hpLoss: 5, duration: 10 }
+];
+
+var ancientDanger = [
+  { range: '1-25', content: '宝藏 (钢铁/白银/组件/稀有材料)' },
+  { range: '26-50', content: '机械族 (苏醒即敌对)' },
+  { range: '51-65', content: '病原体 (释放瘟疫)' },
+  { range: '66-80', content: '友好休眠者 (可唤醒加入)' },
+  { range: '81-95', content: '混合 (宝藏+机械族)' },
+  { range: '96-100', content: '神器 (灵能/传奇装备)' }
+];
+
+var disasterCd = _cd(gameDay, lastSpecialDay, 10, 20);
+var tradeCd = _cd(gameDay, lastTradeDay, 7, 15);
+var diseaseCd = _cd(gameDay, lastDiseaseDay, 15, 30);
+var specialCd = _cd(gameDay, lastSpecialDay, 20, 40);
+var meteorCd = _cd(gameDay, lastMeteorDay, 20, 40);
+var mechCd = _cd(gameDay, lastRaidDay, 30, 60);
+_%>
+<事件包就绪>
+[当前事件状态]
+游戏日: <%= gameDay %>
+当前事件: <%= currentEvent %>
+
+[事件冷却状态]
+自然灾害: 距上次<%= disasterCd.elapsed %>天 → <%= disasterCd.ready ? '可触发' : '剩' + disasterCd.remaining + '天' %>
+贸易: 距上次<%= tradeCd.elapsed %>天 → <%= tradeCd.ready ? '可触发' : '剩' + tradeCd.remaining + '天' %>
+疾病: 距上次<%= diseaseCd.elapsed %>天 → <%= diseaseCd.ready ? '可触发' : '剩' + diseaseCd.remaining + '天' %>
+特殊: 距上次<%= specialCd.elapsed %>天 → <%= specialCd.ready ? '可触发' : '剩' + specialCd.remaining + '天' %>
+陨石: 距上次<%= meteorCd.elapsed %>天 → <%= meteorCd.ready ? '可触发' : '剩' + meteorCd.remaining + '天' %>
+机械族: 距上次袭击<%= mechCd.elapsed %>天 → <%= mechCd.ready ? '可触发' : '剩' + mechCd.remaining + '天' %>
+精神事件: 每轮检查
+
+[7类事件表]
+<%_ for (var i = 0; i < eventTypes.length; i++) { var e = eventTypes[i]; _%>
+<%= (i+1) %>. <%= e.type %>
+   冷却: <%= e.cooldown %>
+   触发: <%= e.handler || e.examples %>
+<%_ } _%>
+
+[特殊事件详表]
+远古危险6档 (_lcgRoll(1-100)):
+<%_ for (var i = 0; i < ancientDanger.length; i++) { var a = ancientDanger[i]; _%>
+  <%= a.range %>: <%= a.content %>
+<%_ } _%>
+
+疾病4种:
+<%_ for (var i = 0; i < diseases.length; i++) { var d = diseases[i]; _%>
+  <%= d.name %>: 传染<%= d.contRate %>% / HP-<%= d.hpLoss %>/天 / 持续<%= d.duration %>天
+<%_ } _%>
+防疫成功率: _check(医疗技能×4, seed, '普通')
+
+难民: 1-5人求加入, 接受+派系关系, 可能混入间谍(5%概率)
+逃亡者: 无条件加入, 可能被追杀引发袭击
+陨石: 落点半径3格, 产钢铁10-50 (_lcgRoll(seed,1,41)[0]+9)
+
+[行为校验要求]
+事件触发必须输出行为校验块:
+<事件触发校验>
+- 事件类型 / 触发条件 / 检定结果 (_lcgRoll/_check)
+- 事件描述 / 影响范围 / 持续时间
+- 效果执行 (变量变更/状态影响/HP损失)
+- 冷却重置 (新冷却值写入事件计时器)
+</事件触发校验>
+</事件包就绪>

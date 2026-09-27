@@ -1,0 +1,206 @@
+@@generate_before
+<%_
+// [mvu_plot]技能升级公式系统 - 常驻 depth 0
+// 6女性技能 + 6 user技能升级公式 + 多人疯狂使用场景 + 难度修正
+// AI 内部参考，严禁外露数值
+
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var difficulty = getvar('stat_data.状态.难度', {scope:'local', defaults:'困难'}) || '困难';
+var diffIdx = difficulty === '普通' ? 0 : difficulty === '地狱' ? 2 : 1;
+
+// ===== 难度系数（从 配置.难度倍率 读取）=====
+var femaleSkillGrowthArr = getvar('stat_data.配置.难度倍率.女性技能成长', {scope:'local', defaults:[0.7, 1.0, 1.3]}) || [0.7, 1.0, 1.3];
+var playerExpArr = getvar('stat_data.配置.难度倍率.玩家经验', {scope:'local', defaults:[1.0, 0.7, 0.5]}) || [1.0, 0.7, 0.5];
+var femaleSkillGrowth = Number(femaleSkillGrowthArr[diffIdx]) || 1.0;
+var playerExp = Number(playerExpArr[diffIdx]) || 0.7;
+
+// ===== 持有者信息 =====
+var holderId = getvar('stat_data.隐藏层.持有者ID', {scope:'local', defaults:'林婉清'}) || '林婉清';
+var activeUsersCount = Number(getvar('stat_data.隐藏层.活跃使用人数', {scope:'local', defaults:0})) || 0;
+
+// 持有者ID 存的是中文姓名，需遍历 女性角色 反查 UID
+var holderUid = '';
+try {
+  var _allFem = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+  for (var _uid in _allFem) {
+    if (_allFem[_uid] && _allFem[_uid].基础 && _allFem[_uid].基础.姓名 === holderId) {
+      holderUid = _uid;
+      break;
+    }
+  }
+} catch(e) {}
+
+// ===== 持有者6技能等级 =====
+var holderSkill = Number(getvar('stat_data.女性角色.' + holderUid + '.能力.技能等级', {scope:'local', defaults:1})) || 1;
+var holderStealth = Number(getvar('stat_data.女性角色.' + holderUid + '.能力.隐蔽', {scope:'local', defaults:50})) || 50;
+var holderEndurance = Number(getvar('stat_data.女性角色.' + holderUid + '.能力.持久', {scope:'local', defaults:50})) || 50;
+var holderControl = Number(getvar('stat_data.女性角色.' + holderUid + '.能力.控制', {scope:'local', defaults:50})) || 50;
+var holderTemptation = Number(getvar('stat_data.女性角色.' + holderUid + '.能力.诱惑', {scope:'local', defaults:50})) || 50;
+var holderDesire = Number(getvar('stat_data.女性角色.' + holderUid + '.能力.欲望', {scope:'local', defaults:30})) || 30;
+
+// ===== 持有者经验（4显式 + 2隐式由 执念 驱动）=====
+var holderSkillExp = Number(getvar('stat_data.女性角色.' + holderUid + '.成长.技能经验', {scope:'local', defaults:0})) || 0;
+var holderStealthExp = Number(getvar('stat_data.女性角色.' + holderUid + '.成长.隐蔽经验', {scope:'local', defaults:0})) || 0;
+var holderEnduranceExp = Number(getvar('stat_data.女性角色.' + holderUid + '.成长.持久经验', {scope:'local', defaults:0})) || 0;
+var holderControlExp = Number(getvar('stat_data.女性角色.' + holderUid + '.成长.控制经验', {scope:'local', defaults:0})) || 0;
+
+// ===== 持有者能力上限（受 能力上限 约束）=====
+var ceilingSkill = Number(getvar('stat_data.女性角色.' + holderUid + '.能力上限.技能上限', {scope:'local', defaults:50})) || 50;
+var ceilingStealth = Number(getvar('stat_data.女性角色.' + holderUid + '.能力上限.隐蔽上限', {scope:'local', defaults:50})) || 50;
+var ceilingEndurance = Number(getvar('stat_data.女性角色.' + holderUid + '.能力上限.持久上限', {scope:'local', defaults:50})) || 50;
+var ceilingControl = Number(getvar('stat_data.女性角色.' + holderUid + '.能力上限.控制上限', {scope:'local', defaults:50})) || 50;
+// 诱惑/欲望 无显式 上限，硬上限 100
+
+// ===== 持有者痴迷度（驱动 欲望 升级）=====
+var holderObsession = Number(getvar('stat_data.女性角色.' + holderUid + '.多维状态.执念', {scope:'local', defaults:0})) || 0;
+
+// ===== user 6技能 =====
+var userMeditation = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+var userMeditationExp = Number(getvar('stat_data.技能.冥想.经验', {scope:'local', defaults:0})) || 0;
+var userExercise = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var userInsight = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var userInsightExp = Number(getvar('stat_data.技能.洞察.经验', {scope:'local', defaults:0})) || 0;
+var userDisguise = Number(getvar('stat_data.技能.伪装.等级', {scope:'local', defaults:1})) || 1;
+var userRecovery = Number(getvar('stat_data.技能.恢复.等级', {scope:'local', defaults:1})) || 1;
+var userWillpower = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+var userWillpowerExp = Number(getvar('stat_data.技能.意志.经验', {scope:'local', defaults:0})) || 0;
+
+// ===== 多人疯狂使用判定 =====
+var multiCrazyActive = (activeUsersCount >= 3 && stage >= 4);
+var strengthMult = multiCrazyActive ? (1 + 0.1 * activeUsersCount) : 1;
+var energyMult = multiCrazyActive ? (1 + 0.15 * activeUsersCount) : 1;
+var sanityMult = multiCrazyActive ? (1 + 0.2 * activeUsersCount) : 1;
+var exposureRisk = multiCrazyActive ? (0.05 * activeUsersCount) : 0;
+_%>
+<skill_system>
+【技能升级系统 - AI内部参考，严禁外露数值】
+
+---
+■ 女性技能（6技能，受 能力上限 上限约束）
+---
+持有者ID：<%= holderId %>（严禁正文出现此ID或姓名）
+
+| 技能 | 等级 | 经验 | 上限 | 升级阈值(level×10) |
+|------|------|------|------|--------------------|
+| 技能等级（使用技巧） | <%= holderSkill %> | <%= holderSkillExp %> | <%= ceilingSkill %> | <%= holderSkill * 10 %> |
+| 隐蔽（隐匿） | <%= holderStealth %> | <%= holderStealthExp %> | <%= ceilingStealth %> | <%= holderStealth * 10 %> |
+| 持久（耐力） | <%= holderEndurance %> | <%= holderEnduranceExp %> | <%= ceilingEndurance %> | <%= holderEndurance * 10 %> |
+| 控制（控制） | <%= holderControl %> | <%= holderControlExp %> | <%= ceilingControl %> | <%= holderControl * 10 %> |
+| 诱惑（诱惑） | <%= holderTemptation %> | -（直接入等级） | 100 | <%= holderTemptation * 10 %> |
+| 欲望（欲望） | <%= holderDesire %> | 痴迷度:<%= holderObsession %> | 100 | <%= holderDesire * 10 %> |
+
+注：诱惑/欲望 无显式 经验 字段，由 执念/感知异常直接驱动等级增长。
+
+---
+■ user 技能（6技能）
+---
+| 技能 | 等级 | 经验 | 升级阈值(level×15) | 解锁阶段 |
+|------|------|------|--------------------|----------|
+| 冥想（冥想） | <%= userMeditation %> | <%= userMeditationExp %> | <%= userMeditation * 15 %> | stage>=2 |
+| 锻炼（锻炼） | <%= userExercise %> | - | <%= userExercise * 15 %> | stage>=1 |
+| 洞察（洞察） | <%= userInsight %> | <%= userInsightExp %> | <%= userInsight * 15 %> | stage>=3 |
+| 伪装（伪装） | <%= userDisguise %> | - | <%= userDisguise * 15 %> | stage>=1 |
+| 恢复（恢复） | <%= userRecovery %> | - | <%= userRecovery * 15 %> | stage>=1 |
+| 意志（意志） | <%= userWillpower %> | <%= userWillpowerExp %> | <%= userWillpower * 15 %> | stage>=1 |
+
+---
+■ 女性技能升级公式
+---
+每次使用假阴茎后，变量 AI 自动写入以下经验增量：
+
+  技能经验 += 使用强度 × (1 + 执念/100) × <%= femaleSkillGrowth %>
+  隐蔽经验     += 0.5 × (1 - 被发现概率) × <%= femaleSkillGrowth %>
+  持久经验   += 0.3 × 使用时长系数
+  控制经验     += 0.4 × (1 + 技能等级/100)
+  诱惑      += 0.5 × (1 + 执念/100) × <%= femaleSkillGrowth %>   // 直接入等级
+  欲望          += 0.3 × (执念 / 100) × <%= femaleSkillGrowth %>     // 直接入等级
+
+使用强度参考：温柔=3, 急切=5, 粗暴=7, 仪式性=8
+使用时长系数：短(<5min)=0.5, 中(5-15min)=1.0, 长(15-30min)=1.5, 超长(>30min)=2.0
+被发现概率：基础0.05 + 0.02×(活跃使用人数) + 0.01×(100-隐蔽)/100
+
+升级判定（每次使用后逐技能执行）：
+  if (技能经验 >= 技能等级 × 10) {
+    技能经验 -= 技能等级 × 10
+    技能等级 += 1
+    if (技能等级 > <%= ceilingSkill %>) 技能等级 = <%= ceilingSkill %>  // 触顶不再升
+  }
+  // 其余5技能同公式（诱惑/欲望 上限100，无 上限 字段约束）
+
+---
+■ user 技能升级公式
+---
+冥想经验 += 感知异常强度 × 0.5 × <%= playerExp %>     （仅 stage>=2 才有）
+洞察经验    += 调查行为有效性 × 1.0 × <%= playerExp %>   （仅 stage>=3 才有）
+意志经验  += sanity抵抗次数 × 0.3 × <%= playerExp %>
+锻炼经验   += 锻炼强度 × 0.4 × <%= playerExp %>
+伪装经验   += 对抗女性隐蔽次数 × 0.5 × <%= playerExp %>
+恢复经验   += 休息/营养品使用 × 0.3 × <%= playerExp %>
+
+升级判定：if (exp >= level × 15) { exp -= level × 15; level += 1; }
+
+解锁规则：
+- 冥想 经验仅在 stage>=2 时累积（stage=1 时 exp 不增长）
+- 洞察 经验仅在 stage>=3 时累积（stage<3 时 exp 不增长）
+- 其余4技能 stage>=1 即可累积
+
+---
+■ 多人疯狂使用场景（stage 4-5 触发）
+---
+当前活跃使用者数量：<%= activeUsersCount %>
+当前使用阶段：<%= stage %>/5
+触发条件：活跃使用人数 >= 3 且 stage >= 4
+
+<% if (multiCrazyActive) { %>
+【多人疯狂模式已激活】
+修正公式：
+  每个使用者的使用强度 ×= (1 + 0.1 × <%= activeUsersCount %>) = <%= strengthMult.toFixed(2) %> 倍
+  user的energy消耗 ×= (1 + 0.15 × <%= activeUsersCount %>) = <%= energyMult.toFixed(2) %> 倍
+  user的sanity消耗 ×= (1 + 0.2 × <%= activeUsersCount %>) = <%= sanityMult.toFixed(2) %> 倍
+  暴露风险 += 0.05 × <%= activeUsersCount %> = <%= exposureRisk.toFixed(2) %>
+
+叙事转化：
+- {{user}} 感知到"不止一个人"（仅 stage>=3 且 insight>=30 才能隐约感知）
+- {{user}} 体力消耗加剧（醒来时腰酸加倍，精力恢复变慢）
+- {{user}} 理智下降加剧（春梦更混乱，清醒后恍惚感更重）
+- 暴露风险累积（旁人可能注意到女性群体气色/行为异常）
+- 多人协同使用会使假阴茎"具现度"加速增长（参 [mvu_plot]具现度成长系统）
+<% } else if (activeUsersCount >= 3) { %>
+【多人使用但未触发疯狂模式】
+当前 活跃使用人数=<%= activeUsersCount %>（已达3+），但 stage=<%= stage %>（需 stage>=4）
+触发条件未满足，按单人/普通多人规则计算。
+<% } else { %>
+【多人疯狂模式未触发】
+当前 活跃使用人数=<%= activeUsersCount %>（需>=3），stage=<%= stage %>（需>=4）
+触发条件未满足，按单人规则计算。
+<% } %>
+
+---
+■ 难度修正系数
+---
+当前难度：<%= difficulty %>（索引=<%= diffIdx %>）
+女性技能成长系数：<%= femaleSkillGrowth %>（女性技能经验 × 此系数）
+user经验系数：<%= playerExp %>（user技能经验 × 此系数）
+
+难度对照表（从 配置.难度倍率 读取）：
+| 难度 | 女性技能成长 | user经验 | 女性使用频率 | 传播速度 |
+|------|-------------|---------|-------------|---------|
+| 普通 | 0.7 | 1.0 | 0.7 | 0.7 |
+| 困难 | 1.0 | 0.7 | 1.0 | 1.0 |
+| 地狱 | 1.3 | 0.5 | 1.3 | 1.3 |
+
+---
+■ AI 执行铁律
+---
+1. 每次女性使用后，变量 AI 自动 patch 持有者 成长.*_经验 增长（4个字段）
+2. 每次女性使用后，判定是否触发升级；触发则在同块 patch level+1 和 exp-=阈值
+3. 诱惑/欲望 直接修改 能力.诱惑/欲望（无 经验 字段）
+4. user 技能升级仅 stage>=2（冥想）/ stage>=3（洞察）才生效，其他时段 exp 不增
+5. 多人疯狂使用（活跃使用人数>=3 且 stage>=4）时，user 的 energy/sanity 消耗按修正公式计算
+6. 严禁在正文中输出"经验""等级""exp""level""技能等级""隐蔽"等元数值术语
+7. 升级结果通过 {{user}} 的感知变化间接体现（如"感觉更敏锐了""今天异常感更强"）
+8. 升级阈值固定：女性 level×10，user level×15
+9. 触顶（level > 上限）时不再升级，AI 不得伪造升级
+10. 多人疯狂场景的"暴露风险"累积到 状态.怀疑值 字段
+</skill_system>

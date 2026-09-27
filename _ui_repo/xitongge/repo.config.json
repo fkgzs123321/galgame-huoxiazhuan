@@ -1,0 +1,11 @@
+{
+  "GH_NAME": "fkgzs123321",
+  "GH_PROJECT_NAME": "galgame-xitongge",
+  "BRANCH": "main",
+  "PROJECT_NAME": "系统哥的末日",
+  "CDN": "https://testingcf.jsdelivr.net/gh",
+  "UI_FILE": "index.html",
+  "CARD_LOADER": "src/系统哥的末日/正则/状态栏界面.html",
+  "LAST_COMMIT": "2cd5c24",
+  "note": "已发布。改面板 → node _ui_repo/xitongge/push.cjs（构建 + 推 + 回填 commit + 重打包）。"
+}

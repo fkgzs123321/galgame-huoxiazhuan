@@ -1,0 +1,46 @@
+@@generate_before
+@@private
+# 阶段调度（按需拉取档案·蓝灯）：单人战斗=当前目标全套；多人=目标列表全套；日常=最近消息出现角色全套（基础/私密/阶段）——NSFW 场景表达多样，不做词表判断，在场即全套
+<%_ const ALL_NAMES = ['何晓雯','凌音华','周灵韵','唐墨竹','唐雅芝','方瑾瑜','李慧珍','林墨白','林若梅','欧阳雪','江文澜','沈雨桐','白洁','白露','程雪琴','苏婉清','苏梦瑶','赵雅芳','陆诗涵','陈老师','韩雪','林婉清','唐小糖','苏晴','江月白','秦雨','张雨萱','林小艾','柳思雨','顾小曼','卓玛','奥克萨娜·科瓦连科','娜奥米·恩迪亚耶','宋雅','叶知秋','周思琪','白雪','马丽亚','马晓月','阿茹娜','阿莎·帕特尔','何美琪','林心怡','樱井美咲','艾米丽·沃克','陈雅思','赵灵儿','慕容晴','铃','小夜','怜奈','柚子','桃桃']; _%>
+<%_ const tgt = getvar('stat_data.排班.当前战斗目标', { defaults: '' }); _%>
+<%_ const st = getvar('stat_data.排班.战斗状态', { defaults: '未开始' }); _%>
+<%_ const curUser = getvar('stat_data.隐藏层.当前使用者UID', { defaults: '' }); _%>
+
+<%_ function jx(nm){ return getvar('stat_data.女性角色.' + nm + '.多维状态.综合阶段', { defaults: 'A_理性期' }); } _%>
+
+<%_ if (tgt && tgt !== '多人' && getvar('stat_data.女性角色.' + tgt, { defaults: null })) { _%>
+## 当前目标：<%- tgt %>（<%- jx(tgt) %>）
+<%- await getwi(tgt + '_基础信息') %>
+<%- await getwi(tgt + '_私密档案') %>
+<%- await getwi(tgt + '_阶段行为') %>
+<%_ } else if (tgt === '多人') { _%>
+## 当前目标：多人战斗——逐人档案（目标列表见 排班.战斗.目标列表 / 隐藏层.活跃使用人数）
+<%_ const tl = getvar('stat_data.排班.战斗.目标列表', { defaults: [] }) || []; _%>
+<%_ const tlNames = tl.map(function(t){ return typeof t === 'string' ? t : (t && t.名) || ''; }).filter(Boolean); _%>
+<%_ for (var i = 0; i < tlNames.length && i < 4; i++) { var nm = tlNames[i]; if (!getvar('stat_data.女性角色.' + nm, { defaults: null })) continue; _%>
+### <%- nm %>（<%- jx(nm) %>）
+<%- await getwi(nm + '_基础信息') %>
+<%- await getwi(nm + '_私密档案') %>
+<%- await getwi(nm + '_阶段行为') %>
+<%_ } _%>
+<%_ } else if (curUser && getvar('stat_data.女性角色.' + curUser, { defaults: null })) { _%>
+## 当前使用者：<%- curUser %>（<%- jx(curUser) %>）
+<%- await getwi(curUser + '_基础信息') %>
+<%- await getwi(curUser + '_私密档案') %>
+<%- await getwi(curUser + '_阶段行为') %>
+<%_ } else { _%>
+<%_ const recent = (typeof getChatMessages === 'function' ? (getChatMessages(-5) || []) : []).join('\n'); _%>
+<%_ const appeared = ALL_NAMES.filter(function(n){ return recent.indexOf(n) >= 0; }).slice(0, 3); _%>
+<%_ if (appeared.length) { _%>
+## 当前场景在场角色（按最近消息提取，<%- appeared.length %> 人）——全套档案（基础/私密/阶段）
+<%_ for (var i = 0; i < appeared.length; i++) { var nm = appeared[i]; if (!getvar('stat_data.女性角色.' + nm, { defaults: null })) continue; _%>
+### <%- nm %>（<%- jx(nm) %>）
+<%- await getwi(nm + '_基础信息') %>
+<%- await getwi(nm + '_私密档案') %>
+<%- await getwi(nm + '_阶段行为') %>
+<%_ } _%>
+<%_ } else { _%>
+## 当前目标：无（自由剧情时段）
+- 可自由推进：结识新的女性、经营已有关系、处理日常事件、或选定当前目标（写入 排班.当前战斗目标 变量）
+<%_ } _%>
+<%_ } _%>

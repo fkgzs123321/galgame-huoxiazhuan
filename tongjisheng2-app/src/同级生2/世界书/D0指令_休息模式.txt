@@ -1,0 +1,146 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · D0指令 · 休息模式
+   ════════════════════════════════════════════════════════════
+   职责：当 场景模式='休息' 时加载，定义该模式的系统提示与规则
+   由D0系统控制器（按 临时.场景模式）加载
+   引用全局规则总表：SURVIVAL_RULES / DIFFICULTY_MODIFIERS / SKILL_RULES / BEHAVIOR_TABLE / ITEM_EFFECTS_REF
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const REST_MODE = {
+  mode_name: '休息',
+  time_cost: '1时段（任意时段，深夜强制睡眠）',
+  turn_actions_cost: 1,
+  allowed_actions: [
+    '睡觉（恢复 疲劳/体力，深夜强制，计算次日 睡眠质量）',
+    '洗澡（恢复 清洁，淋浴+30/温泉+60/温泉旅馆+80）',
+    '吃饭（恢复 饥饿，按 SHOP_ITEMS 三餐类别）',
+    '喝水（恢复 口渴，按 SHOP_ITEMS 饮料类别）',
+    '看电视（心情 +5，疲劳 +2，0.5时段）',
+    '发呆/放松（心情 +3，疲劳 -5，0.5时段）',
+    '梳洗打扮（魅力 +2，疲劳 +2，0.5时段）',
+    '锻炼（体力 +3，疲劳 +8，引用 BEHAVIOR_TABLE.锻炼）',
+    '学习（学业 +3，疲劳 +5，引用 BEHAVIOR_TABLE.学习）'
+  ],
+  forbidden_actions: [
+    '深夜不睡觉强行其他行动（触发"熬夜惩罚"：次日 疲劳 +20，睡眠质量 -20）',
+    '疲劳≥80 时拒绝睡觉（触发"晕倒"事件，强制推进至次日）',
+    '在非自宅地点洗澡（需在自宅周边或温泉乡）',
+    '金钱不足强行高消费休息（如温泉旅馆需 5000）',
+    '连续休息 3 天无任何行动 → 触发"惰性"debuff（心情 -10/天）'
+  ],
+  // rest_actions 各项的 *_change 字段已删除：单一来源为 全局规则总表.txt 的 BEHAVIOR_TABLE（睡觉/在家淋浴/泡温泉/温泉旅馆过夜/吃便利店便当/吃家庭料理/吃美佐子料理/喝矿泉水/喝能量饮料）与 SHOP_ITEMS（物品价格与效果）
+  rest_actions: [
+    { name: '睡觉', note: '深夜强制，计算次日 睡眠质量（引用 SURVIVAL_RULES.sleep_quality）' },
+    { name: '在家淋浴', note: '免费，仅限自宅周边，引用 BEHAVIOR_TABLE.在家淋浴 / SHOP_ITEMS.淋浴券' },
+    { name: '泡温泉', note: '需在温泉乡，金钱 -800，引用 BEHAVIOR_TABLE.泡温泉 / SHOP_ITEMS.温泉券' },
+    { name: '温泉旅馆过夜', note: '需在温泉乡，金钱 -5000，深度休息，引用 BEHAVIOR_TABLE.温泉旅馆过夜 / SHOP_ITEMS.温泉旅馆住宿' },
+    { name: '吃便利店便当', note: '金钱 -300，引用 BEHAVIOR_TABLE.吃便利店便当 / SHOP_ITEMS.便利店便当' },
+    { name: '吃家庭料理', note: '需在自宅，金钱 -200，引用 BEHAVIOR_TABLE.吃家庭料理 / SHOP_ITEMS.家庭料理' },
+    { name: '吃美佐子料理', note: '需美佐子好感≥20，免费，引用 BEHAVIOR_TABLE.吃美佐子料理 / SHOP_ITEMS.美佐子料理' },
+    { name: '喝矿泉水', note: '金钱 -100，引用 BEHAVIOR_TABLE.喝矿泉水 / SHOP_ITEMS.矿泉水' },
+    { name: '喝能量饮料', note: '强效提神，金钱 -200，引用 BEHAVIOR_TABLE.喝能量饮料 / SHOP_ITEMS.能量饮料' },
+    { name: '看电视', note: '0.5时段，免费，放松心情' },
+    { name: '发呆/放松', note: '0.5时段，免费，无所事事' }
+  ],
+  variable_changes: {
+    fatigue: '-5~40（睡觉 -40，发呆 -5，看电视 +2，锻炼 +8）',
+    mood: '+1~10（看电视 +5，发呆 +3，睡觉 +5，温泉旅馆 +10）',
+    hunger: '-20~60（按食物：便当 -30，家庭料理 -25，美佐子料理 -50，高级套餐 -60），同时每时段自动 +10',
+    thirst: '-15~30（按饮料：矿泉水 -25，运动饮料 -30，能量饮料 -10），同时每时段自动 +15',
+    hygiene: '+30~80（淋浴 +30，温泉 +60，温泉旅馆 +80），每日凌晨自动 -20',
+    money: '-0~5000（按消费：在家免费，温泉旅馆 -5000）',
+    physical: '+3~25（睡觉 +25，能量饮料 +5，锻炼 +3）',
+    sleep_quality: '深夜睡觉时计算（引用 SURVIVAL_RULES.sleep_quality.formula）'
+  },
+  difficulty_modifiers: {
+    '轻松': '恢复量 ×1.2（DIFFICULTY_MODIFIERS.decrease_mult=0.5 应用到疲劳下降，实际 fatigue 恢复更多）',
+    '普通': '恢复量 ×1.0（基准值）',
+    '挑战': '恢复量 ×0.8（DIFFICULTY_MODIFIERS.increase_mult=0.9 由模式覆盖至 0.8）',
+    '地狱': '恢复量 ×0.6（恢复极慢，survival_hunger_mult=1.5 加剧饥饿）'
+  },
+  special_triggers: [
+    '深夜时段（时段=深夜）→ 强制睡觉，计算次日 睡眠质量（引用 SURVIVAL_RULES.sleep_quality.formula）',
+    '睡眠质量 公式：base 50 + 当日亲密互动 +10 / 当日负面事件 -15 / 当日 饥饿≥70 -20 / 当日 疲劳≥80 -10',
+    '次日恢复效果：good(70-100) 体力+25/疲劳-40 / normal(40-69) 体力+15/疲劳-25 / bad(0-39) 体力+5/疲劳-10',
+    '连续休息 3 天无任何行动（本时段楼层数 持续为 1）→ 触发"惰性"debuff，心情 -10/天',
+    '疲劳≥80 强制休息 → 仅允许"睡觉"，禁止其他行动',
+    '体力≤20 强制休息 → 仅允许"睡觉"，禁止其他行动',
+    '饥饿≥90 → 强制送医，金钱 -2000，饥饿 重置为 50',
+    '口渴≥90 → 强制送医，金钱 -1500，口渴 重置为 30',
+    '清洁≤10 → 女角拒绝接近，心情 -10，建议立即洗澡'
+  ],
+  system_prompt: `[休息模式 · 系统提示模板]
+你正在生成同级生2 休息/居家场景的叙事。请按以下结构生成：
+
+【场景环境】描写主角居家或休息场所的氛围（鸣泽家客厅/自宅卧室/温泉旅馆/咖啡馆角落），突出 1995 年日本冬日居家气息。描写时段（早/上午/下午/晚/深夜）、天气（窗外雪景/阴雨/晴朗）、室内光线（暖灯/日光/月光）、背景音（电视声/钟表声/水声/寂静）。
+
+【休息动作】按玩家选择的休息动作生成叙事：
+- 睡觉：描写入睡过程（铺床/熄灯/梦境/苏醒），计算次日 睡眠质量，描写次日清晨醒来状态
+- 洗澡：描写淋浴/温泉过程（脱衣/水流/泡沫/冲洗/擦干），温泉可描写室外雪景
+- 吃饭：描写用餐细节（拆包装/咀嚼/味道/饱腹感），美佐子料理可加入美佐子互动
+- 喝水：描写饮水动作（拧瓶盖/吞咽/解渴感），能量饮料可描写提神效果
+- 看电视：描写电视节目内容（新闻/动画/综艺/天气预报），主角的反应
+- 发呆：描写主角的神游（回忆/幻想/发愣），可能穿插内心独白
+
+【生存属性结算】显式写出恢复量与自动变化：
+- 饥饿 自动 +10/时段（引用 SURVIVAL_RULES.hunger.auto_increment_per_slot）
+- 口渴 自动 +15/时段（引用 SURVIVAL_RULES.thirst.auto_increment_per_slot）
+- 若深夜切换至次日，清洁 -20（引用 SURVIVAL_RULES.hygiene.auto_decrement_per_day）
+- 若深夜睡觉，计算 睡眠质量（引用 SURVIVAL_RULES.sleep_quality.formula）
+
+【家庭互动】如果在鸣泽家，可穿插与唯/美佐子的日常互动：
+- 唯在客厅看电视/在房间做作业
+- 美佐子在厨房/从咖啡店回来/醉酒（12-26 起）
+- 互动按女角当前 关系阶段，禁止越界
+
+【输出格式】生成 200-400 字叙事段落，第一人称（"我"的视角）。变量更新由额外模型处理，禁止输出 <UpdateVariable> 块。叙事结束后按顺序输出：
+<StatusPlaceHolderImpl/>
+<UpdateTable>
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '休息·<location>', '<纪要200-600字，含地点/休息描述/疲劳fatigue变化/心情mood变化/金钱-money消费>');
+</UpdateTable>
+
+请严格遵守 SURVIVAL_RULES（生存属性自动变化与阈值效果）与 DIFFICULTY_MODIFIERS（难度修正恢复量）。深夜强制睡觉，疲劳≥80 仅允许睡觉。`
+};
+%>
+
+[D0指令 · 休息模式已加载]
+mode_name: <%= REST_MODE.mode_name %>
+time_cost: <%= REST_MODE.time_cost %>
+turn_actions_cost: <%= REST_MODE.turn_actions_cost %>（每楼层 30 分钟，本时段楼层数 = 本时段累计楼层数）
+
+【允许行动】
+<% REST_MODE.allowed_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【禁止行动】
+<% REST_MODE.forbidden_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【休息动作与效果（引用 SHOP_ITEMS / BEHAVIOR_TABLE）】
+<% REST_MODE.rest_actions.forEach(r => { %>- <%= r.name %>：<%- r.note %>
+<% }); %>
+
+【变量变化规则（引用全局规则总表）】
+- 疲劳: <%= REST_MODE.variable_changes.fatigue %>
+- 心情: <%= REST_MODE.variable_changes.mood %>
+- 饥饿: <%= REST_MODE.variable_changes.hunger %>
+- 口渴: <%= REST_MODE.variable_changes.thirst %>
+- 清洁: <%= REST_MODE.variable_changes.hygiene %>
+- 现金: <%= REST_MODE.variable_changes.money %>
+- 体力: <%= REST_MODE.variable_changes.physical %>
+- 睡眠质量: <%= REST_MODE.variable_changes.sleep_quality %>
+
+【难度修正（引用 DIFFICULTY_MODIFIERS）】
+<% Object.keys(REST_MODE.difficulty_modifiers).forEach(d => { %>- <%= d %>：<%= REST_MODE.difficulty_modifiers[d] %>
+<% }); %>
+
+【特殊事件触发】
+<% REST_MODE.special_triggers.forEach(t => { %>- <%= t %>
+<% }); %>
+
+【系统提示模板】
+<%= REST_MODE.system_prompt %>
+
+[休息模式规则输出完毕。AI 必须按上述系统提示生成叙事，并严格执行生存属性自动变化与睡眠质量计算。]

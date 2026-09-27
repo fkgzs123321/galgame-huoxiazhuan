@@ -1,0 +1,98 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 阶段指导 · 结局阶段（01-07，day 17）
+   ════════════════════════════════════════════════════════════
+   关键词：结局 / 多结局分支 / 终章独白
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const CHAPTER_ENDING = {
+  chapter_id: '结局',
+  day_range: [17, 17],
+  date_range: '01-07',
+  duration: '1 天',
+
+  // ─── 阶段定位 ───
+  narrative_position: '结局（占故事 10%）',
+  pacing: '收束叙事，根据累积状态触发对应结局',
+  tone: '终章感 + 余韵悠长',
+
+  // ─── 4 字段对齐（埃瑟尔德大陆借鉴） ───
+  goal: '触发最终结局事件，根据 day 1-16 累积状态确定结局类型（True End / Good End / Normal End / Bad End / BAD_END_1~7）',
+  narration_focus: '终章感与余韵悠长，根据结局类型叙事收束；禁止开放性悬念',
+  interaction: '收束互动：结局独白/告别/承诺/专属结局事件；禁止建立新关系；结局后所有指令拒绝执行',
+  progression_boundary: '故事必然收束；禁止开放性悬念；禁止玩家继续操作；状态栏渲染为"故事已结束 - [结局类型]"；保留 day 1-16 全部记忆可引用',
+
+  // ─── 主线任务 ───
+  main_quest: {
+    task: '触发最终结局事件，根据 day 1-16 累积状态确定结局类型',
+    success_condition: '完成结局叙事 + 输出结局标识',
+    failure_consequence: '无（结局阶段必然完成，只是结局类型不同）'
+  },
+
+  // ─── 结局分支矩阵 ───
+  ending_matrix: {
+    'True End（真结局）': {
+      conditions: ['主攻略女角 好感度 ≥ 100（亲密阶段（90~100 子阶段））', '储蓄 ≥ 50000', '违法计数 = 0', '嫉妒值 ≤ 30'],
+      description: '主攻略女角专属真结局，含毕业后告白/同居/结婚等可能性',
+      unlock_rate: '<5%（需精确规划）'
+    },
+    'Good End（好结局）': {
+      conditions: ['主攻略女角 好感度 ≥ 80（亲密阶段）', '储蓄 ≥ 50000', '违法计数 = 0'],
+      description: '主攻略女角 Good End，含确认关系/甜蜜分别等',
+      unlock_rate: '约 30%'
+    },
+    'Normal End（普通结局）': {
+      conditions: ['主攻略女角 好感度 ≥ 60（心动阶段）', '储蓄 ≥ 30000'],
+      description: '主攻略女角 Normal End，含暧昧收场/继续保持朋友关系等',
+      unlock_rate: '约 40%'
+    },
+    'Bad End（坏结局）': {
+      conditions: ['主攻略女角 好感度 < 60 OR 储蓄 < 30000'],
+      description: '普通收场，无明确恋爱关系，故事淡出',
+      unlock_rate: '约 20%'
+    },
+    'BAD_END_1 ~ BAD_END_7（死结局）': {
+      conditions: ['已在前 16 天触发任一死结局标识'],
+      description: '强制结局，叙事已结束，仅输出余韵/警告',
+      unlock_rate: '约 5%'
+    }
+  },
+
+  // ─── 结局日事件流 ───
+  ending_day_flow: [
+    '早上：醒来回顾整个寒假',
+    '上午：根据主攻略女角状态决定是否触发专属结局事件',
+    '下午：储蓄/属性最终结算',
+    '晚：结局独白（主角内心）',
+    '深夜：结局标识输出 + 状态栏锁定 + 提示玩家"故事已结束"'
+  ],
+
+  // ─── 难度修正 ───
+  difficulty_modifiers: {
+    '轻松': 'True End 阈值放宽（好感度 ≥ 90 即可）',
+    '普通': '原作阈值',
+    '挑战': 'True End 阈值收紧（好感度 ≥ 100 + 心动值 ≥ 80）',
+    '地狱': '无 True End，最高 Good End（好感度 ≥ 95）'
+  },
+
+  // ─── 结局标识输出 ───
+  ending_flag_output: {
+    flag_key: 'final_ending_type',
+    flag_value: 'True End / Good End / Normal End / Bad End / BAD_END_1~BAD_END_7',
+    output_format: '在叙事结束后输出 <UpdateTable table="global_state"> 更新 flags_text 字段，将 final_ending_type 设为对应值',
+    narrative_end: '结局独白 ≤ 200 字，余韵悠长，禁止悬念'
+  },
+
+  // ─── 故事收束规则 ───
+  closure_rules: [
+    '禁止开放性悬念（如"故事还在继续..."）',
+    '禁止跳过结局叙事直接结束',
+    '禁止玩家继续操作（结局后所有指令拒绝执行）',
+    '状态栏渲染为"故事已结束 - [结局类型]"',
+    '保留 day 1-16 全部记忆，主角独白可引用过往事件'
+  ]
+};
+%>
+
+结局阶段已加载（day 17，01-07）。根据 day 1-16 累积状态触发对应结局。5 类结局矩阵：True End / Good End / Normal End / Bad End / BAD_END_1~7。故事在 day 17 末必然收束，禁止开放性悬念。

@@ -1,0 +1,317 @@
+@@generate_before
+# [mvu_plot]RPG居所系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.居所 / stat_data.时间 / stat_data.环境
+
+<%
+// ===== 读取时间 =====
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+
+// ===== 当前居所 =====
+// {{user}} 住宿：女生宿舍A栋三楼"高三2班4人宿舍"（与苏晴、秦雨、张雨萱三位女同学同住）
+// 林婉清住宿：女生宿舍A栋三楼隔壁单人间（班长特权，就近监督）
+// 说明：圣德女子学院无男生宿舍楼，校董沈芷兰特批安排{{user}}与3位同班女同学同住一间4人宿舍
+//      宿舍面积约20平米，4张上下铺床位（{{user}}睡门口下铺，苏晴上铺对床，秦雨下铺对床，张雨萱上铺{{user}}对面）
+//      每人1个衣柜+1个书桌+1个床头柜，共享1个独立卫生间（淋浴+马桶+洗手台）
+//      宿舍有独立门锁，4人各持一把钥匙，宿管白露持备用钥匙
+//      隔壁单人间：林婉清独住，她持自己房间的钥匙+4人宿舍的备用钥匙（班长监督权）
+//      隐私有限：4人朝夕相处，{{user}}是唯一男性，换衣/沐浴/生理期均需协调
+// 注意：schema 中 stat_data.居所 为数组，取第一个作为当前居所
+var _rawResidences = getvar('stat_data.居所', {scope:'local', defaults:[]}) || [];
+var _residences = Array.isArray(_rawResidences) ? _rawResidences : (function(){ var a=[]; if(_rawResidences && typeof _rawResidences==='object'){ for(var k in _rawResidences){ if(Object.prototype.hasOwnProperty.call(_rawResidences,k)) a.push(_rawResidences[k]); } } return a; })();
+var residence = (Array.isArray(_residences) && _residences.length > 0)
+  ? _residences[0]
+  : {
+    type:'学生宿舍',
+    location:'女生宿舍A栋三楼高三2班4人宿舍',
+    living_status:'居住中（4人同住）',
+    safety_level:'普通（宿管白露每日查寝2次，22:00门禁）',
+    rooms:[
+      {
+        type:'卧室（4人宿舍主室）',
+        occupants:['{{user}}','苏晴','秦雨','张雨萱'],
+        cleanliness:75,
+        privacy_level:'低（4人同住，男女混宿，无独立隔断；每人有布帘可拉起遮挡床铺）',
+        comfort:55,
+        atmosphere:'女生气息浓重（化妆品/衣物/卫生用品随处可见，{{user}}的男生物品被默认放在最角落）',
+        door_lock:'已锁（4人各持钥匙+宿管备用钥匙）',
+        facilities:['4张上下铺床','4张书桌','4把椅子','4个衣柜','4个床头柜','共用台灯×2','插座×4','挂衣架','全身镜','小风扇'],
+        storage:[
+          { name:'{{user}}衣柜', capacity:20, used:5 },
+          { name:'{{user}}书桌抽屉', capacity:5, used:3 },
+          { name:'{{user}}床头柜', capacity:3, used:1 },
+          { name:'苏晴衣柜', capacity:20, used:10 },
+          { name:'秦雨衣柜', capacity:20, used:8 },
+          { name:'张雨萱衣柜', capacity:20, used:15 }
+        ],
+        todos:[],
+        last_cleaned_day:1
+      },
+      {
+        type:'卫生间（4人共用，独立卫浴）',
+        occupants:[],
+        cleanliness:70,
+        privacy_level:'中（独立卫浴但有4人共用，门锁可锁；{{user}}使用时女生默认敲门确认）',
+        comfort:50,
+        atmosphere:'潮湿带女性用品气味',
+        door_lock:'可锁（内有反锁旋钮）',
+        facilities:['淋浴','马桶','洗手台','镜子','置物架（4人格子）','脏衣篓'],
+        storage:[
+          { name:'{{user}}洗漱格', capacity:5, used:2 },
+          { name:'苏晴洗漱格', capacity:5, used:4 },
+          { name:'秦雨洗漱格', capacity:5, used:3 },
+          { name:'张雨萱洗漱格', capacity:5, used:5 }
+        ],
+        todos:[],
+        last_cleaned_day:1
+      }
+    ],
+    beds:[
+      { owner:'{{user}}', bed_type:'下铺（门口位）', status:'空闲', last_sleep_day:0 },
+      { owner:'苏晴', bed_type:'上铺（对床位）', status:'空闲', last_sleep_day:0 },
+      { owner:'秦雨', bed_type:'下铺（对床位）', status:'空闲', last_sleep_day:0 },
+      { owner:'张雨萱', bed_type:'上铺（门口对面位）', status:'空闲', last_sleep_day:0 }
+    ],
+    public_facilities:[
+      { name:'A栋三楼走廊（高三女生宿舍区，{{user}}唯一可进入的楼层）', cleanliness:65 },
+      { name:'A栋楼梯（与全楼女生共用）', cleanliness:60 },
+      { name:'A栋三楼公共淋浴间（备用，宿舍内卫生间损坏时使用，男女分时段）', cleanliness:55, distance:'步行1分钟' },
+      { name:'A栋一楼宿管处（白露常驻）', cleanliness:80, distance:'步行2分钟', staff:'宿管白露' },
+      { name:'A栋外公共洗衣房', cleanliness:50, distance:'步行3分钟' },
+      { name:'A栋二楼/四楼女生宿舍区（{{user}}禁入）', cleanliness:70, distance:'楼上/楼下' }
+    ],
+    last_visited_day:1
+  };
+
+// 空值保护：residence 可能为 undefined / 部分字段缺失
+// record→array 安全转换：schema 中 居所.房间/床位/公共设施 可能为 z.record()，getvar 返回对象时需转为数组
+residence = residence || {};
+residence.rooms = Array.isArray(residence.rooms) ? residence.rooms : (function(){var a=[]; if(residence.rooms&&typeof residence.rooms==='object'){for(var k in residence.rooms){if(Object.prototype.hasOwnProperty.call(residence.rooms,k))a.push(residence.rooms[k]);}}return a;})();
+residence.beds = Array.isArray(residence.beds) ? residence.beds : (function(){var a=[]; if(residence.beds&&typeof residence.beds==='object'){for(var k in residence.beds){if(Object.prototype.hasOwnProperty.call(residence.beds,k))a.push(residence.beds[k]);}}return a;})();
+residence.public_facilities = Array.isArray(residence.public_facilities) ? residence.public_facilities : (function(){var a=[]; if(residence.public_facilities&&typeof residence.public_facilities==='object'){for(var k in residence.public_facilities){if(Object.prototype.hasOwnProperty.call(residence.public_facilities,k))a.push(residence.public_facilities[k]);}}return a;})();
+
+// 整洁度退化计算（每跨日 -2，无人维护 -5/天）
+var lastVisit = Number(residence.最后到访日 || residence.last_visited_day) || 1;
+var daysSinceVisit = day - lastVisit;
+%>
+
+<residence_system>
+【RPG居所系统 - AI内部参考，严禁外露元数据】
+
+---
+■ 当前途所概览
+---
+居所类型：<%= residence.居所类型 || residence.类型 || residence.type || '' %>
+位置：<%= residence.位置 || residence.location || '' %>
+居住状态：<%= residence.居住状态 || residence.living_status || '' %>
+安全等级：<%= residence.安全等级 || residence.safety_level || '' %>
+最后到访：第 <%= lastVisit %> 天（距今 <%= daysSinceVisit %> 天）
+
+---
+■ 房间列表
+---
+<% residence.rooms.forEach(function(r) {
+  r = r || {};
+  r.occupants = Array.isArray(r.occupants) ? r.occupants : (function(){var a=[]; if(r.occupants&&typeof r.occupants==='object'){for(var k in r.occupants){if(Object.prototype.hasOwnProperty.call(r.occupants,k))a.push(r.occupants[k]);}}return a;})();
+  r.facilities = Array.isArray(r.facilities) ? r.facilities : (function(){var a=[]; if(r.facilities&&typeof r.facilities==='object'){for(var k in r.facilities){if(Object.prototype.hasOwnProperty.call(r.facilities,k))a.push(r.facilities[k]);}}return a;})();
+  r.storage = Array.isArray(r.storage) ? r.storage : (function(){var a=[]; if(r.storage&&typeof r.storage==='object'){for(var k in r.storage){if(Object.prototype.hasOwnProperty.call(r.storage,k))a.push(r.storage[k]);}}return a;})();
+  r.todos = Array.isArray(r.todos) ? r.todos : (function(){var a=[]; if(r.todos&&typeof r.todos==='object'){for(var k in r.todos){if(Object.prototype.hasOwnProperty.call(r.todos,k))a.push(r.todos[k]);}}return a;})();
+%>
+【<%= r.类型 || r.type || '' %>】
+- 人员：<%= r.occupants.length > 0 ? r.occupants.join('、') : '无' %>
+- 整洁度：<%= r.整洁度 || r.cleanliness || 0 %>/100
+- 隐私等级：<%= r.隐私等级 || r.privacy_level || '' %>
+- 舒适度：<%= r.舒适度 || r.comfort || 0 %>/100
+- 氛围：<%= r.氛围 || r.atmosphere || '' %>
+- 门禁状态：<%= r.门禁状态 || r.door_lock || '' %>
+- 设施：<%= r.facilities.join('、') %>
+- 储物空间：
+<% r.storage.forEach(function(s) { %>
+  · <%= s.名称 || s.name || '' %>：<%= s.已用 || s.used || 0 %>/<%= s.容量 || s.capacity || 0 %> 件
+<% }); %>
+- 待办事项：<%= r.todos.length > 0 ? r.todos.join('、') : '无' %>
+- 上次打扫：第 <%= r.上次打扫日 || r.last_cleaned_day || 1 %> 天
+<% }); %>
+
+---
+■ 床位系统
+---
+<% residence.beds.forEach(function(b) { %>
+- 归属：<%= b.归属 || b.owner || '' %> | 类型：<%= b.床位类型 || b.bed_type || '' %> | 状态：<%= b.状态 || b.status || '' %> | 上次睡眠：第 <%= b.上次睡眠日 || b.last_sleep_day || 0 %> 天
+<% }); %>
+
+---
+■ 公共设施
+---
+<% residence.public_facilities.forEach(function(f) { %>
+- <%= f.名称 || f.name || '' %>（整洁度：<%= f.整洁度 || f.cleanliness || 0 %>/100<% if (f.距离 || f.distance) { %>，距离：<%= f.距离 || f.distance %><% } %><% if (f.管理员 || f.staff) { %>，管理员：<%= f.管理员 || f.staff %><% } %>）
+<% }); %>
+
+---
+■ 居所类型说明
+---
+1. 学生宿舍（{{user}} 当前类型）：
+   - 圣德女子学院无男生宿舍楼，{{user}}与3位同班女同学（苏晴/秦雨/张雨萱）同住4人宿舍（约20平米），林婉清住隔壁单人间
+   - 与女生共用同一栋楼同一入口同一楼梯，但仅三楼高三2班宿舍区{{user}}可进入
+   - 设施：上下铺4张/书桌4张/衣柜4个/独立卫生间1个（4人共用淋浴+马桶+洗手台）
+   - 安全等级：普通（宿管白露每日查寝2次，22:00门禁，对4人宿舍"特殊照看"）
+2. 出租屋（剧情可能触发）：
+   - 学生通常不可校外租房
+   - 例外：家长陪读/特殊情况（需请假）
+3. 家中（假期回家）：
+   - 仅寒暑假/重要节日
+   - 距离校园远，需乘校车
+4. 临时住所（特殊剧情）：
+   - 借住NPC宿舍（极高风险）
+   - 校医室临时休息（需沈雨桐允许）
+   - 钟点房（严禁学生使用，被发现触发处分）
+
+---
+■ 居所属性详解
+---
+1. 类型：学生宿舍 / 出租屋 / 家中 / 临时住所
+2. 位置：校园内具体位置
+3. 居住状态：居住中 / 空置 / 退租 / 临时借用
+4. 安全等级：
+   - 低：任何人可进入（如临时住所）
+   - 普通：有锁但管理松（如{{user}}4人宿舍虽在女生楼栋内但有独立门锁，宿管每日2次查寝）
+   - 高：有锁+宿管巡查（其他高三女生宿舍，{{user}}禁入）
+   - 极高：有锁+监控+专人管理（行政楼）
+
+---
+■ 房间系统
+---
+1. 房间类型：
+   - 卧室：睡眠/休息/私人活动
+   - 书房：学习/写作（宿舍内可与卧室合并）
+   - 浴室：洗漱/淋浴
+   - 厨房：{{user}}宿舍无独立厨房（食堂用餐）
+   - 阳台：晾衣/透气（部分宿舍有）
+2. 房间属性：
+   - 类型：上述类型
+   - 人员：当前在房间内的人员
+   - 整洁度：0-100，影响心情和恢复效率
+   - 隐私等级：低/中/高/极高
+   - 舒适度：0-100，影响睡眠恢复精力
+   - 氛围：简朴/温馨/凌乱/潮湿/雅致等
+   - 门禁状态：已锁/可锁/无锁
+   - 设施：房间内固定家具/电器
+   - 储物：该房间的储物空间
+   - 待办事项：如"该打扫了""该换床单了"
+3. 整洁度影响：
+   - 80-100：心情+3，睡眠恢复+10%
+   - 60-79：正常
+   - 40-59：心情-2，睡眠恢复-10%
+   - 20-39：心情-5，睡眠恢复-20%，sanity -1/天
+   - 0-19：心情-10，睡眠恢复-30%，sanity -3/天
+
+---
+■ 床位系统
+---
+1. 床位属性：
+   - 对应角色名：床位的归属者
+   - 床位类型：单人床/上下铺/双人床/沙发床/地铺
+   - 使用状态：空闲/睡眠中/占用（非睡眠）
+   - 上次睡眠：第N天
+2. 床位与睡眠恢复：
+   - 单人床：标准恢复（40点精力）
+   - 上下铺：标准恢复（40点精力）
+   - 双人床：舒适+10%（44点精力）
+   - 沙发床：-15%（34点精力）
+   - 地铺：-30%（28点精力）
+3. 床位占用规则：
+   - 一张床只能一人使用
+   - NPC进入{{user}}床位需{{user}}同意（或被偷潜入）
+   - 假阴茎相关剧情可能涉及NPC潜入（夜间使用）
+
+---
+■ 公共设施
+---
+1. 走廊/楼梯：
+   - 公共区域，整洁度由宿管维护
+   - 影响通行心情
+2. 洗衣房：
+   - 公共使用，需排队
+   - 洗衣费用：5元/次
+   - 洗衣时长：1时段
+3. 宿舍管理处：
+   - 宿管阿姨管理
+   - 处理报修/请假/物品领取
+   - 门禁时间：22:00锁门（夜归需登记）
+4. 公共浴室（部分宿舍无独立卫浴）：
+   - {{user}}4人宿舍有独立卫浴（淋浴+马桶+洗手台），4人共用
+   - 三楼公共淋浴间为备用（宿舍卫生间损坏/多人同时使用时启用，男女分时段）
+   - 二楼/四楼女生宿舍为公共浴室（影响其他女生NPC洗澡时段，{{user}}禁入）
+
+---
+■ 跨日推演（整洁度变化）
+---
+1. 正常居住（每日回家）：
+   - 卧室整洁度 -2/天
+   - 卫生间整洁度 -3/天
+   - 公共区域整洁度 -1/天
+2. 长时间无人维护（外出/请假多日）：
+   - 房间整洁度 -5/天
+   - 卫生间整洁度 -7/天（潮湿+异味）
+   - 灰尘积累，氛围转为"凌乱"
+3. 打扫恢复：
+   - {{user}} 主动打扫：消耗1时段，整洁度+20（单房间）
+   - 聘请保洁：宿舍不提供，需自行打扫
+   - NPC 帮忙打扫：需高好感度，整洁度+15
+4. 跨日推演规则：
+   - 每跨日（day+1）所有房间整洁度按上述规则下降
+   - 下降后若整洁度<40，房间待办事项新增"该打扫了"
+   - 跨日推演由变量 AI 自动同步：
+     · stat_data.居所[0].房间.*.清洁度 -= 退化值
+     · stat_data.居所[0].房间.*.待办 更新
+
+---
+■ 居所与剧情联动
+---
+1. 假阴茎使用高发场景：
+   - {{user}}卧室是假阴茎使用的核心场景（夜间睡眠时）
+   - 床位状态影响使用频率（"睡眠中"才可被使用）
+   - 整洁度过低可能影响使用效果（{{user}}睡不安稳，易醒）
+2. 隐私与安全：
+   - {{user}}与3位女舍友同住4人宿舍，无独立隔断，每人仅靠布帘遮挡床铺
+   - 钥匙由4人各持一把+宿管白露备用钥匙（白露以"特殊照看"为名每日2次查寝）
+   - 林婉清（隔壁单人间）定下"宿舍铁律10条"——禁止{{user}}在女生换衣时回头/靠近女生床铺/询问生理期；她持4人宿舍备用钥匙，可随时抽查
+   - 张雨萱最不设防——故意在{{user}}面前穿薄睡裙/洗澡后只裹浴巾出来/换衣服不拉帘子
+   - NPC女生（如林婉清、江月白等）来访时需敲门，{{user}}在宿舍则由舍友开门
+   - 假阴茎使用场景：{{user}}睡眠时被使用，3位女舍友是潜在高危使用者（她们的床距{{user}}仅1-2米）
+3. 待办事项触发：
+   - 整洁度<40：心情-2，建议打扫
+   - 床单未换>7天：sanity -1/天
+   - 衣柜满：无法存入新物品
+4. 居所升级（剧情允许）：
+   - 家长来校：可能添置新设施（如风扇/小冰箱）
+   - 与宿管关系好：可能换大房间（极罕见）
+   - 严禁学生擅自改造宿舍
+
+---
+■ AI 执行铁律
+---
+1. 每跨日必须推演居所整洁度变化
+2. {{user}}回到居所时必须更新 last_visited_day
+3. 房间待办事项触发时必须在叙事中体现（如"床单该换了"）
+4. 整洁度<40时影响心情和恢复效率，必须在叙事中体现
+5. 床位状态影响假阴茎使用剧情：
+   - "睡眠中"才能被使用
+   - "空闲"时无法被使用
+6. 严禁NPC未经允许进入{{user}}居所（除非剧情触发，如潜入使用）
+7. 严禁在正文中输出"cleanliness""safety_level""last_visited_day"等元术语
+8. 居所叙事转化：
+   - "回到宿舍，推开门，房间里有些闷"
+   - "卫生间镜子有点脏，该擦了"
+   - "床单已经一周没换了，有股汗味"
+9. 公共设施使用必须遵守规则：
+   - 洗衣房排队（先到先得）
+   - 宿舍管理处门禁（22:00后归寝）
+10. 居所与睡眠恢复：
+    - 舒适度>70：睡眠恢复+10%
+    - 舒适度<40：睡眠恢复-15%
+    - 整洁度<20：sanity 持续下降
+11. 居所升级仅通过剧情触发，禁止玩家主动"装修"
+</residence_system>

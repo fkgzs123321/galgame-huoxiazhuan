@@ -1,0 +1,49 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 15 - 01-05 周五 ═══
+   当日主题：久美子攻略完成
+   特殊事件：event_day15_kumiko_climax / event_day15_diary_5_window / event_day15_yui_88park_rescue / event_day15_izumi_speech_change / event_day15_yoko_forced_confession
+   女角锁定：[]
+*/%>
+
+<%
+const _dayInfo = {
+  day_count: 15,
+  date: '01-05',
+  weekday: '周五',
+  chapter: '寒假尾声',
+  theme: '久美子攻略完成',
+  special_events: ['event_day15_kumiko_climax', 'event_day15_diary_5_window', 'event_day15_yui_88park_rescue', 'event_day15_izumi_speech_change', 'event_day15_yoko_forced_confession'],
+  locked_heroines: [],
+  new_unlock: [],
+  weather_default: '晴',
+  notes: '久美子线高潮；达亲密阶段；is_completed=1'
+};
+%>
+
+[Day 15 调度器已加载：01-05 周五，主题：久美子攻略完成。
+本日特殊事件：event_day15_kumiko_climax / event_day15_diary_5_window / event_day15_yui_88park_rescue / event_day15_izumi_speech_change / event_day15_yoko_forced_confession。
+本日锁定女角：无（全部女角已解锁）。
+本日新解锁：无。
+本日天气默认：晴。
+本日备注：久美子线高潮；达亲密阶段；is_completed=1。
+
+【当日事件详情】
+- event_day15_kumiko_climax：久美子线高潮。下午/晚/深夜时段自宅触发，久美子线高潮事件。前置条件：久美子好感 ≥ 40。
+  - 久美子好感 < 40 → 事件不触发，久美子线无法完成
+  - 久美子好感 ≥ 40 → 高潮事件触发，久美子达亲密阶段
+  - 久美子好感 ≥ 50 → 额外解锁久美子特殊结局对话
+  触发后久美子 is_completed=1，久美子攻略完成。MVU 变量更新：stat_data.女角.永岛久美子.is_completed = 1。
+- event_day15_diary_5_window：第5本·电视台录影窗口期持续（01-04~01-06）。下午时段电视台触发。前置条件同 Day 14。叙事提示：本日仍可触发可怜电视台录影事件。
+- event_day15_yui_88park_rescue：唯88公园救出事件（1/3~1/5 88公园）。下午/晚时段88公园触发。前置条件：阴谋偷听=true OR 主角 strength≥40 OR speech≥50。唯好感 +15 trust +20（救援成功），设置 唯获救 flag。叙事提示：若未在 1/5 前救出唯则唯线 BAD_END，是唯线 True End 关键事件，需 confrontation=true 或主角属性达标。
+- event_day15_izumi_speech_change：筱原泉美改变说话语气。全时段八十八学园弓箭场或自宅触发。前置条件：泉美.affection≥30。泉美好感 +3（亲近加成）。叙事提示：泉美对主角说话语气改变，从冷淡转为柔和，是泉美线深度推进标志。
+- event_day15_yoko_forced_confession：南川洋子强迫接受告白。晚时段机车行或海岸触发。前置条件：洋子.affection≥40。洋子好感 +5（但触发 jealousy 机制）。叙事提示：洋子强迫主角接受告白，是洋子线关键转折，影响 Day 17 洋子结局判定。
+
+【当日女角出现特殊规则】
+本日为久美子攻略完成日，全部女角已解锁。当日可遭遇女角：
+- 鸣泽唯（row_id=1）：自宅早/晚
+- 鸣泽美佐子（row_id=2）：咖啡店全时段
+- 水野友美（row_id=8）：水野家上午/晚
+- 永岛久美子（row_id=13）：自宅下午/晚/深夜（高潮场景）
+- 永岛佐知子（row_id=14）：自宅上午 + 咖啡店下午
+全部 19 位女角均可出现，建议优先完成久美子攻略。
+关键提示：久美子攻略完成后，is_completed=1 将影响 Day 17 结局判定。若久美子未完成攻略，Day 17 无法触发久美子专属结局。]

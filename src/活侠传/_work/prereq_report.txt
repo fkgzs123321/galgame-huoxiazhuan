@@ -1,0 +1,95 @@
+﻿中文脚本文件数: 2380
+
+======================================================================
+前置条件调用  唯一 flag 413 个 / 总调用 663 次
+隐藏选项 ~x   出现 541 次
+flag 写入调用 唯一 0 个 / 总 0 次
+action 变化   {'-1': 101, '1': 5, '-2': 1}
+
+=== 最高频前置 flag top 30 ===
+  XXX                                            54
+  Talk_Option_01                                 49
+  Talk_Option_02                                 28
+  Talk_Option_03                                 10
+  Talk_Option_04                                 6
+  Talk_Option_05                                 6
+  Any_Food_001                                   6
+  Ch_0_M_Option_03                               4
+  xxx                                            4
+  Food_2003                                      4
+  Food_2004                                      4
+  Food_2005                                      4
+  Food_3001                                      4
+  Food_3002                                      4
+  Food_5003                                      4
+  Food_5004                                      4
+  Meeting_Option_01_202                          4
+  Talk_Brother4_Option_01                        4
+  Talk_Brother2_00                               2
+  Ch_0_M_03_02_01_001                            2
+  Ch_0_M_Option_02                               2
+  Ch_0_M_Option_04                               2
+  S9906_01                                       2
+  Ch_2_2_3_1_Travel_03_001                       2
+  Ch_2_2_3_1_Travel_03_002                       2
+  Ch_2_2_3_1_Travel_03_003                       2
+  Ch_2_2_3_1_Travel_03_004                       2
+  Ch_2_2_3_1_Travel_03_005                       2
+  Ch_2_2_3_1_Travel_03_006                       2
+  Ch_2_2_3_4_3_Break_Option_01                   2
+
+=== flag 写入调用 top 15 ===
+
+=== 菜单选项名 top 20（前 20 个字符）===
+  free                                     28
+  x                                        27
+  work                                     23
+  talk                                     11
+  xxx                                      10
+  休息                                       5
+  X                                        4
+  退席                                       3
+  羊羔酒                                      3
+  A                                        3
+  段考                                       2
+  小师妹                                      2
+  江湖                                       2
+  奄奄一息                                     2
+  我想去崆峒派留学                                 2
+  O_Meet_Option_01_001                     2
+  O_Meet_Option_01_003                     2
+  切磋                                       2
+  燒刀子                                      2
+  蘇合香酒                                     2
+
+=== Condition 使用样例 ===
+  [resources__alchemy_001__zh__1]
+     "alchemy+work+alchemy" local Talk_Brother2_00 = checkpointmanager.Condition("Talk_Brother2_00") alchemy[2] = Talk_Brother2_00 and "talk+talk+brother2" or "~x" local choice_alchemy =
+  [resources__alchemy_001__zh__2]
+     "alchemy+work+alchemy" local Talk_Brother2_00 = checkpointmanager.Condition("Talk_Brother2_00") alchemy[2] = Talk_Brother2_00 and "talk+talk+brother2" or "~x" local choice_alchemy =
+  [resources__ch0_meeting_option_03_02_01__zh__]
+     local option1_1 = {} local Ch_0_M_03_02_01_001 = checkpointmanager.Condition("Ch_0_M_03_02_01_001") option1_1[1] = Ch_0_M_03_02_01_001 and "讲道理" or "~解锁条件：嘴力>32" option1_1[2] = "男子汉就该用拳头
+  [resources__ch0_meeting_option_03_02_01__zh__]
+     local option1_1 = {} local Ch_0_M_03_02_01_001 = checkpointmanager.Condition("Ch_0_M_03_02_01_001") option1_1[1] = Ch_0_M_03_02_01_001 and "O_0_Meet_Option_03_02_01_001" or "~O_0_Meet_Opt
+  [resources__ch0_meeting_option__zh__1]
+     _0_Meet_Option_001+0+0" local Ch_0_M_Option_02 = checkpointmanager.Condition("Ch_0_M_Option_02") meet[2] = Ch_0_M_Option_02 and "talk+O_0_Meet_Option_002+0+20" or "~x" local Ch_0_M_Op
+  [resources__ch0_meeting_option__zh__1]
+     ption_002+0+20" or "~x" local Ch_0_M_Option_03 = checkpointmanager.Condition("Ch_0_M_Option_03") meet[3] = Ch_0_M_Option_03 and "battle+O_0_Meet_Option_003+1+30" or "~x" local Ch_0_M_
+  [resources__ch0_meeting_option__zh__1]
+     ption_003+1+30" or "~x" local Ch_0_M_Option_03 = checkpointmanager.Condition("Ch_0_M_Option_03") meet[4] = Ch_0_M_Option_03 and "event+O_0_Meet_Option_004+1+30" or "~x" local Ch_0_M_O
+  [resources__ch0_meeting_option__zh__1]
+     ption_004+1+30" or "~x" local Ch_0_M_Option_04 = checkpointmanager.Condition("Ch_0_M_Option_04") meet[5] = Ch_0_M_Option_04 and "event+O_0_Meet_Option_005+1+20" or "~x" local S9906_01
+
+=== 隐藏选项 "~x" 样例 ===
+  [resources__alchemy_001__zh__1]
+     my+work+alchemy" local Talk_Brother2_00 = checkpointmanager.Condition("Talk_Brother2_00") alchemy[2] = Talk_Brother2_00 and "talk+talk+brother2" or "~x" local choice_alche
+  [resources__alchemy_001__zh__2]
+     my+work+alchemy" local Talk_Brother2_00 = checkpointmanager.Condition("Talk_Brother2_00") alchemy[2] = Talk_Brother2_00 and "talk+talk+brother2" or "~x" local choice_alche
+  [resources__ch0_meeting_option__zh__1]
+     001+0+0" local Ch_0_M_Option_02 = checkpointmanager.Condition("Ch_0_M_Option_02") meet[2] = Ch_0_M_Option_02 and "talk+O_0_Meet_Option_002+0+20" or "~x" local Ch_0_M_Optio
+  [resources__ch0_meeting_option__zh__1]
+     r "~x" local Ch_0_M_Option_03 = checkpointmanager.Condition("Ch_0_M_Option_03") meet[3] = Ch_0_M_Option_03 and "battle+O_0_Meet_Option_003+1+30" or "~x" local Ch_0_M_Optio
+  [resources__ch0_meeting_option__zh__1]
+     or "~x" local Ch_0_M_Option_03 = checkpointmanager.Condition("Ch_0_M_Option_03") meet[4] = Ch_0_M_Option_03 and "event+O_0_Meet_Option_004+1+30" or "~x" local Ch_0_M_Optio
+  [resources__ch0_meeting_option__zh__1]
+     or "~x" local Ch_0_M_Option_04 = checkpointmanager.Condition("Ch_0_M_Option_04") meet[5] = Ch_0_M_Option_04 and "event+O_0_Meet_Option_005+1+20" or "~x" local S9906_01 = c

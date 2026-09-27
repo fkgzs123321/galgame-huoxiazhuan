@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "_世界": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "天数": {
+          "default": 1,
+          "type": "number"
+        },
+        "阶段": {
+          "default": "昼",
+          "type": "string",
+          "enum": [
+            "夜",
+            "昼"
+          ]
+        },
+        "存活名单": {
+          "default": "庄晚棠|白蘅|灶婶|小满|姜芸|苏黎|陆霜霜|闻人夏|程郁|顾青芜|顾青黛",
+          "type": "string"
+        },
+        "昨夜死讯": {
+          "default": "",
+          "type": "string"
+        },
+        "公开事实": {
+          "default": "",
+          "type": "string"
+        },
+        "今日广播": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "_玩家": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "身份": {
+          "default": "未指派",
+          "type": "string",
+          "enum": [
+            "未指派",
+            "狼",
+            "民",
+            "铜镜",
+            "药囊",
+            "银匕",
+            "草汁"
+          ]
+        },
+        "存活": {
+          "default": "存活",
+          "type": "string",
+          "enum": [
+            "存活",
+            "死亡"
+          ]
+        }
+      }
+    },
+    "_人物": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "庄晚棠",
+          "白蘅",
+          "灶婶",
+          "小满",
+          "姜芸",
+          "苏黎",
+          "陆霜霜",
+          "闻人夏",
+          "程郁",
+          "顾青芜",
+          "顾青黛"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "已知": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "庄晚棠",
+        "白蘅",
+        "灶婶",
+        "小满",
+        "姜芸",
+        "苏黎",
+        "陆霜霜",
+        "闻人夏",
+        "程郁",
+        "顾青芜",
+        "顾青黛"
+      ]
+    },
+    "人物": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "庄晚棠",
+          "白蘅",
+          "灶婶",
+          "小满",
+          "姜芸",
+          "苏黎",
+          "陆霜霜",
+          "闻人夏",
+          "程郁",
+          "顾青芜",
+          "顾青黛"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "好感": {
+            "default": 50,
+            "type": "number"
+          },
+          "怀疑": {
+            "default": 15,
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "庄晚棠",
+        "白蘅",
+        "灶婶",
+        "小满",
+        "姜芸",
+        "苏黎",
+        "陆霜霜",
+        "闻人夏",
+        "程郁",
+        "顾青芜",
+        "顾青黛"
+      ]
+    },
+    "世界": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "传递事件": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "$物品": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "草汁存量": {
+          "default": 3,
+          "type": "number"
+        },
+        "毒药已用": {
+          "default": "否",
+          "type": "string",
+          "enum": [
+            "否",
+            "是"
+          ]
+        },
+        "麻沸散已用": {
+          "default": "否",
+          "type": "string",
+          "enum": [
+            "否",
+            "是"
+          ]
+        },
+        "银匕在身": {
+          "default": "",
+          "type": "string"
+        },
+        "铜镜在身": {
+          "default": "",
+          "type": "string"
+        },
+        "草汁在身": {
+          "default": "",
+          "type": "string"
+        },
+        "药囊在身": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "$人物": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "庄晚棠",
+          "白蘅",
+          "灶婶",
+          "小满",
+          "姜芸",
+          "苏黎",
+          "陆霜霜",
+          "闻人夏",
+          "程郁",
+          "顾青芜",
+          "顾青黛"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "身份": {
+            "default": "未指派",
+            "type": "string",
+            "enum": [
+              "未指派",
+              "狼",
+              "民",
+              "铜镜",
+              "药囊",
+              "银匕",
+              "草汁"
+            ]
+          },
+          "持物": {
+            "default": "",
+            "type": "string"
+          },
+          "被种": {
+            "default": "",
+            "type": "string"
+          },
+          "兽化": {
+            "default": "无",
+            "type": "string",
+            "enum": [
+              "无",
+              "进行中",
+              "完成"
+            ]
+          },
+          "存活": {
+            "default": "存活",
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "庄晚棠",
+        "白蘅",
+        "灶婶",
+        "小满",
+        "姜芸",
+        "苏黎",
+        "陆霜霜",
+        "闻人夏",
+        "程郁",
+        "顾青芜",
+        "顾青黛"
+      ]
+    }
+  }
+}

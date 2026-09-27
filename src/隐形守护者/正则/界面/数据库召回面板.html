@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>剧情上下文面板</title>
+<style>
+:root {--bg-color: #24221f;--border-color: #36332e;--text-main: #c1b9ad;--text-dim: #9e978e;--text-mute: #645e55;--accent: #7d4940;--bg-hover: #2a2824;--bg-stats: #211f1c;}
+body.theme-silk {--bg-color: #f4f1eb;--border-color: #e0dacb;--text-main: #4a453f;--text-dim: #6e675e;--text-mute: #9e978e;--accent: #8a6b5e;--bg-hover: #ebe7de;--bg-stats: #f9f8f5;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif SC','Source Han Serif CN','Songti SC',serif;background:transparent;padding:12px;margin:0;color:var(--text-main);transition:background-color 0.6s ease;}
+.context-panel{width:100%;background-color:var(--bg-color);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");border-radius:2px;border:1px solid var(--border-color);overflow:hidden;position:relative;transition:all 0.6s ease;}
+.panel-content-inner{padding:0;max-height:600px;overflow-y:auto}
+.seal{display:inline-block;border:1px solid var(--accent);color:var(--accent);font-size:12px;padding:1px 4px;margin-right:10px;border-radius:1px;opacity:0.8;font-weight:normal;letter-spacing:1px;line-height:1;transition:all 0.6s ease;}
+.section-header{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border-color);position:relative;cursor:default;transition:all 0.6s ease;}
+.section-title{font-size:14px;letter-spacing:2px;color:var(--text-main);opacity:0.9;transition:color 0.6s ease;}
+.action-group {margin-left:auto; display:flex; gap:12px;}
+.action-btn {font-size:11px; color:var(--text-mute); border:1px solid transparent; padding:2px 6px; cursor:pointer; transition:all 0.3s ease; letter-spacing:1px; user-select:none;}
+.action-btn:hover {color:var(--text-main); border-color:var(--border-color);}
+.action-btn.active {color:var(--accent); border-color:var(--accent);}
+.user-input-content{padding:20px;color:var(--text-main);font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word;position:relative;border-bottom:1px solid var(--border-color);transition:all 0.6s ease;}
+.recall-section .section-header, .supplement-section .section-header{cursor:pointer;}
+.recall-section .section-header:hover, .supplement-section .section-header:hover{background-color:var(--bg-hover)}
+.badge{margin-left:12px;font-size:11px;color:var(--text-mute);letter-spacing:1px;transition:color 0.6s ease;}
+.toggle-arrow{color:var(--text-mute);font-size:10px;transition:all 0.3s ease;margin-left:auto}
+.collapsed .toggle-arrow{transform:rotate(-90deg)}
+.collapsed .list-container{display:none}
+.list-container{padding:16px 20px;border-bottom:1px solid var(--border-color);transition:all 0.6s ease;}
+.item-box{margin-bottom:24px;position:relative;padding-left:16px;animation:fadeIn 0.4s ease forwards}
+.item-box::before{content:'';position:absolute;left:0;top:4px;bottom:0;width:1px;background-color:var(--border-color);transition:all 0.6s ease;}
+.item-box:last-child{margin-bottom:8px}
+.item-header{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+.item-id{color:var(--text-mute);font-size:11px;letter-spacing:1px;font-family:'Courier New',Courier,monospace;transition:color 0.6s ease;}
+.item-title{color:var(--text-main);font-size:13px;letter-spacing:1px;transition:color 0.6s ease;}
+.item-body{color:var(--text-dim);font-size:13px;line-height:1.9;white-space:pre-wrap;word-break:break-word;transition:color 0.6s ease;}
+.item-source{font-size:11px;color:var(--text-mute);margin-top:8px;font-style:italic;transition:color 0.6s ease;}
+.tag-label{display:inline-block;font-size:11px;color:var(--text-dim);border:1px solid var(--border-color);padding:2px 6px;margin-right:8px;transition:all 0.6s ease;}
+.stats-section{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background-color:var(--bg-stats);transition:all 0.6s ease;}
+.stats-item{display:flex;align-items:center;gap:8px;color:var(--text-mute);font-size:11px;letter-spacing:1px}
+.stats-value{color:var(--text-dim)}
+.loading-text{padding:30px;text-align:center;color:var(--text-mute);font-size:13px;letter-spacing:2px;animation:breathe 3s infinite ease-in-out}
+.memory-layout { display: flex; flex-direction: row; gap: 16px; align-items: flex-start; }
+.memory-sidebar { flex: 0 0 140px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
+.memory-content-area { flex: 1; min-height: 120px; position: relative; }
+.memory-btn { padding: 6px 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-dim); cursor: pointer; border-radius: 2px; font-size: 11px; text-align: center; transition: all 0.3s ease; user-select: none; }
+.memory-btn:hover { color: var(--text-main); border-color: var(--text-mute); background: var(--bg-hover); }
+.memory-btn.active { color: var(--accent); border-color: var(--accent); background: var(--bg-hover); font-weight: bold; }
+.memory-detail { display: none; animation: fadeIn 0.4s ease forwards; }
+.memory-detail.active { display: block; }
+@media (max-width: 480px) { .memory-layout { flex-direction: column; } .memory-sidebar { flex: 1; width: 100%; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); } .memory-content-area { border-top: 1px solid var(--border-color); padding-top: 16px; width: 100%; } }
+@keyframes breathe{0%,100%{opacity:0.4}50%{opacity:1}}
+.error-message{padding:20px;color:var(--accent);font-size:13px;border-left:1px solid var(--accent);margin:10px 0}
+.panel-content-inner::-webkit-scrollbar{width:4px}
+.panel-content-inner::-webkit-scrollbar-track{background:transparent}
+.panel-content-inner::-webkit-scrollbar-thumb{background:var(--border-color)}
+.panel-content-inner::-webkit-scrollbar-thumb:hover{background:var(--text-mute)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+</head>
+<body>
+<script type="text/plain" id="rawData">$1</script>
+<div class="context-panel expanded" id="contextPanel">
+<div class="panel-content-inner">
+<div class="user-input-section">
+<div class="section-header">
+<span class="seal">录</span><span class="section-title">当归</span>
+<div class="action-group">
+<span class="action-btn" id="themeBtn" onclick="toggleTheme()">[ 素纱 ]</span>
+<span class="action-btn" id="copyBtn" onclick="copyUserInput()">[ 抄录 ]</span>
+</div>
+</div>
+<div class="user-input-content" id="userInputContent"></div>
+</div>
+<div class="recall-section collapsed" id="recallSection">
+<div class="section-header" onclick="toggleSection('recallSection')">
+<span class="seal">忆</span><span class="section-title">流转</span>
+<span class="badge" id="memoryBadge">参阅 -</span>
+<span class="toggle-arrow">▼</span>
+</div>
+<div class="list-container" id="memoryList"><div class="loading-text">静候回音...</div></div>
+</div>
+<div class="supplement-section collapsed" id="supplementSection">
+<div class="section-header" onclick="toggleSection('supplementSection')">
+<span class="seal">注</span><span class="section-title">旁支</span>
+<span class="badge" id="supplementBadge">拾遗 -</span>
+<span class="toggle-arrow">▼</span>
+</div>
+<div class="list-container" id="supplementList"></div>
+</div>
+<div class="stats-section">
+<div class="stats-item"><span>残篇</span><span class="stats-value" id="statsMemory">-</span></div>
+<div class="stats-item"><span>拾遗</span><span class="stats-value" id="statsSupplement">-</span></div>
+<div class="stats-item"><span>流年</span><span class="stats-value" id="statsTime">-</span></div>
+</div>
+</div>
+</div>
+<script>
+(function(){
+var startTime=Date.now();
+try {if(localStorage.getItem('wabi-theme') === 'silk') {document.body.classList.add('theme-silk');setTimeout(function(){ document.getElementById('themeBtn').textContent = '[ 墨纸 ]'; }, 50);}} catch(e) {}
+window.toggleTheme = function() {var body = document.body;var btn = document.getElementById('themeBtn');if (body.classList.contains('theme-silk')) {body.classList.remove('theme-silk');btn.textContent = '[ 素纱 ]';try{ localStorage.setItem('wabi-theme', 'ink'); }catch(e){}} else {body.classList.add('theme-silk');btn.textContent = '[ 墨纸 ]';try{ localStorage.setItem('wabi-theme', 'silk'); }catch(e){}}};
+window.copyUserInput = function() {var contentEl = document.getElementById('userInputContent');var btn = document.getElementById('copyBtn');if (!contentEl || !btn) return;var textToCopy = contentEl.innerText || contentEl.textContent;if (textToCopy === '无声...') return;function showFeedback(text, isSuccess) {btn.textContent = text;if(isSuccess) btn.classList.add('active');setTimeout(function() { btn.textContent = '[ 抄录 ]'; btn.classList.remove('active'); }, 2000);}function fallbackCopy() {try {var textArea = document.createElement("textarea");textArea.value = textToCopy;textArea.style.position = "fixed";document.body.appendChild(textArea);textArea.focus();textArea.select();var successful = document.execCommand('copy');document.body.removeChild(textArea);if (successful) showFeedback('[ 已录 ]', true);else showFeedback('[ 失败 ]', false);} catch (err) {showFeedback('[ 阻断 ]', false);}}if (navigator.clipboard && window.isSecureContext) {navigator.clipboard.writeText(textToCopy).then(function(){ showFeedback('[ 已录 ]', true); }).catch(function(){ fallbackCopy(); });} else {fallbackCopy();}};
+var rawDataEl=document.getElementById("rawData");if(!rawDataEl)return;var rawContent=rawDataEl.textContent||"";
+function parseUserInput(content){var match=content.match(/<本轮用户输入>([\s\S]*?)<\/本轮用户输入>/);return match?match[1].replace(/^\s+|\s+$/g,''):'';}
+function parseRecallContent(content){var match=content.match(/<recall>([\s\S]*?)<\/recall>/);return match?match[1].replace(/^\s+|\s+$/g,''):'';}
+function parseSupplementContent(content){var match=content.match(/<supplement>([\s\S]*?)<\/supplement>/);return match?match[1].replace(/^\s+|\s+$/g,''):'';}
+var rawUserInput=parseUserInput(rawContent);var rawAmList=parseRecallContent(rawContent);var rawSupplement=parseSupplementContent(rawContent);
+function toggleSection(id){var section=document.getElementById(id);if(section)section.classList.toggle('collapsed');updateIframeHeight();}
+window.toggleSection=toggleSection;
+function updateIframeHeight(){setTimeout(function(){var bodyHeight=document.body.scrollHeight;if(window.parent&&window.parent!==window) window.parent.postMessage({type:'resizeIframe',height:bodyHeight},'*');},50);}
+function escapeHtml(text){var div=document.createElement('div');div.textContent=text;return div.innerHTML;}
+function parseAmCodes(raw){var result=[];var matches=raw.match(/AM\d+/gi);if(matches){for(var i=0;i<matches.length;i++){result.push(matches[i].toUpperCase());}}return result;}
+function extractAmTitle(raw,amCode){var pattern=amCode+'[（\\(]([^）\\)]+)[）\\)]';var match=raw.match(new RegExp(pattern));return match?match[1].trim():'';}
+function parseSupplementItems(raw){var lines=raw.split('\n');var items=[];var currentItem=null;for(var i=0;i<lines.length;i++){var line=lines[i];var tagMatch=line.match(/^\s*-\s*\[([^\]]+)\]\s*(.*)/);if(tagMatch){if(currentItem)items.push(currentItem);currentItem={tag:tagMatch[1].trim(),content:tagMatch[2].trim()};}else if(currentItem&&line.trim()){currentItem.content+='\n'+line.trim();}}if(currentItem)items.push(currentItem);return items;}
+function getAutoCardAPI(){if(typeof parent!=='undefined'&&parent.AutoCardUpdaterAPI) return parent.AutoCardUpdaterAPI;if(window.AutoCardUpdaterAPI) return window.AutoCardUpdaterAPI;return null;}
+function findMemoryInTable(tables,amCode,tableName){for(var uid in tables){var sheet=tables[uid];if(!sheet||!sheet.name||!sheet.content)continue;if(sheet.name!==tableName)continue;if(sheet.content.length<2)continue;var headers=sheet.content[0];var rows=sheet.content.slice(1);var codeIndex=headers.indexOf('编码索引');var summaryIndex=headers.indexOf('纪要');var titleIndex=headers.indexOf('标题');if(codeIndex===-1)continue;for(var i=0;i<rows.length;i++){var row=rows[i];if(!row||row.length<=codeIndex)continue;var codeValue=String(row[codeIndex]||'').trim().toUpperCase();if(codeValue===amCode.toUpperCase()){return{code:amCode,title:titleIndex!==-1&&row.length>titleIndex?String(row[titleIndex]||'').trim():'',content:summaryIndex!==-1&&row.length>summaryIndex?String(row[summaryIndex]||'').trim():'',source:tableName,rowIndex:i+1};}}}return null;}
+function renderMemoryItem(entry,amTitle){var title=amTitle||entry.title||'无名';var content=entry.content||'（形如白纸）';var source=entry.source||'未知';return '<div class="item-box" style="margin-bottom:0;"><div class="item-header"><span class="item-id">'+escapeHtml(entry.code)+'</span><span class="item-title">'+escapeHtml(title)+'</span></div><div class="item-body">'+escapeHtml(content)+'</div><div class="item-source">来自：'+escapeHtml(source)+' · 卷'+entry.rowIndex+'</div></div>';}
+function renderSupplementItem(item){return '<div class="item-box"><div class="item-header"><span class="tag-label">'+escapeHtml(item.tag)+'</span></div><div class="item-body">'+escapeHtml(item.content)+'</div></div>';}
+function initUserInput(){var container=document.getElementById('userInputContent');var trimmed=rawUserInput.replace(/^\s+|\s+$/g,'');container.innerHTML=trimmed?escapeHtml(trimmed):'<span style="color:var(--text-mute);font-style:italic;">无声...</span>';}
+async function loadMemories(){var container=document.getElementById('memoryList');var badge=document.getElementById('memoryBadge');var statsMemory=document.getElementById('statsMemory');var amCodes=parseAmCodes(rawAmList);if(badge)badge.textContent='参阅 '+amCodes.length;if(amCodes.length===0){if(container)container.innerHTML='<div style="color:var(--text-mute);text-align:center;padding:30px;letter-spacing:1px;">此刻尚无记忆泛起涟漪</div>';if(statsMemory)statsMemory.textContent='0';updateIframeHeight();return;}var api=getAutoCardAPI();var tables=null;var foundCount=0;if(api){try{if(api.refreshDataAndWorldbook) await api.refreshDataAndWorldbook();var jsonData=api.exportTableAsJson();if(jsonData) tables=typeof jsonData==='string'?JSON.parse(jsonData):jsonData;}catch(err){ console.error(err); }}var html='<div class="memory-layout"><div class="memory-sidebar" id="memSidebar"></div><div class="memory-content-area" id="memContentArea"></div></div>';if(container)container.innerHTML=html;var sidebar=document.getElementById('memSidebar');var contentArea=document.getElementById('memContentArea');if(!sidebar||!contentArea) return;var sidebarHtml='';var contentHtml='';for(var i=0;i<amCodes.length;i++){var amCode=amCodes[i];var amTitle=extractAmTitle(rawAmList,amCode);var entry=null;if(tables){entry=findMemoryInTable(tables,amCode,'纪要表') || findMemoryInTable(tables,amCode,'总结表');}else{entry={ code:amCode, title:amTitle||'断联残影', content:'此为无数据连接时的残篇。请确认已启用 SP·数据库 并导入本卡 SQL_v4.3 模板。', source:'未知档案', rowIndex: 1 };}if(tables&&entry) foundCount++;else if(!tables) foundCount++;var btnClass = i===0 ? 'memory-btn active' : 'memory-btn';sidebarHtml += '<div class="'+btnClass+'" onclick="switchMemory('+i+')" id="btn-mem-'+i+'">'+escapeHtml(amCode)+'</div>';var detailClass = i===0 ? 'memory-detail active' : 'memory-detail';contentHtml += '<div class="'+detailClass+'" id="detail-mem-'+i+'">';if(tables&&!entry){contentHtml += '<div class="item-box" style="margin-bottom:0;"><div class="item-header"><span class="item-id">'+escapeHtml(amCode)+'</span><span class="item-title" style="color:var(--accent)">散佚</span></div><div class="item-body" style="color:var(--text-mute)">未曾在此处留下印记。</div></div>';}else{contentHtml += renderMemoryItem(entry, amTitle);}contentHtml += '</div>';}sidebar.innerHTML=sidebarHtml;contentArea.innerHTML=contentHtml;if(statsMemory)statsMemory.textContent=foundCount+' / '+amCodes.length;window.switchMemory = function(idx){for(var j=0;j<amCodes.length;j++){var b=document.getElementById('btn-mem-'+j);var c=document.getElementById('detail-mem-'+j);if(b)b.classList.remove('active');if(c)c.classList.remove('active');}var ab=document.getElementById('btn-mem-'+idx);var ac=document.getElementById('detail-mem-'+idx);if(ab)ab.classList.add('active');if(ac)ac.classList.add('active');updateIframeHeight();};updateIframeHeight();}
+function loadSupplements(){var container=document.getElementById('supplementList');var badge=document.getElementById('supplementBadge');var statsSupplement=document.getElementById('statsSupplement');var items=parseSupplementItems(rawSupplement);if(badge)badge.textContent='拾遗 '+items.length;if(statsSupplement)statsSupplement.textContent=items.length;if(items.length===0){if(container)container.innerHTML='<div style="color:var(--text-mute);text-align:center;padding:30px;letter-spacing:1px;">无旁支线索</div>';return;}var html='';for(var i=0;i<items.length;i++) html+=renderSupplementItem(items[i]);if(container)container.innerHTML=html;}
+function updateLoadTime(){var statsTime=document.getElementById('statsTime');if(statsTime) statsTime.textContent=(Date.now()-startTime)+' 瞬';}
+initUserInput();loadSupplements();updateIframeHeight();setTimeout(function(){loadMemories();updateLoadTime();},300);
+})();
+</script>
+</body>
+</html>

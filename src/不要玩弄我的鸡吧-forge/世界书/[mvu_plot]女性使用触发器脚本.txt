@@ -1,0 +1,542 @@
+@@generate_before
+# 世界书条目：女性使用触发器
+# 激活策略：正则（匹配女性使用相关关键词）
+
+<% 
+// 此条目不产生正文内容，仅作为变量更新触发器
+// 实际使用逻辑在女性侧卡/世界书中，这里定义对 {{user}} 变量的影响
+
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var mode = getvar('stat_data.隐藏层.使用模式', {scope:'local', defaults:'internal'}) || 'internal';
+var rhythm = getvar('stat_data.隐藏层.使用节奏', {scope:'local', defaults:'normal'}) || 'normal';
+var scene = getvar('stat_data.隐藏层.当前场景', {scope:'local', defaults:'dorm_night'}) || 'dorm_night';
+var meditation = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:0})) || 0;
+var recovery = Number(getvar('stat_data.技能.恢复.等级', {scope:'local', defaults:1})) || 1;
+var willpower = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+var disguise = Number(getvar('stat_data.技能.伪装.等级', {scope:'local', defaults:1})) || 1;
+var exercise = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var stamina = Number(getvar('stat_data.状态.体力', {scope:'local', defaults:80})) || 80;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var corruption = Number(getvar('stat_data.状态.堕落值', {scope:'local', defaults:0})) || 0;
+var users_active = Number(getvar('stat_data.隐藏层.活跃使用人数', {scope:'local', defaults:1})) || 1;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var event_id = Number(getvar('stat_data.UID计数器.事件', {scope:'local', defaults:0})) || 0;
+var currentUid = getvar('stat_data.隐藏层.当前使用者UID', {scope:'local', defaults:'叶知秋'}) || '叶知秋';
+// 女性各字段（自动追踪）
+var femEnergy = 0, femUsage = 0, femFavor = 0;
+try {
+  var femRaw = getvar('stat_data.女性角色.' + currentUid + '.NSFW.假阴茎经验.总次数', {scope:'local', defaults:0});
+  femUsage = Number(femRaw) || 0;
+  var femFavRaw = getvar('stat_data.女性角色.' + currentUid + '.与玩家关系.好感度', {scope:'local', defaults:30});
+  femFavor = Number(femFavRaw) || 30;
+} catch(e) {}
+
+// 计算基础消耗 baseDrain
+var baseDrain = 6;
+if (stage === 2) baseDrain = 12;
+else if (stage === 3) baseDrain = 20;
+else if (stage === 4) baseDrain = 30;
+else if (stage >= 5) baseDrain = 50 + (users_active - 1) * 15;
+
+// 节奏倍率
+var rhythmMult = {slow:0.5, normal:1, fast:1.5, intermittent:0.3, surge:1.3}[rhythm] || 1;
+
+// 场景倍率表
+var sceneMult = {
+  dorm_night:1, dorm_morning:1.1, classroom:1.2, noon_rest:1.5,
+  evening_study:1.1, exam:1.3, pe_class:0.8, clinic_night:1.1,
+  locker_room:1.3, office:1.0, library:0.9, music_room:1.2,
+  study_room:1.0, rooftop:1.4, storage:1.3, bathroom:1.1,
+  infirmary:0.85, dorm_common:1.5, library_archive:0.8, outside_grounds:1.2
+}[scene] || 1;
+
+// 多人惩罚
+var userMult = users_active === 1 ? 1 : users_active === 2 ? 1.5 : users_active === 3 ? 2 : users_active >= 4 ? 3 + (users_active-4)*0.5 : 1;
+
+// 定力减免（冥想 100 级换算：Lv.1=0.99, Lv.20=0.81, Lv.50=0.53, Lv.80=0.24, Lv.100=0.05）
+// 系数与 [mvu_plot]精力消耗计算规则.txt 统一：0.0095，下限 0.05
+var medRed = Math.max(0.05, 1.0 - meditation * 0.0095);
+
+// 模式倍率
+var modeMult = {internal:1, external:0.8, edging:0.4, delayed:1.2}[mode] || 1;
+
+// 恢复减免（恢复100级：Lv.1=1.0, Lv.30=0.75, Lv.60=0.50, Lv.100=0.10）
+var recRed = Math.max(0.10, 1.0 - recovery * 0.009);
+
+// 计算总消耗
+var diff = getvar('stat_data.状态.难度', {scope:'local', defaults:'困难'}) || '困难';
+var diffIdx = { '普通': 0, '困难': 1, '地狱': 2 }[diff];
+if (typeof diffIdx === 'undefined') diffIdx = 1;
+var energyCostArr = getvar('stat_data.配置.难度倍率.玩家精力消耗', {scope:'local', defaults:[0.8,1.0,1.3]}) || [0.8,1.0,1.3];
+var difficultyMult = energyCostArr[diffIdx] || 1.0;
+var finalDrain = Math.floor(baseDrain * difficultyMult * rhythmMult * sceneMult * userMult * medRed * modeMult * recRed);
+// 射精阻挡折扣：blocked=true时精力消耗按60%执行（详见 [mvu_plot]射精判定与精液系统.txt L49-50）
+if (typeof blocked !== 'undefined' && blocked) { finalDrain = Math.floor(finalDrain * 0.6); }
+
+// 更新变量
+setvar('stat_data.隐藏层.最后榨取量', finalDrain, {scope:'local'});
+setvar('stat_data.状态.精力', Math.max(0, Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) - finalDrain), {scope:'local'});
+// 疑心度/沉沦度增长（按难度倍率）
+var suspicionArr = getvar('stat_data.配置.难度倍率.玩家怀疑值', {scope:'local', defaults:[0.7,1.0,1.3]}) || [0.7,1.0,1.3];
+var suspicionMult = suspicionArr[diffIdx] || 1.0;
+setvar('stat_data.状态.怀疑值', Math.min(200, Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) + Math.round(users_active * 2 * suspicionMult)), {scope:'local'});
+setvar('stat_data.状态.堕落值', Math.min(200, Number(getvar('stat_data.状态.堕落值', {scope:'local', defaults:0})) + Math.round(users_active * 1 * suspicionMult)), {scope:'local'});
+
+// 理智消耗（按难度倍率）
+var sanityCostArr = getvar('stat_data.配置.难度倍率.玩家理智消耗', {scope:'local', defaults:[0.8,1.0,1.3]}) || [0.8,1.0,1.3];
+var sanityMult = sanityCostArr[diffIdx] || 1.0;
+setvar('stat_data.状态.理智', Math.max(0, Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) - Math.round(users_active * 2 * sanityMult)), {scope:'local'});
+
+// ===== 防速通保护检查 =====
+// 0. 先反查持有者 UID（持有者ID 存中文姓名，需遍历 女性角色 找对应 UID）
+var _holderIdForCheck = getvar('stat_data.隐藏层.持有者ID', {scope:'local', defaults:'林婉清'}) || '林婉清';
+var _holderUidForCheck = '';
+try {
+  var _allFemForCheck = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+  for (var _uid of Object.keys(_allFemForCheck)) {
+    if (_allFemForCheck[_uid] && _allFemForCheck[_uid].基础 && _allFemForCheck[_uid].基础.姓名 === _holderIdForCheck) {
+      _holderUidForCheck = _uid;
+      break;
+    }
+  }
+} catch(e) {}
+
+// 1. 每日使用次数上限（默认5次，可由 使用阶段.今日上限 配置）
+var todayMax = Number(getvar('stat_data.使用阶段.今日上限', {scope:'local', defaults:5})) || 5;
+var todayUses = Number(getvar('stat_data.使用阶段.今日使用', {scope:'local', defaults:0})) || 0;
+// 2. 单次使用间隔至少2小时
+var lastUseDay = Number(getvar('stat_data.使用阶段.最后使用日', {scope:'local', defaults:0})) || 0;
+var lastUseHour = Number(getvar('stat_data.使用阶段.最后使用时', {scope:'local', defaults:-99})) || -99;
+var hoursSinceLastUse = (day * 24 + hour) - (lastUseDay * 24 + lastUseHour);
+// 3. 持有者每日使用上限（默认2次，防止单人刷次数）
+var holderDailyUseMax = Number(getvar('stat_data.配置.持有者每日使用上限', {scope:'local', defaults:2})) || 2;
+var holderUsedToday = _holderUidForCheck ? (Number(getvar('stat_data.女性角色.' + _holderUidForCheck + '.NSFW.当日统计.今日已用', {scope:'local', defaults:0})) || 0) : 0;
+var isHolderUsing = (_holderUidForCheck && currentUid === _holderUidForCheck);
+
+if (todayUses >= todayMax) {
+  // 过热保护：今日已达上限，跳过本次使用更新
+  setvar('stat_data.隐藏层.过热保护', true, {scope:'local'});
+} else if (lastUseDay > 0 && hoursSinceLastUse < 2) {
+  // 间隔保护：距上次使用不足2小时，跳过本次使用更新
+  setvar('stat_data.隐藏层.间隔保护', true, {scope:'local'});
+} else if (isHolderUsing && holderUsedToday >= holderDailyUseMax) {
+  // 持有者过热保护：持有者今日已达上限（默认2次），跳过本次使用更新
+  setvar('stat_data.隐藏层.持有者过热保护', true, {scope:'local'});
+} else {
+  setvar('stat_data.隐藏层.过热保护', false, {scope:'local'});
+  setvar('stat_data.隐藏层.间隔保护', false, {scope:'local'});
+  setvar('stat_data.隐藏层.持有者过热保护', false, {scope:'local'});
+  // 每日使用计数
+  setvar('stat_data.使用阶段.今日使用', todayUses + users_active, {scope:'local'});
+  setvar('stat_data.使用阶段.总使用次数', Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) + users_active, {scope:'local'});
+  setvar('stat_data.使用阶段.最后使用日', day, {scope:'local'});
+  setvar('stat_data.使用阶段.最后使用时', hour, {scope:'local'});
+
+  // ===== 阶段晋升系统（经验值+天数双触发，详见 [mvu_plot]阶段晋升系统.txt）=====
+  var currentStage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+  var confirmedUsers = getvar('stat_data.隐藏层.确认使用者', {scope:'local', defaults:[]});
+  var confirmedCount = Array.isArray(confirmedUsers) ? confirmedUsers.length : 0;
+  var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+  var holderId = getvar('stat_data.隐藏层.持有者ID', {scope:'local', defaults:'林婉清'}) || '林婉清';
+
+  // 读取持有者信息（持有者ID 是中文姓名，需遍历 女性角色 找对应 UID）
+  var holderHasUsed = false;
+  var holderObsession = 0;
+  var holderCompositeStage = 'A_理性期';
+  var holderUid = '';
+  try {
+    var allFemales = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+    for (var uid of Object.keys(allFemales)) {
+      if (allFemales[uid] && allFemales[uid].基础 && allFemales[uid].基础.姓名 === holderId) {
+        holderUid = uid;
+        break;
+      }
+    }
+    if (holderUid) {
+      var holderInfo = getvar('stat_data.女性角色.' + holderUid + '.持有者信息', {scope:'local', defaults:null});
+      holderHasUsed = holderInfo ? !!holderInfo.是否使用过 : false;
+      var holderMulti = getvar('stat_data.女性角色.' + holderUid + '.多维状态', {scope:'local', defaults:null});
+      if (holderMulti) {
+        holderObsession = Number(holderMulti.执念) || 0;
+        holderCompositeStage = holderMulti.综合阶段 || 'A_理性期';
+      }
+    }
+  } catch(e) {}
+
+  // 检查是否有使用者达到指定综合阶段（C沉沦期/D疯狂期）
+  var hasCStage = false; // 至少1人达C沉沦期或更深
+  var hasDStage = false; // 至少1人达D疯狂期或更深
+  try {
+    var allFemaleIds = Object.keys(getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {});
+    var stageRank = {'A_理性期':1, 'B_动摇期':2, 'C_沉沦期':3, 'D_疯狂期':4, 'E_清醒反扑期':5};
+    for (var i = 0; i < allFemaleIds.length; i++) {
+      var ms = getvar('stat_data.女性角色.' + allFemaleIds[i] + '.多维状态', {scope:'local', defaults:null});
+      if (ms && ms.综合阶段) {
+        var rank = stageRank[ms.综合阶段] || 0;
+        if (rank >= 3) hasCStage = true;
+        if (rank >= 4) hasDStage = true;
+      }
+    }
+  } catch(e) {}
+
+  // ===== 计算本次使用获得的经验值（详见 [mvu_plot]阶段晋升系统.txt） =====
+  // 1. 基础经验
+  var baseExp = 1;
+  // 2. 多人加成（2人×1.5 / 3人×2.0 / 4人×2.5 / 5+人×3.0）
+  var multiUserMult = users_active === 1 ? 1 : users_active === 2 ? 1.5 : users_active === 3 ? 2.0 : users_active === 4 ? 2.5 : 3.0;
+  // 3. 高频加成（同日第N次，封顶×1.8；todayUses 为本次使用前当日已使用次数）
+  var highFreqMult = todayUses === 0 ? 1 : Math.min(1.8, 1 + todayUses * 0.2);
+  // 4. 场景加成（高危场景 ×1.3）
+  var sceneMultExp = ['dorm_night', 'classroom', 'infirmary', 'library_archive', 'storage'].indexOf(scene) >= 0 ? 1.3 : 1.0;
+  // 5. 阶段加成（阶段越高灵体反馈越强）
+  var stageMult = stage === 1 ? 1.0 : stage === 2 ? 1.1 : stage === 3 ? 1.2 : stage === 4 ? 1.3 : 1.5;
+  // 6. 持有者加成（持有者本人使用 ×1.5，强化主链接）
+  var holderMult = 1;
+  try {
+    if (holderUid && holderUid === currentUid) holderMult = 1.5;
+  } catch(e) {}
+  // 单次经验（四舍五入）
+  var expGain = Math.round(baseExp * multiUserMult * highFreqMult * sceneMultExp * stageMult * holderMult);
+
+  // 日经验上限检查（今日经验上限 = 30）
+  var dailyExp = Number(getvar('stat_data.使用阶段.今日经验', {scope:'local', defaults:0})) || 0;
+  var dailyExpMax = Number(getvar('stat_data.使用阶段.今日经验上限', {scope:'local', defaults:30})) || 30;
+  if (dailyExp < dailyExpMax) {
+    // 实际可获得的经验（不超过日上限）
+    var actualGain = Math.min(expGain, dailyExpMax - dailyExp);
+    var newDailyExp = dailyExp + actualGain;
+    var newTotalExp = Number(getvar('stat_data.使用阶段.经验', {scope:'local', defaults:0})) + actualGain;
+    setvar('stat_data.使用阶段.今日经验', newDailyExp);
+    setvar('stat_data.使用阶段.经验', newTotalExp);
+
+    // 阶段晋升条件表（经验值+天数+附加条件，与 [mvu_plot]阶段晋升系统.txt 保持一致）
+    // expThresholds: 各阶段累计经验下限 [0, 30, 100, 200, 350]
+    // dayThresholds: 各阶段最低天数 [0, 30, 60, 95, 102]
+    var expThresholds = [0, 30, 100, 200, 350];
+    var promotionConditions = [
+      null, // 索引0占位
+      // 阶段1→2：累计exp≥30 + 第30天 + 持有者已使用
+      { minDay: 30, minExp: 30, extra: () => holderHasUsed },
+      // 阶段2→3：累计exp≥100 + 第60天 + 3人传播 + 持有者执念≥30
+      { minDay: 60, minExp: 100, extra: () => confirmedCount >= 3 && holderObsession >= 30 },
+      // 阶段3→4：累计exp≥200 + 第95天 + 6人传播 + 1人达C沉沦期
+      { minDay: 95, minExp: 200, extra: () => confirmedCount >= 6 && hasCStage },
+      // 阶段4→5：累计exp≥350 + 第102天 + 10人传播 + 1人达D疯狂期 + user的怀疑值≥60
+      { minDay: 102, minExp: 350, extra: () => confirmedCount >= 10 && hasDStage && suspicion >= 60 },
+    ];
+
+    var promoted = false;
+    if (currentStage < 5) {
+      var cond = promotionConditions[currentStage];
+      if (cond && day >= cond.minDay && newTotalExp >= cond.minExp && cond.extra()) {
+        setvar('stat_data.使用阶段.当前阶段', currentStage + 1, {scope:'local'});
+        setvar('stat_data.使用阶段.阶段进度', 0, {scope:'local'});
+        setvar('stat_data.隐藏层.阶段已晋升', true, {scope:'local'});
+        promoted = true;
+      }
+    }
+    if (!promoted) {
+      setvar('stat_data.隐藏层.阶段已晋升', false, {scope:'local'});
+      // 阶段进度 按经验值计算：(累计exp - 当前阶段下限) / (下阶段下限 - 当前阶段下限) × 100%
+      var curExpMin = expThresholds[currentStage - 1] || 0;
+      var nextExpMin = expThresholds[currentStage] || 350;
+      var stageProgress = Math.min(100, Math.max(0, Math.round((newTotalExp - curExpMin) / Math.max(1, (nextExpMin - curExpMin)) * 100)));
+      setvar('stat_data.使用阶段.阶段进度', stageProgress, {scope:'local'});
+    }
+  } else {
+    // 今日经验 已达上限，不再累加经验，但需保证 阶段进度 不被覆盖为旧值
+    setvar('stat_data.隐藏层.阶段已晋升', false, {scope:'local'});
+    var expThresholds = [0, 30, 100, 200, 350];
+    var curExpMin = expThresholds[currentStage - 1] || 0;
+    var nextExpMin = expThresholds[currentStage] || 350;
+    var curTotalExp = Number(getvar('stat_data.使用阶段.经验', {scope:'local', defaults:0})) || 0;
+    var stageProgress = Math.min(100, Math.max(0, Math.round((curTotalExp - curExpMin) / Math.max(1, (nextExpMin - curExpMin)) * 100)));
+    setvar('stat_data.使用阶段.阶段进度', stageProgress, {scope:'local'});
+  }
+}
+
+// 定力判定（冥想100级：Lv.1=1%, Lv.30=30%, Lv.60=60%, Lv.100≈100%）
+var blockChance = Math.min(1.0, meditation * 0.01);
+// LCG 确定性种子（嵌套乘法，与 LCG 系统一致）：(((((day*7 + hour*13)*7919 + id)*11 + stage)*17 + extra)*31)
+// extra=0 用于射精阻挡判定（与 [mvu_plot]LCG确定性骰子系统.txt 公式结构完全一致）
+var lcg_seed = ((((((day||1)*7 + (hour||8)*13)*7919 + (event_id||0))*11 + (stage||1))*17 + 0)*31) >>> 0;
+function lcg_next(s) { var a=1664525,c=1013904223,m=4294967296; return ((s*a+c)>>>0); }
+var lcg_val = lcg_next(lcg_seed) % 10000 / 10000;
+var blocked = lcg_val < blockChance;
+setvar('stat_data.隐藏层.射精被阻止', blocked, {scope:'local'});
+
+if (!blocked && mode !== 'edging') {
+  if (hour >= 7 && hour <= 23) {
+    setvar('stat_data.隐藏层.清醒射精', true, {scope:'local'});
+  }
+}
+
+// 条件更新（精力/精力上限比例驱动）
+var energyNew = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80}));
+var energyMax = Number(getvar('stat_data.状态.精力上限', {scope:'local', defaults:80})) || 80;
+var energyPct = energyNew / Math.max(energyMax, 1) * 100;
+var cond = 'normal';
+if (energyPct < 15) cond = 'overworked';
+else if (energyPct < 35) cond = 'exhausted';
+else if (energyPct < 60) cond = 'fatigued';
+setvar('stat_data.症状.疲劳描述', cond, {scope:'local'});
+
+// 症状更新
+var fatigueText = '暂无异常';
+var sensitivityText = '暂无异常';
+if (energyPct >= 80) fatigueText = '精神状态良好';
+else if (energyPct >= 60) fatigueText = '略显疲惫';
+else if (energyPct >= 40) fatigueText = '面色发黄，眼睑浮肿';
+else if (energyPct >= 20) fatigueText = '黑眼圈明显，走路打晃';
+else fatigueText = '随时可能晕倒的虚弱状态';
+
+var senseText = '体感无明显异常';
+if (stage >= 2) senseText = '下体偶感酸胀';
+if (stage >= 3) senseText = '会阴部时有痉挛感';
+if (stage >= 4) senseText = '腰骶部钝痛，下体持续充血';
+if (stage >= 5) senseText = '全身敏感，轻微刺激即产生强烈反应';
+
+setvar('stat_data.症状.疲劳描述', fatigueText, {scope:'local'});
+setvar('stat_data.症状.敏感描述', senseText, {scope:'local'});
+
+// 定力/洞察经验增长（受难度 exp 倍率影响）
+var expArr = getvar('stat_data.配置.难度倍率.玩家经验', {scope:'local', defaults:[1.0,0.7,0.5]}) || [1.0,0.7,0.5];
+var expMult = expArr[diffIdx] || 0.7;
+var dailyMaxArr = getvar('stat_data.配置.难度倍率.玩家每日上限', {scope:'local', defaults:[1.3,1.0,0.7]}) || [1.3,1.0,0.7];
+var dailyMaxMult = dailyMaxArr[diffIdx] || 1.0;
+
+var medMax = Number(getvar('stat_data.技能.冥想.今日上限', {scope:'local', defaults:50})) * dailyMaxMult;
+var insMax = Number(getvar('stat_data.技能.洞察.今日上限', {scope:'local', defaults:40})) * dailyMaxMult;
+var medUsed = Number(getvar('stat_data.技能.冥想.今日已用', {scope:'local', defaults:0})) || 0;
+var insUsed = Number(getvar('stat_data.技能.洞察.今日已用', {scope:'local', defaults:0})) || 0;
+
+if (medUsed < medMax) {
+  var medGain = Math.round((blocked ? 2 : 1) * expMult);
+  setvar('stat_data.技能.冥想.经验', Number(getvar('stat_data.技能.冥想.经验', {scope:'local', defaults:0})) + Math.max(1, medGain), {scope:'local'});
+  setvar('stat_data.技能.冥想.今日已用', medUsed + 1, {scope:'local'});
+}
+if (insUsed < insMax) {
+  var insGain = Math.round(1 * expMult);
+  setvar('stat_data.技能.洞察.经验', Number(getvar('stat_data.技能.洞察.经验', {scope:'local', defaults:0})) + Math.max(1, insGain), {scope:'local'});
+  setvar('stat_data.技能.洞察.今日已用', insUsed + 1, {scope:'local'});
+}
+
+// 写入事件日志
+var eventsJson = getvar('stat_data.事件', {scope:'local', defaults:[]});
+try {
+  var events = typeof eventsJson === 'string' ? JSON.parse(eventsJson) : (Array.isArray(eventsJson) ? eventsJson : []);
+  events.push({编号: event_id, 类型:'使用', 日: day, 时: hour, 榨取: finalDrain, 阶段: stage, 人数: users_active, 模式: mode, 节奏: rhythm, 场景: scene, 已阻挡: blocked});
+  setvar('stat_data.事件', events, {scope:'local'});
+  setvar('stat_data.UID计数器.事件', event_id + 1, {scope:'local'});
+} catch(e) {}
+
+// ===== 女性使用者个人计数器自动更新 =====
+// 当前使用者 UID 由 AI 在叙事前设置 隐藏层.当前使用者UID
+try {
+  var femPath = 'stat_data.女性角色.' + currentUid;
+  // 使用次数+1（单女性+1，不是加全场人数）
+  setvar(femPath + '.NSFW.假阴茎经验.总次数', femUsage + 1, {scope:'local'});
+  // 亲密度微增（每次使用+1~3，schema钳制0-100）
+  setvar(femPath + '.与玩家关系.好感度', Math.min(100, femFavor + 2), {scope:'local'});
+  // 当日使用计数（脚本层，单女性+1）
+  var femToday = Number(getvar(femPath + '.NSFW.当日统计.今日已用', {scope:'local', defaults:0})) || 0;
+  setvar(femPath + '.NSFW.当日统计.今日已用', femToday + 1, {scope:'local'});
+  // 消耗能量记录
+  var femDrained = Number(getvar(femPath + '.交叉影响.精力消耗', {scope:'local', defaults:0})) || 0;
+  setvar(femPath + '.交叉影响.精力消耗', femDrained + finalDrain, {scope:'local'});
+
+  // ===== 女性动态状态更新（当前状态字段，NSFW场景必更新） =====
+  // 兴奋度/润滑度/乳头/阴蒂/体温 随使用行为联动变化
+  try {
+    var csPath = femPath + '.当前状态';
+    // 读取当前值（带默认值兜底）
+    var curArousal = Number(getvar(csPath + '.兴奋度', {scope:'local', defaults:0})) || 0;
+    var curLubric = Number(getvar(csPath + '.润滑度', {scope:'local', defaults:0})) || 0;
+    var curTemp = Number(getvar(csPath + '.体温', {scope:'local', defaults:36.5})) || 36.5;
+
+    // 使用行为强度系数（stage越高强度越大）
+    var intensityBase = {1: 8, 2: 12, 3: 18, 4: 25, 5: 35}[stage] || 8;
+    var intensity = intensityBase * (rhythm === 'fast' ? 1.3 : rhythm === 'slow' ? 0.7 : 1.0) * (mode === 'external' ? 0.7 : 1.0);
+
+    // 兴奋度递增（多人使用时叠加）
+    var arousalGain = Math.min(40, Math.round(intensity * users_active * 0.8));
+    var newArousal = Math.max(0, Math.min(100, curArousal + arousalGain));
+    setvar(csPath + '.兴奋度', newArousal, {scope:'local'});
+
+    // 润滑度联动（约为兴奋度的0.8倍，可独立微调）
+    var newLubric = Math.max(0, Math.min(100, Math.round(newArousal * 0.8)));
+    setvar(csPath + '.润滑度', newLubric, {scope:'local'});
+
+    // 乳头状态（按兴奋度档位映射）
+    var nippleState = newArousal < 30 ? '柔软' : newArousal < 50 ? '微挺' : newArousal < 80 ? '勃起' : '肿胀';
+    setvar(csPath + '.乳头状态', nippleState, {scope:'local'});
+
+    // 阴蒂状态（按兴奋度档位映射）
+    var clitorisState = newArousal < 30 ? '休眠' : newArousal < 50 ? '微充血' : newArousal < 80 ? '充血' : '勃起';
+    setvar(csPath + '.阴蒂状态', clitorisState, {scope:'local'});
+
+    // 体温（兴奋时微升，上限38.0）
+    var tempInc = newArousal >= 80 ? 1.0 : newArousal >= 50 ? 0.7 : newArousal >= 30 ? 0.4 : 0.2;
+    var newTemp = Math.max(36.0, Math.min(38.0, curTemp + tempInc));
+    setvar(csPath + '.体温', Number(newTemp.toFixed(1)), {scope:'local'});
+
+    // 标记最后更新时段
+    setvar(csPath + '.最后更新时', hour, {scope:'local'});
+  } catch(e) {}
+} catch(e) {}
+
+// ===== 女性能力成长（A类：技能等级/隐蔽/持久/控制 + B类：诱惑/欲望 + 僵尸字段同步） =====
+try {
+  var femAbilities = getvar('stat_data.女性角色.' + currentUid + '.能力', {scope:'local', defaults:null});
+  var femCeilings = getvar('stat_data.女性角色.' + currentUid + '.能力上限', {scope:'local', defaults:null});
+  var femGrowth = getvar('stat_data.女性角色.' + currentUid + '.成长', {scope:'local', defaults:null});
+  var femMulti = getvar('stat_data.女性角色.' + currentUid + '.多维状态', {scope:'local', defaults:{}}) || {};
+  var femHolder = getvar('stat_data.女性角色.' + currentUid + '.持有者信息', {scope:'local', defaults:{}}) || {};
+  var femRelation = getvar('stat_data.女性角色.' + currentUid + '.与玩家关系', {scope:'local', defaults:{}}) || {};
+  var femCross = getvar('stat_data.女性角色.' + currentUid + '.交叉影响', {scope:'local', defaults:{}}) || {};
+  var femNsfw = getvar('stat_data.女性角色.' + currentUid + '.NSFW', {scope:'local', defaults:{}}) || {};
+  if (femAbilities && femCeilings) {
+    var abilities = femAbilities;
+    var ceilings = femCeilings;
+    var growth = femGrowth || {技能经验:0, 隐蔽经验:0, 持久经验:0, 控制经验:0, 总次数:0};
+    // UID 已统一为中文姓名，需将字符编码累加为稳定数字（确保不同姓名产生不同 LCG 种子）
+    var _uidStr = String(currentUid || '叶知秋');
+    var uidNum = 0;
+    for (var _ci = 0; _ci < _uidStr.length; _ci++) { uidNum += _uidStr.charCodeAt(_ci); }
+    uidNum = uidNum || 1;
+    var idMul = Number(getvar('stat_data.配置.LCG常数.ID乘数', {scope:'local', defaults:7919})) || 7919;
+    var skillGrowthArr = getvar('stat_data.配置.难度倍率.女性技能成长', {scope:'local', defaults:[0.7,1.0,1.3]}) || [0.7,1.0,1.3];
+    var gMult = skillGrowthArr[diffIdx] || 1.0;
+
+    // LCG for this female
+    function lcg_g(s) { var a=1664525,c=1013904223,m=4294967296; return ((s*a+c)>>>0); }
+    function lcg_roll_g(s, mn, mx) { return mn + (lcg_g(s) % (mx - mn + 1)); }
+    function lcg_prob_g(s) { return (lcg_g(s) % 10000) / 10000; }
+
+    // 每日成长上限保护（能力.今日成长已用 上限 10 次/日）
+    var dailyGrowthUsed = Number(abilities.今日成长已用) || 0;
+    var dailyGrowthMax = 10;
+    var canGrow = dailyGrowthUsed < dailyGrowthMax;
+
+    // 持有者加成（持有者成长速度+50%）
+    var holderId = getvar('stat_data.隐藏层.持有者ID', {scope:'local', defaults:''}) || '';
+    var isHolderNow = (holderId === currentUid) || (femHolder && femHolder.是否持有者);
+    var holderMult = isHolderNow ? 1.5 : 1.0;
+
+    // 多人加成（活跃使用人数×10%，上限+50%）
+    var activeCount = Number(getvar('stat_data.隐藏层.活跃使用人数', {scope:'local', defaults:1})) || 1;
+    var multiUserMult = Math.min(1.5, 1 + activeCount * 0.10);
+
+    // Player stat modifiers
+    var pMods = {
+      skill_level: 1 + meditation * 0.10 - willpower * 0.05,
+      stealth: 1 + disguise * 0.10 - Math.max(0, (100-stamina)/100) * 0.03,
+      endurance: 1 + exercise * 0.10 - Math.max(0, (100-sanity)/100) * 0.05,
+      control: 1 + willpower * 0.05 + corruption * 0.02
+    };
+
+    if (canGrow) {
+      var growable = [
+        {key:'技能等级', capKey:'技能上限', expKey:'技能经验', pStat:'skill_level', seedOff:1},
+        {key:'隐蔽', capKey:'隐蔽上限', expKey:'隐蔽经验', pStat:'stealth', seedOff:2},
+        {key:'持久', capKey:'持久上限', expKey:'持久经验', pStat:'endurance', seedOff:3},
+        {key:'控制', capKey:'控制上限', expKey:'控制经验', pStat:'control', seedOff:4}
+      ];
+
+      growable.forEach(function(g) {
+        var cur = Number(abilities[g.key]) || 0;
+        var cap = Number(ceilings[g.capKey]) || 100;
+        if (cur >= cap) return;
+        var ratio = cur / cap;
+        var ceilingFactor = 1 - ratio * ratio;
+        if (ceilingFactor <= 0) return;
+        var seed = (((((day * 7 + hour * 13) * 7919 + uidNum * idMul) * 11 + stage) * 17 + g.seedOff * 7919) * 31) >>> 0;
+        var baseExp = lcg_roll_g(seed, 1, 3);
+        var mod = pMods[g.pStat] || 1.0;
+        var expGain = Math.max(1, Math.floor(baseExp * ceilingFactor * gMult * mod * holderMult * multiUserMult));
+        var curExp = Number(growth[g.expKey]) || 0;
+        growth[g.expKey] = curExp + expGain;
+        // 升级阈值 = max(10, 当前等级 × 10)（与 [mvu_plot]技能升级公式系统.txt 声明一致）
+        var upgradeThreshold = Math.max(10, cur * 10);
+        if (growth[g.expKey] >= upgradeThreshold) {
+          var lvUp = Math.floor(growth[g.expKey] / upgradeThreshold);
+          growth[g.expKey] = growth[g.expKey] % upgradeThreshold;
+          abilities[g.key] = Math.min(cap, cur + lvUp);
+        }
+      });
+
+      // B类能力（诱惑/欲望）：执念驱动，LCG 概率触发 + 经验累积 + 上限读取
+      var obsession = Number(femMulti.执念) || 0;
+      var temptationCur = Number(abilities.诱惑) || 0;
+      var desireCur = Number(abilities.欲望) || 0;
+      var temptationCap = Number(ceilings.诱惑上限) || 100;
+      var desireCap = Number(ceilings.欲望上限) || 100;
+      // 诱惑：执念驱动概率触发，触发则累积经验，经验达阈值升级
+      if (temptationCur < temptationCap && obsession > 0) {
+        var tempSeed = (((((day * 7 + hour * 13) * 7919 + uidNum * idMul) * 11 + stage) * 17 + 5 * 7919) * 31) >>> 0;
+        var tempProb = obsession / 100;
+        if (lcg_prob_g(tempSeed) < tempProb) {
+          var tempRatio = temptationCur / temptationCap;
+          var tempCeilingFactor = 1 - tempRatio * tempRatio;
+          if (tempCeilingFactor > 0) {
+            var tempExpGain = Math.max(1, Math.floor(0.5 * (1 + obsession/100) * tempCeilingFactor * gMult * holderMult * multiUserMult));
+            growth.诱惑经验 = (Number(growth.诱惑经验) || 0) + tempExpGain;
+            var tempThreshold = Math.max(10, temptationCur * 10);
+            if (growth.诱惑经验 >= tempThreshold) {
+              var tempLvUp = Math.floor(growth.诱惑经验 / tempThreshold);
+              growth.诱惑经验 = growth.诱惑经验 % tempThreshold;
+              abilities.诱惑 = Math.min(temptationCap, temptationCur + tempLvUp);
+            }
+          }
+        }
+      }
+      // 欲望：执念驱动概率触发，触发则累积经验，经验达阈值升级
+      if (desireCur < desireCap && obsession > 0) {
+        var desireSeed = (((((day * 7 + hour * 13) * 7919 + uidNum * idMul) * 11 + stage) * 17 + 6 * 7919) * 31) >>> 0;
+        var desireProb = obsession / 100;
+        if (lcg_prob_g(desireSeed) < desireProb) {
+          var desireRatio = desireCur / desireCap;
+          var desireCeilingFactor = 1 - desireRatio * desireRatio;
+          if (desireCeilingFactor > 0) {
+            var desireExpGain = Math.max(1, Math.floor(0.3 * (obsession/100) * desireCeilingFactor * gMult * holderMult * multiUserMult));
+            growth.欲望经验 = (Number(growth.欲望经验) || 0) + desireExpGain;
+            var desireThreshold = Math.max(10, desireCur * 10);
+            if (growth.欲望经验 >= desireThreshold) {
+              var desireLvUp = Math.floor(growth.欲望经验 / desireThreshold);
+              growth.欲望经验 = growth.欲望经验 % desireThreshold;
+              abilities.欲望 = Math.min(desireCap, desireCur + desireLvUp);
+            }
+          }
+        }
+      }
+
+      // 每日成长已用递增
+      abilities.今日成长已用 = dailyGrowthUsed + 1;
+    }
+
+    growth.总次数 = (Number(growth.总次数) || 0) + 1;
+    setvar('stat_data.女性角色.' + currentUid + '.能力', abilities);
+    setvar('stat_data.女性角色.' + currentUid + '.成长', growth);
+
+    // 僵尸字段同步：多维状态.技能等级 ← 能力.技能等级
+    femMulti.技能等级 = Number(abilities.技能等级) || 0;
+    setvar('stat_data.女性角色.' + currentUid + '.多维状态', femMulti);
+
+    // 持有者信息.使用次数 与 NSFW.假阴茎经验.总次数 同步
+    if (femHolder && femHolder.是否持有者) {
+      femHolder.使用次数 = Number(femHolder.使用次数) || 0;
+      // 不在此处递增使用次数（由调用方在判定使用时递增），仅保证字段存在
+      setvar('stat_data.女性角色.' + currentUid + '.持有者信息', femHolder);
+    }
+
+    // 与玩家关系.互动次数 递增 + 与玩家关系.榨取精力 与 交叉影响.精力消耗 同步
+    femRelation.互动次数 = (Number(femRelation.互动次数) || 0) + 1;
+    var crossEnergyCost = Number(femCross.精力消耗) || 0;
+    if (crossEnergyCost > 0) {
+      femRelation.榨取精力 = (Number(femRelation.榨取精力) || 0) + crossEnergyCost;
+    }
+    setvar('stat_data.女性角色.' + currentUid + '.与玩家关系', femRelation);
+  }
+} catch(e) {}
+%>

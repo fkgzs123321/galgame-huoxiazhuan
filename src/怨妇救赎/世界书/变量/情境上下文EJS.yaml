@@ -1,0 +1,23 @@
+@@generate_before
+@@private
+<%_ const tgt = getvar('stat_data.当前目标', { defaults: '' }); _%>
+<%_ const jd = tgt ? getvar('stat_data.女主.' + tgt + '.阶段', { defaults: 1 }) : 0; _%>
+
+## 当前情境概览
+- 时间: <%- getvar('stat_data.时间.日期', { defaults: '' }) %> <%- getvar('stat_data.时间.星期', { defaults: '' }) %>（<%- getvar('stat_data.时间.时段', { defaults: '' }) %>）
+- <user> 状态: 体力 <%- getvar('stat_data.玩家.体力', { defaults: 0 }) %>；性欲 <%- getvar('stat_data.玩家.性欲', { defaults: 0 }) %>；勃起度 <%- getvar('stat_data.玩家.勃起度', { defaults: 0 }) %>
+
+<%_ if (tgt && getvar('stat_data.女主.' + tgt, { defaults: null })) { _%>
+## 当前目标：<%- tgt %>
+- 身份: <%- getvar('stat_data.女主.' + tgt + '.身份', { defaults: '' }) %>；丈夫: <%- getvar('stat_data.女主.' + tgt + '.丈夫', { defaults: '' }) %>
+- 阶段: <%- jd %>/5（<%- jd===1?'陌生攻略':jd===2?'暧昧·初孕':jd===3?'觉醒掌控':jd===4?'巅峰蜜月':'追夫火葬场' %>）
+- 吸收量: <%- getvar('stat_data.女主.' + tgt + '.吸收量', { defaults: 0 }) %>/100（转化率 <%- getvar('stat_data.女主.' + tgt + '.转化率', { defaults: 0 }) %>%）
+- 掌控值: <%- getvar('stat_data.女主.' + tgt + '.掌控值', { defaults: 0 }) %>/100；怀孕: <%- getvar('stat_data.女主.' + tgt + '.怀孕', { defaults: '未孕' }) %>
+- 亲密值: <%- getvar('stat_data.女主.' + tgt + '.亲密值', { defaults: 0 }) %>；丈夫察觉度: <%- getvar('stat_data.女主.' + tgt + '.丈夫察觉度', { defaults: 0 }) %>；资源转移: <%- getvar('stat_data.女主.' + tgt + '.资源转移', { defaults: 0 }) %>
+- 精神状态: <%- getvar('stat_data.女主.' + tgt + '.心理状态.精神状态', { defaults: '正常' }) %>；心声: <%- getvar('stat_data.女主.' + tgt + '.心声', { defaults: '' }) %>
+<%_ if (getvar('stat_data.女主.' + tgt + '.决裂', { defaults: false }) === true) { _%>
+- 火葬场进度: <%- getvar('stat_data.女主.' + tgt + '.火葬场进度', { defaults: '刚决裂' }) %>（决裂中）
+<%_ } _%>
+<%_ } else { _%>
+## 当前目标：无（自由时段，可结识新目标或经营已有关系）
+<%_ } _%>

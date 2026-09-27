@@ -1,0 +1,309 @@
+@@generate_before
+<%_
+/* 采矿资源勘探系统 - 矿脉发现/挖掘产出/深层采矿/疲劳判定 */
+
+/* 矿物类型表 MINERAL_DB
+   字段: 硬度(1-10), 单位N值, 堆叠, 估值, 用途, 挖掘难度, 深层出现概率 */
+var MINERAL_DB = {
+  '钢铁':   { 硬度: 4, 单位N值: 1.0, 堆叠: 75, 估值: 3,   用途: '钢墙/武器/装甲/电缆',           挖掘难度: 1.0, 深层出现概率: 0.30 },
+  '铜':     { 硬度: 3, 单位N值: 1.0, 堆叠: 75, 估值: 4,   用途: '电缆/电子元件/装饰',           挖掘难度: 0.9, 深层出现概率: 0.20 },
+  '铁矿':   { 硬度: 5, 单位N值: 1.2, 堆叠: 75, 估值: 2,   用途: '炼钢原料/低级武器',             挖掘难度: 1.1, 深层出现概率: 0.25 },
+  '白银':   { 硬度: 2, 单位N值: 0.5, 堆叠: 500, 估值: 1,   用途: '货币/装饰/贸易',               挖掘难度: 0.7, 深层出现概率: 0.15 },
+  '黄金':   { 硬度: 3, 单位N值: 0.3, 堆叠: 75, 估值: 30,  用途: '皇家床/贸易/高级装饰',         挖掘难度: 0.9, 深层出现概率: 0.10 },
+  '铀':     { 硬度: 7, 单位N值: 2.0, 堆叠: 25, 估值: 80,  用途: '能量武器/飞船反应堆/疫苗',     挖掘难度: 1.6, 深层出现概率: 0.12 },
+  '翡翠':   { 硬度: 8, 单位N值: 0.8, 堆叠: 50, 估值: 45,  用途: '高级艺术品/皇室装饰',           挖掘难度: 1.5, 深层出现概率: 0.08 },
+  '玉石':   { 硬度: 6, 单位N值: 1.0, 堆叠: 75, 估值: 20,  用途: '艺术品/高级装饰',               挖掘难度: 1.3, 深层出现概率: 0.15 },
+  '黑曜石': { 硬度: 9, 单位N值: 1.5, 堆叠: 50, 估值: 35,  用途: '锋利刃具/雕塑/神秘仪式',       挖掘难度: 1.8, 深层出现概率: 0.05 },
+  '深银':   { 硬度: 8, 单位N值: 1.8, 堆叠: 50, 估值: 60,  用途: '高级义体/能量传导/深井建筑',   挖掘难度: 1.7, 深层出现概率: 0.50 },
+  '塑钢':   { 硬度: 7, 单位N值: 1.5, 堆叠: 50, 估值: 25,  用途: '高级建筑/义体/装甲内衬',       挖掘难度: 1.4, 深层出现概率: 0.40 }
+};
+
+/* 矿脉生成表 VEIN_DB
+   字段: 矿物数量范围, 矿物类型, 发现概率, 挖掘耗时(小时), 深度要求(米) */
+var VEIN_DB = {
+  '小矿脉':   { 矿物数量范围: [5, 15],   矿物类型: ['铁矿','铜','白银'],                     发现概率: 0.40, 挖掘耗时: 2.0,  深度要求: 0 },
+  '中矿脉':   { 矿物数量范围: [16, 35],  矿物类型: ['钢铁','铁矿','铜','白银','玉石'],         发现概率: 0.30, 挖掘耗时: 4.0,  深度要求: 0 },
+  '大矿脉':   { 矿物数量范围: [36, 75],  矿物类型: ['钢铁','黄金','铀','翡翠','玉石'],         发现概率: 0.15, 挖掘耗时: 8.0,  深度要求: 5 },
+  '深层矿脉': { 矿物数量范围: [40, 100], 矿物类型: ['铀','翡翠','黑曜石','深银','塑钢'],       发现概率: 0.10, 挖掘耗时: 12.0, 深度要求: 30 },
+  '稀有矿脉': { 矿物数量范围: [10, 30],  矿物类型: ['黄金','翡翠','黑曜石'],                   发现概率: 0.05, 挖掘耗时: 6.0,  深度要求: 15 }
+};
+
+/* 深层矿物表 DEEP_MINERAL_DB
+   字段: 深度要求(米), 硬度, 特殊效果, 估值 */
+var DEEP_MINERAL_DB = {
+  '深银':   { 深度要求: 30, 硬度: 8, 特殊效果: '能量传导+30%,义体制造核心材料',     估值: 60 },
+  '塑钢':   { 深度要求: 40, 硬度: 7, 特殊效果: '建筑耐久+20%,装甲减伤+5%',         估值: 25 },
+  '活体钢': { 深度要求: 60, 硬度: 9, 特殊效果: '自愈建筑/高级义体骨架,耐久恢复',     估值: 120 },
+  '霓虹石': { 深度要求: 80, 硬度: 8, 特殊效果: '持续发光/地标照明/精神稳定+5',      估值: 90 },
+  '神秘矿': { 深度要求: 100, 硬度: 10, 特殊效果: '未知效应/概率触发异常事件',       估值: 200 }
+};
+
+/* biome 矿物倾向表: 不同生态的矿脉修正 */
+var BIOME_MINING_MOD = {
+  '温带森林': { 发现修正: 1.0, 深层修正: 1.0, 倾向矿物: ['钢铁','铜','白银'] },
+  '沙漠':     { 发现修正: 1.2, 深层修正: 1.1, 倾向矿物: ['黄金','黑曜石','铁矿'] },
+  '冻原':     { 发现修正: 1.3, 深层修正: 1.3, 倾向矿物: ['钢铁','铀','深银'] },
+  '热带雨林': { 发现修正: 0.8, 深层修正: 0.9, 倾向矿物: ['铜','玉石','白银'] },
+  '极地':     { 发现修正: 1.4, 深层修正: 1.5, 倾向矿物: ['铀','深银','塑钢','神秘矿'] },
+  '灌木丛':   { 发现修正: 1.0, 深层修正: 0.8, 倾向矿物: ['铁矿','铜','白银'] },
+  '干草原':   { 发现修正: 1.1, 深层修正: 1.0, 倾向矿物: ['铁矿','钢铁','铜'] },
+  '海洋':     { 发现修正: 0.5, 深层修正: 0.3, 倾向矿物: ['铜','白银','深银'] }
+};
+
+/* 获取矿物信息, 不存在返回钢铁兜底 */
+function _mineralInfo(type) {
+  var t = String(type) || '钢铁';
+  return MINERAL_DB[t] || MINERAL_DB['钢铁'];
+}
+
+/* 矿脉发现判定: 基于采矿技能与biome修正, 使用DDL骰子引擎判定
+   返回是否发现/矿脉类型/矿脉数据/检定结果 */
+function _veinDiscover(skill, biome) {
+  var skl = Number(skill) || 0;
+  var b = String(biome) || '温带森林';
+  var bMod = BIOME_MINING_MOD[b] || BIOME_MINING_MOD['温带森林'];
+  var score = skl * 5 + 20;
+  var seed = 'vein_' + b + '_' + skl;
+  var checkResult = _check(score, seed, '普通');
+  var discovered = checkResult.result === '普通成功' || checkResult.result === '极难成功' || checkResult.result === '大成功';
+  var veinType = null;
+  var veinData = null;
+  if (discovered) {
+    var bonus = 0;
+    if (checkResult.result === '大成功') bonus = 0.15;
+    else if (checkResult.result === '极难成功') bonus = 0.05;
+    var rollSeed = 'veintype_' + seed + '_' + checkResult.roll;
+    var typeRoll = _lcgRoll(rollSeed, 1, 100)[0] / 100;
+    var cumulative = 0;
+    var discoverMod = bMod.发现修正 + bonus;
+    for (var k in VEIN_DB) {
+      var v = VEIN_DB[k];
+      var adjProb = v.发现概率 * discoverMod;
+      cumulative += adjProb;
+      if (typeRoll <= cumulative / (cumulative + (1 - cumulative) * 0.5)) {
+        veinType = k;
+        veinData = v;
+        break;
+      }
+    }
+    if (!veinType) {
+      veinType = '小矿脉';
+      veinData = VEIN_DB['小矿脉'];
+    }
+  }
+  return {
+    发现: discovered,
+    矿脉类型: veinType,
+    矿脉数据: veinData,
+    biome修正: bMod.发现修正,
+    检定: checkResult
+  };
+}
+
+/* 挖掘速度: 实际速度 = 基础速度 x (1 + 技能 x 0.06) / 硬度修正
+   硬度越高速度越慢, 技能越高速度越快
+   返回每小时产出单位数 */
+function _miningSpeed(skill, mineralHardness) {
+  var skl = Number(skill) || 0;
+  var hard = Number(mineralHardness) || 5;
+  if (hard < 1) hard = 1;
+  var base = 10;
+  var speed = base * (1 + skl * 0.06) / (hard / 5);
+  return Math.round(speed * 100) / 100;
+}
+
+/* 挖掘产出: 产出数量 = 矿脉数量 x (0.6 + 技能 x 0.04) x 品质修正
+   技能越高产出越多, 大成功额外+20%
+   返回实际产出/产出系数/检定结果 */
+function _miningYield(skill, veinSize, seed) {
+  var skl = Number(skill) || 0;
+  var size = Number(veinSize) || 10;
+  var score = skl * 5 + 10;
+  var sd = String(seed) || 'mine_yield';
+  var checkResult = _check(score, sd, '普通');
+  var yieldMod = 0.6 + skl * 0.04;
+  var bonus = 0;
+  if (checkResult.result === '大成功') { yieldMod *= 1.2; bonus = 0.2; }
+  else if (checkResult.result === '大失败') { yieldMod *= 0.6; bonus = -0.4; }
+  else if (checkResult.result === '失败') { yieldMod *= 0.8; bonus = -0.2; }
+  var actual = Math.max(1, Math.round(size * yieldMod));
+  return {
+    实际产出: actual,
+    矿脉数量: size,
+    产出系数: Math.round(yieldMod * 100) / 100,
+    附加修正: bonus,
+    检定: checkResult
+  };
+}
+
+/* 深层采矿: 深度越大难度越高, 需要更高技能与设备
+   返回可达深度/速度修正/可用矿物列表/检定结果 */
+function _deepMining(skill, depth) {
+  var skl = Number(skill) || 0;
+  var dep = Number(depth) || 0;
+  var score = skl * 4 + 10;
+  var sd = 'deepmine_' + skl + '_' + dep;
+  var checkResult = _check(score, sd, '困难');
+  var maxDepth = skl * 8 + 20;
+  var speedMod = 1.0;
+  if (dep > maxDepth) speedMod = 0.3;
+  else if (dep > maxDepth * 0.7) speedMod = 0.6;
+  else if (dep > maxDepth * 0.5) speedMod = 0.8;
+  var available = [];
+  for (var k in DEEP_MINERAL_DB) {
+    var dm = DEEP_MINERAL_DB[k];
+    if (dep >= dm.深度要求 && dep <= maxDepth) {
+      available.push(k);
+    }
+  }
+  var success = checkResult.result === '普通成功' || checkResult.result === '极难成功' || checkResult.result === '大成功';
+  return {
+    可达深度: maxDepth,
+    速度修正: speedMod,
+    可用矿物: available,
+    深度足够: dep <= maxDepth,
+    挖掘成功: success,
+    检定: checkResult
+  };
+}
+
+/* 挖掘疲劳: 疲劳值越高挖掘效率越低, 疲劳>=80有塌方风险
+   返回效率修正/塌方风险/建议 */
+function _miningExhaustion(fatigue) {
+  var f = Number(fatigue) || 0;
+  var mod = 1.0;
+  var risk = 0;
+  var advice = '状态良好';
+  if (f < 20) { mod = 1.1; advice = '精力充沛,效率+10%'; }
+  else if (f < 40) { mod = 1.0; advice = '状态正常'; }
+  else if (f < 60) { mod = 0.85; advice = '略显疲惫,建议休息'; }
+  else if (f < 80) { mod = 0.7; risk = 0.1; advice = '疲惫不堪,效率-30%'; }
+  else { mod = 0.5; risk = 0.3; advice = '极度疲劳,塌方风险高,必须休息'; }
+  return {
+    疲劳值: f,
+    效率修正: mod,
+    塌方风险: risk,
+    建议: advice
+  };
+}
+
+/* 矿物估值: 总价值 = 单价 x 数量 x 品质系数(深银/塑钢等深层矿物+10%)
+   返回总价值/单价/数量/品质系数 */
+function _mineralValue(type, quantity) {
+  var t = String(type) || '钢铁';
+  var q = Number(quantity) || 0;
+  var info = MINERAL_DB[t] || MINERAL_DB['钢铁'];
+  var unit = Number(info.估值) || 1;
+  var qualityMod = 1.0;
+  var isDeep = false;
+  if (DEEP_MINERAL_DB[t]) {
+    isDeep = true;
+    qualityMod = 1.1;
+    unit = Number(DEEP_MINERAL_DB[t].估值) || unit;
+  }
+  var total = Math.round(unit * q * qualityMod * 100) / 100;
+  return {
+    矿物: t,
+    单价: unit,
+    数量: q,
+    品质系数: qualityMod,
+    深层矿物: isDeep,
+    总价值: total
+  };
+}
+
+/* 读取殖民者采矿技能与状态(MVU变量) */
+var p1Name = getvar('stat_data.殖民者_主角.姓名', {scope:'local',defaults:''}) || '';
+var p1Mining = Number(getvar('stat_data.殖民者_主角.采矿', {scope:'local',defaults:5})) || 5;
+var p1Fatigue = Number(getvar('stat_data.殖民者_主角.疲劳', {scope:'local',defaults:20})) || 20;
+var p1Mood = Number(getvar('stat_data.殖民者_主角.心情', {scope:'local',defaults:50})) || 50;
+
+var colonyBiome = getvar('stat_data.殖民地.biome', {scope:'local',defaults:'温带森林'}) || '温带森林';
+
+/* 主角采矿演示判定 */
+var demoVein = _veinDiscover(p1Mining, colonyBiome);
+var demoSpeed = _miningSpeed(p1Mining, 5);
+var demoExhaustion = _miningExhaustion(p1Fatigue);
+var demoDeepMine = _deepMining(p1Mining, 30);
+
+/* 心情修正: 心情<30挖掘效率-20%, 心情>70挖掘效率+10% */
+var moodMod = 1.0;
+if (p1Mood < 30) { moodMod = 0.8; }
+else if (p1Mood > 70) { moodMod = 1.1; }
+_%>
+
+<采矿校验>
+[采矿资源勘探系统校验]
+殖民者: <%= p1Name %>
+采矿技能: <%= p1Mining %>
+疲劳值: <%= p1Fatigue %>
+心情: <%= p1Mood %> (心情修正×<%= moodMod %>)
+殖民地biome: <%= colonyBiome %>
+
+[矿脉发现判定]
+技能评分: <%= p1Mining * 5 + 20 %>
+检定结果: <%= demoVein.检定.result %> (骰值<%= demoVein.检定.roll %>,阈值<%= demoVein.检定.threshold %>)
+是否发现: <%= demoVein.发现 ? '是' : '否' %>
+矿脉类型: <%= demoVein.矿脉类型 || '无' %>
+biome发现修正: ×<%= demoVein.biome修正 %>
+
+[挖掘速度]
+基础速度公式: 10 × (1 + 技能×0.06) / (硬度/5)
+示例(硬度5): <%= demoSpeed %> 单位/小时
+
+[疲劳判定]
+效率修正: ×<%= demoExhaustion.效率修正 %>
+塌方风险: <%= demoExhaustion.塌方风险 %>
+建议: <%= demoExhaustion.建议 %>
+
+[深层采矿判定]
+可达深度: <%= demoDeepMine.可达深度 %> 米
+目标深度30米: <%= demoDeepMine.深度足够 ? '可达' : '不足' %>
+速度修正: ×<%= demoDeepMine.速度修正 %>
+挖掘成功: <%= demoDeepMine.挖掘成功 ? '是' : '否' %>
+可用深层矿物: <%= demoDeepMine.可用矿物.join(' / ') || '无' %>
+
+[矿物估值示例]
+深银×10: <%= _mineralValue('深银', 10).总价值 %> 银两
+钢铁×75: <%= _mineralValue('钢铁', 75).总价值 %> 银两
+铀×25: <%= _mineralValue('铀', 25).总价值 %> 银两
+</采矿校验>
+
+[采矿资源勘探系统 · 系统控制器]
+## 矿物类型表（查MINERAL_DB）
+钢铁(硬度4/估值3/钢墙武器装甲) | 铜(硬度3/估值4/电缆电子元件) | 铁矿(硬度5/估值2/炼钢原料)
+白银(硬度2/估值1/货币贸易) | 黄金(硬度3/估值30/皇家床贸易) | 铀(硬度7/估值80/能量武器反应堆)
+翡翠(硬度8/估值45/高级艺术品) | 玉石(硬度6/估值20/艺术品装饰) | 黑曜石(硬度9/估值35/锋利刃具雕塑)
+深银(硬度8/估值60/义体能量传导) | 塑钢(硬度7/估值25/高级建筑义体)
+
+## 矿脉生成表（查VEIN_DB）
+小矿脉(5-15个/铁矿/铜/白银/发现40%/2h/深度0m)
+中矿脉(16-35个/钢铁/铁矿/铜/白银/玉石/发现30%/4h/深度0m)
+大矿脉(36-75个/钢铁/黄金/铀/翡翠/玉石/发现15%/8h/深度5m)
+深层矿脉(40-100个/铀翡翠黑曜石深银塑钢/发现10%/12h/深度30m)
+稀有矿脉(10-30个/金翡翠黑曜石/发现5%/6h/深度15m)
+
+## 深层矿物表（查DEEP_MINERAL_DB）
+深银(深度30m/硬度8/能量传导+30%/估值60)
+塑钢(深度40m/硬度7/建筑耐久+20%/估值25)
+活体钢(深度60m/硬度9/自愈建筑义体骨架/估值120)
+霓虹石(深度80m/硬度8/持续发光精神稳定+5/估值90)
+神秘矿(深度100m/硬度10/未知效应概率异常事件/估值200)
+
+## 挖掘规则
+- **矿脉发现**：技能评分=采矿×5+20，DDL骰子判定，biome修正发现概率
+- **挖掘速度**：速度=10×(1+技能×0.06)/(硬度/5)，硬度越高越慢
+- **挖掘产出**：产出=矿脉数量×(0.6+技能×0.04)×品质修正，大成功+20%
+- **深层采矿**：可达深度=技能×8+20，超过70%深度速度降至60%
+- **疲劳影响**：疲劳<20效率+10%，疲劳≥60效率-30%，疲劳≥80塌方风险30%
+- **心情修正**：心情<30效率-20%，心情>70效率+10%
+- **biome修正**：冻原/极地采矿发现+30%/+40%，热带雨林-20%
+- **矿物估值**：深层矿物总价值×1.1品质系数加成
+
+## 叙事要求
+- 发现"稀有矿脉"时，叙事须描写矿脉的罕见光泽与殖民者的惊喜
+- 开采"铀"时，叙事须提及辐射警示与防护措施
+- 深层采矿触及"活体钢"时，叙事须描写金属的自我修复颤动
+- 发现"神秘矿"时，叙事须营造未知与异常氛围，可触发神秘事件
+- 疲劳≥80时，叙事须描写矿洞塌方的惊险与殖民者的狼狈撤离
+- 连续高强度采矿时，殖民者须出现肌肉酸痛/精神疲惫等描写

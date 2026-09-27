@@ -1,0 +1,5 @@
+[
+  { "op": "add", "path": "/entryManifest/地理/上海/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/地理/场景_林天产业/scope", "value": "specific" },
+  { "op": "add", "path": "/entryManifest/地理/场景_苏婉与市区/scope", "value": "specific" }
+]

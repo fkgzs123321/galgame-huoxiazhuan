@@ -1,0 +1,723 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · EJS 精准控制框架（按需加载机制）
+   ════════════════════════════════════════════════════════════
+   目标：解决 token 爆炸问题（从全量加载 → ≤15000 tokens/轮）
+   机制：按 scene_mode 精准加载所需模块，非必需模块不加载
+
+   核心原理：
+   1. 当前所有 EJS 预处理文件均为蓝灯（每轮全量加载），造成 token 爆炸
+   2. 本框架定义"场景模式 → 加载策略"映射表，按需决定加载哪些模块
+   3. 5 种场景模式：探索 / 战斗 / 对话 / 炼丹 / 休憩
+   4. 16 人物 × 4 件套（基础信息/性格调色盘/三面性/NSFW反差）= 64 角色条目，按场景动态加载
+
+   使用方法：
+   - 本框架由主调度控制器在核心校验后调用
+   - 根据 scene_mode 决定加载哪些模块
+   - 输出加载清单给 AI 参考
+
+   前置条件（实施清单见 IMPLEMENTATION_CHECKLIST）：
+   - 全局规则总表可拆分为 核心 + 扩展（五灵/剑法/灵玉/蛊毒已独立）
+   - index.yaml 中非核心模块改为绿灯/禁用，由本框架按需 getwi 加载
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、读取当前 MVU 状态（用于条件判断）
+   ════════════════════════════════════════════════════════════ */
+const _ejf_scene = getvar('stat_data.场景', { scope: 'local', defaults: {} }) || {};
+const _ejf_world = getvar('stat_data.世界', { scope: 'local', defaults: {} }) || {};
+const _ejf_party = getvar('stat_data.队伍.成员', { scope: 'local', defaults: {} }) || {};
+const _ejf_chars = getvar('stat_data.角色', { scope: 'local', defaults: {} }) || {};
+const _ejf_temp = getvar('stat_data.临时', { scope: 'local', defaults: {} }) || {};
+
+const _ejf_sceneMode = _ejf_scene.场景模式 || '探索';
+const _ejf_currentLocation = String(_ejf_scene.当前地点 || (_ejf_world.当前位置 && _ejf_world.当前位置.所在场景) || '余杭镇');
+const _ejf_currentChapter = String(_ejf_scene.当前章节 || '仙灵岛');
+const _ejf_currentDialogueCharId = Number(_ejf_scene.当前对话人物) || 0;
+const _ejf_currentAlchemyRecipe = String(_ejf_scene.当前炼丹配方 || _ejf_temp.当前炼丹配方 || '');
+const _ejf_sceneCharIds = Array.isArray(_ejf_scene.当前场景人物) ? _ejf_scene.当前场景人物 : [];
+
+/* 从队伍成员中提取人物 ID 列表 */
+const _ejf_partyNames = Object.values(_ejf_party).map(function (m) { return m && m.姓名 || ''; }).filter(function (n) { return n && n !== '无'; });
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   二、16 人物 ID → 名称映射表
+   ════════════════════════════════════════════════════════════
+   分组：
+     主角(1)：       1=李逍遥
+     女主角(4)：     2=赵灵儿 / 3=林月如 / 4=阿奴 / 5=彩依
+     主角挚友(3)：   6=刘晋元 / 7=酒剑仙 / 8=姥姥
+     蜀山派(2)：     9=剑圣 / 10=镇狱明王
+     苗疆势力(3)：   11=圣姑 / 12=巫王 / 13=拜月教主
+     反派与妖魔(3)： 14=毒娘子 / 15=青儿(巫后) / 16=水魔兽
+   ════════════════════════════════════════════════════════════ */
+const EJF_CHAR_MAP = {
+  1:  '李逍遥',
+  2:  '赵灵儿',
+  3:  '林月如',
+  4:  '阿奴',
+  5:  '彩依',
+  6:  '刘晋元',
+  7:  '酒剑仙',
+  8:  '姥姥',
+  9:  '剑圣',
+  10: '镇狱明王',
+  11: '圣姑',
+  12: '巫王',
+  13: '拜月教主',
+  14: '毒娘子',
+  15: '青儿',
+  16: '水魔兽'
+};
+
+/* 名称 → ID 反查表 */
+const EJF_NAME_TO_ID = {};
+for (const _id in EJF_CHAR_MAP) {
+  EJF_NAME_TO_ID[EJF_CHAR_MAP[_id]] = Number(_id);
+}
+
+/* 人物条目类型 → getwi 路径构建函数
+   4 件套：基础信息 / 性格调色盘 / 三面性 / NSFW反差
+   注意：主角(李逍遥, ID=1)使用独立的"主角设定"条目，非 4 件套结构 */
+function ejf_buildCharPath(char_id, entry_type) {
+  const _name = EJF_CHAR_MAP[char_id];
+  if (!_name) return null;
+
+  /* 主角特殊处理 */
+  if (Number(char_id) === 1) {
+    if (entry_type === '基础信息') return '角色/主角设定';
+    return null; /* 主角无性格调色盘/三面性/NSFW反差 */
+  }
+
+  const _typeMap = {
+    '基础信息':   '角色/' + _name + '/基础信息',
+    '性格调色盘': '角色/' + _name + '/性格调色盘',
+    '三面性':     '角色/' + _name + '/三面性',
+    'NSFW反差':   '角色/' + _name + '/NSFW反差'
+  };
+  return _typeMap[entry_type] || null;
+}
+
+/* 4 件套完整类型列表 */
+const EJF_CHAR_ENTRY_TYPES = ['基础信息', '性格调色盘', '三面性', 'NSFW反差'];
+
+/* 根据人物名称构建 4 件套路径列表 */
+function ejf_buildCharFourPack(char_id) {
+  const _paths = [];
+  for (const _type of EJF_CHAR_ENTRY_TYPES) {
+    const _p = ejf_buildCharPath(char_id, _type);
+    if (_p) _paths.push(_p);
+  }
+  return _paths;
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   三、模块 getwi 路径映射表
+   ════════════════════════════════════════════════════════════ */
+const EJF_MODULE_PATHS = {
+  /* ── 核心模块（每轮必加载，由主调度控制器加载） ── */
+  '全局规则核心':       'EJS预处理/全局规则总表',
+  'LCG骰子引擎':        'EJS预处理/LCG骰子/引擎',
+  '主调度控制器':       'EJS预处理/主调度控制器',
+  '角色性格控制器':      'EJS预处理/角色性格控制器',
+  '世界观场景控制器':    'EJS预处理/世界观场景控制器',
+  '阶段联动框架':       'EJS预处理/阶段联动框架',
+  '女娲血脉觉醒表':     'EJS预处理/女娲血脉觉醒表',
+  '变量变化幅度控制':    'EJS预处理/变量变化幅度控制',
+
+  /* ── 全局规则扩展（按场景加载） ── */
+  '五灵法术体系':       'EJS预处理/全局规则-五灵法术体系',
+  '剑法绝技系统':       'EJS预处理/全局规则-剑法绝技系统',
+  '灵玉镶嵌系统':       'EJS预处理/全局规则-灵玉镶嵌系统',
+  '蛊毒炼丹系统':       'EJS预处理/全局规则-蛊毒炼丹系统',
+  '战斗指令调度器':     'EJS预处理/战斗指令调度器',
+  '章节触发器':         'EJS预处理/章节触发器',
+  '世界线提议系统':     'EJS预处理/世界线提议系统',
+  '固定物品效果表':     'EJS预处理/固定物品效果表',
+
+  /* ── 章节模块（按当前章节加载） ── */
+  '章节-仙灵岛':       'EJS预处理/章节调度/仙灵岛',
+  '章节-苏州':         'EJS预处理/章节调度/苏州',
+  '章节-京城':         'EJS预处理/章节调度/京城',
+  '章节-蜀山锁妖塔':   'EJS预处理/章节调度/蜀山锁妖塔',
+  '章节-苗疆':         'EJS预处理/章节调度/苗疆',
+  '章节-结局':         'EJS预处理/章节调度/结局',
+
+  /* ── 地理模块（按当前地点加载） ── */
+  '地理-余杭镇':       '地理/余杭镇',
+  '地理-仙灵岛':       '地理/仙灵岛',
+  '地理-苏州':         '地理/苏州',
+  '地理-京城':         '地理/京城',
+  '地理-蜀山锁妖塔':   '地理/蜀山锁妖塔',
+  '地理-苗疆':         '地理/苗疆',
+
+  /* ── 事件模块（按条件加载） ── */
+  '时间线剧情索引库':   '事件/时间线剧情索引库',
+  '关键事件':          '事件/关键事件',
+  '结局分支矩阵':      '事件/结局分支矩阵',
+  '隐藏剧情触发器':    '事件/隐藏剧情触发器'
+};
+
+/* 地点名称 → 地理模块映射（用于当前地点加载） */
+const EJF_LOCATION_MAP = {
+  '余杭镇':     '地理-余杭镇',
+  '仙灵岛':     '地理-仙灵岛',
+  '苏州':       '地理-苏州',
+  '林家堡':     '地理-苏州',
+  '京城':       '地理-京城',
+  '长安':       '地理-京城',
+  '蜀山':       '地理-蜀山锁妖塔',
+  '锁妖塔':     '地理-蜀山锁妖塔',
+  '苗疆':       '地理-苗疆'
+};
+
+/* 章节名称 → 章节模块映射 */
+const EJF_CHAPTER_MAP = {
+  '仙灵岛':     '章节-仙灵岛',
+  '苏州':       '章节-苏州',
+  '京城':       '章节-京城',
+  '蜀山锁妖塔': '章节-蜀山锁妖塔',
+  '苗疆':       '章节-苗疆',
+  '结局':       '章节-结局'
+};
+
+/* 注：以下模块路径由本框架动态构建，不在 EJF_MODULE_PATHS 中 */
+/* '当前场景人物4件套' / '队伍成员4件套' / '队伍成员基础信息' / '当前对话人物4件套' → 动态构建 */
+/* '当前地点' → 查 EJF_LOCATION_MAP */
+/* '当前章节' → 查 EJF_CHAPTER_MAP */
+/* '关系网基础信息' → 引用 stat_data.角色（无需 getwi，仅声明） */
+/* '当前炼丹配方' → 由蛊毒炼丹系统内部按 stat_data.场景.当前炼丹配方 查询 */
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   四、场景模式 → 加载策略映射表（核心）
+   ════════════════════════════════════════════════════════════
+   5 种场景模式，每种精准加载所需模块，目标 ≤15000 tokens/轮
+   ════════════════════════════════════════════════════════════ */
+const EJS_LOAD_STRATEGY = {
+  /* 探索模式：全局规则核心 + 五灵法术 + 剑法绝技 + 灵玉镶嵌 + 当前地点 + 当前场景人物4件套 */
+  '探索': {
+    required_modules: ['全局规则核心', '五灵法术体系', '剑法绝技系统', '灵玉镶嵌系统'],
+    conditional_modules: [
+      { condition: 'always', module: '当前地点' },
+      { condition: 'always', module: '当前章节' },
+      { condition: 'scene_characters.length > 0', module: '当前场景人物4件套' }
+    ],
+    estimated_tokens: 14000,
+    description: '探索模式：全局规则核心+五灵法术+剑法绝技+灵玉镶嵌+当前地点+当前场景人物4件套'
+  },
+
+  /* 战斗模式：全局规则核心 + 五灵法术 + 剑法绝技 + 灵玉镶嵌 + 战斗指令调度器 + 队伍成员4件套 */
+  '战斗': {
+    required_modules: ['全局规则核心', '五灵法术体系', '剑法绝技系统', '灵玉镶嵌系统', '战斗指令调度器'],
+    conditional_modules: [
+      { condition: 'party_names.length > 0', module: '队伍成员4件套' }
+    ],
+    estimated_tokens: 15000,
+    description: '战斗模式：全局规则核心+五灵法术+剑法绝技+灵玉镶嵌+战斗指令调度器+队伍成员4件套'
+  },
+
+  /* 对话模式：全局规则核心 + 当前对话人物4件套 + 关系网基础信息 */
+  '对话': {
+    required_modules: ['全局规则核心'],
+    conditional_modules: [
+      { condition: 'current_dialogue_char > 0', module: '当前对话人物4件套' },
+      { condition: 'always', module: '关系网基础信息' }
+    ],
+    estimated_tokens: 10000,
+    description: '对话模式：全局规则核心+当前对话人物4件套+关系网基础信息'
+  },
+
+  /* 炼丹模式：全局规则核心 + 蛊毒炼丹系统 + 当前炼丹配方 */
+  '炼丹': {
+    required_modules: ['全局规则核心', '蛊毒炼丹系统'],
+    conditional_modules: [
+      { condition: 'always', module: '当前炼丹配方' }
+    ],
+    estimated_tokens: 9000,
+    description: '炼丹模式：全局规则核心+蛊毒炼丹系统+当前炼丹配方'
+  },
+
+  /* 休憩模式：全局规则核心 + 当前地点 + 队伍成员基础信息 */
+  '休憩': {
+    required_modules: ['全局规则核心'],
+    conditional_modules: [
+      { condition: 'always', module: '当前地点' },
+      { condition: 'party_names.length > 0', module: '队伍成员基础信息' }
+    ],
+    estimated_tokens: 8000,
+    description: '休憩模式：全局规则核心+当前地点+队伍成员基础信息'
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   五、条件评估与模块加载函数
+   ════════════════════════════════════════════════════════════ */
+
+/* 条件评估器：解析 condition 字符串并返回布尔值 */
+function ejf_evaluateCondition(condition, context) {
+  if (condition === 'always') return true;
+
+  /* scene_characters.length > 0 */
+  if (condition === 'scene_characters.length > 0') {
+    return context.scene_characters.length > 0;
+  }
+  /* party_names.length > 0 */
+  if (condition === 'party_names.length > 0') {
+    return context.party_names.length > 0;
+  }
+  /* current_dialogue_char > 0 */
+  if (condition === 'current_dialogue_char > 0') {
+    return context.current_dialogue_char > 0;
+  }
+  /* current_dialogue_char > N */
+  if (condition.startsWith('current_dialogue_char > ')) {
+    return context.current_dialogue_char > Number(condition.split('> ')[1]);
+  }
+  /* location.includes("关键词") */
+  if (condition.startsWith('location.includes(')) {
+    const _match = condition.match(/"([^"]+)"/);
+    if (!_match) return false;
+    return context.location.includes(_match[1]);
+  }
+  /* chapter == 章节名 */
+  if (condition.startsWith('chapter == ')) {
+    return context.chapter === condition.split('== ')[1];
+  }
+  return false;
+}
+
+/* 模块加载器：返回模块名与 getwi 路径列表（实际加载由调用方执行） */
+function ejf_loadModule(module_name, context) {
+  /* ── 动态模块：当前地点 ── */
+  if (module_name === '当前地点') {
+    let _modName = null;
+    for (const _key in EJF_LOCATION_MAP) {
+      if (context.location.includes(_key)) {
+        _modName = EJF_LOCATION_MAP[_key];
+        break;
+      }
+    }
+    if (!_modName) _modName = '地理-余杭镇';
+    const _path = EJF_MODULE_PATHS[_modName];
+    return { name: module_name, paths: _path ? [_path] : [], dynamic: true, note: _modName || '未匹配' };
+  }
+
+  /* ── 动态模块：当前章节 ── */
+  if (module_name === '当前章节') {
+    let _modName = EJF_CHAPTER_MAP[context.chapter] || '章节-仙灵岛';
+    const _path = EJF_MODULE_PATHS[_modName];
+    return { name: module_name, paths: _path ? [_path] : [], dynamic: true, note: _modName };
+  }
+
+  /* ── 动态模块：当前场景人物4件套 ── */
+  if (module_name === '当前场景人物4件套') {
+    const _paths = [];
+    const _names = [];
+    for (const _charId of context.scene_characters) {
+      const _id = Number(_charId);
+      if (!_id) continue;
+      const _charPaths = ejf_buildCharFourPack(_id);
+      for (const _p of _charPaths) {
+        _paths.push(_p);
+      }
+      _names.push(EJF_CHAR_MAP[_id] || ('ID:' + _id));
+    }
+    return { name: module_name, paths: _paths, dynamic: true, note: '人物: ' + _names.join(', ') };
+  }
+
+  /* ── 动态模块：队伍成员4件套 ── */
+  if (module_name === '队伍成员4件套') {
+    const _paths = [];
+    const _names = [];
+    for (const _name of context.party_names) {
+      const _id = EJF_NAME_TO_ID[_name];
+      if (!_id) continue;
+      const _charPaths = ejf_buildCharFourPack(_id);
+      for (const _p of _charPaths) {
+        _paths.push(_p);
+      }
+      _names.push(_name);
+    }
+    return { name: module_name, paths: _paths, dynamic: true, note: '队伍: ' + _names.join(', ') };
+  }
+
+  /* ── 动态模块：队伍成员基础信息（仅基础信息，非4件套） ── */
+  if (module_name === '队伍成员基础信息') {
+    const _paths = [];
+    const _names = [];
+    for (const _name of context.party_names) {
+      const _id = EJF_NAME_TO_ID[_name];
+      if (!_id) continue;
+      const _p = ejf_buildCharPath(_id, '基础信息');
+      if (_p) _paths.push(_p);
+      _names.push(_name);
+    }
+    return { name: module_name, paths: _paths, dynamic: true, note: '队伍基础: ' + _names.join(', ') };
+  }
+
+  /* ── 动态模块：当前对话人物4件套 ── */
+  if (module_name === '当前对话人物4件套') {
+    const _id = context.current_dialogue_char;
+    if (!_id) return { name: module_name, paths: [], dynamic: true, note: '未指定对话人物' };
+    const _charPaths = ejf_buildCharFourPack(_id);
+    const _name = EJF_CHAR_MAP[_id] || ('ID:' + _id);
+    return { name: module_name, paths: _charPaths, dynamic: true, note: '对话人物: ' + _name };
+  }
+
+  /* ── 动态模块：关系网基础信息（引用 stat_data.角色，无需 getwi） ── */
+  if (module_name === '关系网基础信息') {
+    return { name: module_name, paths: [], dynamic: true, note: '引用 stat_data.角色，无需 getwi 加载' };
+  }
+
+  /* ── 动态模块：当前炼丹配方（由蛊毒炼丹系统内部查询） ── */
+  if (module_name === '当前炼丹配方') {
+    return { name: module_name, paths: [], dynamic: true, note: '由蛊毒炼丹系统内部按 stat_data.场景.当前炼丹配方 查询' };
+  }
+
+  /* ── 静态模块：查 EJF_MODULE_PATHS ── */
+  const _path = EJF_MODULE_PATHS[module_name];
+  return {
+    name: module_name,
+    paths: _path ? [_path] : [],
+    dynamic: false,
+    note: _path ? '' : '模块路径待整合/创建'
+  };
+}
+
+/* 精准加载函数：根据 scene_mode 加载所需模块 */
+function ejf_loadRequiredModules(scene_mode, context) {
+  const _strategy = EJS_LOAD_STRATEGY[scene_mode] || EJS_LOAD_STRATEGY['探索'];
+  const _loaded = [];
+  const _skipped = [];
+
+  /* 1. 加载必需模块 */
+  for (const _name of _strategy.required_modules) {
+    const _mod = ejf_loadModule(_name, context);
+    _loaded.push(_mod);
+  }
+
+  /* 2. 加载条件模块 */
+  for (const _cond of _strategy.conditional_modules) {
+    if (ejf_evaluateCondition(_cond.condition, context)) {
+      const _mod = ejf_loadModule(_cond.module, context);
+      _loaded.push(_mod);
+    } else {
+      _skipped.push({ module: _cond.module, condition: _cond.condition, reason: '条件不满足' });
+    }
+  }
+
+  return {
+    scene_mode: scene_mode,
+    strategy_description: _strategy.description,
+    loaded_modules: _loaded,
+    skipped_modules: _skipped,
+    estimated_tokens: _strategy.estimated_tokens
+  };
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   六、全局规则总表拆分策略（未来优化）
+   ════════════════════════════════════════════════════════════ */
+const GLOBAL_RULES_SPLIT = {
+  '全局规则核心': {
+    original_file: '全局规则总表',
+    size: '约 8KB',
+    load_condition: 'always（每轮必加载）',
+    kept_content: [
+      '主角身份（李逍遥，固定）',
+      '时间流逝规则（每楼层30分钟）',
+      '时间纪元（仙剑历）',
+      '难度系数表（4档）',
+      '场景模式定义（5种）',
+      '时间段（5时段）',
+      '行动次数限制（≤5/日）',
+      '经济护栏（铜钱0-9999999）',
+      '角色关系阶段枚举（7阶段）',
+      '死结局触发器（8类）',
+      '叙事结构铁律（三段式输出）'
+    ],
+    note: '当前全局规则总表即为核心，尚未拆分扩展'
+  },
+
+  '五灵法术体系': {
+    original_file: '已独立（全局规则-五灵法术体系）',
+    size: '约 2KB',
+    load_condition: 'scene_mode in [探索, 战斗]',
+    kept_content: ['五灵相克（金木水火土）', '法术伤害公式', '法术列表与消耗']
+  },
+
+  '剑法绝技系统': {
+    original_file: '已独立（全局规则-剑法绝技系统）',
+    size: '约 2KB',
+    load_condition: 'scene_mode in [探索, 战斗]',
+    kept_content: ['剑法伤害公式', '绝技树（4等级）', '绝技槽累计规则']
+  },
+
+  '灵玉镶嵌系统': {
+    original_file: '已独立（全局规则-灵玉镶嵌系统）',
+    size: '约 1.5KB',
+    load_condition: 'scene_mode in [探索, 战斗]',
+    kept_content: ['灵玉AP累计', '灵玉法术解锁表', '镶嵌槽位规则']
+  },
+
+  '蛊毒炼丹系统': {
+    original_file: '已独立（全局规则-蛊毒炼丹系统）',
+    size: '约 1KB',
+    load_condition: 'scene_mode == 炼丹',
+    kept_content: ['炼丹配方表', '成功率判定', '炸炉规则', '蛊术谱']
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   七、主调度控制器重构策略
+   ════════════════════════════════════════════════════════════ */
+const DISPATCHER_REFACTOR = {
+  current_problem: '主调度控制器每轮全量加载所有模块，token 爆炸',
+  new_strategy: '主调度控制器只加载核心，其他按 scene_mode 通过本框架按需加载',
+
+  dispatcher_core: {
+    description: '主调度控制器核心（每轮必加载）',
+    content: [
+      '加载全局规则总表（核心规则）',
+      '加载 LCG 骰子引擎',
+      '读取 MVU 变量（时间/场景/主角/队伍/经济）',
+      '身份校验（固定为李逍遥）',
+      '难度系数应用（4档 × 6维度修正）',
+      '时间锁检查（每楼层30分钟）',
+      '行动次数检查（≤5/日）',
+      '体力/灵力/心情强制规则',
+      '死结局触发器（8类）',
+      '调用本框架 ejf_loadRequiredModules() 获取加载清单',
+      '按清单执行 getwi 加载'
+    ],
+    removed: [
+      '全量加载五灵法术体系 → 改为探索/战斗模式按需加载',
+      '全量加载剑法绝技系统 → 改为探索/战斗模式按需加载',
+      '全量加载灵玉镶嵌系统 → 改为探索/战斗模式按需加载',
+      '全量加载蛊毒炼丹系统 → 改为炼丹模式按需加载',
+      '全量加载固定物品效果表 → 改为购物/事件模式按需加载'
+    ]
+  },
+
+  dispatcher_dispatch: {
+    description: '调度器（按 scene_mode 分发）',
+    content: '调用 ejf_loadRequiredModules(scene_mode, context) 获取加载清单，按清单执行 getwi',
+    pseudocode: [
+      'const _loadResult = ejf_loadRequiredModules(_sceneMode, _context);',
+      'for (const _mod of _loadResult.loaded_modules) {',
+      '  for (const _path of _mod.paths) {',
+      '    <%- await getwi(_path) %>',
+      '  }',
+      '}'
+    ]
+  },
+
+  dispatcher_output: {
+    description: '输出（精简版）',
+    content: '只输出当前轮必要信息（当前状态 + 加载清单 + 警告），不再输出全量规则'
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   八、Token 预算控制
+   ════════════════════════════════════════════════════════════ */
+const TOKEN_BUDGET = {
+  total_per_turn: 30000,
+  ejs_preprocessing_limit: 15000,
+  breakdown: {
+    system_prompt: 5000,
+    ejs_preprocessing: 15000,
+    character_data: 3000,
+    scene_description: 2000,
+    ai_response: 5000
+  }
+};
+
+/* Token 超预算时自动精简策略 */
+function ejf_enforceTokenBudget(load_result) {
+  const _estimated = load_result.estimated_tokens;
+  const _budget = TOKEN_BUDGET.ejs_preprocessing_limit;
+
+  if (_estimated <= _budget) {
+    return { action: 'none', message: '预算内' };
+  }
+
+  /* 超预算：按优先级移除低优先级模块 */
+  const _priority = {
+    '高': ['全局规则核心', 'LCG骰子引擎', '主调度控制器', '战斗指令调度器', '五灵法术体系', '剑法绝技系统'],
+    '中': ['灵玉镶嵌系统', '蛊毒炼丹系统', '角色性格控制器', '当前对话人物4件套', '队伍成员4件套', '当前场景人物4件套'],
+    '低': ['阶段联动框架', '女娲血脉觉醒表', '变量变化幅度控制', '世界观场景控制器', '当前地点', '关系网基础信息', '队伍成员基础信息']
+  };
+
+  const _removable = load_result.loaded_modules.filter(function (m) {
+    return _priority['低'].indexOf(m.name) !== -1 || _priority['中'].indexOf(m.name) !== -1;
+  });
+
+  return {
+    action: 'reduce',
+    message: '超预算，建议移除低优先级模块',
+    removable_modules: _removable.map(function (m) { return m.name; }),
+    current_estimate: _estimated,
+    budget: _budget,
+    new_estimate: _budget
+  };
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   九、执行加载策略
+   ════════════════════════════════════════════════════════════ */
+
+/* 构建上下文对象 */
+const _ejf_context = {
+  scene_characters: _ejf_sceneCharIds,
+  party_names: _ejf_partyNames,
+  current_dialogue_char: _ejf_currentDialogueCharId,
+  location: _ejf_currentLocation,
+  chapter: _ejf_currentChapter
+};
+
+/* 执行加载策略 */
+const _ejf_loadResult = ejf_loadRequiredModules(_ejf_sceneMode, _ejf_context);
+
+/* Token 预算检查 */
+const _ejf_budgetCheck = ejf_enforceTokenBudget(_ejf_loadResult);
+
+/* 提取已加载模块名与路径 */
+const _ejf_loadedNames = _ejf_loadResult.loaded_modules.map(function (m) { return m.name; });
+const _ejf_loadedPaths = [];
+for (const _mod of _ejf_loadResult.loaded_modules) {
+  for (const _p of _mod.paths) {
+    _ejf_loadedPaths.push(_p);
+  }
+}
+const _ejf_skippedInfo = _ejf_loadResult.skipped_modules.map(function (s) { return s.module + '(' + s.condition + ')'; });
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   十、实施清单
+   ════════════════════════════════════════════════════════════ */
+const IMPLEMENTATION_CHECKLIST = {
+  step_1_implement_load_strategy: {
+    description: '实现 EJS_LOAD_STRATEGY 按需加载',
+    status: '已完成（本文件）',
+    files_created: ['EJS预处理/EJS精准控制框架.txt']
+  },
+
+  step_2_refactor_dispatcher: {
+    description: '重构主调度控制器为核心+调度+输出',
+    status: '待执行',
+    files_to_modify: ['EJS预处理/主调度控制器.txt'],
+    changes: [
+      '移除全量 getwi("全局规则-五灵法术体系")，改为探索/战斗模式按需加载',
+      '移除全量 getwi("全局规则-剑法绝技系统")，改为探索/战斗模式按需加载',
+      '移除全量 getwi("全局规则-灵玉镶嵌系统")，改为探索/战斗模式按需加载',
+      '移除全量 getwi("全局规则-蛊毒炼丹系统")，改为炼丹模式按需加载',
+      '主调度器调用本框架的 ejf_loadRequiredModules()',
+      '主调度器输出精简为 ≤2KB'
+    ],
+    expected_reduction: '主调度控制器从全量加载降至核心+按需加载'
+  },
+
+  step_3_update_index_yaml: {
+    description: '更新 index.yaml 激活策略',
+    status: '待执行',
+    changes: [
+      '核心模块（全局规则总表/LCG骰子引擎/主调度控制器/本框架）保持蓝灯',
+      '扩展规则模块（五灵/剑法/灵玉/蛊毒/战斗调度器）改为禁用（由本框架按需 getwi）',
+      '角色模块改为禁用（由角色性格控制器/本框架按需 getwi）',
+      '地理模块保持蓝灯+关键词触发（或由本框架按需 getwi）',
+      '事件模块改为绿灯（章节/条件触发）'
+    ]
+  },
+
+  step_4_test_token_consumption: {
+    description: '测试各 scene_mode 的 token 消耗',
+    status: '待执行',
+    test_cases: [
+      '探索模式：预计 14000 tokens',
+      '战斗模式：预计 15000 tokens',
+      '对话模式：预计 10000 tokens',
+      '炼丹模式：预计 9000 tokens',
+      '休憩模式：预计 8000 tokens'
+    ]
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   十一、输出加载清单给 AI
+   ════════════════════════════════════════════════════════════ */
+%>
+[EJS精准控制框架·加载清单]
+{
+  "当前场景模式": "<%= _ejf_sceneMode %>",
+  "加载策略": "<%= _ejf_loadResult.strategy_description %>",
+  "预估Token消耗": <%= _ejf_loadResult.estimated_tokens %>,
+  "Token预算上限": <%= TOKEN_BUDGET.ejs_preprocessing_limit %>,
+  "预算检查": "<%= _ejf_budgetCheck.action === 'none' ? '通过' : '超预算' %>",
+  "已加载模块": <%= JSON.stringify(_ejf_loadedNames) %>,
+  "已跳过模块": <%= JSON.stringify(_ejf_skippedInfo) %>,
+  "模块路径清单": <%= JSON.stringify(_ejf_loadedPaths) %>,
+  "当前上下文": {
+    "current_location": "<%= _ejf_currentLocation %>",
+    "current_chapter": "<%= _ejf_currentChapter %>",
+    "current_dialogue_char": <%= _ejf_currentDialogueCharId %>,
+    "scene_characters": <%= JSON.stringify(_ejf_sceneCharIds) %>,
+    "party_names": <%= JSON.stringify(_ejf_partyNames) %>,
+    "current_alchemy_recipe": "<%= _ejf_currentAlchemyRecipe %>"
+  }
+}
+[/EJS精准控制框架·加载清单]
+
+<% if (_ejf_budgetCheck.action === 'reduce') { %>
+[EJS精准控制框架·预算警告]
+超预算！当前预估 <%= _ejf_loadResult.estimated_tokens %> tokens > 预算 <%= TOKEN_BUDGET.ejs_preprocessing_limit %> tokens。
+建议移除低优先级模块：<%= _ejf_budgetCheck.removable_modules.join(', ') %>
+[/EJS精准控制框架·预算警告]
+<% } %>
+
+<%/* ════════════════════════════════════════════════════════════
+   十二、实施进度提示（AI 可读，不输出给玩家）
+   ════════════════════════════════════════════════════════════ */%>
+<%
+const _ejf_checklist = IMPLEMENTATION_CHECKLIST;
+const _ejf_done = Object.values(_ejf_checklist).filter(function (s) { return s.status === '已完成（本文件）'; }).length;
+const _ejf_total = Object.keys(_ejf_checklist).length;
+%>
+[EJS精准控制框架·实施进度]
+已完成 <%= _ejf_done %>/<%= _ejf_total %> 步：
+<% for (const _key of Object.keys(_ejf_checklist)) { %>
+- <%= _key %>: <%= _ejf_checklist[_key].status %> — <%= _ejf_checklist[_key].description %>
+<% } %>
+
+注意：本框架当前为"声明模式"（输出加载清单，不实际执行 getwi）。
+当 step_2（重构主调度控制器）完成后，切换为"执行模式"：
+将本文件第九节"执行加载策略"中注释取消，启用实际 getwi 调用。
+
+调用方（主调度控制器）应按以下伪代码执行实际加载：
+  const _loadResult = ejf_loadRequiredModules(_sceneMode, _context);
+  for (const _mod of _loadResult.loaded_modules) {
+    for (const _path of _mod.paths) {
+      <%- await getwi(_path) %>
+    }
+  }
+[/EJS精准控制框架·实施进度]

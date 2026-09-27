@@ -1,0 +1,1053 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "世界": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "年": {
+          "default": 1,
+          "type": "number"
+        },
+        "月": {
+          "default": 4,
+          "type": "number"
+        },
+        "旬": {
+          "description": "原作 Stage，一月三旬，时间最小推进单位",
+          "default": "上旬",
+          "$ref": "#/$defs/__schema0"
+        },
+        "昼夜": {
+          "description": "原作 DayEnvironment",
+          "default": "白天",
+          "$ref": "#/$defs/__schema1"
+        },
+        "天气": {
+          "default": "晴",
+          "type": "string",
+          "enum": [
+            "晴",
+            "阴",
+            "雨",
+            "雪"
+          ]
+        },
+        "当前地点": {
+          "description": "唐门 12 处之一",
+          "default": "正心堂",
+          "$ref": "#/$defs/__schema2"
+        },
+        "当前节点": {
+          "description": "时间轴位置，唯一时间真值",
+          "default": "第一年_四月上旬",
+          "$ref": "#/$defs/__schema3"
+        },
+        "已发生节点": {
+          "description": "、分隔",
+          "default": "",
+          "$ref": "#/$defs/__schema4"
+        },
+        "路线": {
+          "description": "已定的路线；空字符串表示尚未分线（各线共用事件照常出）",
+          "default": "",
+          "$ref": "#/$defs/__schema5"
+        },
+        "可选路线": {
+          "description": "当前可选的路线；定了之后清空",
+          "default": [],
+          "$ref": "#/$defs/__schema6"
+        },
+        "分线时间": {
+          "description": "在哪一旬分线的，如「第二年_三月上旬」；空表示还没分",
+          "default": "",
+          "$ref": "#/$defs/__schema7"
+        },
+        "行动次数": {
+          "description": "原作 action",
+          "default": 3,
+          "$ref": "#/$defs/__schema8"
+        },
+        "行动上限": {
+          "description": "按旬查不同 stat，见 GetMaxActionCount()",
+          "default": 3,
+          "$ref": "#/$defs/__schema9"
+        },
+        "门人": {
+          "description": "门人数量",
+          "default": 3,
+          "$ref": "#/$defs/__schema10"
+        },
+        "向心": {
+          "description": "门派的向心力",
+          "default": 30,
+          "$ref": "#/$defs/__schema11"
+        },
+        "门派规模": {
+          "description": "★ 一至六阶段，见 门派阶段 表",
+          "default": 1,
+          "$ref": "#/$defs/__schema12"
+        },
+        "门派资产": {
+          "default": 0,
+          "type": "number"
+        },
+        "名声": {
+          "description": "原作 fame",
+          "default": 0,
+          "$ref": "#/$defs/__schema13"
+        },
+        "贡献度": {
+          "default": 0,
+          "type": "number"
+        },
+        "随机种子": {
+          "default": 20260927,
+          "type": "number"
+        },
+        "门派好感": {
+          "description": "原作用 H 前缀 flag 存，如 H00001=青城派好感度",
+          "default": {},
+          "$ref": "#/$defs/__schema14"
+        }
+      }
+    },
+    "你": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "赵活",
+          "type": "string"
+        },
+        "身份": {
+          "default": "唐门外姓弟子",
+          "type": "string"
+        },
+        "出身": {
+          "description": "开局身份，决定初始配点",
+          "default": "绵阳",
+          "$ref": "#/$defs/__schema15"
+        },
+        "称号": {
+          "description": "称号链见 称号链 表",
+          "default": "唐门杂鱼",
+          "$ref": "#/$defs/__schema16"
+        },
+        "心上人": {
+          "description": "原作 lover",
+          "default": "",
+          "$ref": "#/$defs/__schema17"
+        },
+        "银两": {
+          "description": "money",
+          "default": 0,
+          "$ref": "#/$defs/__schema18"
+        },
+        "体力": {
+          "description": "life：影响生命、绝招威力（小）",
+          "default": {
+            "当前": 50,
+            "上限": 50
+          },
+          "$ref": "#/$defs/__schema19"
+        },
+        "内力": {
+          "description": "stamina：影响攻击力(中)、绝招威力(中)、战役回气速度",
+          "default": {
+            "当前": 20,
+            "上限": 20
+          },
+          "$ref": "#/$defs/__schema20"
+        },
+        "轻功": {
+          "description": "dexterity：影响回避机率、绝招威力（中）、战役移动速度",
+          "default": 10,
+          "$ref": "#/$defs/__schema21"
+        },
+        "魅力": {
+          "description": "charisma：原作说明「你所没有的某种东西」",
+          "default": 5,
+          "$ref": "#/$defs/__schema22"
+        },
+        "学问": {
+          "description": "literacy：学习所得的知识",
+          "default": 10,
+          "$ref": "#/$defs/__schema23"
+        },
+        "道德": {
+          "description": "karma：恶棍/坏人/中庸/好人/侠客。原作最高频条件 S_Kar_LE_40",
+          "default": 50,
+          "$ref": "#/$defs/__schema24"
+        },
+        "性情": {
+          "description": "disposition：懦夫/谨慎/中庸/勇敢/莽夫",
+          "default": 50,
+          "$ref": "#/$defs/__schema25"
+        },
+        "处世": {
+          "description": "behaviour：矫情/知礼/中庸/豪爽/粗鲁。原作 S_Beh_GE_60",
+          "default": 50,
+          "$ref": "#/$defs/__schema26"
+        },
+        "修养": {
+          "description": "training：疯狂/暴躁/中庸/沉着/君子。原作 S_Tra_GE_40",
+          "default": 50,
+          "$ref": "#/$defs/__schema27"
+        },
+        "心相": {
+          "description": "mental：忧郁/平静/快乐。影响锻冶、炼丹、修练成功率",
+          "default": 50,
+          "$ref": "#/$defs/__schema28"
+        },
+        "阴阳": {
+          "description": "internal：老阴/少阴/调和/少阳/老阳",
+          "default": 50,
+          "$ref": "#/$defs/__schema29"
+        },
+        "变心": {
+          "description": "change-heart",
+          "default": 0,
+          "$ref": "#/$defs/__schema30"
+        },
+        "命运": {
+          "description": "fate",
+          "default": 50,
+          "$ref": "#/$defs/__schema31"
+        },
+        "嘴力": {
+          "description": "talking：说话的才能，影响嘴攻效果",
+          "default": 20,
+          "$ref": "#/$defs/__schema32"
+        },
+        "锻造": {
+          "description": "weapon：锻造点数。[锻冶场使用]",
+          "default": 0,
+          "$ref": "#/$defs/__schema33"
+        },
+        "炼丹": {
+          "description": "poison：炼丹点数。[炼丹房使用]",
+          "default": 0,
+          "$ref": "#/$defs/__schema34"
+        },
+        "武学点": {
+          "description": "martial-point：修练秘籍消耗",
+          "default": 0,
+          "$ref": "#/$defs/__schema35"
+        },
+        "八系": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "刀剑": {
+              "description": "m-sword：影响攻击力(大)",
+              "default": 0,
+              "$ref": "#/$defs/__schema36"
+            },
+            "暗器": {
+              "description": "m-projectile：唐门本门。影响暗器威力、爆击",
+              "default": 20,
+              "$ref": "#/$defs/__schema37"
+            },
+            "拳掌": {
+              "description": "m-fist：影响攻击力(小)、影响防御(大)",
+              "default": 10,
+              "$ref": "#/$defs/__schema38"
+            },
+            "腿法": {
+              "description": "m-leg",
+              "default": 10,
+              "$ref": "#/$defs/__schema39"
+            },
+            "奇门": {
+              "description": "m-odd：机关、阵法",
+              "default": 0,
+              "$ref": "#/$defs/__schema40"
+            },
+            "软兵器": {
+              "description": "m-soft",
+              "default": 0,
+              "$ref": "#/$defs/__schema41"
+            },
+            "枪棍": {
+              "description": "m-stick",
+              "default": 0,
+              "$ref": "#/$defs/__schema42"
+            },
+            "内功": {
+              "description": "m-internal",
+              "default": 0,
+              "$ref": "#/$defs/__schema43"
+            }
+          }
+        },
+        "三教": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "儒学": {
+              "description": "confucianism",
+              "default": 0,
+              "$ref": "#/$defs/__schema44"
+            },
+            "道学": {
+              "description": "taoism",
+              "default": 0,
+              "$ref": "#/$defs/__schema45"
+            },
+            "释学": {
+              "description": "buddhism",
+              "default": 0,
+              "$ref": "#/$defs/__schema46"
+            }
+          }
+        },
+        "形意拳": {
+          "description": "xingyi：原作单列一项",
+          "default": 0,
+          "$ref": "#/$defs/__schema47"
+        },
+        "抗毒": {
+          "description": "影响血毒的抗性、代谢率",
+          "default": 0,
+          "$ref": "#/$defs/__schema48"
+        },
+        "抗麻": {
+          "description": "影响神经毒的抗性、代谢率",
+          "default": 0,
+          "$ref": "#/$defs/__schema49"
+        },
+        "毒药": {
+          "description": "poison-value：暗器击中毒药累积值",
+          "default": 0,
+          "$ref": "#/$defs/__schema50"
+        },
+        "麻痹": {
+          "description": "paralysis-value：暗器击中麻痹累积值",
+          "default": 0,
+          "$ref": "#/$defs/__schema51"
+        },
+        "战斗": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "攻击": {
+              "description": "基础杀伤力",
+              "default": 10,
+              "$ref": "#/$defs/__schema52"
+            },
+            "防御": {
+              "description": "备揍减伤率、格档率",
+              "default": 10,
+              "$ref": "#/$defs/__schema53"
+            },
+            "绝招": {
+              "description": "绝招威力",
+              "default": 5,
+              "$ref": "#/$defs/__schema54"
+            },
+            "爆发": {
+              "description": "combat-attack-dice：影响攻击的骰子",
+              "default": 10,
+              "$ref": "#/$defs/__schema55"
+            },
+            "暗器威力": {
+              "description": "combat-weapon",
+              "default": 10,
+              "$ref": "#/$defs/__schema56"
+            },
+            "暗器爆发": {
+              "description": "combat-weapon-dice",
+              "default": 10,
+              "$ref": "#/$defs/__schema57"
+            },
+            "生命上限": {
+              "default": 100,
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "天赋": {
+      "description": "已习得。如「自恋」「唐门暗器」「金钟罩」「君子风」「孟子曰」",
+      "default": {},
+      "$ref": "#/$defs/__schema58"
+    },
+    "秘籍": {
+      "description": "如「唐门暗器总纲」（唐门二宝之一）「孔夫子剑」「鸳鸯拳剑谱」",
+      "default": {},
+      "$ref": "#/$defs/__schema59"
+    },
+    "物品": {
+      "description": "原作 33 件特殊物品 + 丹药暗器材料",
+      "default": {},
+      "$ref": "#/$defs/__schema61"
+    },
+    "装备": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "兵器": {
+          "default": "",
+          "type": "string"
+        },
+        "防具": {
+          "default": "",
+          "type": "string"
+        },
+        "暗器袋": {
+          "default": "",
+          "type": "string"
+        },
+        "饰品": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "关系": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "角色名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "身份": {
+            "default": "",
+            "type": "string"
+          },
+          "好感": {
+            "description": "他对<user>的观感",
+            "default": 0,
+            "$ref": "#/$defs/__schema62"
+          },
+          "我的好感": {
+            "description": "<user>对他的观感，双向分开存",
+            "default": 0,
+            "$ref": "#/$defs/__schema63"
+          },
+          "认知": {
+            "description": "★ 他知道什么 —— 原作认知边界机制的载体",
+            "default": "",
+            "$ref": "#/$defs/__schema64"
+          },
+          "欠人情": {
+            "description": "正=他欠我",
+            "default": 0,
+            "$ref": "#/$defs/__schema65"
+          },
+          "状态": {
+            "default": "未识",
+            "type": "string",
+            "enum": [
+              "未识",
+              "相识",
+              "相熟",
+              "交心",
+              "决裂"
+            ]
+          }
+        }
+      }
+    },
+    "关系网": {
+      "description": "★ 引擎 E15 关系网：NPC↔NPC。键须排序，否则同一条存两份",
+      "default": {},
+      "$ref": "#/$defs/__schema66"
+    },
+    "前置": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "已解锁": {
+          "description": "Condition 为真的 flag，、分隔（原作「旗標」类型）",
+          "default": "",
+          "$ref": "#/$defs/__schema70"
+        },
+        "已错过": {
+          "description": "★★ 永久关闭的分支。对应 _modifyFlagsWhenFalse",
+          "default": "",
+          "$ref": "#/$defs/__schema71"
+        },
+        "本旬已用": {
+          "description": "本旬已执行的行动 id，NextRound 时清空",
+          "default": "",
+          "$ref": "#/$defs/__schema72"
+        },
+        "可见条件": {
+          "description": "玩家可见的解锁提示。原作 663 次判定里只有 3 处",
+          "default": "",
+          "$ref": "#/$defs/__schema73"
+        },
+        "计数": {
+          "description": "原作 TC 前缀计数器（TC0001 用了 122 次）",
+          "default": {},
+          "$ref": "#/$defs/__schema74"
+        }
+      }
+    },
+    "任务": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "主线": {
+          "description": "当前主线目标，一句话",
+          "default": "",
+          "$ref": "#/$defs/__schema75"
+        },
+        "主线节点": {
+          "description": "原作 MainMission 的 Key",
+          "default": "",
+          "$ref": "#/$defs/__schema76"
+        },
+        "支线": {
+          "description": "原作 SubMissions，129 项 / 96 组",
+          "default": {},
+          "$ref": "#/$defs/__schema77"
+        },
+        "事件标记": {
+          "description": "原作 707 个 EventFlags 的对应物",
+          "default": "",
+          "$ref": "#/$defs/__schema79"
+        }
+      }
+    },
+    "战斗": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "状态": {
+          "default": "无",
+          "type": "string",
+          "enum": [
+            "无",
+            "进行中",
+            "已结束"
+          ]
+        },
+        "对手": {
+          "default": "",
+          "type": "string"
+        },
+        "回合": {
+          "default": 0,
+          "type": "number"
+        },
+        "我方血": {
+          "default": 100,
+          "type": "number"
+        },
+        "我方血上限": {
+          "default": 100,
+          "type": "number"
+        },
+        "对方血": {
+          "default": 100,
+          "type": "number"
+        },
+        "对方血上限": {
+          "default": 100,
+          "type": "number"
+        },
+        "气": {
+          "description": "绝招资源，嘴炮可破",
+          "default": 0,
+          "$ref": "#/$defs/__schema80"
+        },
+        "对方气": {
+          "description": "★ 对手的气。回合制战斗用",
+          "default": 0,
+          "$ref": "#/$defs/__schema81"
+        },
+        "对方呆滞": {
+          "description": "本回合不行动，计数递减",
+          "default": 0,
+          "$ref": "#/$defs/__schema82"
+        },
+        "我方防御": {
+          "description": "本回合是否处于防御姿态",
+          "default": false,
+          "$ref": "#/$defs/__schema83"
+        },
+        "我方状态": {
+          "description": "增益减益：名→剩余回合",
+          "default": {},
+          "$ref": "#/$defs/__schema84"
+        },
+        "对方状态": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "日志": {
+          "description": "逐回合记录，、分隔",
+          "default": "",
+          "$ref": "#/$defs/__schema85"
+        },
+        "摘要": {
+          "description": "★ 引擎算完给 AI 的结论",
+          "default": "",
+          "$ref": "#/$defs/__schema86"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "type": "string",
+      "enum": [
+        "上旬",
+        "中旬",
+        "下旬"
+      ]
+    },
+    "__schema1": {
+      "type": "string",
+      "enum": [
+        "白天",
+        "晚上"
+      ]
+    },
+    "__schema2": {
+      "type": "string"
+    },
+    "__schema3": {
+      "type": "string"
+    },
+    "__schema4": {
+      "type": "string"
+    },
+    "__schema5": {
+      "type": "string"
+    },
+    "__schema6": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema7": {
+      "type": "string"
+    },
+    "__schema8": {
+      "type": "number"
+    },
+    "__schema9": {
+      "type": "number"
+    },
+    "__schema10": {
+      "type": "number"
+    },
+    "__schema11": {
+      "type": "number"
+    },
+    "__schema12": {
+      "type": "number"
+    },
+    "__schema13": {
+      "type": "number"
+    },
+    "__schema14": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "门派名"
+      },
+      "additionalProperties": {
+        "default": 0,
+        "type": "number"
+      }
+    },
+    "__schema15": {
+      "type": "string"
+    },
+    "__schema16": {
+      "type": "string"
+    },
+    "__schema17": {
+      "type": "string"
+    },
+    "__schema18": {
+      "type": "number"
+    },
+    "__schema19": {
+      "type": "object",
+      "properties": {
+        "当前": {
+          "default": 50,
+          "type": "number"
+        },
+        "上限": {
+          "default": 50,
+          "type": "number"
+        }
+      }
+    },
+    "__schema20": {
+      "type": "object",
+      "properties": {
+        "当前": {
+          "default": 20,
+          "type": "number"
+        },
+        "上限": {
+          "default": 20,
+          "type": "number"
+        }
+      }
+    },
+    "__schema21": {
+      "type": "number"
+    },
+    "__schema22": {
+      "type": "number"
+    },
+    "__schema23": {
+      "type": "number"
+    },
+    "__schema24": {
+      "type": "number"
+    },
+    "__schema25": {
+      "type": "number"
+    },
+    "__schema26": {
+      "type": "number"
+    },
+    "__schema27": {
+      "type": "number"
+    },
+    "__schema28": {
+      "type": "number"
+    },
+    "__schema29": {
+      "type": "number"
+    },
+    "__schema30": {
+      "type": "number"
+    },
+    "__schema31": {
+      "type": "number"
+    },
+    "__schema32": {
+      "type": "number"
+    },
+    "__schema33": {
+      "type": "number"
+    },
+    "__schema34": {
+      "type": "number"
+    },
+    "__schema35": {
+      "type": "number"
+    },
+    "__schema36": {
+      "type": "number"
+    },
+    "__schema37": {
+      "type": "number"
+    },
+    "__schema38": {
+      "type": "number"
+    },
+    "__schema39": {
+      "type": "number"
+    },
+    "__schema40": {
+      "type": "number"
+    },
+    "__schema41": {
+      "type": "number"
+    },
+    "__schema42": {
+      "type": "number"
+    },
+    "__schema43": {
+      "type": "number"
+    },
+    "__schema44": {
+      "type": "number"
+    },
+    "__schema45": {
+      "type": "number"
+    },
+    "__schema46": {
+      "type": "number"
+    },
+    "__schema47": {
+      "type": "number"
+    },
+    "__schema48": {
+      "type": "number"
+    },
+    "__schema49": {
+      "type": "number"
+    },
+    "__schema50": {
+      "type": "number"
+    },
+    "__schema51": {
+      "type": "number"
+    },
+    "__schema52": {
+      "type": "number"
+    },
+    "__schema53": {
+      "type": "number"
+    },
+    "__schema54": {
+      "type": "number"
+    },
+    "__schema55": {
+      "type": "number"
+    },
+    "__schema56": {
+      "type": "number"
+    },
+    "__schema57": {
+      "type": "number"
+    },
+    "__schema58": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "天赋名"
+      },
+      "additionalProperties": {
+        "default": {
+          "等级": 1,
+          "经验": 0
+        },
+        "type": "object",
+        "properties": {
+          "等级": {
+            "default": 1,
+            "type": "number"
+          },
+          "经验": {
+            "default": 0,
+            "type": "number"
+          }
+        }
+      }
+    },
+    "__schema59": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "书名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "已读": {
+            "default": false,
+            "type": "boolean"
+          },
+          "熟练": {
+            "default": 0,
+            "type": "number"
+          },
+          "师授": {
+            "description": "★ 原作：无师长传授心诀则自学极难寸进",
+            "default": false,
+            "$ref": "#/$defs/__schema60"
+          }
+        }
+      }
+    },
+    "__schema60": {
+      "type": "boolean"
+    },
+    "__schema61": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "物品名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "数量": {
+            "default": 1,
+            "type": "number"
+          },
+          "品质": {
+            "default": "凡",
+            "type": "string",
+            "enum": [
+              "凡",
+              "良",
+              "优",
+              "珍",
+              "绝"
+            ]
+          },
+          "说明": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "__schema62": {
+      "type": "number"
+    },
+    "__schema63": {
+      "type": "number"
+    },
+    "__schema64": {
+      "type": "string"
+    },
+    "__schema65": {
+      "type": "number"
+    },
+    "__schema66": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "对键：两人名按字典序拼成「甲|乙」"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "甲": {
+            "default": "",
+            "type": "string"
+          },
+          "乙": {
+            "default": "",
+            "type": "string"
+          },
+          "类型": {
+            "description": "同门 / 师徒 / 兄妹 / 父女 / 挚友 / 仇敌 / 断了",
+            "default": "一般",
+            "$ref": "#/$defs/__schema67"
+          },
+          "强度": {
+            "default": 50,
+            "type": "number"
+          },
+          "双向": {
+            "description": "false = 单方面（一边热一边冷是常态）",
+            "default": true,
+            "$ref": "#/$defs/__schema68"
+          },
+          "曾经": {
+            "description": "断关系不删，记下「曾经是什么」",
+            "default": "",
+            "$ref": "#/$defs/__schema69"
+          }
+        }
+      }
+    },
+    "__schema67": {
+      "type": "string"
+    },
+    "__schema68": {
+      "type": "boolean"
+    },
+    "__schema69": {
+      "type": "string"
+    },
+    "__schema70": {
+      "type": "string"
+    },
+    "__schema71": {
+      "type": "string"
+    },
+    "__schema72": {
+      "type": "string"
+    },
+    "__schema73": {
+      "type": "string"
+    },
+    "__schema74": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "计数器名"
+      },
+      "additionalProperties": {
+        "default": 0,
+        "type": "number"
+      }
+    },
+    "__schema75": {
+      "type": "string"
+    },
+    "__schema76": {
+      "type": "string"
+    },
+    "__schema77": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "任务组 id"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "名": {
+            "default": "",
+            "type": "string"
+          },
+          "节点": {
+            "description": "当前节点；clear 表示已完成",
+            "default": "",
+            "$ref": "#/$defs/__schema78"
+          }
+        }
+      }
+    },
+    "__schema78": {
+      "type": "string"
+    },
+    "__schema79": {
+      "type": "string"
+    },
+    "__schema80": {
+      "type": "number"
+    },
+    "__schema81": {
+      "type": "number"
+    },
+    "__schema82": {
+      "type": "number"
+    },
+    "__schema83": {
+      "type": "boolean"
+    },
+    "__schema84": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "__schema85": {
+      "type": "string"
+    },
+    "__schema86": {
+      "type": "string"
+    }
+  }
+}

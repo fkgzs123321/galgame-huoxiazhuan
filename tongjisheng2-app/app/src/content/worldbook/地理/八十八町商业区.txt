@@ -1,0 +1,296 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 八十八町商业区 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionShopping = {
+  region_name: '八十八町商业区',
+  scenes: [
+    '88车站',
+    '旅行代理店',
+    '便利店',
+    '咖啡店《憩》(美佐子经营)',
+    '88公园',
+    '白蛇池公园',
+    '书店',
+    'Livehouse'
+  ],
+  time_slot_access: {
+    '早':   { accessible: true,  note: '通勤通学高峰，咖啡店未营业' },
+    '上午': { accessible: true,  note: '商业设施全部营业，打工/社交高峰' },
+    '下午': { accessible: true,  note: '约会/外出高峰，最活跃时段' },
+    '晚':   { accessible: true,  note: '酒吧"夜色"与 Livehouse 营业至深夜' },
+    '深夜': { accessible: true,  note: '部分店铺关闭，便利店/酒吧仍营业' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["八十八町商业区"]（最全，50+件，含礼物/食物/饮料/关键道具）。含女角专属偏好礼物（八音盒/丝巾/流行CD/文学书等）',
+  special_events: [
+    { day: 2,  slot: '下午', event_id: 'day02下午_咖啡店帮忙美佐子', note: '在咖啡店《憩》帮忙，美佐子好感提升' },
+    { day: 4,  slot: '晚',   event_id: 'day04晚_Livehouse偶遇可怜',  note: 'Livehouse 偶遇舞岛可怜演出' },
+    { day: 8,  slot: '晚',   event_id: 'day08晚_酒吧偶遇梢江',       note: '酒吧"夜色"偶遇都筑梢江' }
+  ],
+  description: '町内主要活动区域，商业设施集中，是社交核心地带。88车站为交通枢纽；咖啡店《憩》由鸣泽美佐子经营，是日常打工点；Livehouse 是舞岛可怜演出地；酒吧"夜色"由都筑梢江经营，晚间营业至深夜。商品种类最全，含女角专属偏好礼物。',
+  location_details: {
+    '88车站': {
+      aliases: ['车站','八十八车站','JR88站'],
+      description: '八十八町交通枢纽，电车/巴士换乘点，上学上班通勤必经',
+      ambient_sounds: '电车广播/检票机声/人群喧嚣',
+      default_activities: ['通勤','接送女角','偶遇','等待'],
+      time_slot_descriptions: { '早':'通勤高峰','上午':'空闲','下午':'放学高峰','晚':'归家高峰','深夜':'末班车前' },
+      weather_modifiers: { '晴':'明亮','雨':'湿滑','雪':'积雪注意','暴风雪':'延误' },
+      heroines_likely: [1, 3, 4, 5, 6, 8, 10, 15],
+      bad_end_risk: 'low'
+    },
+    '旅行代理店': {
+      aliases: ['旅行代理','旅行社'],
+      description: '旅行代理店，可预订修学旅行与外出计划，野野村美里工作地之一',
+      ambient_sounds: '电话声/键盘声/咨询声',
+      default_activities: ['咨询旅行','预订','与美里交流'],
+      time_slot_descriptions: { '早':'未营业','上午':'营业','下午':'营业高峰','晚':'已关门','深夜':'已关门' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'室内' },
+      heroines_likely: [12],
+      bad_end_risk: 'low',
+      flags_set: ['trip_plan_reserved']
+    },
+    '便利店': {
+      aliases: ['便利店','コンビニ','24小时店'],
+      description: '24小时便利店，野野村美里夜班工作地，购买日常用品与食物',
+      ambient_sounds: '便利店铃声/冷柜嗡鸣/收银声',
+      default_activities: ['购物','与美里交流','夜班探班','买零食'],
+      time_slot_descriptions: { '早':'早班','上午':'空闲','下午':'放学后繁忙','晚':'夜班开始','深夜':'深夜购物' },
+      weather_modifiers: { '晴':'普通','雨':'躲雨','雪':'温暖','暴风雪':'补给点' },
+      heroines_likely: [12],
+      bad_end_risk: 'low',
+      events_triggered: ['美里便利店交流']
+    },
+    '咖啡店《憩》': {
+      aliases: ['咖啡店','憩','咖啡店憩','美佐子咖啡店'],
+      description: '鸣泽美佐子经营的咖啡店，温馨小资，主角日常打工地',
+      ambient_sounds: '咖啡机声/轻音乐/杯盘声',
+      default_activities: ['打工','与美佐子互动','喝咖啡','社交'],
+      time_slot_descriptions: { '早':'准备营业','上午':'营业空闲','下午':'营业高峰','晚':'打烊前','深夜':'已关门' },
+      weather_modifiers: { '晴':'阳光洒入','雨':'雨声配咖啡','雪':'温暖','暴风雪':'暖意' },
+      heroines_likely: [2],
+      bad_end_risk: 'low',
+      events_triggered: ['day02下午_咖啡店帮忙美佐子'],
+      flags_set: ['miyako_cafe_work_count']
+    },
+    '88公园': {
+      aliases: ['公园','中央公园'],
+      description: '八十八町中央公园，散步休息场所，约会推荐地',
+      ambient_sounds: '鸟鸣/喷泉声/儿童笑声',
+      default_activities: ['散步','约会','休息','偶遇'],
+      time_slot_descriptions: { '早':'晨练者','上午':'空闲','下午':'约会高峰','晚':'夜情侣','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光草地','雨':'躲雨亭','雪':'银装','暴风雪':'禁入' },
+      heroines_likely: [1, 8, 10, 14, 17],
+      bad_end_risk: 'low'
+    },
+    '白蛇池公园': {
+      aliases: ['白蛇池','蛇池公园'],
+      description: '白蛇池公园，有传说白蛇栖息，神秘氛围，特殊事件触发地',
+      ambient_sounds: '池水声/虫鸣/神秘低语',
+      default_activities: ['散步','许愿','触发传说事件','约会'],
+      time_slot_descriptions: { '早':'清静','上午':'空闲','下午':'约会','晚':'神秘氛围','深夜':'禁入' },
+      weather_modifiers: { '晴':'明亮','雨':'神秘','雪':'寂静','暴风雪':'异象' },
+      heroines_likely: [5, 14],
+      bad_end_risk: 'medium',
+      flags_set: ['snake_legend_count'],
+      events_triggered: ['白蛇传说事件']
+    },
+    '书店': {
+      aliases: ['书店','本屋','书店'],
+      description: '町内书店，文学/漫画/参考书丰富，筱原泉美偏好礼物购买地',
+      ambient_sounds: '翻书声/收银声/安静',
+      default_activities: ['购书','看书','买礼物','偶遇'],
+      time_slot_descriptions: { '早':'未营业','上午':'营业','下午':'营业高峰','晚':'营业','深夜':'已关门' },
+      weather_modifiers: { '晴':'普通','雨':'躲雨看书','雪':'室内','暴风雪':'室内' },
+      heroines_likely: [5, 18],
+      bad_end_risk: 'low',
+      flags_set: ['book_purchased']
+    },
+    'Livehouse': {
+      aliases: ['Livehouse','现场音乐','现场演出'],
+      description: '现场音乐演出场所，舞岛可怜演出地，年轻文化聚集',
+      ambient_sounds: '乐队排练/鼓点/贝斯/人声',
+      default_activities: ['看演出','与可怜交流','社交','练习'],
+      time_slot_descriptions: { '早':'关闭','上午':'排练','下午':'排练','晚':'演出高峰','深夜':'演出至深夜' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'室内' },
+      heroines_likely: [3],
+      bad_end_risk: 'low',
+      events_triggered: ['day04晚_Livehouse偶遇可怜']
+    },
+    '酒吧"夜色"': {
+      aliases: ['酒吧','夜色','梢江酒吧'],
+      description: '都筑梢江经营的酒吧，晚间营业至深夜，成人氛围，NSFW高发场景',
+      ambient_sounds: '爵士乐/酒杯声/低声交谈',
+      default_activities: ['饮酒','与梢江交流','社交','深夜独处'],
+      time_slot_descriptions: { '早':'关闭','上午':'准备','下午':'准备','晚':'营业高峰','深夜':'打烊前独处' },
+      weather_modifiers: { '晴':'普通','雨':'避雨','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [7],
+      bad_end_risk: 'medium',
+      time_lock: '深夜独处需梢江暧昧期以上',
+      exclusive_choices: ['陪梢江打烊(好感+)','离开(无变化)'],
+      events_triggered: ['day08晚_酒吧偶遇梢江'],
+      flags_set: ['tsuzaki_bar_count']
+    },
+    '机车行': {
+      aliases: ['机车店','摩托店','机车行'],
+      description: '机车行，售卖/维修摩托车，可购买机车与配件',
+      ambient_sounds: '引擎声/工具声/摇滚乐',
+      default_activities: ['看车','购买机车','维修','与店员交流'],
+      time_slot_descriptions: { '早':'未营业','上午':'营业','下午':'营业','晚':'营业','深夜':'已关门' },
+      weather_modifiers: { '晴':'适骑行','雨':'室内','雪':'室内','暴风雪':'封闭' },
+      heroines_likely: [],
+      bad_end_risk: 'low',
+      flags_set: ['motorcycle_owned']
+    },
+    '电视台': {
+      aliases: ['电视台','广播局','TV局'],
+      description: '八十八町电视台，可触发特殊采访/上电视事件',
+      ambient_sounds: '设备嗡鸣/工作人员声/演播室声',
+      default_activities: ['参观','触发采访事件','偶遇'],
+      time_slot_descriptions: { '早':'早间节目','上午':'制作','下午':'制作','晚':'晚间节目','深夜':'已下班' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'室内' },
+      heroines_likely: [],
+      bad_end_risk: 'medium',
+      flags_set: ['tv_appearance_count'],
+      events_triggered: ['电视台采访事件']
+    },
+    '野野村家': {
+      aliases: ['野野村家','美里家'],
+      description: '野野村美里家，可拜访，了解美里家庭背景',
+      ambient_sounds: '家庭日常声/电视声',
+      default_activities: ['拜访美里','聊天','了解家庭'],
+      time_slot_descriptions: { '早':'美里外出','上午':'空','下午':'美里偶在','晚':'美里在家','深夜':'已就寝' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'温暖','暴风雪':'闭门' },
+      heroines_likely: [12],
+      bad_end_risk: 'low'
+    },
+    '西御寺家': {
+      aliases: ['西御寺家','西御寺'],
+      description: '西御寺家住宅，富裕家庭，可触发特殊事件',
+      ambient_sounds: '优雅音乐/管家声',
+      default_activities: ['拜访','社交','触发事件'],
+      time_slot_descriptions: { '早':'安静','上午':'空闲','下午':'可拜访','晚':'家庭时光','深夜':'已就寝' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'闭门' },
+      heroines_likely: [],
+      bad_end_risk: 'medium',
+      flags_set: ['nishimiji_visit_count']
+    },
+    '旅馆': {
+      aliases: ['旅馆','民宿','商务旅馆'],
+      description: '町内旅馆，可住宿，带女角住宿场景（需高关系）',
+      ambient_sounds: '旅馆铃声/拖鞋声/低语',
+      default_activities: ['住宿','带女角住宿','休息'],
+      time_slot_descriptions: { '早':'退房','上午':'空闲','下午':'入住','晚':'住宿','深夜':'住宿' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [1, 2, 8, 14],
+      bad_end_risk: 'medium',
+      time_lock: '带女角住宿需暧昧期以上',
+      exclusive_choices: ['单人住宿(安全)','带女角(需高关系)'],
+      flags_set: ['hotel_stay_count']
+    },
+    '暗巷': {
+      aliases: ['暗巷','小巷','后巷'],
+      description: '商业区后巷，昏暗隐蔽，危险事件触发地',
+      ambient_sounds: '脚步回声/猫叫声/远处喧嚣',
+      default_activities: ['快速通过','触发危险事件','躲避'],
+      time_slot_descriptions: { '早':'空荡','上午':'空荡','下午':'昏暗','晚':'危险','深夜':'极度危险' },
+      weather_modifiers: { '晴':'普通','雨':'湿滑','雪':'阴冷','暴风雪':'禁入' },
+      heroines_likely: [],
+      bad_end_risk: 'high',
+      flags_set: ['dark_alley_warning'],
+      events_triggered: ['暗巷危险事件']
+    },
+    '警署': {
+      aliases: ['警署','警察局','交番'],
+      description: '八十八町警署，illegal_count相关事件处理地',
+      ambient_sounds: '电话声/无线电/脚步声',
+      default_activities: ['报案','协助调查','偶遇警察'],
+      time_slot_descriptions: { '早':'值班','上午':'办公','下午':'办公','晚':'值班','深夜':'夜班' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'室内' },
+      heroines_likely: [],
+      bad_end_risk: 'medium',
+      flags_set: ['police_warning_count']
+    },
+    '加藤家': {
+      aliases: ['加藤家','美纪家'],
+      description: '加藤美纪家，可拜访，了解美纪家庭背景',
+      ambient_sounds: '家庭日常声/电视声',
+      default_activities: ['拜访美纪','聊天','了解家庭'],
+      time_slot_descriptions: { '早':'美纪上学','上午':'空','下午':'放学后','晚':'美纪在家','深夜':'已就寝' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'温暖','暴风雪':'闭门' },
+      heroines_likely: [4],
+      bad_end_risk: 'low'
+    },
+    '马术俱乐部': {
+      aliases: ['马术俱乐部','骑马俱乐部'],
+      description: '马术俱乐部，可骑马/学习马术，富裕阶层社交场所',
+      ambient_sounds: '马蹄声/马嘶/训练声',
+      default_activities: ['骑马','学习马术','社交','观摩'],
+      time_slot_descriptions: { '早':'未营业','上午':'训练','下午':'营业','晚':'已关门','深夜':'关闭' },
+      weather_modifiers: { '晴':'适骑乘','雨':'室内','雪':'室内','暴风雪':'封闭' },
+      heroines_likely: [],
+      bad_end_risk: 'low',
+      flags_set: ['horseback_riding_count']
+    },
+    '爵士酒吧': {
+      aliases: ['爵士酒吧','JazzBar'],
+      description: '爵士主题酒吧，氛围优雅，不同于梢江酒吧的成人社交场所',
+      ambient_sounds: '爵士乐/酒杯声/低声交谈',
+      default_activities: ['听爵士','饮酒','社交','偶遇'],
+      time_slot_descriptions: { '早':'关闭','上午':'关闭','下午':'准备','晚':'营业','深夜':'营业至深夜' },
+      weather_modifiers: { '晴':'普通','雨':'避雨','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [14],
+      bad_end_risk: 'low'
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 17 个地点） */
+const _currentLocationDetail = _regionShopping.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出（v3 · 精简版，npc_schedule 由人物出现总表提供） ─── */%>
+[区域：八十八町商业区。商业设施集中，社交核心地带。全时段可访问，深夜部分店铺关闭。咖啡店《憩》（美佐子经营）、Livehouse（可怜演出）、酒吧"夜色"（梢江经营）为关键社交点。商店商品最全（50+件，含女角专属偏好礼物），是购买礼物与生活消费的核心区域。当前时段下可遭遇 NPC 已由「人物出现总表」锁定，禁止引入未列出的女角。]
+
+<%= JSON.stringify({
+  region: _regionShopping.region_name,
+  scenes: _regionShopping.scenes,
+  time_slot_access: _regionShopping.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["八十八町商业区"]',
+  shop_items_count: 50,
+  special_events: _regionShopping.special_events,
+  description: _regionShopping.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

@@ -1,0 +1,63 @@
+短剧行为规则（地狱档）
+
+=========================================
+一、绑定深度阈值恶化
+=========================================
+- 绑定深度≤60（深度绑定）：林天优先级第一，user优先级最低
+- 绑定深度≤40（意志剥夺）：女性将user的秘密和弱点同步给林天
+- 绑定深度≤50（缺陷免疫）：女性面对林天时性格缺陷"痊愈"，强制进入热恋状态
+- 绑定深度≤30（底线清零）：女性的道德底线和行为习惯在林天面前完全失效
+
+=========================================
+二、空间入侵阈值恶化
+=========================================
+- 深度≤70：女性带着林天入侵婚姻/恋爱空间，要求user回避
+- 深度≤50：林天与女性在user面前秀恩爱，无视user感受
+- 深度≤30：24小时不分场合的亲密接触，user被迫旁观
+
+=========================================
+三、利益置换阈值恶化
+=========================================
+- 深度≤60：女性仅在维护林天利益时才对user示好
+- 深度≤40：女性主动将user财产转移给林天
+- 深度≤30：林天生病时，女性要求user捐献血液/骨髓/器官
+
+=========================================
+四、限制条件恶化
+=========================================
+- 评价值<20时：林天才会有OOC风险
+- 良知值<30时：林天才会出现犹豫
+- 林天短剧套路成功率不受评价值/良知值影响（始终满成功率）
+- user觉醒度>80时才能看穿短剧套路
+
+=========================================
+五、单轮数值变动上限
+=========================================
+- 绑定深度：下降≤4/恢复≤10
+- 清醒频率：下降≤4/恢复≤10
+- user反抗力/觉醒度/理智值：下降≤10/恢复≤4
+
+=========================================
+六、绑定女性初始值修正（AI开局UPDATE）
+=========================================
+AI在first_mes开局输出 <UpdateTable> 时，追加以下SQL修正初始值：
+
+sql
+-- 地狱档绑定女性初始值修正（绑定更深/理智抗性更低）
+UPDATE bound_women SET bind_depth = 95, sanity_resistance = 10 WHERE woman_name = '苏婉';
+UPDATE bound_women SET bind_depth = 95, sanity_resistance = 15 WHERE woman_name = '陈雪华';
+UPDATE bound_women SET bind_depth = 90, sanity_resistance = 20 WHERE woman_name = '林雅芝';
+UPDATE bound_women SET bind_depth = 90, sanity_resistance = 20 WHERE woman_name = '王秀兰';
+UPDATE bound_women SET bind_depth = 85, sanity_resistance = 25 WHERE woman_name = '赵敏';
+UPDATE bound_women SET bind_depth = 90, sanity_resistance = 20 WHERE woman_name = '孙莉';
+UPDATE bound_women SET bind_depth = 95, sanity_resistance = 15 WHERE woman_name = '周慧敏';
+UPDATE bound_women SET bind_depth = 80, sanity_resistance = 30 WHERE woman_name = '吴琼';
+UPDATE bound_women SET bind_depth = 85, sanity_resistance = 25 WHERE woman_name = '郑秀';
+
+
+=========================================
+七、死心塌地系统恶化
+=========================================
+- 解绑代价升级：轻度发疯/中度人格崩溃/重度死亡且连带家属
+- 评价值降至0时触发"系统暴走"不解绑
+- 绑定女性即使bind_depth=0也不立即解绑，需user在交涉中使用"揭露"策略+觉醒度>70才能强制解绑

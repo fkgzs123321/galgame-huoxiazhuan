@@ -1,0 +1,24 @@
+schemaVersion: 5
+id: project_mr1fetuw_6bd2c43e
+slug: 系统哥的末日
+name: 系统哥的末日
+kind:
+  output: character_card
+  source: original
+  assets:
+    mvu: planned
+    html: disabled
+    regex: planned
+    ejs: planned
+    tavernHelper: planned
+paths:
+  plan: plan.md
+  draft:
+    card: draft/card.yaml
+    worldbook: draft/worldbook.yaml
+    assets: draft/assets.yaml
+  sourceRoot: source
+  reports: reports
+  exports: exports
+createdAt: '2026-07-01T01:58:05.475Z'
+updatedAt: '2026-07-01T01:58:05.535Z'

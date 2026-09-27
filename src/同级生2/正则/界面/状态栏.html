@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · 同级生2</title>
+<style>
+:root{
+  --bg-0:#0a0e1a;--bg-1:#161a2e;--bg-card:rgba(28,32,58,.88);
+  --c-text:#f3f4f6;--c-dim:#9ca3af;--c-border:rgba(99,102,241,.22);
+  --c-danger:#ef4444;--c-warn:#f59e0b;--c-orange:#db6d28;--c-safe:#10b981;--c-accent:#a371f7;--c-blue:#3b82f6;--c-pink:#f472b6;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin:6px 0;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:700;letter-spacing:.5px}
+.hd-sub{font-size:var(--fs-xs);color:var(--c-dim);width:100%;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(163,113,247,.12);border:1px solid rgba(163,113,247,.3);color:#d2a8ff;white-space:nowrap}
+.pill.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:var(--c-warn)}
+.pill.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:var(--c-danger)}
+.pill.safe{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);color:var(--c-safe)}
+.pill.hell{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.5);color:#fca5a5;font-weight:700}
+.rfr{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0;transition:color .2s}
+.rfr:hover{color:var(--c-text)}
+.rfr.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+details.block{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:0;margin-bottom:8px;overflow:hidden}
+details.block>summary{font-size:var(--fs-sm);font-weight:700;padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none}
+details.block>summary::-webkit-details-marker{display:none}
+details.block[open]>summary{border-bottom:1px solid var(--c-border)}
+details.block[open]>summary .caret{transform:rotate(90deg)}
+details.block>summary .caret{margin-left:auto;transition:transform .2s}
+.card-t.user{color:var(--c-safe)}
+.card-t.heroine{color:var(--c-accent)}
+.card-t.skill{color:#34d399}
+.card-t.economy{color:#fbbf24}
+.card-t.personality{color:var(--c-pink)}
+.card-t.hidden{color:var(--c-dim)}
+.card-t.temp{color:var(--c-blue)}
+.card-t.list{color:var(--c-accent)}
+.block-body{padding:6px 10px 8px;display:block}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:6px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.kv{display:flex;flex-direction:column;gap:1px}
+.kv .k{font-size:var(--fs-xs);color:var(--c-dim)}
+.kv .v{font-size:var(--fs-sm);font-weight:600}
+.v.danger{color:var(--c-danger)}.v.warn{color:var(--c-warn)}.v.safe{color:var(--c-safe)}.v.neutral{color:var(--c-dim)}.v.accent{color:var(--c-accent)}.v.blue{color:var(--c-blue)}.v.pink{color:var(--c-pink)}
+.bar{margin:5px 0}
+.bar-h{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}
+.bar-h .bv{color:var(--c-text);font-weight:600}
+.bar-t{height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar-f{height:100%;border-radius:4px;transition:width .5s ease;width:0}
+.bar-f.r{background:linear-gradient(90deg,#7f1d1d,var(--c-danger))}
+.bar-f.o{background:linear-gradient(90deg,#78350f,var(--c-orange))}
+.bar-f.y{background:linear-gradient(90deg,#78350f,var(--c-warn))}
+.bar-f.g{background:linear-gradient(90deg,#064e3b,var(--c-safe))}
+.bar-f.b{background:linear-gradient(90deg,#1e3a8a,var(--c-blue))}
+.bar-f.p{background:linear-gradient(90deg,#831843,var(--c-pink))}
+.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.sect-title{font-size:var(--fs-xs);color:var(--c-dim);margin:8px 0 4px;font-weight:600;border-bottom:1px solid rgba(99,102,241,.1);padding-bottom:2px}
+.heroine-item{background:rgba(163,113,247,.06);border:1px solid rgba(163,113,247,.2);border-radius:6px;padding:6px 8px;margin-bottom:4px;cursor:pointer;transition:background .2s}
+.heroine-item:hover{background:rgba(163,113,247,.12)}
+.heroine-item.active{border-color:rgba(163,113,247,.6);background:rgba(163,113,247,.15)}
+.heroine-row{display:flex;justify-content:space-between;align-items:center;gap:4px;flex-wrap:wrap}
+.heroine-name{font-weight:700;font-size:var(--fs-sm);color:var(--c-accent)}
+.heroine-stage{font-size:var(--fs-xs);padding:1px 6px;border-radius:8px;background:rgba(163,113,247,.2);color:#d2a8ff}
+.heroine-stage.safe{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:var(--c-safe)}
+.heroine-stage.warn{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--c-warn)}
+.heroine-stage.pink{background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:var(--c-pink)}
+.cur-tag{font-size:var(--fs-xs);color:var(--c-pink);font-weight:bold;margin-left:4px}
+.heroine-stats{display:flex;gap:6px;margin-top:3px;font-size:var(--fs-xs);color:var(--c-dim)}
+.heroine-stats span{white-space:nowrap}
+.flag-on{color:var(--c-safe);font-weight:700}
+.flag-off{color:var(--c-dim)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:10px}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;padding:12px}
+.modal-title{font-size:var(--fs-md);font-weight:700;margin-bottom:8px;color:var(--c-accent);display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:var(--fs-md)}
+.modal-close:hover{color:var(--c-text)}
+.nsfw-tag{font-size:var(--fs-xs);padding:1px 5px;border-radius:4px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;margin-left:4px}
+@media(max-width:480px){
+  .g{grid-template-columns:repeat(2,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .hd-t{font-size:var(--fs-sm)}
+  .hd{flex-wrap:wrap}
+  .hd-l{width:100%}
+  .rfr{padding:4px 10px}
+  .pill{font-size:9px;padding:1px 6px}
+  .modal{max-width:95vw;max-height:80vh;padding:10px}
+  .heroine-stats{flex-wrap:wrap;gap:4px}
+  .heroine-stats span{font-size:9px}
+  .hd-sub{font-size:9px}
+}
+@media(max-width:360px){
+  .g{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .hd-t{font-size:var(--fs-xs)}
+  .heroine-name{font-size:var(--fs-xs)}
+}
+</style>
+</head>
+<body>
+<div id="sb-root">
+  <div class="loading" id="sb-loading">正在载入状态栏…</div>
+  <div class="sb" id="sb-body" style="display:none"></div>
+</div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+<script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* ===== 状态栏 · 同级生2 · 纯ES5 + 全变量显示 ===== */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+
+function parseEmbeddedStat(){
+  var el=document.getElementById('mvu-stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'){
+      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+
+function resolveMessageIdFromDom(){
+  try{
+    var frame=window.frameElement;
+    if(frame&&frame.closest){var mes=frame.closest('.mes');if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(id>=0)return id}}
+    var el=frame;
+    while(el){if(el.classList&&el.classList.contains('mes')){var id2=parseInt(el.getAttribute('mesid'),10);if(id2>=0)return id2}el=el.parentElement}
+    for(var i=0;i<TH_HOSTS.length;i++){try{var host=TH_HOSTS[i];var host$=host.$||host.jQuery;if(!host$||!frame)continue;var $mes=host$(frame).closest('.mes');if($mes&&$mes.length){var id3=parseInt($mes.attr('mesid'),10);if(id3>=0)return id3}}catch(e){}}
+  }catch(e){}
+  return -1;
+}
+function resolveMessageIdFromIframeName(){
+  var fn=pickHostFn('getIframeName');if(!fn)return -1;
+  try{var name=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}
+  return -1;
+}
+function resolveMessageId(){
+  var fromDom=resolveMessageIdFromDom();if(fromDom>=0)return fromDom;
+  var fromName=resolveMessageIdFromIframeName();if(fromName>=0)return fromName;
+  if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;
+  var fn=pickHostFn('getCurrentMessageId');
+  if(fn){try{var id=fn();if(typeof id==='number'&&id>=0)return id}catch(e){}}
+  return -1;
+}
+function getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}
+function hasMeaningfulStatData(stat){return stat&&typeof stat==='object'&&!Array.isArray(stat)&&Object.keys(stat).length>0}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;return hasMeaningfulStatData(stat)?stat:null}
+
+var cachedStatFromBridge=null;
+var cachedBridgeMessageId=-1;
+
+/* 同步降级读取：仅用于初始化快速渲染（数据可能滞后） */
+function readStatDataSync(){
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)){
+    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);
+  }
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+
+/* 异步读取：参考暗黑地牢生产级实现，用 getLastMessageId 遍历找最后一条 assistant 消息 */
+async function readStatDataAsync(){
+  try{
+    if(typeof getLastMessageId==='function'){
+      var maxId=getLastMessageId();
+      var Mvu=getMvu();
+      var gv=pickHostFn('getVariables');
+      for(var i=0;i<15;i++){
+        var cid=maxId-i;
+        if(cid<0)break;
+        var msg=null;
+        try{msg=getChatMessages(cid)}catch(e){continue}
+        if(Array.isArray(msg))msg=msg[0];
+        if(!msg||msg.role!=='assistant')continue;
+        var mid=msg.message_id;
+        if(typeof mid!=='number'||mid<0)continue;
+        var v=null;
+        try{
+          if(Mvu&&typeof Mvu.getMvuData==='function'){
+            v=await Mvu.getMvuData({type:'message',message_id:mid});
+          }else if(gv){
+            v=await gv({type:'message',message_id:mid});
+          }
+        }catch(e){}
+        var stat=pickStatData(v);
+        if(stat&&hasMeaningfulStatData(stat)){
+          return deepMergeStat(DEFAULT_STAT,stat);
+        }
+      }
+    }
+  }catch(e){}
+  /* 降级1：embed 快照（消息生成时的数据） */
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  /* 降级2：bridge 缓存 */
+  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)){
+    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);
+  }
+  /* 降级3：DEFAULT_STAT */
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+
+function requestStatFromBridge(){
+  var mesId=resolveMessageId();var payload={type:'dj2-mvu-stat-request',messageId:mesId};
+  for(var i=0;i<TH_HOSTS.length;i++){try{TH_HOSTS[i].postMessage(payload,'*')}catch(e){}}
+}
+
+/* 工具 */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function barClass4(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'y';if(v>=30)return'o';return'r'}
+function kv(k,v,cls){return '<div class="kv"><span class="k">'+k+'</span><span class="v'+(cls?' '+cls:'')+'">'+esc(v)+'</span></div>'}
+function bar(label,val,max){
+  max=max||100;var v=num(val,0);
+  return '<div class="bar"><div class="bar-h"><span>'+label+'</span><span class="bv">'+v+'/'+max+'</span></div><div class="bar-t"><div class="bar-f '+barClass4(v)+'" style="width:'+pct(v,max)+'%"></div></div></div>';
+}
+function flagStr(v){return v?'<span class="flag-on">✓</span>':'<span class="flag-off">✗</span>'}
+
+var DEFAULT_STAT={
+  "时间":{"当前日期":"12-22","星期":"周五","时段":"早","当前时间":"08:00","天数":1,"季节":"冬","章节":"寒假前奏","天气":"晴"},
+  "场景":{"当前地点":"主角自宅客厅","当前女角名":"无","场景模式":"休息"},
+  "主角":{"玩家身份":"未选择","玩家姓名":"{{user}}","年龄":0,"住所":"未选择","魅力":0,"学业":0,"体力":0,"社交":0,"敏感":0,"声誉":0,"饥饿":30,"口渴":20,"清洁":80,"疲劳":0,"心情":70,"睡眠质量":70,"现金":0,"储蓄":0,"违法计数":0,"法律警告":0,"今日餐费":0,"今日礼费":0,"今日交通费":0,"今日总消费":0,"储蓄目标":50000},
+  "当前女角":{"姓名":"无","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识","阶段锁定":0,"是否在攻略中":0,"攻略路线锁定":0,"互斥组名":"","互斥伙伴姓名":"无","H经验次数":0,"初吻":0,"初H":0,"进阶H":0,"魅力":0,"学业":0,"体力":0,"社交":0,"敏感":0,"声誉":0,"力量":0,"敏捷":0,"智力":0,"意志技能":0,"潜行":0,"口才":0,"医学":0,"烹饪":0,"艺术":0,"驾驶":0,"格斗":0,"观察":0,"恋爱技能":0,"罩杯":"无","胸围":0,"腰围":0,"臀围":0,"身高":0,"体重":0,"乳头大小":"","乳头颜色":"","乳晕大小":"","胸型":"","胸部敏感度":0,"泌乳":"","腰型":"","腰部敏感度":0,"手部描述":"","美甲风格":"","臀型":"","臀部敏感度":0,"后庭描述":"N/A","阴毛":"","阴唇大小":"","阴唇颜色":"","阴道紧度":"","特殊体质":"","润滑程度":"","处女膜状态":"","生育能力":"","全身敏感度":0,"敏感带":"","兴奋触发点":"","当前衣着":"N/A","暴露程度":"N/A","湿润度":0,"兴奋度":0,"精液残留":"N/A","最后更新":"12-22 08:00"},
+  "技能":{"力量":30,"敏捷":40,"智力":50,"意志":40,"潜行":20,"口才":40,"医学":10,"烹饪":20,"艺术":20,"驾驶":0,"格斗":25,"观察":40,"恋爱":25},
+  "临时":{"上次事件ID":"","上次选择结果":"","本时段楼层数":0,"当前难度":"普通","预期下时段序号":1,"连续无收入天数":0,"死结局标识":"","超自然妄想计数":0},
+  "经济":{"当日收入":0,"当日支出":0,"累计储蓄":0},
+  "性格":{"温柔":50,"果断":50,"幽默":50,"谨慎":50,"外向":50,"理性":50},
+  "隐藏":{"日记1":false,"日记2":false,"日记3":false,"日记4":false,"日记5":false,"日记全收集":false,"樱子死讯":false,"樱子线解锁":false,"医院访问次数":0,"芳树偷拍美纪":0,"美纪双身份揭示":0,"美纪秘密保守":0,"美纪秘密揭穿":0,"美纪威胁事件":0,"美纪完整揭示":0,"变数屋访问次数":0,"变数屋全解锁":false,"阴谋偷听":false,"西寺解决进度":0,"西寺债务陷阱":0,"齐藤互斥触发":0,"田中铃木互斥触发":0,"仁科正树互斥触发":0,"永岛久美子分支":0,"永岛佐知子分支":0,"泉美H完成":0,"友美误会解决":0,"毕业生外传完成":0,"洋子短发完成":0},
+  "女角":{
+    "鸣泽唯":{"姓名":"鸣泽唯","好感度":5,"心动值":0,"嫉妒值":0,"信任度":30,"关系阶段":"熟悉"},
+    "鸣泽美佐子":{"姓名":"鸣泽美佐子","好感度":10,"心动值":0,"嫉妒值":0,"信任度":40,"关系阶段":"熟悉"},
+    "舞岛可怜":{"姓名":"舞岛可怜","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "加藤美纪":{"姓名":"加藤美纪","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "筱原泉美":{"姓名":"筱原泉美","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "南川洋子":{"姓名":"南川洋子","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "都筑梢江":{"姓名":"都筑梢江","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "水野友美":{"姓名":"水野友美","好感度":15,"心动值":0,"嫉妒值":0,"信任度":35,"关系阶段":"初识"},
+    "安田爱美":{"姓名":"安田爱美","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "田中美沙":{"姓名":"田中美沙","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "片桐美铃":{"姓名":"片桐美铃","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "野野村美里":{"姓名":"野野村美里","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "永岛久美子":{"姓名":"永岛久美子","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "永岛佐知子":{"姓名":"永岛佐知子","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "齐藤澪":{"姓名":"齐藤澪","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "齐藤澪奈":{"姓名":"齐藤澪奈","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "铃木美穗":{"姓名":"铃木美穗","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "仁科":{"姓名":"仁科","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "正树夏子":{"姓名":"正树夏子","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"},
+    "杉本樱子":{"姓名":"杉本樱子","好感度":0,"心动值":0,"嫉妒值":0,"信任度":0,"关系阶段":"初识"}
+  }
+};
+
+function deepMergeStat(dst,src){
+  if(!src||typeof src!=='object')return dst;
+  var out={};try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}
+  for(var k in src){
+    if(!Object.prototype.hasOwnProperty.call(src,k))continue;
+    var sv=src[k],dv=out[k];
+    if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){out[k]=deepMergeStat(dv,sv)}
+    else{out[k]=sv}
+  }
+  return out;
+}
+
+var State={loading:true,refreshing:false,mvu:{},_refreshing:false,expanded:{}};
+
+function mvuObj(key){return(State.mvu&&State.mvu[key])||{}}
+
+function cardTitle(cls,icon,text,key){
+  var open=State.expanded[key]?' open':'';
+  return '<details class="block"'+open+' data-key="'+key+'"><summary class="card-t '+cls+'">'+icon+' '+text+'<span class="caret">▶</span></summary><div class="block-body">';
+}
+
+/* 女角姓名直接从变量读取，无需ID映射 */
+
+/* 渲染：顶部 */
+function renderHeader(){
+  var t=mvuObj('时间'),sc=mvuObj('场景'),tp=mvuObj('临时');
+  var diff=tp.当前难度||'普通';
+  var diffCls=diff==='地狱'?'hell':(diff==='挑战'?'danger':(diff==='普通'?'':'safe'));
+  return '<div class="hd"><div class="hd-l">'
+    +'<span class="hd-t">'+esc(t.章节||'寒假前奏')+'</span>'
+    +'<span class="pill">Day '+esc(t.天数||1)+'/17</span>'
+    +'<span class="pill">'+esc(t.当前日期||'12-22')+' · '+esc(t.星期||'周五')+'</span>'
+    +'<span class="pill safe">'+esc(t.时段||'早')+' '+esc(t.当前时间||'08:00')+'</span>'
+    +'<span class="pill">'+esc(sc.场景模式||'休息')+'</span>'
+    +'<span class="pill">'+esc(t.天气||'晴')+'</span>'
+    +'<span class="pill '+diffCls+'">'+esc(diff)+'</span>'
+    +'<div class="hd-sub">📍 '+esc(sc.当前地点||'——')+'</div>'
+    +'</div>'
+    +'<button class="rfr'+(State.refreshing?' spinning':'')+'" data-act="refresh">🔄</button>'
+    +'</div>';
+}
+
+/* 主角状态 - 完整25字段 */
+function renderPlayer(){
+  var p=mvuObj('主角');
+  var body='<div class="sect-title">身份信息</div><div class="g2">'
+    +kv('身份',p.玩家身份||'——')+kv('姓名',p.玩家姓名||'——')
+    +kv('年龄',p.年龄||'——')+kv('住所',p.住所||'——')
+    +'</div>'
+    +'<div class="sect-title">六维属性</div><div class="g">'
+    +kv('魅力',p.魅力||0)+kv('学业',p.学业||0)+kv('体力',p.体力||0)
+    +kv('社交',p.社交||0)+kv('敏感',p.敏感||0)+kv('声誉',p.声誉||0)
+    +'</div>'
+    +bar('疲劳',p.疲劳||0,100)+bar('心情',p.心情||0,100)+bar('睡眠',p.睡眠质量||0,100)
+    +'<div class="sect-title">生存属性</div><div class="g">'
+    +kv('饥饿',p.饥饿||0)+kv('口渴',p.口渴||0)+kv('清洁',p.清洁||0)
+    +'</div>'
+    +'<div class="sect-title">经济</div><div class="g2">'
+    +kv('现金','¥'+num(p.现金||0,0),'warn')
+    +kv('储蓄','¥'+num(p.储蓄||0,0),'safe')
+    +kv('储蓄目标','¥'+num(p.储蓄目标||50000,50000),'blue')
+    +'</div>'
+    +bar('储蓄进度',p.储蓄||0,p.储蓄目标||50000)
+    +'<div class="sect-title">今日消费</div><div class="g2">'
+    +kv('餐费','¥'+num(p.今日餐费||0,0))
+    +kv('礼费','¥'+num(p.今日礼费||0,0))
+    +kv('交通费','¥'+num(p.今日交通费||0,0))
+    +kv('总消费','¥'+num(p.今日总消费||0,0),'warn')
+    +'</div>'
+    +'<div class="sect-title">法律/道德</div><div class="g">'
+    +kv('违法计数',p.违法计数||0,(p.违法计数||0)>0?'danger':'')
+    +kv('法律警告',p.法律警告||0,(p.法律警告||0)>0?'warn':'')
+    +'</div>';
+  return cardTitle('user','👤','主角 · 完整状态','player')+body+'</div></details>';
+}
+
+/* 女角完整body渲染（当前女角和详情共用） */
+function renderHeroineBody(h,name){
+  name=name||h.姓名||'无';
+  var isReal=name!=='无'&&name!==''&&name!=='0';
+  var body='<div class="g2">'+kv('姓名',name)+kv('关系阶段',h.关系阶段||'初识')+kv('最后更新',h.最后更新||'--')+'</div>'
+    +'<div class="sect-title">关系核心</div><div class="g">'
+    +kv('好感度',h.好感度||0)+kv('心动值',h.心动值||0)
+    +kv('信任度',h.信任度||0)+kv('嫉妒值',h.嫉妒值||0)
+    +'</div>'
+    +bar('好感度',h.好感度||0,100)+bar('心动值',h.心动值||0,100)+bar('信任度',h.信任度||0,100)
+    +'<div class="sect-title">互斥与锁定</div><div class="g2">'
+    +kv('阶段锁定',flagStr(h.阶段锁定))+kv('是否在攻略中',flagStr(h.是否在攻略中))
+    +kv('攻略路线锁定',flagStr(h.攻略路线锁定))+kv('互斥组名',h.互斥组名||'无')
+    +kv('互斥伙伴',h.互斥伙伴姓名||'无')
+    +'</div>'
+    +'<div class="sect-title">H经验进度</div><div class="g2">'
+    +kv('H经验次数',h.H经验次数||0)+kv('初吻',flagStr(h.初吻))
+    +kv('初H',flagStr(h.初H))+kv('进阶H',flagStr(h.进阶H))
+    +'</div>'
+    +'<div class="sect-title">六维属性</div><div class="g">'
+    +kv('魅力',h.魅力||0)+kv('学业',h.学业||0)+kv('体力',h.体力||0)
+    +kv('社交',h.社交||0)+kv('敏感',h.敏感||0)+kv('声誉',h.声誉||0)
+    +'</div>'
+    +'<div class="sect-title">技能 · 13项</div><div class="g">'
+    +kv('力量',h.力量||0)+kv('敏捷',h.敏捷||0)+kv('智力',h.智力||0)
+    +kv('意志技能',h.意志技能||0)+kv('潜行',h.潜行||0)+kv('口才',h.口才||0)
+    +kv('医学',h.医学||0)+kv('烹饪',h.烹饪||0)+kv('艺术',h.艺术||0)
+    +kv('驾驶',h.驾驶||0)+kv('格斗',h.格斗||0)+kv('观察',h.观察||0)
+    +kv('恋爱技能',h.恋爱技能||0)
+    +'</div>';
+  if(isReal){
+    body+='<div class="sect-title">NSFW · 身体测量 <span class="nsfw-tag">18+</span></div><div class="g2">'
+      +kv('罩杯',h.罩杯||'无')+kv('胸围',h.胸围||0)+'cm'
+      +kv('腰围',h.腰围||0)+'cm'+kv('臀围',h.臀围||0)+'cm'
+      +kv('身高',h.身高||0)+'cm'+kv('体重',h.体重||0)+'kg'
+      +kv('乳头大小',h.乳头大小||'——')+kv('乳头颜色',h.乳头颜色||'——')
+      +kv('乳晕大小',h.乳晕大小||'——')+kv('胸型',h.胸型||'——')
+      +kv('胸部敏感度',h.胸部敏感度||0)+kv('泌乳',h.泌乳||'——')
+      +'</div>'
+      +'<div class="sect-title">NSFW · 腰部/手部/臀部</div><div class="g2">'
+      +kv('腰型',h.腰型||'——')+kv('腰部敏感度',h.腰部敏感度||0)
+      +kv('手部描述',h.手部描述||'——')+kv('美甲风格',h.美甲风格||'——')
+      +kv('臀型',h.臀型||'——')+kv('臀部敏感度',h.臀部敏感度||0)
+      +kv('后庭描述',h.后庭描述||'N/A')
+      +'</div>'
+      +'<div class="sect-title">NSFW · 下体</div><div class="g2">'
+      +kv('阴毛',h.阴毛||'——')+kv('阴唇大小',h.阴唇大小||'——')
+      +kv('阴唇颜色',h.阴唇颜色||'——')+kv('阴道紧度',h.阴道紧度||'——')
+      +kv('特殊体质',h.特殊体质||'——')+kv('润滑程度',h.润滑程度||'——')
+      +kv('处女膜状态',h.处女膜状态||'——')+kv('生育能力',h.生育能力||'——')
+      +'</div>'
+      +'<div class="sect-title">敏感度综合</div><div class="g2">'
+      +kv('全身敏感度',h.全身敏感度||0)+kv('敏感带',h.敏感带||'——')
+      +kv('兴奋触发点',h.兴奋触发点||'——')
+      +'</div>'
+      +'<div class="sect-title">NSFW · 实时状态</div><div class="g2">'
+      +kv('当前衣着',h.当前衣着||'N/A')+kv('暴露程度',h.暴露程度||'N/A')
+      +'</div>'
+      +bar('湿润度',h.湿润度||0,100)
+      +bar('兴奋度',h.兴奋度||0,100)
+      +'<div class="g2">'+kv('精液残留',h.精液残留||'N/A')+'</div>';
+  }
+  return body;
+}
+
+/* 当前女角 - 完整50字段 */
+function renderHeroine(){
+  var h=mvuObj('当前女角');
+  var name=h.姓名||'无';
+  return cardTitle('heroine','💕','当前女角 · '+name,'heroine')+renderHeroineBody(h,name)+'</div></details>';
+}
+
+/* 女角列表 - 显示更多信息（当前女角直接复用 /当前女角/* 变量，避免镜像不同步） */
+function renderHeroineList(){
+  var heroines=mvuObj('女角');
+  var curName=mvuObj('场景').当前女角名||'无';
+  var curHeroine=mvuObj('当前女角');
+  var keys=Object.keys(heroines).filter(function(k){return k&&k!=='0'&&k!=='无';});
+  /* 如果当前女角名存在但 /女角/ 列表中没有对应条目，则把当前女角名加入列表（数据来自 /当前女角/*） */
+  if(curName&&curName!=='无'&&keys.indexOf(curName)===-1){
+    keys.push(curName);
+  }
+  var body='';
+  if(keys.length===0){
+    body='<div style="text-align:center;color:var(--c-dim);padding:10px;font-size:var(--fs-sm)">暂无女角数据<br><span style="font-size:var(--fs-xs)">等待女角登场</span></div>';
+  }else{
+    for(var i=0;i<keys.length;i++){
+      var name=keys[i];
+      /* 关键：当前女角直接复用 /当前女角/* 数据，其他女角读 /女角/${name}/* 镜像 */
+      var h=(name===curName&&curHeroine&&curHeroine.姓名)?curHeroine:heroines[name];
+      if(!h||typeof h!=='object')continue;
+      var stage=h.关系阶段||'初识';
+      var stageCls=stage==='初识'?'':(stage==='熟悉'?'safe':(stage==='暧昧'?'warn':(stage==='心动'||stage==='亲密'||stage==='攻略完成'?'pink':(stage==='失恋'?'warn':'danger'))));
+      var curTag=(name===curName)?' <span class="cur-tag">★当前</span>':'';
+      body+='<div class="heroine-item" data-act="heroine-detail" data-name="'+esc(name)+'">'
+        +'<div class="heroine-row">'
+        +'<span class="heroine-name">'+esc(name)+curTag+'</span>'
+        +'<span class="heroine-stage '+stageCls+'">'+esc(stage)+'</span>'
+        +'</div>'
+        +'<div class="heroine-stats">'
+        +'<span>好感:'+esc(h.好感度||0)+'</span>'
+        +'<span>心动:'+esc(h.心动值||0)+'</span>'
+        +'<span>信任:'+esc(h.信任度||0)+'</span>'
+        +'<span>嫉妒:'+esc(h.嫉妒值||0)+'</span>'
+        +'<span>H:'+esc(h.H经验次数||0)+'</span>'
+        +'<span>初吻:'+(h.初吻?'✓':'✗')+'</span>'
+        +'<span>初H:'+(h.初H?'✓':'✗')+'</span>'
+        +'</div></div>';
+    }
+  }
+  return cardTitle('list','👥','女角列表 ('+keys.length+'/20)','heroineList')+body+'</div></details>';
+}
+
+/* 技能 */
+function renderSkills(){
+  var s=mvuObj('技能');
+  var body='<div class="g">'
+    +kv('力量',s.力量||0)+kv('敏捷',s.敏捷||0)+kv('智力',s.智力||0)
+    +kv('意志',s.意志||0)+kv('潜行',s.潜行||0)+kv('口才',s.口才||0)
+    +kv('医学',s.医学||0)+kv('烹饪',s.烹饪||0)+kv('艺术',s.艺术||0)
+    +kv('驾驶',s.驾驶||0)+kv('格斗',s.格斗||0)+kv('观察',s.观察||0)
+    +kv('恋爱',s.恋爱||0)
+    +'</div>';
+  return cardTitle('skill','🎯','技能 · 13维','skills')+body+'</div></details>';
+}
+
+/* 经济 */
+function renderEconomy(){
+  var e=mvuObj('经济');
+  var body='<div class="g2">'
+    +kv('当日收入','¥'+num(e.当日收入||0,0),'safe')
+    +kv('当日支出','¥'+num(e.当日支出||0,0),'danger')
+    +kv('累计储蓄','¥'+num(e.累计储蓄||0,0),'blue')
+    +'</div>';
+  return cardTitle('economy','💰','经济统计','economy')+body+'</div></details>';
+}
+
+/* 性格 */
+function renderPersonality(){
+  var p=mvuObj('性格');
+  var body='<div class="g">'
+    +kv('温柔',p.温柔||0)+kv('果断',p.果断||0)+kv('幽默',p.幽默||0)
+    +kv('谨慎',p.谨慎||0)+kv('外向',p.外向||0)+kv('理性',p.理性||0)
+    +'</div>';
+  return cardTitle('personality','🧠','性格 · 6维','personality')+body+'</div></details>';
+}
+
+/* 临时变量 - 完整8字段 */
+function renderTemp(){
+  var t=mvuObj('临时');
+  var diff=t.当前难度||'普通';
+  var diffCls=diff==='地狱'?'hell':(diff==='挑战'?'danger':(diff==='普通'?'':'safe'));
+  var body='<div class="g2">'
+    +kv('当前难度','<span class="'+diffCls+'">'+esc(diff)+'</span>')
+    +kv('本时段楼层数',t.本时段楼层数||0)
+    +kv('预期下时段序号',t.预期下时段序号||1)
+    +kv('连续无收入天数',t.连续无收入天数||0)
+    +kv('超自然妄想计数',t.超自然妄想计数||0,(t.超自然妄想计数||0)>=3?'danger':'')
+    +'</div>'
+    +'<div class="g2">'
+    +kv('上次事件ID',t.上次事件ID||'——')
+    +kv('上次选择结果',t.上次选择结果||'——')
+    +kv('死结局标识',t.死结局标识||'无',(t.死结局标识||'')?'danger':'')
+    +'</div>';
+  return cardTitle('temp','📋','临时状态','temp')+body+'</div></details>';
+}
+
+/* 隐藏变量 - 完整29字段 */
+function renderHidden(){
+  var h=mvuObj('隐藏');
+  var body='<div class="sect-title">日记收集</div><div class="g">'
+    +kv('日记1',flagStr(h.日记1))+kv('日记2',flagStr(h.日记2))+kv('日记3',flagStr(h.日记3))
+    +kv('日记4',flagStr(h.日记4))+kv('日记5',flagStr(h.日记5))+kv('全收集',flagStr(h.日记全收集))
+    +'</div>'
+    +'<div class="sect-title">樱子线</div><div class="g">'
+    +kv('樱子死讯',flagStr(h.樱子死讯))+kv('樱子线解锁',flagStr(h.樱子线解锁))
+    +kv('医院访问次数',h.医院访问次数||0)
+    +'</div>'
+    +'<div class="sect-title">美纪双身份</div><div class="g">'
+    +kv('芳树偷拍',h.芳树偷拍美纪||0)+kv('双身份揭示',h.美纪双身份揭示||0)
+    +kv('秘密保守',h.美纪秘密保守||0)+kv('秘密揭穿',h.美纪秘密揭穿||0)
+    +kv('威胁事件',h.美纪威胁事件||0)+kv('完整揭示',h.美纪完整揭示||0)
+    +'</div>'
+    +'<div class="sect-title">变数屋</div><div class="g">'
+    +kv('访问次数',h.变数屋访问次数||0)+kv('全解锁',flagStr(h.变数屋全解锁))
+    +'</div>'
+    +'<div class="sect-title">西寺阴谋</div><div class="g">'
+    +kv('阴谋偷听',flagStr(h.阴谋偷听))+kv('解决进度',h.西寺解决进度||0)
+    +kv('债务陷阱',h.西寺债务陷阱||0)
+    +'</div>'
+    +'<div class="sect-title">互斥触发</div><div class="g">'
+    +kv('齐藤姐妹',h.齐藤互斥触发||0)+kv('田中铃木',h.田中铃木互斥触发||0)
+    +kv('仁科正树',h.仁科正树互斥触发||0)+kv('永岛久美子',h.永岛久美子分支||0)
+    +kv('永岛佐知子',h.永岛佐知子分支||0)+kv('泉美H',h.泉美H完成||0)
+    +kv('友美误会',h.友美误会解决||0)+kv('毕业生外传',h.毕业生外传完成||0)
+    +kv('洋子短发',h.洋子短发完成||0)
+    +'</div>';
+  return cardTitle('hidden','🔒','隐藏变量 ('+Object.keys(h).length+')','hidden')+body+'</div></details>';
+}
+
+/* 主渲染 */
+function render(){
+  var loadingEl=document.getElementById('sb-loading');
+  var bodyEl=document.getElementById('sb-body');
+  if(!bodyEl)return;
+  if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}
+  loadingEl.style.display='none';bodyEl.style.display='';
+  bodyEl.innerHTML=renderHeader()+renderPlayer()+renderHeroine()+renderHeroineList()+renderSkills()+renderEconomy()+renderPersonality()+renderTemp()+renderHidden();
+}
+
+/* 模态框 */
+function showModal(title,content){
+  var overlay=document.getElementById('modal-overlay');
+  var modal=document.getElementById('modal-content');
+  modal.innerHTML='<div class="modal-title"><span>'+esc(title)+'</span><button class="modal-close" data-act="close-modal">✕</button></div>'+content;
+  overlay.className='modal-overlay show';
+}
+function closeModal(){document.getElementById('modal-overlay').className='modal-overlay'}
+
+/* 女角详情（当前女角直接读 /当前女角/*，避免镜像不同步） */
+function showHeroineDetail(name){
+  var curName=mvuObj('场景').当前女角名||'无';
+  var h;
+  if(name===curName){
+    /* 当前女角：直接读 /当前女角/* 变量，无需 AI 输出镜像 */
+    h=mvuObj('当前女角');
+  }else{
+    /* 非当前女角：读 /女角/${name}/* 镜像 */
+    var heroines=mvuObj('女角');
+    h=heroines[name];
+  }
+  if(!h){showModal('错误','<p>未找到女角：'+esc(name)+'</p>');return}
+  var content=renderHeroineBody(h,name);
+  showModal(esc(name)+' · 完整详情',content);
+}
+
+/* refresh - 异步版本，参考暗黑地牢 */
+async function refresh(){
+  if(State._refreshing)return;
+  State._refreshing=true;State.refreshing=true;
+  /* 第一步：用 embed 快照快速渲染一次（避免界面空白） */
+  var quickStat=readStatDataSync();
+  if(hasData(quickStat)){State.mvu=quickStat;State.loading=false}
+  render();
+  /* 第二步：异步获取最新 MVU 数据 */
+  try{
+    var realStat=await readStatDataAsync();
+    if(hasData(realStat)){State.mvu=realStat;State.loading=false}
+  }catch(e){}
+  State._refreshing=false;State.refreshing=false;
+  render();
+  requestStatFromBridge();
+}
+
+/* 事件绑定 */
+function bindEvents(){
+  var root=document.getElementById('sb-root');
+  root.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.tagName==='DETAILS'){var key=t.getAttribute('data-key');if(key){State.expanded[key]=t.hasAttribute('open')}}
+  },true);
+  root.addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(!t)return;
+    var act=t.getAttribute('data-act');
+    if(act==='refresh'){refresh()}
+    else if(act==='heroine-detail'){showHeroineDetail(t.getAttribute('data-name'))}
+  });
+  document.getElementById('modal-overlay').addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(t&&t.getAttribute('data-act')==='close-modal'){closeModal()}
+  });
+}
+
+/* 初始化 */
+(function init(){
+  bindEvents();
+  var autoRefresh=function(){setTimeout(refresh,800)};
+  try{if(typeof eventOn==='function'){eventOn('GENERATION_ENDED',autoRefresh);eventOn('MESSAGE_EDITED',autoRefresh);eventOn('mag_variable_update_ended',autoRefresh)}}catch(e){}
+  try{var Mvu=getMvu();if(Mvu&&Mvu.events&&Mvu.events.VARIABLE_UPDATE_ENDED&&typeof eventOn==='function'){eventOn(Mvu.events.VARIABLE_UPDATE_ENDED,autoRefresh)}}catch(e){}
+  window.addEventListener('message',function(e){
+    try{
+      var data=e.data;
+      if(data&&data.type==='dj2-mvu-stat-data'&&data.stat_data){
+        var mesId=resolveMessageId();
+        if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;
+        if(hasMeaningfulStatData(data.stat_data)){
+          cachedStatFromBridge=data.stat_data;
+          cachedBridgeMessageId=typeof data.messageId==='number'?data.messageId:mesId;
+          State.mvu=deepMergeStat(DEFAULT_STAT,data.stat_data);
+          State.loading=false;render();
+        }
+        return;
+      }
+      var t=(data&&data.type)||data||'';
+      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0))autoRefresh();
+    }catch(x){}
+  });
+  var embedded=parseEmbeddedStat();
+  if(embedded){cachedStatFromBridge=embedded;cachedBridgeMessageId=resolveMessageId()}
+  requestStatFromBridge();refresh();
+})();
+</script>
+</body>
+</html>

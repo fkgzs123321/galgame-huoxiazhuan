@@ -1,0 +1,12 @@
+async function getLatestVersion() {
+  try {
+    const response = await fetch('https://api.github.com/repos/jerryzmtz/my-tavern-scripts/tags');
+    const tags = await response.json();
+    return tags[0]?.name || 'main';
+  } catch {
+    return 'main';
+  }
+}
+
+const version = await getLatestVersion();
+import(`https://testingcf.jsdelivr.net/gh/jerryzmtz/my-tavern-scripts@${version}/dist/骰子系统/stable.js`);

@@ -1,0 +1,149 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 5 - 12-26 周二 ═══
+   当日主题：美佐子酒后场景开启（身份感知独立场景）
+   特殊事件：event_day05_evening_misako_drunk / event_day05_diary_2_window / event_day05_amami_tenndo_confession
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day5 场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家/美佐子深夜醉酒归来（义母家庭场景，好感 +3）
+     P2 川尻信良 → 川尻家/寻找洋子/洋子短发事件铺垫
+     P3 长冈芳树 → 长冈家/整理偷拍成果/问题儿童行为日
+     P4 西御寺有友 → 西御寺家豪宅/财阀生活/计划骚扰唯美纪美铃
+     P5 天道新干线 → 天道家/爱美线深化/向爱美告白（玩家本人行为）
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 5,
+  date: '12-26',
+  weekday: '周二',
+  chapter: '寒假核心',
+  theme: '美佐子酒后场景开启（身份感知独立场景）',
+  special_events: ['event_day05_evening_misako_drunk', 'event_day05_diary_2_window', 'event_day05_amami_tenndo_confession'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '雪',
+  notes: '美佐子线深化；进入暧昧阶段前置；按身份解锁对应核心女角'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _playerIdentityDesc === 'undefined') var _playerIdentityDesc = _profile ? _profile.identity_desc : '未选择';
+if (typeof _playerSpecialRole === 'undefined') var _playerSpecialRole = _profile ? _profile.special_role : '未选择';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家早/上午/下午（义妹）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店上午/下午 + 鸣泽家自宅晚/深夜（义母，酒后场景主触发）',
+    tomomi: '水野友美（row_id=8）：水野家上午/晚（邻家）'
+  },
+  '川尻信良': {
+    yui: '鸣泽唯（row_id=1）：学园/商业区附近偶遇（认识但不熟）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属，酒后场景改在咖啡店打烊触发）',
+    tomomi: '水野友美（row_id=8）：学园/商业区附近偶遇（非邻家，陌生）',
+    yoko: '南川洋子（row_id=6）：机车行/学园/商业区偶遇（同班同学，洋子线核心，洋子短发事件铺垫）★本日核心'
+  },
+  '长冈芳树': {
+    yui: '鸣泽唯（row_id=1）：学园/商业区附近偶遇（陌生，非家庭关系）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属，酒后场景改在咖啡店打烊触发）',
+    tomomi: '水野友美（row_id=8）：长冈家周边/住宅区偷拍场景（敌意）★本日核心（谨慎潜行）',
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意）'
+  },
+  '西御寺有友': {
+    yui: '鸣泽唯（row_id=1）：学园/商业区远观（敌意）★本日核心（禁止骚扰，仅远观）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属，酒后场景改在咖啡店打烊触发）',
+    tomomi: '水野友美（row_id=8）：商业区偶遇（非邻家，陌生）',
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室/商业区偶遇（师生关系紧张）'
+  },
+  '天道新干线': {
+    yui: '鸣泽唯（row_id=1）：学园/商业区附近偶遇（师生关系，陌生）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属，酒后场景改在咖啡店打烊触发）',
+    tomomi: '水野友美（row_id=8）：学园/商业区附近偶遇（师生关系，陌生）',
+    aimi: '安田爱美（row_id=9）：保育园/商业区/天道家周边偶遇（有特殊企图，本日告白事件核心）★本日核心',
+    misuzu: '片桐美铃（row_id=11）：学园教师室/商业区偶遇（同事关系）'
+  },
+  '自定义': {
+    yui: '鸣泽唯（row_id=1）：学园/商业区附近偶遇（陌生，按玩家背景调整）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，酒后场景改在咖啡店打烊触发）',
+    tomomi: '水野友美（row_id=8）：学园/商业区附近偶遇（陌生，按玩家背景调整）'
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+
+/* 事件描述（身份感知，用具体名字） */
+if (typeof _morningDesc === 'undefined') var _morningDesc = _dayScene ? _dayScene.morning : '玩家身份未初始化，等待玩家选择 P1-P6。';
+if (typeof _afternoonDesc === 'undefined') var _afternoonDesc = _dayScene ? _dayScene.afternoon : '等待玩家选择身份。';
+if (typeof _eveningDesc === 'undefined') var _eveningDesc = _dayScene ? _dayScene.evening : '等待玩家选择身份。';
+if (typeof _diaryHint === 'undefined') var _diaryHint = _dayScene ? _dayScene.diary_hint : '玩家身份未初始化。';
+
+/* event_day05_evening_misako_drunk：美佐子深夜醉酒（P1 归鸣泽家；P2-P6 咖啡店打烊偶遇，不住玩家住所） */
+if (typeof _misakoDrunkDesc === 'undefined') var _misakoDrunkDesc = (_playerIdentity === '原作主角')
+  ? '美佐子深夜醉酒归来。深夜时段鸣泽家自宅触发，美佐子好感 +3。前置条件：美佐子好感 ≥ 10（Day 4 圣诞事件后通常可达）。触发后进入美佐子线暧昧阶段前置，解锁后续深度剧情。' + _playerName + ' 在鸣泽家遇义母美佐子醉酒归来'
+  : '美佐子深夜醉酒。深夜时段咖啡店《憩》打烊时偶遇醉酒的美佐子（非玩家亲属，不住' + _playerHome + '），美佐子好感 +3。前置条件：美佐子好感 ≥ 10。触发后进入美佐子线暧昧阶段前置，解锁后续深度剧情。' + _playerName + ' 在咖啡店偶遇醉酒的美佐子';
+
+if (typeof _misakoDrunkTiers === 'undefined') var _misakoDrunkTiers = '  - 好感 < 10 → 事件不触发，美佐子仅简单寒暄\n  - 好感 ≥ 10 → 醉酒场景触发，美佐子吐露心声\n  - 好感 ≥ 20 → 解锁美佐子特殊对话，铺垫 NSFW 预警';
+
+/* event_day05_diary_2_window：梦仙人还书窗口期（P2 玩家即川尻信良本人） */
+if (typeof _diary2Desc === 'undefined') var _diary2Desc = (_playerIdentity === '川尻信良')
+  ? '第2本·梦仙人还书窗口期持续（12-23~12-28）。任意时段温泉乡占卜馆触发。前置条件同 Day 2。叙事提示：' + _playerName + '（川尻信良本人）自行前往占卜馆还书'
+  : '第2本·梦仙人还书窗口期持续（12-23~12-28）。任意时段温泉乡占卜馆触发。前置条件同 Day 2。叙事提示：本日仍可推进川尻信良还书任务，' + _playerName + ' 可陪同前往';
+
+/* event_day05_amami_tenndo_confession：天道向爱美告白（P5 玩家即天道新干线本人） */
+if (typeof _tenndoConfessDesc === 'undefined') var _tenndoConfessDesc = (_playerIdentity === '天道新干线')
+  ? _playerName + '（天道新干线）向爱美告白。全时段保育园或商业区触发。前置条件：has_met_安田爱美=true AND 天道爱美分支已开启。爱美好感 -2（受惊），' + _playerName + ' 与爱美关系变化。叙事提示：' + _playerName + ' 向爱美告白，是爱美分支的关键转折，影响 Day 8 天道爱美事件解决与 爱美获救 flag 达成'
+  : '天道向爱美告白。全时段保育园或商业区触发。前置条件：has_met_安田爱美=true AND 天道爱美分支已开启。爱美好感 -2（受惊），天道 NPC 关系变化。叙事提示：天道新干线向爱美告白，是爱美分支的关键转折，影响 Day 8 天道爱美事件解决与 爱美获救 flag 达成。' + _playerName + ' 作为旁观者或介入者参与';
+%>
+
+[Day 5 调度器已加载：12-26 周二，主题：美佐子酒后场景开启（身份感知独立场景）。
+本日特殊事件：event_day05_evening_misako_drunk / event_day05_diary_2_window / event_day05_amami_tenndo_confession。
+本日锁定女角：[13,14]（永岛母女未登场）。
+本日新解锁：无。
+本日天气默认：雪。
+本日备注：美佐子线深化；进入暧昧阶段前置；按身份解锁对应核心女角。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _playerIdentityDesc %>
+★ 特殊角色：<%= _playerSpecialRole %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+
+【当日事件详情】
+- event_day05_evening_misako_drunk：<%= _misakoDrunkDesc %>
+<%= _misakoDrunkTiers %>
+- event_day05_diary_2_window：<%= _diary2Desc %>。叙事提示：<%= _diaryHint %>
+- event_day05_amami_tenndo_confession：<%= _tenndoConfessDesc %>。
+
+【当日女角出现特殊规则】
+本日为美佐子线关键节点。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% } %>
+其余未列出女角锁定（含永岛母女 row_id=13,14），AI 不可让其出现。
+关键提示：美佐子酒后场景是美佐子线深化核心事件，建议确保好感达标后触发。若好感不足，事件将跳过且不可补触发。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼/在鸣泽家过圣诞夜/与唯/美佐子家庭场景"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。]

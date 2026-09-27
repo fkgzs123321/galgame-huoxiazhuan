@@ -1,0 +1,15 @@
+{
+  "id": "8ff7ac01-0002-4000-8000-000000000102",
+  "scriptName": "思维链对AI隐藏",
+  "findRegex": "/<think(?:ing|reasoning)?>[\\s\\S]*?<\\/think(?:ing|reasoning)?>/gi",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [1, 2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

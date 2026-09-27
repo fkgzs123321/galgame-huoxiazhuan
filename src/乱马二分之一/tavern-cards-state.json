@@ -1,0 +1,3258 @@
+{
+  "projectName": "乱马二分之一",
+  "worldbookName": "乱马二分之一",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "世界观": {
+      "咒泉乡与溺泉": {
+        "path": "世界书/世界观/咒泉乡与溺泉.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "咒泉乡位置与百余眼泉；成因与触发；十五眼已知泉种；诅咒可叠加、男溺泉可抵消但无人成功；不许编新泉",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        }
+      },
+      "变身规则": {
+        "path": "世界书/世界观/变身规则.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "冷水变热水复原的判定；湿度六十阈值与增减；男相女相体态差异；止水桶与开水壶；镜女乱马与猫拳两个例外",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 25
+        }
+      },
+      "水脉与两副开关": {
+        "path": "世界书/世界观/水脉与两副开关.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "咒泉洞结构；龙形口出咒泉、凤凰形口出热水、栓子月涡蛇与金蛇环；水脉只有一条的三种后果",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        }
+      },
+      "格斗规则": {
+        "path": "世界书/世界观/格斗规则.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "七种行动与克制链；气有上限；场地影响；对手四种风格；胜负后果全是喜剧性的",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        }
+      },
+      "格斗流派速览": {
+        "path": "世界书/世界观/格斗流派速览.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "竞技项目十三种与流派二十七门；谁用哪一门",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        }
+      }
+    },
+    "扮演准则": {
+      "加载纪律": {
+        "path": "世界书/扮演准则/加载纪律.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "引擎层与内容层的优先级；冲突取更具体的那条；正文不解释机制",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 1
+        }
+      },
+      "判定引擎": {
+        "path": "世界书/扮演准则/判定引擎.txt",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "判定与战斗结果的注入通道。读局面变量，把引擎算好的结果交给人话，明写不许重算",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 2
+        }
+      },
+      "喜剧铁律": {
+        "path": "世界书/扮演准则/喜剧铁律.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "格斗恋爱喜剧基调；四拍单元铺垫误解爆发收束；禁悲剧化；没人真死真残；诅咒全作无人解除",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 3
+        }
+      },
+      "叙述准则": {
+        "path": "世界书/扮演准则/叙述准则.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "第三人称跟玩家角色；感知范围与越界禁令；玩家输入权；动作与台词规范",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 4
+        }
+      },
+      "变身判定权": {
+        "path": "世界书/扮演准则/变身判定权.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "变身由规则五步判定不由叙事需要决定；湿度结算；目击者三档；体态变化只改身体不改人格",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 5
+        }
+      },
+      "认知边界": {
+        "path": "世界书/扮演准则/认知边界.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "谁知道什么由当前节点决定；九能带刀永远分不清辫子姑娘与乱马；防全知",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 6
+        }
+      },
+      "防口胡": {
+        "path": "世界书/扮演准则/防口胡.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "不许发明招式道具角色设定溺泉；新内容只许来自考据档案与条目",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 7
+        }
+      },
+      "推进纪律": {
+        "path": "世界书/扮演准则/推进纪律.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "四十六节点的推进条件与方式；禁止穿越；世界状态以当前节点为准",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 8
+        }
+      }
+    },
+    "时间线": {
+      "时间线索引": {
+        "path": "世界书/时间线/时间线索引.yaml",
+        "scope": "catalog",
+        "part": "history",
+        "keywords": [],
+        "abstract": "四十六个节点全序列；插曲归位规则；已并进原卷的改编清单；判定一件事发生过没有的依据",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 110
+        }
+      },
+      "卷01": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷01 乱马来了：早乙女父子以女相与熊猫的形态抵达天道道场，婚约被摆上台面",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷01'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷01.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 120
+        }
+      },
+      "卷02": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷02 追杀乱马的男子：响良牙找上门来算旧账",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷02'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷02.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 121
+        }
+      },
+      "卷03": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷03 黑玫瑰的恋情：九能小太刀与格斗新体操找上门",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷03'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷03.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 122
+        }
+      },
+      "卷04": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷04 死亡之吻：珊璞跨海来追杀女相乱马",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷04'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷04.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 123
+        }
+      },
+      "卷05": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷05 猫拳之灾：乱马怕猫的弱点被找到并且被利用",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷05'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷05.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 124
+        }
+      },
+      "卷06": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷06 格斗茶道：大文字流的格斗茶道挑战",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷06'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷06.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 125
+        }
+      },
+      "卷07": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷07 邪恶复活：被封印在深山里的八宝斋解封归来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷07'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷07.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 126
+        }
+      },
+      "卷08": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷08 即席男溺泉：有人拿男溺泉做文章",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷08'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷08.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 127
+        }
+      },
+      "卷09": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷09 右京的原形：久远寺右京找上门讨十年前那笔账",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷09'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷09.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 128
+        }
+      },
+      "卷10": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷10 俊郎与可伦：女杰族的长辈出面，要把婚约正式化",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷10'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷10.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 129
+        }
+      },
+      "卷11": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷11 良牙回家：良牙回自己家",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷11'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷11.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 130
+        }
+      },
+      "卷12": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷12 校长回来了：九能校长带着剃发校规回来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷12'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷12.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 131
+        }
+      },
+      "卷13": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷13 飞龙升天破：八宝斋对乱马下了贫力虚脱灸，乱马功力全失",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷13'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷13.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 132
+        }
+      },
+      "卷14": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷14 猫魔铃：猫魔铃落到乱马手里",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷14'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷14.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 133
+        }
+      },
+      "卷15": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷15 龙之鬚：龙之鬚被人盯上",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷15'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷15.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 134
+        }
+      },
+      "卷16": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷16 温泉二人三足：温泉村办脚击二人三足赛跑，奖品是咒泉乡旅游资格",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷16'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷16.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 135
+        }
+      },
+      "插曲01": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲01 寝昆仑大决战：骑象少女带来的经卷被抢，天道茜被掳走",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲01'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲01.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 136
+        }
+      },
+      "卷17": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷17 姐姐的心情：天道靡把婚约搅进来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷17'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷17.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 137
+        }
+      },
+      "卷18": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷18 咒泉乡来的恶魔：裤袜太郎抓走天道茜",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷18'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷18.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 138
+        }
+      },
+      "卷19": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷19 假的夫妇：右京搬进乱马的房间",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷19'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷19.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 139
+        }
+      },
+      "卷20": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷20 狮子咆哮弹：良牙修得狮子咆哮弹，来找乱马算账",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷20'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷20.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 140
+        }
+      },
+      "插曲02": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲02 决战桃幻乡：天道家度假时女生接连失踪",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲02'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲02.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 141
+        }
+      },
+      "卷21": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷21 幸福樱花印：幸福樱花印的说法在镇上传开",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷21'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷21.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 142
+        }
+      },
+      "卷22": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷22 乱马见母亲：早乙女佳香找上门来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷22'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷22.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 143
+        }
+      },
+      "卷23": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷23 裤袜太郎的逆袭：裤袜太郎带着章鱼溺泉第二次来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷23'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷23.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 144
+        }
+      },
+      "插曲03": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲03 珊璞暴变反转宝珠：反转宝珠落到相关的人手里，性格整个翻过来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲03'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲03.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 145
+        }
+      },
+      "卷24": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷24 宝来山止水桶与开水壶：哈浦为解止水桶的固定来夺开水壶",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷24'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷24.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 146
+        }
+      },
+      "插曲04": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲04 天道家混乱的圣诞节：圣诞节到了，一群人凑在一起",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲04'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲04.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 147
+        }
+      },
+      "卷25": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷25 史上最强的女人：风林馆来了新班导二宫雏子",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷25'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷25.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 148
+        }
+      },
+      "插曲05": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲05 妈妈的味道由我守护：天道茜与乱马为一道菜较劲",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲05'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲05.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 149
+        }
+      },
+      "卷26": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷26 生命之水：流幻泽的生命之水出了问题",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷26'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷26.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 150
+        }
+      },
+      "插曲06": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲06 身材剧变的雏子老师：二宫雏子的形态出了状况",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲06'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲06.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 151
+        }
+      },
+      "卷27": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷27 破恋洞的诅咒：破恋洞的传闻在镇上流传开",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷27'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷27.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 152
+        }
+      },
+      "卷28": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷28 海千拳与山千拳：公纹龙假冒乱马住进早乙女家",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷28'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷28.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 153
+        }
+      },
+      "卷29": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷29 毒草的森林：砒珂与琳珂来取珊璞的性命",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷29'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷29.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 154
+        }
+      },
+      "卷30": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷30 良牙的春天：良牙遇上云龙明",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷30'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷30.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 155
+        }
+      },
+      "卷31": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷31 蝴蝶乱舞：乐京斋为夺回锦乃蝶而来",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷31'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷31.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 156
+        }
+      },
+      "卷32": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷32 力之源：蕗珠为找力之源追到日本",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷32'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷32.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 157
+        }
+      },
+      "卷33": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷33 岁月菇：岁月菇被人误食",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷33'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷33.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 158
+        }
+      },
+      "卷34": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷34 微笑三年必杀技：九能校长的校规又来了",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷34'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷34.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 159
+        }
+      },
+      "插曲07": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲07 邪恶之鬼：鬼出现了",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲07'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲07.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 160
+        }
+      },
+      "卷35": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷35 两个乱马：魔镜里出来一个女相乱马",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷35'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷35.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 161
+        }
+      },
+      "插曲08": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "插曲08 两个小茜：出现了第二个天道茜",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '插曲08'"
+          },
+          {
+            "file": "世界书/时间线/节点/插曲08.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 162
+        }
+      },
+      "卷36": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷36 乱马切腹：玄马的切腹誓约被推到台面",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷36'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷36.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 163
+        }
+      },
+      "卷37": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷37 来自咒泉乡的使者：蒲兰慕来报咒泉乡有危险，凤凰山一族来抢地图",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷37'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷37.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 164
+        }
+      },
+      "卷38": {
+        "scope": "specific",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "卷38 凤凰与龙：关上凤凰水龙头，打开龙头水，救回天道茜",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.当前节点', { defaults: '卷01' }) === '卷38'"
+          },
+          {
+            "file": "世界书/时间线/节点/卷38.yaml"
+          }
+        ],
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 165
+        }
+      }
+    },
+    "地理": {
+      "地理速览": {
+        "path": "世界书/地理/地理速览.yaml",
+        "scope": "catalog",
+        "part": "region",
+        "keywords": [],
+        "abstract": "全部区域与场景的速览名单，按练马区、中国青海、篇章地点、剧场版舞台分组",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        }
+      },
+      "练马区": {
+        "path": "世界书/地理/练马区.yaml",
+        "part": "region",
+        "keywords": [],
+        "abstract": "范围: 东京都练马区。故事的主舞台",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 60
+        }
+      },
+      "天道道场": {
+        "path": "世界书/地理/天道道场.yaml",
+        "part": "scene",
+        "keywords": [],
+        "abstract": "位置: 练马区。无差别格斗天道流本家",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 61
+        }
+      },
+      "风林馆高中": {
+        "path": "世界书/地理/风林馆高中.yaml",
+        "part": "scene",
+        "keywords": [],
+        "abstract": "位置: 练马区",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 62
+        }
+      },
+      "猫饭店": {
+        "path": "世界书/地理/猫饭店.yaml",
+        "part": "scene",
+        "keywords": [],
+        "abstract": "位置: 练马区，天道道场附近",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 63
+        }
+      },
+      "宝来山": {
+        "path": "世界书/地理/宝来山.yaml",
+        "part": "scene",
+        "keywords": [],
+        "abstract": "位置: 练马区郊外的山",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 64
+        }
+      },
+      "咒泉乡": {
+        "path": "世界书/地理/咒泉乡.yaml",
+        "part": "region",
+        "keywords": [],
+        "abstract": "位置: 中国青海省巴颜喀拉山脉拳精山中",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 65
+        }
+      },
+      "咒泉洞": {
+        "path": "世界书/地理/咒泉洞.yaml",
+        "part": "scene",
+        "keywords": [],
+        "abstract": "位置: 咒泉乡的水源地",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 66
+        }
+      },
+      "凤凰山": {
+        "path": "世界书/地理/凤凰山.yaml",
+        "part": "region",
+        "keywords": [],
+        "abstract": "位置: 中国青海省，拳精山以南",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 67
+        }
+      },
+      "女杰族村": {
+        "path": "世界书/地理/女杰族村.yaml",
+        "part": "region",
+        "keywords": [],
+        "abstract": "位置: 中国山中，离咒泉乡不远",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 68
+        }
+      },
+      "麝香王朝": {
+        "path": "世界书/地理/麝香王朝.yaml",
+        "part": "region",
+        "keywords": [],
+        "abstract": "位置: 中国深山",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 69
+        }
+      },
+      "天道道场势力": {
+        "path": "世界书/地理/势力/天道道场.yaml",
+        "part": "faction",
+        "keywords": [],
+        "abstract": "性质: 无差别格斗天道流的一家",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 70
+        }
+      },
+      "女杰族": {
+        "path": "世界书/地理/势力/女杰族.yaml",
+        "part": "faction",
+        "keywords": [],
+        "abstract": "性质: 中国的女性武斗民族",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 71
+        }
+      },
+      "凤凰山一族": {
+        "path": "世界书/地理/势力/凤凰山一族.yaml",
+        "part": "faction",
+        "keywords": [],
+        "abstract": "性质: 鸟人王族",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 72
+        }
+      },
+      "麝香王朝势力": {
+        "path": "世界书/地理/势力/麝香王朝.yaml",
+        "part": "faction",
+        "keywords": [],
+        "abstract": "性质: 千年男性武斗集团",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 73
+        }
+      }
+    },
+    "角色": {
+      "角色速览": {
+        "path": "世界书/角色/角色速览.yaml",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "全体登场角色速览，含身份一句话与所属溺泉，供 AI 认人",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 105
+        }
+      },
+      "早乙女乱马_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "早乙女乱马",
+          "乱马",
+          "辫子姑娘"
+        ],
+        "abstract": "早乙女乱马的基础档案：姓名: 早乙女乱马",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['早乙女乱马', '乱马', '辫子姑娘'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"早乙女乱马\">"
+          },
+          {
+            "file": "世界书/角色/早乙女乱马/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "早乙女乱马",
+            "乱马",
+            "辫子姑娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 200
+        }
+      },
+      "天道茜_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "天道茜",
+          "小茜"
+        ],
+        "abstract": "天道茜的基础档案：姓名: 天道茜",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道茜', '小茜'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"天道茜\">"
+          },
+          {
+            "file": "世界书/角色/天道茜/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道茜",
+            "小茜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 201
+        }
+      },
+      "天道靡_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "天道靡",
+          "小靡"
+        ],
+        "abstract": "天道靡的基础档案：姓名: 天道靡",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道靡', '小靡'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"天道靡\">"
+          },
+          {
+            "file": "世界书/角色/天道靡/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道靡",
+            "小靡"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 202
+        }
+      },
+      "天道霞_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "天道霞",
+          "小霞"
+        ],
+        "abstract": "天道霞的基础档案：姓名: 天道霞",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道霞', '小霞'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"天道霞\">"
+          },
+          {
+            "file": "世界书/角色/天道霞/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道霞",
+            "小霞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 203
+        }
+      },
+      "早乙女玄马_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "早乙女玄马",
+          "玄马"
+        ],
+        "abstract": "早乙女玄马的基础档案：姓名: 早乙女玄马",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['早乙女玄马', '玄马'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"早乙女玄马\">"
+          },
+          {
+            "file": "世界书/角色/早乙女玄马/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "早乙女玄马",
+            "玄马"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 204
+        }
+      },
+      "响良牙_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "响良牙",
+          "良牙"
+        ],
+        "abstract": "响良牙的基础档案：姓名: 响良牙",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['响良牙', '良牙'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"响良牙\">"
+          },
+          {
+            "file": "世界书/角色/响良牙/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "响良牙",
+            "良牙"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 205
+        }
+      },
+      "珊璞_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "珊璞",
+          "香波"
+        ],
+        "abstract": "珊璞的基础档案：姓名: 珊璞",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['珊璞', '香波'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"珊璞\">"
+          },
+          {
+            "file": "世界书/角色/珊璞/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "珊璞",
+            "香波"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 206
+        }
+      },
+      "久远寺右京_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "久远寺右京",
+          "右京"
+        ],
+        "abstract": "久远寺右京的基础档案：姓名: 久远寺右京",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['久远寺右京', '右京'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"久远寺右京\">"
+          },
+          {
+            "file": "世界书/角色/久远寺右京/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "久远寺右京",
+            "右京"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 207
+        }
+      },
+      "九能带刀_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "九能带刀",
+          "带刀"
+        ],
+        "abstract": "九能带刀的基础档案：姓名: 九能带刀",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['九能带刀', '带刀'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"九能带刀\">"
+          },
+          {
+            "file": "世界书/角色/九能带刀/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "九能带刀",
+            "带刀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 208
+        }
+      },
+      "九能小太刀_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "九能小太刀",
+          "小太刀"
+        ],
+        "abstract": "九能小太刀的基础档案：姓名: 九能小太刀",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['九能小太刀', '小太刀'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"九能小太刀\">"
+          },
+          {
+            "file": "世界书/角色/九能小太刀/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "九能小太刀",
+            "小太刀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 209
+        }
+      },
+      "可伦_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "可伦"
+        ],
+        "abstract": "可伦的基础档案：姓名: 可伦",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['可伦'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"可伦\">"
+          },
+          {
+            "file": "世界书/角色/可伦/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "可伦"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 210
+        }
+      },
+      "哈浦_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "哈浦"
+        ],
+        "abstract": "哈浦的基础档案：姓名: 哈浦",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['哈浦'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"哈浦\">"
+          },
+          {
+            "file": "世界书/角色/哈浦/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "哈浦"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 211
+        }
+      },
+      "八宝斋_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "八宝斋",
+          "八宝齐"
+        ],
+        "abstract": "八宝斋的基础档案：姓名: 八宝斋",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['八宝斋', '八宝齐'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_basic character=\"八宝斋\">"
+          },
+          {
+            "file": "世界书/角色/八宝斋/基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "八宝斋",
+            "八宝齐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 212
+        }
+      },
+      "主角": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "主角",
+          "玩家角色"
+        ],
+        "abstract": "主角模板与可选身份：",
+        "contents": [
+          {
+            "content": "@@if true"
+          },
+          {
+            "content": "---\n<character_basic character=\"主角\">"
+          },
+          {
+            "file": "世界书/角色/主角.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "主角",
+            "玩家角色"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 213
+        }
+      },
+      "早乙女乱马_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "早乙女乱马",
+          "乱马",
+          "辫子姑娘"
+        ],
+        "abstract": "早乙女乱马的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['早乙女乱马', '乱马', '辫子姑娘'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"早乙女乱马\">"
+          },
+          {
+            "file": "世界书/角色/早乙女乱马/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "早乙女乱马",
+            "乱马",
+            "辫子姑娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 220
+        }
+      },
+      "天道茜_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "天道茜",
+          "小茜"
+        ],
+        "abstract": "天道茜的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道茜', '小茜'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"天道茜\">"
+          },
+          {
+            "file": "世界书/角色/天道茜/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道茜",
+            "小茜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 221
+        }
+      },
+      "天道靡_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "天道靡",
+          "小靡"
+        ],
+        "abstract": "天道靡的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道靡', '小靡'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"天道靡\">"
+          },
+          {
+            "file": "世界书/角色/天道靡/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道靡",
+            "小靡"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 222
+        }
+      },
+      "天道霞_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "天道霞",
+          "小霞"
+        ],
+        "abstract": "天道霞的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道霞', '小霞'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"天道霞\">"
+          },
+          {
+            "file": "世界书/角色/天道霞/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道霞",
+            "小霞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 223
+        }
+      },
+      "早乙女玄马_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "早乙女玄马",
+          "玄马"
+        ],
+        "abstract": "早乙女玄马的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['早乙女玄马', '玄马'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"早乙女玄马\">"
+          },
+          {
+            "file": "世界书/角色/早乙女玄马/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "早乙女玄马",
+            "玄马"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 224
+        }
+      },
+      "响良牙_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "响良牙",
+          "良牙"
+        ],
+        "abstract": "响良牙的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['响良牙', '良牙'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"响良牙\">"
+          },
+          {
+            "file": "世界书/角色/响良牙/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "响良牙",
+            "良牙"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 225
+        }
+      },
+      "珊璞_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "珊璞",
+          "香波"
+        ],
+        "abstract": "珊璞的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['珊璞', '香波'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"珊璞\">"
+          },
+          {
+            "file": "世界书/角色/珊璞/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "珊璞",
+            "香波"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 226
+        }
+      },
+      "久远寺右京_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "久远寺右京",
+          "右京"
+        ],
+        "abstract": "久远寺右京的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['久远寺右京', '右京'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"久远寺右京\">"
+          },
+          {
+            "file": "世界书/角色/久远寺右京/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "久远寺右京",
+            "右京"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 227
+        }
+      },
+      "九能带刀_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "九能带刀",
+          "带刀"
+        ],
+        "abstract": "九能带刀的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['九能带刀', '带刀'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"九能带刀\">"
+          },
+          {
+            "file": "世界书/角色/九能带刀/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "九能带刀",
+            "带刀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 228
+        }
+      },
+      "九能小太刀_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "九能小太刀",
+          "小太刀"
+        ],
+        "abstract": "九能小太刀的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['九能小太刀', '小太刀'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"九能小太刀\">"
+          },
+          {
+            "file": "世界书/角色/九能小太刀/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "九能小太刀",
+            "小太刀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 229
+        }
+      },
+      "可伦_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "可伦"
+        ],
+        "abstract": "可伦的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['可伦'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"可伦\">"
+          },
+          {
+            "file": "世界书/角色/可伦/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "可伦"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 230
+        }
+      },
+      "哈浦_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "哈浦"
+        ],
+        "abstract": "哈浦的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['哈浦'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"哈浦\">"
+          },
+          {
+            "file": "世界书/角色/哈浦/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "哈浦"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 231
+        }
+      },
+      "八宝斋_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "八宝斋",
+          "八宝齐"
+        ],
+        "abstract": "八宝斋的性格调色盘：底色、主色调、点缀与衍生",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['八宝斋', '八宝齐'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_personality character=\"八宝斋\">"
+          },
+          {
+            "file": "世界书/角色/八宝斋/性格调色盘.yaml"
+          },
+          {
+            "content": "</character_personality>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "八宝斋",
+            "八宝齐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 232
+        }
+      },
+      "早乙女乱马_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "早乙女乱马",
+          "乱马",
+          "辫子姑娘"
+        ],
+        "abstract": "早乙女乱马的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['早乙女乱马', '乱马', '辫子姑娘'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"早乙女乱马\">"
+          },
+          {
+            "file": "世界书/角色/早乙女乱马/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "早乙女乱马",
+            "乱马",
+            "辫子姑娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 240
+        }
+      },
+      "天道茜_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "天道茜",
+          "小茜"
+        ],
+        "abstract": "天道茜的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['天道茜', '小茜'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"天道茜\">"
+          },
+          {
+            "file": "世界书/角色/天道茜/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道茜",
+            "小茜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 241
+        }
+      },
+      "响良牙_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "响良牙",
+          "良牙"
+        ],
+        "abstract": "响良牙的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['响良牙', '良牙'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"响良牙\">"
+          },
+          {
+            "file": "世界书/角色/响良牙/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "响良牙",
+            "良牙"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 242
+        }
+      },
+      "珊璞_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "珊璞",
+          "香波"
+        ],
+        "abstract": "珊璞的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['珊璞', '香波'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"珊璞\">"
+          },
+          {
+            "file": "世界书/角色/珊璞/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "珊璞",
+            "香波"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 243
+        }
+      },
+      "久远寺右京_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "久远寺右京",
+          "右京"
+        ],
+        "abstract": "久远寺右京的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['久远寺右京', '右京'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"久远寺右京\">"
+          },
+          {
+            "file": "世界书/角色/久远寺右京/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "久远寺右京",
+            "右京"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 244
+        }
+      },
+      "九能带刀_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "九能带刀",
+          "带刀"
+        ],
+        "abstract": "九能带刀的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['九能带刀', '带刀'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"九能带刀\">"
+          },
+          {
+            "file": "世界书/角色/九能带刀/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "九能带刀",
+            "带刀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 245
+        }
+      },
+      "哈浦_三面性": {
+        "scope": "specific",
+        "part": "tri_faceted",
+        "keywords": [
+          "哈浦"
+        ],
+        "abstract": "哈浦的三面性：每面的触发条件、能量、语料、身体行为与功能，含过渡与渗透",
+        "contents": [
+          {
+            "content": "@@if matchChatMessages(['哈浦'], { start: 0 })"
+          },
+          {
+            "content": "---\n<character_tri_faceted character=\"哈浦\">"
+          },
+          {
+            "file": "世界书/角色/哈浦/三面性.yaml"
+          },
+          {
+            "content": "</character_tri_faceted>"
+          }
+        ],
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "哈浦"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 246
+        }
+      }
+    },
+    "NPC": {
+      "NPC_天道家与早乙女家": {
+        "path": "世界书/NPC/天道家与早乙女家.yaml",
+        "keywords": [
+          "天道早云",
+          "早乙女佳香"
+        ],
+        "abstract": "天道家与早乙女家：天道早云、早乙女佳香 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天道早云",
+            "早乙女佳香"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 300
+        }
+      },
+      "NPC_中国组": {
+        "path": "世界书/NPC/中国组.yaml",
+        "keywords": [
+          "沐丝",
+          "裤袜太郎",
+          "蕗珠"
+        ],
+        "abstract": "中国组：沐丝、裤袜太郎、蕗珠 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "沐丝",
+            "裤袜太郎",
+            "蕗珠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 301
+        }
+      },
+      "NPC_咒泉乡": {
+        "path": "世界书/NPC/咒泉乡.yaml",
+        "keywords": [
+          "咒泉乡导游",
+          "蒲兰慕"
+        ],
+        "abstract": "咒泉乡：咒泉乡导游、蒲兰慕 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "咒泉乡导游",
+            "蒲兰慕"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 302
+        }
+      },
+      "NPC_风林馆": {
+        "path": "世界书/NPC/风林馆.yaml",
+        "keywords": [
+          "九能校长",
+          "五寸钉光",
+          "二宫雏子",
+          "小乃东风"
+        ],
+        "abstract": "风林馆：九能校长、五寸钉光、二宫雏子、小乃东风 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "九能校长",
+            "五寸钉光",
+            "二宫雏子",
+            "小乃东风"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 303
+        }
+      },
+      "NPC_篇章角色": {
+        "path": "世界书/NPC/篇章角色.yaml",
+        "keywords": [
+          "大文字煎太郎",
+          "大文字家元",
+          "都大路茶月",
+          "三千院帝",
+          "白鸟梓",
+          "今条真理子",
+          "鹭宫飞鸟",
+          "明神隼人",
+          "皮可莱特",
+          "小夏",
+          "公纹龙",
+          "火车王",
+          "真之介",
+          "红翼",
+          "牌王",
+          "镜女乱马",
+          "镜乱马"
+        ],
+        "abstract": "篇章角色：大文字煎太郎、大文字家元、都大路茶月、三千院帝 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "大文字煎太郎",
+            "大文字家元",
+            "都大路茶月",
+            "三千院帝",
+            "白鸟梓",
+            "今条真理子",
+            "鹭宫飞鸟",
+            "明神隼人",
+            "皮可莱特",
+            "小夏",
+            "公纹龙",
+            "火车王",
+            "真之介",
+            "红翼",
+            "牌王",
+            "镜女乱马",
+            "镜乱马"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 304
+        }
+      },
+      "NPC_云龙家与稀客": {
+        "path": "世界书/NPC/云龙家与稀客.yaml",
+        "keywords": [
+          "云龙明",
+          "胜锦",
+          "乐京斋",
+          "蛙仙人",
+          "金尼",
+          "南条亚里沙",
+          "小介",
+          "与太郎",
+          "洒水婆婆"
+        ],
+        "abstract": "云龙家与稀客：云龙明、胜锦、乐京斋、蛙仙人 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "云龙明",
+            "胜锦",
+            "乐京斋",
+            "蛙仙人",
+            "金尼",
+            "南条亚里沙",
+            "小介",
+            "与太郎",
+            "洒水婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 305
+        }
+      },
+      "NPC_动画原创": {
+        "path": "世界书/NPC/动画原创.yaml",
+        "keywords": [
+          "铃铃",
+          "兰兰",
+          "猿隐佐助",
+          "大黑香织",
+          "雷门手鞠",
+          "杨贵妃",
+          "武藏小金",
+          "珍玄斋",
+          "绿小姐",
+          "未央",
+          "小乃绢",
+          "春卷",
+          "大德寺"
+        ],
+        "abstract": "动画原创：铃铃、兰兰、猿隐佐助、大黑香织 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃铃",
+            "兰兰",
+            "猿隐佐助",
+            "大黑香织",
+            "雷门手鞠",
+            "杨贵妃",
+            "武藏小金",
+            "珍玄斋",
+            "绿小姐",
+            "未央",
+            "小乃绢",
+            "春卷",
+            "大德寺"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 306
+        }
+      },
+      "NPC_凤凰山": {
+        "path": "世界书/NPC/凤凰山.yaml",
+        "keywords": [
+          "萨夫郎",
+          "纪玛",
+          "柯尔玛",
+          "马飒拉"
+        ],
+        "abstract": "凤凰山：萨夫郎、纪玛、柯尔玛、马飒拉 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "萨夫郎",
+            "纪玛",
+            "柯尔玛",
+            "马飒拉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 307
+        }
+      },
+      "NPC_麝香王朝": {
+        "path": "世界书/NPC/麝香王朝.yaml",
+        "keywords": [
+          "来睦",
+          "敏杜"
+        ],
+        "abstract": "麝香王朝：来睦、敏杜 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "来睦",
+            "敏杜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 308
+        }
+      },
+      "NPC_女杰族": {
+        "path": "世界书/NPC/女杰族.yaml",
+        "keywords": [
+          "砒珂",
+          "琳珂"
+        ],
+        "abstract": "女杰族：砒珂、琳珂 等",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "砒珂",
+            "琳珂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 309
+        }
+      }
+    },
+    "阶段指导": {
+      "咒泉乡主线": {
+        "path": "世界书/阶段指导/咒泉乡主线.yaml",
+        "keywords": [],
+        "abstract": "主持目标:",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 1
+        }
+      }
+    },
+    "事件": {
+      "溺泉图鉴_人": {
+        "keywords": [
+          "娘溺泉",
+          "男溺泉",
+          "童子溺泉",
+          "和尚溺泉"
+        ],
+        "abstract": "溺泉图鉴_人：娘溺泉: 一千五百年前有个年轻女子溺死。变年轻女子。中招的是早乙女乱马与哈浦",
+        "path": "世界书/事件/溺泉图鉴_人.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "娘溺泉",
+            "男溺泉",
+            "童子溺泉",
+            "和尚溺泉"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 2
+        }
+      },
+      "溺泉图鉴_兽": {
+        "keywords": [
+          "熊猫溺泉",
+          "黑豚溺泉",
+          "猫溺泉",
+          "鸭子溺泉"
+        ],
+        "abstract": "溺泉图鉴_兽：熊猫溺泉: 两千年前有只熊猫溺死。变熊猫。中招的是早乙女玄马",
+        "path": "世界书/事件/溺泉图鉴_兽.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "熊猫溺泉",
+            "黑豚溺泉",
+            "猫溺泉",
+            "鸭子溺泉"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 3
+        }
+      },
+      "溺泉图鉴_异物": {
+        "keywords": [
+          "牛鹤鳗毛人溺泉",
+          "章鱼溺泉",
+          "双胞胎溺泉",
+          "阿修罗溺泉"
+        ],
+        "abstract": "溺泉图鉴_异物：牛鹤鳗毛人溺泉: 两千五百年前有鳗鱼、鹤和骑着牛的雪人同时溺死。变牛头、雪人躯干",
+        "path": "世界书/事件/溺泉图鉴_异物.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "牛鹤鳗毛人溺泉",
+            "章鱼溺泉",
+            "双胞胎溺泉",
+            "阿修罗溺泉"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 4
+        }
+      },
+      "溺泉图鉴_细则": {
+        "keywords": [
+          "叠泉",
+          "模板泉",
+          "瓶装泉水"
+        ],
+        "abstract": "溺泉图鉴_细则：叠泉: 诅咒可以叠。先掉一眼再掉另一眼，两种形态合在一起。裤袜太郎就是牛鹤鳗毛人",
+        "path": "世界书/事件/溺泉图鉴_细则.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "叠泉",
+            "模板泉",
+            "瓶装泉水"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 5
+        }
+      },
+      "剧场版与OVA": {
+        "keywords": [
+          "寝昆仑",
+          "桃幻乡",
+          "反转宝珠",
+          "圣诞节"
+        ],
+        "abstract": "剧场版与OVA：院线三部:",
+        "path": "世界书/事件/剧场版与OVA.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "寝昆仑",
+            "桃幻乡",
+            "反转宝珠",
+            "圣诞节"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 6
+        }
+      },
+      "破恋洞": {
+        "keywords": [
+          "破恋洞",
+          "分手的出口"
+        ],
+        "abstract": "破恋洞：是什么: 一个洞。一起进去的情侣必定分手",
+        "path": "世界书/事件/破恋洞.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "破恋洞",
+            "分手的出口"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 7
+        }
+      },
+      "镜像与分身": {
+        "keywords": [
+          "镜女乱马",
+          "两个小茜",
+          "公纹龙"
+        ],
+        "abstract": "镜像与分身：镜女乱马: 镜屋里那面魔镜投出来的女相乱马。她是独立人格，对冷热水都没有反应。迷",
+        "path": "世界书/事件/镜像与分身.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "镜女乱马",
+            "两个小茜",
+            "公纹龙"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 8
+        }
+      },
+      "咒泉洞争夺战": {
+        "keywords": [
+          "咒泉洞",
+          "月涡蛇",
+          "金蛇环"
+        ],
+        "abstract": "咒泉洞争夺战：起因: 卷三十七，蒲兰慕来日本报信，咒泉乡的泉水正在干。凤凰山一族同时派人来抢水",
+        "path": "世界书/事件/咒泉洞争夺战.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "咒泉洞",
+            "月涡蛇",
+            "金蛇环"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 9
+        }
+      },
+      "止水桶与开水壶": {
+        "keywords": [
+          "止水桶",
+          "开水壶",
+          "龙精飞翔"
+        ],
+        "abstract": "止水桶与开水壶：止水桶: 麝香王朝的秘宝。用它打的水叫定貌之水，泼中即永久锁定当前形态，热水无效",
+        "path": "世界书/事件/止水桶与开水壶.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "止水桶",
+            "开水壶",
+            "龙精飞翔"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 10
+        }
+      },
+      "佳香相认": {
+        "keywords": [
+          "早乙女佳香",
+          "切腹誓约",
+          "母亲的礼物"
+        ],
+        "abstract": "佳香相认：起因: 卷二十二，早乙女佳香找上门来。乱马从记事前就跟着父亲在外流浪，不记得母亲",
+        "path": "世界书/事件/佳香相认.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "早乙女佳香",
+            "切腹誓约",
+            "母亲的礼物"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 11
+        }
+      },
+      "格斗新体操": {
+        "keywords": [
+          "格斗新体操",
+          "九能小太刀",
+          "今条真理子"
+        ],
+        "abstract": "格斗新体操：规则: 彩带、棍棒、呼啦圈都是武器。动作必须像成套动作，落点必须像打架",
+        "path": "世界书/事件/格斗新体操.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "格斗新体操",
+            "九能小太刀",
+            "今条真理子"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 12
+        }
+      },
+      "格斗茶道": {
+        "keywords": [
+          "格斗茶道",
+          "大文字煎太郎",
+          "都大路茶月"
+        ],
+        "abstract": "格斗茶道：规则: 用茶釜、柄杓、茶杓打。边点茶边攻防",
+        "path": "世界书/事件/格斗茶道.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "格斗茶道",
+            "大文字煎太郎",
+            "都大路茶月"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 13
+        }
+      },
+      "格斗滑冰": {
+        "keywords": [
+          "格斗滑冰",
+          "三千院帝",
+          "白鸟梓"
+        ],
+        "abstract": "格斗滑冰：规则: 冰上双人项目。冰刀、彩带都是兵器。摔出冰面算输",
+        "path": "世界书/事件/格斗滑冰.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "格斗滑冰",
+            "三千院帝",
+            "白鸟梓"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 14
+        }
+      },
+      "女杰族月报": {
+        "keywords": [
+          "女杰族月报",
+          "女杰族经"
+        ],
+        "abstract": "女杰族月报：是什么: 女杰族的内部报刊。族里的大小事都登在上面",
+        "path": "世界书/事件/女杰族月报.yaml",
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "女杰族月报",
+            "女杰族经"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 15
+        }
+      }
+    },
+    "MVU": {}
+  },
+  "typeLists": {
+    "before_char": [
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": true
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "事件": 0,
+    "地理": {
+      "faction": {
+        "threshold": 4,
+        "required": false
+      },
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "世界观": "Infinity",
+    "阶段指导": "Infinity"
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "",
+  "first_messages": [],
+  "creator": "",
+  "creator_notes": "",
+  "version": "1.0",
+  "create_date": "2026-09-22T02:15:56.187Z"
+}

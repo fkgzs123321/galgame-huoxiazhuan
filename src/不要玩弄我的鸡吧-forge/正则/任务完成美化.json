@@ -1,0 +1,15 @@
+{
+  "id": "fjb-task-complete-beautify",
+  "scriptName": "任务完成美化",
+  "findRegex": "/<TaskComplete\\s+name=\"([^\"]+)\"\\s+reward=\"([^\"]+)\"\\s+result=\"([^\"]+)\"\\/>/g",
+  "replaceString": "<div class=\"fjb-taskcomplete\"><div class=\"fjb-taskcomplete-icon\">✓</div><div class=\"fjb-taskcomplete-body\"><div class=\"fjb-taskcomplete-title\">任务完成 · $1</div><div class=\"fjb-taskcomplete-reward\">奖励 · $2</div><div class=\"fjb-taskcomplete-result\">$3</div></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

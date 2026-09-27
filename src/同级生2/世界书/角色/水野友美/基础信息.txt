@@ -1,0 +1,159 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 水野友美 · 基础信息
+   ════════════════════════════════════════════════════════════
+   heroine_id=8 / 原版经典女角 · 青梅竹马线
+   互斥关系：无严格互斥，与鸣泽唯（同居义妹）存在隐性竞争
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 水野友美_INFO = {
+  heroine_id: 8,
+  name: '水野友美',
+  romanization: 'Mizuno Tomomi',
+  age: 18,
+  blood_type: 'B',
+  identity: '八十八学园三年生，主角青梅竹马，邻居',
+  relationship: '主角青梅竹马，从小一起长大，暗恋主角多年但未表白；转校生路线中作为房东女儿与主角同住',
+  home: '水野家（主角家隔壁；转校生路线中主角借住此家）',
+  birthday: '07-20',
+  height: 160,
+  weight: 48,
+  three_size: 'B80-W58-H84',
+  cv_implied: '元气少女声线，明亮清脆略带沙哑',
+
+  appearance: {
+    hair: '黑色短发齐肩，发尾微卷自然翘起，刘海偏分露出额头',
+    eyes: '明亮大眼睛，眼色深棕，眼神灵动带笑意',
+    body: '身材匀称健康偏运动型，腰线紧致，臀部翘挺，皮肤健康麦色',
+    feature: '笑起来左颊有一个浅酒窝；右手腕内侧有一道童年爬树留下的浅疤',
+    clothing_default: '校服穿得松松垮垮：领带歪斜、衬衫下摆常漏出一角、裙摆及膝偏短；课外常配运动外套、网球裙与彩色发圈'
+  },
+
+  personality: {
+    mbti: 'ESFP',
+    tags: ['元气青梅', '暗恋未表白', '哥们儿伪装'],
+    public_face: '爽朗的青梅竹马，与主角称兄道弟',
+    social_face: '偶尔流露少女心，会因主角与其他女角亲近而吃醋',
+    intimate_face: '暗恋多年的情感倾泻，怕失去主角的脆弱'
+  },
+
+  preferences: {
+    like_food: ['汉堡包', '奶昔', '运动饮料'],
+    hate_food: ['纳豆', '洋葱'],
+    hobby: ['网球', '购物', '看动漫'],
+    gift_pref: ['运动护腕', '流行CD', '可爱发卡', '保育绘本'],
+    topic_pref: ['童年回忆', '动漫', '网球', '学校趣事']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '无严格互斥，与鸣泽唯（同居义妹）存在隐性竞争——唯是同居义妹，友美是青梅竹马',
+    family: '父母（水野家房东，转校生路线中接待主角借住）',
+    friends: ['网球部成员', '同班同学', '主角（青梅竹马十年）']
+  },
+
+  strategy: {
+    initial_affection: 15,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 35,
+    best_approach: '需突破"哥们儿"框架，让她承认暗恋；直接表白成功率最高；日常可借童年回忆、网球、动漫话题拉近距离',
+    warning: '强迫亲密会让她崩溃（信任底子被破坏），触发"青梅竹马破裂"事件；友美嫉妒值针对鸣泽唯升高快（同居义妹的存在感）'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁青梅竹马/网球部：哥们儿伪装 + 多年暗恋，理论丰富实战空白
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'C',
+    bust_size: 80,
+    waist_size: 58,
+    hip_size: 84,
+    height: 160,
+    weight: 48,
+    // 胸部详细（6 列）— 网球训练的挺拔小胸
+    nipple_size: '小',
+    nipple_color: '粉嫩',
+    areola_size: '小',
+    breast_shape: '挺拔',
+    breast_sensitivity: 100,
+    lactation: '无',
+    // 腰部（2 列）— 网球训练的紧致腰线
+    waist_shape: '紧致',
+    waist_sensitivity: 110,
+    // 手部（2 列）— 运动磨损但修长
+    hand_desc: '手指修长，运动磨损',
+    nail_style: '素色',
+    // 臀部（3 列）— 网球训练的翘挺
+    hip_shape: '翘挺',
+    hip_sensitivity: 120,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，理论丰富实战空白
+    pubic_hair: '稀疏',
+    labia_size: '偏小',
+    labia_color: '粉嫩',
+    vaginal_tightness: '极紧',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 青梅竹马的熟悉感 + 暗恋的压抑
+    body_sensitivity: 110,
+    sensitive_zones: '颈侧,耳后,腰窝,右手腕疤处(童年爬树),左颊酒窝,发际线',
+    arousal_triggers: '童年回忆涌上,网球赛后,动漫情节,称兄道弟的肢体接触,雨后公寓独处,被直白表白'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 72,           // 魅力（外貌吸引力）
+    academic: 60,        // 学业（学习成绩）
+    physical: 55,        // 体力（体能/运动）
+    social: 55,          // 社交（交际能力）
+    perception: 60,      // 敏感（察言观色/直觉）
+    reputation: 65,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 30,        // 力量（物理对抗/搬运）
+    agility: 50,         // 敏捷（反应/逃跑）
+    intelligence: 60,    // 智力（解谜/计划）
+    will_skill: 50,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 50,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 45,         // 烹饪（料理）
+    art: 40,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 20,        // 格斗（防身）
+    observation: 55,     // 观察（情报收集）
+    romance_skill: 30    // 恋爱（约会/亲密推进）
+  }
+};
+%>
+
+水野友美 · 基础信息已加载。当前女角 heroine_id=8，互斥关系：无严格互斥，与鸣泽唯（同居义妹）存在隐性竞争。底色：元气青梅，核心矛盾为十年"哥们儿"框架与多年暗恋未表白的张力。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 水野友美_INFO.name %>（<%- 水野友美_INFO.age %>岁）
+- 身份: <%- 水野友美_INFO.identity %>
+- 关系: <%- 水野友美_INFO.relationship %>
+- 住所: <%- 水野友美_INFO.home %>
+<%_ if (水野友美_INFO.appearance) { _%>
+- 外貌: <%- [水野友美_INFO.appearance.hair, 水野友美_INFO.appearance.eyes, 水野友美_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (水野友美_INFO.personality) { _%>
+- 性格: <%- 水野友美_INFO.personality.tags ? 水野友美_INFO.personality.tags.join('、') : 水野友美_INFO.personality.public_face %>
+<%_ if (水野友美_INFO.personality.public_face) { _%>- 表面: <%- 水野友美_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (水野友美_INFO.personality.intimate_face) { _%>- 亲密面: <%- 水野友美_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (水野友美_INFO.preferences) { _%>- 喜好: <%- [(水野友美_INFO.preferences.like_food || []).join('/'), '爱好：' + (水野友美_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (水野友美_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(水野友美_INFO.relations) %>
+<%_ } _%>
+<%_ if (水野友美_INFO.strategy) { _%>- 攻略要点: <%- 水野友美_INFO.strategy.best_approach %>
+<%_ if (水野友美_INFO.strategy.warning) { _%>- 警告: <%- 水野友美_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

@@ -1,0 +1,1 @@
+const e=Date.UTC(2026,4,27);function t(e,t=0){return Number.isFinite(e)?Math.min(36,Math.max(t,Math.trunc(e))):t}function n(e,n={}){let r=Math.trunc(e);return n.includeLegacyThirtySix&&r===36?30:r===37?31:r===38?32:r>=39?36:t(r)}export{t as n,n as r,e as t};

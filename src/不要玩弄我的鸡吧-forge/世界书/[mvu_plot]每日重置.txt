@@ -1,0 +1,155 @@
+@@generate_before
+# [变量更新]每日重置
+# 策略：常驻
+
+<%
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var prev_day = Number(getvar('stat_data.隐藏层.上一日', {scope:'local', defaults:0})) || 0;
+// 首次加载时初始化 上一日，防止 hour=0 时误触发
+if (prev_day === 0) { setvar('stat_data.隐藏层.上一日', day, { scope: 'local' }); }
+var isNewDay = hour === 0 && day !== prev_day && prev_day !== 0;
+if (isNewDay) {
+  setvar('stat_data.隐藏层.上一日', day, { scope: 'local' });
+  // === 执行跨天重置 ===
+  // 1. 技能 今日已用 归零
+  ['冥想','锻炼','洞察','伪装','恢复','意志'].forEach(function(sk) {
+    setvar('stat_data.技能.' + sk + '.今日已用', 0, { scope: 'local' });
+  });
+  // 2. 当日使用次数归零 + 日经验归零
+  setvar('stat_data.使用阶段.今日使用', 0, { scope: 'local' });
+  setvar('stat_data.使用阶段.今日经验', 0, { scope: 'local' });
+  // 3. 精力夜间恢复（+20，不超上限）
+  var em = Number(getvar('stat_data.状态.精力上限', {scope:'local', defaults:80})) || 80;
+  var en = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) || 80;
+  setvar('stat_data.状态.精力', Math.min(em, en + 20), { scope: 'local' });
+  // 4. 理智夜间恢复（+10）
+  var sn = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+  setvar('stat_data.状态.理智', Math.min(100, sn + 10), { scope: 'local' });
+  // 5. 体力夜间恢复（+20，按8小时睡眠；理智≤20时恢复减半为+10）
+  var sm = Number(getvar('stat_data.状态.体力', {scope:'local', defaults:80})) || 80;
+  var snNow = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+  var staminaRecover = snNow <= 20 ? 10 : 20;
+  var smCap = Number(getvar('stat_data.状态.体力上限', {scope:'local', defaults:100})) || 100;
+  setvar('stat_data.状态.体力', Math.min(smCap, sm + staminaRecover), { scope: 'local' });
+  // 6. 健康恢复 +3，压力衰减 -5
+  var hl = Number(getvar('stat_data.状态.健康', {scope:'local', defaults:75})) || 75;
+  var st = Number(getvar('stat_data.状态.压力', {scope:'local', defaults:10})) || 10;
+  setvar('stat_data.状态.健康', Math.min(100, hl + 3), { scope: 'local' });
+  setvar('stat_data.状态.压力', Math.max(0, st - 5), { scope: 'local' });
+  // 7. 考试倒计时（下次考试：周考/月考/季考/模拟考）
+  var cd = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:7})) || 7;
+  if (cd > 0) {
+    setvar('stat_data.学业.考试倒计时', cd - 1, { scope: 'local' });
+  } else {
+    // 倒计时归零，重置为下一周期（默认周考7天，可根据考试期调整）
+    var examPeriod = getvar('stat_data.时间.考试期', {scope:'local', defaults:'无'}) || '无';
+    var nextCycle = 7; // 默认周考
+    if (examPeriod === '月考') nextCycle = 30;
+    else if (examPeriod === '季考') nextCycle = 90;
+    setvar('stat_data.学业.考试倒计时', nextCycle, { scope: 'local' });
+  }
+  // 8. 学习计数归零
+  setvar('stat_data.学业.今日学习次数', 0, { scope: 'local' });
+  // 9. 所有女性使用者 当日统计.今日已用 归零
+  var fu = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+  Object.keys(fu).forEach(function(uid) {
+    if (uid === 'UID顺序') return;
+    if (fu[uid] && typeof fu[uid] === 'object') {
+      setvar('stat_data.女性角色.' + uid + '.NSFW.当日统计.今日已用', 0, { scope: 'local' });
+    }
+  });
+  // 10. 每日购买次数归零（对应 每日购买 对象中的中文字段名）
+  setvar('stat_data.状态.每日购买', {
+    营养餐: 0, 功能饮料: 0, 维生素片: 0,
+    安眠药: 0, 高级补剂: 0, 特制药膳: 0,
+  }, { scope: 'local' });
+}
+%>
+
+[每日重置规则]
+
+<% if (isNewDay) { %>
+=== 跨天触发：进入新的一天（第<%= day %>天） ===
+<% } else { %>
+=== 等待跨天触发（当前 hour=<%= hour %>，跨天需 hour 从 23→0） ===
+<% } %>
+
+【跨天条件】
+当 时间.小时 从 23 跳转至 0 时（模拟时钟推进），触发新的一天。
+同时更新：时间.天数 += 1, 时间.星期 按序推进（周→周二→...→日→周一）
+
+【重置列表——跨天时执行以下所有操作】
+
+1. /技能/下所有 今日已用 归零
+   - /技能/冥想/今日已用 = 0
+   - /技能/锻炼/今日已用 = 0
+   - /技能/洞察/今日已用 = 0
+   - /技能/伪装/今日已用 = 0
+   - /技能/恢复/今日已用 = 0
+   - /技能/意志/今日已用 = 0
+   上限不变（今日上限保持不变）
+
+2. /使用阶段/今日使用 = 0
+   每天的使用次数重新计数
+
+3. stat_data.状态.精力 夜间自然恢复 +20
+   若入睡前采取了额外休息/早睡等行为，额外恢复 +10~20
+   恢复不超出 精力上限
+
+4. stat_data.状态.理智 夜间自然恢复 +10
+   若进行了睡前冥想，额外恢复 +5~10
+
+5. stat_data.状态.体力 夜间自然恢复 +20
+   按8小时睡眠，体力消耗更慢所以略高于精力
+   恢复不超出 体力上限（由难度决定：普通100/困难80/地狱60）
+   若理智<=20（精神萎靡），恢复效率减半 +10（详见 精力消耗计算.txt VII.体力联动规则）
+
+6. 所有女性使用者的 stat_data.女性角色.{uid}.NSFW.当日统计.今日已用 = 0
+   今日已用 用于限制同一女性每日使用频率
+
+7. stat_data.学业.今日学习次数 = 0
+   每天的学习次数重新计数
+
+8. stat_data.隐藏层.近期事件 清空（如果存在）
+   [注意] 事件 数组不空，它保持累计
+
+9. 重置女性使用者的 每日榨取精力 = 0
+   （可选跟踪字段，用于传播倾向判定）
+
+=== 下次考试倒计时 ===
+- /学业/考试倒计时 每日减1
+  - 当前倒计时：下次考试还有 ? 天（周考/月考/季考/模拟考）
+  - 当 考试倒计时 <= 0 时：考试触发，次日重置为下一周期
+    - 周考：重置为 7
+    - 月考：重置为 30
+    - 季考：重置为 90
+    - 模拟考：按日历设定
+  - 考试期间影响：精力消耗×1.3、使用频率上升、角色焦虑度增加
+
+=== 高考倒计时 ===
+- /时间/距高考天数 每日减1
+  - 当前倒计时：距高考还有 ? 天（需要读取实际变量）
+  - 当 距高考天数 <= 0 时：触发学业结局判定
+  - 学业结局判定：
+    - 若 学业.阶段 >= 4: 健康结局候选
+    - 若 学业.阶段 >= 3: 平庸结局候选
+    - 若 学业.阶段 < 3: 坠落结局候选
+
+=== 跨天时的状态跟踪更新 ===
+- 女性使用者连续使用追踪：
+  - 如果某女性今天没有被使用（今日使用 == 0）：
+    - her.连续使用天数 = 0（重置连续使用天数）
+  - 如果被使用了：her.连续使用天数 += 1
+    - 连续使用天数影响 her.传播.倾向（连续使用越久，传播倾向越高）
+
+=== 健康与恢复 ===
+- /状态/健康 每日自然恢复 +3（若 健康 < 100）
+- /状态/压力 每日自然衰减 -5（若 压力 > 0）
+- 如果当天被使用 >= 3 次：健康 恢复为0（消耗太大），压力 +10
+
+=== 疑似线索（每日自动刷新） ===
+这些线索每日早晨刷新，供AI在叙事中使用（如果怀疑值达到对应等级）：
+- 怀疑值 >= 50: "你昨晚又做梦了，但想不起内容，只记得腰很酸"
+- 怀疑值 >= 70: "你翻开记事本，发现这周的精力记录——周二四六的曲线像心电图"
+- 怀疑值 >= 90: "XXX今天又请假了。这是本月第几次了？你数了数——和你的'坏日子'对得上。"

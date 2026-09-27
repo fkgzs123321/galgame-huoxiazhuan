@@ -1,0 +1,253 @@
+-- ════════════════════════════════════════════════════════════
+-- 同级生2 SPV chatSheets 表格模板（11 表，基于 SQL_v4.3.json 扩展）
+-- 由"📦 创建同级生2表格模板"按钮脚本调用 AutoCardUpdaterAPI.createTables 注入
+-- AI 通过 <UpdateTable> 块输出 SQL 语句，SPV 扩展自动执行
+-- DDL 注释必须与表头一致，避免 SPV 解析告警
+-- 以验证过的 SQL_v4.3.json 11表为基底，表内增加同级生2专属字段
+-- ════════════════════════════════════════════════════════════
+
+-- ════════════════════════════════════════════════════════════
+-- 表 1：全局数据表（13 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE global_state ( -- 全局数据表
+  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1
+  current_location TEXT NOT NULL, -- 当前详细地点
+  current_minor_region TEXT NOT NULL, -- 当前次要地区
+  current_major_region TEXT NOT NULL, -- 当前主要地区
+  prev_scene_time TEXT CHECK(prev_scene_time IS NULL OR prev_scene_time GLOB '??-?? ??:??'), -- 上轮场景时间
+  elapsed_time TEXT NOT NULL, -- 经过的时间
+  cur_time TEXT NOT NULL CHECK(cur_time GLOB '??-?? ??:??'), -- 当前时间
+  day_count INTEGER NOT NULL DEFAULT 1 CHECK(day_count BETWEEN 1 AND 17), -- 寒假累计天数
+  time_slot TEXT NOT NULL DEFAULT '早' CHECK(time_slot IN ('早','上午','下午','晚','深夜')), -- 当前时段
+  difficulty TEXT NOT NULL DEFAULT '普通' CHECK(difficulty IN ('轻松','普通','挑战','地狱')), -- 难度等级
+  current_heroine TEXT NOT NULL DEFAULT '', -- 当前对话女角
+  scene_summary TEXT NOT NULL CHECK(LENGTH(scene_summary) <= 60), -- 场景概览
+  flags_text TEXT NOT NULL DEFAULT '{}' -- 不可逆flag计数
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 2：世界地图点（8 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE world_map_points ( -- 世界地图点
+  row_id INTEGER PRIMARY KEY, -- 行号
+  location_name TEXT NOT NULL UNIQUE, -- 详细地点
+  minor_region TEXT NOT NULL, -- 次要地区
+  major_region TEXT NOT NULL, -- 主要地区
+  location_type TEXT NOT NULL, -- 地点类型
+  environment_desc TEXT NOT NULL CHECK(LENGTH(environment_desc) <= 60), -- 环境描述
+  importance TEXT NOT NULL CHECK(importance IN ('核心', '重要', '普通')), -- 重要度
+  exploration_status TEXT NOT NULL CHECK(exploration_status IN ('未探索', '部分探索', '已探索')) -- 探索状态
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 3：地图元素表（7 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE map_elements ( -- 地图元素表
+  row_id INTEGER PRIMARY KEY, -- 行号
+  element_name TEXT NOT NULL UNIQUE, -- 元素名称
+  element_type TEXT NOT NULL CHECK(element_type IN ('剧情物品', '威胁', '龙套', '地标')), -- 元素类型
+  location_name TEXT NOT NULL, -- 所在地点
+  element_desc TEXT NOT NULL CHECK(LENGTH(element_desc) <= 40), -- 元素描述
+  status_text TEXT NOT NULL, -- 状态
+  interaction_options TEXT NOT NULL CHECK(TRIM(interaction_options) <> '') -- 交互选项
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 4：势力（6 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE factions ( -- 势力
+  row_id INTEGER PRIMARY KEY, -- 行号
+  faction_name TEXT NOT NULL UNIQUE, -- 名称
+  description TEXT NOT NULL CHECK(LENGTH(description) <= 60), -- 描述
+  leader TEXT, -- 领袖
+  relations_text TEXT, -- 关系
+  headquarters TEXT -- 据点
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 5：主角信息（23 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE protagonist_info ( -- 主角信息
+  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1
+  name TEXT NOT NULL, -- 姓名
+  gender TEXT NOT NULL, -- 性别
+  age INTEGER NOT NULL CHECK(age >= 0), -- 年龄
+  appearance TEXT NOT NULL CHECK(LENGTH(appearance) <= 60), -- 外貌特征
+  identity_text TEXT NOT NULL CHECK(LENGTH(identity_text) <= 40), -- 身份
+  self_status TEXT NOT NULL DEFAULT '正常', -- 自身状态
+  location_name TEXT NOT NULL, -- 所在地点
+  charm INTEGER NOT NULL DEFAULT 50 CHECK(charm BETWEEN 0 AND 100), -- 魅力
+  academic INTEGER NOT NULL DEFAULT 50 CHECK(academic BETWEEN 0 AND 100), -- 学识
+  social INTEGER NOT NULL DEFAULT 50 CHECK(social BETWEEN 0 AND 100), -- 社交
+  physical INTEGER NOT NULL DEFAULT 50 CHECK(physical BETWEEN 0 AND 100), -- 体质
+  willpower INTEGER NOT NULL DEFAULT 50 CHECK(willpower BETWEEN 0 AND 100), -- 意志
+  perception INTEGER NOT NULL DEFAULT 50 CHECK(perception BETWEEN 0 AND 100), -- 感知
+  hunger INTEGER NOT NULL DEFAULT 30 CHECK(hunger BETWEEN 0 AND 100), -- 饥饿度
+  thirst INTEGER NOT NULL DEFAULT 20 CHECK(thirst BETWEEN 0 AND 100), -- 口渴度
+  fatigue INTEGER NOT NULL DEFAULT 0 CHECK(fatigue BETWEEN 0 AND 100), -- 疲劳度
+  mood INTEGER NOT NULL DEFAULT 70 CHECK(mood BETWEEN 0 AND 100), -- 心情
+  money INTEGER NOT NULL DEFAULT 5000 CHECK(money >= 0), -- 现金
+  category_modifiers TEXT NOT NULL DEFAULT '{}', -- 分段修饰符
+  base_attributes TEXT NOT NULL, -- 基础属性
+  special_attributes TEXT, -- 特有属性
+  resources_text TEXT -- 资源数据
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 6：重要角色表（83 列·新增 6 属性 + 13 技能 = 19 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE important_npc ( -- 重要角色表
+  row_id INTEGER PRIMARY KEY, -- 行号
+  name TEXT NOT NULL UNIQUE, -- 姓名
+  gender TEXT NOT NULL, -- 性别
+  age INTEGER NOT NULL CHECK(age >= 0), -- 年龄
+  brief_intro TEXT NOT NULL CHECK(LENGTH(brief_intro) <= 30), -- 一句话介绍
+  appearance TEXT NOT NULL CHECK(LENGTH(appearance) <= 60), -- 外貌特征
+  identity_text TEXT NOT NULL CHECK(LENGTH(identity_text) <= 40), -- 身份
+  base_attributes TEXT NOT NULL, -- 基础属性
+  special_attributes TEXT, -- 特有属性
+  location_name TEXT NOT NULL, -- 所在地点
+  presence_status TEXT NOT NULL CHECK(presence_status IN ('在场', '离场')), -- 在场状态
+  relations_text TEXT, -- 人际关系
+  interaction_options TEXT CHECK(presence_status = '离场' OR (interaction_options IS NOT NULL AND LENGTH(TRIM(interaction_options)) > 0)), -- 交互选项
+  past_experience TEXT NOT NULL CHECK(LENGTH(past_experience) <= 600), -- 过往经历
+  affection INTEGER NOT NULL DEFAULT 0 CHECK(affection BETWEEN -100 AND 100), -- 好感度
+  heartbeat INTEGER NOT NULL DEFAULT 0 CHECK(heartbeat BETWEEN -100 AND 100), -- 心动值
+  jealousy INTEGER NOT NULL DEFAULT 0 CHECK(jealousy BETWEEN -100 AND 100), -- 嫉妒值
+  trust INTEGER NOT NULL DEFAULT 0 CHECK(trust BETWEEN -100 AND 100), -- 信任度
+  relationship_stage TEXT NOT NULL DEFAULT '初识' CHECK(relationship_stage IN ('决裂','仇视','厌恶','冷漠','疏离','初识','熟悉','暧昧','心动','亲密','攻略完成','失恋')), -- 关系阶段
+  stage_locked INTEGER NOT NULL DEFAULT 0 CHECK(stage_locked IN (0,1)), -- 阶段锁定
+  is_pursued INTEGER NOT NULL DEFAULT 0 CHECK(is_pursued IN (0,1)), -- 是否在攻略中
+  route_locked INTEGER NOT NULL DEFAULT 0 CHECK(route_locked IN (0,1)), -- 攻略路线锁定
+  mutex_group TEXT, -- 互斥组名
+  mutex_partner_name TEXT, -- 互斥伙伴姓名（如'鸣泽唯'，'无'=无互斥）
+  h_exp INTEGER NOT NULL DEFAULT 0 CHECK(h_exp >= 0), -- H经验次数
+  first_kiss_done INTEGER NOT NULL DEFAULT 0 CHECK(first_kiss_done IN (0,1)), -- 初吻
+  first_h_done INTEGER NOT NULL DEFAULT 0 CHECK(first_h_done IN (0,1)), -- 初H
+  advanced_h_done INTEGER NOT NULL DEFAULT 0 CHECK(advanced_h_done IN (0,1)), -- 进阶H
+  -- ═══ 女角专属：6 维属性（新增，0-100，男性 NPC 可留 NULL）═══
+  charm INTEGER CHECK(charm IS NULL OR charm BETWEEN 0 AND 100), -- 魅力
+  academic INTEGER CHECK(academic IS NULL OR academic BETWEEN 0 AND 100), -- 学业
+  physical INTEGER CHECK(physical IS NULL OR physical BETWEEN 0 AND 100), -- 体力
+  social INTEGER CHECK(social IS NULL OR social BETWEEN 0 AND 100), -- 社交
+  perception INTEGER CHECK(perception IS NULL OR perception BETWEEN 0 AND 100), -- 敏感
+  reputation INTEGER CHECK(reputation IS NULL OR reputation BETWEEN 0 AND 100), -- 声誉
+  -- ═══ 女角专属：13 项技能（新增，0-100，男性 NPC 可留 NULL）═══
+  strength INTEGER CHECK(strength IS NULL OR strength BETWEEN 0 AND 100), -- 力量
+  agility INTEGER CHECK(agility IS NULL OR agility BETWEEN 0 AND 100), -- 敏捷
+  intelligence INTEGER CHECK(intelligence IS NULL OR intelligence BETWEEN 0 AND 100), -- 智力
+  will_skill INTEGER CHECK(will_skill IS NULL OR will_skill BETWEEN 0 AND 100), -- 意志技能
+  stealth INTEGER CHECK(stealth IS NULL OR stealth BETWEEN 0 AND 100), -- 潜行
+  speech INTEGER CHECK(speech IS NULL OR speech BETWEEN 0 AND 100), -- 口才
+  medical INTEGER CHECK(medical IS NULL OR medical BETWEEN 0 AND 100), -- 医学
+  cooking INTEGER CHECK(cooking IS NULL OR cooking BETWEEN 0 AND 100), -- 烹饪
+  art INTEGER CHECK(art IS NULL OR art BETWEEN 0 AND 100), -- 艺术
+  driving INTEGER CHECK(driving IS NULL OR driving BETWEEN 0 AND 100), -- 驾驶
+  fighting INTEGER CHECK(fighting IS NULL OR fighting BETWEEN 0 AND 100), -- 格斗
+  observation INTEGER CHECK(observation IS NULL OR observation BETWEEN 0 AND 100), -- 观察
+  romance_skill INTEGER CHECK(romance_skill IS NULL OR romance_skill BETWEEN 0 AND 100), -- 恋爱技能
+  -- ═══ NSFW 身体测量 - 胸部（12 列）═══
+  cup_size TEXT NOT NULL DEFAULT '无' CHECK(cup_size IN ('无','A','B','C','D','E','F','G','H')), -- 罩杯
+  bust_size INTEGER, -- 胸围cm
+  waist_size INTEGER, -- 腰围cm
+  hip_size INTEGER, -- 臀围cm
+  height INTEGER NOT NULL, -- 身高cm
+  weight INTEGER, -- 体重kg
+  nipple_size TEXT, -- 乳头大小
+  nipple_color TEXT, -- 乳头颜色
+  areola_size TEXT, -- 乳晕大小
+  breast_shape TEXT, -- 胸型
+  breast_sensitivity INTEGER CHECK(breast_sensitivity BETWEEN 0 AND 300), -- 胸部敏感度
+  lactation TEXT, -- 泌乳
+  -- ═══ NSFW 身体测量 - 腰部（2 列）═══
+  waist_shape TEXT, -- 腰型
+  waist_sensitivity INTEGER CHECK(waist_sensitivity BETWEEN 0 AND 300), -- 腰部敏感度
+  -- ═══ NSFW 身体测量 - 手部（2 列）═══
+  hand_desc TEXT, -- 手部描述
+  nail_style TEXT, -- 美甲风格
+  -- ═══ NSFW 身体测量 - 臀部（3 列）═══
+  hip_shape TEXT, -- 臀型
+  hip_sensitivity INTEGER CHECK(hip_sensitivity BETWEEN 0 AND 300), -- 臀部敏感度
+  anal_desc TEXT CHECK(anal_desc IS NULL OR anal_desc IN ('紧致','松弛','未开发','半开发','已开发','发达','N/A')), -- 后庭描述
+  -- ═══ NSFW 身体测量 - 下体（8 列）═══
+  pubic_hair TEXT, -- 阴毛
+  labia_size TEXT, -- 阴唇大小
+  labia_color TEXT, -- 阴唇颜色
+  vaginal_tightness TEXT, -- 阴道紧度
+  vaginal_special TEXT, -- 特殊体质
+  lubrication_level TEXT, -- 润滑程度
+  hymen_status TEXT, -- 处女膜状态
+  fertility TEXT, -- 生育能力
+  -- ═══ 敏感度综合（3 列）═══
+  body_sensitivity INTEGER CHECK(body_sensitivity BETWEEN 0 AND 300), -- 全身敏感度
+  sensitive_zones TEXT, -- 敏感带
+  arousal_triggers TEXT, -- 兴奋触发点
+  -- ═══ NSFW 实时状态（5 列）═══
+  clothing_state TEXT, -- 当前衣着
+  exposure_level TEXT CHECK(exposure_level IS NULL OR exposure_level IN ('保守','日常','微露','暴露','半裸','全裸','N/A')), -- 暴露程度
+  wetness INTEGER CHECK(wetness BETWEEN 0 AND 100), -- 湿润度
+  arousal_level INTEGER CHECK(arousal_level BETWEEN 0 AND 100), -- 兴奋度
+  semen_residue TEXT, -- 精液残留
+  -- ═══ 元数据（1 列）═══
+  last_updated TEXT NOT NULL -- 最后更新
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 7：物品表（6 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE inventory ( -- 物品表
+  row_id INTEGER PRIMARY KEY, -- 行号
+  item_name TEXT NOT NULL UNIQUE CHECK(LENGTH(item_name) <= 10), -- 物品名称
+  item_type TEXT NOT NULL, -- 类型
+  quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity >= 0), -- 数量
+  quality TEXT NOT NULL CHECK(quality IN ('普通', '优秀', '稀有', '史诗', '传说', '神话')), -- 品质
+  description TEXT NOT NULL CHECK(LENGTH(description) <= 60) -- 描述
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 8：装备表（6 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE equipment ( -- 装备表
+  row_id INTEGER PRIMARY KEY, -- 行号
+  equipment_name TEXT NOT NULL UNIQUE, -- 装备名称
+  equipment_type TEXT NOT NULL, -- 类型
+  quality TEXT NOT NULL CHECK(quality IN ('普通', '优秀', '稀有', '史诗', '传说', '神话')), -- 品质
+  status_text TEXT NOT NULL CHECK(status_text IN ('已装备', '闲置')), -- 状态
+  description TEXT NOT NULL CHECK(LENGTH(description) <= 40) -- 描述
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 9：任务表（9 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE quests ( -- 任务表
+  row_id INTEGER PRIMARY KEY, -- 行号
+  quest_name TEXT NOT NULL UNIQUE, -- 名称
+  quest_type TEXT NOT NULL CHECK(quest_type IN ('主线', '支线', '日常')), -- 类型
+  priority_level TEXT NOT NULL CHECK(priority_level IN ('紧急', '重要', '普通')), -- 优先级
+  target_desc TEXT NOT NULL CHECK(LENGTH(target_desc) <= 100), -- 目标
+  progress_text TEXT NOT NULL CHECK(progress_text = '0%' OR progress_text GLOB '[1-9]%' OR progress_text GLOB '[1-9][0-9]%' OR progress_text = '100%'), -- 进度（%）
+  status_tag TEXT NOT NULL CHECK(status_tag IN ('进行中', '已完成', '已失败', '已放弃')), -- 状态标签
+  source_text TEXT, -- 来源
+  reward_text TEXT -- 奖励
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 10：纪要表（5 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE chronicle ( -- 纪要表
+  row_id INTEGER PRIMARY KEY, -- 行号
+  code_index TEXT NOT NULL UNIQUE CHECK(code_index GLOB 'AM[0-9][0-9][0-9][0-9]'), -- 编码索引
+  time_span TEXT NOT NULL CHECK(time_span GLOB '??-?? ??:?? ~ ??-?? ??:??'), -- 时间跨度
+  summary TEXT NOT NULL, -- 概览
+  chronicle_text TEXT NOT NULL -- 纪要
+);
+
+-- ════════════════════════════════════════════════════════════
+-- 表 11：检定建议表（3 列）
+-- ════════════════════════════════════════════════════════════
+CREATE TABLE check_suggestions ( -- 检定建议表
+  row_id INTEGER PRIMARY KEY CHECK(row_id BETWEEN 1 AND 5), -- 行号，仅允许 1-5
+  display_text TEXT NOT NULL CHECK(TRIM(display_text) <> ''), -- 展示文本
+  dice_command TEXT NOT NULL CHECK(TRIM(dice_command) <> '') -- 骰子命令
+);
+

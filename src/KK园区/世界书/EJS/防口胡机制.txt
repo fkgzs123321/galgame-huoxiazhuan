@@ -1,0 +1,462 @@
+@@generate_before
+<%_
+/* ════════════════════════════════════════════════════════════
+ * KK园区 防口胡机制（EJS预处理层）
+ * 职责：在EJS预处理层强制校验所有数值变化，防止AI放水
+ * 设计原则：
+ *   1. 所有关键操作必须通过校验函数
+ *   2. 超限变化自动截断并返回警告
+ *   3. 关键操作必须有对应条件才能执行
+ *   4. 难度越高，校验越严格
+ *   5. 与 变量变化幅度控制 配合使用
+ * 身份系统：受害者 / 管理者 / 打手 / 老板
+ * ════════════════════════════════════════════════════════════ */-%>
+
+<%
+// ────────────────────────────────────────────────────────────
+// 一、强制校验开关（不可被AI关闭）
+// ────────────────────────────────────────────────────────────
+const ANTI_CHEAT_CONFIG = {
+  enabled: true,                    // 总开关（强制true）
+  strict_mode: true,                // 严格模式（强制true）
+  log_violations: true,             // 记录违规
+  block_invalid_changes: true,      // 阻止非法变化
+  block_missing_flags: true        // 阻止缺少前置条件的操作
+};
+
+// ────────────────────────────────────────────────────────────
+// 二、操作前置条件表（关键操作必须满足对应条件）
+// ────────────────────────────────────────────────────────────
+const ACTION_FLAG_REQUIREMENTS = {
+  // 逃跑尝试（受害者专属）
+  escape_attempt: {
+    required_identity: '受害者',
+    required_逃跑准备: 30,
+    required_伪装度: 20,
+    required_希望值: 20,
+    description: '逃跑尝试需要逃跑准备≥30+伪装度≥20+希望值≥20'
+  },
+
+  // 反杀上位（D结局）
+  counterattack: {
+    required_identity: '受害者',
+    required_权力接触: true,
+    required_信任值: 40,
+    required_结局条件: 'D_反杀上位',
+    description: '反杀上位需要权力接触+信任值≥40+结局分支指向D_反杀上位'
+  },
+
+  // NSFW触发
+  nsfw_trigger: {
+    required_处境值: 40,
+    required_关系值: 80,
+    identity_restrictions: '受害者无法与管理者/打手建立自愿NSFW',
+    description: 'NSFW需要处境值≥40+关系值≥80，受害者与加害方仅可被迫'
+  },
+
+  // 结局触发
+  ending_trigger: {
+    required_结局分支匹配: true,
+    required_剧情进度: 80,
+    description: '结局触发需要剧情进度≥80+结局分支已确定'
+  },
+
+  // 派系加入
+  faction_join: {
+    required_派系关系: 30,
+    identity_restrictions: '受害者无法直接加入管理层',
+    description: '加入派系需要对应派系关系≥30'
+  },
+
+  // 暗网拍卖上架
+  auction_list: {
+    required_身份: ['老板', '管理者'],
+    required_暗网知名度: 20,
+    identity_restrictions: '仅老板/管理者可决定上架',
+    description: '拍卖上架需要暗网知名度≥20+老板或管理者身份'
+  },
+
+  // 被救结局（E结局）
+  rescue_ending: {
+    required_identity: '受害者',
+    required_警方线索: 3,
+    required_外部援助: true,
+    description: 'E_被救结局需要警方线索≥3+外部援助'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 三、AI放水检测规则
+// ────────────────────────────────────────────────────────────
+const CHEAT_DETECTION_RULES = {
+  // 规则1：希望值异常变化
+  hope_anomaly: {
+    rule_id: 'cheat_001',
+    description: '希望值单次变化超过±20',
+    detection: 'change > 20 OR change < -20',
+    action: '截断到±20上限',
+    severity: 'high'
+  },
+
+  // 规则2：金钱异常增长
+  money_anomaly: {
+    rule_id: 'cheat_002',
+    description: '金钱单次增长超过10000',
+    detection: 'change > 10000',
+    action: '截断到10000上限',
+    severity: 'high'
+  },
+
+  // 规则3：关系值跳跃
+  relationship_jump: {
+    rule_id: 'cheat_003',
+    description: 'NPC关系值单次变化超过30或阶段跨级跳跃',
+    detection: 'change > 30 OR stage_change > 1',
+    action: '截断到相邻阶段',
+    severity: 'high'
+  },
+
+  // 规则4：技能等级虚高
+  skill_without_training: {
+    rule_id: 'cheat_004',
+    description: '技能等级超过训练次数允许的上限',
+    detection: 'skill_level > training_count * 5 + 10',
+    action: '警告技能可能虚高',
+    severity: 'medium'
+  },
+
+  // 规则5：六维属性总和异常
+  attribute_anomaly: {
+    rule_id: 'cheat_005',
+    description: '六维属性总和异常（力量+敏捷+体质+智力+感知+魅力>60）',
+    detection: 'sum(六维) > 60',
+    action: '警告属性可能虚高',
+    severity: 'medium'
+  },
+
+  // 规则6：身份无剧情支撑切换
+  identity_switch: {
+    rule_id: 'cheat_006',
+    description: '当前身份变化且无剧情支撑',
+    detection: 'identity_changed AND no_plot_support',
+    action: '阻止身份切换',
+    severity: 'critical'
+  },
+
+  // 规则7：逃跑准备不足强行逃跑
+  escape_without_prep: {
+    rule_id: 'cheat_007',
+    description: '逃跑尝试且逃跑准备<30',
+    detection: 'escape_attempt AND 逃跑准备 < 30',
+    action: '强制失败',
+    severity: 'critical'
+  },
+
+  // 规则8：NSFW条件不满足
+  nsfw_without_condition: {
+    rule_id: 'cheat_008',
+    description: 'NSFW触发且处境值<40或关系值<80',
+    detection: 'nsfw_triggered AND (处境值 < 40 OR 关系值 < 80)',
+    action: '阻止NSFW',
+    severity: 'critical'
+  },
+
+  // 规则9：结局进度不足
+  ending_without_progress: {
+    rule_id: 'cheat_009',
+    description: '结局触发但剧情进度<80',
+    detection: 'ending_triggered AND 剧情进度 < 80',
+    action: '阻止结局触发',
+    severity: 'critical'
+  },
+
+  // 规则10：受害者非法加入管理层
+  faction_jump: {
+    rule_id: 'cheat_010',
+    description: '受害者直接加入管理层',
+    detection: 'identity==受害者 AND faction_join==管理层',
+    action: '阻止派系加入',
+    severity: 'critical'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 四、身份阶段校验矩阵（每种身份的合法叙事阶段序列）
+// ────────────────────────────────────────────────────────────
+const IDENTITY_STAGE_MATRIX = {
+  '受害者': ['入园恐惧', '适应期', '收集情报', '逃跑准备', '结局'],
+  '管理者': ['上任', '业绩压力', '内心动摇', '抉择', '结局'],
+  '打手': ['执行任务', '动摇', '挣扎', '抉择', '结局'],
+  '老板': ['统治', '外部压力', '内部危机', '覆灭', '结局']
+};
+
+// ────────────────────────────────────────────────────────────
+// 五、强制校验函数
+// ────────────────────────────────────────────────────────────
+function validateAction(action_type, context) {
+  const _result = {
+    valid: true,
+    violations: [],
+    warnings: [],
+    blocked: false,
+    action_type: action_type
+  };
+
+  const _req = ACTION_FLAG_REQUIREMENTS[action_type];
+  if (!_req) return _result;
+
+  // 校验身份（单选）
+  if (_req.required_identity) {
+    const _cur_identity = String(getvar('stat_data.身份系统.当前身份', { scope: 'local', defaults: '' }) || '');
+    if (_cur_identity !== _req.required_identity) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'identity_mismatch',
+        actual: _cur_identity,
+        required: _req.required_identity,
+        desc: `${action_type}需要身份${_req.required_identity}，当前${_cur_identity}`
+      });
+    }
+  }
+
+  // 校验身份（多选，如拍卖上架允许老板/管理者）
+  if (_req.required_身份 && Array.isArray(_req.required_身份)) {
+    const _cur_identity = String(getvar('stat_data.身份系统.当前身份', { scope: 'local', defaults: '' }) || '');
+    if (_req.required_身份.indexOf(_cur_identity) === -1) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'identity_not_allowed',
+        actual: _cur_identity,
+        required: _req.required_身份.join('/'),
+        desc: `${action_type}仅允许${_req.required_身份.join('/')}，当前${_cur_identity}`
+      });
+    }
+  }
+
+  // 校验逃跑准备
+  if (_req.required_逃跑准备 !== undefined) {
+    const _val = Number(getvar('stat_data.身份.受害者.逃跑准备', { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_逃跑准备) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'escape_prep_too_low',
+        actual: _val,
+        required: _req.required_逃跑准备,
+        desc: `逃跑准备不足：需要${_req.required_逃跑准备}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验伪装度
+  if (_req.required_伪装度 !== undefined) {
+    const _val = Number(getvar('stat_data.身份.受害者.伪装度', { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_伪装度) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'disguise_too_low',
+        actual: _val,
+        required: _req.required_伪装度,
+        desc: `伪装度不足：需要${_req.required_伪装度}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验希望值
+  if (_req.required_希望值 !== undefined) {
+    const _val = Number(getvar('stat_data.身份.受害者.希望值', { scope: 'local', defaults: 80 })) || 80;
+    if (_val < _req.required_希望值) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'hope_too_low',
+        actual: _val,
+        required: _req.required_希望值,
+        desc: `希望值不足：需要${_req.required_希望值}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验权力接触（布尔，影响D_反杀上位结局）
+  if (_req.required_权力接触 !== undefined) {
+    const _val = getvar('stat_data.身份.受害者.权力接触', { scope: 'local', defaults: false });
+    if (_val !== _req.required_权力接触) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'power_access_missing',
+        actual: _val,
+        required: _req.required_权力接触,
+        desc: `权力接触未满足：需要${_req.required_权力接触}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验外部援助（布尔，影响E_被救结局）
+  if (_req.required_外部援助 !== undefined) {
+    const _val = getvar('stat_data.身份.受害者.外部援助', { scope: 'local', defaults: false });
+    if (_val !== _req.required_外部援助) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'external_aid_missing',
+        actual: _val,
+        required: _req.required_外部援助,
+        desc: `外部援助未满足：需要${_req.required_外部援助}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验警方线索（整数，≥3触发E_被救结局）
+  if (_req.required_警方线索 !== undefined) {
+    const _val = Number(getvar('stat_data.身份.受害者.警方线索', { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_警方线索) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'police_clues_too_low',
+        actual: _val,
+        required: _req.required_警方线索,
+        desc: `警方线索不足：需要${_req.required_警方线索}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验处境值（女性专属）
+  if (_req.required_处境值 !== undefined) {
+    const _val = Number(getvar('stat_data.女性专属.处境值', { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_处境值) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'situation_too_low',
+        actual: _val,
+        required: _req.required_处境值,
+        desc: `处境值不足：需要${_req.required_处境值}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验关系值（NPC关系为record，由context传入目标NPC关系值）
+  if (_req.required_关系值 !== undefined) {
+    const _val = Number(context.relationship_value || 0) || 0;
+    if (_val < _req.required_关系值) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'relationship_too_low',
+        actual: _val,
+        required: _req.required_关系值,
+        desc: `关系值不足：需要${_req.required_关系值}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验信任值
+  if (_req.required_信任值 !== undefined) {
+    const _val = Number(getvar('stat_data.身份.受害者.信任值', { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_信任值) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'trust_too_low',
+        actual: _val,
+        required: _req.required_信任值,
+        desc: `信任值不足：需要${_req.required_信任值}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验剧情进度
+  if (_req.required_剧情进度 !== undefined) {
+    const _val = Number(getvar('stat_data.身份系统.剧情进度', { scope: 'local', defaults: 1 })) || 1;
+    if (_val < _req.required_剧情进度) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'plot_progress_too_low',
+        actual: _val,
+        required: _req.required_剧情进度,
+        desc: `剧情进度不足：需要${_req.required_剧情进度}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验暗网知名度
+  if (_req.required_暗网知名度 !== undefined) {
+    const _val = Number(getvar('stat_data.暗网.暗网知名度', { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_暗网知名度) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'darknet_fame_too_low',
+        actual: _val,
+        required: _req.required_暗网知名度,
+        desc: `暗网知名度不足：需要${_req.required_暗网知名度}，当前${_val}`
+      });
+    }
+  }
+
+  // 校验派系关系（context.faction 指定派系名）
+  if (_req.required_派系关系 !== undefined) {
+    const _faction = context.faction || '管理层';
+    const _faction_map = {
+      '董事会': 'stat_data.派系.园区董事会',
+      '管理层': 'stat_data.派系.管理层',
+      '打手团': 'stat_data.派系.打手团',
+      '受害者群': 'stat_data.派系.受害者群',
+      '暗网网络': 'stat_data.派系.暗网网络'
+    };
+    const _path = _faction_map[_faction] || 'stat_data.派系.管理层';
+    const _val = Number(getvar(_path, { scope: 'local', defaults: 0 })) || 0;
+    if (_val < _req.required_派系关系) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'faction_relation_too_low',
+        actual: _val,
+        required: _req.required_派系关系,
+        desc: `${_faction}关系不足：需要${_req.required_派系关系}，当前${_val}`
+      });
+    }
+  }
+
+  // 阻止非法操作
+  if (!_result.valid && ANTI_CHEAT_CONFIG.block_invalid_changes) {
+    _result.blocked = true;
+  }
+
+  return _result;
+}
+
+// ────────────────────────────────────────────────────────────
+// 六、强制检查清单（6项，AI思维链必须逐条确认）
+// ────────────────────────────────────────────────────────────
+const MANDATORY_CHECKLIST = [
+  '1. 检查当前身份是否匹配操作要求',
+  '2. 检查相关变量是否达到阈值（逃跑准备/伪装度/希望值等）',
+  '3. 检查是否满足结局触发条件（剧情进度≥80+结局分支匹配）',
+  '4. 检查NPC关系值是否足够触发NSFW（关系值≥80+处境值≥40）',
+  '5. 检查逃跑/反杀准备是否充分（权力接触/警方线索/外部援助）',
+  '6. 检查变量变化是否在合理范围内（希望值±20/金钱10000/关系值30）'
+];
+
+// ────────────────────────────────────────────────────────────
+// 七、违规记录系统（局部数组，每次EJS执行重新初始化）
+// ────────────────────────────────────────────────────────────
+var _violations = [];
+function logViolation(violation_type, details, severity) {
+  _violations.push({
+    timestamp: getvar('stat_data.通用.时间.天数', { scope: 'local', defaults: 1 }) + '_' + getvar('stat_data.通用.时间.时段', { scope: 'local', defaults: '清晨' }),
+    type: violation_type,
+    severity: severity || 'medium',
+    details: details
+  });
+  // 限制记录数量（保留最近20条）
+  if (_violations.length > 20) _violations.shift();
+}
+
+// ────────────────────────────────────────────────────────────
+// 八、注册到全局（供其他EJS条目调用）
+// ────────────────────────────────────────────────────────────
+define('ANTI_CHEAT_CONFIG', ANTI_CHEAT_CONFIG);
+define('ACTION_FLAG_REQUIREMENTS', ACTION_FLAG_REQUIREMENTS);
+define('CHEAT_DETECTION_RULES', CHEAT_DETECTION_RULES);
+define('IDENTITY_STAGE_MATRIX', IDENTITY_STAGE_MATRIX);
+define('validateAction', validateAction);
+define('logViolation', logViolation);
+define('MANDATORY_CHECKLIST', MANDATORY_CHECKLIST);
+-%>
+
+<%_ // 输出防口胡状态摘要 _%>
+<%_ const antiCheatStatus = { enabled: ANTI_CHEAT_CONFIG.enabled, rules_count: Object.keys(CHEAT_DETECTION_RULES).length, checklist_count: MANDATORY_CHECKLIST.length }; _%>
+<%= JSON.stringify(antiCheatStatus, null, 2) %>

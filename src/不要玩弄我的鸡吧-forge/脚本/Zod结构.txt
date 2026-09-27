@@ -1,0 +1,948 @@
+import { registerMvuSchema } from 'https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js';
+// 运行时 z（Zod v4）与 _（lodash）已由 MVU 框架全局注入，禁止任何 import
+
+// ===== LCG 确定性骰子种子（统一公式，全系统唯一事实源） =====
+// seed = (((((天数*7 + 小时*13)*7919 + uid_num)*11 + 阶段)*17 + 200)*31) >>> 0
+// uid_num 提取规则：UID 若为纯数字直接用；中文姓名按 charCode 求和 mod 100000
+// 所有概率判定走 LCG(seed) % 10000 / 10000
+
+const clamp = (v, lo, hi) => _.clamp(v, lo, hi);
+const num   = z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0);
+const num1  = z.coerce.number().transform(v => Math.max(1, v)).prefault(1).catch(1);
+const pct   = z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(0).catch(0);
+const attr  = z.coerce.number().transform(v => clamp(v, -3, 3)).prefault(0).catch(0);
+const favor = z.coerce.number().transform(v => clamp(v, -1000, 1000)).prefault(0).catch(0);
+const str   = (d = '')    => z.string().prefault(d).catch(d);
+const bool  = (d = false) => z.boolean().prefault(d).catch(d);
+const tagArr = z.array(z.string()).prefault(() => []).catch([]);
+
+// ===== 工具：9时段映射（时段 自动计算，AI 禁手写） =====
+const calcTimeSlot = (hour) => {
+  const h = Number(hour) || 0;
+  if (h >= 5 && h < 7) return '早晨';
+  if (h >= 7 && h < 8) return '晨读';
+  if (h >= 8 && h < 12) return '上午';
+  if (h >= 12 && h < 14) return '中午';
+  if (h >= 14 && h < 17) return '下午';
+  if (h >= 17 && h < 19) return '傍晚';
+  if (h >= 19 && h < 22) return '晚自习';
+  if (h >= 22 || h < 2) return '夜里';
+  return '半夜';
+};
+
+// ===== 工具：学业阶段映射（分数 → 阶段，AI 禁手写） =====
+const calcAcademicStage = (score) => {
+  const s = Number(score) || 0;
+  if (s >= 90) return 5;
+  if (s >= 75) return 4;
+  if (s >= 60) return 3;
+  if (s >= 40) return 2;
+  return 1;
+};
+
+// ===== 工具：综合阶段映射（多维状态 → 综合阶段，AI 禁手写） =====
+const calcCompositeStage = (理性, 执念, 理智, 逃避意识) => {
+  const r = Number(理性) || 0;
+  const o = Number(执念) || 0;
+  const s = Number(理智) || 100;
+  const e = Number(逃避意识) || 0;
+  if (s <= 0) return 'E_崩坏期';
+  if (e >= 70 && r >= 40) return 'E_清醒反扑期';
+  if (o >= 70 || s <= 30) return 'D_疯狂期';
+  if (o >= 40 || r <= 40) return 'C_沉沦期';
+  if (o >= 15 || r <= 65) return 'B_动摇期';
+  return 'A_理性期';
+};
+
+// ===== 工具：技能等级 =====
+const SkillSchema = z.object({
+  等级: z.coerce.number().transform(v => clamp(v, 1, 100)).prefault(1).catch(1),
+  经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+  今日已用: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+  今日上限: z.coerce.number().transform(v => Math.max(1, v)).catch(30),
+}).prefault({});
+
+// ===== 女性使用习惯 =====
+const UsageHabitSchema = z.object({
+  偏好时段: z.enum(['午休','放学后','深夜','课间','上课中','自习课','保健室时间']).prefault('午休').catch('午休'),
+  偏好地点: z.enum(['空教室','音乐室','保健室','天台','图书馆','体育仓库','宿舍','实验室','美术室','办公室']).prefault('空教室').catch('空教室'),
+  使用风格: z.enum(['温柔','粗暴','实验性','仪式性','急切','催眠式','冷漠','游戏']).prefault('温柔').catch('温柔'),
+  特殊道具: z.enum(['无','润滑油','跳蛋','捆缚','冰','低温蜡烛','震动手环','按摩棒','束缚带']).prefault('无').catch('无'),
+  冥想阈值: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+  伪装阈值: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+  最低阶段: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(1).catch(1),
+}).prefault({});
+
+// ===== 阶段轨迹参数（每女性独立） =====
+const StageTrajectorySchema = z.object({
+  模板类型: z.enum(['纯真','御姐','辣妹','运动','运动-支配型','文静','熟女','萝莉']).prefault('纯真').catch('纯真'),
+  当前阶段: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(1).catch(1),
+  基础概率: z.coerce.number().transform(v => clamp(v, 0, 1)).prefault(0.3).catch(0.3),
+  性格修正: z.coerce.number().transform(v => clamp(v, 0.2, 2)).prefault(1).catch(1),
+  硬上限: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(5).catch(5),
+  理智: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(100).catch(100),
+}).prefault({});
+
+// ===== 交叉影响系数（女性使用对玩家各维度的影响） =====
+const CrossImpactSchema = z.object({
+  学业: z.coerce.number().transform(v => clamp(v, -20, 0)).prefault(-3).catch(-3),
+  纪律: z.coerce.number().transform(v => clamp(v, -10, 0)).prefault(-1).catch(-1),
+  经济: z.coerce.number().transform(v => clamp(v, -20, 10)).prefault(0).catch(0),
+  社交: z.coerce.number().transform(v => clamp(v, -10, 10)).prefault(-2).catch(-2),
+  精力消耗: z.coerce.number().transform(v => Math.max(0, v)).prefault(8).catch(8),
+  理智消耗: z.coerce.number().transform(v => Math.max(0, v)).prefault(5).catch(5),
+}).prefault({});
+
+// ===== 女性完整档案 =====
+const FemaleUserSchema = z.object({
+  基础: z.object({
+    姓名: str(),
+    角色: str(),
+    班级: str(),
+    年龄: z.coerce.number().transform(v => clamp(v, 14, 55)).prefault(18).catch(18),
+    身份: z.string().prefault(''),
+    班级名: z.string().prefault(''),
+    学校: z.string().prefault('私立圣德女子学院').catch('私立圣德女子学院'),
+    住宿: z.string().prefault('').catch(''),
+    // 教职工专属字段（学生角色为空）
+    工号: z.string().prefault('').catch(''),
+    教研组: z.string().prefault('').catch(''),
+    教授科目: z.string().prefault('').catch(''),
+    职务: z.string().prefault('').catch(''),
+    办公室: z.string().prefault('').catch(''),
+    是否班主任: z.boolean().prefault(false).catch(false),
+  }).catchall(z.any()).prefault({}),
+  身体: z.object({
+    罩杯: str('B'),
+    胸围厘米: z.coerce.number().transform(v => Math.max(0, v)).prefault(80).catch(80),
+    体型: z.string().prefault('匀称').catch('匀称'),
+    身高: z.coerce.number().transform(v => clamp(v, 140, 190)).prefault(160).catch(160),
+    阴毛: z.enum(['无','少量','修剪','自然','浓密']).prefault('自然').catch('自然'),
+    罩杯尺寸: z.string().prefault(''),
+    胸围: z.coerce.number().prefault(0).catch(0),
+    腰围: z.coerce.number().prefault(0).catch(0),
+    臀围: z.coerce.number().prefault(0).catch(0),
+    体重: z.coerce.number().prefault(0).catch(0),
+    乳头大小: z.string().prefault(''),
+    乳头颜色: z.string().prefault(''),
+    乳晕大小: z.string().prefault(''),
+    乳房形状: z.string().prefault(''),
+    乳房敏感度: z.coerce.number().prefault(0).catch(0),
+    泌乳: z.boolean().prefault(false).catch(false),
+    腰形: z.string().prefault(''),
+    腰部敏感度: z.coerce.number().prefault(0).catch(0),
+    手部描述: z.string().prefault(''),
+    指甲风格: z.string().prefault(''),
+    臀形: z.string().prefault(''),
+    臀部敏感度: z.coerce.number().prefault(0).catch(0),
+    肛门描述: z.string().prefault(''),
+    阴道描述: z.string().prefault(''),
+    阴蒂描述: z.string().prefault(''),
+    分泌物描述: z.string().prefault(''),
+    阴唇描述: z.string().prefault(''),
+    乳晕颜色: z.string().prefault(''),
+    乳房质感: z.string().prefault(''),
+    大腿描述: z.string().prefault(''),
+    足部描述: z.string().prefault(''),
+  }).catchall(z.any()).prefault({}),
+  人格: z.object({
+    表色: str(),
+    间色: str(),
+    底色: str(),
+    公众面: z.object({ 行为: str(), 言语: str() }).prefault({}),
+    亲密面: z.object({ 行为: str(), 言语: str() }).prefault({}),
+    真实面: z.object({ 欲望: str(), 恐惧: str() }).prefault({}),
+  }).prefault({}),
+  // ⚠️NSFW 动态状态（兴奋度/润滑度/乳头/阴蒂/体温）统一存 当前状态 对象
+  // 本 NSFW 对象仅存累积统计（假阴茎经验）和静态敏感度（敏感度/润滑度）
+  // AI 更新动态状态时，路径必须是 /女性角色/{uid}/当前状态/兴奋度
+  NSFW: z.object({
+    敏感度: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    润滑度: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    假阴茎经验: z.object({
+      总次数: num,
+      技能等级: z.coerce.number().transform(v => clamp(v, 1, 100)).prefault(1).catch(1),
+      偏好模式: z.enum(['内置','外置','边缘','延时']).prefault('内置').catch('内置'),
+      高潮次数: num,
+      总榨取: num,
+      使用次数: z.coerce.number().prefault(0).catch(0),
+      熟练度: z.coerce.number().prefault(0).catch(0),
+      敏感度: z.coerce.number().prefault(0).catch(0),
+      最后使用日: z.coerce.number().prefault(0).catch(0),
+    }).catchall(z.any()).prefault({}),
+    // 当日统计 仅存当日会话统计（跨日重置），动态状态一律走 当前状态
+    当日统计: z.object({
+      今日已用: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+      今日次数: z.coerce.number().prefault(0).catch(0),
+      最后阶段: z.coerce.number().prefault(0).catch(0),
+    }).catchall(z.any()).prefault({}),
+  }).prefault({}),
+  能力: z.object({
+    技能等级: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(1).catch(1),
+    隐蔽: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    持久: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    控制: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    诱惑: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    欲望: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(30).catch(30),
+    今日成长已用: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    今日成长上限: z.coerce.number().transform(v => Math.max(1, v)).prefault(10).catch(10),
+  }).prefault({}),
+  能力上限: z.object({
+    技能上限: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    隐蔽上限: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    持久上限: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    控制上限: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    诱惑上限: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(100).catch(100),
+    欲望上限: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(100).catch(100),
+  }).catchall(z.any()).prefault({}),
+  成长: z.object({
+    技能经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    隐蔽经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    持久经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    控制经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    诱惑经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    欲望经验: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    总次数: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+  }).catchall(z.any()).prefault({}),
+  与玩家关系: z.object({
+    好感度: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(30).catch(30),
+    熟悉度: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(0).catch(0),
+    互动次数: num,
+    最后互动: str(),
+    已知真相: bool(false),
+    信任: z.coerce.number().prefault(50).catch(50),
+    榨取精力: z.coerce.number().prefault(0).catch(0),
+    关系: z.string().prefault(''),
+  }).catchall(z.any()).prefault({}),
+  使用习惯: UsageHabitSchema,
+  阶段轨迹: StageTrajectorySchema,
+  关系网: z.record(z.string(), z.object({
+    类型: z.enum(['闺蜜','好友','对手','暗恋','师生','母女','买卖','同事','上下级','陌生人']).prefault('陌生人').catch('陌生人'),
+    信任: z.coerce.number().transform(v => clamp(v, 0, 1)).prefault(0.5).catch(0.5),
+    亲密度: z.enum(['亲密','普通','疏远','敌对']).prefault('普通').catch('普通'),
+  })).prefault(() => ({})),
+  传播: z.object({
+    倾向: z.coerce.number().transform(v => clamp(v, 0, 1)).prefault(0.3).catch(0.3),
+    方式: z.enum(['借出','归还','分享','偷窃','买卖','捡到','强制']).prefault('借出').catch('借出'),
+    偏好目标: tagArr,
+  }).prefault({}),
+  权力: z.enum(['无','风纪','教师','校医','管理层','家长','黑市']).prefault('无').catch('无'),
+  交叉影响: CrossImpactSchema,
+  学业: z.object({
+    分数: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(75).catch(75),
+    阶段: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(3).catch(3),
+    表现: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(75).catch(75),
+  }).prefault({}),
+  生育: z.object({
+    周期日: z.coerce.number().transform(v => clamp(v, 1, 28)).prefault(1).catch(1),
+    周期阶段: z.enum(['行经期','卵泡期','排卵期','黄体期']).prefault('行经期').catch('行经期'),
+    怀孕状态: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    怀孕阶段: z.enum(['未孕','无症状','孕吐期','行动受限','临产期','分娩触发']).prefault('未孕').catch('未孕'),
+    受孕种子: str(),
+    分娩结果: z.enum(['未分娩','成功','风险']).prefault('未分娩').catch('未分娩'),
+    产后天数: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    孩子数: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    最后受孕日: z.coerce.number().prefault(0).catch(0),
+    父亲UID: str(),
+  }).prefault({}),
+  // ===== 多维状态系统（6维 + 5综合阶段） =====
+  // 综合阶段 为 transform 自动计算字段，AI 禁止手写
+  多维状态: z.object({
+    理性: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(80).catch(80),
+    执念: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(0).catch(0),
+    学业压力: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    逃避意识: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(0).catch(0),
+    理智: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(100).catch(100),
+    技能等级: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(0).catch(0),
+    综合阶段: z.enum(['A_理性期','B_动摇期','C_沉沦期','D_疯狂期','E_清醒反扑期','E_崩坏期']).prefault('A_理性期').catch('A_理性期'),
+  }).catchall(z.any()).transform(data => ({ ...data, 综合阶段: calcCompositeStage(data.理性, data.执念, data.理智, data.逃避意识) })).prefault({}),
+  // ===== 持有者信息（假阴茎持有状态） =====
+  持有者信息: z.object({
+    是否初始持有者: z.boolean().prefault(false).catch(false),
+    获取方式: z.string().prefault('').catch(''),
+    获取日: z.coerce.number().prefault(1).catch(1),
+    包裹状态: z.string().prefault('').catch(''),
+    是否使用过: z.boolean().prefault(false).catch(false),
+    使用次数: z.coerce.number().prefault(0).catch(0),
+  }).prefault({}).catch({}),
+  叙事: z.object({
+    在场状态: z.enum(['在场','离场','未知']).prefault('在场').catch('在场'),
+    位置: str(),
+    外貌: z.string().prefault(''),
+    简介: z.string().prefault(''),
+    身份文本: z.string().prefault(''),
+    过往经历: z.string().prefault(''),
+    最后更新: z.string().prefault(''),
+    心跳: z.coerce.number().prefault(0).catch(0),
+    嫉妒: z.coerce.number().prefault(0).catch(0),
+    信任: z.coerce.number().prefault(50).catch(50),
+    阶段锁定: z.boolean().prefault(false).catch(false),
+    互斥组: z.string().prefault(''),
+    互斥伙伴: z.string().prefault(''),
+    场景标签: z.string().prefault(''),
+    最后场景: z.string().prefault(''),
+    状态: z.string().prefault(''),
+  }).catchall(z.any()).prefault({}),
+  // ===== 动态当前状态（衣着/内衣/月经/卫生用品/身体状态） =====
+  // 与 身体（静态档案）配合，当前状态 记录随时间和互动变化的状态
+  // 兴奋度/润滑度/乳头/阴蒂/体温等 NSFW 动态状态统一存此对象
+  当前状态: z.object({
+    // ── 外衣着装状态（动态）──
+    上衣: z.string().prefault('校服外套').catch('校服外套'),
+    下装: z.string().prefault('校服长裤').catch('校服长裤'),
+    外衣细节: z.string().prefault('').catch(''),
+    // ── 内衣着装状态（动态）──
+    文胸: z.string().prefault('运动内衣').catch('运动内衣'),
+    文胸颜色: z.string().prefault('白色').catch('白色'),
+    内裤: z.string().prefault('棉质三角裤').catch('棉质三角裤'),
+    内裤颜色: z.string().prefault('白色').catch('白色'),
+    // ── 月经状态（动态）──
+    月经阶段: z.enum(['月经期','行经期','卵泡期','排卵期','黄体期','经期前']).prefault('月经期').catch('月经期'),
+    月经日: z.coerce.number().transform(v => Math.max(0, Math.min(35, v))).prefault(1).catch(1),
+    经量: z.enum(['无','微量','少量','中等','量大']).prefault('无').catch('无'),
+    是否月经: z.boolean().prefault(false).catch(false),
+    // ── 卫生用品（动态）──
+    卫生用品: z.enum(['无','日用卫生巾','夜用卫生巾','卫生棉条','月经杯','护垫','卫生巾']).prefault('无').catch('无'),
+    更换时间: z.string().prefault('').catch(''),
+    // ── 身体当前状态（动态，NSFW 场景核心）──
+    兴奋度: z.coerce.number().transform(v => Math.max(0, Math.min(100, v))).prefault(0).catch(0),
+    润滑度: z.coerce.number().transform(v => Math.max(0, Math.min(100, v))).prefault(0).catch(0),
+    乳头状态: z.enum(['柔软','微挺','勃起','肿胀']).prefault('柔软').catch('柔软'),
+    阴蒂状态: z.enum(['休眠','微充血','充血','勃起']).prefault('休眠').catch('休眠'),
+    体温: z.coerce.number().transform(v => Math.max(35, Math.min(40, v))).prefault(36.5).catch(36.5),
+    // ── 其他动态状态 ──
+    最后洗澡时间: z.string().prefault('').catch(''),
+    是否处女: z.boolean().prefault(true).catch(true),
+    处女膜状态: z.enum(['完整','破裂','残存','无']).prefault('完整').catch('完整'),
+    最后更新时: z.coerce.number().prefault(0).catch(0),
+  }).catchall(z.any()).prefault({}),
+}).catchall(z.any()).prefault({});
+
+// ===== 关系图谱（女性间全局） =====
+const RelationGraphEntrySchema = z.object({
+  类型: z.enum(['闺蜜','好友','对手','暗恋','师生','母女','买卖','同事','上下级','陌生人']).prefault('陌生人').catch('陌生人'),
+  信任: z.coerce.number().transform(v => clamp(v, 0, 1)).prefault(0.5).catch(0.5),
+  亲密度: z.enum(['亲密','普通','疏远','敌对']).prefault('普通').catch('普通'),
+}).prefault({});
+
+// ===== 事件条目 =====
+const EventLogSchema = z.object({
+  编号: str(),
+  日: num,
+  时: z.coerce.number().transform(v => clamp(v, 6, 22)).prefault(8).catch(8),
+  类型: z.enum(['使用','症状','调查','社交','考试','结局','系统']).prefault('系统').catch('系统'),
+  描述: str(),
+  相关: tagArr,
+  榨取: z.coerce.number().prefault(0).catch(0),
+  阶段: z.coerce.number().prefault(1).catch(1),
+  人数: z.coerce.number().prefault(1).catch(1),
+  模式: z.string().prefault('').catch(''),
+  节奏: z.string().prefault('').catch(''),
+  场景: z.string().prefault('').catch(''),
+  已阻挡: z.boolean().prefault(false).catch(false),
+}).prefault({});
+
+// ===== 任务条目（RPG增强 P1-1）=====
+const QuestRewardsSchema = z.object({
+  金钱: num.prefault(0).catch(0),
+  经验: z.record(z.string(), num).prefault({}).catch({}),
+  物品: z.record(z.string(), z.any()).prefault(() => ({})).catch({}),
+}).catchall(z.any()).prefault({});
+
+const TaskSchema = z.object({
+  编号: str(),
+  类型: z.enum(['主线', '支线', '日常', '隐藏']).prefault('日常').catch('日常'),
+  标题: str(),
+  描述: str(''),
+  难度: z.enum(['D', 'C', 'B', 'A', 'S', 'SS']).prefault('D').catch('D'),
+  状态: z.enum(['待接', '进行中', '已完成', '失败']).prefault('待接').catch('待接'),
+  进度: num.prefault(0).catch(0),
+  阶段: num.prefault(1).catch(1),
+  奖励: QuestRewardsSchema,
+  截止: z.any().nullable().prefault(null).catch(null),
+  发布者: str('系统'),
+  发布地点: str(''),
+  触发日: num.prefault(1).catch(1),
+  接受日: num.prefault(1).catch(1),
+  重复: str('').catch(''),
+}).catchall(z.any()).prefault({});
+
+// ===== 规则变化条目（RPG增强 P1-2）=====
+const RuleChangeSchema = z.object({
+  编号: str(),
+  标题: str(),
+  内容: str(''),
+  范围: str(''),
+  目标: str(''),
+  强度: str(''),
+  来源: str(''),
+  过期: str(''),
+  备注: str(''),
+  奖励: str(''),
+  奖惩: str(''),
+}).prefault({});
+
+// ===== 商店商品条目（RPG增强 P1-3）=====
+const ShopGoodSchema = z.object({
+  编号: str(),
+  名称: str(),
+  价格: z.coerce.number().prefault(0).catch(0),
+  品质: z.enum(['普通', '优良', '稀有', '史诗', '传说']).prefault('普通').catch('普通'),
+  库存: z.coerce.number().prefault(-1).catch(-1),
+  库存上限: z.coerce.number().prefault(0).catch(0),
+  描述: str(''),
+  效果: str(''),
+  位置: str(''),
+  限制: str(''),
+}).prefault({});
+
+// ===== RPG增强 P2: 环境/雷达/资产/制造/载具/居所 系统 =====
+
+// 环境系统
+const EnvActivitySchema = z.object({
+  编号: str(), 标题: str(), 名称: str(),
+  截止: str(), 时间: str(),
+  描述: str(''), 简述: str(''),
+}).prefault({});
+
+const EnvNewsSchema = z.object({
+  编号: str(), 标题: str(), 头条: str(),
+  热度: z.coerce.number().prefault(0).catch(0), 重要性: z.coerce.number().prefault(0).catch(0),
+  内容: str(''), 摘要: str(''),
+  来源: str(), 时间: str(), 位置: str(), 状态: str('进行中'),
+}).prefault({});
+
+const EnvironmentSchema = z.object({
+  天气: str(''), 天气描述: str(''),
+  温度: str(''), 气温: str(''),
+  位置: str(''), 当前位置: str(''),
+  湿度: str(''), 风: str(''), 降水: str(''),
+  空气质量: str(''), 光线: str(''), 噪音: str(''),
+  人群密度: str(''), 交通: str(''), 治安: str(''),
+  区域: str(''), 季节: str(''),
+  描述: str(''), 环境描述: str(''),
+  活动: z.record(z.string(), EnvActivitySchema).prefault(() => ({})),
+  新闻: z.record(z.string(), EnvNewsSchema).prefault(() => ({})),
+}).prefault({});
+
+// 雷达信号系统
+const RadarSignalSchema = z.object({
+  编号: str(),
+  类型: str('人员'),
+  名称: str(''), 目标名称: str(''),
+  强度: str('弱'),
+  威胁: str('未知'),
+  描述: str(''), 简述: str(''),
+  方向: str(''), 方位: str(''),
+  单位: str(''), 单位描述: str(''),
+  来源: str(''), 所属: str(''),
+  距离: str(''), 位置: str(''),
+  探测日: num, 探测时: num,
+  备注: str(''),
+}).catchall(z.any()).prefault({});
+
+// 资产物品（统一用于 物品栏/仓库/已放置物品）
+const InventoryItemSchema = z.object({
+  编号: str(), 名称: str(), 标题: str(),
+  数量: num1, 量: num1,
+  类型: str(''), 品质: str(''), 状态: str(''),
+  位置: str(''), 所有者: str(''),
+  可堆叠: bool(true), 标签: tagArr,
+  描述: str(''),
+}).prefault({});
+
+// 制造配方
+const CraftMaterialSchema = z.object({
+  名称: str(''), 物品: str(''),
+  需要: num1, 需求: num1,
+  拥有: num, 已有: num,
+}).prefault({});
+
+const CraftOutputSchema = z.object({
+  名称: str(''), 物品: str(''),
+  数量: num1, 量: num1,
+}).prefault({});
+
+const CraftingRecipeSchema = z.object({
+  编号: str(), 名称: str(), 标题: str(),
+  类型: z.enum(['制造', '改造', '升级']).prefault('制造').catch('制造'),
+  描述: str(''), 简述: str(''),
+  材料: z.record(z.string(), CraftMaterialSchema).prefault(() => ({})),
+  材料列表: z.record(z.string(), CraftMaterialSchema).prefault(() => ({})),
+  产物: z.record(z.string(), CraftOutputSchema).prefault(() => ({})),
+  输出: z.record(z.string(), CraftOutputSchema).prefault(() => ({})),
+  解锁条件: str(''), 解锁: str(''),
+  成功率: z.coerce.number().prefault(100).catch(100),
+  之前: z.record(z.string(), z.object({标签: str(), 键: str(), 值: str()}).prefault({})).prefault(() => ({})),
+  预览之前: z.record(z.string(), z.object({标签: str(), 键: str(), 值: str()}).prefault({})).prefault(() => ({})),
+  之后: z.record(z.string(), z.object({标签: str(), 键: str(), 值: str()}).prefault({})).prefault(() => ({})),
+  预览之后: z.record(z.string(), z.object({标签: str(), 键: str(), 值: str()}).prefault({})).prefault(() => ({})),
+}).prefault({});
+
+// 载具
+const VehicleSeatSchema = z.object({
+  类型: str(''), 座位类型: str(''),
+  使用者: str(''), 占用者: str(''),
+  状态: str(''), 可用: str('可用'),
+  备注: str(''),
+}).prefault({});
+
+const VehicleStorageSchema = z.object({
+  名称: str(''), 物品: str(''),
+  量: num1, 数量: num1,
+  内容: str(''), 容量: str(''), 状态: str(''),
+}).prefault({});
+
+const VehicleSchema = z.object({
+  编号: str(),
+  类型: str(''), 载具类型: str(''),
+  品牌: str(''), 型号: str(''),
+  牌照: str(''), 车牌: str(''),
+  位置: str(''),
+  状态: z.enum(['停放', '行驶', '维修', '损坏', '被盗']).prefault('停放').catch('停放'),
+  移动状态: str(''),
+  能源: str(''), 燃料: str(''),
+  耐久: str(''), 状况: str(''),
+  维护: str(''),
+  座位: z.record(z.string(), VehicleSeatSchema).prefault(() => ({})),
+  储物: z.record(z.string(), VehicleStorageSchema).prefault(() => ({})),
+  货物: z.record(z.string(), VehicleStorageSchema).prefault(() => ({})),
+}).prefault({});
+
+// 居所
+const RoomSchema = z.object({
+  类型: str(''), 房间类型: str(''),
+  居住者们: z.array(str()).prefault(() => []).catch([]),
+  居住者: str(''), 人员: str(''),
+  清洁度: num.prefault(0).catch(0),
+  整洁度: str(''),
+  隐私: str(''), 隐私等级: str(''),
+  舒适度: num.prefault(0).catch(0),
+  氛围: str(''),
+  门锁: str(''),
+  状态: str('正常'), 房间状态: str(''),
+  设施们: z.array(str()).prefault(() => []).catch([]),
+  设施: str(''),
+  储物: z.record(z.string(), z.any()).prefault(() => ({})).catch({}),
+  待办们: z.array(str()).prefault(() => []).catch([]),
+  待办: str(''),
+  最后清洁日: num.prefault(1).catch(1),
+  备注: str(''),
+}).catchall(z.any()).prefault({});
+
+const FacilitySchema = z.object({
+  类型: str(''), 设施类型: str(''),
+  名称: str(''), 设施: str(''),
+  状态: str(''), 开放状态: str(''),
+  占用者: str(''), 当前人员: str(''),
+  清洁度: str(''), 隐私: str(''),
+  备注: str(''),
+}).prefault({});
+
+const ResidenceSchema = z.object({
+  编号: str(),
+  类型: str(''), 居所类型: str(''),
+  状态: str(''), 居住状态: str(''),
+  位置: str(''),
+  安全等级: str(''),
+  治安: str(''),
+  房间: z.record(z.string(), RoomSchema).prefault(() => ({})),
+  床位: z.record(z.string(), z.any()).prefault(() => ({})).catch({}),
+  公共设施: z.record(z.string(), FacilitySchema).prefault(() => ({})),
+  最后访问日: num.prefault(1).catch(1),
+  备注: str(''),
+}).catchall(z.any()).prefault({});
+
+// 近期事件（隐藏层.近期事件 用）
+const RecentEventSchema = z.object({
+  事件id: str(), 编号: str(), 事件编号: str(), id: str(),
+  类型: str(''), 时间: str(''), 时间戳: str(''), 日: num,
+  地点: str(''), 位置: str(''),
+  参与者: z.array(z.any()).prefault(() => []).catch([]),
+  摘要: str(''), 描述: str(''), 简述: str(''), 文本: str(''), 标题: str(''),
+  影响: str(''),
+  后续钩子: str(''), 钩子: str(''), 钩子们: str(''),
+  重要度: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(2).catch(2),
+  重要性: z.coerce.number().prefault(50).catch(50), 优先级: num,
+  更新时间: str(''),
+}).catchall(z.any()).prefault({});
+
+// 检查建议
+const CheckSuggestionSchema = z.object({
+  显示文本: str(),
+  骰子命令: str(''),
+}).prefault({});
+
+// ===== 结局追踪（中文键名，与 SQL endings 表对齐） =====
+const EndingTrackSchema = z.object({
+  健康: bool(false),
+  平庸: bool(false),
+  真相揭示: bool(false),
+  坠落: bool(false),
+  崩坏: bool(false),
+  黑市掌控: bool(false),
+  同归于尽: bool(false),
+  未解之谜: bool(false),
+  某人清醒: z.record(z.string(), z.string()).prefault(() => ({})).catch({}),
+  某人崩坏: z.record(z.string(), z.string()).prefault(() => ({})).catch({}),
+}).prefault({});
+
+// ===== 陌生女性模板定义 =====
+const StrangerTemplateSchema = z.object({
+  年龄范围: z.tuple([z.coerce.number(), z.coerce.number()]).prefault([16, 18]).catch([16, 18]),
+  罩杯范围: z.array(z.string()).prefault(['A','B']).catch(['A','B']),
+  体型池: tagArr,
+  NSFW默认: z.object({
+    敏感度: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+    技能等级: z.coerce.number().transform(v => clamp(v, 1, 100)).prefault(5).catch(5),
+    隐蔽: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(50).catch(50),
+  }).prefault({}),
+  性格池: tagArr,
+  传播倾向: z.coerce.number().transform(v => clamp(v, 0, 1)).prefault(0.3).catch(0.3),
+  模板类型: z.enum(['纯真','御姐','辣妹','运动','文静','熟女','萝莉']).prefault('纯真').catch('纯真'),
+}).prefault({});
+
+// ===== 顶层 Schema（字段名统一中文，_/$ 前缀保留英文符号） =====
+export const Schema = z.object({
+  基础信息: z.object({
+    姓名: str('玩家'),
+    性别: str('男'),
+    年龄: z.coerce.number().transform(v => clamp(v, 16, 60)).prefault(18).catch(18),
+    学校: str('私立圣德女子学院'),
+    班级: str('高三2班'),
+  }).prefault({}),
+
+  // ===== 时间系统（时段 为 transform 自动计算字段，AI 禁手写） =====
+  时间: z.object({
+    天数: z.coerce.number().transform(v => Math.max(1, v)).prefault(1).catch(1),
+    小时: z.coerce.number().transform(v => clamp(v, 0, 23)).prefault(8).catch(8),
+    分钟: z.coerce.number().transform(v => clamp(v, 0, 59)).prefault(0).catch(0),
+    时段: z.string().prefault('晨读').catch('晨读'),
+    星期: str('周一'),
+    日期: str('02-24 周一'),
+    学期: z.enum(['高三上','高三下','高考后']).prefault('高三下').catch('高三下'),
+    学期天数: z.coerce.number().transform(v => Math.max(1, v)).prefault(1).catch(1),
+    考试期: z.enum(['无','周考','月考','季考','高考','成绩出炉']).prefault('无').catch('无'),
+    距高考天数: z.coerce.number().transform(v => Math.max(0, v)).prefault(103).catch(103),
+  }).transform(data => ({ ...data, 时段: calcTimeSlot(data.小时) })).prefault({}),
+
+  // ===== 玩家六维状态 =====
+  状态: z.object({
+    精力: pct,
+    // 精力/体力上限：clamp 30~100，严格匹配难度档（普通100/困难80/地狱60）
+    // 难度切换时 AI 必须按变量更新规则铁律表 replace 对应值，禁止超出范围
+    精力上限: z.coerce.number().transform(v => clamp(v, 30, 100)).prefault(100).catch(100),
+    理智: pct,
+    健康: pct,
+    压力: pct,
+    怀疑值: z.coerce.number().transform(v => clamp(v, 0, 200)).prefault(0).catch(0),
+    堕落值: z.coerce.number().transform(v => clamp(v, 0, 200)).prefault(0).catch(0),
+    金钱: z.coerce.number().transform(v => Math.max(0, v)).prefault(500).catch(500),
+    今日生活费已领取: bool(false),
+    难度: z.enum(['普通','困难','地狱']).prefault('困难').catch('困难'),
+    体力: pct,
+    体力上限: z.coerce.number().transform(v => clamp(v, 30, 100)).prefault(100).catch(100),
+    每日购买: z.object({
+      营养餐: z.coerce.number().prefault(0).catch(0),
+      功能饮料: z.coerce.number().prefault(0).catch(0),
+      维生素片: z.coerce.number().prefault(0).catch(0),
+      安眠药: z.coerce.number().prefault(0).catch(0),
+      高级补剂: z.coerce.number().prefault(0).catch(0),
+      特制药膳: z.coerce.number().prefault(0).catch(0),
+    }).prefault({}).catch({}),
+  }).prefault({}),
+
+  // ===== 6技能系统 =====
+  技能: z.object({
+    冥想: SkillSchema,
+    锻炼: SkillSchema,
+    洞察: SkillSchema,
+    伪装: SkillSchema,
+    恢复: SkillSchema,
+    意志: SkillSchema,
+  }).prefault({}),
+
+  // ===== 使用阶段（双轴之一） =====
+  使用阶段: z.object({
+    当前阶段: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(1).catch(1),
+    总使用次数: num,
+    今日使用: z.coerce.number().transform(v => Math.min(5, Math.max(0, v|0))).prefault(0).catch(0),
+    今日上限: z.coerce.number().prefault(5).catch(5),
+    最后使用日: z.coerce.number().prefault(0).catch(0),
+    最后使用时: z.coerce.number().prefault(-99).catch(-99),
+    阶段进度: pct,
+    经验: z.coerce.number().prefault(0).catch(0),
+    今日经验: z.coerce.number().prefault(0).catch(0),
+    今日经验上限: z.coerce.number().prefault(30).catch(30),
+  }).prefault({}),
+
+  // ===== 学业阶段（双轴之二，阶段 为自动计算字段） =====
+  学业: z.object({
+    分数: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(75).catch(75),
+    阶段: z.coerce.number().transform(v => clamp(v, 1, 5)).prefault(3).catch(3),
+    今日学习次数: z.coerce.number().transform(v => Math.max(0, v)).prefault(0).catch(0),
+    考试倒计时: z.coerce.number().transform(v => Math.max(0, v)).prefault(7).catch(7),
+    老师关注度: z.coerce.number().transform(v => clamp(v, 0, 100)).prefault(0).catch(0),
+    当前课程: str(''),
+    当前老师: str(''),
+    下节课程: str(''),
+    下节老师: str(''),
+  }).transform(data => ({ ...data, 阶段: calcAcademicStage(data.分数) })).prefault({}),
+
+  // ===== 隐藏层 — 脚本运行时暂存区（AI 默认只读；仅 近期事件 例外可写） =====
+  隐藏层: z.object({
+    真相: str(''),
+    持有者ID: z.string().nullable().prefault(null).catch(null),
+    持有者获取方式: str(''),
+    持有者获取日: z.coerce.number().prefault(0).catch(0),
+    持有者包裹状态: str(''),
+    持有者首次使用日: z.coerce.number().prefault(0).catch(0),
+    持有者历史: z.record(z.string(), z.object({
+      编号: str(),
+      姓名: str(),
+      获得日: num,
+      方式: str(),
+    })).prefault(() => ({})).catch({}),
+    传播链: z.record(z.string(), z.object({
+      来源: str(),
+      目标: str(),
+      方式: str(),
+      日: num,
+      时: num,
+    })).prefault(() => ({})).catch({}),
+    确认使用者: tagArr,
+    最后持有者: z.string().nullable().prefault(null).catch(null),
+    // ── EJS 脚本运行时临时字段 ──
+    上一日: z.coerce.number().prefault(0).catch(0),
+    使用模式: z.string().prefault('内置').catch('内置'),
+    使用节奏: z.string().prefault('正常').catch('正常'),
+    当前场景: z.string().prefault('宿舍夜间').catch('宿舍夜间'),
+    活跃使用人数: z.coerce.number().prefault(1).catch(1),
+    最后榨取量: z.coerce.number().prefault(0).catch(0),
+    射精被阻止: z.boolean().prefault(false).catch(false),
+    清醒射精: z.boolean().prefault(false).catch(false),
+    觉醒进度: z.coerce.number().prefault(0).catch(0),
+    // ── 保护机制与计数器 ──
+    过热保护: z.boolean().prefault(false).catch(false),
+    间隔保护: z.boolean().prefault(false).catch(false),
+    持有者过热保护: z.boolean().prefault(false).catch(false),
+    阶段已晋升: z.boolean().prefault(false).catch(false),
+    女性战斗力: z.coerce.number().prefault(0).catch(0),
+    玩家战斗力: z.coerce.number().prefault(0).catch(0),
+    对抗结果: str(''),
+    连续拒绝: z.coerce.number().prefault(0).catch(0),
+    坏结局已触发: z.boolean().prefault(false).catch(false),
+    坏结局类型: str(''),
+    坏结局描述: str(''),
+    难度已锁定: z.boolean().prefault(false).catch(false),
+    // ── 发现机制进度跟踪（与技能对抗与发现机制配合）──
+    发现进度: z.object({
+      四阶段成功: z.coerce.number().prefault(0).catch(0),
+      五阶段成功: z.coerce.number().prefault(0).catch(0),
+      总调查次数: z.coerce.number().prefault(0).catch(0),
+      持有者暴露事件: z.coerce.number().prefault(0).catch(0),
+      孩子相似事件: z.coerce.number().prefault(0).catch(0),
+    }).prefault({}).catch({}),
+    // ── 计数器（中文键名，规则文件用）──
+    '超自然妄想计数': z.coerce.number().prefault(0).catch(0),
+    '违法计数': z.coerce.number().prefault(0).catch(0),
+    // ── 初始化标志 ──
+    '$已初始化': z.boolean().prefault(false).catch(false),
+    // ── 近期事件（隐藏层下唯一可写例外，AI 可 add/replace）──
+    近期事件: z.record(z.string(), RecentEventSchema).prefault(() => ({})),
+  }).catchall(z.any()).prefault({}),
+
+  // ===== 骰子 — LCG 骰子结果暂存 =====
+  骰子: z.object({
+    持有者使用: z.coerce.number().prefault(50).catch(50),
+    传播基值: z.coerce.number().prefault(50).catch(50),
+    怀疑抵抗: z.coerce.number().prefault(50).catch(50),
+    女性使用: z.record(z.string(), z.coerce.number()).prefault(() => ({})).catch({}),
+    阶段晋升: z.record(z.string(), z.coerce.number()).prefault(() => ({})).catch({}),
+  }).catchall(z.any()).prefault({}),
+
+  // ===== RPG增强 P1-1: 任务系统 =====
+  任务: z.record(z.string(), TaskSchema).prefault(() => ({})),
+
+  // ===== RPG增强 P1-2: 规则变化系统 =====
+  规则变化: z.object({
+    世界变化: z.record(z.string(), RuleChangeSchema).prefault(() => ({})),
+    学校变化: z.record(z.string(), RuleChangeSchema).prefault(() => ({})),
+  }).catchall(z.any()).prefault({}),
+
+  // ===== RPG增强 P1-3: 动态商品 =====
+  商店商品: z.record(z.string(), ShopGoodSchema).prefault(() => ({})),
+
+  // ===== RPG增强 P2: 环境/雷达/资产/制造/载具/居所 系统 =====
+  环境: EnvironmentSchema,
+  雷达: z.object({
+    信号: z.record(z.string(), RadarSignalSchema).prefault(() => ({})),
+    最后扫描日: num,
+    最后扫描时: num,
+  }).catchall(z.any()).prefault({ 信号: {} }),
+  物品栏: z.record(z.string(), InventoryItemSchema).prefault(() => ({})),
+  仓库: z.record(z.string(), InventoryItemSchema).prefault(() => ({})),
+  已放置物品: z.record(z.string(), InventoryItemSchema).prefault(() => ({})),
+  制造配方: z.record(z.string(), CraftingRecipeSchema).prefault(() => ({})),
+  载具: z.record(z.string(), VehicleSchema).prefault(() => ({})),
+  居所: z.record(z.string(), ResidenceSchema).prefault(() => ({})),
+  检定建议: z.record(z.string(), CheckSuggestionSchema).prefault(() => ({})),
+
+  // ===== 症状层（AI 可见层，根据状态自动描写） =====
+  症状: z.object({
+    疲劳描述: str('暂无异常'),
+    敏感描述: str('暂无异常'),
+    外观描述: str('气色正常'),
+    理智描述: str('情绪稳定'),
+  }).prefault({}),
+
+  // ===== 女性角色档案库（字典容器，UID 为 key） =====
+  女性角色: z.object({
+    UID顺序: z.array(z.string()).prefault([]).catch([]),
+  }).catchall(FemaleUserSchema).prefault(() => ({})),
+
+  // ===== 关系图谱（女性间全局，源UID → 目标UID → 关系对象） =====
+  关系图谱: z.record(z.string(), z.record(z.string(), RelationGraphEntrySchema)).prefault(() => ({})),
+
+  // ===== 事件日志 =====
+  事件: z.record(z.string(), EventLogSchema).prefault(() => ({})),
+
+  // ===== 结局追踪（中文键名，与 SQL endings 表对齐） =====
+  结局: EndingTrackSchema,
+
+  // ===== 课程表系统（周固定，按星期×时段二维结构） =====
+  课程表: z.object({
+    周一: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+    周二: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+    周三: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+    周四: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+    周五: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+    周六: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+    周日: z.array(z.object({
+      时段: str('上午'),
+      节次: num1,
+      科目: str(),
+      老师: str(),
+      '老师 UID': str(),
+      教室: str('高三2班'),
+      类型: z.enum(['正课','早读','自习','体育','实验','活动','班会']).prefault('正课').catch('正课'),
+      备注: str(''),
+    }).catchall(z.any()).prefault({})).prefault(() => []).catch([]),
+  }).catchall(z.any()).prefault({}),
+
+  // ===== 陌生女性生成模板 =====
+  陌生模板: z.record(z.string(), StrangerTemplateSchema).prefault(() => ({})),
+
+  // ===== 配置层（只读，AI 不可写） =====
+  配置: z.object({
+    经验阈值: z.array(z.coerce.number()).prefault([0, 30, 100, 200, 350]).catch([0, 30, 100, 200, 350]),
+    学业阈值: z.array(z.coerce.number()).prefault([0, 40, 60, 75, 90, 100]).catch([0, 40, 60, 75, 90, 100]),
+    天数阈值: z.array(z.coerce.number()).prefault([0, 30, 60, 95, 102]).catch([0, 30, 60, 95, 102]),
+    难度倍率: z.object({
+      // ===== 玩家方向（越难越苛刻）=====
+      玩家经验: z.array(z.coerce.number()).prefault([1.0, 0.7, 0.5]).catch([1.0, 0.7, 0.5]),
+      玩家每日上限: z.array(z.coerce.number()).prefault([1.3, 1.0, 0.7]).catch([1.3, 1.0, 0.7]),
+      玩家精力消耗: z.array(z.coerce.number()).prefault([0.8, 1.0, 1.3]).catch([0.8, 1.0, 1.3]),
+      玩家理智消耗: z.array(z.coerce.number()).prefault([0.8, 1.0, 1.3]).catch([0.8, 1.0, 1.3]),
+      玩家怀疑值: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      玩家金钱获取: z.array(z.coerce.number()).prefault([1.3, 1.0, 0.7]).catch([1.3, 1.0, 0.7]),
+      玩家压力增长: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      玩家健康恢复: z.array(z.coerce.number()).prefault([1.3, 1.0, 0.7]).catch([1.3, 1.0, 0.7]),
+      玩家技能经验: z.array(z.coerce.number()).prefault([1.2, 1.0, 0.8]).catch([1.2, 1.0, 0.8]),
+      // ===== 玩家初始值（越难越低）=====
+      初始精力: z.array(z.coerce.number()).prefault([100, 80, 60]).catch([100, 80, 60]),
+      初始理智: z.array(z.coerce.number()).prefault([100, 80, 60]).catch([100, 80, 60]),
+      初始精力上限: z.array(z.coerce.number()).prefault([100, 80, 60]).catch([100, 80, 60]),
+      初始体力上限: z.array(z.coerce.number()).prefault([100, 80, 60]).catch([100, 80, 60]),
+      初始金钱: z.array(z.coerce.number()).prefault([800, 500, 300]).catch([800, 500, 300]),
+      初始健康: z.array(z.coerce.number()).prefault([90, 75, 60]).catch([90, 75, 60]),
+      初始压力: z.array(z.coerce.number()).prefault([5, 10, 20]).catch([5, 10, 20]),
+      // ===== 女方方向（越难越宽松，与玩家相反）=====
+      女性使用频率: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      女性传播: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      女性技能成长: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      女性好感增长: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      女性信任增长: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      女性阶段升级: z.array(z.coerce.number()).prefault([0.7, 1.0, 1.3]).catch([0.7, 1.0, 1.3]),
+      女性初始能力上限: z.array(z.coerce.number()).prefault([60, 80, 100]).catch([60, 80, 100]),
+      女性初始好感: z.array(z.coerce.number()).prefault([30, 40, 50]).catch([30, 40, 50]),
+      女性初始信任: z.array(z.coerce.number()).prefault([50, 60, 70]).catch([50, 60, 70]),
+      女性初始理性: z.array(z.coerce.number()).prefault([90, 80, 70]).catch([90, 80, 70]),
+      女性初始执念: z.array(z.coerce.number()).prefault([10, 20, 30]).catch([10, 20, 30]),
+    }).prefault({}),
+    LCG常数: z.object({
+      天数乘数: z.coerce.number().prefault(7).catch(7),
+      小时乘数: z.coerce.number().prefault(13).catch(13),
+      ID乘数: z.coerce.number().prefault(7919).catch(7919),
+      阶段乘数: z.coerce.number().prefault(11).catch(11),
+      阶段后乘数: z.coerce.number().prefault(17).catch(17),
+      末乘数: z.coerce.number().prefault(31).catch(31),
+    }).prefault({}),
+    持有者每日使用上限: z.coerce.number().prefault(2).catch(2),
+    持有者经验倍率: z.coerce.number().prefault(1.5).catch(1.5),
+  }).catchall(z.any()).prefault({}),
+
+  // ===== UID 计数器 =====
+  UID计数器: z.record(z.string(), z.coerce.number()).prefault(() => ({
+    女性: 0,
+    事件: 0,
+  })),
+});
+
+$(() => {
+  registerMvuSchema(Schema);
+});

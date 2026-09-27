@@ -1,0 +1,1 @@
+var e=new Map;function t(t){e.set(t.id,t)}export{t};

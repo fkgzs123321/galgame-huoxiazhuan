@@ -1,0 +1,541 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   暗黑地牢视觉系统 v3 — 哥特黑暗风格
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+  --dd-gold: #c8a030;
+  --dd-gold-bright: #e8c050;
+  --dd-border: #4a3a28;
+  --dd-surface: #241d16;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #0a0705;
+  color: #c8b890;
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================================================
+   全局氛围层 — 噪点纹理 + 暗角 + 烟雾
+   ============================================================ */
+
+/* 噪点纹理叠加层 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* 暗角效果 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+}
+
+/* 应用容器背景 — 火把光晕 */
+#root {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 30%, rgba(200,160,48,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 50% 100%, rgba(107,24,24,0.03) 0%, transparent 60%),
+    linear-gradient(180deg, #15110d 0%, #0a0705 100%);
+  background-attachment: fixed;
+}
+
+/* ============================================================
+   滚动条 — 锈铁质感
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0705;
+  border-left: 1px solid #2a2018;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a3a28, #2a2018);
+  border: 1px solid #6a5238;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6a5238, #3a2f22);
+}
+
+/* ============================================================
+   核心面板 — 暗石质地，锐角边框
+   ============================================================ */
+
+.dd-panel {
+  position: relative;
+  background: linear-gradient(135deg, #2a2218 0%, #1e1813 100%);
+  border: 1px solid #4a3a28;
+  border-radius: 2px;
+  box-shadow:
+    0 4px 16px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(200,160,48,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+}
+
+/* 面板装饰边角 — 哥特L形角饰 */
+.dd-panel::before,
+.dd-panel::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #6a5238;
+  pointer-events: none;
+}
+.dd-panel::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+.dd-panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+/* 面板头部条 */
+.dd-panel-header {
+  background: linear-gradient(180deg, #322820 0%, #241d16 100%);
+  border-bottom: 1px solid #4a3a28;
+  padding: 8px 14px;
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  color: #c8a030;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* 头部底部金线 */
+.dd-panel-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #6a5238 20%, #6a5238 80%, transparent);
+}
+
+/* ============================================================
+   按钮 — 立体金属质感
+   ============================================================ */
+
+.dd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: linear-gradient(180deg, #2e251c 0%, #1e1813 100%);
+  border: 1px solid #4a3a28;
+  border-radius: 2px;
+  color: #c8b890;
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,48,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 2px 6px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.dd-btn:hover {
+  background: linear-gradient(180deg, #3a2f22 0%, #2a2218 100%);
+  border-color: #6a5238;
+  color: #e8c050;
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,48,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 2px 8px rgba(0,0,0,0.4),
+    0 0 8px rgba(200,160,48,0.1);
+}
+
+.dd-btn:active {
+  background: linear-gradient(180deg, #1e1813 0%, #2e251c 100%);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+  transform: translateY(1px);
+}
+
+.dd-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+/* 主要按钮 — 血红战斗色 */
+.dd-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: linear-gradient(180deg, #8b2020 0%, #5a1010 100%);
+  border: 1px solid #a83030;
+  border-radius: 2px;
+  color: #f0d8a8;
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 4px rgba(200,160,48,0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,48,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.4),
+    0 2px 8px rgba(0,0,0,0.4),
+    0 0 10px rgba(139,32,32,0.2);
+}
+
+.dd-btn-primary:hover {
+  background: linear-gradient(180deg, #a82828 0%, #6b1818 100%);
+  border-color: #c83030;
+  color: #ffe8c0;
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,48,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.4),
+    0 2px 10px rgba(0,0,0,0.5),
+    0 0 14px rgba(168,40,40,0.3);
+}
+
+.dd-btn-primary:active {
+  background: linear-gradient(180deg, #5a1010 0%, #8b2020 100%);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+  transform: translateY(1px);
+}
+
+/* 危险按钮 */
+.dd-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: linear-gradient(180deg, #4a1010 0%, #2a0808 100%);
+  border: 1px solid #6b1818;
+  border-radius: 2px;
+  color: #c88080;
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+.dd-btn-danger:hover {
+  background: linear-gradient(180deg, #6b1818 0%, #3a0c0c 100%);
+  border-color: #8b2020;
+  color: #e8a0a0;
+}
+
+/* ============================================================
+   状态条 — 棱角分明
+   ============================================================ */
+
+.dd-bar {
+  height: 8px;
+  background: #0a0705;
+  border: 1px solid #2a2018;
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.dd-bar-fill {
+  height: 100%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.dd-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+}
+
+/* HP颜色 */
+.dd-hp-high { background: linear-gradient(90deg, #3d6b3d, #5a9a3a); }
+.dd-hp-mid  { background: linear-gradient(90deg, #8a7028, #c8a030); }
+.dd-hp-low  { background: linear-gradient(90deg, #6b1818, #a82828); }
+
+/* 压力条 */
+.dd-stress-fill { background: linear-gradient(90deg, #4a1818, #7a2820, #a83828); }
+
+/* 压力>100 溢出状态 — 血红脉冲 */
+.dd-stress-overflow {
+  background: linear-gradient(90deg, #6b1010, #a81818, #c83030);
+  animation: dd-stress-pulse 1s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(168,40,40,0.6);
+}
+@keyframes dd-stress-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+
+/* ============================================================
+   分隔线
+   ============================================================ */
+
+.dd-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4a3a28 15%, #4a3a28 85%, transparent);
+  position: relative;
+}
+
+.dd-divider::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: #4a3a28;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* ============================================================
+   英雄职业颜色 — 更暗的DD色调
+   ============================================================ */
+.class-crusader { color: #c85050; }
+.class-highwayman { color: #5a8abc; }
+.class-vestal { color: #d4b04a; }
+.class-plague_doctor { color: #5aa550; }
+.class-hellion { color: #d06820; }
+.class-leper { color: #a89878; }
+.class-bounty_hunter { color: #c08828; }
+.class-occultist { color: #8850a8; }
+.class-grave_robber { color: #50a888; }
+.class-jester { color: #c04880; }
+.class-arbalest { color: #48b0c8; }
+.class-antiquarian { color: #c8a830; }
+.class-abomination { color: #a03030; }
+.class-flagellant { color: #b01818; }
+.class-houndmaster { color: #a88830; }
+.class-shieldbreaker { color: #38b0a0; }
+.class-man_at_arms { color: #c06820; }
+
+/* ============================================================
+   战斗动画
+   ============================================================ */
+
+/* 攻击者震动 */
+@keyframes dd-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-6px) rotate(-2deg); }
+  30% { transform: translateX(6px) rotate(2deg); }
+  45% { transform: translateX(-4px) rotate(-1deg); }
+  60% { transform: translateX(4px) rotate(1deg); }
+  75% { transform: translateX(-2px); }
+}
+.dd-anim-shake { animation: dd-shake 0.5s ease-in-out; }
+
+/* 受击红色闪烁 */
+@keyframes dd-hit-flash {
+  0%, 100% { background-color: transparent; box-shadow: none; }
+  30% { background-color: rgba(168,40,40,0.3); box-shadow: 0 0 16px rgba(168,40,40,0.5); }
+  60% { background-color: rgba(168,40,40,0.15); box-shadow: 0 0 8px rgba(168,40,40,0.3); }
+}
+.dd-anim-hit { animation: dd-hit-flash 0.6s ease-in-out; }
+
+/* 治疗绿色闪烁 */
+@keyframes dd-heal-flash {
+  0%, 100% { background-color: transparent; box-shadow: none; }
+  30% { background-color: rgba(90,165,80,0.25); box-shadow: 0 0 16px rgba(90,165,80,0.3); }
+  60% { background-color: rgba(90,165,80,0.1); box-shadow: 0 0 8px rgba(90,165,80,0.2); }
+}
+.dd-anim-heal { animation: dd-heal-flash 0.6s ease-in-out; }
+
+/* 当前行动者脉冲高亮 */
+@keyframes dd-turn-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,160,48,0.4), 0 4px 16px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 16px 4px rgba(200,160,48,0.3), 0 4px 16px rgba(0,0,0,0.5); }
+}
+.dd-anim-turn { animation: dd-turn-pulse 1.8s ease-in-out infinite; }
+
+/* 胜利淡入 */
+@keyframes dd-victory-in {
+  0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.dd-anim-victory { animation: dd-victory-in 0.6s ease-out; }
+
+/* 奖励物品弹出 */
+@keyframes dd-reward-pop {
+  0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.dd-anim-reward { animation: dd-reward-pop 0.5s ease-out backwards; }
+
+/* 火把闪烁 */
+@keyframes dd-torch-flicker {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  10% { opacity: 0.92; filter: brightness(0.95); }
+  20% { opacity: 1; filter: brightness(1.05); }
+  35% { opacity: 0.88; filter: brightness(0.92); }
+  50% { opacity: 1; filter: brightness(1); }
+  65% { opacity: 0.95; filter: brightness(0.97); }
+  80% { opacity: 1; filter: brightness(1.03); }
+  90% { opacity: 0.9; filter: brightness(0.94); }
+}
+.dd-anim-flicker { animation: dd-torch-flicker 4s ease-in-out infinite; }
+
+/* 雾气漂浮 */
+@keyframes dd-fog {
+  0% { transform: translateX(0) translateY(0); opacity: 0.15; }
+  50% { transform: translateX(-30px) translateY(-10px); opacity: 0.08; }
+  100% { transform: translateX(-60px) translateY(0); opacity: 0.15; }
+}
+.dd-anim-fog { animation: dd-fog 30s ease-in-out infinite alternate; }
+
+/* 拖拽 */
+.dd-drag-over {
+  ring: 2px solid #c8a030;
+  border-color: #c8a030 !important;
+  box-shadow: 0 0 12px rgba(200,160,48,0.3) !important;
+}
+.dd-dragging {
+  opacity: 0.4 !important;
+}
+
+/* ============================================================
+   标签/徽章
+   ============================================================ */
+
+.dd-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid #4a3a28;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #2a2218, #1e1813);
+  font-size: 11px;
+  color: #c8b890;
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: inset 0 1px 0 rgba(200,160,48,0.05);
+}
+
+.dd-tag-positive {
+  border-color: #3d5a28;
+  color: #7aaa50;
+  background: linear-gradient(180deg, #1a2410, #0e1208);
+}
+
+.dd-tag-negative {
+  border-color: #6b1818;
+  color: #c87070;
+  background: linear-gradient(180deg, #241010, #180808);
+}
+
+.dd-tag-locked {
+  border-color: #2a2018;
+  color: #5a4a38;
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ============================================================
+   输入框
+   ============================================================ */
+
+.dd-input {
+  background: #0a0705;
+  border: 1px solid #4a3a28;
+  border-radius: 2px;
+  color: #c8b890;
+  padding: 6px 10px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.dd-input:focus {
+  border-color: #6a5238;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px rgba(200,160,48,0.1);
+}
+
+/* ============================================================
+   稀有度颜色
+   ============================================================ */
+.dd-rarity-common { color: #9a8a70; border-color: #4a3a28; }
+.dd-rarity-uncommon { color: #5aa550; border-color: #3d5a28; }
+.dd-rarity-rare { color: #4a8acc; border-color: #2a4a6a; }
+.dd-rarity-very_rare { color: #a050c0; border-color: #4a2a5a; }
+.dd-rarity-ancestral { color: #c8a030; border-color: #6a5210; }
+.dd-rarity-civic { color: #a06820; border-color: #5a3810; }
+
+/* ============================================================
+   文字效果
+   ============================================================ */
+.dd-text-gold {
+  color: #c8a030;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(200,160,48,0.15);
+}
+
+.dd-text-blood {
+  color: #c83030;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(168,40,40,0.2);
+}
+
+/* 标题大字 */
+.dd-title {
+  font-family: 'Cinzel', 'Noto Serif SC', serif;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 10px rgba(200,160,48,0.15),
+    0 2px 4px rgba(0,0,0,0.8),
+    0 0 20px rgba(200,160,48,0.08);
+}

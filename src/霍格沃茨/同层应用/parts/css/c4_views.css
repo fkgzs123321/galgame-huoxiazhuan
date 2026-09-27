@@ -1,0 +1,752 @@
+/* ============================================================
+   霍格沃茨 · 同层应用 视图样式
+   ============================================================ */
+
+/* ============================================================
+   首页（剧情流 + 学年时间线）
+   ============================================================ */
+#hgw-home-hero {
+  position: relative;
+  border-radius: var(--hgw-r-lg);
+  padding: 28px 24px;
+  margin-bottom: var(--hgw-gap-lg);
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(201, 162, 39, 0.14), transparent 50%),
+    linear-gradient(135deg, #14202f, #0d1520);
+  border: 1px solid var(--hgw-gold-line);
+  box-shadow: var(--hgw-shadow-md);
+  overflow: hidden;
+}
+#hgw-home-hero::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.1), transparent 70%);
+}
+#hgw-home-hero .hero-title {
+  font-family: var(--hgw-font-title);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--hgw-gold-bright);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+}
+#hgw-home-hero .hero-sub {
+  font-size: var(--hgw-fs-sm);
+  color: var(--hgw-text-dim);
+  margin-top: 6px;
+  line-height: 1.8;
+}
+#hgw-home-hero .hero-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* 学年时间线 */
+.hgw-timeline {
+  position: relative;
+  padding-left: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hgw-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--hgw-gold), var(--hgw-gold-dim), transparent);
+  border-radius: 2px;
+}
+.hgw-tl-item {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: var(--hgw-r-md);
+  transition: all var(--hgw-dur-fast);
+  cursor: pointer;
+}
+.hgw-tl-item::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--hgw-bg1);
+  border: 2px solid var(--hgw-gold-dim);
+}
+.hgw-tl-item.done::before { background: var(--hgw-gold); border-color: var(--hgw-gold-bright); }
+.hgw-tl-item.now::before {
+  background: var(--hgw-gold-bright);
+  border-color: var(--hgw-gold-bright);
+  box-shadow: 0 0 10px rgba(232, 212, 139, 0.8);
+  animation: hgw-pulse 1.6s ease-in-out infinite;
+}
+.hgw-tl-item:hover { background: rgba(255, 255, 255, 0.03); }
+.hgw-tl-item .tl-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--hgw-fs-md);
+  font-weight: 600;
+  color: var(--hgw-text-bright);
+}
+.hgw-tl-item .tl-sub { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); margin-top: 2px; }
+.hgw-tl-item .tl-desc { font-size: var(--hgw-fs-sm); color: var(--hgw-text-dim); margin-top: 4px; line-height: 1.7; }
+
+/* 剧情流 */
+#hgw-story {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+.hgw-msg {
+  max-width: 86%;
+  padding: 10px 14px;
+  border-radius: var(--hgw-r-md);
+  font-size: var(--hgw-fs-md);
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-word;
+  animation: hgw-view-in var(--hgw-dur-md) var(--hgw-ease) both;
+}
+.hgw-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0.08));
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-top-right-radius: 4px;
+}
+.hgw-msg.ai {
+  align-self: flex-start;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-top-left-radius: 4px;
+}
+.hgw-msg.sys {
+  align-self: center;
+  background: rgba(127, 208, 168, 0.05);
+  border: 1px solid rgba(127, 208, 168, 0.2);
+  color: var(--hgw-ok);
+  font-size: var(--hgw-fs-xs);
+  max-width: 70%;
+  text-align: center;
+}
+.hgw-msg .who {
+  font-size: var(--hgw-fs-xs);
+  color: var(--hgw-gold-bright);
+  margin-bottom: 3px;
+  font-weight: 600;
+}
+.hgw-msg .who.user-who { color: var(--hgw-text-dim); }
+.hgw-msg .settle-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(127, 208, 168, 0.12);
+  color: var(--hgw-ok);
+  margin-bottom: 4px;
+}
+
+/* ============================================================
+   状态视图
+   ============================================================ */
+#hgw-status-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--hgw-gap-md);
+  margin-bottom: var(--hgw-gap-lg);
+}
+.hgw-realm-card {
+  text-align: center;
+  padding: 18px 12px;
+  position: relative;
+  overflow: hidden;
+}
+.hgw-realm-card .realm-name {
+  font-family: var(--hgw-font-title);
+  font-size: var(--hgw-fs-xl);
+  font-weight: 700;
+  color: var(--hgw-gold-bright);
+  letter-spacing: 2px;
+  text-shadow: 0 0 16px rgba(201, 162, 39, 0.4);
+}
+.hgw-realm-card .realm-layer { font-size: var(--hgw-fs-sm); color: var(--hgw-text-dim); margin-top: 2px; }
+.hgw-realm-card .realm-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.12), transparent 60%);
+  pointer-events: none;
+}
+.hgw-realm-card .break-hint {
+  font-size: var(--hgw-fs-xs);
+  color: var(--hgw-text-faint);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.hgw-realm-card .break-hint.ready { color: var(--hgw-ok); }
+
+/* 属性条列表 */
+.hgw-attr-list { display: flex; flex-direction: column; gap: 10px; }
+.hgw-attr-row .hgw-bar-label { margin-bottom: 3px; }
+
+/* 咒语格子 */
+.hgw-spell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.hgw-spell-cell {
+  padding: 10px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: center;
+  transition: all var(--hgw-dur-fast);
+}
+.hgw-spell-cell .sname { font-size: var(--hgw-fs-md); color: var(--hgw-text-bright); font-weight: 600; }
+.hgw-spell-cell .slv { font-size: var(--hgw-fs-xs); color: var(--hgw-gold-bright); margin: 2px 0 6px; }
+.hgw-spell-cell.locked { opacity: 0.4; }
+.hgw-spell-cell.locked .sname { color: var(--hgw-text-faint); }
+
+/* 背包格子 */
+.hgw-inv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+.hgw-inv-cell {
+  padding: 10px 8px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: center;
+  position: relative;
+}
+.hgw-inv-cell .iname { font-size: var(--hgw-fs-sm); color: var(--hgw-text-bright); }
+.hgw-inv-cell .inum { font-size: var(--hgw-fs-lg); color: var(--hgw-gold-bright); font-weight: 700; margin-top: 2px; }
+.hgw-inv-cell .irank { position: absolute; top: 4px; right: 6px; font-size: 9px; }
+
+/* ============================================================
+   课表视图
+   ============================================================ */
+.hgw-session-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--hgw-gap-md);
+}
+.hgw-session-card {
+  padding: 14px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: all var(--hgw-dur-fast);
+}
+.hgw-session-card:hover { border-color: var(--hgw-gold-line); }
+.hgw-session-card .sess-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.hgw-session-card .sess-time {
+  font-family: var(--hgw-font-title);
+  font-size: var(--hgw-fs-lg);
+  font-weight: 700;
+  color: var(--hgw-gold-bright);
+  letter-spacing: 2px;
+}
+.hgw-session-card .sess-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.hgw-session-card .sess-pick {
+  margin-top: 10px;
+  text-align: right;
+}
+.hgw-session-card.current { border-color: var(--hgw-gold); background: rgba(201, 162, 39, 0.07); }
+.hgw-session-card.finished { opacity: 0.75; }
+
+/* ============================================================
+   名录视图
+   ============================================================ */
+.hgw-char-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px;
+}
+.hgw-char-ava {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  border: 2px solid var(--hgw-gold-dim);
+  background: linear-gradient(135deg, #2c3e50, #1a252f);
+  position: relative;
+}
+.hgw-char-ava .house-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid;
+  opacity: 0.6;
+}
+.hgw-char-card .c-info { flex: 1; min-width: 0; }
+.hgw-char-card .c-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--hgw-fs-lg);
+  font-weight: 700;
+  color: var(--hgw-text-bright);
+}
+.hgw-char-card .c-meta { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); margin-top: 2px; }
+.hgw-char-card .c-tags { margin-top: 6px; }
+.hgw-char-card .c-axes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.hgw-axis-mini {
+  text-align: center;
+  padding: 6px 4px;
+  border-radius: var(--hgw-r-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.hgw-axis-mini .ax { font-size: 9px; color: var(--hgw-text-faint); }
+.hgw-axis-mini .av { font-size: var(--hgw-fs-md); font-weight: 700; color: var(--hgw-text-bright); font-variant-numeric: tabular-nums; }
+
+/* 角色详情 */
+.hgw-char-detail-hero {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: var(--hgw-gap-lg);
+  border-radius: var(--hgw-r-lg);
+  background:
+    radial-gradient(ellipse at 85% 10%, rgba(201, 162, 39, 0.12), transparent 55%),
+    linear-gradient(135deg, #16202e, #0e1622);
+  border: 1px solid var(--hgw-gold-line);
+}
+.hgw-char-detail-hero .big-ava {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  color: #fff;
+  border: 3px solid var(--hgw-gold);
+  box-shadow: var(--hgw-shadow-glow);
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #2c3e50, #1a252f);
+}
+.hgw-char-detail-hero .d-name { font-family: var(--hgw-font-title); font-size: var(--hgw-fs-2xl); font-weight: 700; color: var(--hgw-gold-bright); letter-spacing: 2px; }
+.hgw-char-detail-hero .d-meta { font-size: var(--hgw-fs-sm); color: var(--hgw-text-dim); margin-top: 4px; }
+.hgw-char-detail-hero .d-secret {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--hgw-r-sm);
+  background: rgba(142, 124, 195, 0.07);
+  border: 1px solid var(--hgw-magic-line);
+  color: #c3b4e8;
+  font-size: var(--hgw-fs-xs);
+  line-height: 1.7;
+}
+.hgw-char-detail-hero .d-voice {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: var(--hgw-r-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--hgw-text-dim);
+  font-size: var(--hgw-fs-xs);
+  font-style: italic;
+  line-height: 1.7;
+}
+
+/* 关系图谱 */
+#hgw-bond-map {
+  width: 100%;
+  height: 360px;
+  border-radius: var(--hgw-r-md);
+  background: radial-gradient(ellipse at center, rgba(201, 162, 39, 0.05), transparent 70%);
+}
+
+/* ============================================================
+   战斗视图
+   ============================================================ */
+#hgw-battle-stage {
+  position: relative;
+  border-radius: var(--hgw-r-lg);
+  overflow: hidden;
+  border: 1px solid var(--hgw-gold-line);
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(201, 162, 39, 0.1), transparent 60%),
+    linear-gradient(180deg, #141d2c, #0c131e);
+  padding: 20px;
+  margin-bottom: var(--hgw-gap-lg);
+}
+#hgw-battle-stage .duel-title {
+  text-align: center;
+  font-family: var(--hgw-font-title);
+  font-size: var(--hgw-fs-xl);
+  letter-spacing: 6px;
+  color: var(--hgw-gold-bright);
+  margin-bottom: 16px;
+  text-shadow: 0 0 16px rgba(201, 162, 39, 0.4);
+}
+.hgw-duel-hp {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.hgw-duel-side { text-align: center; }
+.hgw-duel-side .side-name { font-size: var(--hgw-fs-md); font-weight: 700; color: var(--hgw-text-bright); margin-bottom: 4px; }
+.hgw-duel-side .side-sub { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); margin-bottom: 8px; }
+.hgw-duel-vs {
+  font-family: var(--hgw-font-title);
+  font-size: var(--hgw-fs-2xl);
+  font-weight: 700;
+  color: var(--hgw-gold-dim);
+  text-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+  padding: 0 8px;
+}
+.hgw-hp-block { margin-bottom: 6px; }
+.hgw-hp-block .hp-num {
+  font-family: var(--hgw-font-serif);
+  font-size: var(--hgw-fs-lg);
+  font-weight: 700;
+  color: var(--hgw-text-bright);
+  font-variant-numeric: tabular-nums;
+}
+.hgw-hp-block .hp-max { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); }
+
+.hgw-buff-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  justify-content: center;
+}
+.hgw-buff-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: var(--hgw-r-full);
+  background: rgba(142, 124, 195, 0.1);
+  border: 1px solid var(--hgw-magic-line);
+  color: #c3b4e8;
+}
+.hgw-buff-chip.debuff {
+  background: rgba(226, 75, 74, 0.08);
+  border-color: var(--hgw-danger-line);
+  color: var(--hgw-danger);
+}
+
+/* 咒语选择区 */
+.hgw-spell-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+.hgw-spell-pick .pick-cell {
+  padding: 12px 8px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--hgw-dur-fast);
+  user-select: none;
+}
+.hgw-spell-pick .pick-cell:hover { border-color: var(--hgw-gold-line); background: rgba(255, 255, 255, 0.05); }
+.hgw-spell-pick .pick-cell.picked {
+  border-color: var(--hgw-gold);
+  background: rgba(201, 162, 39, 0.12);
+  box-shadow: var(--hgw-shadow-gold);
+}
+.hgw-spell-pick .pick-cell.picked::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: var(--hgw-gold-bright);
+  font-weight: 700;
+}
+.hgw-spell-pick .pick-cell .pc-name { font-size: var(--hgw-fs-md); font-weight: 600; color: var(--hgw-text-bright); }
+.hgw-spell-pick .pick-cell .pc-dmg { font-size: var(--hgw-fs-xs); color: var(--hgw-gold-bright); margin-top: 2px; }
+.hgw-spell-pick .pick-cell .pc-desc { font-size: 9px; color: var(--hgw-text-faint); margin-top: 2px; }
+.hgw-spell-pick .pick-cell .pc-type { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 4px; margin-top: 4px; background: rgba(142, 124, 195, 0.12); color: #c3b4e8; }
+.hgw-spell-pick .pick-cell.locked { opacity: 0.35; cursor: not-allowed; }
+
+/* 她实力卡 */
+.hgw-skill-block { display: flex; flex-wrap: wrap; gap: 10px; }
+.hgw-skill-chip {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 12px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.hgw-skill-chip .sc-name { font-size: var(--hgw-fs-sm); font-weight: 600; color: var(--hgw-text-bright); }
+.hgw-skill-chip .sc-lv { font-size: var(--hgw-fs-xs); color: var(--hgw-gold-bright); }
+.hgw-skill-chip .sc-type { font-size: 9px; color: var(--hgw-text-faint); margin-top: 2px; }
+
+/* 战斗日志 */
+.hgw-battle-log {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--hgw-r-md);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: var(--hgw-fs-xs);
+  color: var(--hgw-text-dim);
+  line-height: 1.8;
+}
+.hgw-battle-log .lg-turn { color: var(--hgw-gold-bright); font-weight: 600; }
+.hgw-battle-log .lg-you { color: var(--hgw-ok); }
+.hgw-battle-log .lg-her { color: var(--hgw-danger); }
+.hgw-battle-log .lg-sys { color: var(--hgw-text-faint); }
+
+/* ============================================================
+   做爱视图
+   ============================================================ */
+.hgw-love-dims { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.hgw-dim-card { padding: 12px 10px; text-align: center; }
+.hgw-dim-card .dname { font-size: var(--hgw-fs-sm); color: var(--hgw-text-dim); }
+.hgw-dim-card .dval {
+  font-family: var(--hgw-font-serif);
+  font-size: var(--hgw-fs-xl);
+  font-weight: 700;
+  color: var(--hgw-text-bright);
+  font-variant-numeric: tabular-nums;
+  margin: 2px 0 6px;
+}
+.hgw-dim-card.orgasm-flag { border-color: var(--hgw-love-line); background: rgba(212, 83, 126, 0.08); animation: hgw-heartbeat 1.2s ease-in-out infinite; }
+.hgw-dim-card.orgasm-flag .dname { color: #f0a6c0; }
+
+/* 动作编排器 */
+.hgw-combo-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.hgw-combo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(212, 83, 126, 0.06);
+  border: 1px solid var(--hgw-love-line);
+  border-radius: var(--hgw-r-md);
+  font-size: var(--hgw-fs-sm);
+  color: var(--hgw-text);
+  animation: hgw-view-in var(--hgw-dur-fast) both;
+}
+.hgw-combo-item .ci-idx {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(212, 83, 126, 0.15);
+  color: #f0a6c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.hgw-combo-item .ci-del { margin-left: auto; cursor: pointer; color: var(--hgw-text-faint); }
+.hgw-combo-item .ci-del:hover { color: var(--hgw-danger); }
+
+/* 契合度提示 */
+.hgw-fit-hint {
+  padding: 10px 14px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(142, 124, 195, 0.06);
+  border: 1px solid var(--hgw-magic-line);
+  color: #c3b4e8;
+  font-size: var(--hgw-fs-xs);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.hgw-fit-hint .fh-title { font-weight: 700; color: #d8ccf5; margin-bottom: 2px; }
+
+/* 历史轮 */
+.hgw-hist-list { display: flex; flex-direction: column; gap: 6px; }
+.hgw-hist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--hgw-r-md);
+  font-size: var(--hgw-fs-xs);
+  color: var(--hgw-text-dim);
+}
+.hgw-hist-item .hi-round { font-weight: 700; color: var(--hgw-gold-bright); }
+
+/* ============================================================
+   炼药 / 商店视图
+   ============================================================ */
+.hgw-recipe-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.hgw-recipe-row .rr-name { font-weight: 600; color: var(--hgw-text-bright); min-width: 72px; }
+.hgw-recipe-row .rr-req { font-size: var(--hgw-fs-xs); color: var(--hgw-text-dim); }
+.hgw-recipe-row .rr-desc { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); flex: 1; min-width: 120px; }
+.hgw-recipe-row .rr-rate { font-size: var(--hgw-fs-xs); color: var(--hgw-gold-bright); white-space: nowrap; }
+
+.hgw-shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.hgw-shop-cell { text-align: center; padding: 12px 8px; }
+.hgw-shop-cell .sprice { font-size: var(--hgw-fs-lg); font-weight: 700; color: var(--hgw-gold-bright); margin: 4px 0 8px; }
+.hgw-shop-cell .sprice small { font-size: 10px; color: var(--hgw-text-faint); font-weight: 400; }
+
+/* 坩埚动画区 */
+.hgw-brew-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: var(--hgw-r-md);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 14px;
+}
+.hgw-brew-stage .bs-txt {
+  font-family: var(--hgw-font-title);
+  color: var(--hgw-gold-bright);
+  font-size: var(--hgw-fs-lg);
+  letter-spacing: 3px;
+}
+
+/* ============================================================
+   日志 / 记录视图
+   ============================================================ */
+.hgw-log-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: var(--hgw-fs-xs);
+  line-height: 1.7;
+}
+.hgw-log-item .li-time { color: var(--hgw-text-faint); white-space: nowrap; }
+.hgw-log-item .li-type { white-space: nowrap; }
+.hgw-log-item .li-body { color: var(--hgw-text-dim); flex: 1; word-break: break-word; }
+.hgw-log-item.type-battle { border-left: 3px solid var(--hgw-danger); }
+.hgw-log-item.type-love { border-left: 3px solid var(--hgw-love); }
+.hgw-log-item.type-brew { border-left: 3px solid var(--hgw-ok); }
+.hgw-log-item.type-break { border-left: 3px solid var(--hgw-magic); }
+.hgw-log-item.type-social { border-left: 3px solid var(--hgw-gold); }
+
+/* ============================================================
+   设置视图
+   ============================================================ */
+.hgw-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 8px;
+}
+.hgw-settings-row .sr-icon { font-size: 20px; width: 36px; text-align: center; }
+.hgw-settings-row .sr-title { font-size: var(--hgw-fs-md); font-weight: 600; color: var(--hgw-text-bright); }
+.hgw-settings-row .sr-desc { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); margin-top: 2px; }
+.hgw-settings-row .sr-action { margin-left: auto; }
+
+/* 开关 */
+.hgw-switch { position: relative; width: 42px; height: 22px; cursor: pointer; flex-shrink: 0; }
+.hgw-switch input { opacity: 0; width: 0; height: 0; }
+.hgw-switch .slider {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--hgw-r-full);
+  transition: all var(--hgw-dur-md);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.hgw-switch .slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: var(--hgw-text-dim);
+  transition: all var(--hgw-dur-md);
+}
+.hgw-switch input:checked + .slider {
+  background: rgba(201, 162, 39, 0.3);
+  border-color: var(--hgw-gold);
+}
+.hgw-switch input:checked + .slider::before {
+  transform: translateX(20px);
+  background: var(--hgw-gold-bright);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.6);
+}
+
+/* ============================================================
+   存档管理
+   ============================================================ */
+.hgw-save-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--hgw-dur-fast);
+}
+.hgw-save-card:hover { border-color: var(--hgw-gold-line); background: rgba(255, 255, 255, 0.04); }
+.hgw-save-card .sv-ava { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #2c3e50, #1a252f); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.hgw-save-card .sv-meta { flex: 1; min-width: 0; }
+.hgw-save-card .sv-name { font-size: var(--hgw-fs-md); font-weight: 600; color: var(--hgw-text-bright); }
+.hgw-save-card .sv-time { font-size: var(--hgw-fs-xs); color: var(--hgw-text-faint); margin-top: 2px; }
+.hgw-save-card .sv-info { font-size: 10px; color: var(--hgw-text-faint); margin-top: 2px; }
+.hgw-save-card.active { border-color: var(--hgw-gold); background: rgba(201, 162, 39, 0.07); }
+
+/* ============================================================
+   结算块展示（消息内）
+   ============================================================ */
+.hgw-settle-block {
+  margin: 6px 0;
+  padding: 8px 12px;
+  border-radius: var(--hgw-r-sm);
+  background: rgba(127, 208, 168, 0.05);
+  border: 1px dashed rgba(127, 208, 168, 0.3);
+  font-size: var(--hgw-fs-xs);
+  color: var(--hgw-ok);
+  font-family: Consolas, monospace;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/文风/淫视叙事总纲",
+    "value": {
+      "path": "世界书/文风/淫视叙事总纲.txt",
+      "abstract": "叙述层最高准则：色情滤镜、优先级、表现尺度、镜头与画面流、段落编织、行文、事件不越权、非性场景、对白嵌入、拟声排版、密度基准",
+      "keywords": []
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/文风/淫视肉体落笔",
+    "value": {
+      "path": "世界书/文风/淫视肉体落笔.txt",
+      "abstract": "雌性肉体落笔法：三层落笔、观察方位、体型落点五档、动态与外力介入、自行反应、取材时机、声音、密度下限参照",
+      "keywords": []
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/文风/骚妈层",
+    "value": {
+      "contents": [
+        { "content": "@@if getvar('stat_data.镜头.绑定深度', { defaults: 0 }) < 60" },
+        { "file": "世界书/文风/骚妈层.txt" }
+      ],
+      "abstract": "味道层·无尽骚妈：绑定深度<60 时生效。远看体面近看揭布，脏度全在台词，叙述只给体面与旁人反应，❤ 插句中",
+      "keywords": []
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/文风/母猪层",
+    "value": {
+      "contents": [
+        { "content": "@@if getvar('stat_data.镜头.绑定深度', { defaults: 0 }) >= 60" },
+        { "file": "世界书/文风/母猪层.txt" }
+      ],
+      "abstract": "味道层·母猪：绑定深度≥60 时生效。三级脏度表、十三条铁律、强欲与极致两档、四阶段快感循环、角色锚定",
+      "keywords": []
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/文风/词料速查",
+    "value": {
+      "path": "世界书/文风/词料速查.txt",
+      "abstract": "选词规范：模糊指代禁令、器官名与脏字定语、雄性雌性词料全表、温湿词区分、复合词组合、雅词限额与禁区、可数判据",
+      "keywords": []
+    }
+  }
+]

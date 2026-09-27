@@ -1,0 +1,241 @@
+# MVU变量完整列表
+# 创意重构 v2.0：受害者视角·飞机杯系统·精液成瘾能力
+# 此文件为参考文档，不参与EJS渲染
+
+时间系统:
+  日期:
+    type: string
+    description: 当前游戏内日期（YYYY.MM.DD）
+  星期:
+    type: string
+    description: 星期几
+  时间:
+    type: string
+    description: HH:MM 格式时间（每楼层+30分钟）
+
+玩家:
+  # 飞机杯三系统（3）
+  当前位置:
+    type: string
+    description: 园区分区
+  飞机杯当前绑定:
+    type: string
+    description: 当前绑定女性名/'无'
+  飞机杯定位:
+    type: string
+    description: 飞机杯当前位置
+
+  # 生存属性（5·0-100）
+  体力: { type: number, range: 0~100 }
+  精神: { type: number, range: 0~100 }
+  饥饿: { type: number, range: 0~100, description: 越高越饿 }
+  脱水: { type: number, range: 0~100 }
+  疲劳: { type: number, range: 0~100 }
+
+  # NSFW属性（3·飞机杯系统）
+  性欲: { type: number, range: 0~100 }
+  勃起度: { type: number, range: 0~100 }
+  累计射精次数: { type: number, range: ≥0 }
+
+  # 经济物品（2）
+  金钱: { type: number, range: ≥0 }
+  持有物品: { type: array }
+
+  # user专属（4·0-100）
+  容貌值:
+    type: number
+    range: 0~100
+    description: 影响女性NPC态度与精液成瘾速度（不参与以貌定性别）
+  性别稀缺度: { type: number, range: 0~100 }
+  被觊觎度: { type: number, range: 0~100 }
+  生育价值: { type: number, range: 0~100 }
+
+  # 受害者状态（11·0-100）
+  伪装度: { type: number, range: 0~100 }
+  逃跑准备: { type: number, range: 0~100 }
+  情报网: { type: number, range: ≥0 }
+  信任值: { type: number, range: 0~100 }
+  伤势: { type: number, range: 0~100 }
+  恐惧值: { type: number, range: 0~100 }
+  希望值: { type: number, range: 0~100 }
+  被迫度: { type: number, range: 0~100 }
+  权力接触:
+    type: boolean
+    default: false
+    description: 是否接触园区内部权力核心（影响D_反杀上位结局）
+  外部援助:
+    type: boolean
+    default: false
+    description: 是否获得外部援助（影响E_被救结局）
+  警方线索:
+    type: number
+    range: 0~5
+    description: ≥3触发E_被救结局
+
+  # 精液成瘾能力（7·本次创意核心）
+  精液成瘾能力:
+    已觉醒: { type: boolean, default: true }
+    觉醒进度: { type: number, range: 0~100 }
+    已触发口服次数: { type: number, range: ≥0, description: 隐藏底牌（园区不知晓） }
+    已触发内射次数: { type: number, range: ≥0, description: 园区已知晓的触发方式 }
+    园区知晓程度: { type: number, range: 0~100, description: 园区对内射能力的掌握度 }
+    园区知晓途径: { type: string }
+    成瘾女性总数: { type: number, range: ≥0, description: 已成瘾女性数量（关键指标） }
+
+女性角色:
+  _说明: 按需动态生成，初始为空。每位女性角色70字段（飞机杯通用系统+精液成瘾扩展）
+  字段结构:
+    基础元数据:
+      身份: { type: string }
+      已激活: { type: boolean, description: 是否已被飞机杯绑定激活 }
+      被绑定状态: { type: boolean }
+      终局: { type: boolean }
+    飞机杯三系统:
+      察觉度: { type: number, range: 0~200 }
+      倾心度: { type: number, range: 0~200 }
+      具现度: { type: number, range: 0~200 }
+    精液成瘾系统:
+      成瘾度: { type: number, range: 0~100, description: ≥50触发爱意值上升，≥80病态依恋 }
+      爱意值: { type: number, range: 0~100 }
+      成瘾触发方式: { type: enum, values: [未触发, 口服, 内射, 双重] }
+      已口服次数: { type: number, range: ≥0 }
+      已内射次数: { type: number, range: ≥0 }
+      成瘾觉醒日期: { type: string }
+    服装状态:
+      整体着装状态: { type: enum, values: [全裸, 半裸, 着装, 未知] }
+      上身/裤子/胸罩/内裤/配饰: { type: string }
+    身体部位:
+      胸部: { 状态, 乳头, 敏感度(0-100) }
+      阴道: { 状态, 湿润度(0-100), 敏感度(0-100) }
+      肛门/嘴部/大腿/臀部: { 状态 }
+      肌肤: { 状态, 体温(30-45) }
+    生理状态:
+      是否已怀孕: { type: boolean }
+      周期日/怀孕周数/怀孕天数/受孕风险/体内精液量: { type: number }
+      生理周期阶段/受孕日期/末次月经日期/子宫状态: { type: string }
+      累计受孕率锁定: { type: boolean }
+      阶段基础率/最近暗骰结果: { type: number }
+      当前防护措施/上次结算日期/最近性行为时间戳/最近结算结果: { type: string }
+      生理状态描述/身体状况描述: { type: string }
+      近期性行为记录/结算历史: { type: array }
+    心理状态:
+      主导情绪/精神状态: { type: string }
+      情绪强度/羞耻感/恐惧感/欲望度/期待感/心理防线: { type: number, range: 0~100 }
+    实时状态:
+      当前姿势/当前动作/当前场景/互动进度/当前刺激部位: { type: string }
+    互动过程:
+      本轮高潮次数/本轮互动时长/本轮刺激强度/本轮快感累积/本轮心理冲击/高潮强度/射精量: { type: number }
+      敏感点反应: { type: string }
+    长期跟踪:
+      总互动次数/高潮次数/总内射次数/总潮吹次数: { type: number }
+      关系阶段/首次互动日期: { type: string }
+    总结:
+      总体发展趋势/近期变化方向/今日互动统计/最近变化: { type: string }
+      重要事件标记: { type: array }
+    状态文本:
+      心情/心声/当前状态: { type: string }
+
+男性角色:
+  _说明: 按需动态生成，6字段/角色（飞机杯通用系统）
+  字段结构:
+    是否在场: { type: boolean }
+    当前位置: { type: string }
+    服装: { 整体着装状态, 上身, 裤子 }
+    心情: { type: string }
+    当前状态: { type: string }
+
+园区:
+  # 阶段系统（3）
+  当前阶段:
+    type: enum
+    values: [入园恐惧, 适应求生, 暗中谋划, 逃脱行动, 结局]
+    description: 受害者路线的5个叙事阶段
+  剧情进度: { type: number, range: 1~100 }
+  结局分支: { type: string, description: 空=未确定，赋值后不可更改 }
+
+  # 暗网（5）
+  拍卖状态: { type: enum, values: [未上架, 拍卖中, 已成交, 已流拍] }
+  拍卖价格: { type: number }
+  直播次数: { type: number }
+  暗网知名度: { type: number, range: 0~100 }
+  买家关注: { type: array }
+
+  # 派系（5·-100~100）
+  园区董事会: { type: number, range: -100~100 }
+  管理层: { type: number, range: -100~100 }
+  打手团: { type: number, range: -100~100 }
+  受害者群: { type: number, range: -100~100 }
+  暗网网络: { type: number, range: -100~100 }
+
+  # 道德（1）
+  善恶值: { type: number, range: -100~100, description: <-50黑暗路线，>50光明路线 }
+
+  # 任务（3）
+  当前主线任务: { type: string }
+  已接取支线: { type: array }
+  已完成任务: { type: array }
+
+  # 情报（2）
+  已获取情报: { type: array }
+  待验证情报: { type: array }
+
+  # 成就（4）
+  已达成: { type: array }
+  生存天数: { type: number }
+  结识NPC数: { type: number }
+  救助人数: { type: number }
+
+  # 同伙（2）
+  已招募: { type: array }
+  待招募候选: { type: array }
+
+  # 证据（2）
+  已收集: { type: array }
+  已传递: { type: number }
+
+  # LCG（1）
+  LCG种子: { type: number, description: 确定性骰子种子，绑定message_id }
+
+  # 园区对user的利用（3·本次创意核心）
+  利用计划: { type: string, description: 龙姐对user精液成瘾能力的利用计划 }
+  利用进度: { type: number, range: 0~100, description: 利用计划推进度 }
+  已诈骗金额: { type: number, description: 通过user能力诈骗大陆女性的累计金额 }
+
+RPG:
+  # 六维属性（1-10）
+  力量: { type: number, range: 1~10, description: 格斗/搬运/体力上限 }
+  敏捷: { type: number, range: 1~10, description: 潜行/逃跑/反应 }
+  体质: { type: number, range: 1~10, description: 抗打击/恢复/饥饿耐受 }
+  智力: { type: number, range: 1~10, description: 诈骗/技术/策划 }
+  感知: { type: number, range: 1~10, description: 观察/情报/警觉 }
+  魅力: { type: number, range: 1~10, description: 社交/说服/被关注（主动） }
+  未分配点数: { type: number, description: 开局30点，分配后归零 }
+
+  # 12技能（0-100）
+  诈骗术: { type: number, range: 0~100 }
+  格斗术: { type: number, range: 0~100 }
+  潜行术: { type: number, range: 0~100 }
+  社交术: { type: number, range: 0~100 }
+  技术术: { type: number, range: 0~100 }
+  求生术: { type: number, range: 0~100 }
+  伪装术: { type: number, range: 0~100, description: 专属技能，需学习 }
+  情报收集: { type: number, range: 0~100, description: 专属技能 }
+  逃脱术: { type: number, range: 0~100, description: 专属技能 }
+  交际手腕: { type: number, range: 0~100, description: 专属技能 }
+  暗网操作: { type: number, range: 0~100, description: 专属技能 }
+  拷问抗性: { type: number, range: 0~100, description: 专属技能 }
+
+  # 成长子树
+  成长:
+    力量使用计数/敏捷使用计数/体质使用计数/智力使用计数/感知使用计数/魅力使用计数: { type: number }
+    技能使用计数: { type: record, description: 按技能名记录成功次数 }
+
+人际:
+  NPC关系: { type: record, description: 按NPC名记录关系值(-100~100) }
+  当前在场角色: { type: array }
+  互动计数: { type: record }
+
+角色库:
+  已生成列表: { type: array }
+  当前交互角色: { type: string }
+  角色生成计数器: { type: number }

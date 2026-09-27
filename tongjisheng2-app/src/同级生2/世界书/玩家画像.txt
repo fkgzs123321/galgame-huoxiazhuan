@@ -1,0 +1,198 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 玩家画像
+   ════════════════════════════════════════════════════════════
+   本条目定义"玩家"作为操作者的角色定位、可执行操作边界、
+   以及与"主角"（角色内代入人格）的区分。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const PLAYER_PROFILE = {
+  // ─── 玩家定位 ───
+  role: '玩家（player）',
+  relationship_to_protagonist: '玩家是主角的操作者，不直接出现在故事中',
+  control_mode: '通过自然语言输入指示主角行为',
+
+  // ─── 玩家可执行操作（白名单） ───
+  allowed_actions: {
+    movement: ['移动到地点', '切换场景', '回家', '上学'],
+    interaction: ['与 NPC 对话', '送礼物', '约会邀请', '打工选择', '购买物品'],
+    daily_life: ['吃饭', '洗澡', '睡觉', '休息', '学习', '训练技能'],
+    time_advance: ['跳过时段', '跳过到次日', '确认下一时段行动'],
+    meta: ['查询物品栏', '查询经济', '查询关系网', '查询当前任务'],
+    choice: ['在剧情分支做选择', '接受/拒绝任务', '触发事件']
+  },
+
+  // ─── 玩家禁止操作（红线） ───
+  forbidden_actions: {
+    illegal: ['强迫猥亵', '强迫性行为', '闯入私宅', '暴力行为', '当众暴露'],
+    anti_game: ['跳过时段不通过 time_slot 推进', '直接修改变量值（必须通过 <UpdateVariable>）', '查看隐藏骰子结果'],
+    anti_narrative: ['要求 AI 跳过死结局判定', '要求 AI 改写历史', '要求 AI 改变其他女角对主角的态度']
+  },
+
+  // ─── 玩家身份选择（6 位可扮演男性角色 = 5 预设 + 1 自定义，开局选择） ───
+  // 每位男性有独立的剧情线和可攻略女角，原作男配角（N1~N4）在玩家未扮演时作为 NPC 推动剧情
+  // P6 自定义身份支持玩家自由创建：姓名/年龄/身份/住所/初始属性（总和≤360）/技能加成/性格倾向/背景
+  identity_options: {
+    '原作主角': {
+      name_placeholder: '{{user}}（可自定义姓名，默认相沢诚）',
+      age: 18,
+      description: '八十八学园三年生，鸣泽家义子（重组家庭），同级生2 第一男主',
+      home: '鸣泽家（与义妹唯、义母美佐子同住）',
+      school_access: true,
+      work_access: true,
+      initial_money: 5000,
+      initial_stats: { charm: 50, academic: 50, physical: 80, social: 50, perception: 30, willpower: 50 },
+      initial_relations: {
+        '鸣泽唯': { affection: 5, trust: 30, note: '义妹，已同居 10 年' },
+        '鸣泽美佐子': { affection: 10, trust: 40, note: '义母，关照多年' },
+        '水野友美': { affection: 15, trust: 35, note: '青梅竹马，邻居' },
+        '川尻信良': { affection: 20, trust: 45, note: '损友（玩家选 P1 时作为 NPC 存在）' }
+      },
+      advantage: '故事入口自然，所有 20 位女角都可能正常攻略；与鸣泽家有 10 年信任底子',
+      disadvantage: '无特殊技能加成；金钱起步仅 5000，需打工赚钱',
+      exclusive_route: '无（全女角开放攻略）'
+    },
+    '川尻信良': {
+      name_placeholder: '川尻信良',
+      age: 18,
+      description: '八十八学园三年生，相沢诚的知心朋友；洋子线的核心推动者',
+      home: '川尻家（自宅周边）',
+      school_access: true,
+      work_access: true,
+      initial_money: 4000,
+      initial_stats: { charm: 45, academic: 40, physical: 70, social: 60, perception: 40, willpower: 55 },
+      initial_relations: {
+        '南川洋子': { affection: 10, trust: 20, note: '同班同学，有些交集' },
+        '鸣泽唯': { affection: 0, trust: 10, note: '认识但不熟' },
+        '相沢诚': { affection: 20, trust: 45, note: '好友（玩家选 P2 时相沢诚作为 NPC 存在）' }
+      },
+      advantage: '社交能力较强（social=60）；与南川洋子有特殊联系，12/23 白蛇池公园告白事件可直接触发',
+      disadvantage: '金钱起步仅 4000；学业较差；与鸣泽家无家庭信任底子，唯/美佐子线难度提升',
+      exclusive_route: '南川洋子线专属：12/23 告白→12/29 放弃→洋子线转向玩家'
+    },
+    '长冈芳树': {
+      name_placeholder: '长冈芳树',
+      age: 18,
+      description: '八十八学园三年生，偷拍问题儿童；友美线反派 + 美纪线威胁者',
+      home: '长冈家（八十八町住宅区）',
+      school_access: true,
+      work_access: 'limited',
+      initial_money: 3000,
+      initial_stats: { charm: 35, academic: 45, physical: 60, social: 30, perception: 50, willpower: 20 },
+      initial_skills_bonus: { stealth: 40, observation: 50 },
+      initial_relations: {
+        '水野友美': { affection: -10, trust: -20, note: '被偷拍过，敌意' },
+        '加藤美纪': { affection: -5, trust: -10, note: '被威胁过' },
+        '大部分女角': { affection: 0, trust: 0, note: '名声差，初始印象负面' }
+      },
+      advantage: '潜行/观察技能加成（stealth=40, observation=50）；可触发独特的偷拍/情报收集剧情',
+      disadvantage: '名声极差（willpower=20）；大部分女角初始敌意或零信任；部分工作因名声被拒；金钱起步仅 3000',
+      exclusive_route: '友美线反派视角：12/26~27 友美家徘徊 / 12/29 威胁美纪 / 1/2 与西御寺秘谋'
+    },
+    '西御寺有友': {
+      name_placeholder: '西御寺有友',
+      age: 19,
+      description: '八十八学园三年生（留级），财阀独生子；唯线+美纪线+美铃线的核心反派',
+      home: '西御寺家豪宅（八十八町商业区）',
+      school_access: true,
+      work_access: false,
+      initial_money: 50000,
+      initial_stats: { charm: 60, academic: 30, physical: 50, social: 70, perception: 20, willpower: 40 },
+      initial_relations: {
+        '鸣泽唯': { affection: -20, trust: -30, note: '被骚扰过，敌意' },
+        '加藤美纪': { affection: -10, trust: -20, note: '被纠缠过' },
+        '片桐美铃': { affection: -15, trust: -25, note: '师生关系紧张' },
+        '大部分女角': { affection: '负数或 0', trust: '负数或 0', note: '名声差，有钱但恶劣' }
+      },
+      advantage: '金钱极多（50000，无需打工）；社交能力强（social=70）；魅力较高（charm=60）',
+      disadvantage: '名声差（willpower=40）；部分女角初始敌意；学业极差（academic=30）；无需打工但错过打工线事件',
+      exclusive_route: '反派视角：1/3 PM5:05 旅馆大厅唯误会事件 / 1/1 被相沢诚痛打（NPC 触发）'
+    },
+    '天道新干线': {
+      name_placeholder: '天道新干线',
+      age: 28,
+      description: '八十八学园教师，虐待狂；爱美线的核心反派',
+      home: '天道家（八十八町住宅区）',
+      school_access: true,
+      work_access: true,
+      initial_money: 20000,
+      initial_stats: { charm: 55, academic: 70, physical: 60, social: 65, perception: 15, willpower: 60 },
+      initial_relations: {
+        '安田爱美': { affection: 5, trust: 10, note: '有特殊企图' },
+        '片桐美铃': { affection: 10, trust: 20, note: '同事关系' },
+        '学生女角': { affection: 0, trust: 0, note: '师生距离' },
+        '校外女角': { affection: 0, trust: 0, note: '初识' }
+      },
+      advantage: '教师身份（可进入学校）；金钱较多（20000）；学业高（academic=70）；与片桐美铃有同事关系',
+      disadvantage: '年龄大（28岁），与学生女角有师生距离；爱美线特殊（12/26 告白→12/29~30 若不阻止则爱美沦为天道女友=BAD_END）；敏感度低（perception=15）',
+      exclusive_route: '爱美线专属：12/26 向爱美告白 / 12/29~30 若不阻止则爱美沦为天道女友（BAD_END）'
+    },
+    '自定义': {
+      name_placeholder: '{{user}}（玩家自定义姓名）',
+      age: '18~30（玩家自定义，建议 18~22 学生身份）',
+      description: '玩家自由创建的男主角，无固定身份',
+      home: '玩家自定义',
+      school_access: 'auto（年龄 ≤22 默认 true，≥23 需背景说明）',
+      work_access: true,
+      initial_money: '玩家自定义（0~50000，超过强制降至 50000）',
+      initial_stats: {
+        charm: '玩家自定义（0~80）',
+        academic: '玩家自定义（0~80）',
+        physical: '玩家自定义（0~80）',
+        social: '玩家自定义（0~80）',
+        perception: '玩家自定义（0~80）',
+        willpower: '玩家自定义（0~80）',
+        _constraint: '6 维总和 ≤ 360（防 OP）'
+      },
+      initial_skills_bonus: '玩家自定义（1 项 +30 或 2 项各 +15，可不选）',
+      initial_relations: '由 AI 根据背景描述生成（默认全 20 女角开放攻略，除背景明确亲属/师生关系）',
+      personality_tendency: {
+        gentleness: '玩家自定义（0~100，默认 50）',
+        decisiveness: '玩家自定义（0~100，默认 50）',
+        humor: '玩家自定义（0~100，默认 50）',
+        cautiousness: '玩家自定义（0~100，默认 50）',
+        extraversion: '玩家自定义（0~100，默认 50）',
+        rationality: '玩家自定义（0~100，默认 50）'
+      },
+      advantage: '完全自由定制：身份/属性/性格/背景/技能加成；默认全 20 位女角开放攻略；AI 根据背景生成自定义事件',
+      disadvantage: '无专属预设剧情线；属性受 360 总和上限约束；原作男配角（N1~N4）作为 NPC 推动剧情，可能影响某些事件触发',
+      exclusive_route: '无专属预设剧情；AI 根据背景描述生成自适应事件',
+      custom_creation: {
+        format: 'P6 自定义 + 姓名/年龄/身份/住所/初始金钱/初始属性/初始技能加成/性格倾向/背景描述',
+        constraint_stats: '6 维属性每项 0~80，总和 ≤ 360',
+        constraint_money: '0~50000，超过强制降至 50000',
+        constraint_age: '18~30，18~22 学生身份可访问学校；23~30 社会人需背景说明出现原因',
+        example: '见 开场白/0.txt 中 P6 自定义示例'
+      }
+    }
+  },
+
+  // ─── 玩家偏好设定（开局可选） ───
+  preferences: {
+    difficulty: ['轻松', '普通', '挑战', '地狱'],
+    narrative_style: ['恋爱向', '剧情向', '生存向', '全开放'],
+    nsfw_intensity: ['无 NSFW', '轻 H', '重 H', '极端'],
+    time_pace: ['真实时间（5 时段/天）', '加速（3 时段/天）']
+  },
+
+  // ─── 玩家信息回传格式 ───
+  feedback_format: {
+    thought_visible: false,  // 思维链对玩家隐藏
+    narrative_visible: true,  // 叙事正文可见
+    variable_visible: true,   // <UpdateVariable> 可见（状态栏渲染）
+    table_visible: true,      // <UpdateTable> 可见（数据库变化）
+    status_bar: true          // 单一 inline HTML 状态栏渲染
+  },
+
+  // ─── 玩家与主角的关系（重要） ───
+  player_vs_protagonist: {
+    separation: '玩家 ≠ 主角；玩家是操作者，主角是故事中的角色',
+    player_will: '玩家输入决定主角行为，但主角有自己的情感反应',
+    protagonist_agency: '主角在 NSFW/互斥关系/死结局预警上有独立判断（拒绝玩家非法指令）',
+    narrative_voice: '叙事以主角视角展开（第一人称内心独白 + 第三人称环境描写）'
+  }
+};
+%>
+
+玩家画像已加载。玩家是主角的操作者，通过自然语言指示主角行为。禁止强迫/暴力/作弊类操作。支持 6 位可扮演男性角色（5 预设：原作主角/川尻信良/长冈芳树/西御寺有友/天道新干线 + 1 自定义：玩家自由创建身份/属性/性格/背景，受 360 属性总和上限约束），每位预设男性有独立的剧情线和可攻略女角，开局选择后决定初始属性/金钱/关系/专属剧情；P6 自定义由 AI 根据背景描述自适应生成。玩家 ≠ 主角，主角在死结局预警上有独立拒绝权。

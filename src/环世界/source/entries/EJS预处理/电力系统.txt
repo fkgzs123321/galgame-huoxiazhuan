@@ -1,0 +1,144 @@
+@@generate_before
+<%_
+/* 电力系统控制器 P1-12
+   读取殖民地电力状态，输出电力规则与行为校验要求 */
+
+/* _hashSeed/_lcgRoll 定义在DDL确定性骰子引擎.txt，此处通过EJS执行顺序保证可用 */
+
+/* 风力发电判定表 (确定性骰子: 10%无风/30%微风/40%中风/18%强风/2%风暴) */
+function _windPower(seed) {
+  var roll = _lcgRoll(seed, 1, 100)[0];
+  if (roll <= 10) { return { power: 0, label: '无风', note: '0W' }; }
+  if (roll <= 40) { return { power: 500, label: '微风', note: '500W' }; }
+  if (roll <= 80) { return { power: 1500, label: '中风', note: '1500W' }; }
+  if (roll <= 98) { return { power: 3000, label: '强风', note: '3000W' }; }
+  return { power: 0, label: '风暴', note: '损坏5%' };
+}
+
+/* 断电优先级 (净额<0且蓄电池=0时按序断电) */
+function _blackoutPriority() {
+  return [
+    { 优先级: 1, 系统: '太阳灯', 耗电: 2000 },
+    { 优先级: 2, 系统: '照明', 耗电: 100 },
+    { 优先级: 3, 系统: '娱乐', 耗电: 150 },
+    { 优先级: 4, 系统: '制造台', 耗电: 300 },
+    { 优先级: 5, 系统: '炮台', 耗电: 500 },
+    { 优先级: 6, 系统: '医疗', 耗电: 300 },
+    { 优先级: 7, 系统: '冷库', 耗电: 300 }
+  ];
+}
+
+/* 短路风险判定 (蓄电池>95%时每轮2%概率短路爆炸) */
+function _shortCircuitCheck(batteryPct, seed) {
+  if (batteryPct <= 95) { return { risk: false }; }
+  var roll = _lcgRoll(seed, 1, 100)[0];
+  if (roll <= 2) {
+    return { risk: true, damage: '爆炸', severity: '严重', note: '蓄电池过充短路' };
+  }
+  return { risk: false };
+}
+
+/* 线路老化判定 (每设施0.5%/轮概率老化，老化后效率×0.8) */
+function _lineAging(facilityCount, seed) {
+  var aged = [];
+  for (var i = 0; i < facilityCount; i++) {
+    var roll = _lcgRoll(seed + '_aging_' + i, 1, 1000)[0];
+    if (roll <= 5) {
+      aged.push({ index: i, efficiency: 0.8, note: '效率降至80%' });
+    }
+  }
+  return aged;
+}
+
+var powerGen = Number(getvar('stat_data.殖民地.电力总发电', { scope: 'local', defaults: 0 })) || 0;
+var powerDemand = Number(getvar('stat_data.殖民地.电力总需求', { scope: 'local', defaults: 0 })) || 0;
+var powerNet = Number(getvar('stat_data.殖民地.电力净额', { scope: 'local', defaults: 0 })) || 0;
+var batteryCharge = Number(getvar('stat_data.殖民地.蓄电池电量', { scope: 'local', defaults: 0 })) || 0;
+var batteryCap = Number(getvar('stat_data.殖民地.蓄电池容量', { scope: 'local', defaults: 0 })) || 0;
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+
+var batteryPct = batteryCap > 0 ? Math.round((batteryCharge / batteryCap) * 100) : 0;
+var isBlackout = (powerNet < 0 && batteryCharge <= 0);
+var isLowBattery = (batteryPct < 30 && powerNet < 0);
+var isOvercharged = (batteryPct > 95);
+
+var windResult = _windPower('wind_' + gameDay + '_' + timeSlot);
+var shortCircuit = _shortCircuitCheck(batteryPct, 'short_' + gameDay + '_' + timeSlot);
+var blackoutList = _blackoutPriority();
+_%>
+<电力系统就绪>
+[当前电力状态]
+游戏日: <%= gameDay %> / 时段: <%= timeSlot %>
+电力总发电: <%= powerGen %>W
+电力总需求: <%= powerDemand %>W
+电力净额: <%= powerNet %>W
+蓄电池电量: <%= batteryCharge %>Wd / 容量: <%= batteryCap %>Wd (充放电比: <%= batteryPct %>%)
+<%_ if (isBlackout) { _%>
+状态: 电力中断 - 蓄电池耗尽，启动断电优先级
+<%_ } else if (isLowBattery) { _%>
+状态: 低电量预警 - 净消耗中，蓄电池即将耗尽
+<%_ } else if (isOvercharged) { _%>
+状态: 过充风险 - 蓄电池接近满载
+<%_ } else { _%>
+状态: 正常运行
+<%_ } _%>
+
+[风力判定]
+本轮风力骰: <%= windResult.label %> (<%= windResult.note %>)
+<%_ if (windResult.label === '风暴') { _%>
+风暴损坏: 风力涡轮机效率降低5%，需维修
+<%_ } _%>
+
+[发电设备表]
+- 太阳能板: 1700W (仅白天发电，夜间0W)
+- 风力涡轮机: 0-3000W (查_windPower()确定性骰子)
+  无风0W(10%) / 微风500W(30%) / 中风1500W(40%) / 强风3000W(18%) / 风暴0W损坏5%(2%)
+- 地热发电机: 3000W (恒定输出，不受天气影响)
+- 柴油发电机: 1000W (需消耗化学燃料，1化学燃料/小时)
+- 核聚变反应堆: 10000W (需研究技能>=18，终局科技)
+
+[储能设备]
+- 蓄电池: 容量400Wd (成本50银，转换效率80%)
+- 高级蓄电池: 容量1000Wd (成本200银，转换效率90%)
+
+[电力平衡公式]
+总发电 = Sigma(设施功率 x 运行系数 x 故障修正)
+总需求 = Sigma(建筑耗电 x 运行状态)
+净额 = 总发电 - 总需求
+蓄电池状态 = max(0, min(容量, 上轮电量 + 净额 x 时间h / 1000))
+
+[用电建筑耗电参考]
+冷库: 200-400W / 研究台: 400W / 高科技研究台: 800W
+炮台: 500W(待机) / 1000W(战斗) / 太阳灯: 2000W
+医疗台: 300W / 通讯台: 200W
+详细数据查BUILDING_DB
+
+[断电优先级] (净额<0且蓄电池=0时按序断电)
+<%_ for (var i = 0; i < blackoutList.length; i++) { _%>
+<%= blackoutList[i].优先级 %>. <%= blackoutList[i].系统 %> (<%= blackoutList[i].耗电 %>W)
+<%_ } _%>
+
+[短路风险]
+<%_ if (shortCircuit.risk) { _%>
+警告: 蓄电池过充短路! 后果: <%= shortCircuit.damage %> (<%= shortCircuit.severity %>)
+处理: 立即切断充电回路，蓄电池放电至90%以下
+<%_ } else { _%>
+本轮短路判定: 无 (<%= batteryPct > 95 ? '过充但未触发2%/轮概率' : '蓄电池未过充' %>)
+规则: 蓄电池>95%时每轮2%概率短路爆炸
+<%_ } _%>
+
+[线路老化]
+规则: 每设施每轮0.5%概率老化，老化后效率x0.8
+老化设施需维修恢复，否则持续低效运行
+
+[行为校验要求]
+电力相关行为(建造发电设施/铺设电缆/切换开关/蓄电池维护)必须输出行为校验块:
+- 行为类型: 建造/拆除/维修/切换
+- 执行者: 殖民者姓名 + 建设技能等级
+- 目标设施: 设施名称
+- 输入材料: 材料清单(查BUILDING_DB)
+- 耗时: 基础耗时 / (1 + 建设技能x0.08)
+- 发电变化: 新增/减少功率
+- 电力净额变更: 旧值 -> 新值
+</电力系统就绪>

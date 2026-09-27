@@ -1,0 +1,730 @@
+{
+  "mate": {
+    "type": "chatSheets",
+    "version": 2,
+    "updateConfigUiSentinel": -1,
+    "globalInjectionConfig": {
+      "readableEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "wrapperPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99980
+      }
+    }
+  },
+  "sheet_global_state": {
+    "uid": "sheet_global_state",
+    "name": "全局数据表",
+    "sourceData": {
+      "note": "记录当前场景的细粒度状态。此表有且仅有一行。与MVU变量互补：MVU记录城市名/天数/时段enum，本表记录具体地点/时间差/场景概览/林天在场状态。\n\n【列定义】\n- 列1: 当前详细地点 current_location（具体位置描述，非城市名）\n- 列2: 当前次要地区 current_minor_region（区/街道级）\n- 列3: 当前主要地区 current_major_region（城市级，与MVU一致）\n- 列4: 上轮场景时间 prev_scene_time（上一轮结束时的时间快照，首轮NULL）\n- 列5: 经过的时间 elapsed_time（本轮经过的时间跨度）\n- 列6: 当前时间 cur_time（YYYY-MM-DD HH:MM）\n- 列7: 场景概览 scene_summary（本轮场景一句话概括，≤30字）\n- 列8: 林天在场 lin_tian_present（是/否）\n- 列9: 系统警告等级 system_alert（无/警告/危险/崩坏）\n\n【强制约束】\ncurrent_location写具体位置描述，不写城市名（城市名由MVU管理）。\n√ 苏婉别墅·主卧\n√ 林天公寓·客厅\n√ 苏婉公司·董事长办公室\n× 江城 ← 城市名是MVU的职责\n\ncur_time格式必须为 YYYY-MM-DD HH:MM。\nelapsed_time写自然语言时间跨度。\n√ 约2小时\n√ 一整夜（约8小时）\n× 7200秒 ← 禁止精确秒数\n\nscene_summary一句话概括本轮场景核心事件，≤30字。\n√ user撞见苏婉与林天在书房亲热\n√ 乐乐生日宴林天不请自来\n× 发生了很多事 ← 禁止模糊描述\n\nsystem_alert枚举：无/警告/危险/崩坏。评价值80-60=无，60-40=警告，40-20=危险，20-0=崩坏。\n\n【位置同步提示】\n- global_state的地点需与protagonist_info/antagonist_state/bound_women的当前位置保持一致",
+      "initNode": "开场白首轮回复时INSERT一行。开局为现代江城，user家。\nSQL示例: INSERT INTO global_state (row_id, current_location, current_minor_region, current_major_region, prev_scene_time, elapsed_time, cur_time, scene_summary, lin_tian_present, system_alert) VALUES (1, '苏婉别墅·主卧', '滨江区', '江城', NULL, '0分', '2024-04-01 19:00', 'user下班回家发现苏婉异常冷漠', '否', '无');",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时UPDATE唯一行。仅更新发生变化的列。current_location、current_minor_region、current_major_region、elapsed_time、cur_time、scene_summary、lin_tian_present、system_alert 均 NOT NULL。cur_time / prev_scene_time 必须严格为 'YYYY-MM-DD HH:MM' 格式。\n\nSQL示例(纯时间推进): UPDATE global_state SET prev_scene_time = '2024-04-01 19:00', elapsed_time = '2小时', cur_time = '2024-04-01 21:00', scene_summary = 'user试图与苏婉沟通被冷漠拒绝', lin_tian_present = '否' WHERE row_id = 1;\nSQL示例(林天登场): UPDATE global_state SET current_location = '苏婉别墅·客厅', prev_scene_time = '2024-04-01 21:00', elapsed_time = '30分', cur_time = '2024-04-01 21:30', scene_summary = '林天以谈生意为由登门拜访', lin_tian_present = '是', system_alert = '无' WHERE row_id = 1;\nSQL示例(系统警告): UPDATE global_state SET system_alert = '警告', scene_summary = '林天公开与苏婉亲昵被user目击' WHERE row_id = 1;",
+      "insertNode": "禁止。此表有且仅有一行，不允许INSERT第二行。",
+      "ddl": "CREATE TABLE IF NOT EXISTS global_state ( -- 全局数据表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  current_location TEXT NOT NULL, -- 当前详细地点\n  current_minor_region TEXT NOT NULL, -- 当前次要地区\n  current_major_region TEXT NOT NULL, -- 当前主要地区\n  prev_scene_time TEXT CHECK(prev_scene_time IS NULL OR prev_scene_time GLOB '????-??-?? ??:??'), -- 上轮场景时间\n  elapsed_time TEXT NOT NULL, -- 经过的时间\n  cur_time TEXT NOT NULL CHECK(cur_time GLOB '????-??-?? ??:??'), -- 当前时间\n  scene_summary TEXT NOT NULL CHECK(LENGTH(scene_summary) <= 60), -- 场景概览\n  lin_tian_present TEXT NOT NULL DEFAULT '否' CHECK(lin_tian_present IN ('是', '否')), -- 林天在场\n  system_alert TEXT NOT NULL DEFAULT '无' CHECK(system_alert IN ('无', '警告', '危险', '崩坏')) -- 系统警告等级\n);"
+    },
+    "content": [["row_id", "当前详细地点", "当前次要地区", "当前主要地区", "上轮场景时间", "经过的时间", "当前时间", "场景概览", "林天在场", "系统警告等级"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": 1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "全局数据表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "全局数据表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 0
+  },
+  "sheet_protagonist_info": {
+    "uid": "sheet_protagonist_info",
+    "name": "主角user状态表",
+    "sourceData": {
+      "note": "记录主角user（玩家扮演）的实时状态。此表有且仅有一行。user是实际游玩主角，林天是反派（在antagonist_state表独立追踪）。\n\n【列定义】\n- 列1: user姓名 user_name（固定'你'，即玩家本人）\n- 列2: 财富等级 wealth_level（A1-A15，与世界书财富等级体系一致）\n- 列3: 具体财富 wealth_amount（具体资产数值+单位）\n- 列4: 婚姻状态 marriage_state（完好/动摇/破裂/离婚/丧偶）\n- 列5: 反抗力 resistance_power（0-100，对抗林天系统的能力）\n- 列6: 觉醒度 awakening_progress（0-100，认知到这是小说世界的程度）\n- 列7: 理智值 sanity_value（0-100，受NTR精神冲击后的精神健康度）\n- 列8: 收集的罪证 evidence_collected（已收集的罪证名称列表，逗号分隔；初始为空字符串）\n- 列9: 盟友列表 allies（已知盟友姓名，逗号分隔；初始为空）\n- 列10: 当前目标 current_goal（≤30字）\n\n【强制约束】\nwealth_level必须使用枚举：A1/A2/.../A15，与世界书财富等级体系一致。\n√ A8\n× 8级 ← 必须带A前缀\n× A级8 ← 必须是A+数字\n\nmarriage_state枚举：\n- 完好：婚姻正常，苏婉对user感情未受影响\n- 动摇：苏婉被林天绑定初期，对user冷漠但未提离婚\n- 破裂：苏婉主动提离婚，user被赶出家庭\n- 离婚：离婚协议已签，法律上解除婚姻\n- 丧偶：苏婉死亡（罕见分支）\n\nresistance_power阈值：\n- 0-20：几乎无反抗能力，被林天任意摆布\n- 21-50：有意识但无力反抗，被动承受\n- 51-80：开始组织反抗，能影响剧情走向\n- 81-100：有实力正面对抗林天\n\nawakening_progress阈值（user认知到这是小说世界）：\n- 0-20：完全不知情，认为现实正常\n- 21-50：察觉异常，开始怀疑\n- 51-80：部分觉醒，知道林天有系统但不知自己被玩家控制\n- 81-100：完全觉醒，认知到自己是被玩家操控的角色\n\nsanity_value阈值：\n- 80-100：精神稳定\n- 60-79：焦虑抑郁，影响判断\n- 40-59：精神濒临崩溃，可能做出极端行为\n- 0-39：精神崩溃，可能被林天趁虚而入\n\nevidence_collected罪证管理：\n- 获得新证据时追加到evidence_collected字符串，逗号分隔\n- evidence_collected存储罪证名称列表，不与独立表联动\n- 初始为空字符串，开局线索证据在INSERT时同步追加\n\n【更新约束】\n- resistance_power变化需有明确事件支撑（发现罪证+5~10/盟友加入+10~15/被林天羞辱-5~10/苏婉提离婚-10~20）\n- awakening_progress变化需有触发事件（发现系统异常+5~10/林天暴露能力+10~15/读者评论暗示+5）\n- sanity_value受NTR事件冲击：目睹苏婉与林天亲热-10~20/被当众羞辱-15~25/清醒瞬间被强制中断-5~10\n- sanity_value自然恢复：每轮无新冲击+3~8\n- evidence_collected只追加不删减，已消耗证据保留记录\n- allies只追加不删改（除非盟友遇害或背叛）",
+      "initNode": "开场白首轮回复时INSERT一行。user开局为A8富豪级，苏婉丈夫，婚姻7年。\nSQL示例: INSERT INTO protagonist_info (row_id, user_name, wealth_level, wealth_amount, marriage_state, resistance_power, awakening_progress, sanity_value, evidence_collected, allies, current_goal) VALUES (1, '你', 'A8', '8000万', '完好', 30, 0, 85, '', '', '调查苏婉近期异常的原因');",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时根据剧情发展UPDATE唯一行。仅更新发生变化的列。\n\nSQL示例(婚姻动摇): UPDATE protagonist_info SET marriage_state = '动摇', sanity_value = 70, current_goal = '查清苏婉变化原因' WHERE row_id = 1;\nSQL示例(发现罪证): UPDATE protagonist_info SET evidence_collected = evidence_collected || ',林天资金来源异常记录', resistance_power = resistance_power + 8 WHERE row_id = 1;\nSQL示例(精神受创): UPDATE protagonist_info SET sanity_value = 55, current_goal = '寻找心理支持' WHERE row_id = 1;\nSQL示例(觉醒): UPDATE protagonist_info SET awakening_progress = 25, current_goal = '验证世界真实性' WHERE row_id = 1;\nSQL示例(结盟): UPDATE protagonist_info SET allies = allies || ',赵敏', resistance_power = resistance_power + 12 WHERE row_id = 1;",
+      "insertNode": "禁止。此表有且仅有一行，不允许INSERT第二行。",
+      "ddl": "CREATE TABLE IF NOT EXISTS protagonist_info ( -- 主角user状态表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  user_name TEXT NOT NULL DEFAULT '你', -- user姓名\n  wealth_level TEXT NOT NULL CHECK(wealth_level GLOB 'A[0-9]*' AND CAST(SUBSTR(wealth_level, 2) AS INTEGER) BETWEEN 1 AND 15), -- 财富等级\n  wealth_amount TEXT NOT NULL, -- 具体财富\n  marriage_state TEXT NOT NULL DEFAULT '完好' CHECK(marriage_state IN ('完好', '动摇', '破裂', '离婚', '丧偶')), -- 婚姻状态\n  resistance_power INTEGER NOT NULL DEFAULT 30 CHECK(resistance_power >= 0 AND resistance_power <= 100), -- 反抗力\n  awakening_progress INTEGER NOT NULL DEFAULT 0 CHECK(awakening_progress >= 0 AND awakening_progress <= 100), -- 觉醒度\n  sanity_value INTEGER NOT NULL DEFAULT 85 CHECK(sanity_value >= 0 AND sanity_value <= 100), -- 理智值\n  evidence_collected TEXT NOT NULL DEFAULT '', -- 收集的罪证\n  allies TEXT NOT NULL DEFAULT '', -- 盟友列表\n  current_goal TEXT NOT NULL CHECK(LENGTH(current_goal) <= 60) -- 当前目标\n);"
+    },
+    "content": [["row_id", "user姓名", "财富等级", "具体财富", "婚姻状态", "反抗力", "觉醒度", "理智值", "收集的罪证", "盟友列表", "当前目标"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": 1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": false,
+      "entryName": "主角状态",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "<user_state>\n$1\n</user_state>",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "主角状态-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10020
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10030
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99983
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99984
+      }
+    },
+    "orderNo": 1
+  },
+  "sheet_antagonist_state": {
+    "uid": "sheet_antagonist_state",
+    "name": "反派林天状态表",
+    "sourceData": {
+      "note": "记录反派林天的实时状态。此表有且仅有一行。林天是反派主角（不是user），独立成表追踪其系统状态、评价值、玩法偏好等核心机制。\n\n【列定义】\n- 列1: 反派姓名 antagonist_name（固定'林天'）\n- 列2: 财富等级 wealth_level（A1-A15，当前A9）\n- 列3: 具体财富 wealth_amount（具体资产数值+单位）\n- 列4: 已绑定数 bound_count（已绑定女性数量，当前8）\n- 列5: 绑定名额上限 binding_quota（系统上限，固定10）\n- 列6: 评价值 evaluation_value（0-100，初始100，满分巅峰，系统核心约束）\n- 列7: 系统警告等级 system_warning（无/警告/危险/崩坏，与global_state同步）\n- 列8: 当前绑定目标 current_target（当前瞄准的下一个绑定女性）\n- 列9: 玩法偏好 play_style_preference（6种枚举：NTR隐奸/NTR明目侵犯/多人运动/变态道具/恋父养成/精神虐待，可多选用|分隔，禁用逗号）\n- 列10: OOC累计次数 ooc_count（人设崩塌累计次数）\n- 列11: 读者情绪倾向 reader_sentiment（叫好/满意/中性/愤怒/弃书边缘）\n- 列12: 当前阶段 current_phase（满分巅峰/玩世不恭/警觉期/危机期/崩坏期/解绑边缘/系统解绑，对应评价值7阶段）\n- 列13: 良知值 conscience_value（0-100，初始50，证据使用可降低）\n\n【强制约束】\nwealth_level必须使用A1-A15枚举（与世界书财富等级体系一致）。\n\nevaluation_value阈值（与人设崩塌评价系统世界书条目一致）：\n- 80-100 巅峰期：系统正常运作，林天肆意妄为\n- 60-79 警告期：系统警告剧情偏离，提示调整策略\n- 40-59 危险期：系统功能受限（绑定冷却延长、名额暂停）\n- 20-39 崩坏期：系统即将解绑，频繁红色警告\n- 1-19 解绑边缘：林天疯狂洗白博取读者好感\n- 0 系统解绑：林天失去一切，所有女性觉醒\n\nsystem_warning与global_state.system_alert必须同步：\n- 80-60 → 无\n- 60-40 → 警告\n- 40-20 → 危险\n- 20-0 → 崩坏\n\nplay_style_preference枚举（与林天档案一致）：\n- NTR隐奸：丈夫/家人不知情时进行\n- NTR明目侵犯：强迫原伴侣目睹全程\n- 多人运动：多名绑定女性同时参与\n- 变态道具：使用系统奖励道具增强控制\n- 恋父养成：扮演父亲/老师/主人等权威角色\n- 精神虐待：精神层面折磨，逼女性伤害最爱的人\n\ncurrent_phase必须与evaluation_value对应：\n- 80-100 → 满分巅峰\n- 60-79 → 玩世不恭\n- 40-59 → 危机期\n- 20-39 → 崩坏期\n- 1-19 → 解绑边缘\n- 0 → 系统解绑\n\nconscience_value阈值：\n- 80-100 良知泯灭：林天完全无情，系统控制彻底\n- 60-79 良知微弱：偶有犹豫但迅速被系统修正\n- 40-59 良知动摇：开始反思自己的行为，OOC风险增加\n- 20-39 良知觉醒：抗拒系统指令，可能主动放水\n- 0-19 良知爆发：即将反叛系统，是user争取林天的关键窗口\n\nconscience_value变化规则：\n- user在交涉中使用良知记录类证据：-8~15/条\n- 林天目睹绑定女性极端痛苦：-5~10\n- 乐乐等无辜儿童受牵连：-10~20\n- 系统强制OOC行为：+5~10（系统压制良知）\n- 林天成功反制user：+3~8（系统奖励强化控制）\n\n【更新约束】\n- evaluation_value下降触发：OOC-5~10/剧情不合理-3~8/绑定女性解绑死亡-15~25/user成功反抗打脸-5~15/评论弃书-10~20\n- evaluation_value回升条件：剧情精彩+3~5/爽点到位+2~5/合理化解释+1~3/林天成功反制+3~5（单次回升上限+5）\n- bound_count仅在绑定新女性成功时+1，绑定失败或女性解绑时不-1（已绑定的不算流失）\n- ooc_count只增不减\n- current_phase必须随evaluation_value同步更新\n- conscience_value变化需有明确事件支撑（证据使用/目睹痛苦/系统强制等）",
+      "initNode": "开场白首轮回复时INSERT一行。林天开局为A9准巨富，已绑定8人，评价值100（满分巅峰）。\nSQL示例: INSERT INTO antagonist_state (row_id, antagonist_name, wealth_level, wealth_amount, bound_count, binding_quota, evaluation_value, system_warning, current_target, play_style_preference, ooc_count, reader_sentiment, current_phase, conscience_value) VALUES (1, '林天', 'A9', '5亿', 8, 10, 100, '无', '苏婉', 'NTR隐奸|NTR明目侵犯|多人运动', 0, '叫好', '满分巅峰', 50);",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时根据剧情发展UPDATE唯一行。仅更新发生变化的列。\n\nSQL示例(评价值下降): UPDATE antagonist_state SET evaluation_value = 65, system_warning = '无', current_phase = '玩世不恭', reader_sentiment = '中性' WHERE row_id = 1;\nSQL示例(系统警告): UPDATE antagonist_state SET evaluation_value = 50, system_warning = '警告', current_phase = '危机期' WHERE row_id = 1;\nSQL示例(绑定新女性): UPDATE antagonist_state SET bound_count = 9, current_target = '陈雪华', wealth_level = 'A10', wealth_amount = '10亿' WHERE row_id = 1;\nSQL示例(OOC): UPDATE antagonist_state SET ooc_count = ooc_count + 1, evaluation_value = evaluation_value - 8, reader_sentiment = '愤怒' WHERE row_id = 1;\nSQL示例(读者好评): UPDATE antagonist_state SET evaluation_value = evaluation_value + 4, reader_sentiment = '满意' WHERE row_id = 1;\nSQL示例(良知降低): UPDATE antagonist_state SET conscience_value = conscience_value - 12 WHERE row_id = 1;",
+      "insertNode": "禁止。此表有且仅有一行，不允许INSERT第二行。",
+      "ddl": "CREATE TABLE IF NOT EXISTS antagonist_state ( -- 反派林天状态表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  antagonist_name TEXT NOT NULL DEFAULT '林天', -- 反派姓名\n  wealth_level TEXT NOT NULL CHECK(wealth_level GLOB 'A[0-9]*' AND CAST(SUBSTR(wealth_level, 2) AS INTEGER) BETWEEN 1 AND 15), -- 财富等级\n  wealth_amount TEXT NOT NULL, -- 具体财富\n  bound_count INTEGER NOT NULL DEFAULT 8 CHECK(bound_count >= 0 AND bound_count <= 10), -- 已绑定数\n  binding_quota INTEGER NOT NULL DEFAULT 10 CHECK(binding_quota = 10), -- 绑定名额上限\n  evaluation_value INTEGER NOT NULL DEFAULT 100 CHECK(evaluation_value >= 0 AND evaluation_value <= 100), -- 评价值\n  system_warning TEXT NOT NULL DEFAULT '无' CHECK(system_warning IN ('无', '警告', '危险', '崩坏')), -- 系统警告等级\n  current_target TEXT NOT NULL DEFAULT '苏婉', -- 当前绑定目标\n  play_style_preference TEXT NOT NULL DEFAULT 'NTR隐奸', -- 玩法偏好（多选用|分隔，禁用逗号）\n  ooc_count INTEGER NOT NULL DEFAULT 0, -- OOC累计次数\n  reader_sentiment TEXT NOT NULL DEFAULT '叫好' CHECK(reader_sentiment IN ('叫好', '满意', '中性', '愤怒', '弃书边缘')), -- 读者情绪倾向\n  current_phase TEXT NOT NULL DEFAULT '满分巅峰' CHECK(current_phase IN ('满分巅峰', '玩世不恭', '警觉期', '危机期', '崩坏期', '解绑边缘', '系统解绑')), -- 当前阶段\n  conscience_value INTEGER NOT NULL DEFAULT 50 CHECK(conscience_value BETWEEN 0 AND 100) -- 良知值\n);"
+    },
+    "content": [["row_id", "反派姓名", "财富等级", "具体财富", "已绑定数", "绑定名额上限", "评价值", "系统警告等级", "当前绑定目标", "玩法偏好", "OOC累计次数", "读者情绪倾向", "当前阶段", "良知值"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": 1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": false,
+      "entryName": "反派状态",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "<antagonist_state>\n$1\n</antagonist_state>",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "反派状态-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10040
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10050
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99985
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99986
+      }
+    },
+    "orderNo": 2
+  },
+  "sheet_bound_women": {
+    "uid": "sheet_bound_women",
+    "name": "绑定女性表",
+    "sourceData": {
+      "note": "记录林天已绑定和正在绑定的女性。多行表，每个女性一行。NSFW列仅在女性条目中标有NSFW信息时允许填写正常值。本表是NTR夺妻主题的核心追踪表，参考raft_13 npc_tracker扩展。\n\n【列定义】\n- 列1: 姓名 woman_name（全表唯一，与世界书女性条目名一致）\n- 列2: 绑定顺序 bind_order（1-10，林天第N个绑定目标）\n- 列3: 绑定深度 bind_depth（0-100，绑定强度，越高越彻底）\n- 列4: 财富等级 wealth_level（A1-A15，与世界书财富等级体系一致）\n- 列5: 身份 identity（社会身份/职业）\n- 列6: 家庭关系 family_relation（家庭关系描述）\n- 列7: 原伴侣 original_partner（原丈夫/男友/未婚夫姓名，无则填'无'）\n- 列8: 子女信息 children_info（子女姓名+年龄，无则填'无'）\n- 列9: 清醒频率 sanity_resistance（0-100，越高清醒瞬间越频繁）\n- 列10: 上次清醒瞬间 last_lucid_moment（最近一次清醒瞬间的描述，≤80字）\n- 列11: NTR玩法类型 ntr_play_type（12种枚举，可多选用|分隔，禁用逗号）\n- 列12: 当前衣着状态 clothing_state（NSFW）\n- 列13: 身体暴露程度 exposure（NSFW枚举）\n- 列14: 润湿状态 wetness（NSFW枚举）\n- 列15: 皮肤痕迹 skin_marks（NSFW）\n- 列16: 性兴奋等级 arousal_level（NSFW 0-100或N/A）\n- 列17: 精液残留 semen_residue（NSFW）\n- 列18: 占有印记 possession_marks（林天的占有标识，分号分隔）\n- 列19: 罩杯 cup_size（B/C/D/E/F等字母）\n- 列20: 胸围 bust_size（cm，实测上胸围）\n- 列21: 腰围 waist_size（cm）\n- 列22: 臀围 hip_size（cm）\n- 列23: 身高 height（cm）\n- 列24: 体重 weight（kg）\n\n【强制约束】\nwoman_name全表唯一，与世界书女性条目名一致。\n\nbind_order枚举：1-10的整数，按林天绑定时间顺序。当前目标(未绑定)填0。\n\nbind_depth阈值：\n- 0-20：刚绑定，仍有强烈反抗意识\n- 21-50：绑定中段，表层服从底层挣扎\n- 51-80：绑定深化，主动迎合但偶有清醒\n- 81-100：完全绑定，视林天为唯一信仰\n\nwealth_level必须使用A1-A15枚举。\n\nsanity_resistance阈值：\n- 0-20：几乎无清醒，完全被系统控制\n- 21-50：偶尔清醒（每月1-2次）\n- 51-80：频繁清醒（每周1-2次）\n- 81-100：极高反抗意识（每天清醒）\n\nntr_play_type枚举（12种，与林天档案一致）：\n- NTR隐奸：在丈夫/家人不知情的情况下进行\n- NTR明目侵犯：强迫原伴侣目睹全程\n- 多人运动：多名绑定女性同时参与\n- 变态道具：使用系统奖励道具增强控制\n- 恋父养成：扮演父亲/老师/主人等权威角色\n- 精神虐待：精神层面折磨，逼女性伤害最爱的人\n- 初夜剥夺：处女膜保留控制/初次占有仪式\n- 母乳调教：哺乳期女性的乳玩/泌乳控制\n- 身体改造：敏感度提升/永久性身体改造\n- 角色扮演：校服/父女/老师等情境扮演\n- 公开羞辱：当众场景/公开场合的羞辱玩法\n- 主奴契约：卖身契/奴役训练/服从训练\n\nexposure枚举（NSFW）：无暴露/轻度/中度/重度/全裸/N/A\nwetness枚举（NSFW）：干燥/微润/湿润/极湿/N/A\narousal_level（NSFW）：0-100整数或N/A\n\nNSFW列更新规则（参考raft_13 npc_tracker动态机制）：\n- arousal_level无刺激时每轮自然衰减5-15\n- skin_marks微红数分钟消退/红痕数小时消退\n- semen_residue液态→半干→精斑→无（一夜内干透）\n- 系统强制'湿润'指令下即便无心理意愿也会分泌爱液\n- 系统强制'快感反馈'下身体产生明显高潮反应，意识可反抗但身体不能\n\n【主键判定】\n收到一个女性时，先在本表查同名的woman_name：\n- 查不到 → INSERT新行\n- 查到了 → UPDATE该行\n\n【更新约束】\n- bind_depth变化需有明确剧情支撑（系统强化+5~15/user刺激清醒-5~10/林天使用道具+10~20）\n- sanity_resistance变化需有清醒瞬间事件（目睹user痛苦+5~15/被乐乐叫妈妈+10~20/林天虐待家人-5~10）\n- possession_marks只追加不删改（除非印记被消除）\n- last_lucid_moment每次清醒瞬间发生时更新\n- NSFW列仅在性相关互动时更新",
+      "initNode": "开场白首轮回复时INSERT已绑定的8名女性+当前目标苏婉。苏婉bind_order=9（当前目标，未完全绑定），第10名待定。\nSQL示例(已绑定): INSERT INTO bound_women (row_id, woman_name, bind_order, bind_depth, wealth_level, identity, family_relation, original_partner, children_info, sanity_resistance, last_lucid_moment, ntr_play_type, clothing_state, exposure, wetness, skin_marks, arousal_level, semen_residue, possession_marks, cup_size, bust_size, waist_size, hip_size, height, weight) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM bound_women), '陈雪华', 1, 85, 'A6', '贫民窟少女，林天旗下低端夜场经理', '父·陈富贵（酒鬼）', '无', '无', 30, '上月在书房呼唤前未婚夫名字后被打断', 'NTR隐奸|恋父养成|角色扮演', '白棉背心+校服式白袜', '轻度', 'N/A', 'N/A', 'N/A', 'N/A', '锁骨咬痕;刻林字银项链;私处脱毛造型', 'B', 92, 58, 82, 158, 43);\nSQL示例(当前目标苏婉): INSERT INTO bound_women (row_id, woman_name, bind_order, bind_depth, wealth_level, identity, family_relation, original_partner, children_info, sanity_resistance, last_lucid_moment, ntr_play_type, clothing_state, exposure, wetness, skin_marks, arousal_level, semen_residue, possession_marks, cup_size, bust_size, waist_size, hip_size, height, weight) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM bound_women), '苏婉', 9, 35, 'A9', '苏婉集团董事长', '夫·{{user}}，子·乐乐6岁', '你', '乐乐6岁', 55, '开局前三天抱着{{user}}哭救我被拉回', 'NTR隐奸|NTR明目侵犯|初夜剥夺', '黑色连衣裙', '轻度', 'N/A', 'N/A', 'N/A', 'N/A', '左手无名指压痕(原婚戒位置);林天所赠钻戒', 'E', 105, 58, 92, 168, 52);",
+      "deleteNode": "默认禁止删除。仅当女性永久死亡且不再追踪时允许。\nSQL示例(死亡): DELETE FROM bound_women WHERE woman_name = '某女性';",
+      "updateNode": "每轮回复中涉及已记录女性时UPDATE对应行。仅更新发生变化的列。\n\nSQL示例(清醒瞬间): UPDATE bound_women SET sanity_resistance = 65, last_lucid_moment = '看到乐乐哭喊妈妈时扑向user被系统拉回' WHERE woman_name = '苏婉';\nSQL示例(绑定深化): UPDATE bound_women SET bind_depth = 55, ntr_play_type = 'NTR隐奸|NTR明目侵犯|多人运动' WHERE woman_name = '苏婉';\nSQL示例(NSFW更新): UPDATE bound_women SET clothing_state = '黑色蕾丝内衣', exposure = '中度', wetness = '湿润', arousal_level = 60 WHERE woman_name = '苏婉';\nSQL示例(占有印记追加): UPDATE bound_women SET possession_marks = possession_marks || ';林天咬的牙印(右大腿外侧)' WHERE woman_name = '苏婉';\nSQL示例(绑定完成): UPDATE bound_women SET bind_order = 9, bind_depth = 70 WHERE woman_name = '苏婉';",
+      "insertNode": "林天成功绑定新女性时INSERT新行。bind_order按顺序分配（已绑定数+1）。NSFW列初始为N/A，绑定后第一次性行为发生时更新。三维数据（cup_size至weight）从角色档案提取，初始化时填入。\nSQL示例: INSERT INTO bound_women (row_id, woman_name, bind_order, bind_depth, wealth_level, identity, family_relation, original_partner, children_info, sanity_resistance, last_lucid_moment, ntr_play_type, clothing_state, exposure, wetness, skin_marks, arousal_level, semen_residue, possession_marks, cup_size, bust_size, waist_size, hip_size, height, weight) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM bound_women), '陈雪华', 1, 80, 'A6', '陈氏集团千金', '陈富贵之女', '无', '无', 25, '曾哭着喊前未婚夫名字', 'NTR隐奸|恋父养成|角色扮演', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', '', 'B', 92, 58, 82, 158, 43);",
+      "ddl": "CREATE TABLE IF NOT EXISTS bound_women ( -- 绑定女性表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  woman_name TEXT NOT NULL UNIQUE, -- 姓名\n  bind_order INTEGER NOT NULL CHECK(bind_order BETWEEN 0 AND 10), -- 绑定顺序（0=当前目标未绑定）\n  bind_depth INTEGER NOT NULL DEFAULT 0 CHECK(bind_depth >= 0 AND bind_depth <= 100), -- 绑定深度\n  wealth_level TEXT NOT NULL CHECK(wealth_level GLOB 'A[0-9]*' AND CAST(SUBSTR(wealth_level, 2) AS INTEGER) BETWEEN 1 AND 15), -- 财富等级\n  identity TEXT NOT NULL, -- 身份\n  family_relation TEXT NOT NULL, -- 家庭关系\n  original_partner TEXT NOT NULL DEFAULT '无', -- 原伴侣\n  children_info TEXT NOT NULL DEFAULT '无', -- 子女信息\n  sanity_resistance INTEGER NOT NULL DEFAULT 30 CHECK(sanity_resistance >= 0 AND sanity_resistance <= 100), -- 清醒频率\n  last_lucid_moment TEXT NOT NULL DEFAULT '', -- 上次清醒瞬间\n  ntr_play_type TEXT NOT NULL DEFAULT '', -- NTR玩法类型\n  clothing_state TEXT NOT NULL DEFAULT 'N/A', -- 当前衣着状态\n  exposure TEXT NOT NULL DEFAULT 'N/A' CHECK(exposure IN ('无暴露', '轻度', '中度', '重度', '全裸', 'N/A')), -- 身体暴露程度\n  wetness TEXT NOT NULL DEFAULT 'N/A' CHECK(wetness IN ('干燥', '微润', '中度', '湿润', '极湿', 'N/A')), -- 润湿状态\n  skin_marks TEXT NOT NULL DEFAULT 'N/A', -- 皮肤痕迹\n  arousal_level TEXT NOT NULL DEFAULT 'N/A', -- 性兴奋等级\n  semen_residue TEXT NOT NULL DEFAULT 'N/A', -- 精液残留\n  possession_marks TEXT NOT NULL DEFAULT '', -- 占有印记\n  cup_size TEXT NOT NULL DEFAULT '', -- 罩杯\n  bust_size INTEGER NOT NULL DEFAULT 0 CHECK(bust_size >= 0 AND bust_size <= 200), -- 胸围(cm)\n  waist_size INTEGER NOT NULL DEFAULT 0 CHECK(waist_size >= 0 AND waist_size <= 200), -- 腰围(cm)\n  hip_size INTEGER NOT NULL DEFAULT 0 CHECK(hip_size >= 0 AND hip_size <= 200), -- 臀围(cm)\n  height INTEGER NOT NULL DEFAULT 0 CHECK(height >= 0 AND height <= 250), -- 身高(cm)\n  weight INTEGER NOT NULL DEFAULT 0 CHECK(weight >= 0 AND weight <= 300) -- 体重(kg)\n);"
+    },
+    "content": [["row_id", "姓名", "绑定顺序", "绑定深度", "财富等级", "身份", "家庭关系", "原伴侣", "子女信息", "清醒频率", "上次清醒瞬间", "NTR玩法类型", "当前衣着状态", "身体暴露程度", "润湿状态", "皮肤痕迹", "性兴奋等级", "精液残留", "占有印记", "罩杯", "胸围", "腰围", "臀围", "身高", "体重"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "绑定女性档案",
+      "entryType": "keyword",
+      "keywords": "姓名",
+      "preventRecursion": true,
+      "injectionTemplate": "<bound_woman_detail>\n$1\n</bound_woman_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "绑定女性总览",
+      "extraIndexColumns": ["姓名", "绑定顺序", "绑定深度", "财富等级", "身份", "清醒频率"],
+      "extraIndexColumnModes": {
+        "姓名": "both",
+        "绑定顺序": "index",
+        "绑定深度": "index",
+        "财富等级": "index",
+        "身份": "index",
+        "清醒频率": "index"
+      },
+      "extraIndexInjectionTemplate": "<bound_women_index>\n$1\n</bound_women_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10060
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10070
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99987
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99988
+      }
+    },
+    "orderNo": 3
+  },
+  "sheet_family_members": {
+    "uid": "sheet_family_members",
+    "name": "家属关系网表",
+    "sourceData": {
+      "note": "记录user、苏婉、林天及绑定女性的家属关系网。多行表，每个家属一行。家属是NTR主题的重要支点，独立成表追踪其态度变化。\n\n【列定义】\n- 列1: 姓名 member_name（全表唯一）\n- 列2: 关系类型 relation_type（父/母/子/女/兄/妹/前夫/前妻/公公/婆婆/岳父/岳母等）\n- 列3: 关联主角色 linked_character（user/苏婉/林天/某绑定女性）\n- 列4: 年龄 age\n- 列5: 职业 occupation\n- 列6: 所在地 location\n- 列7: 对user态度 attitude_to_user（支持/敌视/中立/被林天控制）\n- 列8: 对林天态度 attitude_to_antagonist（崇拜/敌视/中立/恐惧/被胁迫）\n- 列9: 状态 status（正常/被胁迫/被控制/已遇害/被收买）\n- 列10: 备注 notes（≤100字）\n\n【强制约束】\nmember_name全表唯一。\n\nrelation_type枚举：父/母/子/女/兄/妹/姐/弟/前夫/前妻/公公/婆婆/岳父/岳母/未婚夫/未婚妻/其他。\n\nattitude_to_user枚举：\n- 支持：站在user一边，愿意帮助反抗林天\n- 敌视：被林天洗脑或收买，对user敌对\n- 中立：未明确表态或摇摆不定\n- 被林天控制：被林天系统绑定或胁迫\n\nattitude_to_antagonist枚举：\n- 崇拜：被林天系统绑定或洗脑\n- 敌视：明确反对林天\n- 中立：未接触或未表态\n- 恐惧：知道林天厉害但不敢反抗\n- 被胁迫：被林天抓把柄威胁\n\nstatus枚举：\n- 正常：生活正常\n- 被胁迫：被林天威胁但未完全服从\n- 被控制：被林天系统绑定或彻底洗脑\n- 已遇害：被林天陷害身亡\n- 被收买：被林天金钱收买\n\n【特殊约束】\n- 乐乐(6岁)只填情感状态，不填NSFW相关字段（系统硬性限制）\n- 家属遇害时不DELETE，改为UPDATE status='已遇害'保留记录\n- 关系网变化需有明确剧情支撑",
+      "initNode": "开场白首轮回复时INSERT核心家属。苏婉家包括乐乐6岁、苏婉父母；user父母；林天无家属（穿越者孤儿）。\nSQL示例: INSERT INTO family_members (row_id, member_name, relation_type, linked_character, age, occupation, location, attitude_to_user, attitude_to_antagonist, status, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM family_members), '乐乐', '子', '苏婉', 6, '幼儿园', '苏婉别墅', '依恋', '中立', '正常', 'user与苏婉之子，6岁，是苏婉最强的清醒触发器');\nSQL示例: INSERT INTO family_members (row_id, member_name, relation_type, linked_character, age, occupation, location, attitude_to_user, attitude_to_antagonist, status, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM family_members), '苏父', '岳父', '苏婉', 60, '退休教授', '江南老家', '支持', '敌视', '正常', '苏婉父亲，大学教授退休，对林天存疑');",
+      "deleteNode": "禁止。家属遇害时UPDATE status='已遇害'保留记录。",
+      "updateNode": "家属态度或状态变化时UPDATE对应行。\n\nSQL示例(被林天收买): UPDATE family_members SET attitude_to_user = '敌视', attitude_to_antagonist = '被收买', status = '被收买', notes = '被林天用1000万收买' WHERE member_name = '苏父';\nSQL示例(遇害): UPDATE family_members SET status = '已遇害', notes = '被林天制造车祸灭口' WHERE member_name = '苏父';\nSQL示例(被胁迫): UPDATE family_members SET status = '被胁迫', attitude_to_antagonist = '被胁迫' WHERE member_name = '苏母';",
+      "insertNode": "剧情中出现新家属时INSERT。来源包括：user结识苏婉远亲、林天身世揭示、绑定女性家属登场。\nSQL示例: INSERT INTO family_members (row_id, member_name, relation_type, linked_character, age, occupation, location, attitude_to_user, attitude_to_antagonist, status, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM family_members), '陈富贵', '父', '陈雪华', 55, '陈氏集团创始人', '江城', '中立', '崇拜', '正常', '陈雪华之父，被林天用商业利益拉拢');",
+      "ddl": "CREATE TABLE IF NOT EXISTS family_members ( -- 家属关系网表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  member_name TEXT NOT NULL UNIQUE, -- 姓名\n  relation_type TEXT NOT NULL CHECK(relation_type IN ('父', '母', '子', '女', '兄', '妹', '姐', '弟', '前夫', '前妻', '公公', '婆婆', '岳父', '岳母', '未婚夫', '未婚妻', '其他')), -- 关系类型\n  linked_character TEXT NOT NULL, -- 关联主角色\n  age INTEGER NOT NULL CHECK(age >= 0), -- 年龄\n  occupation TEXT NOT NULL, -- 职业\n  location TEXT NOT NULL, -- 所在地\n  attitude_to_user TEXT NOT NULL DEFAULT '中立' CHECK(attitude_to_user IN ('支持', '敌视', '中立', '依恋', '被林天控制')), -- 对user态度\n  attitude_to_antagonist TEXT NOT NULL DEFAULT '中立' CHECK(attitude_to_antagonist IN ('崇拜', '敌视', '中立', '恐惧', '被胁迫')), -- 对林天态度\n  status TEXT NOT NULL DEFAULT '正常' CHECK(status IN ('正常', '被胁迫', '被控制', '已遇害', '被收买')), -- 状态\n  notes TEXT NOT NULL DEFAULT '' CHECK(LENGTH(notes) <= 200) -- 备注\n);"
+    },
+    "content": [["row_id", "姓名", "关系类型", "关联主角色", "年龄", "职业", "所在地", "对user态度", "对林天态度", "状态", "备注"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "家属档案",
+      "entryType": "keyword",
+      "keywords": "姓名",
+      "preventRecursion": true,
+      "injectionTemplate": "<family_member_detail>\n$1\n</family_member_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "家属总览",
+      "extraIndexColumns": ["姓名", "关系类型", "关联主角色", "对user态度", "对林天态度", "状态"],
+      "extraIndexColumnModes": {
+        "姓名": "both",
+        "关系类型": "index",
+        "关联主角色": "index",
+        "对user态度": "index",
+        "对林天态度": "index",
+        "状态": "index"
+      },
+      "extraIndexInjectionTemplate": "<family_index>\n$1\n</family_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10080
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10090
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99989
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99990
+      }
+    },
+    "orderNo": 4
+  },
+  "sheet_factions": {
+    "uid": "sheet_factions",
+    "name": "势力表",
+    "sourceData": {
+      "note": "记录世界中的主要势力及其与user/林天的关系。多行表，每个势力一行。初始预填5大势力。\n\n【列定义】\n- 列1: 势力名称 faction_name（全表唯一）\n- 列2: 类型 faction_type（战神/商会/朝廷/都市联盟/仙门）\n- 列3: 总部所在地 base_region\n- 列4: 影响力等级 influence_level（0-5）\n- 列5: 与user关系 relation_to_user（敌对/中立/合作/盟友）\n- 列6: 与林天关系 relation_to_antagonist（敌对/中立/合作/被渗透）\n- 列7: 核心成员 key_members（逗号分隔，≤100字）\n- 列8: 备注 notes（≤100字）\n\n【强制约束】\nfaction_name全表唯一。\n\nfaction_type枚举（5大势力类型）：\n- 战神：武神殿/武道势力\n- 商会：商业协会/财阀集团\n- 朝廷：政府机关/官方势力\n- 都市联盟：城市地下势力/帮派\n- 仙门：修真门派/异能组织\n\ninfluence_level阈值：\n- 0：无影响力\n- 1：区域性小势力\n- 2：中型势力\n- 3：大型势力\n- 4：跨区域大势力\n- 5：世界级顶级势力\n\nrelation_to_user枚举：\n- 敌对：明确反对user\n- 中立：未接触或摇摆\n- 合作：有商业/情报合作\n- 盟友：愿意全力支持user反抗林天\n\nrelation_to_antagonist枚举：\n- 敌对：明确反对林天\n- 中立：未接触或摇摆\n- 合作：与林天有利益绑定\n- 被渗透：被林天系统控制或收买核心成员\n\n【更新约束】\n- relation_to_user/relation_to_antagonist变化需有明确剧情事件支撑\n- influence_level变化需重大事件（吞并其他势力+1/分裂-1/被林天渗透-1）\n- key_members更新时保留核心成员，新增/移除时显式说明",
+      "initNode": "开场白首轮回复时INSERT 5大势力。\nSQL示例: INSERT INTO factions (row_id, faction_name, faction_type, base_region, influence_level, relation_to_user, relation_to_antagonist, key_members, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM factions), '武神殿', '战神', '京城', 5, '中立', '敌对', '殿主·剑无极;副殿主·刀无痕', '武道至尊势力，反对林天系统控制');\nSQL示例: INSERT INTO factions (row_id, faction_name, faction_type, base_region, influence_level, relation_to_user, relation_to_antagonist, key_members, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM factions), '苏婉集团', '商会', '江城', 4, '合作', '被渗透', '苏婉(被绑定);user;副总裁·王经理', '苏婉公司，被林天通过苏婉渗透');",
+      "deleteNode": "禁止。势力覆灭时UPDATE notes记录而非DELETE。",
+      "updateNode": "势力关系变化时UPDATE对应行。\n\nSQL示例(林天渗透): UPDATE factions SET relation_to_antagonist = '被渗透', key_members = '苏婉(被绑定);user(被架空);副总裁·王经理(被收买)' WHERE faction_name = '苏婉集团';\nSQL示例(成为盟友): UPDATE factions SET relation_to_user = '盟友', notes = '武神殿答应提供武力支持对抗林天' WHERE faction_name = '武神殿';",
+      "insertNode": "剧情中出现新势力时INSERT。来源包括：user结识新势力、林天渗透新势力、绑定女性所属势力登场。\nSQL示例: INSERT INTO factions (row_id, faction_name, faction_type, base_region, influence_level, relation_to_user, relation_to_antagonist, key_members, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM factions), '陈氏集团', '商会', '上海', 3, '中立', '合作', '陈富贵', '陈雪华家族企业，被林天拉拢');",
+      "ddl": "CREATE TABLE IF NOT EXISTS factions ( -- 势力表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  faction_name TEXT NOT NULL UNIQUE, -- 势力名称\n  faction_type TEXT NOT NULL CHECK(faction_type IN ('战神', '商会', '朝廷', '都市联盟', '仙门')), -- 类型\n  base_region TEXT NOT NULL, -- 总部所在地\n  influence_level INTEGER NOT NULL DEFAULT 1 CHECK(influence_level >= 0 AND influence_level <= 5), -- 影响力等级\n  relation_to_user TEXT NOT NULL DEFAULT '中立' CHECK(relation_to_user IN ('敌对', '中立', '合作', '盟友')), -- 与user关系\n  relation_to_antagonist TEXT NOT NULL DEFAULT '中立' CHECK(relation_to_antagonist IN ('敌对', '中立', '合作', '被渗透')), -- 与林天关系\n  key_members TEXT NOT NULL DEFAULT '' CHECK(LENGTH(key_members) <= 200), -- 核心成员\n  notes TEXT NOT NULL DEFAULT '' CHECK(LENGTH(notes) <= 200) -- 备注\n);"
+    },
+    "content": [["row_id", "势力名称", "类型", "总部所在地", "影响力等级", "与user关系", "与林天关系", "核心成员", "备注"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "势力档案",
+      "entryType": "keyword",
+      "keywords": "势力名称",
+      "preventRecursion": true,
+      "injectionTemplate": "<faction_detail>\n$1\n</faction_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "势力总览",
+      "extraIndexColumns": ["势力名称", "类型", "影响力等级", "与user关系", "与林天关系"],
+      "extraIndexColumnModes": {
+        "势力名称": "both",
+        "类型": "index",
+        "影响力等级": "index",
+        "与user关系": "index",
+        "与林天关系": "index"
+      },
+      "extraIndexInjectionTemplate": "<factions_index>\n$1\n</factions_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10100
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10110
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99991
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99992
+      }
+    },
+    "orderNo": 5
+  },
+  "sheet_novel_comments": {
+    "uid": "sheet_novel_comments",
+    "name": "读者评论系统表",
+    "sourceData": {
+      "note": "记录小说世界中的读者评论。多行表，每条评论一行。这是林天系统的核心约束机制——评价值降到0会剥夺一切。评论仅林天可见，但通过系统面板影响林天行为。\n\n【列定义】\n- 列1: 评论ID comment_id（C0001起递增，全表唯一）\n- 列2: 所在章节 chapter（评论出现的章节号或剧情节点）\n- 列3: 评论类型 comment_type（剧情吐槽/角色评价/爽点/弃书/建议/打赏）\n- 列4: 倾向 sentiment（正面/中性/负面）\n- 列5: 评论内容 content（≤120字）\n- 列6: 影响评价值 impact_value（+5~+10/-5~-20，正负整数）\n- 列7: 是否已应用 applied（是/否）\n\n【强制约束】\ncomment_id格式必须为 C####，从C0001起递增，全表唯一。\n\ncomment_type枚举：\n- 剧情吐槽：对剧情走向的评价\n- 角色评价：对林天或user等角色的评价\n- 爽点：剧情精彩令人满足\n- 弃书：表达弃书意愿\n- 建议：对后续剧情的建议\n- 打赏：通过打赏支持（影响评价值+5~+10）\n\nsentiment枚举：\n- 正面：满意、支持\n- 中性：观望、客观评价\n- 负面：不满、愤怒\n\nimpact_value范围：\n- 正面评论：+5~+10\n- 中性评论：0\n- 负面评论：-5~-15\n- 弃书评论：-15~-20（最严重）\n- 打赏：+5~+10\n\napplied枚举：\n- 是：评论已影响评价值（UPDATE antagonist_state.evaluation_value）\n- 否：评论待应用\n\n【更新规则】\n- 每轮剧情后系统生成3-5条新评论（INSERT）\n- 新评论INSERT时applied='否'\n- 系统结算时UPDATE applied='是'并同步UPDATE antagonist_state.evaluation_value\n- 弃书评论必须立即应用（applied='是'）并扣评价值\n- 评论内容必须贴合当前剧情，不能空泛\n- 评论数量上限30条，超过时DELETE最早的已应用评论",
+      "initNode": "开场白首轮回复时INSERT 3-5条初始评论（基于开局剧情）。\nSQL示例: INSERT INTO novel_comments (row_id, comment_id, chapter, comment_type, sentiment, content, impact_value, applied) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM novel_comments), 'C0001', '第1章·开局', '角色评价', '中性', '林天这反派设定有意思，期待男主怎么反抗', 0, '是');\nSQL示例: INSERT INTO novel_comments (row_id, comment_id, chapter, comment_type, sentiment, content, impact_value, applied) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM novel_comments), 'C0002', '第1章·开局', '剧情吐槽', '负面', '又是一本夺妻文，希望能写出新意', -5, '是');",
+      "deleteNode": "评论超过30条时DELETE最早的已应用评论。\nSQL示例: DELETE FROM novel_comments WHERE applied = '是' AND row_id IN (SELECT row_id FROM novel_comments WHERE applied = '是' ORDER BY row_id ASC LIMIT 5);",
+      "updateNode": "评论应用时UPDATE applied='是'。同步UPDATE antagonist_state.evaluation_value。\n\nSQL示例(应用评论): UPDATE novel_comments SET applied = '是' WHERE comment_id = 'C0005';\nSQL示例(同步评价值): UPDATE antagonist_state SET evaluation_value = evaluation_value - 8 WHERE row_id = 1;",
+      "insertNode": "每轮剧情后系统生成3-5条新评论。\nSQL示例: INSERT INTO novel_comments (row_id, comment_id, chapter, comment_type, sentiment, content, impact_value, applied) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM novel_comments), 'C0006', '第2章·苏婉变化', '剧情吐槽', '负面', '苏婉这转变太突兀了，希望多写心理戏', -8, '否');\nSQL示例(爽点): INSERT INTO novel_comments (row_id, comment_id, chapter, comment_type, sentiment, content, impact_value, applied) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM novel_comments), 'C0007', '第2章·苏婉变化', '爽点', '正面', '林天在书房那一幕太刺激了！', +8, '否');\nSQL示例(弃书): INSERT INTO novel_comments (row_id, comment_id, chapter, comment_type, sentiment, content, impact_value, applied) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM novel_comments), 'C0008', '第3章·夺妻', '弃书', '负面', 'NTR写得太恶心，弃了', -18, '是');",
+      "ddl": "CREATE TABLE IF NOT EXISTS novel_comments ( -- 读者评论系统表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  comment_id TEXT NOT NULL UNIQUE CHECK(comment_id GLOB 'C[0-9][0-9][0-9][0-9]'), -- 评论ID\n  chapter TEXT NOT NULL, -- 所在章节\n  comment_type TEXT NOT NULL CHECK(comment_type IN ('剧情吐槽', '角色评价', '爽点', '弃书', '建议', '打赏')), -- 评论类型\n  sentiment TEXT NOT NULL CHECK(sentiment IN ('正面', '中性', '负面')), -- 倾向\n  content TEXT NOT NULL CHECK(LENGTH(content) <= 240), -- 评论内容\n  impact_value INTEGER NOT NULL CHECK(impact_value BETWEEN -20 AND 10), -- 影响评价值\n  applied TEXT NOT NULL DEFAULT '否' CHECK(applied IN ('是', '否')) -- 是否已应用\n);"
+    },
+    "content": [["row_id", "评论ID", "所在章节", "评论类型", "倾向", "评论内容", "影响评价值", "是否已应用"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "读者评论",
+      "entryType": "keyword",
+      "keywords": "评论ID",
+      "preventRecursion": true,
+      "injectionTemplate": "<novel_comment>\n$1\n</novel_comment>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "评论总览",
+      "extraIndexColumns": ["评论ID", "评论类型", "倾向", "影响评价值", "是否已应用"],
+      "extraIndexColumnModes": {
+        "评论ID": "both",
+        "评论类型": "index",
+        "倾向": "index",
+        "影响评价值": "index",
+        "是否已应用": "index"
+      },
+      "extraIndexInjectionTemplate": "<comments_index>\n$1\n</comments_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10120
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10130
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99993
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99994
+      }
+    },
+    "orderNo": 6
+  },
+  "sheet_negotiation_log": {
+    "uid": "sheet_negotiation_log",
+    "name": "交涉对抗记录表",
+    "sourceData": {
+      "note": "记录user与林天或其势力的交涉、对抗、调查、反抗记录。多行表，用类型列区分四类。本表是交涉面板的核心数据源，参考raft_13 records三合一设计。\n\n【列定义】\n- 列1: 日志ID log_id（N0001起递增，全表唯一）\n- 列2: 类型 log_type（交涉/对抗/调查/反抗）\n- 列3: 对象名称 target_name\n- 列4: 时间跨度 time_span（YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM）\n- 列5: 概览 summary（≤30字）\n- 列6: 详情 detail（240-480字）\n- 列7: 结果 outcome（胜利/失败/平局/未决）\n- 列8: 系统影响 system_effect（≤80字，如'评价值-5'/'无'）\n\n【强制约束】\nlog_id格式必须为 N####，从N0001起递增，全表唯一。\n\nlog_type枚举：\n- 交涉：user与林天或其势力的对话、谈判、利益交换\n- 对抗：user与林天的正面冲突（口角、肢体冲突、商业战）\n- 调查：user收集林天罪证、调查林天背景\n- 反抗：user组织盟友对抗林天、保护家人\n\ntime_span格式必须为 YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM。\n\nsummary一句话概括，≤30字。\ndetail写240-480字的具体过程。\n\noutcome枚举：\n- 胜利：user达成目标，林天受挫\n- 失败：user失败，林天占上风\n- 平局：双方各有得失\n- 未决：交涉未结束，待后续\n\nsystem_effect格式：\n- 影响评价值时写'评价值±N'\n- 影响反抗力时写'反抗力±N'\n- 影响盟友时写'盟友+/-姓名'\n- 无影响写'无'\n\n【更新约束】\n- log_id和log_type不可变更\n- outcome从未决变更为其他状态时需有明确结果事件支撑\n- system_effect必须与antagonist_state.evaluation_value/protagonist_info.resistance_power同步更新",
+      "initNode": "禁止初始化INSERT。表初始为空。开局user未与林天正式交涉。",
+      "deleteNode": "禁止。记录永久保留。",
+      "updateNode": "已存在记录的信息补充或结果变更时UPDATE。例如：交涉从未决变为胜利、补充后续影响。\n\nSQL示例(交涉结果): UPDATE negotiation_log SET outcome = '胜利', system_effect = '评价值-5;反抗力+8' WHERE log_id = 'N0001';",
+      "insertNode": "每轮交涉/对抗/调查/反抗事件结束后INSERT一条新记录。\n\nSQL示例(交涉): INSERT INTO negotiation_log (row_id, log_id, log_type, target_name, time_span, summary, detail, outcome, system_effect) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM negotiation_log), 'N0001', '交涉', '林天', '2024-04-02 14:00 ~ 2024-04-02 15:30', 'user与林天首次正面对话', 'user在苏婉公司楼下堵住林天，质问其与苏婉的关系。林天以商业合作为由搪塞，user出示苏婉异常行为的证据要求林天离开苏婉。林天表面应允，暗中威胁user不要多管闲事。双方未达成实质协议，但user确认林天心虚。', '未决', '无');\nSQL示例(调查): INSERT INTO negotiation_log (row_id, log_id, log_type, target_name, time_span, summary, detail, outcome, system_effect) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM negotiation_log), 'N0002', '调查', '林天背景', '2024-04-03 09:00 ~ 2024-04-03 18:00', 'user调查林天商业背景', 'user雇佣私家侦探调查林天，发现林天三年前还是普通社畜，突然暴富成为A9级富豪。财务记录显示其资金来源不明，多家公司被收购后高管全部更换为年轻女性。user进一步调查发现这些女性均与林天有异常关系，但无法找到直接证据。', '胜利', '反抗力+5');\nSQL示例(对抗): INSERT INTO negotiation_log (row_id, log_id, log_type, target_name, time_span, summary, detail, outcome, system_effect) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM negotiation_log), 'N0003', '对抗', '林天', '2024-04-05 20:00 ~ 2024-04-05 22:00', 'user在家庭聚餐中与林天冲突', '林天不请自来参加苏婉家的家庭聚餐，故意在user面前与苏婉亲昵。user怒火中烧质问林天，林天反讽user无能。苏婉冷漠站在林天一边，乐乐被吓哭。user被赶出家门，林天当晚留宿苏婉卧室。', '失败', '评价值-3;反抗力-10;理智值-15');",
+      "ddl": "CREATE TABLE IF NOT EXISTS negotiation_log ( -- 交涉对抗记录表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  log_id TEXT NOT NULL UNIQUE CHECK(log_id GLOB 'N[0-9][0-9][0-9][0-9]'), -- 日志ID\n  log_type TEXT NOT NULL CHECK(log_type IN ('交涉', '对抗', '调查', '反抗')), -- 类型\n  target_name TEXT NOT NULL, -- 对象名称\n  time_span TEXT NOT NULL CHECK(time_span GLOB '????-??-?? ??:?? ~ ????-??-?? ??:??'), -- 时间跨度\n  summary TEXT NOT NULL CHECK(LENGTH(summary) <= 60), -- 概览\n  detail TEXT NOT NULL CHECK(LENGTH(detail) >= 100), -- 详情\n  outcome TEXT NOT NULL DEFAULT '未决' CHECK(outcome IN ('胜利', '失败', '平局', '未决')), -- 结果\n  system_effect TEXT NOT NULL DEFAULT '无' CHECK(LENGTH(system_effect) <= 160) -- 系统影响\n);"
+    },
+    "content": [["row_id", "日志ID", "类型", "对象名称", "时间跨度", "概览", "详情", "结果", "系统影响"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "交涉记录",
+      "entryType": "keyword",
+      "keywords": "日志ID",
+      "preventRecursion": true,
+      "injectionTemplate": "<negotiation_detail>\n$1\n</negotiation_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "交涉记录索引",
+      "extraIndexColumns": ["日志ID", "类型", "对象名称", "结果"],
+      "extraIndexColumnModes": {
+        "日志ID": "both",
+        "类型": "index",
+        "对象名称": "index",
+        "结果": "index"
+      },
+      "extraIndexInjectionTemplate": "<negotiation_index>\n$1\n</negotiation_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10140
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10150
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99995
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99996
+      }
+    },
+    "orderNo": 7
+  },
+  "sheet_chronicle": {
+    "uid": "sheet_chronicle",
+    "name": "纪要表",
+    "sourceData": {
+      "note": "轮次日志。每轮交互结束后立刻插入一条新记录。\n\n【列定义】\n- 列1: 编码索引 code_index（AM0001起递增，全表唯一）\n- 列2: 时间跨度 time_span（YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM）\n- 列3: 概览 summary（≤30字）\n- 列4: 纪要 chronicle_text（240-480字）\n- 列5: 重要对话 key_dialogue（可NULL）\n\n【强制约束】\n1.编码索引格式 AMXXXX，从0001开始递增。\n2.时间跨度格式为 YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM。\n3.概览一句话概括本轮纪要内容，≤30字。\n4.纪要240-480字，客观记录本轮核心事件、角色互动、状态变化。\n5.重要对话记录本轮最关键的1-2句对话原文，无则NULL。",
+      "initNode": "故事初始化时，插入一条新记录用于记录开局剧情。\nSQL示例: INSERT INTO chronicle (row_id, code_index, time_span, summary, chronicle_text, key_dialogue) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM chronicle), 'AM0001', '2024-04-01 19:00 ~ 2024-04-01 21:00', 'user下班回家发现苏婉异常冷漠', 'user下班回到苏婉别墅，发现苏婉一反常态地冷漠，黑色连衣裙替代了往日的暖色家居服。苏婉避开user的眼神，称公司有事需要早休息。乐乐被保姆带去隔壁房间，user询问苏婉原因，苏婉冷淡回应\"最近累了\"。user注意到苏婉左手无名指的婚戒不见了，取而代之的是一枚陌生的钻石戒指。user心生疑虑，决定暗中调查苏婉近期异常的原因。', '苏婉：\"最近累了，别多问。\"');",
+      "deleteNode": "禁止。",
+      "updateNode": "禁止。纪要一旦写入不可修改。",
+      "insertNode": "每轮交互结束后插入一条新记录。\n\nSQL示例: INSERT INTO chronicle (row_id, code_index, time_span, summary, chronicle_text, key_dialogue) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM chronicle), 'AM0002', '2024-04-02 09:00 ~ 2024-04-02 12:00', 'user雇佣侦探调查林天背景', 'user联系私家侦探老吴调查林天的商业背景。老吴三小时后回电，告知林天三年前还是普通社畜，突然暴富成为A9级富豪，资金来源不明。多家被收购公司的高管全部更换为年轻女性，且这些女性均与林天有异常关系。user进一步调查发现林天近期频繁出入苏婉公司，以商业合作为名接近苏婉。user意识到苏婉的异常可能与林天有关，决定搜集更多证据。', '老吴：\"这小子不简单，三年从社畜到亿万富翁，背后绝对有猫腻。\"');",
+      "ddl": "CREATE TABLE IF NOT EXISTS chronicle ( -- 纪要表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  code_index TEXT NOT NULL UNIQUE CHECK(code_index GLOB 'AM[0-9][0-9][0-9][0-9]'), -- 编码索引\n  time_span TEXT NOT NULL CHECK(time_span GLOB '????-??-?? ??:?? ~ ????-??-?? ??:??'), -- 时间跨度\n  summary TEXT NOT NULL CHECK(LENGTH(summary) <= 60), -- 概览\n  chronicle_text TEXT NOT NULL CHECK(LENGTH(chronicle_text) >= 100), -- 纪要\n  key_dialogue TEXT -- 重要对话\n);"
+    },
+    "content": [["row_id", "编码索引", "时间跨度", "概览", "纪要", "重要对话"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "纪要",
+      "entryType": "keyword",
+      "keywords": "编码索引",
+      "preventRecursion": true,
+      "injectionTemplate": "<chronicle_detail>\n$1\n</chronicle_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "纪要索引",
+      "extraIndexColumns": ["编码索引", "时间跨度", "概览"],
+      "extraIndexColumnModes": {
+        "编码索引": "both",
+        "时间跨度": "index",
+        "概览": "index"
+      },
+      "extraIndexInjectionTemplate": "<chronicle_index>\n$1\n</chronicle_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10160
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10170
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99997
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99998
+      }
+    },
+    "orderNo": 8
+  },
+  "sheet_evidence": {
+    "uid": "sheet_evidence",
+    "name": "证据表",
+    "sourceData": {
+      "note": "记录user收集的林天罪证。多行表，每条证据一行。原protagonist_info.evidence_collected字段已移入本表独立追踪，支持证据的获取、消耗、交涉加成等机制。\n\n【列定义】\n- 列1: 证据编号 evidence_id（E0001起递增，全表唯一）\n- 列2: 证据类型 evidence_type（物证/人证/视频/OOC记录/良知记录/其他）\n- 列3: 标题 title（≤40字，证据名称）\n- 列4: 描述 description（≤200字，证据详细内容）\n- 列5: 获取时间 obtained_time（YYYY-MM-DD HH:MM）\n- 列6: 获取场景 obtained_scene（获得证据的场景描述）\n- 列7: 可信度 credibility（0-100整数）\n- 列8: 交涉使用记录 used_in_negotiation（记录该证据在哪些交涉中使用过，分号分隔日志ID）\n- 列9: 是否已消耗 is_consumed（是/否）\n\n【证据类型说明】\n- 物证：实物证据（文件、录音、照片、合同、账本等），可信度通常较高\n- 人证：证人证言（赵敏等已解绑女性、林天前员工、受害者家属等），可信度受证人立场影响\n- 视频：视频录像（监控、手机拍摄等），可信度最高\n- OOC记录：林天人设崩塌的OOC行为记录（系统异常、能力暴露等），针对系统机制\n- 良知记录：林天良知波动的记录（conscience_value变化事件），针对其心理防线\n- 其他：不属于上述类型的证据\n\n【可信度分级】\n- 0-30 低：可信度低，孤证难以采信，交涉加成有限\n- 31-60 中：可信度中等，需要其他证据佐证\n- 61-85 高：可信度高，可作为关键证据使用\n- 86-100 铁证：不可辩驳的决定性证据，交涉时效果显著\n\n【交涉时使用证据的骰子修正规则】\n交涉（negotiation_log中log_type='交涉'）时user可声明使用一条未消耗的证据，根据证据类型获得骰子修正：\n- 物证：骰子+10\n- 人证：骰子+5\n- 视频：骰子+15\n- OOC记录：骰子+20（针对林天系统，效果最强）\n- 良知记录：骰子+8\n- 其他：骰子+3\n\n同一证据类型不叠加，多条同类证据取最高值。不同类型证据可叠加修正，但单次交涉最多使用3条证据。可信度低于30的证据不予加成。\n\n【证据消耗规则】\n- 证据使用后is_consumed改为'是'，不可重复使用\n- 物证/视频：使用后暴露，林天会销毁或转移原件，不可再用\n- 人证：使用后证人暴露，可能被林天报复或收买，不可再用\n- OOC记录/良知记录：使用后林天产生防备，同类记录不再有效\n- used_in_negotiation记录该证据使用过的交涉日志ID（如N0001;N0003）\n- 已消耗的证据保留在表中用于查阅，但不影响后续交涉\n\n【更新约束】\n- evidence_id生成后不可变更\n- credibility设定后原则上不变，若发现证据伪造则UPDATE为0并标记is_consumed='是'\n- is_consumed一旦改为'是'不可改回'否'\n- user获得新证据时INSERT，同时在protagonist_info.evidence_collected追加证据名称",
+      "initNode": "开场白首轮回复时INSERT 2条初始证据示例（user开局已掌握的线索）。\nSQL示例: INSERT INTO evidence (row_id, evidence_id, evidence_type, title, description, obtained_time, obtained_scene, credibility, used_in_negotiation, is_consumed) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM evidence), 'E0001', '物证', '苏婉手机中的暧昧短信截图', '苏婉手机收件箱中与林天的暧昧对话截图，内容涉及\"今晚老地方见\"\"想你\"等暧昧话语，发送时间早于苏婉态度变化', '2024-04-01 20:30', '苏婉别墅·主卧·苏婉手机', 70, '', '否');\nSQL示例: INSERT INTO evidence (row_id, evidence_id, evidence_type, title, description, obtained_time, obtained_scene, credibility, used_in_negotiation, is_consumed) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM evidence), 'E0002', '物证', '苏婉左手无名指的陌生钻戒', '苏婉左手无名指原佩戴婚戒的位置换成了一枚陌生钻戒，经查询为某奢侈品限量款，价值约200万，非user所赠', '2024-04-01 19:15', '苏婉别墅·客厅', 55, '', '否');",
+      "deleteNode": "禁止。证据永久保留，即使已消耗也不删除。",
+      "updateNode": "证据状态变化时UPDATE对应行。\n\nSQL示例(交涉使用后消耗): UPDATE evidence SET is_consumed = '是', used_in_negotiation = used_in_negotiation || ';N0001' WHERE evidence_id = 'E0001';\nSQL示例(发现伪造): UPDATE evidence SET credibility = 0, is_consumed = '是' WHERE evidence_id = 'E0003';",
+      "insertNode": "user获得新证据时INSERT新行。evidence_id按E0001起递增。\nSQL示例: INSERT INTO evidence (row_id, evidence_id, evidence_type, title, description, obtained_time, obtained_scene, credibility, used_in_negotiation, is_consumed) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM evidence), 'E0003', '人证', '赵敏关于林天系统的证言', '已解绑的前绑定女性赵敏透露林天拥有某种\"系统\"，能控制女性心智，她曾目睹林天使用系统面板操作', '2024-04-10 15:00', '赵敏安全屋', 65, '', '否');\nSQL示例: INSERT INTO evidence (row_id, evidence_id, evidence_type, title, description, obtained_time, obtained_scene, credibility, used_in_negotiation, is_consumed) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM evidence), 'E0004', 'OOC记录', '林天在公司年会上的异常行为', '林天在公司年会上当众说出\"这个世界只是小说\"的言论，随后系统强制修正，在场人员记忆被篡改，但user因觉醒度较高保留了记忆', '2024-04-15 22:00', '苏婉集团·年会现场', 85, '', '否');",
+      "ddl": "CREATE TABLE IF NOT EXISTS evidence ( -- 证据表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  evidence_id TEXT NOT NULL UNIQUE CHECK(evidence_id GLOB 'E[0-9][0-9][0-9][0-9]'), -- 证据编号\n  evidence_type TEXT NOT NULL CHECK(evidence_type IN ('物证', '人证', '视频', 'OOC记录', '良知记录', '其他')), -- 证据类型\n  title TEXT NOT NULL CHECK(LENGTH(title) <= 80), -- 标题\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 400), -- 描述\n  obtained_time TEXT NOT NULL CHECK(obtained_time GLOB '????-??-?? ??:??'), -- 获取时间\n  obtained_scene TEXT NOT NULL, -- 获取场景\n  credibility INTEGER NOT NULL DEFAULT 50 CHECK(credibility >= 0 AND credibility <= 100), -- 可信度\n  used_in_negotiation TEXT NOT NULL DEFAULT '', -- 交涉使用记录\n  is_consumed TEXT NOT NULL DEFAULT '否' CHECK(is_consumed IN ('是', '否')) -- 是否已消耗\n);"
+    },
+    "content": [["row_id", "证据编号", "证据类型", "标题", "描述", "获取时间", "获取场景", "可信度", "交涉使用记录", "是否已消耗"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "证据档案",
+      "entryType": "keyword",
+      "keywords": "证据编号",
+      "preventRecursion": true,
+      "injectionTemplate": "<evidence_detail>\n$1\n</evidence_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "证据总览",
+      "extraIndexColumns": ["证据编号", "证据类型", "标题", "可信度", "是否已消耗"],
+      "extraIndexColumnModes": {
+        "证据编号": "both",
+        "证据类型": "index",
+        "标题": "index",
+        "可信度": "index",
+        "是否已消耗": "index"
+      },
+      "extraIndexInjectionTemplate": "<evidence_index>\n$1\n</evidence_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10200
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10210
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 100001
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 100002
+      }
+    },
+    "orderNo": 10
+  },
+  "sheet_wealth_details": {
+    "uid": "sheet_wealth_details",
+    "name": "财富明细表",
+    "sourceData": {
+      "note": "记录user、林天及其他关键角色的财富资产明细。多行表，每项资产一行。本表是财富等级（A1-A15）的底层数据支撑，protagonist_info/antagonist_state的wealth_level由本表汇总得出。\n\n【列定义】\n- 列1: 所属人 owner（林天/user/受害者/反派）\n- 列2: 资产名称 asset_name（≤40字）\n- 列3: 资产类型 asset_type（不动产/现金/股权/车辆/收藏/理财/其他）\n- 列4: 资产价值 asset_value（估值文本，含数值+单位）\n- 列5: 状态 status（持有/冻结/转移/转移中/查封/抵押）\n- 列6: 获取方式 acquire_method（资产来源，≤100字）\n- 列7: 备注 notes（≤200字）\n\n【财富等级对应表】\nwealth_level与总资产估值对应关系（汇总本表各owner的所有资产得出）：\n- A1 贫困：总资产<1万\n- A2 温饱：1万-10万\n- A3 小康：10万-50万\n- A4 中产：50万-100万\n- A5 百万：100万-500万\n- A6 富裕：500万-1000万\n- A7 准富：1000万-3000万\n- A8 千万：3000万-1亿\n- A9 准巨富：1亿-5亿\n- A10 亿级：5亿-10亿\n- A11 巨富：10亿-50亿\n- A12 大富：50亿-100亿\n- A13 豪富：100亿-500亿\n- A14 首富级：500亿-1000亿\n- A15 全球首富：>1000亿\n\n【资产估值规则】\n- asset_value写具体估值文本，包含数值+单位\n  √ 800万\n  √ 约2.3亿\n  √ 估值1200万（2024年市价）\n  × 很多钱 ← 禁止模糊\n- 房产估值按当前市价，股权按最新一轮融资估值\n- 资产价值随剧情发展可波动（经济危机/股市崩盘/公司上市等）\n\n【财富变动触发事件】\n- 林天系统奖励：林天绑定女性/评价值变化时系统奖励资产，INSERT新行或UPDATE asset_value\n- user资产受损：林天商业打压/苏婉转移财产/离婚分割，UPDATE status为'冻结'/'转移'/'转移中'\n- user反击收益：扳倒林天势力/夺回资产/盟友支援，INSERT新行或UPDATE status为'持有'\n- 资产查封：官方介入时UPDATE status为'查封'\n- 财富等级变化：汇总各owner总资产后，若跨过等级阈值则同步UPDATE protagonist_info/antagonist_state的wealth_level\n\n【更新约束】\n- owner和asset_name组合可作为资产唯一标识\n- status变化需有明确剧情事件支撑\n- 资产变卖后保留记录，不DELETE，UPDATE status='变卖'\n- 新增资产时INSERT，wealth_level若跨阈值同步更新",
+      "initNode": "开场白首轮回复时INSERT 12条初始资产（林天7项+user5项，详见开局初始化SQL条目）。\nSQL示例(林天): INSERT INTO wealth_details (row_id, owner, asset_name, asset_type, asset_value, status, acquire_method, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM wealth_details), '林天', '林天私人会所', '不动产', '8000万', '持有', '系统奖励', '位于城郊半山，林天主要居所');\nSQL示例(user): INSERT INTO wealth_details (row_id, owner, asset_name, asset_type, asset_value, status, acquire_method, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM wealth_details), 'user', 'user科技公司股权', '股权', '5000万', '冻结', '自创', '核心股权，已被苏婉胁迫签字转让给林天');",
+      "deleteNode": "禁止。资产变卖或转移后保留记录，UPDATE status而非DELETE。",
+      "updateNode": "资产状态变化或估值变动时UPDATE对应行。\n\nSQL示例(资产冻结): UPDATE wealth_details SET status = '冻结' WHERE owner = 'user' AND asset_name = 'user科技公司股权';\nSQL示例(估值变动): UPDATE wealth_details SET asset_value = '1.5亿' WHERE owner = '林天' AND asset_name = '林天私人会所';\nSQL示例(资产转移): UPDATE wealth_details SET status = '转移', notes = notes || ';苏婉离婚时转移至user名下' WHERE owner = 'user' AND asset_name = '银行存款';\nSQL示例(资产查封): UPDATE wealth_details SET status = '查封' WHERE owner = '林天' AND asset_name = '林天投资控股有限公司';",
+      "insertNode": "角色获得新资产时INSERT新行。\nSQL示例: INSERT INTO wealth_details (row_id, owner, asset_name, asset_type, asset_value, status, acquire_method, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM wealth_details), '林天', '布加迪Chiron', '车辆', '3000万', '持有', '系统奖励', '林天绑定第5名女性后获得');\nSQL示例: INSERT INTO wealth_details (row_id, owner, asset_name, asset_type, asset_value, status, acquire_method, notes) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM wealth_details), 'user', '苏婉集团5%股份', '股权', '4000万', '持有', '苏婉父亲赠与', '家族股份');",
+      "ddl": "CREATE TABLE IF NOT EXISTS wealth_details ( -- 财富明细表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  owner TEXT NOT NULL CHECK(owner IN ('林天', 'user', '受害者', '反派')), -- 持有者\n  asset_name TEXT NOT NULL, -- 资产名称\n  asset_type TEXT NOT NULL CHECK(asset_type IN ('不动产', '现金', '股权', '车辆', '收藏', '理财', '其他')), -- 资产类型\n  asset_value TEXT NOT NULL, -- 资产价值\n  status TEXT NOT NULL DEFAULT '持有' CHECK(status IN ('持有', '冻结', '转移', '转移中', '查封', '抵押')), -- 状态\n  acquire_method TEXT NOT NULL DEFAULT '', -- 获取方式\n  notes TEXT NOT NULL DEFAULT '' CHECK(LENGTH(notes) <= 200) -- 备注\n);"
+    },
+    "content": [["row_id", "所属人", "资产名称", "资产类型", "资产价值", "状态", "获取方式", "备注"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": -1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": true,
+      "splitByRow": true,
+      "entryName": "财富明细",
+      "entryType": "keyword",
+      "keywords": "所属人",
+      "preventRecursion": true,
+      "injectionTemplate": "<wealth_detail>\n$1\n</wealth_detail>",
+      "extraIndexEnabled": true,
+      "extraIndexEntryName": "财富总览",
+      "extraIndexColumns": ["所属人", "资产名称", "资产类型", "资产价值", "状态"],
+      "extraIndexColumnModes": {
+        "所属人": "both",
+        "资产名称": "index",
+        "资产类型": "index",
+        "资产价值": "index",
+        "状态": "index"
+      },
+      "extraIndexInjectionTemplate": "<wealth_index>\n$1\n</wealth_index>",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10220
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10230
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 100003
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 100004
+      }
+    },
+    "orderNo": 11
+  },
+  "sheet_options": {
+    "uid": "sheet_options",
+    "name": "选项表",
+    "sourceData": {
+      "note": "每轮剧情输出完毕后，必须生成接下来8个剧情发展可能性及1条tips，写入本表。此表固定9行（row 1-8为选项，row 9为tips）。每轮全部UPDATE覆盖。参考raft_13 options设计。\n\n【列定义】\n- 列1: 槽位类型 slot_type（选项分类标记）\n- 列2: 表情 emoji（单个Emoji符号）\n- 列3: 选项文本 option_text（具体的剧情发展描述或tips内容，≤600字）\n\n【强制约束】\nslot_type固定分配（不可更改行与类型的对应关系）：\n- row 1: 交涉（与林天或其势力的对话谈判）\n- row 2: NTR（林天对苏婉或家人的NTR行为）\n- row 3: 反抗（user组织反抗林天）\n- row 4: 调查（user收集罪证或调查林天）\n- row 5: 日常（家庭生活/工作日常）\n- row 6: 危机（突发危机事件）\n- row 7: 系统（系统相关事件/评价值变化/读者评论）\n- row 8: 觉醒（user认知觉醒相关事件）\n- row 9: tips（系统提示/玩法建议）\n\n【更新约束】\n- 8个选项必须全部是新内容，严禁与上一轮选项重复\n- 选项必须基于当前剧情结尾处的状态（地点/林天在场/苏婉状态/家人状态/评价值/反抗力）\n- NTR选项须判定前提条件（林天在场/苏婉绑定深度/原伴侣在场）\n- 反抗选项须判定前提条件（user反抗力/盟友数量/罪证数量）\n- 觉醒选项须判定前提条件（user觉醒度/异常事件触发）\n- 无前提条件满足时，对应类型选项改为暗示/擦边/单方面幻想\n- tips必须与本轮结尾处的状态相关，给出实用建议\n\n【选项文本要求】\n- 第一人称user视角（\"你...\"）\n- 具体描述可能的剧情走向，不写空泛内容\n- ≤600字\n- 包含必要的前提条件提示",
+      "initNode": "初始化时INSERT 9行。前8行为基于开局场景的选项，第9行为tips。\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (1, '交涉', '🤝', '你决定主动联系林天，以谈生意为由约他见面，试图在对话中找到他的破绽');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (2, 'NTR', '💔', '林天深夜造访苏婉别墅，要求苏婉在你面前为他服务，你被绑在椅子上目睹全程');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (3, '反抗', '✊', '你联系大学时期的律师朋友，咨询如何在不惊动林天的情况下保护财产');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (4, '调查', '🔍', '你决定潜入苏婉公司调查她与林天的商业合作文件，寻找资金异常的证据');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (5, '日常', '🏠', '你带乐乐去游乐园玩耍，试图在苏婉冷漠的婚姻中给孩子正常的童年');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (6, '危机', '⚠️', '苏婉公司遭遇恶意收购，林天以救世主姿态出现，苏婉被迫接受他的条件');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (7, '系统', '⚙️', '林天评价值跌破60，系统发出警告，林天被迫调整策略博取读者好感');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (8, '觉醒', '👁️', '你在苏婉手机中发现一条无法解释的短信，内容暗示她被某种系统控制');\nSQL示例: INSERT INTO options (row_id, slot_type, emoji, option_text) VALUES (9, 'tips', '💡', '当前反抗力30，建议优先调查林天背景收集罪证，罪证是反抗的核心筹码');",
+      "deleteNode": "禁止。",
+      "insertNode": "禁止。此表固定9行，不允许INSERT额外行。",
+      "updateNode": "每轮剧情回复输出完毕后，必须UPDATE全部9行。选项内容必须基于本轮回复结尾的最新剧情状态生成。\n\nSQL示例: UPDATE options SET emoji = '🤝', option_text = '你决定在林天公司年会上当众质问他与苏婉的关系，利用舆论压力逼他退让' WHERE row_id = 1;\nSQL示例: UPDATE options SET emoji = '💔', option_text = '林天命令苏婉在你书房为他口交，你被迫在隔壁听到全过程' WHERE row_id = 2;\nSQL示例: UPDATE options SET emoji = '✊', option_text = '你联合赵敏（已解绑的前绑定女性）组建反抗联盟，共享林天的罪证' WHERE row_id = 3;\nSQL示例: UPDATE options SET emoji = '🔍', option_text = '你潜入林天公寓寻找系统面板的物理证据' WHERE row_id = 4;\nSQL示例: UPDATE options SET emoji = '💡', option_text = '当前觉醒度25，可尝试与苏婉对质触发她的清醒瞬间，清醒瞬间是觉醒的关键触发器' WHERE row_id = 9;",
+      "ddl": "CREATE TABLE IF NOT EXISTS options ( -- 选项表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  slot_type TEXT NOT NULL CHECK(slot_type IN ('交涉', 'NTR', '反抗', '调查', '日常', '危机', '系统', '觉醒', 'tips')), -- 槽位类型\n  emoji TEXT NOT NULL DEFAULT '', -- 表情\n  option_text TEXT NOT NULL CHECK(LENGTH(option_text) <= 1200) -- 选项文本\n);"
+    },
+    "content": [["row_id", "槽位类型", "表情", "选项文本"]],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "选项表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "选项表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 4,
+        "order": 10180
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10190
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99999
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 100000
+      }
+    },
+    "orderNo": 9
+  }
+}

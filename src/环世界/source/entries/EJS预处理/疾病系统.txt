@@ -1,0 +1,249 @@
+@@generate_before
+<%_
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var hygiene = Number(getvar('stat_data.殖民地.卫生条件', { scope: 'local', defaults: 50 })) || 50;
+var temperature = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+
+/* 疾病数据库 - RimWorld原版疾病 */
+var DISEASE_DB = {
+  '流感':       { contagion: 30, duration: 5,  severity: '轻度',   treat: '基础药品', immunityRate: 8 },
+  '疟疾':       { contagion: 20, duration: 7,  severity: '中度',   treat: '奎宁',     immunityRate: 6 },
+  '感染':       { contagion: 0,  duration: 3,  severity: '重度',   treat: '抗生素',   immunityRate: 5 },
+  '瘟疫':       { contagion: 60, duration: 10, severity: '极重度', treat: '高级药品', immunityRate: 4 },
+  '肌肉寄生虫': { contagion: 10, duration: 4,  severity: '轻度',   treat: '基础药品', immunityRate: 9 }
+};
+
+/* 疾病影响表 - 按严重度 */
+var DISEASE_IMPACT = {
+  '轻度':   { workEff: 0.8, mood: -5,  bedRest: false },
+  '中度':   { workEff: 0.5, mood: -15, bedRest: true  },
+  '重度':   { workEff: 0.2, mood: -30, bedRest: true  },
+  '极重度': { workEff: 0,   mood: -50, bedRest: true  }
+};
+
+/* 疾病触发判定 - 基于卫生条件/温度/biome */
+function _diseaseTrigger(seed) {
+  var roll = _lcgRoll(seed, 1, 100)[0];
+  /* 卫生条件越差,触发概率越高 */
+  var hygieneFactor = Math.max(0, (100 - hygiene) / 100);
+  /* 极端温度增加疾病风险 */
+  var tempFactor = (temperature < -5 || temperature > 35) ? 0.3 : 0;
+  /* biome修正 */
+  var biomeFactor = 0;
+  if (biome === '热带雨林') { biomeFactor = 0.4; }
+  else if (biome === '沙漠' || biome === '冻原') { biomeFactor = 0.2; }
+  var triggerChance = Math.round((hygieneFactor * 30) + (tempFactor * 100) + (biomeFactor * 100));
+  if (triggerChance > 80) { triggerChance = 80; }
+  if (roll > triggerChance) { return { triggered: false, disease: '无', chance: triggerChance }; }
+  /* 根据biome和条件选择疾病类型 */
+  var typeRoll = _lcgRoll(seed + '_type', 1, 100)[0];
+  if (biome === '热带雨林') {
+    if (typeRoll <= 40) { return { triggered: true, disease: '疟疾', chance: triggerChance }; }
+    if (typeRoll <= 70) { return { triggered: true, disease: '流感', chance: triggerChance }; }
+    if (typeRoll <= 90) { return { triggered: true, disease: '肌肉寄生虫', chance: triggerChance }; }
+    return { triggered: true, disease: '瘟疫', chance: triggerChance };
+  }
+  if (biome === '冻原' || temperature < 0) {
+    if (typeRoll <= 60) { return { triggered: true, disease: '流感', chance: triggerChance }; }
+    return { triggered: true, disease: '感染', chance: triggerChance };
+  }
+  if (hygiene < 20) {
+    if (typeRoll <= 35) { return { triggered: true, disease: '瘟疫', chance: triggerChance }; }
+    if (typeRoll <= 70) { return { triggered: true, disease: '流感', chance: triggerChance }; }
+    return { triggered: true, disease: '感染', chance: triggerChance };
+  }
+  if (typeRoll <= 50) { return { triggered: true, disease: '流感', chance: triggerChance }; }
+  if (typeRoll <= 80) { return { triggered: true, disease: '肌肉寄生虫', chance: triggerChance }; }
+  return { triggered: true, disease: '疟疾', chance: triggerChance };
+}
+
+/* 疾病发展阶段: 0潜伏→1轻度→2中度→3重度→4极重度→5康复/6死亡 */
+function _diseaseProgress(stage) {
+  var s = Number(stage) || 0;
+  if (s === 0) { return { stage: 1, label: '轻度',   detail: '症状显现,工作效率下降' }; }
+  if (s === 1) { return { stage: 2, label: '中度',   detail: '症状加重,需卧床休息' }; }
+  if (s === 2) { return { stage: 3, label: '重度',   detail: '症状严重,强制卧床' }; }
+  if (s === 3) { return { stage: 4, label: '极重度', detail: '濒死风险,需紧急治疗' }; }
+  return { stage: s, label: '稳定', detail: '阶段不推进' };
+}
+
+/* 治疗效果判定 - medLevel含skill/medType/bedRest */
+function _diseaseTreat(medLevel, disease) {
+  var skill = Number(medLevel.skill) || 0;
+  var medType = medLevel.medType || '无';
+  var bedRest = medLevel.bedRest ? true : false;
+  var diseaseData = DISEASE_DB[disease] || { severity: '轻度', treat: '基础药品' };
+  /* 药品系数与技能门槛 */
+  var medFactor = 0.3;
+  var medOk = false;
+  if (medType === '基础药品') { medFactor = 1.0; medOk = skill >= 3; }
+  else if (medType === '高级药品') { medFactor = 1.5; medOk = skill >= 5; }
+  else if (medType === '抗生素' && diseaseData.treat === '抗生素') { medFactor = 1.3; medOk = skill >= 4; }
+  else if (medType === '奎宁' && diseaseData.treat === '奎宁') { medFactor = 1.4; medOk = skill >= 4; }
+  else if (medType === '高级药品' && diseaseData.treat === '高级药品') { medFactor = 1.5; medOk = skill >= 5; }
+  /* 医疗技能修正: 1 + skill×0.05 */
+  var skillMod = 1 + (skill * 0.05);
+  /* 卧床修正: 免疫力累积+2/楼层 */
+  var bedMod = bedRest ? 2 : 0;
+  var treatRate = medFactor * skillMod;
+  var immunityGain = bedMod;
+  var success = medOk && (treatRate >= 1.0);
+  return {
+    success: success,
+    treatRate: treatRate.toFixed(2),
+    immunityGain: immunityGain,
+    skillMod: skillMod.toFixed(2),
+    medFactor: medFactor,
+    bedMod: bedMod,
+    detail: medOk ? '治疗有效' : '药品/技能不足,仅靠免疫力'
+  };
+}
+
+/* 自愈判定 - 基于免疫力 */
+function _diseaseRecover(immunity, disease) {
+  var imm = Number(immunity) || 0;
+  var diseaseData = DISEASE_DB[disease] || { immunityRate: 5 };
+  if (imm >= 100) { return { recovered: true, detail: '免疫力达标,自愈成功' }; }
+  var roll = _lcgRoll('recover_' + disease + '_' + imm, 1, 100)[0];
+  var recoverChance = Math.floor(imm * 0.8);
+  if (roll <= recoverChance) { return { recovered: true, detail: '自愈成功,免疫力:' + imm }; }
+  return { recovered: false, detail: '自愈失败,需继续治疗' };
+}
+
+/* 免疫力累积 - 每游戏日推进 */
+function _immunityBuild(immunity, disease) {
+  var imm = Number(immunity) || 0;
+  var diseaseData = DISEASE_DB[disease] || { immunityRate: 5 };
+  var gain = diseaseData.immunityRate || 5;
+  var newImm = imm + gain;
+  if (newImm > 100) { newImm = 100; }
+  return { immunity: newImm, gain: gain, detail: '免疫力+' + gain + ' (当前' + newImm + ')' };
+}
+
+/* 读取殖民者疾病状态 */
+function _readColonistDisease(idx) {
+  var prefix = 'stat_data.殖民者_' + idx;
+  var disease = getvar(prefix + '.疾病', { scope: 'local', defaults: '无' }) || '无';
+  var stage = Number(getvar(prefix + '.疾病阶段', { scope: 'local', defaults: 0 })) || 0;
+  var immunity = Number(getvar(prefix + '.免疫力', { scope: 'local', defaults: 0 })) || 0;
+  var bedRest = getvar(prefix + '.卧床', { scope: 'local', defaults: false }) || false;
+  var medSkill = Number(getvar(prefix + '.医疗', { scope: 'local', defaults: 5 })) || 5;
+  var mood = Number(getvar(prefix + '.心情', { scope: 'local', defaults: 50 })) || 50;
+  return {
+    name: idx === '主角' ? '主角' : '殖民者' + idx,
+    disease: disease,
+    stage: stage,
+    immunity: immunity,
+    bedRest: bedRest,
+    medSkill: medSkill,
+    mood: mood
+  };
+}
+
+var colonists = [
+  _readColonistDisease('主角'),
+  _readColonistDisease('2'),
+  _readColonistDisease('3'),
+  _readColonistDisease('4'),
+  _readColonistDisease('5')
+];
+
+/* 疾病触发判定示例 */
+var trigger1 = _diseaseTrigger('disease1_' + gameDay + '_' + timeSlot);
+var trigger2 = _diseaseTrigger('disease2_' + gameDay + '_' + timeSlot);
+
+/* 治疗示例 - 主角患流感卧床接受基础药品治疗 */
+var treat1 = _diseaseTreat({ skill: 4, medType: '基础药品', bedRest: true }, '流感');
+_%>
+<疾病系统就绪>
+[当前疾病状态]
+游戏日: <%= gameDay %> / 时段: <%= timeSlot %>
+卫生条件: <%= hygiene %> / 温度: <%= temperature %>°C / 生态: <%= biome %>
+
+<%_ for (var i = 0; i < colonists.length; i++) { var c = colonists[i]; _%>
+<%= c.name %>: 疾病[<%= c.disease %>] 阶段<%= c.stage %> 免疫力<%= c.immunity %> 卧床<%= c.bedRest ? '是' : '否' %>
+<%_ } _%>
+
+[疾病数据库 DISEASE_DB]
+流感: 传染率30% / 持续5天 / 轻度 / 需基础药品
+疟疾: 传染率20% / 持续7天 / 中度 / 需奎宁
+感染: 传染率0% / 持续3天 / 重度 / 需抗生素
+瘟疫: 传染率60% / 持续10天 / 极重度 / 需高级药品
+肌肉寄生虫: 传染率10% / 持续4天 / 轻度 / 需基础药品
+
+[疾病触发判定]
+触发因子:
+  卫生因子: (100-卫生)/100 × 30
+  温度因子: 极端温度(<-5或>35) → +30%
+  生态因子: 热带雨林 +40% / 沙漠/冻原 +20%
+触发上限: 80%
+疾病选择:
+  热带雨林: 40%疟疾 / 30%流感 / 20%肌肉寄生虫 / 10%瘟疫
+  冻原/低温: 60%流感 / 40%感染
+  卫生<20: 35%瘟疫 / 35%流感 / 30%感染
+  默认: 50%流感 / 30%肌肉寄生虫 / 20%疟疾
+当前主角触发: <%= trigger1.triggered ? '是 - ' + trigger1.disease + '(概率' + trigger1.chance + '%)' : '否 (概率' + trigger1.chance + '%)' %>
+当前殖民者2触发: <%= trigger2.triggered ? '是 - ' + trigger2.disease + '(概率' + trigger2.chance + '%)' : '否 (概率' + trigger2.chance + '%)' %>
+
+[疾病发展阶段]
+0 潜伏 → 1 轻度 (症状显现,工作效率×0.8)
+1 轻度 → 2 中度 (需卧床,工作效率×0.5)
+2 中度 → 3 重度 (强制卧床,工作效率×0.2)
+3 重度 → 4 极重度 (濒死风险,工作效率×0)
+4 极重度 → 5 康复/6死亡 (依据免疫力判定)
+
+[治疗规则]
+药品类型 / 系数 / 技能门槛:
+  基础药品: 治疗率×1.0 / 需医疗技能≥3
+  高级药品: 治疗率×1.5 / 需医疗技能≥5
+  抗生素:   治疗率×1.3 / 需医疗技能≥4 (仅感染有效)
+  奎宁:     治疗率×1.4 / 需医疗技能≥4 (仅疟疾有效)
+  无药品:   恢复率×0.3 (仅靠免疫力自愈)
+修正系数:
+  医疗技能修正: 1 + skill×0.05
+  卧床休息: 免疫力累积+2/楼层
+治疗成功率 = 药品系数 × 技能修正 (≥1.0且技能达标即成功)
+
+[治疗示例 - 主角流感]
+执行者医疗技能: 4
+药品: 基础药品 (系数1.0)
+卧床: 是 (+2免疫力/楼层)
+技能修正: ×<%= treat1.skillMod %>
+治疗率: <%= treat1.treatRate %>
+免疫力变化: +<%= treat1.immunityGain %>
+判定: <%= treat1.detail %>
+产出系数: 技能×<%= treat1.skillMod %> 药品×<%= treat1.medFactor %> 卧床×<%= treat1.bedMod %>
+
+[疾病影响表]
+轻度:   工作效率×0.8 / 心情-5
+中度:   工作效率×0.5 / 心情-15 / 需卧床
+重度:   工作效率×0.2 / 心情-30 / 强制卧床
+极重度: 工作效率×0   / 心情-50 / 濒死风险
+
+[行为校验要求]
+疾病治疗行为必须输出行为校验块:
+<疾病治疗校验>
+行为类型: 医疗治疗
+执行者: [殖民者姓名]
+技能等级: [医疗技能值]
+目标: [患病殖民者姓名]
+输入: [药品类型] [疾病类型] [疾病阶段]
+输出: [治疗成功率] [免疫力变化]
+耗时: [治疗耗时]
+判定: [治疗结果]
+产出系数: 技能×[X] 药品×[Y] 卧床×[Z]
+</疾病治疗校验>
+
+[疾病系统说明]
+1. 本控制器负责: 疾病触发判定 + 发展阶段 + 治疗效果 + 自愈判定 + 免疫力累积
+2. 疾病触发基于卫生条件/温度/生态,概率上限80%
+3. 治疗需匹配药品类型: 感染需抗生素,疟疾需奎宁,瘟疫需高级药品,流感/肌肉寄生虫用基础药品
+4. 免疫力达100或自愈检定通过即可康复
+5. 疾病阶段每游戏日推进1级,极重度(阶段4)时进行死亡检定
+6. 卧床休息提供免疫力累积加成(+2/楼层)
+7. 无药品时恢复率降至0.3,依赖免疫力自愈
+8. 传染性疾病(流感30%/疟疾20%/瘟疫60%)可能波及同区殖民者,感染(0%)不传染
+9. 核心函数: _diseaseTrigger / _diseaseProgress / _diseaseTreat / _diseaseRecover / _immunityBuild
+</疾病系统就绪>

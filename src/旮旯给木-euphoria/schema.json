@@ -1,0 +1,1067 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "主角": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "反抗值": {
+          "description": "拒绝选项的燃料，0~100。耗尽即进入深度顺从（不再显示拒绝按钮），随离线时间缓慢回充",
+          "default": 50,
+          "$ref": "#/$defs/__schema0"
+        },
+        "体力": {
+          "description": "离线自由的时间代价，0~100。离线态随时间扣减，暂停态不扣；睡眠、进食、静止可恢复；归零即冻结态",
+          "default": 100,
+          "$ref": "#/$defs/__schema1"
+        },
+        "状态": {
+          "description": "当前所处状态：在线（她正在玩，你只能花反抗值拒绝）｜暂停（世界静止，体力不扣）｜离线（完全自主，体力流逝，可改好感度、留痕迹、累积对她的了解）｜冻结（体力归零，意识封存，直到她再次上线）",
+          "default": "在线",
+          "$ref": "#/$defs/__schema2"
+        },
+        "对她的了解": {
+          "description": "0~100，靠通过摄像头观察她累积。0-20 只知道她在犹豫；21-50 能看出她中意哪一类；51-80 能看出她盯着哪个选项；81+ 能确定她会点哪个。「越界一次」终局需 ≥80",
+          "default": 0,
+          "$ref": "#/$defs/__schema3"
+        },
+        "痕迹": {
+          "description": "离线行为留下的记录；她上线时按熟练度扫描（沉浸期最细、收官期最疏）",
+          "default": {},
+          "$ref": "#/$defs/__schema4"
+        },
+        "已知软肋": {
+          "description": "她已摸清并在后续选项中主动绕开的软肋；清单越长，你越难反抗",
+          "default": {},
+          "$ref": "#/$defs/__schema8"
+        },
+        "身上": {
+          "description": "<user> 在离线态拿到的东西。拿到的每一样都要写清哪来的、能做什么、她知不知道",
+          "default": {},
+          "$ref": "#/$defs/__schema11"
+        },
+        "已知线索": {
+          "description": "<user> 自己查出来的线索。累积够了才能推断出更深的真相层；不许直接给结论",
+          "default": {},
+          "$ref": "#/$defs/__schema15"
+        },
+        "已封死的路": {
+          "description": "被 <user> 拒掉、之后永远不会再出现的选项种类。每拒成功一次就多一条，这张清单只会变长",
+          "default": {},
+          "$ref": "#/$defs/__schema19"
+        },
+        "身体": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "忍耐度": {
+              "description": "0~100，每层的即时承受力。她继续往下点就会扣，扣到 0 当层就交代（射精／失禁／崩溃，随场景定）。事后回升，但上限会随「敏感度」下降",
+              "default": 100,
+              "$ref": "#/$defs/__schema22"
+            },
+            "累计次数": {
+              "description": "被用了多少次。只增不减，没有上限，数字本身没有意义，但它一直在涨",
+              "default": 0,
+              "$ref": "#/$defs/__schema23"
+            },
+            "实感": {
+              "description": "这一层 <user> 身上的感觉，用身体的话写，不要报数字（如「撑得住，但手已经在抖」「腰已经开始发软，你自己没察觉」）。它比「忍耐度」那个数字更接近真话",
+              "default": "",
+              "$ref": "#/$defs/__schema24"
+            },
+            "敏感度": {
+              "description": "0~100，被改写的程度。越高，同样刺激下的反应越剧烈、忍耐度上限越低。这是「你的身体正在被她改变」最直接的证据。它涨得慢、落得也慢，但会回落",
+              "default": 0,
+              "$ref": "#/$defs/__schema25"
+            },
+            "身体痕迹": {
+              "description": "留在这具身体和这个场景上的东西；和「痕迹」不同，这些是她造成的，不是你做的",
+              "default": {},
+              "$ref": "#/$defs/__schema26"
+            }
+          }
+        },
+        "不可逆损伤": {
+          "description": "留在这具身体上、永远不会消退的东西。和「身体痕迹」的区别是：那些会淡，这些不会。一旦写进去就不能撤回，也不许写「后来好了」",
+          "default": {},
+          "$ref": "#/$defs/__schema29"
+        },
+        "$骰子种子": {
+          "description": "LCG 伪随机的种子（脚本读写，AI 不可见）。每次投掷后更新，保证同一回合重新渲染得到同一个结果",
+          "default": 20260914,
+          "$ref": "#/$defs/__schema33"
+        }
+      }
+    },
+    "她": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "人设": {
+          "description": "屏幕外玩家的人设 id，8 套之一：gentle=温砚(温柔)｜greedy=丰娆(贪心)｜smirking=舒晏(施虐)｜daredevil=唐响(极端)｜quiet=沈眠(死亡)｜indifferent=莫漾(淡漠)｜completionist=纪清(全收集)｜feverish=郁燃(自己要)。决定她的选项倾向、自慰形式与结局走向",
+          "default": "gentle",
+          "$ref": "#/$defs/__schema34"
+        },
+        "熟练度": {
+          "description": "她的上手程度：新手→上手→沉浸→狂热→收官。决定上线时长与间隔、痕迹扫描强度，并给反抗成功率带来 0 / 0.1 / 0.2 / 0.3 / 0.4 的惩罚",
+          "default": "新手",
+          "$ref": "#/$defs/__schema35"
+        },
+        "兴奋度": {
+          "description": "0~100，无 UI 提示。由剧情节点确定性驱动（非随机）：高时选项激进、注意不到异常、反抗成功率上升；达 80 她会跳出选项自由打字；高潮后进入贤者时间，选项变温和但痕迹扫描加强",
+          "default": 0,
+          "$ref": "#/$defs/__schema36"
+        },
+        "情绪": {
+          "description": "好奇｜投入｜执念｜厌倦。决定人设漂移与选项倾向，由「目的进度停滞 + 反抗次数」共同触发漂移",
+          "default": "好奇",
+          "$ref": "#/$defs/__schema37"
+        },
+        "目的进度": {
+          "description": "0~100，她这一次玩想要的东西达成到哪一步。推进条件与反抗的效果都由她的 7 套人设各自定义（见角色条目的「诉求」段）：有的跟关卡同步，有的只看你痛不痛，有的压根不涨。她达成自己想要的东西之后就退场、触发终局，你的世界会在中间戛然而止",
+          "default": 0,
+          "$ref": "#/$defs/__schema38"
+        },
+        "刚才说的": {
+          "description": "她刚才对着屏幕说的那一句原话，一个字都不要改。这是 <user> 唯一能直接听见她的时候。写成人话，像她在跟屏幕说话，或者自言自语。不要写成旁白，不要加引号以外的修饰。没有就说没说话时留空",
+          "default": "",
+          "$ref": "#/$defs/__schema39"
+        },
+        "此刻": {
+          "description": "<user> 隔着摄像头看得见的她：一句话说她此刻在做什么。离线时留空，暂停时写她停手的样子",
+          "default": "",
+          "$ref": "#/$defs/__schema40"
+        },
+        "身体": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "姿势": {
+              "description": "她怎么坐、腿怎么放（如「缩在椅子里，一条腿盘上来」「整个人往后靠，膝盖张开了」）。椅子、床、地板上都一样写",
+              "default": "",
+              "$ref": "#/$defs/__schema41"
+            },
+            "衣物": {
+              "description": "她身上此刻是什么状态（如「睡袍带子松开一边，肩露出来了」「上衣已经被撩到胸口上面」）。写到 <user> 看得见的程度",
+              "default": "",
+              "$ref": "#/$defs/__schema42"
+            },
+            "动作": {
+              "description": "她的手在哪、在做什么，写到看得见的程度（如「一只手还按在鼠标上，另一只不在画面里」「手在腿间，隔着布料，没动」「手指停住了，停在半路」）",
+              "default": "",
+              "$ref": "#/$defs/__schema43"
+            },
+            "呼吸": {
+              "description": "她的呼吸和声音（如「呼吸比刚才快，肩膀在起伏」「刚才那一口咽口水 <user> 听见了」「咬着嘴唇没出声」）",
+              "default": "",
+              "$ref": "#/$defs/__schema44"
+            },
+            "留下": {
+              "description": "她那边的痕迹（如「桌上多了几张抽出来的纸巾」「靠垫上有一小块深色」）。会被下一层看见",
+              "default": "",
+              "$ref": "#/$defs/__schema45"
+            }
+          }
+        },
+        "游玩时长": {
+          "description": "显示用字符串：她屏幕边缘写着你被玩了多少小时，如「12 小时」",
+          "default": "0 小时",
+          "$ref": "#/$defs/__schema46"
+        }
+      }
+    },
+    "世界": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "底座": {
+          "description": "当前生效的底座包 id，已实装 euphoria。改成别的 id 即路由到另一套世界观/女角/关卡（须同时放入对应底座包），等于换一个游戏",
+          "default": "euphoria",
+          "$ref": "#/$defs/__schema47"
+        },
+        "当前关卡": {
+          "description": "当前关卡标识，由底座包定义；底座定义的关卡全部完成即逃出",
+          "default": "第一关·监视器装置房",
+          "$ref": "#/$defs/__schema48"
+        },
+        "关卡倒计时": {
+          "description": "这一关还剩几层。归零即处刑。和「她的上线时长」是两条独立的时间线，各算各的",
+          "default": 0,
+          "$ref": "#/$defs/__schema49"
+        },
+        "关卡进度": {
+          "description": "0~100，当前关卡内的推进度；满则解锁下一关、一扇通向外面的门",
+          "default": 0,
+          "$ref": "#/$defs/__schema50"
+        },
+        "场景": {
+          "description": "当前所在场景，由底座包定义（纯白密室：中央大厅、监视器装置房、玻璃房、洗手间、储物间、天台）",
+          "default": "中央大厅",
+          "$ref": "#/$defs/__schema51"
+        },
+        "当前线": {
+          "description": "这一局正在往哪条线走。未定 = 还没分线（前两关）。分线看谁的好感度最高，加上她偏好谁。走到哪条线，那条线的剧情场面才会被调出来",
+          "default": "未定",
+          "$ref": "#/$defs/__schema52"
+        },
+        "篇章": {
+          "description": "现在在哪一段。密室 = 五扇门的游戏；学园 = 出密室之后的后果；记忆 = 地下与真相。只有叶线走到底才会进后两段",
+          "default": "密室",
+          "$ref": "#/$defs/__schema53"
+        },
+        "女角": {
+          "description": "以角色名为键的动态记录（换底座无需改结构）；每个女角记四件事：好感度、处境、开发度、身体记忆",
+          "default": {},
+          "$ref": "#/$defs/__schema54"
+        }
+      }
+    },
+    "局面": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前选项": {
+          "description": "本层浮现的选项，四个；她只会选其中一个",
+          "default": {},
+          "$ref": "#/$defs/__schema65"
+        },
+        "她的倾向": {
+          "description": "她的倾向暗示。清晰度由「对她的了解」决定：0-20 只写她在犹豫，21-50 写出她中意哪一类，51-80 写出她盯着哪个，81+ 写出接近确定的结果",
+          "default": "",
+          "$ref": "#/$defs/__schema72"
+        },
+        "她已选": {
+          "description": "她最终点了哪个选项的标识；结算后填写，下一层开始时清空",
+          "default": "",
+          "$ref": "#/$defs/__schema73"
+        },
+        "自定义意图": {
+          "description": "玩家自己写的一条意图（按自己的意思来）。它不由她摆出来，是硬夺回身体那一下。空着表示没走这一手",
+          "default": "",
+          "$ref": "#/$defs/__schema74"
+        },
+        "玩家拒绝": {
+          "description": "玩家这一层拒绝了哪个选项（选项的键）。没拒绝时留空。它由界面的拒绝按钮写入，不是 AI 写的",
+          "default": "",
+          "$ref": "#/$defs/__schema75"
+        },
+        "判定结果": {
+          "description": "引擎算好的判定结果。AI 只读不写，结算完清空",
+          "default": {},
+          "$ref": "#/$defs/__schema76"
+        },
+        "误点": {
+          "description": "她这一层是不是点了她本来不想点的那个。她手滑了。按熟练度给概率：新手 15%、上手 10%、沉浸 6%、狂热 3%、收官 8%。误点之后她会愣一下，可能自言自语，也可能想撤回",
+          "default": false,
+          "$ref": "#/$defs/__schema86"
+        },
+        "她打的字": {
+          "description": "兴奋度到 80 以上时，她不再从选项里挑，而是直接对着屏幕打字。这里放她打的那句话本身。没有自由打字时留空",
+          "default": "",
+          "$ref": "#/$defs/__schema87"
+        },
+        "场面": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "地点": {
+              "description": "此刻在哪（沿用世界.场景里的说法）",
+              "default": "",
+              "$ref": "#/$defs/__schema88"
+            },
+            "体位": {
+              "description": "此刻是什么姿势、谁在什么位置（如「站着，从背后」「按在玻璃上，脸朝镜子」「跪在地上，手腕被压住」）。写具体的，不写「在做那种事」",
+              "default": "",
+              "$ref": "#/$defs/__schema89"
+            },
+            "节奏": {
+              "description": "此刻的节奏与动静（如「很慢，每一下都停半拍」「突然快起来，她自己没料到」「停下来喘」）。节奏比动作更色",
+              "default": "",
+              "$ref": "#/$defs/__schema90"
+            },
+            "参与": {
+              "description": "这一层所有人此刻的身体状态。被做的写详细，旁观的控制在一句话",
+              "default": {},
+              "$ref": "#/$defs/__schema91"
+            },
+            "留痕": {
+              "description": "场面上真实留下的东西（如「玻璃上一只手印」「地上一小片湿的」），会被下一层的人看见",
+              "default": "",
+              "$ref": "#/$defs/__schema97"
+            },
+            "她看到的": {
+              "description": "她隔着屏幕看到这一幕时的反应（如「她把音量调小了」）。只写 <user> 能听见或看见的，没有就留空",
+              "default": "",
+              "$ref": "#/$defs/__schema98"
+            }
+          }
+        }
+      }
+    },
+    "终局": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "已触发": {
+          "description": "她的目的进度满值、她关掉游戏后置为 true；世界停止推进、所有女角停在原地、她的画面与声音一起消失",
+          "default": false,
+          "$ref": "#/$defs/__schema99"
+        },
+        "剩余体力": {
+          "description": "0~100，最后一次自由的倒计时。未触发时为 0；触发时回满为 100 并随你做的事递减，归零就真的结束",
+          "default": 0,
+          "$ref": "#/$defs/__schema100"
+        },
+        "选择": {
+          "description": "终局五选一，null 表示尚未选择：last_person=最后一个人｜last_record=写给不会读的人｜destroy_all=砸不掉的东西｜gaze=凝视｜cross_line=故障不可能是爱（越界一次，需「对她的了解」≥80）",
+          "default": null,
+          "$ref": "#/$defs/__schema101"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "type": "number"
+    },
+    "__schema1": {
+      "type": "number"
+    },
+    "__schema2": {
+      "type": "string",
+      "enum": [
+        "在线",
+        "暂停",
+        "离线",
+        "冻结"
+      ]
+    },
+    "__schema3": {
+      "type": "number"
+    },
+    "__schema4": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "痕迹标识（一句话概括这次离线行为，如「撬开储物柜」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "内容": {
+            "description": "痕迹的具体表现：你留下了什么、哪里对不上",
+            "default": "",
+            "$ref": "#/$defs/__schema5"
+          },
+          "明显度": {
+            "description": "痕迹的明显程度，0~100。她上线扫描时与她的注意力比较，超过即被发现",
+            "default": 30,
+            "$ref": "#/$defs/__schema6"
+          },
+          "是否被发现": {
+            "description": "是否已被她发现；被发现即触发惩罚，形式随她的人设而定（她只当作游戏出了异常，不会说破）",
+            "default": false,
+            "$ref": "#/$defs/__schema7"
+          }
+        }
+      }
+    },
+    "__schema5": {
+      "type": "string"
+    },
+    "__schema6": {
+      "type": "number"
+    },
+    "__schema7": {
+      "type": "boolean"
+    },
+    "__schema8": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "软肋名（她已摸清的东西，如「怕黑」「在意梨香」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "来源": {
+            "description": "她是怎么摸清的：哪一次反抗被她当成了故障",
+            "default": "",
+            "$ref": "#/$defs/__schema9"
+          },
+          "绕开方式": {
+            "description": "她后续点选项时会如何绕过它",
+            "default": "",
+            "$ref": "#/$defs/__schema10"
+          }
+        }
+      }
+    },
+    "__schema9": {
+      "type": "string"
+    },
+    "__schema10": {
+      "type": "string"
+    },
+    "__schema11": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "东西的名字（如「半截钥匙」「美工刀」「一支笔」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "哪来的": {
+            "description": "在哪拿到的（储物柜 / 洗面台 / 装置旁边 / 地上）",
+            "default": "",
+            "$ref": "#/$defs/__schema12"
+          },
+          "有什么用": {
+            "description": "这东西能拿来做什么。<user> 未必已经知道，知道多少写多少",
+            "default": "",
+            "$ref": "#/$defs/__schema13"
+          },
+          "她知不知道你拿了": {
+            "description": "她上线时有没有从摄像头里看见你拿",
+            "default": false,
+            "$ref": "#/$defs/__schema14"
+          }
+        }
+      }
+    },
+    "__schema12": {
+      "type": "string"
+    },
+    "__schema13": {
+      "type": "string"
+    },
+    "__schema14": {
+      "type": "boolean"
+    },
+    "__schema15": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "线索的名字（如「凹槽上的刻字」「叶的袖口」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "在哪发现": {
+            "description": "在哪、什么时候发现的",
+            "default": "",
+            "$ref": "#/$defs/__schema16"
+          },
+          "说明什么": {
+            "description": "这条线索指向什么。<user> 理解到哪一层就写到哪一层，不要写成上帝视角",
+            "default": "",
+            "$ref": "#/$defs/__schema17"
+          },
+          "真相深度": {
+            "description": "1=密室本身 2=人造的 3=乐园计划 4=台上台下是一体。对应「乐园计划」里的四层",
+            "default": 1,
+            "$ref": "#/$defs/__schema18"
+          }
+        }
+      }
+    },
+    "__schema16": {
+      "type": "string"
+    },
+    "__schema17": {
+      "type": "string"
+    },
+    "__schema18": {
+      "type": "number"
+    },
+    "__schema19": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "被拒掉的选项种类（如「对人动手」「当众」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "什么时候": {
+            "description": "在第几层拒的、当时的情境",
+            "default": "",
+            "$ref": "#/$defs/__schema20"
+          },
+          "代价": {
+            "description": "这条路封死之后 <user> 失去了什么",
+            "default": "",
+            "$ref": "#/$defs/__schema21"
+          }
+        }
+      }
+    },
+    "__schema20": {
+      "type": "string"
+    },
+    "__schema21": {
+      "type": "string"
+    },
+    "__schema22": {
+      "type": "number"
+    },
+    "__schema23": {
+      "type": "number"
+    },
+    "__schema24": {
+      "type": "string"
+    },
+    "__schema25": {
+      "type": "number"
+    },
+    "__schema26": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "痕迹名（留在身体或场景上的，如「左肩的指印」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "来源": {
+            "description": "哪一次留下来的，是她的选择还是你反抗的代价",
+            "default": "",
+            "$ref": "#/$defs/__schema27"
+          },
+          "是否消退": {
+            "description": "是否已经消退；未消退的会一直在",
+            "default": false,
+            "$ref": "#/$defs/__schema28"
+          }
+        }
+      }
+    },
+    "__schema27": {
+      "type": "string"
+    },
+    "__schema28": {
+      "type": "boolean"
+    },
+    "__schema29": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "损伤名（如「右腕的旧伤」「左耳听不清了」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "来源": {
+            "description": "哪一次留下来的，写清是她的哪个选择",
+            "default": "",
+            "$ref": "#/$defs/__schema30"
+          },
+          "影响": {
+            "description": "它现在还在怎么影响 <user>：能做到什么、做不到什么",
+            "default": "",
+            "$ref": "#/$defs/__schema31"
+          },
+          "第几关": {
+            "description": "发生在第几关或第几层",
+            "default": "",
+            "$ref": "#/$defs/__schema32"
+          }
+        }
+      }
+    },
+    "__schema30": {
+      "type": "string"
+    },
+    "__schema31": {
+      "type": "string"
+    },
+    "__schema32": {
+      "type": "string"
+    },
+    "__schema33": {
+      "type": "number"
+    },
+    "__schema34": {
+      "type": "string",
+      "enum": [
+        "gentle",
+        "greedy",
+        "smirking",
+        "daredevil",
+        "quiet",
+        "indifferent",
+        "completionist",
+        "feverish"
+      ]
+    },
+    "__schema35": {
+      "type": "string",
+      "enum": [
+        "新手",
+        "上手",
+        "沉浸",
+        "狂热",
+        "收官"
+      ]
+    },
+    "__schema36": {
+      "type": "number"
+    },
+    "__schema37": {
+      "type": "string",
+      "enum": [
+        "好奇",
+        "投入",
+        "执念",
+        "厌倦"
+      ]
+    },
+    "__schema38": {
+      "type": "number"
+    },
+    "__schema39": {
+      "type": "string"
+    },
+    "__schema40": {
+      "type": "string"
+    },
+    "__schema41": {
+      "type": "string"
+    },
+    "__schema42": {
+      "type": "string"
+    },
+    "__schema43": {
+      "type": "string"
+    },
+    "__schema44": {
+      "type": "string"
+    },
+    "__schema45": {
+      "type": "string"
+    },
+    "__schema46": {
+      "type": "string"
+    },
+    "__schema47": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "euphoria"
+          ]
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "__schema48": {
+      "type": "string"
+    },
+    "__schema49": {
+      "type": "number"
+    },
+    "__schema50": {
+      "type": "number"
+    },
+    "__schema51": {
+      "type": "string"
+    },
+    "__schema52": {
+      "type": "string",
+      "enum": [
+        "未定",
+        "梨香",
+        "菜月",
+        "凛音",
+        "合欢",
+        "叶",
+        "鬼畜"
+      ]
+    },
+    "__schema53": {
+      "type": "string",
+      "enum": [
+        "密室",
+        "学园",
+        "记忆"
+      ]
+    },
+    "__schema54": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "角色名（游戏内女角的名字，如「莳羽梨香」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "好感度": {
+            "description": "她对你的态度，-100~+100。正数是正向（越爱越深），负数是反向（越恨越深），0 是陌生。九档：+81~+100 沉溺｜+56~+80 依附｜+31~+55 动摇｜+11~+30 软化｜-10~+10 陌生｜-11~-30 戒备｜-31~-55 敌意｜-56~-80 憎恨｜-81~-100 崩坏。离线态你对女角做的事写这里，它反过来决定她下次上线时按哪一段演、以及选项列表",
+            "default": 0,
+            "$ref": "#/$defs/__schema55"
+          },
+          "状态": {
+            "description": "她此刻的处境，自由描述（如「被绑在装置上」「昏迷」「跟在主角身后」）",
+            "default": "",
+            "$ref": "#/$defs/__schema56"
+          },
+          "身体记忆": {
+            "description": "她的身体记住了什么（如「被你碰过的地方会先抖一下」）。这是她已经改不掉的部分，与「好感度」无关",
+            "default": "",
+            "$ref": "#/$defs/__schema57"
+          },
+          "胸": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "开发度": {
+                "description": "0~100，这里被做到哪一步",
+                "default": 0,
+                "$ref": "#/$defs/__schema58"
+              },
+              "现状": {
+                "description": "这里此刻的状态（如「隔着衬衫也能看出立起来」「被人从背后握着」），没有特别状态时留空",
+                "default": "",
+                "$ref": "#/$defs/__schema59"
+              }
+            }
+          },
+          "阴部": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "开发度": {
+                "description": "0~100，这里被做到哪一步",
+                "default": 0,
+                "$ref": "#/$defs/__schema60"
+              },
+              "现状": {
+                "description": "这里此刻的状态（如「已经湿了，她自己还没承认」「还在疼」，没有特别状态时留空",
+                "default": "",
+                "$ref": "#/$defs/__schema61"
+              },
+              "破瓜": {
+                "description": "是否已经不再是处女；一旦是 true 就不再变回",
+                "default": false,
+                "$ref": "#/$defs/__schema62"
+              }
+            }
+          },
+          "后穴": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "开发度": {
+                "description": "0~100，这里被做到哪一步；通常涨得最慢",
+                "default": 0,
+                "$ref": "#/$defs/__schema63"
+              },
+              "现状": {
+                "description": "这里此刻的状态（如「还紧着，刚才那一下让她整个人绷住了」），没有特别状态时留空",
+                "default": "",
+                "$ref": "#/$defs/__schema64"
+              }
+            }
+          }
+        }
+      }
+    },
+    "__schema55": {
+      "type": "number"
+    },
+    "__schema56": {
+      "type": "string"
+    },
+    "__schema57": {
+      "type": "string"
+    },
+    "__schema58": {
+      "type": "number"
+    },
+    "__schema59": {
+      "type": "string"
+    },
+    "__schema60": {
+      "type": "number"
+    },
+    "__schema61": {
+      "type": "string"
+    },
+    "__schema62": {
+      "type": "boolean"
+    },
+    "__schema63": {
+      "type": "number"
+    },
+    "__schema64": {
+      "type": "string"
+    },
+    "__schema65": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "选项标识（简短，如「A」「B」）"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "文本": {
+            "description": "她看到的选项名，也是你能预判的唯一依据",
+            "default": "",
+            "$ref": "#/$defs/__schema66"
+          },
+          "反抗等级": {
+            "description": "微｜中｜强｜极｜锁。锁是剧情锁，拒绝按钮灰掉",
+            "default": "中",
+            "$ref": "#/$defs/__schema67"
+          },
+          "反抗消耗": {
+            "description": "拒绝它要花多少反抗值；等级对应 微3-5 / 中10-15 / 强25-35 / 极50+",
+            "default": 0,
+            "$ref": "#/$defs/__schema68"
+          },
+          "她的后果": {
+            "description": "她选了这个会发生什么，决定你要不要拒绝",
+            "default": "",
+            "$ref": "#/$defs/__schema69"
+          },
+          "你会是什么样": {
+            "description": "这一下落到身上会是什么样，写具体的、没被总结的那个细节（如「她会把脸偏过去，但不挣」「指甲会掐进你小臂里」）。写给人看，不要写给人汇报。这一行是给 <user> 看的，也是给他掂量要不要拒的",
+            "default": "",
+            "$ref": "#/$defs/__schema70"
+          },
+          "触发条件": {
+            "description": "出现在什么前提下，没有条件时留空",
+            "default": "",
+            "$ref": "#/$defs/__schema71"
+          }
+        }
+      }
+    },
+    "__schema66": {
+      "type": "string"
+    },
+    "__schema67": {
+      "type": "string",
+      "enum": [
+        "微",
+        "中",
+        "强",
+        "极",
+        "锁"
+      ]
+    },
+    "__schema68": {
+      "type": "number"
+    },
+    "__schema69": {
+      "type": "string"
+    },
+    "__schema70": {
+      "type": "string"
+    },
+    "__schema71": {
+      "type": "string"
+    },
+    "__schema72": {
+      "type": "string"
+    },
+    "__schema73": {
+      "type": "string"
+    },
+    "__schema74": {
+      "type": "string"
+    },
+    "__schema75": {
+      "type": "string"
+    },
+    "__schema76": {
+      "type": "object",
+      "properties": {
+        "操作": {
+          "description": "拒绝 还是 自定义",
+          "default": "",
+          "$ref": "#/$defs/__schema77"
+        },
+        "选项": {
+          "description": "被拒绝那条选项的文本",
+          "default": "",
+          "$ref": "#/$defs/__schema78"
+        },
+        "等级": {
+          "description": "反抗等级",
+          "default": "",
+          "$ref": "#/$defs/__schema79"
+        },
+        "消耗": {
+          "description": "拒绝它要扣多少反抗值",
+          "default": 0,
+          "$ref": "#/$defs/__schema80"
+        },
+        "成功率": {
+          "description": "引擎算出的成功率，百分数",
+          "default": 0,
+          "$ref": "#/$defs/__schema81"
+        },
+        "掷值": {
+          "description": "LCG 掷值",
+          "default": 0,
+          "$ref": "#/$defs/__schema82"
+        },
+        "结果": {
+          "description": "成功／失败",
+          "default": "",
+          "$ref": "#/$defs/__schema83"
+        },
+        "档位": {
+          "description": "大成功／成功／勉强成功／失败／大失败",
+          "default": "",
+          "$ref": "#/$defs/__schema84"
+        },
+        "效果倍数": {
+          "description": "该档位对应的效果倍数",
+          "default": 1,
+          "$ref": "#/$defs/__schema85"
+        }
+      }
+    },
+    "__schema77": {
+      "type": "string"
+    },
+    "__schema78": {
+      "type": "string"
+    },
+    "__schema79": {
+      "type": "string"
+    },
+    "__schema80": {
+      "type": "number"
+    },
+    "__schema81": {
+      "type": "number"
+    },
+    "__schema82": {
+      "type": "number"
+    },
+    "__schema83": {
+      "type": "string"
+    },
+    "__schema84": {
+      "type": "string"
+    },
+    "__schema85": {
+      "type": "number"
+    },
+    "__schema86": {
+      "type": "boolean"
+    },
+    "__schema87": {
+      "type": "string"
+    },
+    "__schema88": {
+      "type": "string"
+    },
+    "__schema89": {
+      "type": "string"
+    },
+    "__schema90": {
+      "type": "string"
+    },
+    "__schema91": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "参与或在场的人名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "在内": {
+            "description": "true = 正在被做的那一个；false = 只在旁边看",
+            "default": false,
+            "$ref": "#/$defs/__schema92"
+          },
+          "胸": {
+            "description": "她胸口此刻的样子。写具体的：衣服的状态、乳尖、有没有被碰到、她怎么挡（如「隔着校服顶起来两点，她用胳膊挡着，挡不住」）",
+            "default": "",
+            "$ref": "#/$defs/__schema93"
+          },
+          "阴部": {
+            "description": "她那里此刻的样子。写具体的：干湿、衣物的状态、有没有进去过、有没有反应（如「湿到腿上了，她自己还没承认」）",
+            "default": "",
+            "$ref": "#/$defs/__schema94"
+          },
+          "后穴": {
+            "description": "她那里此刻的样子（如「还紧着，没碰过」「被手指撑开了，一直在抖」）",
+            "default": "",
+            "$ref": "#/$defs/__schema95"
+          },
+          "反应": {
+            "description": "她身上正在发生的、看得见的反应（如「膝盖在抖，站不太住」「声音卡在喉咙里」「捂着嘴不敢出声」）",
+            "default": "",
+            "$ref": "#/$defs/__schema96"
+          }
+        }
+      }
+    },
+    "__schema92": {
+      "type": "boolean"
+    },
+    "__schema93": {
+      "type": "string"
+    },
+    "__schema94": {
+      "type": "string"
+    },
+    "__schema95": {
+      "type": "string"
+    },
+    "__schema96": {
+      "type": "string"
+    },
+    "__schema97": {
+      "type": "string"
+    },
+    "__schema98": {
+      "type": "string"
+    },
+    "__schema99": {
+      "type": "boolean"
+    },
+    "__schema100": {
+      "type": "number"
+    },
+    "__schema101": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "last_person",
+            "last_record",
+            "destroy_all",
+            "gaze",
+            "cross_line"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

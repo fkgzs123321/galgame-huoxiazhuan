@@ -1,0 +1,22 @@
+[
+ {
+  "op": "replace",
+  "path": "/entryManifest/MVU/变量列表/position/order",
+  "value": 70
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/MVU/变量更新规则/position/order",
+  "value": 71
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/MVU/变量输出格式/position/order",
+  "value": 72
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/MVU/[InitVar]请勿打开/position/order",
+  "value": 73
+ }
+]

@@ -1,0 +1,414 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {
+    "时间": {
+      "日期": "2026年9月1日",
+      "星期": "星期二",
+      "时段": "上午"
+    },
+    "玩家": {
+      "体力": 80,
+      "性欲": 30,
+      "勃起度": 10
+    },
+    "当前目标": "",
+    "女主": {}
+  },
+  "type": "object",
+  "properties": {
+    "时间": {
+      "default": {
+        "日期": "2026年9月1日",
+        "星期": "星期二",
+        "时段": "上午"
+      },
+      "type": "object",
+      "properties": {
+        "日期": {
+          "default": "2026年9月1日",
+          "type": "string"
+        },
+        "星期": {
+          "default": "星期二",
+          "type": "string"
+        },
+        "时段": {
+          "default": "上午",
+          "type": "string",
+          "enum": [
+            "上午",
+            "下午",
+            "晚上",
+            "深夜"
+          ]
+        }
+      }
+    },
+    "玩家": {
+      "default": {
+        "体力": 80,
+        "性欲": 30,
+        "勃起度": 10
+      },
+      "type": "object",
+      "properties": {
+        "体力": {
+          "default": 80,
+          "type": "number"
+        },
+        "资金池": {
+          "default": 0,
+          "type": "number"
+        },
+        "全网名声": {
+          "default": 0,
+          "type": "number"
+        },
+        "性欲": {
+          "default": 30,
+          "type": "number"
+        },
+        "勃起度": {
+          "default": 10,
+          "type": "number"
+        }
+      }
+    },
+    "当前目标": {
+      "default": "",
+      "type": "string"
+    },
+    "女主": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "女主名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "身份": {
+            "default": "",
+            "type": "string"
+          },
+          "丈夫": {
+            "default": "",
+            "type": "string"
+          },
+          "家庭": {
+            "default": "",
+            "type": "string"
+          },
+          "名器": {
+            "default": "",
+            "type": "string"
+          },
+          "技能": {
+            "default": "",
+            "type": "string"
+          },
+          "吸收量": {
+            "default": 0,
+            "type": "number"
+          },
+          "转化率": {
+            "default": 70,
+            "type": "number"
+          },
+          "掌控值": {
+            "default": 0,
+            "type": "number"
+          },
+          "亲密值": {
+            "default": 0,
+            "type": "number"
+          },
+          "丈夫抵抗": {
+            "default": 70,
+            "type": "number"
+          },
+          "曝光度": {
+            "default": 0,
+            "type": "number"
+          },
+          "案底": {
+            "default": "",
+            "type": "string",
+            "enum": [
+              "",
+              "治安拘留",
+              "刑事立案",
+              "取保候审"
+            ]
+          },
+          "危机状态": {
+            "default": "",
+            "type": "string",
+            "enum": [
+              "",
+              "传唤",
+              "拘留",
+              "立案",
+              "诉讼",
+              "和解",
+              "坐牢"
+            ]
+          },
+          "怀孕": {
+            "default": "未孕",
+            "type": "string",
+            "enum": [
+              "未孕",
+              "孕一月",
+              "孕二月",
+              "孕三月",
+              "孕四月",
+              "孕五月",
+              "孕六月",
+              "孕七月",
+              "孕八月",
+              "临盆"
+            ]
+          },
+          "生理": {
+            "default": {
+              "周期天数": 28,
+              "周期日": 1,
+              "上次月经": ""
+            },
+            "type": "object",
+            "properties": {
+              "周期天数": {
+                "default": 28,
+                "type": "number"
+              },
+              "周期日": {
+                "default": 1,
+                "type": "number"
+              },
+              "上次月经": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          },
+          "阶段": {
+            "default": 1,
+            "type": "number"
+          },
+          "丈夫察觉度": {
+            "default": 0,
+            "type": "number"
+          },
+          "资源转移": {
+            "default": 0,
+            "type": "number"
+          },
+          "决裂": {
+            "default": false,
+            "type": "boolean"
+          },
+          "火葬场进度": {
+            "default": "",
+            "type": "string",
+            "enum": [
+              "",
+              "傲慢试探",
+              "资源封杀",
+              "认知崩塌",
+              "抛弃一切",
+              "极端强制",
+              "自毁威胁",
+              "替身反噬",
+              "终局退场"
+            ]
+          },
+          "专属": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "身体状态": {
+            "default": {
+              "胸部": {
+                "状态": "正常",
+                "敏感度": 50
+              },
+              "阴道": {
+                "状态": "正常",
+                "湿润度": 30,
+                "敏感度": 50
+              },
+              "肛门": {
+                "状态": "正常"
+              },
+              "嘴": {
+                "状态": "正常"
+              },
+              "肌肤": {
+                "状态": "正常",
+                "体温": "正常"
+              },
+              "大腿": {
+                "状态": "正常"
+              },
+              "臀部": {
+                "状态": "正常"
+              }
+            },
+            "type": "object",
+            "properties": {
+              "胸部": {
+                "default": {
+                  "状态": "正常",
+                  "敏感度": 50
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "敏感度": {
+                    "default": 50,
+                    "type": "number"
+                  }
+                }
+              },
+              "阴道": {
+                "default": {
+                  "状态": "正常",
+                  "湿润度": 30,
+                  "敏感度": 50
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "湿润度": {
+                    "default": 30,
+                    "type": "number"
+                  },
+                  "敏感度": {
+                    "default": 50,
+                    "type": "number"
+                  }
+                }
+              },
+              "肛门": {
+                "default": {
+                  "状态": "正常"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "嘴": {
+                "default": {
+                  "状态": "正常"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "肌肤": {
+                "default": {
+                  "状态": "正常",
+                  "体温": "正常"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "体温": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "大腿": {
+                "default": {
+                  "状态": "正常"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "臀部": {
+                "default": {
+                  "状态": "正常"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "心理状态": {
+            "default": {
+              "欲望度": 20,
+              "羞耻感": 40,
+              "兴奋": 10,
+              "依恋": 10,
+              "精神状态": "正常"
+            },
+            "type": "object",
+            "properties": {
+              "欲望度": {
+                "default": 20,
+                "type": "number"
+              },
+              "羞耻感": {
+                "default": 40,
+                "type": "number"
+              },
+              "兴奋": {
+                "default": 10,
+                "type": "number"
+              },
+              "依恋": {
+                "default": 10,
+                "type": "number"
+              },
+              "精神状态": {
+                "default": "正常",
+                "type": "string"
+              }
+            }
+          },
+          "心声": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "女主"
+  ]
+}

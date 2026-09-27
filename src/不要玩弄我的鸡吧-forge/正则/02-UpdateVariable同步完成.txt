@@ -1,0 +1,15 @@
+{
+  "id": "a1b2c3d4-0202-4000-8000-000000000202",
+  "scriptName": "02-UpdateVariable同步完成",
+  "findRegex": "/<UpdateVariable>\\s*<JSONPatch>([\\s\\S]*?)<\\/JSONPatch>\\s*<\\/UpdateVariable>/gi",
+  "replaceString": "<details class=\"mvu-update-detail\" style=\"margin:8px 0;border-left:3px solid #9b59b6;padding:4px 12px;background:rgba(155,89,182,0.05);border-radius:4px;\"><summary style=\"cursor:pointer;color:#9b59b6;font-size:0.85em;opacity:0.8;\">⚙️ MVU变量更新（点击展开JSONPatch）</summary>\n\n```json\n$1\n```\n\n</details>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

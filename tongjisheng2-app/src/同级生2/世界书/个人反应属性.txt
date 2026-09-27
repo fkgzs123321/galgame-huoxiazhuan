@@ -1,0 +1,509 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 6维个人反应属性（性格特质层 · 第2层 · 单一来源）
+   ════════════════════════════════════════════════════════════
+   职责：定义主角的 6 维性格特质（gentleness/decisiveness/humor/cautiousness/extraversion/rationality），
+         作为 AI 叙事风格调节器——决定主角面对事件时的本能反应倾向。
+
+   三层属性架构（缺一不可，互不正交）：
+     - 第1层 基础个人属性（属性系统.txt · PLAYER_STATS）   = 天赋能力（charm/academic/physical/social/perception/willpower）
+     - 第2层 个人反应属性（本表 · PERSONALITY_TRAITS）      = 性格特质（影响 AI 如何描写主角的反应）
+     - 第3层 技能系统（全局规则总表.txt · SKILL_RULES）     = 可训练技能（strength/agility/.../observation）
+
+   核心价值（用户强调）：
+     "个人基本反应个人属性应该有吧？"——这层属性定义主角的【性格特质】，
+     不是天赋能力（第1层），也不是可训练技能（第3层），
+     而是【主角面对事件时的本能反应倾向】，直接影响 AI 如何描写主角的反应。
+
+   范围 0-100，单次变化 ±5 上限（比第1层 ±10 更缓慢，性格比能力更难改变）。
+   不可训练：性格特质只能通过事件和选择塑造，不能通过"训练"提升。
+
+   引用关系：
+     - 全局规则总表.txt → PLAYER_IDENTITIES 引用本表 initial_values 作为性格起点
+     - schema.ts → 主角性格特质变量源（stat_data.性格.*）
+     - 思维链.txt → 第 6 步数值校验引用本表 change_rules（单次 ±5）
+     - 角色性格控制器.txt → 读取本表 narrative_guide 调整 AI 叙事风格
+     - 恋爱互动系统.txt → 读取本表 romance_influence 修正告白/约会/H 判定
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ───────── 一、6维性格特质定义（0-100，叙事风格调节器） ───────── */
+const PERSONALITY_TRAITS = {
+  gentleness: {
+    name: '温柔度',
+    desc: '影响 AI 描写主角对待女角的温柔程度',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '冷酷':     { range: [0, 19],   desc: 'AI 描写主角冷漠、直接、不近人情' },
+      '理性':     { range: [20, 39],  desc: 'AI 描写主角克制、有距离感' },
+      '平衡':     { range: [40, 59],  desc: 'AI 描写主角适中、视情境而定' },
+      '温柔':     { range: [60, 79],  desc: 'AI 描写主角体贴、细心、会照顾人' },
+      '极尽温柔': { range: [80, 100], desc: 'AI 描写主角无微不至、轻声细语、主动呵护' }
+    },
+    narrative_focus: '女角心情恢复 / 受伤照顾 / 安慰对话 / H前戏温柔度',
+    high_effect: 'AI 多使用关心的语气，主动照顾女角，行动细致',
+    low_effect: 'AI 描写冷淡，对话简洁，嘴硬心软'
+  },
+  decisiveness: {
+    name: '果断度',
+    desc: '影响 AI 描写主角做决定的果断程度',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '犹豫':     { range: [0, 19],   desc: 'AI 描写主角优柔寡断、反复思考、错失时机' },
+      '谨慎':     { range: [20, 39],  desc: 'AI 描写主角三思后行、慢半拍' },
+      '平衡':     { range: [40, 59],  desc: 'AI 描写主角该出手时出手' },
+      '果断':     { range: [60, 79],  desc: 'AI 描写主角行动迅速、决断力强' },
+      '雷厉风行': { range: [80, 100], desc: 'AI 描写主角不拖泥带水、当机立断' }
+    },
+    narrative_focus: '关键事件选择窗口 / 告白时机 / 危机应对 / 女角等待耐心',
+    high_effect: 'AI 描写主角行动迅速，把握关键时机',
+    low_effect: 'AI 描写主角犹豫不决，常因思考错过时机'
+  },
+  humor: {
+    name: '幽默感',
+    desc: '影响 AI 描写主角对话的幽默程度',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '严肃':     { range: [0, 19],   desc: 'AI 描写主角严肃、话题终结者' },
+      '木讷':     { range: [20, 39],  desc: 'AI 描写主角话少、气氛易尴尬' },
+      '平衡':     { range: [40, 59],  desc: 'AI 描写主角正常交流、偶有玩笑' },
+      '风趣':     { range: [60, 79],  desc: 'AI 描写主角会逗女角笑、调节气氛' },
+      '幽默大师': { range: [80, 100], desc: 'AI 描写主角化解尴尬、妙语连珠' }
+    },
+    narrative_focus: '约会氛围 / 尴尬化解 / 初印象加成 / 女角 mood 提升',
+    high_effect: 'AI 多写轻松对话，主动化解尴尬，女角 mood 提升',
+    low_effect: 'AI 描写严肃，气氛易冷场'
+  },
+  cautiousness: {
+    name: '谨慎度',
+    desc: '影响 AI 描写主角行动的谨慎程度',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '鲁莽':       { range: [0, 19],   desc: 'AI 描写主角冲动行事、易触发危机' },
+      '冲动':       { range: [20, 39],  desc: 'AI 描写主角凭直觉行动、易暴露' },
+      '平衡':       { range: [40, 59],  desc: 'AI 描写主角适度思考后行动' },
+      '谨慎':       { range: [60, 79],  desc: 'AI 描写主角三思后行、规避风险' },
+      '谋定后动':   { range: [80, 100], desc: 'AI 描写主角周密计划、不易被抓' }
+    },
+    narrative_focus: '偷窥 / 尾随成功率 / 违法行为被发现概率 / 负面事件规避',
+    high_effect: 'AI 描写主角步步为营，违法行为成功率提升',
+    low_effect: 'AI 描写主角易冲动暴露，触发负面事件'
+  },
+  extraversion: {
+    name: '外向度',
+    desc: '影响 AI 描写主角社交主动性',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '内向':       { range: [0, 19],   desc: 'AI 描写主角沉默寡言、被动等待' },
+      '害羞':       { range: [20, 39],  desc: 'AI 描写主角难以主动开口' },
+      '平衡':       { range: [40, 59],  desc: 'AI 描写主角视情境主动' },
+      '开朗':       { range: [60, 79],  desc: 'AI 描写主角主动搭话、群体中突出' },
+      '社交中心':   { range: [80, 100], desc: 'AI 描写主角容易结识新人、主导群体' }
+    },
+    narrative_focus: '初遇女角的对话选项 / 群体事件表现 / 陌生人社交',
+    high_effect: 'AI 描写主角主动出击，初遇选项丰富',
+    low_effect: 'AI 描写主角被动等待，需女角主动'
+  },
+  rationality: {
+    name: '理性度',
+    desc: '影响 AI 描写主角思考的理性程度',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '冲动型':     { range: [0, 19],   desc: 'AI 描写主角凭直觉行动、易被情绪左右' },
+      '感性':       { range: [20, 39],  desc: 'AI 描写主角感情用事' },
+      '平衡':       { range: [40, 59],  desc: 'AI 描写主角情理兼顾' },
+      '理性':       { range: [60, 79],  desc: 'AI 描写主角冷静分析、权衡利弊' },
+      '极度理性':   { range: [80, 100], desc: 'AI 描写主角不被情绪左右、近乎冷酷的计算' }
+    },
+    narrative_focus: '危机事件决策 / 告白时机判断 / 是否接受诱惑 / 坏结局规避',
+    high_effect: 'AI 描写主角冷静权衡，坏结局规避率高',
+    low_effect: 'AI 描写主角感情用事，易被诱惑/陷入危机'
+  }
+};
+
+/* ───────── 二、性格特质对 AI 叙事的指导（核心功能） ───────── */
+// 每位主角的 6 维性格特质组合，会生成一个"性格画像"，
+// AI 据此调整叙事风格：对话语气、行动节奏、关注焦点。
+const PERSONALITY_NARRATIVE_GUIDE = {
+  gentleness: {
+    high: {
+      narrative_style: '主角的描写偏向温柔体贴，对话中多使用关心的语气，行动上会主动照顾女角',
+      dialogue_examples: ['轻声问："你没事吧？"', '默默递过外套', '记住她提过的小事'],
+      scene_focus: '注重细节描写，关注女角的情绪变化'
+    },
+    low: {
+      narrative_style: '主角的描写偏向冷淡直接，对话简洁，不擅长表达关心',
+      dialogue_examples: ['"哦。"', '转身就走', '嘴硬心软'],
+      scene_focus: '注重行动描写，少内心独白'
+    }
+  },
+  decisiveness: {
+    high: {
+      narrative_style: '主角的描写偏向行动派，决定快、出手快，不拖泥带水',
+      dialogue_examples: ['"现在就去。"', '不回答，直接行动', '一把拉过她的手'],
+      scene_focus: '注重行动节奏，对话简短有力'
+    },
+    low: {
+      narrative_style: '主角的描写偏向犹豫型，反复权衡、错失时机',
+      dialogue_examples: ['"再等等吧……"', '看着她的背影，最终没开口', '反复翻开手机又合上'],
+      scene_focus: '注重内心挣扎，多写思考过程'
+    }
+  },
+  humor: {
+    high: {
+      narrative_style: '主角的描写偏向风趣，会主动调节气氛、逗女角笑',
+      dialogue_examples: ['故意说反话逗她', '夸张地模仿她生气', '冷场时抛梗救场'],
+      scene_focus: '注重对话互动，气氛轻松'
+    },
+    low: {
+      narrative_style: '主角的描写偏向严肃，话题正经，气氛易冷场',
+      dialogue_examples: ['"嗯。"', '沉默地看着别处', '把话题聊死'],
+      scene_focus: '注重氛围描写，多写尴尬与沉默'
+    }
+  },
+  cautiousness: {
+    high: {
+      narrative_style: '主角的描写偏向谋定后动，行动前观察环境、评估风险',
+      dialogue_examples: ['先看了一眼四周', '在心里盘算退路', '不急着下手'],
+      scene_focus: '注重环境观察与风险评估描写'
+    },
+    low: {
+      narrative_style: '主角的描写偏向冲动型，凭直觉行动，事后才后悔',
+      dialogue_examples: ['没多想就冲上去', '"先做了再说"', '事后才意识到闯祸'],
+      scene_focus: '注重冲动后果与危机描写'
+    }
+  },
+  extraversion: {
+    high: {
+      narrative_style: '主角的描写偏向主动型，主动搭话、主导对话、群体中突出',
+      dialogue_examples: ['先开口打招呼', '主动提出一起走', '在人群中主动牵头'],
+      scene_focus: '注重社交互动描写，对话选项丰富'
+    },
+    low: {
+      narrative_style: '主角的描写偏向被动型，沉默寡言、需女角主动',
+      dialogue_examples: ['等她先开口', '低头不语', '被动应答'],
+      scene_focus: '注重内心独白，少主动对话'
+    }
+  },
+  rationality: {
+    high: {
+      narrative_style: '主角的描写偏向冷静分析，权衡利弊，不被情绪左右',
+      dialogue_examples: ['"从概率上看……"', '冷静指出她的漏洞', '不动声色地记录'],
+      scene_focus: '注重逻辑推理，多写思考过程'
+    },
+    low: {
+      narrative_style: '主角的描写偏向感性冲动，凭直觉行动，易被情绪带着走',
+      dialogue_examples: ['"我不管，就要这么做"', '冲动地抱住她', '事后才后悔'],
+      scene_focus: '注重情绪波动描写，多写冲动与后悔'
+    }
+  }
+};
+
+/* ───────── 三、性格特质对恋爱的影响 ───────── */
+const PERSONALITY_ROMANCE_INFLUENCE = {
+  // 告白成功率修正（叠加在第1层 ROMANCE_INFLUENCE.confession_success_rate 之上）
+  confession_modifier: {
+    formula: 'base_层1 + (gentleness×0.1%) + (decisiveness×0.15%) + (humor×0.05%) - (cautiousness×0.05%) + (extraversion×0.1%) - (rationality×0.05%)',
+    weights: {
+      gentleness:    0.10,   // 温柔度每点 +0.1% 成功率
+      decisiveness:  0.15,   // 果断度每点 +0.15%（告白需要果断）
+      humor:         0.05,   // 幽默感小幅加成
+      cautiousness: -0.05,   // 过度谨慎反而降低成功率
+      extraversion:  0.10,   // 外向度有助于主动告白
+      rationality:  -0.05    // 过度理性反而犹豫
+    },
+    note: '性格对告白的修正总和上限 ±10%，叠在第1层告白成功率之上'
+  },
+
+  // 约会氛围修正
+  dating_modifier: {
+    gentleness: {
+      rule: '约会时温柔度 ≥ 60 → 女角 mood +5',
+      threshold: 60,
+      effect: { mood: +5 },
+      note: '温柔度高的主角更会让女角感到被呵护'
+    },
+    humor: {
+      rule: '约会时幽默感 ≥ 60 → 女角 heartbeat +3',
+      threshold: 60,
+      effect: { heartbeat: +3 },
+      note: '幽默感高的主角更易让女角心跳加速'
+    },
+    extraversion: {
+      rule: '约会时外向度 ≥ 60 → 对话选项 +2',
+      threshold: 60,
+      effect: { dialogue_options: +2 },
+      note: '外向度高的主角在约会中对话选项更丰富'
+    },
+    cautiousness: {
+      rule: '约会时谨慎度 ≥ 80 → 女角觉得主角"想太多"，mood -2',
+      threshold: 80,
+      effect: { mood: -2 },
+      note: '过度谨慎反而让女角觉得不自然'
+    }
+  },
+
+  // NSFW 影响
+  nsfw_modifier: {
+    gentleness: {
+      rule: '前戏温柔度，影响女角湿润度/arousal',
+      high: 'gentleness ≥ 70 → 前戏更细腻，女角 arousal 起始 +10，wetness 提升一档',
+      low: 'gentleness ≤ 30 → 前戏潦草，女角 arousal 起始 -10，可能触发"不舒服"事件'
+    },
+    decisiveness: {
+      rule: '主导程度，影响 H 场景节奏',
+      high: 'decisiveness ≥ 70 → 主角主导节奏，H 场景推进顺畅',
+      low: 'decisiveness ≤ 30 → 主角被动，H 场景节奏拖沓，女角可能失去耐心'
+    },
+    cautiousness: {
+      rule: '避孕措施，影响怀孕结局',
+      high: 'cautiousness ≥ 60 → 自动采取避孕措施，无怀孕风险',
+      low: 'cautiousness ≤ 30 → 不采取避孕，触发怀孕结局分支（含 BAD_END）'
+    },
+    rationality: {
+      rule: '理性度影响接受诱惑的概率',
+      high: 'rationality ≥ 70 → 可理性拒绝不当诱惑（如 NTR 陷阱）',
+      low: 'rationality ≤ 30 → 易被诱惑，触发 NSFW 链或坏结局'
+    }
+  },
+
+  // 危机事件修正
+  crisis_modifier: {
+    decisiveness: {
+      rule: '危机事件（如偷窥被抓/西御寺威胁）的反应窗口',
+      high: 'decisiveness ≥ 60 → 危机反应窗口 +1 时段',
+      low: 'decisiveness ≤ 30 → 危机反应窗口 -1 时段，可能错过化解机会'
+    },
+    cautiousness: {
+      rule: '违法行为被发现概率修正',
+      high: 'cautiousness ≥ 60 → 偷窥/尾随被发现概率 ×0.7',
+      low: 'cautiousness ≤ 30 → 偷窥/尾随被发现概率 ×1.5'
+    },
+    rationality: {
+      rule: '坏结局规避率',
+      high: 'rationality ≥ 70 → 坏结局预警触发后多 1 次挽回机会',
+      low: 'rationality ≤ 30 → 坏结局预警直接触发，无挽回'
+    }
+  }
+};
+
+/* ───────── 四、5种 player_identity 的性格特质初始值 ───────── */
+// 与 PLAYER_INITIAL_STATS（第1层）正交：第1层定义"能做什么"，本表定义"会怎么做"
+const PLAYER_INITIAL_PERSONALITY = {
+  '原作主角':   { gentleness: 50, decisiveness: 50, humor: 50, cautiousness: 50, extraversion: 50, rationality: 50 },  // 平衡型：玩家自由塑造
+  '川尻信良':   { gentleness: 70, decisiveness: 30, humor: 60, cautiousness: 60, extraversion: 60, rationality: 40 },  // 温柔犹豫型：体贴但优柔寡断
+  '长冈芳树':   { gentleness: 20, decisiveness: 70, humor: 30, cautiousness: 20, extraversion: 40, rationality: 30 },  // 冲动鲁莽型：果断但不计后果
+  '西御寺有友': { gentleness: 30, decisiveness: 80, humor: 60, cautiousness: 40, extraversion: 80, rationality: 60 },  // 强势主导型：霸道且社交强
+  '天道新干线': { gentleness: 15, decisiveness: 70, humor: 20, cautiousness: 30, extraversion: 30, rationality: 70 },  // 冷酷理性型：冷漠且工于心计
+  '自定义':     { gentleness: 50, decisiveness: 50, humor: 50, cautiousness: 50, extraversion: 50, rationality: 50 }   // 自定义：默认平衡，玩家自由塑造
+};
+
+/* ───────── 五、性格特质变化机制（缓慢变化，不可训练） ───────── */
+const PERSONALITY_CHANGE_RULES = {
+  // 与第1层关键差异：单次变化上限 ±5（第1层为 ±10）
+  // 性格比能力更难改变，需要长期积累
+  cap_rule: {
+    per_change_max: 5,
+    per_change_min: -5,
+    enforced_by: '思维链第 6 步强制校验',
+    note: '单次变化 ±5 上限，防止性格突变。性格变化需"事件触发"，不可通过"训练"提升'
+  },
+
+  // 不可训练规则：性格特质没有 training 字段，与 SKILL_RULES（第3层）的根本区别
+  not_trainable: {
+    rule: '性格特质不能通过"训练/学习/打工"提升',
+    enforced_by: '所有 EJS 控制器读取本表时，不接受 training_growth 类型的变化',
+    note: '与第1层 GROWTH_RULES.training_growth、第3层 SKILL_RULES.training 完全不同'
+  },
+
+  // 事件塑造：关键剧情选择会影响性格
+  event_shaping: {
+    rule: '关键剧情选择会影响性格（单次 ±1~3，受 cap_rule 限制）',
+    examples: {
+      '救鸣泽唯':           { stat: 'gentleness',    delta: +3, note: '保护弱者 → 温柔+3' },
+      '放弃鸣泽唯':         { stat: 'gentleness',    delta: -3, note: '见死不救 → 温柔-3' },
+      '关键告白成功':       { stat: 'decisiveness',  delta: +2, note: '果断行动正反馈' },
+      '错过告白时机':       { stat: 'decisiveness',  delta: -2, note: '犹豫导致错失' },
+      '化解尴尬场面':       { stat: 'humor',         delta: +2, note: '幽默化解正向反馈' },
+      '冷场让女角尴尬':     { stat: 'humor',         delta: -1, note: '气氛冷场负反馈' },
+      '完美规避危机':       { stat: 'cautiousness',  delta: +3, note: '谨慎行动正反馈' },
+      '冲动被发现':         { stat: 'cautiousness',  delta: -2, note: '冲动暴露负反馈' },
+      '主动搭话成功':       { stat: 'extraversion',  delta: +2, note: '社交正反馈' },
+      '回避社交':           { stat: 'extraversion',  delta: -1, note: '被动退缩' },
+      '冷静化解危机':       { stat: 'rationality',   delta: +3, note: '理性分析正反馈' },
+      '冲动接受诱惑':       { stat: 'rationality',   delta: -2, note: '感性冲动负反馈' }
+    }
+  },
+
+  // 女角影响：与高 affection 女角长期互动，性格向女角偏好靠拢
+  heroine_influence: {
+    rule: '与高 affection（≥ 70）女角长期互动，主角性格向女角偏好靠拢',
+    trigger: 'affection ≥ 70 且累计互动 ≥ 5 次',
+    per_interaction_delta: 1,
+    per_interaction_delta_cap: 5,
+    examples: {
+      '鸣泽唯偏好':       { gentleness: +1, decisiveness: -1, note: '唯喜欢温柔体贴' },
+      '南川洋子偏好':     { humor: +1, extraversion: +1, note: '洋子喜欢开朗风趣' },
+      '片桐美铃偏好':     { rationality: +1, cautiousness: +1, note: '美铃喜欢成熟稳重' },
+      '舞岛可怜偏好':     { gentleness: +1, humor: +1, note: '可怜喜欢被呵护逗乐' },
+      '加藤美纪偏好':     { decisiveness: +1, cautiousness: +1, note: '美纪喜欢可靠果决' }
+    },
+    note: '女角影响是单向的——主角向女角偏好靠拢，不会反向'
+  },
+
+  // 负面事件冲击
+  trauma_event: {
+    rule: '极端负面事件可能触发性格突变（突破 cap_rule，但仍受 ±10 上限保护）',
+    examples: {
+      '被 NTR':           { stat: 'gentleness', delta: -10, note: '创伤性事件，温柔暴跌' },
+      '强行初H 被报警':   { stat: 'rationality', delta: -5, note: '冲动导致的恶果' },
+      '女角死亡/转学':     { stat: 'humor', delta: -8, note: '创伤后幽默感丧失' },
+      '破产饿晕':         { stat: 'cautiousness', delta: +5, note: '创伤后变得谨慎' }
+    },
+    note: '创伤事件由 D0 系统控制器判定后写入，本规则仅定义数值变化'
+  }
+};
+
+/* ───────── 六、性格组合原型（用于 AI 快速锁定叙事风格） ───────── */
+// 当主角 6 维性格特质组合接近某原型时，AI 优先采用该原型的叙事风格
+const PERSONALITY_COMBINED_ARCHETYPES = {
+  '温柔守护者': {
+    match: { gentleness: [70, 100], cautiousness: [60, 100], decisiveness: [0, 60] },
+    narrative_style: '主角是温柔的守护者，细心体贴、默默付出，但常因犹豫错过表白时机',
+    dialogue_tone: '温吞、关切、欲言又止',
+    scene_focus: '细节描写、女角情绪变化、内心独白'
+  },
+  '冷酷猎人': {
+    match: { gentleness: [0, 30], rationality: [70, 100], decisiveness: [70, 100] },
+    narrative_style: '主角是冷酷的猎人，目标明确、手段理性、不被情绪左右',
+    dialogue_tone: '简短、直接、不带感情',
+    scene_focus: '行动描写、目标推进、冷静计算'
+  },
+  '社交明星': {
+    match: { extraversion: [70, 100], humor: [60, 100], charm: [60, 100] },
+    narrative_style: '主角是社交明星，主动出击、风趣幽默、群体中焦点',
+    dialogue_tone: '活泼、爱开玩笑、话题丰富',
+    scene_focus: '对话互动、群体场景、气氛调节'
+  },
+  '冲动莽汉': {
+    match: { decisiveness: [70, 100], cautiousness: [0, 30], rationality: [0, 40] },
+    narrative_style: '主角是冲动莽汉，说干就干、不计后果、常闯祸',
+    dialogue_tone: '直接、急躁、不假思索',
+    scene_focus: '冲动后果、危机处理、事后后悔'
+  },
+  '理性谋士': {
+    match: { rationality: [70, 100], cautiousness: [70, 100], decisiveness: [40, 80] },
+    narrative_style: '主角是理性谋士，三思后行、步步为营、权衡利弊',
+    dialogue_tone: '冷静、分析性、多使用"从概率上""权衡来看"',
+    scene_focus: '推理过程、风险评估、计划制定'
+  },
+  '害羞内向者': {
+    match: { extraversion: [0, 30], humor: [0, 40], gentleness: [40, 80] },
+    narrative_style: '主角是害羞内向者，内心丰富但表达困难、需女角主动',
+    dialogue_tone: '简短、小声、易脸红',
+    scene_focus: '内心独白、女角视角、被动反应'
+  },
+  '霸道总裁': {
+    match: { decisiveness: [70, 100], extraversion: [60, 100], gentleness: [20, 50] },
+    narrative_style: '主角是霸道总裁型，强势主导、不容置疑、社交中掌控',
+    dialogue_tone: '命令式、不容反驳、强势',
+    scene_focus: '主导行动、女角服从/反抗、权力动态'
+  },
+  '暖男倾听者': {
+    match: { gentleness: [60, 100], extraversion: [40, 70], rationality: [40, 70] },
+    narrative_style: '主角是暖男倾听者，会听女角倾诉、给出温和建议',
+    dialogue_tone: '温和、倾听式、鼓励性',
+    scene_focus: '女角倾诉、情绪疏导、陪伴感'
+  }
+};
+
+/* ─── 辅助函数：根据性格特质值获取分档 ─── */
+function getTraitStage(traitName, value) {
+  const v = Number(value) || 0;
+  const trait = PERSONALITY_TRAITS[traitName];
+  if (!trait || !trait.thresholds) return null;
+  for (const key in trait.thresholds) {
+    const t = trait.thresholds[key];
+    if (v >= t.range[0] && v <= t.range[1]) return { name: key, ...t };
+  }
+  return null;
+}
+
+/* ─── 辅助函数：获取身份初始性格特质 ─── */
+function getInitialPersonality(identityKey) {
+  return PLAYER_INITIAL_PERSONALITY[identityKey] || PLAYER_INITIAL_PERSONALITY['P1_原作主角'];
+}
+
+/* ─── 辅助函数：获取某维性格的叙事指南（自动判断 high/low） ─── */
+function getNarrativeGuide(traitName, value) {
+  const v = Number(value) || 0;
+  const guide = PERSONALITY_NARRATIVE_GUIDE[traitName];
+  if (!guide) return null;
+  if (v >= 60) return { level: 'high', ...guide.high };
+  if (v <= 40) return { level: 'low', ...guide.low };
+  return { level: 'balanced', note: '处于平衡区（40-59），AI 视情境自由发挥' };
+}
+
+/* ─── 辅助函数：计算性格组合原型（返回最匹配的原型） ─── */
+function detectArchetype(traits) {
+  const t = traits || {};
+  let bestMatch = null;
+  let bestScore = 0;
+  for (const name in PERSONALITY_COMBINED_ARCHETYPES) {
+    const arch = PERSONALITY_COMBINED_ARCHETYPES[name];
+    let matched = 0;
+    let total = 0;
+    for (const traitName in arch.match) {
+      const range = arch.match[traitName];
+      const val = Number(t[traitName]) || 0;
+      total++;
+      if (val >= range[0] && val <= range[1]) matched++;
+    }
+    const score = total > 0 ? matched / total : 0;
+    if (score > bestScore && score >= 0.6) {  // 至少 60% 维度匹配才算该原型
+      bestScore = score;
+      bestMatch = { name, match_ratio: score, ...arch };
+    }
+  }
+  return bestMatch || { name: '无明确原型', narrative_style: 'AI 视情境综合 6 维特质描写' };
+}
+
+/* ─── 辅助函数：计算性格对告白的修正（叠在第1层之上） ─── */
+function calcPersonalityConfessionModifier(traits) {
+  const t = traits || {};
+  const w = PERSONALITY_ROMANCE_INFLUENCE.confession_modifier.weights;
+  const sum =
+    (Number(t.gentleness) || 0) * w.gentleness +
+    (Number(t.decisiveness) || 0) * w.decisiveness +
+    (Number(t.humor) || 0) * w.humor +
+    (Number(t.cautiousness) || 0) * w.cautiousness +
+    (Number(t.extraversion) || 0) * w.extraversion +
+    (Number(t.rationality) || 0) * w.rationality;
+  // 修正总和上限 ±10%
+  return Math.max(-10, Math.min(10, Math.round(sum * 10) / 10));
+}
+%>
+
+[6维个人反应属性已加载。性格特质是叙事风格调节器，与第1层基础属性（天赋能力）、第3层技能系统（可训练技能）正交但缺一不可。性格特质不可训练，只能通过事件和选择塑造，单次变化 ±5 上限由思维链第 6 步强制校验。AI 必须根据主角的 6 维性格特质组合调整叙事风格。]
+
+<%= JSON.stringify({
+  layer: 2,
+  layer_name: '个人反应属性（性格特质层）',
+  total_traits: Object.keys(PERSONALITY_TRAITS).length,
+  trait_names: Object.keys(PERSONALITY_TRAITS),
+  trait_descriptions: Object.fromEntries(Object.keys(PERSONALITY_TRAITS).map(k => [k, PERSONALITY_TRAITS[k].desc])),
+  narrative_guide_traits: Object.keys(PERSONALITY_NARRATIVE_GUIDE),
+  romance_influence_groups: Object.keys(PERSONALITY_ROMANCE_INFLUENCE),
+  identities: Object.keys(PLAYER_INITIAL_PERSONALITY),
+  archetypes_count: Object.keys(PERSONALITY_COMBINED_ARCHETYPES).length,
+  archetypes: Object.keys(PERSONALITY_COMBINED_ARCHETYPES),
+  cap_rule: PERSONALITY_CHANGE_RULES.cap_rule,
+  not_trainable: PERSONALITY_CHANGE_RULES.not_trainable.rule,
+  note: '第2层性格特质系统已加载：gentleness(温柔度)/decisiveness(果断度)/humor(幽默感)/cautiousness(谨慎度)/extraversion(外向度)/rationality(理性度)。与第1层天赋能力、第3层可训练技能正交，单次变化 ±5 上限。'
+}, null, 2) %>

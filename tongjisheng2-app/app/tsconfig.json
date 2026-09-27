@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@content/*": ["src/content/*"],
+      "@runtime/*": ["src/runtime/*"],
+      "@ai/*": ["src/ai/*"],
+      "@ui/*": ["src/ui/*"],
+      "@db/*": ["src/db/*"],
+      "@stores/*": ["src/stores/*"],
+      "@gateway/*": ["src/gateway/*"],
+      "@prompts/*": ["src/prompts/*"],
+      "@schemas/*": ["src/schemas/*"],
+      "@pages/*": ["src/pages/*"],
+      "@settings/*": ["src/settings/*"],
+      "@dialogs/*": ["src/dialogs/*"],
+      "@workers/*": ["src/workers/*"]
+    }
+  },
+  "include": ["src", "scripts"],
+  "exclude": [
+    "src/content/mvu/schema.ts",
+    "src/content/**/*.ts",
+    "src/content/**/*.tsx"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

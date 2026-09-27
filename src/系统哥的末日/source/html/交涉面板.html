@@ -1,0 +1,659 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>交涉面板 · 系统哥的末日</title>
+<style>
+:root{
+  --bg-0:#0a0608;--bg-1:#160a0e;--bg-card:rgba(22,12,16,.9);
+  --c-user:#3b82f6;--c-user-light:#60a5fa;--c-user-dark:#1e3a8a;
+  --c-opp:#ef4444;--c-opp-light:#f87171;--c-opp-dark:#7f1d1d;
+  --c-text:#f3e8e8;--c-dim:#9ca3af;--c-border:rgba(220,38,38,.2);
+  --c-win:#10b981;--c-gold:#fbbf24;--c-orange:#f59e0b;--c-yellow:#facc15;
+  --c-gray:#9ca3af;--c-darkred:#991b1b;--c-purple:#a371f7;--c-green:#10b981;
+  --shadow:0 4px 14px rgba(0,0,0,.4);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);
+  --fs-base:clamp(12px,2.5vw,14px);--fs-md:clamp(13px,2.8vw,15px);
+  --fs-lg:clamp(15px,3.2vw,18px);--fs-xl:clamp(20px,4.5vw,26px);
+  --fs-xxl:clamp(28px,6vw,36px);
+  --space-xs:clamp(4px,1vw,8px);--space-sm:clamp(8px,2vw,12px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;outline:none}
+html,body{height:100%}
+body{
+  font-family:var(--font);color:var(--c-text);
+  background:linear-gradient(160deg,var(--bg-0) 0%,var(--bg-1) 60%,#1c0408 100%);
+  background-attachment:fixed;display:flex;justify-content:center;
+  min-height:100%;line-height:1.5;-webkit-text-size-adjust:100%;
+}
+.panel{width:100%;max-width:680px;padding:var(--space-sm)}
+.loading{text-align:center;padding:20px;color:var(--c-dim);font-size:var(--fs-base)}
+
+/* === 空态 === */
+.empty-state{text-align:center;padding:6px 8px;color:var(--c-dim);font-size:var(--fs-xs)}
+.empty-state .empty-text{letter-spacing:1px;opacity:.6}
+
+/* === 结束态淡出 === */
+.fade-out{animation:fadeOut 1s ease forwards;animation-delay:4s}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-4px)}}
+
+/* === 头部 === */
+.np-header{
+  background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;
+  padding:8px 12px;margin-bottom:6px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.np-title{font-size:var(--fs-md);font-weight:700;color:var(--c-opp-light);letter-spacing:1px;white-space:nowrap}
+.np-info{display:flex;align-items:center;gap:5px;font-size:var(--fs-sm);flex-wrap:wrap;flex:1}
+.np-info-item{color:var(--c-text)}
+.np-badge{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;border:1px solid;font-weight:600;white-space:nowrap}
+.np-badge.寒暄{color:var(--c-user-light);border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1)}
+.np-badge.辞锋{color:var(--c-orange);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+.np-badge.共识{color:var(--c-green);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.np-badge.结束{color:var(--c-dim);border-color:var(--c-border);background:transparent}
+.np-round{font-size:var(--fs-xs);color:var(--c-dim);white-space:nowrap}
+.np-refresh{
+  background:transparent;border:1px solid var(--c-border);color:var(--c-dim);
+  border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-lg);
+  touch-action:manipulation;min-height:30px;line-height:1;flex-shrink:0;transition:color .2s;
+}
+.np-refresh:hover{color:var(--c-text)}
+.np-refresh.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* === 通用区块 === */
+.np-section{
+  background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;
+  padding:8px 10px;margin-bottom:6px;box-shadow:var(--shadow);
+}
+.np-section-title{
+  font-size:var(--fs-sm);font-weight:700;color:var(--c-opp-light);
+  margin-bottom:6px;padding-left:5px;border-left:3px solid var(--c-opp);letter-spacing:.5px;
+}
+
+/* === 属性对比 === */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat-side{
+  background:rgba(255,255,255,.02);border:1px solid var(--c-border);
+  border-radius:6px;padding:6px 8px;
+}
+.stat-side.user{border-left:2px solid var(--c-user)}
+.stat-side.opp{border-left:2px solid var(--c-opp)}
+.stat-side-title{font-size:var(--fs-xs);font-weight:700;margin-bottom:4px;text-align:center;letter-spacing:1px}
+.stat-side.user .stat-side-title{color:var(--c-user-light)}
+.stat-side.opp .stat-side-title{color:var(--c-opp-light)}
+.stat-row{margin-bottom:4px;padding:3px 4px;border-radius:4px;transition:all .3s}
+.stat-row:last-child{margin-bottom:0}
+.stat-row.win{border:1px solid rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.stat-row.lose{opacity:.5}
+.stat-label{display:flex;justify-content:space-between;font-size:var(--fs-xs);margin-bottom:2px}
+.stat-label .stat-val{font-weight:700}
+.stat-side.user .stat-val{color:var(--c-user-light)}
+.stat-side.opp .stat-val{color:var(--c-opp-light)}
+.stat-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:3px;transition:width .5s ease;width:0}
+.stat-bar-fill.user{background:linear-gradient(90deg,var(--c-user-dark),var(--c-user))}
+.stat-bar-fill.opp{background:linear-gradient(90deg,var(--c-opp-dark),var(--c-opp))}
+
+/* === 骰子结果 === */
+.dice-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:6px}
+.dice-box{text-align:center;padding:6px 4px;border-radius:6px;border:1px solid}
+.dice-box.user{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.25)}
+.dice-box.opp{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25)}
+.dice-label{display:block;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}
+.dice-val{display:block;font-size:var(--fs-xxl);font-weight:800;line-height:1.1}
+.dice-box.user .dice-val{color:var(--c-user-light)}
+.dice-box.opp .dice-val{color:var(--c-opp-light)}
+.dice-vs{font-size:var(--fs-sm);font-weight:700;color:var(--c-dim)}
+.dice-diff{text-align:center;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:4px}
+.dice-diff .diff-val{font-weight:700;color:var(--c-text)}
+.judgment-tag{
+  display:inline-block;font-size:var(--fs-sm);font-weight:700;padding:3px 12px;
+  border-radius:12px;border:1px solid;
+}
+.judgment-tag.碾压{color:var(--c-gold);border-color:var(--c-gold);background:rgba(251,191,36,.1);text-shadow:0 0 6px rgba(251,191,36,.4)}
+.judgment-tag.重创{color:var(--c-opp);border-color:var(--c-opp);background:rgba(239,68,68,.1)}
+.judgment-tag.命中{color:var(--c-orange);border-color:var(--c-orange);background:rgba(245,158,11,.1)}
+.judgment-tag.刮擦{color:var(--c-yellow);border-color:var(--c-yellow);background:rgba(250,204,21,.1)}
+.judgment-tag.拂过{color:var(--c-gray);border-color:var(--c-gray);background:rgba(156,163,175,.1)}
+.judgment-tag.落空{color:var(--c-darkred);border-color:var(--c-darkred);background:rgba(153,27,27,.15)}
+.judgment-row{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.strategy-tags{display:flex;justify-content:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+.strat-tag{font-size:var(--fs-xs);padding:2px 8px;border-radius:8px;border:1px solid;white-space:nowrap}
+.strat-tag.user{color:var(--c-user-light);border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.08)}
+.strat-tag.opp{color:var(--c-opp-light);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+
+/* === 共识分 === */
+.cons-wrap{display:flex;flex-direction:column;gap:8px}
+.cons-row{display:flex;align-items:center;gap:6px}
+.cons-label{font-size:var(--fs-xs);color:var(--c-dim);min-width:28px;text-align:right}
+.cons-bar-wrap{flex:1;position:relative;height:14px}
+.cons-bar-track{height:10px;border-radius:5px;background:rgba(255,255,255,.05);overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+.cons-bar-fill{height:100%;border-radius:5px;transition:width .6s ease;width:0}
+.cons-bar-fill.user{background:linear-gradient(90deg,var(--c-user-dark),var(--c-user))}
+.cons-bar-fill.opp{background:linear-gradient(90deg,var(--c-opp-dark),var(--c-opp))}
+.cons-threshold{position:absolute;top:-1px;bottom:-1px;width:2px;background:var(--c-gold);opacity:.7;z-index:2}
+.cons-threshold.break{background:var(--c-darkred)}
+.cons-threshold-label{
+  position:absolute;top:-14px;font-size:9px;white-space:nowrap;
+  transform:translateX(-50%);color:var(--c-gold);opacity:.8;
+}
+.cons-threshold-label.break{color:var(--c-darkred)}
+.cons-val{font-size:var(--fs-xs);font-weight:700;min-width:44px;text-align:left;white-space:nowrap}
+.cons-val.user{color:var(--c-user-light)}
+.cons-val.opp{color:var(--c-opp-light)}
+
+/* === 证据系统 === */
+.ev-stats{display:flex;gap:10px;font-size:var(--fs-xs);margin-bottom:6px;flex-wrap:wrap}
+.ev-stat{color:var(--c-dim)}
+.ev-stat .ev-stat-v{font-weight:700;color:var(--c-text)}
+.ev-stat.unused .ev-stat-v{color:var(--c-orange)}
+.ev-stat.used .ev-stat-v{color:var(--c-green)}
+.conscience-box{margin-bottom:6px;padding:5px 6px;background:rgba(255,255,255,.02);border-radius:5px;border:1px solid var(--c-border)}
+.conscience-head{display:flex;justify-content:space-between;font-size:var(--fs-xs);margin-bottom:3px}
+.conscience-head .con-tier{font-weight:700;padding:0 6px;border-radius:6px;border:1px solid}
+.con-tier.无愧{color:var(--c-green);border-color:var(--c-green)}
+.con-tier.微愧{color:var(--c-user-light);border-color:var(--c-user)}
+.con-tier.不安{color:var(--c-yellow);border-color:var(--c-yellow)}
+.con-tier.动摇{color:var(--c-orange);border-color:var(--c-orange)}
+.con-tier.崩溃{color:var(--c-opp);border-color:var(--c-opp)}
+.conscience-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.05);overflow:hidden}
+.conscience-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.conscience-fill.无愧{background:linear-gradient(90deg,#064e3b,var(--c-green))}
+.conscience-fill.微愧{background:linear-gradient(90deg,#1e3a8a,var(--c-user))}
+.conscience-fill.不安{background:linear-gradient(90deg,#78350f,var(--c-yellow))}
+.conscience-fill.动摇{background:linear-gradient(90deg,#78350f,var(--c-orange))}
+.conscience-fill.崩溃{background:linear-gradient(90deg,#7f1d1d,var(--c-opp))}
+.ev-list{display:flex;flex-direction:column;gap:4px}
+.ev-card{
+  background:rgba(255,255,255,.02);border:1px solid var(--c-border);
+  border-radius:6px;padding:5px 8px;cursor:pointer;transition:border-color .2s;
+}
+.ev-card:hover{border-color:rgba(220,38,38,.4)}
+.ev-card-head{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ev-id{font-size:10px;color:var(--c-dim);font-family:monospace}
+.ev-type-tag{font-size:9px;padding:1px 6px;border-radius:6px;border:1px solid;white-space:nowrap;font-weight:600}
+.ev-type-tag.物证{color:var(--c-user-light);border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1)}
+.ev-type-tag.人证{color:var(--c-green);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.ev-type-tag.视频{color:var(--c-purple);border-color:rgba(163,113,247,.4);background:rgba(163,113,247,.1)}
+.ev-type-tag.OOC记录{color:var(--c-opp);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1)}
+.ev-type-tag.良知记录{color:var(--c-orange);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+.ev-type-tag.其他{color:var(--c-gray);border-color:rgba(156,163,175,.4);background:rgba(156,163,175,.1)}
+.ev-title{font-size:var(--fs-sm);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-mod{font-size:var(--fs-xs);font-weight:700;color:var(--c-gold);white-space:nowrap}
+.ev-cred{margin-top:3px}
+.ev-cred-head{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}
+.ev-cred-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden}
+.ev-cred-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.ev-cred-fill.r{background:linear-gradient(90deg,#7f1d1d,var(--c-opp))}
+.ev-cred-fill.o{background:linear-gradient(90deg,#78350f,var(--c-orange))}
+.ev-cred-fill.b{background:linear-gradient(90deg,#1e3a8a,var(--c-user))}
+.ev-cred-fill.g{background:linear-gradient(90deg,#064e3b,var(--c-green))}
+.ev-detail{margin-top:4px;padding-top:4px;border-top:1px dashed var(--c-border);font-size:var(--fs-xs);color:var(--c-dim);line-height:1.5}
+.ev-detail-row{margin-bottom:2px}
+.ev-detail-label{color:var(--c-opp-light);font-weight:600}
+.ev-empty{text-align:center;font-size:var(--fs-xs);color:var(--c-dim);padding:6px}
+
+/* === 策略 === */
+.strat-current{display:flex;justify-content:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.strat-current-item{font-size:var(--fs-xs);display:flex;align-items:center;gap:3px}
+.strat-current-item .sc-label{color:var(--c-dim)}
+.strat-current-item .sc-val{font-weight:700;padding:1px 8px;border-radius:8px;border:1px solid}
+.strat-current-item.user .sc-val{color:var(--c-user-light);border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.08)}
+.strat-current-item.opp .sc-val{color:var(--c-opp-light);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+.strat-list{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.strat-item{
+  background:rgba(255,255,255,.02);border:1px solid var(--c-border);
+  border-radius:5px;padding:4px 6px;text-align:center;font-size:var(--fs-xs);
+}
+.strat-item.active{border-color:var(--c-gold);background:rgba(251,191,36,.06)}
+.strat-item-name{font-weight:700;color:var(--c-text);margin-bottom:1px}
+.strat-item-mod{color:var(--c-gold);font-size:10px}
+.strat-item-note{color:var(--c-dim);font-size:9px;margin-top:1px;line-height:1.3}
+
+/* === 历史 === */
+.hist-list{display:flex;flex-direction:column;gap:3px;max-height:180px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.hist-item{
+  background:rgba(255,255,255,.02);border:1px solid var(--c-border);
+  border-radius:5px;padding:4px 6px;font-size:var(--fs-xs);cursor:pointer;
+}
+.hist-item:hover{border-color:rgba(220,38,38,.35)}
+.hist-head{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.hist-id{font-size:10px;color:var(--c-dim);font-family:monospace}
+.hist-target{font-weight:600;color:var(--c-text)}
+.hist-outcome{font-size:9px;padding:1px 5px;border-radius:6px;border:1px solid;margin-left:auto;white-space:nowrap}
+.hist-outcome.胜利{color:var(--c-green);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.hist-outcome.失败{color:var(--c-opp);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1)}
+.hist-outcome.平局{color:var(--c-orange);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+.hist-outcome.未决{color:var(--c-dim);border-color:var(--c-border)}
+.hist-summary{color:var(--c-dim);margin-top:2px;line-height:1.4}
+.hist-detail{margin-top:3px;padding-top:3px;border-top:1px dashed var(--c-border);color:var(--c-dim);line-height:1.5}
+.hist-empty{text-align:center;font-size:var(--fs-xs);color:var(--c-dim);padding:6px}
+
+/* === 结束摘要 === */
+.ended-box{
+  background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;
+  padding:8px 12px;box-shadow:var(--shadow);
+}
+.ended-title{font-size:var(--fs-sm);font-weight:700;color:var(--c-opp-light);margin-bottom:4px;letter-spacing:1px}
+.ended-row{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:var(--fs-xs);flex-wrap:wrap}
+.ended-row .er-label{color:var(--c-dim)}
+.ended-row .er-val{font-weight:600}
+
+/* === 响应式 === */
+@media(max-width:360px){
+  .stats-grid{grid-template-columns:1fr}
+  .strat-list{grid-template-columns:repeat(2,1fr)}
+  .np-header{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="panel" id="np-root">
+  <div class="loading" id="np-loading">正在同步交涉数据...</div>
+  <div id="np-body" style="display:none"></div>
+</div>
+<script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* === 多层宿主查找 + 内联变量兜底（参考"真假千金之囚笼"） === */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getExt(n){return pickHostValue(n)||null}
+function waitFor(n,timeout){timeout=timeout||5000;return new Promise(function(resolve){var start=Date.now();(function check(){var obj=getExt(n);if(obj)return resolve(obj);if(Date.now()-start>timeout)return resolve(null);setTimeout(check,100)})()})}
+function parseEmbeddedStat(){
+  var el=document.getElementById('mvu-stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{var parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object'){if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;return parsed}}catch(e){}
+  return null;
+}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+function readStatData(){
+  var emb=parseEmbeddedStat();
+  if(hasData(emb))return emb;
+  var opt={type:'message',message_id:'latest'};
+  try{var Mvu=getExt('Mvu');if(Mvu&&Mvu.getMvuData){var d=Mvu.getMvuData(opt);if(d&&hasData(d.stat_data))return d.stat_data}}catch(e){}
+  try{var gv=pickHostFn('getVariables');if(gv){var v=gv(opt);if(v&&hasData(v.stat_data))return v.stat_data}}catch(e){}
+  try{var gav=pickHostFn('getAllVariables');if(gav){var a=gav();if(a&&hasData(a.stat_data))return a.stat_data}}catch(e){}
+  return emb||{};
+}
+
+/* === HTML 转义 === */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+/* === 数值工具 === */
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function credBarClass(v){v=parseInt(v)||0;if(v>=86)return'g';if(v>=61)return'b';if(v>=31)return'o';return'r'}
+
+/* 6档判定 */
+function judgmentInfo(judgment,userDice,oppDice){
+  var j=(judgment||'').toString();
+  var diff=(parseInt(userDice)||0)-(parseInt(oppDice)||0);
+  var tiers=['碾压','重创','命中','刮擦','拂过','落空'];
+  var tier=null;
+  for(var i=0;i<tiers.length;i++){if(j.indexOf(tiers[i])>=0){tier=tiers[i];break}}
+  if(!tier){
+    if(diff>=20)tier='碾压';else if(diff>=15)tier='重创';else if(diff>=10)tier='命中';
+    else if(diff>=5)tier='刮擦';else if(diff>=1)tier='拂过';else tier='落空';
+  }
+  return{tier:tier,diff:diff};
+}
+function evidenceTypeInfo(type){
+  var t=(type||'').toString();
+  if(t.indexOf('物证')>=0)return{label:'物证',diceMod:10};
+  if(t.indexOf('人证')>=0)return{label:'人证',diceMod:5};
+  if(t.indexOf('视频')>=0||t.indexOf('录像')>=0)return{label:'视频',diceMod:15};
+  if(t.indexOf('OOC')>=0)return{label:'OOC记录',diceMod:20};
+  if(t.indexOf('良知')>=0)return{label:'良知记录',diceMod:8};
+  return{label:'其他',diceMod:0};
+}
+function conscienceTier(v){v=parseInt(v)||0;if(v>=80)return'无愧';if(v>=60)return'微愧';if(v>=40)return'不安';if(v>=20)return'动摇';return'崩溃'}
+function isConsumed(e){var v=e.is_consumed||e.is_used||e.是否消耗||e.是否已用;return v==='是'||v==='已用'||v==='已消耗'||v===true}
+function evidenceId(e){var id=e.evidence_id||e.证据编号;if(id)return id;var n=parseInt(e.row_id)||0;return'E'+String(n).padStart(4,'0')}
+function outcomeClass(o){o=o||'未决';if(o.indexOf('胜')>=0)return'胜利';if(o.indexOf('败')>=0||o.indexOf('失')>=0)return'失败';if(o.indexOf('平')>=0)return'平局';return'未决'}
+
+var STRATEGY_LIST=[
+  {name:'施压',mod:'气势/5',note:'对手情报高反受-5'},
+  {name:'说服',mod:'口才/5',note:'对手地位高效果减半'},
+  {name:'揭露',mod:'情报/5',note:'需有具体证据'},
+  {name:'拖延',mod:'+0',note:'下轮自己+5'},
+  {name:'威胁',mod:'+10',note:'评价-3 OOC风险'},
+  {name:'示弱',mod:'-5',note:'下轮对手-5'}
+];
+
+/* ============================================================
+ * 状态与双源数据缓存
+ * ============================================================ */
+var State={
+  loading:true,
+  refreshing:false,
+  mvu:{},
+  spv:{},
+  showEndedSummary:false,
+  lastNegoState:null,
+  lastNegoActive:false,
+  _refreshing:false,
+  _endedTimer:null,
+  expandedEvId:null,
+  expandedHistId:null
+};
+
+/* SPV 表名自适应读取：兼容 sheet_xxx / xxx / 带meta 的返回结构 */
+function getTable(name){
+  var db=State.spv||{};
+  if(!db||typeof db!=='object')return[];
+  var candidates=[name,'sheet_'+name];
+  for(var i=0;i<candidates.length;i++){
+    var v=db[candidates[i]];
+    if(v){
+      if(Array.isArray(v))return v;
+      if(v.rows&&Array.isArray(v.rows))return v.rows;
+    }
+  }
+  /* 模糊匹配：键名包含 name */
+  var keys=Object.keys(db);
+  for(var j=0;j<keys.length;j++){
+    var k=keys[j];
+    if(k==='mate'||k==='meta')continue;
+    if(k.indexOf(name)>=0){
+      var vv=db[k];
+      if(Array.isArray(vv))return vv;
+      if(vv&&vv.rows&&Array.isArray(vv.rows))return vv.rows;
+    }
+  }
+  return[];
+}
+function getNego(){return(State.mvu&&State.mvu.交涉状态)||{}}
+function isNegoActive(){var n=getNego();return n.交涉进行中===true||n.交涉进行中==='是'||n.交涉进行中==='true'}
+function getPanelMode(){if(isNegoActive())return'active';if(State.showEndedSummary)return'ended';return'empty'}
+function getAntState(){var rows=getTable('antagonist_state');return rows[0]||{}}
+function getUnusedEvidence(){return getTable('evidence').filter(function(e){return!isConsumed(e)})}
+function getHistory(){return getTable('negotiation_log').slice().sort(function(a,b){return(parseInt(b.row_id)||0)-(parseInt(a.row_id)||0)}).slice(0,5)}
+
+/* ============================================================
+ * 渲染函数（返回 HTML 字符串）
+ * ============================================================ */
+function renderHeader(nego){
+  return '<div class="np-header">'
+    +'<span class="np-title">交涉面板</span>'
+    +'<div class="np-info">'
+      +'<span class="np-info-item">对象：'+esc(nego.交涉对象||'未知')+'</span>'
+      +'<span class="np-badge '+esc(nego.交涉幕次||'结束')+'">'+esc(nego.交涉幕次||'-')+'</span>'
+      +'<span class="np-round">第'+esc(nego.交涉回合||0)+'回合</span>'
+    +'</div>'
+    +'<button class="np-refresh'+(State.refreshing?' spinning':'')+'" data-act="refresh" title="刷新">⟳</button>'
+  +'</div>';
+}
+function renderStats(nego){
+  var rows=[
+    {label:'气势',u:num(nego.user气势,0),o:num(nego.对手气势,0)},
+    {label:'口才',u:num(nego.user口才,0),o:num(nego.对手口才,0)},
+    {label:'情报',u:num(nego.user情报,0),o:num(nego.对手情报,0)},
+    {label:'地位',u:num(nego.user地位,0),o:num(nego.对手地位,0)}
+  ];
+  var userRows='',oppRows='';
+  rows.forEach(function(s){
+    var cls=s.u>s.o?'win':(s.u<s.o?'lose':'');
+    userRows+='<div class="stat-row '+cls+'"><div class="stat-label"><span>'+s.label+'</span><span class="stat-val">'+s.u+'</span></div><div class="stat-bar"><div class="stat-bar-fill user" style="width:'+pct(s.u,100)+'%"></div></div></div>';
+    oppRows+='<div class="stat-row"><div class="stat-label"><span>'+s.label+'</span><span class="stat-val">'+s.o+'</span></div><div class="stat-bar"><div class="stat-bar-fill opp" style="width:'+pct(s.o,100)+'%"></div></div></div>';
+  });
+  return '<div class="np-section"><div class="np-section-title">双方属性</div><div class="stats-grid">'
+    +'<div class="stat-side user"><div class="stat-side-title">{{user}}</div>'+userRows+'</div>'
+    +'<div class="stat-side opp"><div class="stat-side-title">对手</div>'+oppRows+'</div>'
+    +'</div></div>';
+}
+function renderDice(nego){
+  var ud=num(nego.上轮user骰,0),od=num(nego.上轮对手骰,0);
+  var j=judgmentInfo(nego.上轮判定,ud,od);
+  var us=nego.user交涉策略||'',os=nego.对手交涉策略||'';
+  var strat='';
+  if(us||os){
+    strat='<div class="strategy-tags">';
+    if(us)strat+='<span class="strat-tag user">{{user}}：'+esc(us)+'</span>';
+    if(os)strat+='<span class="strat-tag opp">对手：'+esc(os)+'</span>';
+    strat+='</div>';
+  }
+  return '<div class="np-section"><div class="np-section-title">上轮骰子</div>'
+    +'<div class="dice-compare">'
+      +'<div class="dice-box user"><span class="dice-label">{{user}}</span><span class="dice-val">'+ud+'</span></div>'
+      +'<div class="dice-vs">VS</div>'
+      +'<div class="dice-box opp"><span class="dice-label">对手</span><span class="dice-val">'+od+'</span></div>'
+    +'</div>'
+    +'<div class="dice-diff">差值：<span class="diff-val">'+(j.diff>0?'+':'')+j.diff+'</span></div>'
+    +'<div class="judgment-row"><span class="judgment-tag '+j.tier+'">'+j.tier+'</span></div>'
+    +strat
+  +'</div>';
+}
+function renderConsensus(nego){
+  var uc=num(nego.user共识分,0),oc=num(nego.对手共识分,0);
+  return '<div class="np-section"><div class="np-section-title">共识分</div><div class="cons-wrap">'
+    +'<div class="cons-row"><span class="cons-label">{{user}}</span><div class="cons-bar-wrap"><div class="cons-threshold" style="left:80%"></div><div class="cons-threshold break" style="left:20%"></div><div class="cons-bar-track"><div class="cons-bar-fill user" style="width:'+pct(uc,100)+'%"></div></div></div><span class="cons-val user">'+uc+'/100</span></div>'
+    +'<div class="cons-row"><span class="cons-label">对手</span><div class="cons-bar-wrap"><div class="cons-threshold" style="left:80%"></div><div class="cons-threshold break" style="left:20%"></div><div class="cons-bar-track"><div class="cons-bar-fill opp" style="width:'+pct(oc,100)+'%"></div></div></div><span class="cons-val opp">'+oc+'/100</span></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--c-dim);padding:0 30px"><span style="color:var(--c-darkred)">↑20 谈判破裂</span><span style="color:var(--c-gold)">↑80 共识达成</span></div>'
+  +'</div></div>';
+}
+function renderEvidence(){
+  var all=getTable('evidence');
+  var unused=getUnusedEvidence();
+  var total=all.length,unusedCount=unused.length,usedCount=total-unusedCount;
+  var ant=getAntState();
+  var cv=ant.conscience_value||ant.良知值;
+  if(cv==null)cv=State.mvu.反派状态&&State.mvu.反派状态.良知值;
+  var conscience=num(cv,100);
+  var conTier=conscienceTier(conscience);
+  var list='';
+  if(unused.length){
+    list='<div class="ev-list">';
+    unused.forEach(function(e){
+      var eid=evidenceId(e);
+      var ti=evidenceTypeInfo(e.type||e.类型);
+      var cred=num(e.credibility||e.可信度,0);
+      var detail='';
+      if(State.expandedEvId===eid){
+        detail='<div class="ev-detail">';
+        if(e.description||e.描述)detail+='<div class="ev-detail-row"><span class="ev-detail-label">描述：</span>'+esc(e.description||e.描述)+'</div>';
+        if(e.obtained_scene||e.获取场景)detail+='<div class="ev-detail-row"><span class="ev-detail-label">获取场景：</span>'+esc(e.obtained_scene||e.获取场景)+'</div>';
+        if(e.obtained_time||e.获取时间)detail+='<div class="ev-detail-row"><span class="ev-detail-label">获取时间：</span>'+esc(e.obtained_time||e.获取时间)+'</div>';
+        if(e.detail||e.详情)detail+='<div class="ev-detail-row"><span class="ev-detail-label">详情：</span>'+esc(e.detail||e.详情)+'</div>';
+        detail+='</div>';
+      }
+      list+='<div class="ev-card" data-act="ev-toggle" data-id="'+esc(eid)+'">'
+        +'<div class="ev-card-head">'
+          +'<span class="ev-id">'+esc(eid)+'</span>'
+          +'<span class="ev-type-tag '+ti.label+'">'+ti.label+'</span>'
+          +'<span class="ev-title">'+esc(e.title||e.标题||'——')+'</span>'
+          +(ti.diceMod>0?'<span class="ev-mod">骰+'+ti.diceMod+'</span>':'')
+        +'</div>'
+        +'<div class="ev-cred"><div class="ev-cred-head"><span>可信度</span><span>'+cred+'/100</span></div><div class="ev-cred-bar"><div class="ev-cred-fill '+credBarClass(cred)+'" style="width:'+pct(cred,100)+'%"></div></div></div>'
+        +detail
+      +'</div>';
+    });
+    list+='</div>';
+  }else{
+    list='<div class="ev-empty">暂无可用证据</div>';
+  }
+  return '<div class="np-section"><div class="np-section-title">证据系统</div>'
+    +'<div class="ev-stats"><span class="ev-stat">总数：<span class="ev-stat-v">'+total+'</span></span><span class="ev-stat unused">未用：<span class="ev-stat-v">'+unusedCount+'</span></span><span class="ev-stat used">已用：<span class="ev-stat-v">'+usedCount+'</span></span></div>'
+    +'<div class="conscience-box"><div class="conscience-head"><span>对手良知值</span><span class="con-tier '+conTier+'">'+conTier+' '+conscience+'/100</span></div><div class="conscience-bar"><div class="conscience-fill '+conTier+'" style="width:'+pct(conscience,100)+'%"></div></div></div>'
+    +list
+  +'</div>';
+}
+function renderStrategy(nego){
+  var us=nego.user交涉策略||'',os=nego.对手交涉策略||'';
+  var cur='';
+  if(us||os){
+    cur='<div class="strat-current">';
+    if(us)cur+='<span class="strat-current-item user"><span class="sc-label">{{user}}</span><span class="sc-val">'+esc(us)+'</span></span>';
+    if(os)cur+='<span class="strat-current-item opp"><span class="sc-label">对手</span><span class="sc-val">'+esc(os)+'</span></span>';
+    cur+='</div>';
+  }
+  var items='';
+  STRATEGY_LIST.forEach(function(s){
+    var active=(us===s.name||os===s.name)?' active':'';
+    items+='<div class="strat-item'+active+'"><div class="strat-item-name">'+s.name+'</div><div class="strat-item-mod">'+esc(s.mod)+'</div><div class="strat-item-note">'+esc(s.note)+'</div></div>';
+  });
+  return '<div class="np-section"><div class="np-section-title">策略</div>'+cur+'<div class="strat-list">'+items+'</div></div>';
+}
+function renderHistory(){
+  var log=getHistory();
+  var list;
+  if(log.length){
+    list='<div class="hist-list">';
+    log.forEach(function(h){
+      var hid=h.log_id||h.row_id;
+      var idText=h.log_id||('N'+String(h.row_id||0).padStart(4,'0'));
+      var detail='';
+      if(State.expandedHistId===hid&&(h.detail||h.详情||h.system_effect||h.系统影响)){
+        detail='<div class="hist-detail">';
+        if(h.detail||h.详情)detail+='<div>'+esc(h.detail||h.详情)+'</div>';
+        if(h.system_effect||h.系统影响)detail+='<div style="margin-top:2px;color:var(--c-orange)">系统影响：'+esc(h.system_effect||h.系统影响)+'</div>';
+        if(h.time_span||h.时间跨度)detail+='<div style="margin-top:2px;font-size:9px">'+esc(h.time_span||h.时间跨度)+'</div>';
+        detail+='</div>';
+      }
+      list+='<div class="hist-item" data-act="hist-toggle" data-id="'+esc(hid)+'">'
+        +'<div class="hist-head"><span class="hist-id">'+esc(idText)+'</span><span class="hist-target">'+esc(h.target_name||h.对象名称||'——')+'</span><span class="hist-outcome '+outcomeClass(h.outcome)+'">'+esc(h.outcome||'未决')+'</span></div>'
+        +'<div class="hist-summary">'+esc(h.summary||h.概览||'——')+'</div>'
+        +detail
+      +'</div>';
+    });
+    list+='</div>';
+  }else{
+    list='<div class="hist-empty">暂无历史记录</div>';
+  }
+  return '<div class="np-section"><div class="np-section-title">交涉历史（最近5轮）</div>'+list+'</div>';
+}
+function renderEnded(nego){
+  var j=judgmentInfo(nego.上轮判定,nego.上轮user骰,nego.上轮对手骰);
+  return '<div class="ended-box"><div class="ended-title">◆ 交涉已结束</div>'
+    +'<div class="ended-row"><span class="er-label">骰值</span><span class="er-val"><span style="color:var(--c-user-light)">'+(num(nego.上轮user骰,0))+'</span> VS <span style="color:var(--c-opp-light)">'+(num(nego.上轮对手骰,0))+'</span></span></div>'
+    +'<div class="ended-row"><span class="er-label">判定</span><span class="judgment-tag '+j.tier+'">'+j.tier+'</span></div>'
+    +'<div class="ended-row"><span class="er-label">共识分</span><span class="er-val"><span style="color:var(--c-user-light)">'+(num(nego.user共识分,0))+'</span> / <span style="color:var(--c-opp-light)">'+(num(nego.对手共识分,0))+'</span></span></div>'
+  +'</div>';
+}
+
+/* ============================================================
+ * 主渲染
+ * ============================================================ */
+function render(){
+  var loadingEl=document.getElementById('np-loading');
+  var bodyEl=document.getElementById('np-body');
+  if(!bodyEl)return;
+  if(State.loading){
+    loadingEl.style.display='';
+    bodyEl.style.display='none';
+    return;
+  }
+  loadingEl.style.display='none';
+  bodyEl.style.display='';
+
+  var mode=getPanelMode();
+  var nego=getNego();
+  var html='';
+  if(mode==='empty'){
+    html='<div class="empty-state"><span class="empty-text">◇ 当前无交涉进行</span></div>';
+  }else if(mode==='ended'){
+    var endedNego=State.lastNegoState||nego;
+    html='<div class="fade-out">'+renderHeader(endedNego)+renderEnded(endedNego)+'</div>';
+  }else{
+    html=renderHeader(nego)+renderStats(nego)+renderDice(nego)+renderConsensus(nego)+renderEvidence()+renderStrategy(nego)+renderHistory();
+  }
+  bodyEl.innerHTML=html;
+}
+
+/* ============================================================
+ * 双源 refresh
+ * ============================================================ */
+function refresh(){
+  if(State._refreshing)return;
+  State._refreshing=true;
+  State.refreshing=true;
+  render();
+  (async function(){
+    try{
+      var Mvu=await waitFor('Mvu',15000);
+      if(Mvu&&typeof Mvu.getMvuData==='function'){
+        var d=Mvu.getMvuData({type:'message',message_id:'latest'});
+        State.mvu=(d&&d.stat_data)?d.stat_data:(d||{});
+      }
+    }catch(e){console.warn('[交涉面板] MVU同步超时',e)}
+    try{
+      var api=await waitFor('AutoCardUpdaterAPI',15000);
+      if(api&&typeof api.exportTableAsJson==='function'){
+        State.spv=await api.exportTableAsJson()||{};
+      }
+    }catch(e){console.warn('[交涉面板] SPV同步超时',e)}
+    /* 无论数据源是否就绪，都解除加载态（渲染真实UI/空态，不再永久加载中） */
+    State.loading=false;
+
+    /* 交涉结束态检测（原 watch 逻辑） */
+    var active=isNegoActive();
+    if(State.lastNegoActive&&!active){
+      State.lastNegoState=JSON.parse(JSON.stringify(getNego()));
+      State.showEndedSummary=true;
+      if(State._endedTimer)clearTimeout(State._endedTimer);
+      State._endedTimer=setTimeout(function(){State.showEndedSummary=false;render()},5000);
+    }else if(!State.lastNegoActive&&active){
+      State.showEndedSummary=false;
+      if(State._endedTimer){clearTimeout(State._endedTimer);State._endedTimer=null}
+    }
+    State.lastNegoActive=active;
+
+    State._refreshing=false;
+    State.refreshing=false;
+    render();
+  })();
+}
+
+/* ============================================================
+ * 事件委托 + 初始化
+ * ============================================================ */
+function bindEvents(){
+  var root=document.getElementById('np-root');
+  root.addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(!t)return;
+    var act=t.getAttribute('data-act');
+    if(act==='refresh'){refresh()}
+    else if(act==='ev-toggle'){var id=t.getAttribute('data-id');State.expandedEvId=(State.expandedEvId===id)?null:id;render()}
+    else if(act==='hist-toggle'){var hid=t.getAttribute('data-id');State.expandedHistId=(State.expandedHistId===hid)?null:hid;render()}
+  });
+}
+
+(function init(){
+  bindEvents();
+  var autoRefresh=function(){setTimeout(refresh,800)};
+  try{
+    if(typeof eventOn==='function'){
+      eventOn('GENERATION_ENDED',autoRefresh);
+      eventOn('MESSAGE_EDITED',autoRefresh);
+    }
+  }catch(e){}
+  window.addEventListener('message',function(e){
+    try{
+      var t=(e.data&&e.data.type)||e.data||'';
+      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0))autoRefresh();
+    }catch(x){}
+  });
+  refresh();
+})();
+</script>
+</body>
+</html>
+```

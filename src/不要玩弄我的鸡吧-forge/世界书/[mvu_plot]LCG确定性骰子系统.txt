@@ -1,0 +1,409 @@
+@@generate_before
+<%_
+// ===== LCG 确定性骰子系统 =====
+// 统一为 NR LCG 参数 + 嵌套乘法种子 + EJS 预判定输出
+// 参考：同级生2 LCG骰子引擎、环世界 DDL确定性骰子引擎
+// 核心改进：从"AI心算"改为"EJS预roll输出结果"，确保确定性可执行
+//
+// ===== 确定性算法说明（DDL类确定性判定）=====
+// 本系统采用 NR LCG（Numerical Recipes Linear Congruential Generator）算法
+// 参数：a=1664525, c=1013904223, m=2^32
+// 种子公式：((((day×7 + hour×13)×7919 + id)×11 + stage)×17 + extra)×31
+// 判定制式：D100（百分比制，0-100），比传统D20（1-20）精度高5倍
+//   - D20制：每档5%精度，临界值跳变明显
+//   - D100制：每档1%精度，概率过渡平滑，更适配本项目多技能联动判定
+// 确定性保证：相同(day,hour,id,stage,extra) → 相同判定结果 → 可复现
+// 与同级生2 DDL一致性：同为NR LCG + 嵌套乘法种子 + D100制，确保确定性判定
+// 属性技能联动：判定阈值由 stat_data.技能.*.等级 和 stat_data.女性角色.*.能力 动态计算
+//   - 冥想/意志/洞察/伪装/锻炼/恢复 6项技能等级直接影响对应判定阈值
+//   - 持有者学业压力/考试倒计时等环境因素修正概率
+//   - 难度系数（普通/困难/地狱）修正基础概率
+
+// ===== 读取全局状态（带守卫，跨文件共享变量）=====
+if (typeof day === 'undefined') var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+if (typeof hour === 'undefined') var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+if (typeof stage === 'undefined') var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+if (typeof totalUses === 'undefined') var totalUses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+if (typeof todayUses === 'undefined') var todayUses = Number(getvar('stat_data.使用阶段.今日使用', {scope:'local', defaults:0})) || 0;
+if (typeof suspicion === 'undefined') var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+if (typeof difficulty === 'undefined') var difficulty = getvar('stat_data.状态.难度', {scope:'local', defaults:'困难'}) || '困难';
+if (typeof holderId === 'undefined') var holderId = getvar('stat_data.隐藏层.持有者ID', {scope:'local', defaults:'林婉清'}) || '林婉清';
+if (typeof activeUsersCount === 'undefined') var activeUsersCount = Number(getvar('stat_data.隐藏层.活跃使用人数', {scope:'local', defaults:0})) || 0;
+if (typeof diffIdx === 'undefined') var diffIdx = difficulty === '普通' ? 0 : difficulty === '地狱' ? 2 : 1;
+
+// 持有者ID 存的是中文姓名，需遍历 女性角色 反查 UID
+if (typeof holderUid === 'undefined') var holderUid = '';
+if (holderUid === '') {
+  try {
+    var _allFem = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+    for (var _uid in _allFem) {
+      if (_allFem.hasOwnProperty(_uid) && _allFem[_uid] && _allFem[_uid].基础 && _allFem[_uid].基础.姓名 === holderId) {
+        holderUid = _uid;
+        break;
+      }
+    }
+  } catch(e) {}
+}
+
+// ===== LCG 引擎函数（本条目本地定义，因 getwi 隔离作用域无法跨条目共享）=====
+// 参数：a=1664525, c=1013904223, m=2^32 (Numerical Recipes LCG)
+// 种子公式：((((day*7 + hour*13)*7919 + id)*11 + stage)*17 + extra)*31
+// 注：全局规则总表.txt 中也有相同定义（带守卫），但 getwi 调用隔离作用域，本条目必须本地定义
+if (typeof LCG_A === 'undefined') var LCG_A = 1664525;
+if (typeof LCG_C === 'undefined') var LCG_C = 1013904223;
+if (typeof LCG_M === 'undefined') var LCG_M = 4294967296;
+if (typeof _lcgNext === 'undefined') var _lcgNext = function(seed) {
+  return ((seed >>> 0) * LCG_A + LCG_C) >>> 0;
+};
+if (typeof _lcgDouble === 'undefined') var _lcgDouble = function(seed) {
+  return _lcgNext(seed) / LCG_M;
+};
+if (typeof _makeSeed === 'undefined') var _makeSeed = function(id, extra, day, hour, stage) {
+  var d = (typeof day !== 'undefined') ? day : Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+  var h = (typeof hour !== 'undefined') ? hour : Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+  var s = (typeof stage !== 'undefined') ? stage : Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+  var e = extra || 0;
+  return (((((d * 7 + h * 13) * 7919 + id) * 11 + s) * 17 + e) * 31) >>> 0;
+};
+// 5档百分比判定（修复版，tier无重复赋值，含"极难成功"/"困难成功"）
+if (typeof _percentRoll === 'undefined') var _percentRoll = function(probability, seed) {
+  var val = _lcgDouble(seed);
+  var success = val < (probability / 100);
+  var tier;
+  if (val < 0.05) tier = '大成功';
+  else if (val < probability / 500) tier = '极难成功';
+  else if (val < probability / 200) tier = '困难成功';
+  else if (success) tier = '成功';
+  else if (val > 0.95) tier = '大失败';
+  else tier = '失败';
+  return { success: success, value: val, tier: tier, dice: Math.round(val * 100) };
+};
+
+// CoC 风格 5 档判定（参考环世界 DDL）：threshold 为 0-100 属性值
+// 本函数仅本条目使用，加守卫避免重复声明
+if (typeof _check === 'undefined') var _check = function(threshold, seed, difficultyLabel) {
+  var val = _lcgDouble(seed) * 100;
+  var t = Number(threshold) || 0;
+  var diff = difficultyLabel || '普通';
+  var effT = diff === '困难' ? t / 2 : diff === '极难' ? t / 5 : t;
+  var result;
+  if (val <= 5) result = '大成功';
+  else if (val <= effT / 5) result = '极难成功';
+  else if (val <= effT / 2) result = '困难成功';
+  else if (val <= effT) result = '普通成功';
+  else if (val >= 96) result = '大失败';
+  else result = '失败';
+  return { result: result, roll: Math.round(val), threshold: effT, success: result.indexOf('成功') >= 0 };
+};
+
+// ===== 预判定：今日关键事件 =====
+
+// 1. 持有者今日使用判定
+var holderSeed = _makeSeed(1, 100);
+var holderProb = 30; // 基础概率30%
+if (diffIdx === 0) holderProb = 21; // 普通难度低频
+if (diffIdx === 2) holderProb = 39; // 地狱难度高频
+holderProb = holderProb + stage * 5; // 阶段越高越频繁
+// P1-12: 学业压力联动 — 压力越大越倾向使用（缓解焦虑）
+// 持有者学业压力每高出基准50点 → 使用概率+1%；每低于50点 → -1%
+var holderAcademicPressure = Number(getvar('stat_data.女性角色.' + holderUid + '.多维状态.学业压力', {scope:'local', defaults:50})) || 50;
+holderProb = holderProb + Math.round((holderAcademicPressure - 50) * 0.1);
+// 考试季节加成（考前30天压力骤增）
+if (Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) <= 30) {
+  holderProb = holderProb + 5;
+}
+holderProb = Math.max(5, Math.min(95, holderProb)); // 钳制到 5%-95%
+var holderUseRoll = _percentRoll(holderProb, holderSeed);
+
+// 2. 传播判定（如果持有者使用且 activeUsersCount < 25）
+var propSeed = _makeSeed(2, 200);
+var propProb = 20; // 基础传播概率20%
+if (diffIdx === 0) propProb = 14;
+if (diffIdx === 2) propProb = 26;
+propProb = propProb + stage * 8; // 阶段越高传播越快
+var propRoll = _percentRoll(propProb, propSeed);
+
+// 3. 疑心度抵抗判定（user 是否察觉异常）
+var suspSeed = _makeSeed(3, 300);
+if (typeof disguiseLv === 'undefined') var disguiseLv = Number(getvar('stat_data.技能.伪装.等级', {scope:'local', defaults:1})) || 1;
+if (typeof insightLv === 'undefined') var insightLv = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var resistThreshold = (disguiseLv * 5 + insightLv * 3); // 抵抗阈值
+var suspRoll = _check(resistThreshold, suspSeed, '普通');
+
+// 4. 女性技能升级判定已迁移至 [mvu_plot]女性使用触发器脚本.txt EJS 自动执行
+// 统一升级阈值公式：max(10, 当前等级 × 10)，避免双写漂移
+// 此处保留 slot 4 仅作 LCG 种子占位，不再独立判定技能升级
+var skillSeed = _makeSeed(4, 400);
+var skillRoll = null; // 已废弃，由女性使用触发器 EJS 闭包驱动
+
+// 5. 终局分支倾向判定（仅 stage>=4 时）
+var endingRoll = null;
+if (stage >= 4) {
+  var endingSeed = _makeSeed(5, 500);
+  var endingVal = _lcgDouble(endingSeed);
+  endingRoll = { value: endingVal, dice: Math.round(endingVal * 100) };
+}
+
+// ===== P2-18: RPG 系统判定（LCG骰子落地到RPG）=====
+// 6. 制造配方成功判定
+var craftSeed = _makeSeed(6, 600);
+var craftLv = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var craftThreshold = 30 + craftLv * 2; // 制造成功率：基础30% + 洞察等级×2%
+if (craftThreshold > 90) craftThreshold = 90;
+var craftRoll = _percentRoll(craftThreshold, craftSeed);
+
+// 7. 探索遭遇判定（雷达.信号 检测异常信号）
+var exploreSeed = _makeSeed(7, 700);
+var radarSys = getvar('stat_data.雷达.信号', {scope:'local', defaults:[]}) || [];
+var exploreThreshold = 25 + stage * 5 + (radarSys.length > 0 ? 10 : 0); // 探索遭遇率：基础25% + 阶段×5% + 雷达+10%
+if (exploreThreshold > 85) exploreThreshold = 85;
+var exploreRoll = _percentRoll(exploreThreshold, exploreSeed);
+
+// 8. 资产品质判定（商店商品 刷新品质）
+var qualitySeed = _makeSeed(8, 800);
+var qualityVal = _lcgDouble(qualitySeed);
+var shopQualityTier;
+if (qualityVal < 0.50) shopQualityTier = 'common';      // 50% 普通
+else if (qualityVal < 0.80) shopQualityTier = 'rare';    // 30% 稀有
+else if (qualityVal < 0.95) shopQualityTier = 'epic';    // 15% 史诗
+else shopQualityTier = 'legendary';                       // 5% 传说
+
+// 9. 载具机动判定（避险成功率）
+var vehicleSeed = _makeSeed(9, 900);
+var vehicles = getvar('stat_data.载具', {scope:'local', defaults:[]}) || [];
+var vehicleThreshold = vehicles.length > 0 ? 60 : 20; // 有载具60%避险，无载具20%
+var vehicleRoll = _percentRoll(vehicleThreshold, vehicleSeed);
+
+// 10. 居所安全事件判定
+var residenceSeed = _makeSeed(10, 1000);
+var residences = getvar('stat_data.居所', {scope:'local', defaults:[]}) || [];
+var residenceSafety = residences.length > 0 ? Number(residences[0].安全等级 || 50) : 50;
+var residenceEventThreshold = 100 - residenceSafety; // 安全度越高事件越少
+var residenceRoll = _percentRoll(residenceEventThreshold, residenceSeed);
+
+// ===== P2-19: 玩家主动行为预判定（每轮为常见玩家行为预生成骰子结果）=====
+// 所有玩家主动行为必须走LCG判定，AI读取下方结果决定成败
+if (typeof meditationLv === 'undefined') var meditationLv = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+if (typeof exerciseLv === 'undefined') var exerciseLv = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var willpowerLv2 = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+
+// 11. 冥想感知判定（感知使用者）
+var medSeed = _makeSeed(11, 1100);
+var medThreshold = meditationLv * 2; // 冥想等级×2%
+if (medThreshold > 90) medThreshold = 90;
+var medRoll = _percentRoll(medThreshold, medSeed);
+
+// 12. 洞察观察判定（发现异常线索）
+var obsSeed = _makeSeed(12, 1200);
+var obsThreshold = 20 + insightLv * 3; // 基础20% + 洞察×3%
+if (obsThreshold > 85) obsThreshold = 85;
+var obsRoll = _percentRoll(obsThreshold, obsSeed);
+
+// 13. 伪装隐藏判定（隐藏知情状态）
+var hideSeed = _makeSeed(13, 1300);
+var hideThreshold = 30 + disguiseLv * 3; // 基础30% + 伪装×3%
+if (hideThreshold > 90) hideThreshold = 90;
+var hideRoll = _percentRoll(hideThreshold, hideSeed);
+
+// 14. 意志抵抗判定（抵抗精神侵蚀/被动射精）
+var willSeed = _makeSeed(14, 1400);
+var willThreshold = 20 + willpowerLv2 * 3; // 基础20% + 意志×3%
+if (willThreshold > 90) willThreshold = 90;
+var willRoll = _percentRoll(willThreshold, willSeed);
+
+// 15. 锻炼/恢复判定（训练成效）
+var trainSeed = _makeSeed(15, 1500);
+var trainThreshold = 40 + exerciseLv * 2; // 基础40% + 锻炼×2%
+if (trainThreshold > 90) trainThreshold = 90;
+var trainRoll = _percentRoll(trainThreshold, trainSeed);
+
+// 16. 社交互动判定（好感度提升/信息获取）
+var socialSeed = _makeSeed(16, 1600);
+var socialThreshold = 35 + insightLv * 2; // 基础35% + 洞察×2%
+if (socialThreshold > 85) socialThreshold = 85;
+var socialRoll = _percentRoll(socialThreshold, socialSeed);
+
+// 17. 调查行为判定（搜查物品/跟踪）
+var invSeed = _makeSeed(17, 1700);
+var invThreshold = 15 + insightLv * 3 + (suspicion >= 60 ? 15 : 0); // 基础15% + 洞察×3% + 疑心≥60加成15%
+if (invThreshold > 80) invThreshold = 80;
+var invRoll = _percentRoll(invThreshold, invSeed);
+
+// ===== 辅助：当前时段（9时段制，与时间轴系统一致）=====
+var timeSlot;
+if (hour >= 5 && hour < 7) timeSlot = '早晨';
+else if (hour >= 7 && hour < 8) timeSlot = '晨读';
+else if (hour >= 8 && hour < 12) timeSlot = '上午';
+else if (hour >= 12 && hour < 14) timeSlot = '中午';
+else if (hour >= 14 && hour < 17) timeSlot = '下午';
+else if (hour >= 17 && hour < 19) timeSlot = '傍晚';
+else if (hour >= 19 && hour < 22) timeSlot = '晚自习';
+else if (hour >= 22 || hour < 2) timeSlot = '夜里';
+else timeSlot = '半夜';
+_%>
+<dice_precheck>
+【LCG确定性骰子预判定 - AI内部参考，严禁在正文中提及骰值/种子/概率数值】
+
+---
+■ 本轮锚点
+---
+游戏日：第 <%= day %> 天
+时段：<%= timeSlot %>（hour=<%= hour %>）
+使用阶段：<%= stage %>/5
+难度：<%= difficulty %>（系数索引=<%= diffIdx %>）
+总使用次数：<%= totalUses %>
+今日使用次数：<%= todayUses %>
+当前疑心度：<%= suspicion %>/200
+当前持有者：<%= holderId %>
+活跃使用者：<%= activeUsersCount %> 人
+
+---
+■ 预判定结果（AI 必须遵守，不得自行心算覆盖）
+---
+
+【1. 持有者今日使用判定】
+  种子锚：id=1, extra=100
+  成功率：<%= holderProb %>%（基础30% + 阶段<%= stage %>×5% + 难度修正 + 学业压力修正 + 考试季节加成）
+  学业压力修正：<%= Math.round((holderAcademicPressure - 50) * 0.1) %>%（持有者压力=<%= holderAcademicPressure %>，基准50）
+  骰值：<%= holderUseRoll.dice %>/100
+  结果：<%= holderUseRoll.tier %> → <%= holderUseRoll.success ? '今日持有者将使用' : '今日持有者不使用' %>
+  叙事转化：<%= holderUseRoll.success ? '今晚某时，假阴茎将被取用（{{user}}在睡梦中可能有模糊感知，按阶段限制）' : '今日假阴茎未被使用，{{user}}无任何异常感受' %>
+
+【2. 传播链扩散判定】（仅当持有者使用且未达上限时生效）
+  种子锚：id=2, extra=200
+  成功率：<%= propProb %>%（基础20% + 阶段<%= stage %>×8% + 难度修正）
+  骰值：<%= propRoll.dice %>/100
+  结果：<%= propRoll.tier %> → <%= propRoll.success ? '传播链将扩展（新增1名使用者）' : '传播链不扩展' %>
+  叙事转化：传播是AI不可见的后台事件，{{user}}完全不知道。新使用者的身份由 传播.倾向 和关系图谱决定。
+
+【3. 疑心度抵抗判定】（{{user}}是否察觉异常）
+  种子锚：id=3, extra=300
+  抵抗阈值：<%= resistThreshold %>（伪装Lv<%= disguiseLv %>×5 + 洞察Lv<%= insightLv %>×3）
+  骰值：<%= suspRoll.roll %>/100
+  结果：<%= suspRoll.result %> → <%= suspRoll.success ? '疑心度增长被抑制（{{user}}今天觉得还好）' : '疑心度正常增长（{{user}}今天觉得更累了）' %>
+
+【4. 持有者技能升级判定】
+  种子锚：id=4, extra=400
+  ※ 本判定已迁移至 [mvu_plot]女性使用触发器脚本.txt EJS 自动执行
+  ※ 升级阈值公式：max(10, 当前等级 × 10)
+  ※ 此处仅保留 LCG 种子占位，不再独立输出判定结果
+  ※ 技能升级由女性使用触发器 EJS 闭包驱动，AI 无需手动计算
+
+【6. RPG-制造配方成功判定】
+  种子锚：id=6, extra=600
+  成功率：<%= craftThreshold %>%（基础30% + 洞察Lv<%= craftLv %>×2%）
+  骰值：<%= craftRoll.dice %>/100
+  结果：<%= craftRoll.tier %> → <%= craftRoll.success ? '制造成功（产出成品，可消耗以降低假阴茎精力消耗）' : '制造失败（材料损耗，无产出）' %>
+
+【7. RPG-探索遭遇判定】
+  种子锚：id=7, extra=700
+  遭遇率：<%= exploreThreshold %>%（基础25% + 阶段<%= stage %>×5% + 雷达<%= radarSys.length > 0 ? '+10%' : '+0%' %>）
+  骰值：<%= exploreRoll.dice %>/100
+  结果：<%= exploreRoll.tier %> → <%= exploreRoll.success ? '遭遇事件（可能发现新道具/新线索/新NPC）' : '无遭遇（平稳探索）' %>
+
+【8. RPG-资产品质判定】
+  种子锚：id=8, extra=800
+  骰值：<%= Math.round(qualityVal * 100) %>/100
+  结果：<%= shopQualityTier %> → <%= shopQualityTier === 'legendary' ? '传说品质（极稀有，强力加成）' : shopQualityTier === 'epic' ? '史诗品质（稀有，显著加成）' : shopQualityTier === 'rare' ? '稀有品质（中等加成）' : '普通品质（基础属性）' %>
+
+【9. RPG-载具机动判定】
+  种子锚：id=9, extra=900
+  避险率：<%= vehicleThreshold %>%（<%= vehicles.length > 0 ? '持有载具60%' : '无载具20%' %>）
+  骰值：<%= vehicleRoll.dice %>/100
+  结果：<%= vehicleRoll.tier %> → <%= vehicleRoll.success ? '机动避险成功（可快速撤离危险场景，降低精力消耗）' : '机动失败（被困现场，消耗增加）' %>
+
+【10. RPG-居所安全事件判定】
+  种子锚：id=10, extra=1000
+  事件率：<%= residenceEventThreshold %>%（居所安全度=<%= residenceSafety %>)
+  骰值：<%= residenceRoll.dice %>/100
+  结果：<%= residenceRoll.tier %> → <%= residenceRoll.success ? '发生安全事件（被窥视/被闯入/被排查，疑心度上升）' : '居所平安（无异常）' %>
+
+---
+■ 玩家主动行为预判定（所有玩家行为必须走LCG判定，AI读取结果决定成败）
+---
+【11. 冥想感知判定】（玩家"感知使用者"指令）
+  成功率：<%= medThreshold %>%（冥想Lv.<%= meditationLv %>×2%）
+  骰值：<%= medRoll.dice %>/100
+  结果：<%= medRoll.tier %> → <%= medRoll.success ? '感知成功（获得模糊感受：时段/强度）' : '感知失败（只有一片模糊）' %>
+
+【12. 洞察观察判定】（玩家"观察异常""发现线索"指令）
+  成功率：<%= obsThreshold %>%（基础20% + 洞察Lv.<%= insightLv %>×3%）
+  骰值：<%= obsRoll.dice %>/100
+  结果：<%= obsRoll.tier %> → <%= obsRoll.success ? '观察成功（发现异常线索）' : '观察失败（未注意到异常）' %>
+
+【13. 伪装隐藏判定】（玩家"装作不知道""隐藏知情"指令）
+  成功率：<%= hideThreshold %>%（基础30% + 伪装Lv.<%= disguiseLv %>×3%）
+  骰值：<%= hideRoll.dice %>/100
+  结果：<%= hideRoll.tier %> → <%= hideRoll.success ? '伪装成功（成功隐藏知情状态）' : '伪装失败（表情/行为泄露情绪）' %>
+
+【14. 意志抵抗判定】（玩家"抵抗""延迟射精""拒绝接受"指令）
+  成功率：<%= willThreshold %>%（基础20% + 意志Lv.<%= willpowerLv2 %>×3%）
+  骰值：<%= willRoll.dice %>/100
+  结果：<%= willRoll.tier %> → <%= willRoll.success ? '抵抗成功（延迟10-30秒或拒绝接受）' : '抵抗失败（无法控制，被动承受）' %>
+
+【15. 锻炼/恢复判定】（玩家"锻炼""训练""恢复"指令）
+  成功率：<%= trainThreshold %>%（基础40% + 锻炼Lv.<%= exerciseLv %>×2%）
+  骰值：<%= trainRoll.dice %>/100
+  结果：<%= trainRoll.tier %> → <%= trainRoll.success ? '训练成效显著（经验+2）' : '训练成效一般（经验+1）' %>
+
+【16. 社交互动判定】（玩家"交谈""社交""套话"指令）
+  成功率：<%= socialThreshold %>%（基础35% + 洞察Lv.<%= insightLv %>×2%）
+  骰值：<%= socialRoll.dice %>/100
+  结果：<%= socialRoll.tier %> → <%= socialRoll.success ? '社交成功（好感+2/获得信息）' : '社交平淡（无显著进展）' %>
+
+【17. 调查行为判定】（玩家"搜查""跟踪""调查"指令）
+  成功率：<%= invThreshold %>%（基础15% + 洞察Lv.<%= insightLv %>×3% <%= suspicion >= 60 ? '+ 疑心≥60加成15%' : '' %>）
+  骰值：<%= invRoll.dice %>/100
+  结果：<%= invRoll.tier %> → <%= invRoll.success ? '调查成功（获得关键线索）' : '调查失败（未发现有价值信息）' %>
+
+★ 玩家行为判定铁律：
+  1. 所有玩家主动行为必须对应上方预判定结果，不得跳过骰子直接判定成功
+  2. 玩家指令不在这7类预判定内时，AI应根据最接近的类型使用对应骰子结果
+  3. 不得在正文中提及"骰值""骰子""LCG"等元术语，将结果转化为自然叙事
+  4. 判定失败时不得硬性拒绝，应通过叙事表现失败后果（如"你试图感知，但只有模糊感受"）
+
+<%_ if (endingRoll) { _%>
+【5. 终局分支倾向判定】（阶段>=4 触发）
+  种子锚：id=5, extra=500
+  骰值：<%= endingRoll.dice %>/100
+  倾向区间：
+    0-25: 反向掌控（{{user}}试图反向利用假阴茎连接）
+    26-50: 谈判交易（{{user}}与持有者/使用者网络谈判）
+    51-75: 彻底摧毁（{{user}}试图摧毁假阴茎）
+    76-100: 接受命运（{{user}}接受被共享的现实）
+  当前倾向：<%= endingRoll.dice <= 25 ? '反向掌控' : endingRoll.dice <= 50 ? '谈判交易' : endingRoll.dice <= 75 ? '彻底摧毁' : '接受命运' %>
+  注意：此为倾向参考，非强制。具体分支由 {{user}} 主动行动 + 疑心度决定。
+<%_ } _%>
+
+---
+■ LCG 算法说明（AI 不需要计算，只需读取上方结果）
+---
+参数：NR LCG (a=1664525, c=1013904223, m=2^32)
+种子：((((day×7 + hour×13)×7919 + id)×11 + stage)×17 + extra)×31
+特性：相同 day/hour/id/stage/extra → 相同结果 → 确定性可复现
+
+---
+■ AI 执行铁律
+---
+1. 上方预判定结果为最终结果，AI 不得自行心算 LCG 覆盖
+2. 不得在正文中输出"骰值""种子""概率""LCG""roll"等元术语
+3. 将判定结果转化为自然叙事：
+   - 持有者使用成功 → 按阶段感知限制描写 {{user}} 的感受
+   - 疑心度抵抗成功 → {{user}} 觉得"还好""可能只是压力大"
+   - 疑心度抵抗失败 → {{user}} 觉得"今天特别累""腰酸得厉害"
+4. 传播判定成功时，在 <UpdateTable> 块 INSERT 传播链 一行
+5. 技能升级由 [mvu_plot]女性使用触发器脚本.txt EJS 自动执行，AI 无需手动 patch
+6. 终局分支倾向仅为参考，不强制触发——需 {{user}} 主动行动 + 疑心度达标
+
+---
+■ 检定建议 表配合（每轮 AI 写入5条检定建议）
+---
+AI 每轮回复时，应在 <UpdateTable> 块中 INSERT/UPDATE 检定建议 表（最多5行）：
+  - row_id=1: 当前最紧迫的检定建议（如"尝试观察同学异常"）
+  - row_id=2: 次要检定建议（如"去校医室检查身体"）
+  - row_id=3: 长期检定建议（如"记录精力变化规律"）
+  - row_id=4: 风险检定建议（如"跟随某人查证"）
+  - row_id=5: 特殊检定建议（如"搜查个人物品"）
+每条含 显示文本（中文描述）和 骰子命令（骰子指令，如"check(insight, 50)"）
+检定建议必须符合当前疑心度阶段（参考 [阶段感知控制器] 的调查行为合法性）
+</dice_precheck>

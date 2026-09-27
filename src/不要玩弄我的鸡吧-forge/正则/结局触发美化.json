@@ -1,0 +1,15 @@
+{
+  "id": "fjb-ending-beautify",
+  "scriptName": "结局触发美化",
+  "findRegex": "/<Ending\\s+name=\"([^\"]+)\"\\s+desc=\"([^\"]+)\"\\/>/g",
+  "replaceString": "<div class=\"fjb-ending\"><div class=\"fjb-ending-banner\">END</div><div class=\"fjb-ending-body\"><div class=\"fjb-ending-name\">$1</div><div class=\"fjb-ending-desc\">$2</div></div><div class=\"fjb-ending-glow\"></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

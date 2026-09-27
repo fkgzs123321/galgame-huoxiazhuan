@@ -1,0 +1,138 @@
+﻿============================================================================
+### Mortal.Core.SubMissionsData :: Sort   RVA=23214
+  IL_5AAF  ldarg.0       
+  IL_5AB0  call          ?::Resort
+  IL_5AB5  ret           
+============================================================================
+### Mortal.Core.SubMissionsData :: Get   RVA=23224
+  IL_5AC4  newobj        .<>c__DisplayClass42_0::.ctor
+  IL_5AC9  stloc.0       
+  IL_5ACA  ldloc.0       
+  IL_5ACB  ldarg.1       
+  IL_5ACC  stfld         FIELD name
+  IL_5AD1  ldarg.0       
+  IL_5AD2  ldfld         ?::_list
+  IL_5AD7  ldloc.0       
+  IL_5AD8  ldftn         .<>c__DisplayClass1_0::<Get>b__0
+  IL_5ADE  newobj        ?::.ctor
+  IL_5AE3  call          METHODSPEC#30
+  IL_5AE8  dup           
+  IL_5AE9  ldnull        
+  IL_5AEA  call          Object::op_Equality
+  IL_5AEF  brfalse.s     23302
+  IL_5AF1  ldstr         "未定義任務 "
+  IL_5AF6  ldloc.0       
+  IL_5AF7  ldfld         FIELD name
+  IL_5AFC  call          String::Concat
+  IL_5B01  call          Debug::LogWarning
+  IL_5B06  ret           
+============================================================================
+### Mortal.Core.SubMissionsData :: SetKey   RVA=23304
+  IL_5B14  ldarg.0       
+  IL_5B15  ldarg.1       
+  IL_5B16  call          Mortal.Core.SubMissionsData::Get
+  IL_5B1B  stloc.0       
+  IL_5B1C  ldloc.0       
+  IL_5B1D  ldnull        
+  IL_5B1E  call          Object::op_Inequality
+  IL_5B23  brfalse.s     23340
+  IL_5B25  ldloc.0       
+  IL_5B26  ldarg.2       
+  IL_5B27  callvirt      Mortal.Core.MissionData::SetCurrentKey
+  IL_5B2C  ret           
+============================================================================
+### Mortal.Core.SubMissionsData :: GetActiveMissions   RVA=23344
+  IL_5B3C  newobj        ?::.ctor
+  IL_5B41  stloc.0       
+  IL_5B42  ldarg.0       
+  IL_5B43  ldfld         ?::_list
+  IL_5B48  callvirt      ?::GetEnumerator
+  IL_5B4D  stloc.1       
+  IL_5B4E  br            23533
+  IL_5B53  newobj        .<>c__DisplayClass1_0::.ctor
+  IL_5B58  stloc.2       
+  IL_5B59  ldloc.2       
+  IL_5B5A  ldloca.s      local(0x0001)
+  IL_5B5C  call          ?::get_Current
+  IL_5B61  stfld         FIELD mission
+  IL_5B66  ldloc.2       
+  IL_5B67  ldfld         FIELD mission
+  IL_5B6C  callvirt      Mortal.Core.MissionData::get_CurrentKey
+  IL_5B71  stloc.3       
+  IL_5B72  ldloc.3       
+  IL_5B73  ldstr         "clear"
+  IL_5B78  call          String::op_Inequality
+  IL_5B7D  brfalse.s     23533
+  IL_5B7F  ldarg.0       
+  IL_5B80  ldfld         ?::_list
+  IL_5B85  ldloc.2       
+  IL_5B86  ldftn         .<>c__DisplayClass3_0::<GetActiveMissions>b__0
+  IL_5B8C  newobj        ?::.ctor
+  IL_5B91  call          METHODSPEC#30
+  IL_5B96  stloc.s       local(0x0004)
+  IL_5B98  ldloc.s       local(0x0004)
+  IL_5B9A  ldnull        
+  IL_5B9B  call          Object::op_Inequality
+  IL_5BA0  brfalse.s     23533
+  IL_5BA2  ldloc.s       local(0x0004)
+  IL_5BA4  callvirt      Mortal.Core.MissionData::get_Name
+  IL_5BA9  stloc.s       local(0x0005)
+  IL_5BAB  ldloc.s       local(0x0004)
+  IL_5BAD  ldloc.3       
+  IL_5BAE  callvirt      Mortal.Core.MissionData::GetByKey
+  IL_5BB3  stloc.s       local(0x0006)
+  IL_5BB5  ldloc.s       local(0x0006)
+  IL_5BB7  ldnull        
+  IL_5BB8  call          Object::op_Inequality
+  IL_5BBD  brfalse.s     23533
+  IL_5BBF  ldloc.s       local(0x0006)
+  IL_5BC1  ldarg.1       
+  IL_5BC2  callvirt      Mortal.Core.MissionCheckData::Check
+  IL_5BC7  brfalse.s     23526
+  IL_5BC9  ldloc.s       local(0x0006)
+  IL_5BCB  callvirt      Mortal.Core.MissionCheckData::ExecuteModifyFlagsWhenTrue
+  IL_5BD0  ldloc.0       
+  IL_5BD1  ldloc.s       local(0x0005)
+  IL_5BD3  callvirt      ?::ContainsKey
+  IL_5BD8  brtrue.s      23533
+  IL_5BDA  ldloc.0       
+  IL_5BDB  ldloc.s       local(0x0005)
+  IL_5BDD  ldloc.s       local(0x0006)
+  IL_5BDF  callvirt      ?::Add
+  IL_5BE4  br.s          23533
+  IL_5BE6  ldloc.s       local(0x0006)
+  IL_5BE8  callvirt      Mortal.Core.MissionCheckData::ExecuteModifyFlagsWhenFalse
+  IL_5BED  ldloca.s      local(0x0001)
+  IL_5BEF  call          ?::MoveNext
+  IL_5BF4  brtrue        23379
+  IL_5BF9  leave.s       23561
+  IL_5BFB  ldloca.s      local(0x0001)
+  IL_5BFD  constrained.  token(0x1B00006E)
+  IL_5C03  callvirt      IDisposable::Dispose
+  IL_5C08  endfinally    
+  IL_5C09  ldloc.0       
+  IL_5C0A  ret           
+============================================================================
+### Mortal.Core.SubMissionsData :: Reset   RVA=23580
+  IL_5C28  ldarg.0       
+  IL_5C29  ldfld         ?::_list
+  IL_5C2E  callvirt      ?::GetEnumerator
+  IL_5C33  stloc.0       
+  IL_5C34  br.s          23618
+  IL_5C36  ldloca.s      local(0x0000)
+  IL_5C38  call          ?::get_Current
+  IL_5C3D  callvirt      Mortal.Core.MissionData::Reset
+  IL_5C42  ldloca.s      local(0x0000)
+  IL_5C44  call          ?::MoveNext
+  IL_5C49  brtrue.s      23606
+  IL_5C4B  leave.s       23643
+  IL_5C4D  ldloca.s      local(0x0000)
+  IL_5C4F  constrained.  token(0x1B00006E)
+  IL_5C55  callvirt      IDisposable::Dispose
+  IL_5C5A  endfinally    
+  IL_5C5B  ret           
+============================================================================
+### Mortal.Core.SubMissionsData :: .ctor   RVA=23660
+  IL_5C6D  ldarg.0       
+  IL_5C6E  call          ?::.ctor
+  IL_5C73  ret           

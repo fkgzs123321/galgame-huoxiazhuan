@@ -1,0 +1,4 @@
+@@generate_before
+<% if (is_chapter1 && !dead) { %>
+<%- await getwi(null, '第一章-太阳之影') %>
+<% } %>

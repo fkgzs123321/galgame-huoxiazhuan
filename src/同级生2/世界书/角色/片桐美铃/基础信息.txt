@@ -1,0 +1,160 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 片桐美铃 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=11 / 八十八学园现代国语教师，二年生班主任，学生会指导教师
+   互斥关系：无（独立线，但师生禁忌是核心伦理张力）
+   警告：强迫初H触发 BAD_END_1_报警 + 教师资格撤销事件
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 片桐美铃_INFO = {
+  heroine_id: 11,
+  name: '片桐美铃',
+  romanization: 'Katagiri Mirei',
+  age: 28,
+  blood_type: 'AB',
+  identity: '八十八学园现代国语教师，二年生班主任，学生会指导教师',
+  relationship: '主角老师，初识为严厉的女教师；师生禁忌框架',
+  home: '八十八町商业区附近公寓（独居，未婚）',
+  birthday: '11-15',
+  height: 166,
+  weight: 52,
+  three_size: 'B90-W58-H88',
+  cv_implied: '成熟冷艳女教师声线，低沉磁性，私下沉溺时带喘',
+
+  appearance: {
+    hair: '黑色长直发及腰，常束严谨低马尾或盘发，鬓角严丝合缝，无碎发',
+    eyes: '狭长锐利凤眼，眼色深黑，眼神如镜片后的冷刃',
+    body: '肤色白皙透光，身材丰满丰腴，腰肢柔软有力，臀部圆润翘挺，骨架匀称偏曲线',
+    feature: '鼻梁上架无框眼镜，镜片后是审视一切的冷光；左锁骨下方有一颗暗痣（衣领下），盘发解开时颈侧有压痕',
+    clothing_default: '讲台标配：无框眼镜 + 白衬衫（纽扣系到第三颗，颈窝可见却克制）+ 紧身及膝铅笔裙 + 黑色丝袜 + 黑色低跟皮鞋；课外常配米色羊绒大衣与皮质托特包，颈间一条细银链'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 28岁美人教师/INTJ：严肃外壳 + 私下淫荡，师生禁忌与理智崩坏
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'F',
+    bust_size: 90,
+    waist_size: 58,
+    hip_size: 88,
+    height: 166,
+    weight: 52,
+    // 胸部详细（6 列）— 严肃白衬衫下的丰满反差
+    nipple_size: '中',
+    nipple_color: '深粉',
+    areola_size: '中',
+    breast_shape: '聚拢',
+    breast_sensitivity: 90,
+    lactation: '无',
+    // 腰部（2 列）— 瑜伽保持的匀称
+    waist_shape: '纤细紧绷',
+    waist_sensitivity: 80,
+    // 手部（2 列）— 长年握粉笔的修长指节
+    hand_desc: '纤细白皙，常握粉笔，指节修长',
+    nail_style: '透明护甲',
+    // 臀部（3 列）— 紧身铅笔裙下的翘挺
+    hip_shape: '圆润翘挺',
+    hip_sensitivity: 90,
+    anal_desc: '半开发',
+    // 下体详细（8 列）— 处女之身，长期压抑，渴望被支配
+    pubic_hair: '自然',
+    labia_size: '正常',
+    labia_color: '深粉',
+    vaginal_tightness: '极紧',
+    vaginal_special: '蠕动',
+    lubrication_level: '易湿',
+    hymen_status: '完整',
+    fertility: '易孕',
+    // 敏感度综合（3 列）— 师生禁忌：理智崩坏即沉沦
+    body_sensitivity: 80,
+    sensitive_zones: '颈侧,锁骨,腰窝,后颈(盘发解开压痕),眼镜架压痕处,手腕内侧',
+    arousal_triggers: '师生禁忌,理智崩坏,被学生看到真实一面,讲台威严崩塌,粉笔灰味,课后独处'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 80,           // 魅力（外貌吸引力）
+    academic: 80,        // 学业（学习成绩）
+    physical: 55,        // 体力（体能/运动）
+    social: 65,          // 社交（交际能力）
+    perception: 70,      // 敏感（察言观色/直觉）
+    reputation: 75,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 30,        // 力量（物理对抗/搬运）
+    agility: 45,         // 敏捷（反应/逃跑）
+    intelligence: 80,    // 智力（解谜/计划）
+    will_skill: 65,      // 意志（抗压/抵抗诱惑）
+    stealth: 20,         // 潜行（暗中行动）
+    speech: 65,          // 口才（说服/调情）
+    medical: 30,         // 医学（诊疗/急救）
+    cooking: 50,         // 烹饪（料理）
+    art: 55,             // 艺术（审美/创作）
+    driving: 55,         // 驾驶（未成年通常 0）
+    fighting: 25,        // 格斗（防身）
+    observation: 70,     // 观察（情报收集）
+    romance_skill: 40    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'INTJ',
+    tags: ['严肃教师', '私下淫荡', '师生禁忌'],
+    public_face: '严肃不可侵犯的片桐老师',
+    social_face: '偶尔流露疲惫，对主角的"不畏惧"感到好奇',
+    intimate_face: '严肃外壳完全崩塌，淫荡面倾泻而出'
+  },
+
+  preferences: {
+    like_food: ['黑咖啡', '红酒', '和果子', '奶酪'],
+    hate_food: ['甜腻奶茶', '速食'],
+    hobby: ['阅读古典文学', '看悬疑剧', '瑜伽', '独自品酒'],
+    gift_pref: ['文学书（特别是古典文学）', '丝绸睡衣', '性感内衣', '按摩油', '银项链', '特调咖啡'],
+    topic_pref: ['古典文学', '教育理念', '悬疑剧', '品酒']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '无',
+    family: '父母（外埠，关系疏远）；未婚独居',
+    friends: ['齐藤澪（学生会副会长，工作关系）', '其他教师同事', '商业区酒吧老板娘']
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '必须通过学术话题切入（古典文学/国语），证明你能跟上她的智识；以"对等谈话者"身份突破师生框架；以文学/教育理念为阶梯，逐步把师生对话拉向私人对话',
+    warning: '强行亲密触发师生伦理红线——强迫初H触发 BAD_END_1_报警 + 教师资格撤销事件；严肃外壳未被智识攻破前，任何身体试探都会被她用"师生"身份回击'
+  }
+};
+%>
+
+片桐美铃 · 基础信息已加载。当前女角 row_id=11，互斥关系：无。初始关系：affection=0, heartbeat=0, jealousy=0, trust=0（普通师生）。师生禁忌线触发条件：强行亲密 → BAD_END_1_报警 + 教师资格撤销。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 片桐美铃_INFO.name %>（<%- 片桐美铃_INFO.age %>岁）
+- 身份: <%- 片桐美铃_INFO.identity %>
+- 关系: <%- 片桐美铃_INFO.relationship %>
+- 住所: <%- 片桐美铃_INFO.home %>
+<%_ if (片桐美铃_INFO.appearance) { _%>
+- 外貌: <%- [片桐美铃_INFO.appearance.hair, 片桐美铃_INFO.appearance.eyes, 片桐美铃_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (片桐美铃_INFO.personality) { _%>
+- 性格: <%- 片桐美铃_INFO.personality.tags ? 片桐美铃_INFO.personality.tags.join('、') : 片桐美铃_INFO.personality.public_face %>
+<%_ if (片桐美铃_INFO.personality.public_face) { _%>- 表面: <%- 片桐美铃_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (片桐美铃_INFO.personality.intimate_face) { _%>- 亲密面: <%- 片桐美铃_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (片桐美铃_INFO.preferences) { _%>- 喜好: <%- [(片桐美铃_INFO.preferences.like_food || []).join('/'), '爱好：' + (片桐美铃_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (片桐美铃_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(片桐美铃_INFO.relations) %>
+<%_ } _%>
+<%_ if (片桐美铃_INFO.strategy) { _%>- 攻略要点: <%- 片桐美铃_INFO.strategy.best_approach %>
+<%_ if (片桐美铃_INFO.strategy.warning) { _%>- 警告: <%- 片桐美铃_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

@@ -1,0 +1,4267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "基础信息": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "玩家",
+          "type": "string"
+        },
+        "性别": {
+          "default": "男",
+          "type": "string"
+        },
+        "年龄": {
+          "default": 18,
+          "type": "number"
+        },
+        "学校": {
+          "default": "私立圣德女子学院",
+          "type": "string"
+        },
+        "班级": {
+          "default": "高三2班",
+          "type": "string"
+        }
+      }
+    },
+    "时间": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "天数": {
+          "default": 1,
+          "type": "number"
+        },
+        "小时": {
+          "default": 8,
+          "type": "number"
+        },
+        "分钟": {
+          "default": 0,
+          "type": "number"
+        },
+        "时段": {
+          "default": "晨读",
+          "type": "string"
+        },
+        "星期": {
+          "default": "周一",
+          "type": "string"
+        },
+        "日期": {
+          "default": "02-24 周一",
+          "type": "string"
+        },
+        "学期": {
+          "default": "高三下",
+          "type": "string",
+          "enum": [
+            "高三上",
+            "高三下",
+            "高考后"
+          ]
+        },
+        "学期天数": {
+          "default": 1,
+          "type": "number"
+        },
+        "考试期": {
+          "default": "无",
+          "type": "string",
+          "enum": [
+            "无",
+            "周考",
+            "月考",
+            "季考",
+            "高考",
+            "成绩出炉"
+          ]
+        },
+        "距高考天数": {
+          "default": 103,
+          "type": "number"
+        }
+      }
+    },
+    "状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "精力": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "精力上限": {
+          "default": 100,
+          "type": "number"
+        },
+        "理智": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "健康": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "压力": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "怀疑值": {
+          "default": 0,
+          "type": "number"
+        },
+        "堕落值": {
+          "default": 0,
+          "type": "number"
+        },
+        "金钱": {
+          "default": 500,
+          "type": "number"
+        },
+        "今日生活费已领取": {
+          "default": false,
+          "type": "boolean"
+        },
+        "难度": {
+          "default": "困难",
+          "type": "string",
+          "enum": [
+            "普通",
+            "困难",
+            "地狱"
+          ]
+        },
+        "体力": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "体力上限": {
+          "default": 100,
+          "type": "number"
+        },
+        "每日购买": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "营养餐": {
+              "default": 0,
+              "type": "number"
+            },
+            "功能饮料": {
+              "default": 0,
+              "type": "number"
+            },
+            "维生素片": {
+              "default": 0,
+              "type": "number"
+            },
+            "安眠药": {
+              "default": 0,
+              "type": "number"
+            },
+            "高级补剂": {
+              "default": 0,
+              "type": "number"
+            },
+            "特制药膳": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "技能": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "冥想": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "锻炼": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "洞察": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "伪装": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "恢复": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "意志": {
+          "$ref": "#/$defs/__schema1"
+        }
+      }
+    },
+    "使用阶段": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前阶段": {
+          "default": 1,
+          "type": "number"
+        },
+        "总使用次数": {
+          "$ref": "#/$defs/__schema2"
+        },
+        "今日使用": {
+          "default": 0,
+          "type": "number"
+        },
+        "今日上限": {
+          "default": 5,
+          "type": "number"
+        },
+        "最后使用日": {
+          "default": 0,
+          "type": "number"
+        },
+        "最后使用时": {
+          "default": -99,
+          "type": "number"
+        },
+        "阶段进度": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "经验": {
+          "default": 0,
+          "type": "number"
+        },
+        "今日经验": {
+          "default": 0,
+          "type": "number"
+        },
+        "今日经验上限": {
+          "default": 30,
+          "type": "number"
+        }
+      }
+    },
+    "学业": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "分数": {
+          "default": 75,
+          "type": "number"
+        },
+        "阶段": {
+          "default": 3,
+          "type": "number"
+        },
+        "今日学习次数": {
+          "default": 0,
+          "type": "number"
+        },
+        "考试倒计时": {
+          "default": 7,
+          "type": "number"
+        },
+        "老师关注度": {
+          "default": 0,
+          "type": "number"
+        },
+        "当前课程": {
+          "default": "",
+          "type": "string"
+        },
+        "当前老师": {
+          "default": "",
+          "type": "string"
+        },
+        "下节课程": {
+          "default": "",
+          "type": "string"
+        },
+        "下节老师": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "隐藏层": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "真相": {
+          "default": "",
+          "type": "string"
+        },
+        "持有者ID": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "持有者获取方式": {
+          "default": "",
+          "type": "string"
+        },
+        "持有者获取日": {
+          "default": 0,
+          "type": "number"
+        },
+        "持有者包裹状态": {
+          "default": "",
+          "type": "string"
+        },
+        "持有者首次使用日": {
+          "default": 0,
+          "type": "number"
+        },
+        "持有者历史": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "编号": {
+                "default": "",
+                "type": "string"
+              },
+              "姓名": {
+                "default": "",
+                "type": "string"
+              },
+              "获得日": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "方式": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "传播链": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "来源": {
+                "default": "",
+                "type": "string"
+              },
+              "目标": {
+                "default": "",
+                "type": "string"
+              },
+              "方式": {
+                "default": "",
+                "type": "string"
+              },
+              "日": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "时": {
+                "$ref": "#/$defs/__schema2"
+              }
+            }
+          }
+        },
+        "确认使用者": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "最后持有者": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "上一日": {
+          "default": 0,
+          "type": "number"
+        },
+        "使用模式": {
+          "default": "内置",
+          "type": "string"
+        },
+        "使用节奏": {
+          "default": "正常",
+          "type": "string"
+        },
+        "当前场景": {
+          "default": "宿舍夜间",
+          "type": "string"
+        },
+        "活跃使用人数": {
+          "default": 1,
+          "type": "number"
+        },
+        "最后榨取量": {
+          "default": 0,
+          "type": "number"
+        },
+        "射精被阻止": {
+          "default": false,
+          "type": "boolean"
+        },
+        "清醒射精": {
+          "default": false,
+          "type": "boolean"
+        },
+        "觉醒进度": {
+          "default": 0,
+          "type": "number"
+        },
+        "过热保护": {
+          "default": false,
+          "type": "boolean"
+        },
+        "间隔保护": {
+          "default": false,
+          "type": "boolean"
+        },
+        "持有者过热保护": {
+          "default": false,
+          "type": "boolean"
+        },
+        "阶段已晋升": {
+          "default": false,
+          "type": "boolean"
+        },
+        "女性战斗力": {
+          "default": 0,
+          "type": "number"
+        },
+        "玩家战斗力": {
+          "default": 0,
+          "type": "number"
+        },
+        "对抗结果": {
+          "default": "",
+          "type": "string"
+        },
+        "连续拒绝": {
+          "default": 0,
+          "type": "number"
+        },
+        "坏结局已触发": {
+          "default": false,
+          "type": "boolean"
+        },
+        "坏结局类型": {
+          "default": "",
+          "type": "string"
+        },
+        "坏结局描述": {
+          "default": "",
+          "type": "string"
+        },
+        "难度已锁定": {
+          "default": false,
+          "type": "boolean"
+        },
+        "发现进度": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "四阶段成功": {
+              "default": 0,
+              "type": "number"
+            },
+            "五阶段成功": {
+              "default": 0,
+              "type": "number"
+            },
+            "总调查次数": {
+              "default": 0,
+              "type": "number"
+            },
+            "持有者暴露事件": {
+              "default": 0,
+              "type": "number"
+            },
+            "孩子相似事件": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        },
+        "超自然妄想计数": {
+          "default": 0,
+          "type": "number"
+        },
+        "违法计数": {
+          "default": 0,
+          "type": "number"
+        },
+        "$已初始化": {
+          "default": false,
+          "type": "boolean"
+        },
+        "近期事件": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "事件id": {
+                "default": "",
+                "type": "string"
+              },
+              "编号": {
+                "default": "",
+                "type": "string"
+              },
+              "事件编号": {
+                "default": "",
+                "type": "string"
+              },
+              "id": {
+                "default": "",
+                "type": "string"
+              },
+              "类型": {
+                "default": "",
+                "type": "string"
+              },
+              "时间": {
+                "default": "",
+                "type": "string"
+              },
+              "时间戳": {
+                "default": "",
+                "type": "string"
+              },
+              "日": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "地点": {
+                "default": "",
+                "type": "string"
+              },
+              "位置": {
+                "default": "",
+                "type": "string"
+              },
+              "参与者": {
+                "default": [],
+                "type": "array",
+                "items": {}
+              },
+              "摘要": {
+                "default": "",
+                "type": "string"
+              },
+              "描述": {
+                "default": "",
+                "type": "string"
+              },
+              "简述": {
+                "default": "",
+                "type": "string"
+              },
+              "文本": {
+                "default": "",
+                "type": "string"
+              },
+              "标题": {
+                "default": "",
+                "type": "string"
+              },
+              "影响": {
+                "default": "",
+                "type": "string"
+              },
+              "后续钩子": {
+                "default": "",
+                "type": "string"
+              },
+              "钩子": {
+                "default": "",
+                "type": "string"
+              },
+              "钩子们": {
+                "default": "",
+                "type": "string"
+              },
+              "重要度": {
+                "default": 2,
+                "type": "number"
+              },
+              "重要性": {
+                "default": 50,
+                "type": "number"
+              },
+              "优先级": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "更新时间": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        }
+      },
+      "additionalProperties": {}
+    },
+    "骰子": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "持有者使用": {
+          "default": 50,
+          "type": "number"
+        },
+        "传播基值": {
+          "default": 50,
+          "type": "number"
+        },
+        "怀疑抵抗": {
+          "default": 50,
+          "type": "number"
+        },
+        "女性使用": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "阶段晋升": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      },
+      "additionalProperties": {}
+    },
+    "任务": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "编号": {
+            "default": "",
+            "type": "string"
+          },
+          "类型": {
+            "default": "日常",
+            "type": "string",
+            "enum": [
+              "主线",
+              "支线",
+              "日常",
+              "隐藏"
+            ]
+          },
+          "标题": {
+            "default": "",
+            "type": "string"
+          },
+          "描述": {
+            "default": "",
+            "type": "string"
+          },
+          "难度": {
+            "default": "D",
+            "type": "string",
+            "enum": [
+              "D",
+              "C",
+              "B",
+              "A",
+              "S",
+              "SS"
+            ]
+          },
+          "状态": {
+            "default": "待接",
+            "type": "string",
+            "enum": [
+              "待接",
+              "进行中",
+              "已完成",
+              "失败"
+            ]
+          },
+          "进度": {
+            "default": 0,
+            "$ref": "#/$defs/__schema2"
+          },
+          "阶段": {
+            "default": 1,
+            "$ref": "#/$defs/__schema2"
+          },
+          "奖励": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "金钱": {
+                "default": 0,
+                "$ref": "#/$defs/__schema2"
+              },
+              "经验": {
+                "default": {},
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "$ref": "#/$defs/__schema2"
+                }
+              },
+              "物品": {
+                "default": {},
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "additionalProperties": {}
+          },
+          "截止": {
+            "default": null,
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "发布者": {
+            "default": "系统",
+            "type": "string"
+          },
+          "发布地点": {
+            "default": "",
+            "type": "string"
+          },
+          "触发日": {
+            "default": 1,
+            "$ref": "#/$defs/__schema2"
+          },
+          "接受日": {
+            "default": 1,
+            "$ref": "#/$defs/__schema2"
+          },
+          "重复": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    "规则变化": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "世界变化": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema4"
+          }
+        },
+        "学校变化": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema4"
+          }
+        }
+      },
+      "additionalProperties": {}
+    },
+    "商店商品": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "编号": {
+            "default": "",
+            "type": "string"
+          },
+          "名称": {
+            "default": "",
+            "type": "string"
+          },
+          "价格": {
+            "default": 0,
+            "type": "number"
+          },
+          "品质": {
+            "default": "普通",
+            "type": "string",
+            "enum": [
+              "普通",
+              "优良",
+              "稀有",
+              "史诗",
+              "传说"
+            ]
+          },
+          "库存": {
+            "default": -1,
+            "type": "number"
+          },
+          "库存上限": {
+            "default": 0,
+            "type": "number"
+          },
+          "描述": {
+            "default": "",
+            "type": "string"
+          },
+          "效果": {
+            "default": "",
+            "type": "string"
+          },
+          "位置": {
+            "default": "",
+            "type": "string"
+          },
+          "限制": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "环境": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "天气": {
+          "default": "",
+          "type": "string"
+        },
+        "天气描述": {
+          "default": "",
+          "type": "string"
+        },
+        "温度": {
+          "default": "",
+          "type": "string"
+        },
+        "气温": {
+          "default": "",
+          "type": "string"
+        },
+        "位置": {
+          "default": "",
+          "type": "string"
+        },
+        "当前位置": {
+          "default": "",
+          "type": "string"
+        },
+        "湿度": {
+          "default": "",
+          "type": "string"
+        },
+        "风": {
+          "default": "",
+          "type": "string"
+        },
+        "降水": {
+          "default": "",
+          "type": "string"
+        },
+        "空气质量": {
+          "default": "",
+          "type": "string"
+        },
+        "光线": {
+          "default": "",
+          "type": "string"
+        },
+        "噪音": {
+          "default": "",
+          "type": "string"
+        },
+        "人群密度": {
+          "default": "",
+          "type": "string"
+        },
+        "交通": {
+          "default": "",
+          "type": "string"
+        },
+        "治安": {
+          "default": "",
+          "type": "string"
+        },
+        "区域": {
+          "default": "",
+          "type": "string"
+        },
+        "季节": {
+          "default": "",
+          "type": "string"
+        },
+        "描述": {
+          "default": "",
+          "type": "string"
+        },
+        "环境描述": {
+          "default": "",
+          "type": "string"
+        },
+        "活动": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "编号": {
+                "default": "",
+                "type": "string"
+              },
+              "标题": {
+                "default": "",
+                "type": "string"
+              },
+              "名称": {
+                "default": "",
+                "type": "string"
+              },
+              "截止": {
+                "default": "",
+                "type": "string"
+              },
+              "时间": {
+                "default": "",
+                "type": "string"
+              },
+              "描述": {
+                "default": "",
+                "type": "string"
+              },
+              "简述": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "新闻": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "编号": {
+                "default": "",
+                "type": "string"
+              },
+              "标题": {
+                "default": "",
+                "type": "string"
+              },
+              "头条": {
+                "default": "",
+                "type": "string"
+              },
+              "热度": {
+                "default": 0,
+                "type": "number"
+              },
+              "重要性": {
+                "default": 0,
+                "type": "number"
+              },
+              "内容": {
+                "default": "",
+                "type": "string"
+              },
+              "摘要": {
+                "default": "",
+                "type": "string"
+              },
+              "来源": {
+                "default": "",
+                "type": "string"
+              },
+              "时间": {
+                "default": "",
+                "type": "string"
+              },
+              "位置": {
+                "default": "",
+                "type": "string"
+              },
+              "状态": {
+                "default": "进行中",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "雷达": {
+      "default": {
+        "信号": {}
+      },
+      "type": "object",
+      "properties": {
+        "信号": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "编号": {
+                "default": "",
+                "type": "string"
+              },
+              "类型": {
+                "default": "人员",
+                "type": "string"
+              },
+              "名称": {
+                "default": "",
+                "type": "string"
+              },
+              "目标名称": {
+                "default": "",
+                "type": "string"
+              },
+              "强度": {
+                "default": "弱",
+                "type": "string"
+              },
+              "威胁": {
+                "default": "未知",
+                "type": "string"
+              },
+              "描述": {
+                "default": "",
+                "type": "string"
+              },
+              "简述": {
+                "default": "",
+                "type": "string"
+              },
+              "方向": {
+                "default": "",
+                "type": "string"
+              },
+              "方位": {
+                "default": "",
+                "type": "string"
+              },
+              "单位": {
+                "default": "",
+                "type": "string"
+              },
+              "单位描述": {
+                "default": "",
+                "type": "string"
+              },
+              "来源": {
+                "default": "",
+                "type": "string"
+              },
+              "所属": {
+                "default": "",
+                "type": "string"
+              },
+              "距离": {
+                "default": "",
+                "type": "string"
+              },
+              "位置": {
+                "default": "",
+                "type": "string"
+              },
+              "探测日": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "探测时": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "最后扫描日": {
+          "$ref": "#/$defs/__schema2"
+        },
+        "最后扫描时": {
+          "$ref": "#/$defs/__schema2"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "物品栏": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/__schema5"
+      }
+    },
+    "仓库": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/__schema5"
+      }
+    },
+    "已放置物品": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/__schema5"
+      }
+    },
+    "制造配方": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "编号": {
+            "default": "",
+            "type": "string"
+          },
+          "名称": {
+            "default": "",
+            "type": "string"
+          },
+          "标题": {
+            "default": "",
+            "type": "string"
+          },
+          "类型": {
+            "default": "制造",
+            "type": "string",
+            "enum": [
+              "制造",
+              "改造",
+              "升级"
+            ]
+          },
+          "描述": {
+            "default": "",
+            "type": "string"
+          },
+          "简述": {
+            "default": "",
+            "type": "string"
+          },
+          "材料": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema7"
+            }
+          },
+          "材料列表": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema7"
+            }
+          },
+          "产物": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema8"
+            }
+          },
+          "输出": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema8"
+            }
+          },
+          "解锁条件": {
+            "default": "",
+            "type": "string"
+          },
+          "解锁": {
+            "default": "",
+            "type": "string"
+          },
+          "成功率": {
+            "default": 100,
+            "type": "number"
+          },
+          "之前": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "标签": {
+                  "default": "",
+                  "type": "string"
+                },
+                "键": {
+                  "default": "",
+                  "type": "string"
+                },
+                "值": {
+                  "default": "",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "预览之前": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "标签": {
+                  "default": "",
+                  "type": "string"
+                },
+                "键": {
+                  "default": "",
+                  "type": "string"
+                },
+                "值": {
+                  "default": "",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "之后": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "标签": {
+                  "default": "",
+                  "type": "string"
+                },
+                "键": {
+                  "default": "",
+                  "type": "string"
+                },
+                "值": {
+                  "default": "",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "预览之后": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "标签": {
+                  "default": "",
+                  "type": "string"
+                },
+                "键": {
+                  "default": "",
+                  "type": "string"
+                },
+                "值": {
+                  "default": "",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "载具": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "编号": {
+            "default": "",
+            "type": "string"
+          },
+          "类型": {
+            "default": "",
+            "type": "string"
+          },
+          "载具类型": {
+            "default": "",
+            "type": "string"
+          },
+          "品牌": {
+            "default": "",
+            "type": "string"
+          },
+          "型号": {
+            "default": "",
+            "type": "string"
+          },
+          "牌照": {
+            "default": "",
+            "type": "string"
+          },
+          "车牌": {
+            "default": "",
+            "type": "string"
+          },
+          "位置": {
+            "default": "",
+            "type": "string"
+          },
+          "状态": {
+            "default": "停放",
+            "type": "string",
+            "enum": [
+              "停放",
+              "行驶",
+              "维修",
+              "损坏",
+              "被盗"
+            ]
+          },
+          "移动状态": {
+            "default": "",
+            "type": "string"
+          },
+          "能源": {
+            "default": "",
+            "type": "string"
+          },
+          "燃料": {
+            "default": "",
+            "type": "string"
+          },
+          "耐久": {
+            "default": "",
+            "type": "string"
+          },
+          "状况": {
+            "default": "",
+            "type": "string"
+          },
+          "维护": {
+            "default": "",
+            "type": "string"
+          },
+          "座位": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "类型": {
+                  "default": "",
+                  "type": "string"
+                },
+                "座位类型": {
+                  "default": "",
+                  "type": "string"
+                },
+                "使用者": {
+                  "default": "",
+                  "type": "string"
+                },
+                "占用者": {
+                  "default": "",
+                  "type": "string"
+                },
+                "状态": {
+                  "default": "",
+                  "type": "string"
+                },
+                "可用": {
+                  "default": "可用",
+                  "type": "string"
+                },
+                "备注": {
+                  "default": "",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "储物": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema9"
+            }
+          },
+          "货物": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/__schema9"
+            }
+          }
+        }
+      }
+    },
+    "居所": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "编号": {
+            "default": "",
+            "type": "string"
+          },
+          "类型": {
+            "default": "",
+            "type": "string"
+          },
+          "居所类型": {
+            "default": "",
+            "type": "string"
+          },
+          "状态": {
+            "default": "",
+            "type": "string"
+          },
+          "居住状态": {
+            "default": "",
+            "type": "string"
+          },
+          "位置": {
+            "default": "",
+            "type": "string"
+          },
+          "安全等级": {
+            "default": "",
+            "type": "string"
+          },
+          "治安": {
+            "default": "",
+            "type": "string"
+          },
+          "房间": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "类型": {
+                  "default": "",
+                  "type": "string"
+                },
+                "房间类型": {
+                  "default": "",
+                  "type": "string"
+                },
+                "居住者们": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "default": "",
+                    "type": "string"
+                  }
+                },
+                "居住者": {
+                  "default": "",
+                  "type": "string"
+                },
+                "人员": {
+                  "default": "",
+                  "type": "string"
+                },
+                "清洁度": {
+                  "default": 0,
+                  "$ref": "#/$defs/__schema2"
+                },
+                "整洁度": {
+                  "default": "",
+                  "type": "string"
+                },
+                "隐私": {
+                  "default": "",
+                  "type": "string"
+                },
+                "隐私等级": {
+                  "default": "",
+                  "type": "string"
+                },
+                "舒适度": {
+                  "default": 0,
+                  "$ref": "#/$defs/__schema2"
+                },
+                "氛围": {
+                  "default": "",
+                  "type": "string"
+                },
+                "门锁": {
+                  "default": "",
+                  "type": "string"
+                },
+                "状态": {
+                  "default": "正常",
+                  "type": "string"
+                },
+                "房间状态": {
+                  "default": "",
+                  "type": "string"
+                },
+                "设施们": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "default": "",
+                    "type": "string"
+                  }
+                },
+                "设施": {
+                  "default": "",
+                  "type": "string"
+                },
+                "储物": {
+                  "default": {},
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                },
+                "待办们": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "default": "",
+                    "type": "string"
+                  }
+                },
+                "待办": {
+                  "default": "",
+                  "type": "string"
+                },
+                "最后清洁日": {
+                  "default": 1,
+                  "$ref": "#/$defs/__schema2"
+                },
+                "备注": {
+                  "default": "",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": {}
+            }
+          },
+          "床位": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {}
+          },
+          "公共设施": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "default": {},
+              "type": "object",
+              "properties": {
+                "类型": {
+                  "default": "",
+                  "type": "string"
+                },
+                "设施类型": {
+                  "default": "",
+                  "type": "string"
+                },
+                "名称": {
+                  "default": "",
+                  "type": "string"
+                },
+                "设施": {
+                  "default": "",
+                  "type": "string"
+                },
+                "状态": {
+                  "default": "",
+                  "type": "string"
+                },
+                "开放状态": {
+                  "default": "",
+                  "type": "string"
+                },
+                "占用者": {
+                  "default": "",
+                  "type": "string"
+                },
+                "当前人员": {
+                  "default": "",
+                  "type": "string"
+                },
+                "清洁度": {
+                  "default": "",
+                  "type": "string"
+                },
+                "隐私": {
+                  "default": "",
+                  "type": "string"
+                },
+                "备注": {
+                  "default": "",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "最后访问日": {
+            "default": 1,
+            "$ref": "#/$defs/__schema2"
+          },
+          "备注": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    "检定建议": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "显示文本": {
+            "default": "",
+            "type": "string"
+          },
+          "骰子命令": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "症状": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "疲劳描述": {
+          "default": "暂无异常",
+          "type": "string"
+        },
+        "敏感描述": {
+          "default": "暂无异常",
+          "type": "string"
+        },
+        "外观描述": {
+          "default": "气色正常",
+          "type": "string"
+        },
+        "理智描述": {
+          "default": "情绪稳定",
+          "type": "string"
+        }
+      }
+    },
+    "排班": {
+      "default": {
+        "当前战斗目标": "",
+        "战斗状态": "未开始",
+        "战斗": {
+          "回合": 0,
+          "主角防守值": 96,
+          "主角防守值上限": 96,
+          "主角精力": 80,
+          "她攻势值": 38,
+          "她快感值": 0,
+          "主角BUFF": {},
+          "她BUFF": {}
+        }
+      },
+      "type": "object",
+      "properties": {
+        "当前战斗目标": {
+          "default": "",
+          "type": "string"
+        },
+        "战斗状态": {
+          "default": "未开始",
+          "type": "string",
+          "enum": [
+            "未开始",
+            "进行中",
+            "已结算"
+          ]
+        },
+        "战斗": {
+          "default": {
+            "回合": 0,
+            "主角防守值": 96,
+            "主角防守值上限": 96,
+            "主角精力": 80,
+            "她攻势值": 38,
+            "她快感值": 0,
+            "主角BUFF": {},
+            "她BUFF": {}
+          },
+          "type": "object",
+          "properties": {
+            "回合": {
+              "default": 0,
+              "type": "number"
+            },
+            "主角防守值": {
+              "default": 96,
+              "type": "number"
+            },
+            "主角防守值上限": {
+              "default": 96,
+              "type": "number"
+            },
+            "主角精力": {
+              "default": 80,
+              "type": "number"
+            },
+            "她攻势值": {
+              "default": 38,
+              "type": "number"
+            },
+            "她快感值": {
+              "default": 0,
+              "type": "number"
+            },
+            "主角BUFF": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "description": "BUFF名"
+              },
+              "additionalProperties": {
+                "default": {
+                  "剩余回合": 0,
+                  "效果值": 0
+                },
+                "type": "object",
+                "properties": {
+                  "剩余回合": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "效果值": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "她BUFF": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "description": "BUFF名"
+              },
+              "additionalProperties": {
+                "default": {
+                  "剩余回合": 0,
+                  "效果值": 0
+                },
+                "type": "object",
+                "properties": {
+                  "剩余回合": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "效果值": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "女性角色": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "UID顺序": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "基础": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "姓名": {
+                "default": "",
+                "type": "string"
+              },
+              "角色": {
+                "default": "",
+                "type": "string"
+              },
+              "班级": {
+                "default": "",
+                "type": "string"
+              },
+              "年龄": {
+                "default": 18,
+                "type": "number"
+              },
+              "身份": {
+                "default": "",
+                "type": "string"
+              },
+              "班级名": {
+                "default": "",
+                "type": "string"
+              },
+              "学校": {
+                "default": "私立圣德女子学院",
+                "type": "string"
+              },
+              "住宿": {
+                "default": "",
+                "type": "string"
+              },
+              "工号": {
+                "default": "",
+                "type": "string"
+              },
+              "教研组": {
+                "default": "",
+                "type": "string"
+              },
+              "教授科目": {
+                "default": "",
+                "type": "string"
+              },
+              "职务": {
+                "default": "",
+                "type": "string"
+              },
+              "办公室": {
+                "default": "",
+                "type": "string"
+              },
+              "是否班主任": {
+                "default": false,
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "身体": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "罩杯": {
+                "default": "B",
+                "type": "string"
+              },
+              "胸围厘米": {
+                "default": 80,
+                "type": "number"
+              },
+              "体型": {
+                "default": "匀称",
+                "type": "string"
+              },
+              "身高": {
+                "default": 160,
+                "type": "number"
+              },
+              "阴毛": {
+                "default": "自然",
+                "type": "string",
+                "enum": [
+                  "无",
+                  "少量",
+                  "修剪",
+                  "自然",
+                  "浓密"
+                ]
+              },
+              "罩杯尺寸": {
+                "default": "",
+                "type": "string"
+              },
+              "胸围": {
+                "default": 0,
+                "type": "number"
+              },
+              "腰围": {
+                "default": 0,
+                "type": "number"
+              },
+              "臀围": {
+                "default": 0,
+                "type": "number"
+              },
+              "体重": {
+                "default": 0,
+                "type": "number"
+              },
+              "乳头大小": {
+                "default": "",
+                "type": "string"
+              },
+              "乳头颜色": {
+                "default": "",
+                "type": "string"
+              },
+              "乳晕大小": {
+                "default": "",
+                "type": "string"
+              },
+              "乳房形状": {
+                "default": "",
+                "type": "string"
+              },
+              "乳房敏感度": {
+                "default": 0,
+                "type": "number"
+              },
+              "泌乳": {
+                "default": false,
+                "type": "boolean"
+              },
+              "腰形": {
+                "default": "",
+                "type": "string"
+              },
+              "腰部敏感度": {
+                "default": 0,
+                "type": "number"
+              },
+              "手部描述": {
+                "default": "",
+                "type": "string"
+              },
+              "指甲风格": {
+                "default": "",
+                "type": "string"
+              },
+              "臀形": {
+                "default": "",
+                "type": "string"
+              },
+              "臀部敏感度": {
+                "default": 0,
+                "type": "number"
+              },
+              "肛门描述": {
+                "default": "",
+                "type": "string"
+              },
+              "阴道描述": {
+                "default": "",
+                "type": "string"
+              },
+              "阴蒂描述": {
+                "default": "",
+                "type": "string"
+              },
+              "分泌物描述": {
+                "default": "",
+                "type": "string"
+              },
+              "阴唇描述": {
+                "default": "",
+                "type": "string"
+              },
+              "乳晕颜色": {
+                "default": "",
+                "type": "string"
+              },
+              "乳房质感": {
+                "default": "",
+                "type": "string"
+              },
+              "大腿描述": {
+                "default": "",
+                "type": "string"
+              },
+              "足部描述": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "人格": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "表色": {
+                "default": "",
+                "type": "string"
+              },
+              "间色": {
+                "default": "",
+                "type": "string"
+              },
+              "底色": {
+                "default": "",
+                "type": "string"
+              },
+              "公众面": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "行为": {
+                    "default": "",
+                    "type": "string"
+                  },
+                  "言语": {
+                    "default": "",
+                    "type": "string"
+                  }
+                }
+              },
+              "亲密面": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "行为": {
+                    "default": "",
+                    "type": "string"
+                  },
+                  "言语": {
+                    "default": "",
+                    "type": "string"
+                  }
+                }
+              },
+              "真实面": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "欲望": {
+                    "default": "",
+                    "type": "string"
+                  },
+                  "恐惧": {
+                    "default": "",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "NSFW": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "敏感度": {
+                "default": 50,
+                "type": "number"
+              },
+              "润滑度": {
+                "default": 50,
+                "type": "number"
+              },
+              "假阴茎经验": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "总次数": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "技能等级": {
+                    "default": 1,
+                    "type": "number"
+                  },
+                  "偏好模式": {
+                    "default": "内置",
+                    "type": "string",
+                    "enum": [
+                      "内置",
+                      "外置",
+                      "边缘",
+                      "延时"
+                    ]
+                  },
+                  "高潮次数": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "总榨取": {
+                    "$ref": "#/$defs/__schema2"
+                  },
+                  "使用次数": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "熟练度": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "敏感度": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "最后使用日": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": {}
+              },
+              "当日统计": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "今日已用": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "今日次数": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "最后阶段": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": {}
+              }
+            }
+          },
+          "能力": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "技能等级": {
+                "default": 1,
+                "type": "number"
+              },
+              "隐蔽": {
+                "default": 50,
+                "type": "number"
+              },
+              "持久": {
+                "default": 50,
+                "type": "number"
+              },
+              "控制": {
+                "default": 50,
+                "type": "number"
+              },
+              "诱惑": {
+                "default": 50,
+                "type": "number"
+              },
+              "欲望": {
+                "default": 30,
+                "type": "number"
+              },
+              "今日成长已用": {
+                "default": 0,
+                "type": "number"
+              },
+              "今日成长上限": {
+                "default": 10,
+                "type": "number"
+              }
+            }
+          },
+          "能力上限": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "技能上限": {
+                "default": 50,
+                "type": "number"
+              },
+              "隐蔽上限": {
+                "default": 50,
+                "type": "number"
+              },
+              "持久上限": {
+                "default": 50,
+                "type": "number"
+              },
+              "控制上限": {
+                "default": 50,
+                "type": "number"
+              },
+              "诱惑上限": {
+                "default": 100,
+                "type": "number"
+              },
+              "欲望上限": {
+                "default": 100,
+                "type": "number"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "成长": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "技能经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "隐蔽经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "持久经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "控制经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "诱惑经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "欲望经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "总次数": {
+                "default": 0,
+                "type": "number"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "与玩家关系": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "好感度": {
+                "default": 30,
+                "type": "number"
+              },
+              "熟悉度": {
+                "default": 0,
+                "type": "number"
+              },
+              "互动次数": {
+                "$ref": "#/$defs/__schema2"
+              },
+              "最后互动": {
+                "default": "",
+                "type": "string"
+              },
+              "已知真相": {
+                "default": false,
+                "type": "boolean"
+              },
+              "信任": {
+                "default": 50,
+                "type": "number"
+              },
+              "榨取精力": {
+                "default": 0,
+                "type": "number"
+              },
+              "关系": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "使用习惯": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "偏好时段": {
+                "default": "午休",
+                "type": "string",
+                "enum": [
+                  "午休",
+                  "放学后",
+                  "深夜",
+                  "课间",
+                  "上课中",
+                  "自习课",
+                  "保健室时间"
+                ]
+              },
+              "偏好地点": {
+                "default": "空教室",
+                "type": "string",
+                "enum": [
+                  "空教室",
+                  "音乐室",
+                  "保健室",
+                  "天台",
+                  "图书馆",
+                  "体育仓库",
+                  "宿舍",
+                  "实验室",
+                  "美术室",
+                  "办公室"
+                ]
+              },
+              "使用风格": {
+                "default": "温柔",
+                "type": "string",
+                "enum": [
+                  "温柔",
+                  "粗暴",
+                  "实验性",
+                  "仪式性",
+                  "急切",
+                  "催眠式",
+                  "冷漠",
+                  "游戏"
+                ]
+              },
+              "特殊道具": {
+                "default": "无",
+                "type": "string",
+                "enum": [
+                  "无",
+                  "润滑油",
+                  "跳蛋",
+                  "捆缚",
+                  "冰",
+                  "低温蜡烛",
+                  "震动手环",
+                  "按摩棒",
+                  "束缚带"
+                ]
+              },
+              "冥想阈值": {
+                "default": 0,
+                "type": "number"
+              },
+              "伪装阈值": {
+                "default": 0,
+                "type": "number"
+              },
+              "最低阶段": {
+                "default": 1,
+                "type": "number"
+              }
+            }
+          },
+          "阶段轨迹": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "模板类型": {
+                "default": "纯真",
+                "type": "string",
+                "enum": [
+                  "纯真",
+                  "御姐",
+                  "辣妹",
+                  "运动",
+                  "运动-支配型",
+                  "文静",
+                  "熟女",
+                  "萝莉"
+                ]
+              },
+              "当前阶段": {
+                "default": 1,
+                "type": "number"
+              },
+              "基础概率": {
+                "default": 0.3,
+                "type": "number"
+              },
+              "性格修正": {
+                "default": 1,
+                "type": "number"
+              },
+              "硬上限": {
+                "default": 5,
+                "type": "number"
+              },
+              "理智": {
+                "default": 100,
+                "type": "number"
+              }
+            }
+          },
+          "关系网": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "类型": {
+                  "default": "陌生人",
+                  "type": "string",
+                  "enum": [
+                    "闺蜜",
+                    "好友",
+                    "对手",
+                    "暗恋",
+                    "师生",
+                    "母女",
+                    "买卖",
+                    "同事",
+                    "上下级",
+                    "陌生人"
+                  ]
+                },
+                "信任": {
+                  "default": 0.5,
+                  "type": "number"
+                },
+                "亲密度": {
+                  "default": "普通",
+                  "type": "string",
+                  "enum": [
+                    "亲密",
+                    "普通",
+                    "疏远",
+                    "敌对"
+                  ]
+                }
+              }
+            }
+          },
+          "传播": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "倾向": {
+                "default": 0.3,
+                "type": "number"
+              },
+              "方式": {
+                "default": "借出",
+                "type": "string",
+                "enum": [
+                  "借出",
+                  "归还",
+                  "分享",
+                  "偷窃",
+                  "买卖",
+                  "捡到",
+                  "强制"
+                ]
+              },
+              "偏好目标": {
+                "$ref": "#/$defs/__schema3"
+              }
+            }
+          },
+          "权力": {
+            "default": "无",
+            "type": "string",
+            "enum": [
+              "无",
+              "风纪",
+              "教师",
+              "校医",
+              "管理层",
+              "家长",
+              "黑市"
+            ]
+          },
+          "交叉影响": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "学业": {
+                "default": -3,
+                "type": "number"
+              },
+              "纪律": {
+                "default": -1,
+                "type": "number"
+              },
+              "经济": {
+                "default": 0,
+                "type": "number"
+              },
+              "社交": {
+                "default": -2,
+                "type": "number"
+              },
+              "精力消耗": {
+                "default": 8,
+                "type": "number"
+              },
+              "理智消耗": {
+                "default": 5,
+                "type": "number"
+              }
+            }
+          },
+          "学业": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "分数": {
+                "default": 75,
+                "type": "number"
+              },
+              "阶段": {
+                "default": 3,
+                "type": "number"
+              },
+              "表现": {
+                "default": 75,
+                "type": "number"
+              }
+            }
+          },
+          "生育": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "周期日": {
+                "default": 1,
+                "type": "number"
+              },
+              "周期阶段": {
+                "default": "行经期",
+                "type": "string",
+                "enum": [
+                  "行经期",
+                  "卵泡期",
+                  "排卵期",
+                  "黄体期"
+                ]
+              },
+              "怀孕状态": {
+                "default": 0,
+                "type": "number"
+              },
+              "怀孕阶段": {
+                "default": "未孕",
+                "type": "string",
+                "enum": [
+                  "未孕",
+                  "无症状",
+                  "孕吐期",
+                  "行动受限",
+                  "临产期",
+                  "分娩触发"
+                ]
+              },
+              "受孕种子": {
+                "default": "",
+                "type": "string"
+              },
+              "分娩结果": {
+                "default": "未分娩",
+                "type": "string",
+                "enum": [
+                  "未分娩",
+                  "成功",
+                  "风险"
+                ]
+              },
+              "产后天数": {
+                "default": 0,
+                "type": "number"
+              },
+              "孩子数": {
+                "default": 0,
+                "type": "number"
+              },
+              "最后受孕日": {
+                "default": 0,
+                "type": "number"
+              },
+              "父亲UID": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          },
+          "多维状态": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "理性": {
+                "default": 80,
+                "type": "number"
+              },
+              "执念": {
+                "default": 0,
+                "type": "number"
+              },
+              "学业压力": {
+                "default": 50,
+                "type": "number"
+              },
+              "逃避意识": {
+                "default": 0,
+                "type": "number"
+              },
+              "理智": {
+                "default": 100,
+                "type": "number"
+              },
+              "技能等级": {
+                "default": 0,
+                "type": "number"
+              },
+              "综合阶段": {
+                "default": "A_理性期",
+                "type": "string",
+                "enum": [
+                  "A_理性期",
+                  "B_动摇期",
+                  "C_沉沦期",
+                  "D_疯狂期",
+                  "E_清醒反扑期",
+                  "E_崩坏期"
+                ]
+              }
+            },
+            "additionalProperties": {}
+          },
+          "持有者信息": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "是否初始持有者": {
+                "default": false,
+                "type": "boolean"
+              },
+              "获取方式": {
+                "default": "",
+                "type": "string"
+              },
+              "获取日": {
+                "default": 1,
+                "type": "number"
+              },
+              "包裹状态": {
+                "default": "",
+                "type": "string"
+              },
+              "是否使用过": {
+                "default": false,
+                "type": "boolean"
+              },
+              "使用次数": {
+                "default": 0,
+                "type": "number"
+              }
+            }
+          },
+          "叙事": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "在场状态": {
+                "default": "在场",
+                "type": "string",
+                "enum": [
+                  "在场",
+                  "离场",
+                  "未知"
+                ]
+              },
+              "位置": {
+                "default": "",
+                "type": "string"
+              },
+              "外貌": {
+                "default": "",
+                "type": "string"
+              },
+              "简介": {
+                "default": "",
+                "type": "string"
+              },
+              "身份文本": {
+                "default": "",
+                "type": "string"
+              },
+              "过往经历": {
+                "default": "",
+                "type": "string"
+              },
+              "最后更新": {
+                "default": "",
+                "type": "string"
+              },
+              "心跳": {
+                "default": 0,
+                "type": "number"
+              },
+              "嫉妒": {
+                "default": 0,
+                "type": "number"
+              },
+              "信任": {
+                "default": 50,
+                "type": "number"
+              },
+              "阶段锁定": {
+                "default": false,
+                "type": "boolean"
+              },
+              "互斥组": {
+                "default": "",
+                "type": "string"
+              },
+              "互斥伙伴": {
+                "default": "",
+                "type": "string"
+              },
+              "场景标签": {
+                "default": "",
+                "type": "string"
+              },
+              "最后场景": {
+                "default": "",
+                "type": "string"
+              },
+              "状态": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          },
+          "当前状态": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "上衣": {
+                "default": "校服外套",
+                "type": "string"
+              },
+              "下装": {
+                "default": "校服长裤",
+                "type": "string"
+              },
+              "外衣细节": {
+                "default": "",
+                "type": "string"
+              },
+              "文胸": {
+                "default": "运动内衣",
+                "type": "string"
+              },
+              "文胸颜色": {
+                "default": "白色",
+                "type": "string"
+              },
+              "内裤": {
+                "default": "棉质三角裤",
+                "type": "string"
+              },
+              "内裤颜色": {
+                "default": "白色",
+                "type": "string"
+              },
+              "月经阶段": {
+                "default": "月经期",
+                "type": "string",
+                "enum": [
+                  "月经期",
+                  "行经期",
+                  "卵泡期",
+                  "排卵期",
+                  "黄体期",
+                  "经期前"
+                ]
+              },
+              "月经日": {
+                "default": 1,
+                "type": "number"
+              },
+              "经量": {
+                "default": "无",
+                "type": "string",
+                "enum": [
+                  "无",
+                  "微量",
+                  "少量",
+                  "中等",
+                  "量大"
+                ]
+              },
+              "是否月经": {
+                "default": false,
+                "type": "boolean"
+              },
+              "卫生用品": {
+                "default": "无",
+                "type": "string",
+                "enum": [
+                  "无",
+                  "日用卫生巾",
+                  "夜用卫生巾",
+                  "卫生棉条",
+                  "月经杯",
+                  "护垫",
+                  "卫生巾"
+                ]
+              },
+              "更换时间": {
+                "default": "",
+                "type": "string"
+              },
+              "兴奋度": {
+                "default": 0,
+                "type": "number"
+              },
+              "润滑度": {
+                "default": 0,
+                "type": "number"
+              },
+              "乳头状态": {
+                "default": "柔软",
+                "type": "string",
+                "enum": [
+                  "柔软",
+                  "微挺",
+                  "勃起",
+                  "肿胀"
+                ]
+              },
+              "阴蒂状态": {
+                "default": "休眠",
+                "type": "string",
+                "enum": [
+                  "休眠",
+                  "微充血",
+                  "充血",
+                  "勃起"
+                ]
+              },
+              "体温": {
+                "default": 36.5,
+                "type": "number"
+              },
+              "最后洗澡时间": {
+                "default": "",
+                "type": "string"
+              },
+              "是否处女": {
+                "default": true,
+                "type": "boolean"
+              },
+              "处女膜状态": {
+                "default": "完整",
+                "type": "string",
+                "enum": [
+                  "完整",
+                  "破裂",
+                  "残存",
+                  "无"
+                ]
+              },
+              "最后更新时": {
+                "default": 0,
+                "type": "number"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "additionalProperties": {}
+      }
+    },
+    "关系图谱": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string"
+        },
+        "additionalProperties": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "类型": {
+              "default": "陌生人",
+              "type": "string",
+              "enum": [
+                "闺蜜",
+                "好友",
+                "对手",
+                "暗恋",
+                "师生",
+                "母女",
+                "买卖",
+                "同事",
+                "上下级",
+                "陌生人"
+              ]
+            },
+            "信任": {
+              "default": 0.5,
+              "type": "number"
+            },
+            "亲密度": {
+              "default": "普通",
+              "type": "string",
+              "enum": [
+                "亲密",
+                "普通",
+                "疏远",
+                "敌对"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "事件": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "编号": {
+            "default": "",
+            "type": "string"
+          },
+          "日": {
+            "$ref": "#/$defs/__schema2"
+          },
+          "时": {
+            "default": 8,
+            "type": "number"
+          },
+          "类型": {
+            "default": "系统",
+            "type": "string",
+            "enum": [
+              "使用",
+              "症状",
+              "调查",
+              "社交",
+              "考试",
+              "结局",
+              "系统"
+            ]
+          },
+          "描述": {
+            "default": "",
+            "type": "string"
+          },
+          "相关": {
+            "$ref": "#/$defs/__schema3"
+          },
+          "榨取": {
+            "default": 0,
+            "type": "number"
+          },
+          "阶段": {
+            "default": 1,
+            "type": "number"
+          },
+          "人数": {
+            "default": 1,
+            "type": "number"
+          },
+          "模式": {
+            "default": "",
+            "type": "string"
+          },
+          "节奏": {
+            "default": "",
+            "type": "string"
+          },
+          "场景": {
+            "default": "",
+            "type": "string"
+          },
+          "已阻挡": {
+            "default": false,
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "结局": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "健康": {
+          "default": false,
+          "type": "boolean"
+        },
+        "平庸": {
+          "default": false,
+          "type": "boolean"
+        },
+        "真相揭示": {
+          "default": false,
+          "type": "boolean"
+        },
+        "坠落": {
+          "default": false,
+          "type": "boolean"
+        },
+        "崩坏": {
+          "default": false,
+          "type": "boolean"
+        },
+        "黑市掌控": {
+          "default": false,
+          "type": "boolean"
+        },
+        "同归于尽": {
+          "default": false,
+          "type": "boolean"
+        },
+        "未解之谜": {
+          "default": false,
+          "type": "boolean"
+        },
+        "某人清醒": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "某人崩坏": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "课程表": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "周一": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "周二": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "周三": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "周四": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "周五": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "周六": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        },
+        "周日": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "时段": {
+                "default": "上午",
+                "type": "string"
+              },
+              "节次": {
+                "$ref": "#/$defs/__schema6"
+              },
+              "科目": {
+                "default": "",
+                "type": "string"
+              },
+              "老师": {
+                "default": "",
+                "type": "string"
+              },
+              "老师 UID": {
+                "default": "",
+                "type": "string"
+              },
+              "教室": {
+                "default": "高三2班",
+                "type": "string"
+              },
+              "类型": {
+                "default": "正课",
+                "type": "string",
+                "enum": [
+                  "正课",
+                  "早读",
+                  "自习",
+                  "体育",
+                  "实验",
+                  "活动",
+                  "班会"
+                ]
+              },
+              "备注": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            "additionalProperties": {}
+          }
+        }
+      },
+      "additionalProperties": {}
+    },
+    "陌生模板": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "年龄范围": {
+            "default": [
+              16,
+              18
+            ],
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "罩杯范围": {
+            "default": [
+              "A",
+              "B"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "体型池": {
+            "$ref": "#/$defs/__schema3"
+          },
+          "NSFW默认": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "敏感度": {
+                "default": 50,
+                "type": "number"
+              },
+              "技能等级": {
+                "default": 5,
+                "type": "number"
+              },
+              "隐蔽": {
+                "default": 50,
+                "type": "number"
+              }
+            }
+          },
+          "性格池": {
+            "$ref": "#/$defs/__schema3"
+          },
+          "传播倾向": {
+            "default": 0.3,
+            "type": "number"
+          },
+          "模板类型": {
+            "default": "纯真",
+            "type": "string",
+            "enum": [
+              "纯真",
+              "御姐",
+              "辣妹",
+              "运动",
+              "文静",
+              "熟女",
+              "萝莉"
+            ]
+          }
+        }
+      }
+    },
+    "配置": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "经验阈值": {
+          "default": [
+            0,
+            30,
+            100,
+            200,
+            350
+          ],
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "学业阈值": {
+          "default": [
+            0,
+            40,
+            60,
+            75,
+            90,
+            100
+          ],
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "天数阈值": {
+          "default": [
+            0,
+            30,
+            60,
+            95,
+            102
+          ],
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "难度倍率": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "玩家经验": {
+              "default": [
+                1,
+                0.7,
+                0.5
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家每日上限": {
+              "default": [
+                1.3,
+                1,
+                0.7
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家精力消耗": {
+              "default": [
+                0.8,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家理智消耗": {
+              "default": [
+                0.8,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家怀疑值": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家金钱获取": {
+              "default": [
+                1.3,
+                1,
+                0.7
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家压力增长": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家健康恢复": {
+              "default": [
+                1.3,
+                1,
+                0.7
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "玩家技能经验": {
+              "default": [
+                1.2,
+                1,
+                0.8
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始精力": {
+              "default": [
+                100,
+                80,
+                60
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始理智": {
+              "default": [
+                100,
+                80,
+                60
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始精力上限": {
+              "default": [
+                100,
+                80,
+                60
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始体力上限": {
+              "default": [
+                100,
+                80,
+                60
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始金钱": {
+              "default": [
+                800,
+                500,
+                300
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始健康": {
+              "default": [
+                90,
+                75,
+                60
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "初始压力": {
+              "default": [
+                5,
+                10,
+                20
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性使用频率": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性传播": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性技能成长": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性好感增长": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性信任增长": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性阶段升级": {
+              "default": [
+                0.7,
+                1,
+                1.3
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性初始能力上限": {
+              "default": [
+                60,
+                80,
+                100
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性初始好感": {
+              "default": [
+                30,
+                40,
+                50
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性初始信任": {
+              "default": [
+                50,
+                60,
+                70
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性初始理性": {
+              "default": [
+                90,
+                80,
+                70
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "女性初始执念": {
+              "default": [
+                10,
+                20,
+                30
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "LCG常数": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "天数乘数": {
+              "default": 7,
+              "type": "number"
+            },
+            "小时乘数": {
+              "default": 13,
+              "type": "number"
+            },
+            "ID乘数": {
+              "default": 7919,
+              "type": "number"
+            },
+            "阶段乘数": {
+              "default": 11,
+              "type": "number"
+            },
+            "阶段后乘数": {
+              "default": 17,
+              "type": "number"
+            },
+            "末乘数": {
+              "default": 31,
+              "type": "number"
+            }
+          }
+        },
+        "持有者每日使用上限": {
+          "default": 2,
+          "type": "number"
+        },
+        "持有者经验倍率": {
+          "default": 1.5,
+          "type": "number"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "UID计数器": {
+      "default": {
+        "女性": 0,
+        "事件": 0
+      },
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "number"
+      }
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "default": 0,
+      "type": "number"
+    },
+    "__schema1": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "等级": {
+          "default": 1,
+          "type": "number"
+        },
+        "经验": {
+          "default": 0,
+          "type": "number"
+        },
+        "今日已用": {
+          "default": 0,
+          "type": "number"
+        },
+        "今日上限": {
+          "default": 30,
+          "type": "number"
+        }
+      }
+    },
+    "__schema2": {
+      "default": 0,
+      "type": "number"
+    },
+    "__schema3": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema4": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "编号": {
+          "default": "",
+          "type": "string"
+        },
+        "标题": {
+          "default": "",
+          "type": "string"
+        },
+        "内容": {
+          "default": "",
+          "type": "string"
+        },
+        "范围": {
+          "default": "",
+          "type": "string"
+        },
+        "目标": {
+          "default": "",
+          "type": "string"
+        },
+        "强度": {
+          "default": "",
+          "type": "string"
+        },
+        "来源": {
+          "default": "",
+          "type": "string"
+        },
+        "过期": {
+          "default": "",
+          "type": "string"
+        },
+        "备注": {
+          "default": "",
+          "type": "string"
+        },
+        "奖励": {
+          "default": "",
+          "type": "string"
+        },
+        "奖惩": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "__schema5": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "编号": {
+          "default": "",
+          "type": "string"
+        },
+        "名称": {
+          "default": "",
+          "type": "string"
+        },
+        "标题": {
+          "default": "",
+          "type": "string"
+        },
+        "数量": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "量": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "类型": {
+          "default": "",
+          "type": "string"
+        },
+        "品质": {
+          "default": "",
+          "type": "string"
+        },
+        "状态": {
+          "default": "",
+          "type": "string"
+        },
+        "位置": {
+          "default": "",
+          "type": "string"
+        },
+        "所有者": {
+          "default": "",
+          "type": "string"
+        },
+        "可堆叠": {
+          "default": true,
+          "type": "boolean"
+        },
+        "标签": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "描述": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "__schema6": {
+      "default": 1,
+      "type": "number"
+    },
+    "__schema7": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "名称": {
+          "default": "",
+          "type": "string"
+        },
+        "物品": {
+          "default": "",
+          "type": "string"
+        },
+        "需要": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "需求": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "拥有": {
+          "$ref": "#/$defs/__schema2"
+        },
+        "已有": {
+          "$ref": "#/$defs/__schema2"
+        }
+      }
+    },
+    "__schema8": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "名称": {
+          "default": "",
+          "type": "string"
+        },
+        "物品": {
+          "default": "",
+          "type": "string"
+        },
+        "数量": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "量": {
+          "$ref": "#/$defs/__schema6"
+        }
+      }
+    },
+    "__schema9": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "名称": {
+          "default": "",
+          "type": "string"
+        },
+        "物品": {
+          "default": "",
+          "type": "string"
+        },
+        "量": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "数量": {
+          "$ref": "#/$defs/__schema6"
+        },
+        "内容": {
+          "default": "",
+          "type": "string"
+        },
+        "容量": {
+          "default": "",
+          "type": "string"
+        },
+        "状态": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

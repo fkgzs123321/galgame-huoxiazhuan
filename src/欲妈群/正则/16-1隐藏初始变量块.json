@@ -1,0 +1,19 @@
+{
+  "id": "yumq-reg-ac970542-ec38-4c8f-9705-d89339349cb9",
+  "scriptName": "1隐藏初始变量块（开局那坨）",
+  "findRegex": "/<UpdateVariable>\\s*<initvar>[\\s\\S]*?<\\/initvar>\\s*<\\/UpdateVariable>/gi",
+  "trimStrings": [],
+  "placement": [
+    1,
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null,
+  "replaceString": "",
+  "source": null
+}

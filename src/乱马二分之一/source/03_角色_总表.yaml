@@ -1,0 +1,158 @@
+# 03 · 角色总表
+# 口径：日文汉字转简体；不用台版盗版华人姓氏（姬乱马／钱小茜／游带刀／贺沐志）
+# conf: ★ 多源一致 ｜ ☆ 单一来源 ｜ ? 存疑
+
+groups:
+
+  - name: 早乙女家
+    characters:
+      - { name: 早乙女乱马, jp: 早乙女乱馬, identity: 无差别格斗早乙女流二代继承人 / 风林馆高中1年F组, age: 16, curse: 娘溺泉（遇冷水变女·热水复原）, techniques: [猫拳, 海千拳, 火中天津甘栗拳, 飞龙升天破, 猛虎高飞车], trait: 好胜傲娇、极度恐猫、感情优柔寡断；喝过龙之鬚粥，需束辫抑发, first: 第1卷第1话, conf: ★ }
+      - { name: 早乙女玄马, jp: 早乙女玄馬, identity: 无差别格斗早乙女流创始人, age: 成年, curse: 熊猫溺泉（遇冷水变熊猫）, techniques: [山千拳, 海千拳, 猛虎落地势], trait: 懒惰贪财、怕妻子；变熊猫后举牌写字；介意秃头, first: 第1卷第1话, conf: ★ }
+      - { name: 早乙女佳香, jp: 早乙女のどか, identity: 家庭主妇 / 乱马之母, age: 成年, curse: 无, techniques: [], trait: 温柔但一板一眼，持武士刀充当「介错」，执着「非男子汉则切腹」誓约；与女乱马容貌极似, first: 卷22「乱马 Meet Mother」, conf: ★ }
+      - { name: 乱子, jp: 乱子, identity: 女乱马在佳香面前用的化名, age: 同乱马, curse: 无（即女乱马）, techniques: [], trait: 仅用于母子相认场合, first: 佳香篇, conf: ★ }
+
+  - name: 天道道场
+    characters:
+      - { name: 天道茜, jp: 天道あかね, identity: 天道流继承人 / 风林馆高中1年F组, age: 16, curse: 无, techniques: [棍棒, 竹刀, 弓, 睡拳], trait: 外刚内柔、体育万能唯独不会游泳、料理是灾难级、醋坛子, first: 第1卷第1话, conf: ★ }
+      - { name: 天道早云, jp: 天道早雲, identity: 天道道场馆主 / 鳏夫, age: 成年, curse: 无, techniques: [], trait: 神经质、爱哭、惧师父八宝斋；「降妖除魔是武道家的责任」, first: 第1卷第1话, conf: ★ }
+      - { name: 天道霞, jp: 天道かすみ, identity: 天道家长女 / 主妇, age: 19, curse: 无, techniques: [], trait: 贤慧天然呆、永远带笑；被八宝斋骚扰最少的女性；极限愤怒时会抄菜刀, first: 第1卷第1话, conf: ★ }
+      - { name: 天道靡, jp: 天道なびき, identity: 天道家次女 / 风林馆高中2年（与九能带刀同班）, age: 17, curse: 无, techniques: [赌术与敛财术], trait: 拜金主义、倒卖乱马与茜的照片牟利；曾击败火车王金之介, first: 第1卷第2话, conf: ★ }
+
+  - name: 无差别格斗（元祖）
+    characters:
+      - { name: 八宝斋, jp: 八宝斎, identity: 无差别格斗流始祖 / 玄马与早云的师父, age: 约118岁（与乐京齐同龄）, curse: 双胞胎溺泉（只让头上肿包变两个）, techniques: [八宝大华轮, 气功弹, 身体雾化, 斗气消除], trait: 作品武力顶点、老色鬼、专偷内衣；曾奴役两徒弟偷内衣而被封印深山, first: 卷2前后, conf: ★ }
+
+  - name: 九能家
+    characters:
+      - { name: 九能带刀, jp: 九能帯刀, identity: 风林馆高中剑道部主将 / 自称「风林馆高中的苍雷」, age: 高中2年, curse: 无, techniques: [木刀剑道, 气压斩], trait: 自恋迟钝；同时迷恋「辫子姑娘」与天道茜，始终不知二者同为乱马, first: 第1卷早期, conf: ★ }
+      - { name: 九能小太刀, jp: 九能小太刀, identity: 圣赫贝雷凯女子学园艺术体操社员 / 通称「黑玫瑰」, age: 未详, curse: 无, techniques: [格斗新体操, 黑玫瑰旋风, 黑玫瑰吹雪, 毒药与爆药], trait: 卑鄙执着、与天道茜关系最恶劣；称乱马「乱马大人」, first: 第3卷「黑玫瑰的恋情」, conf: ★ }
+      - { name: 九能校长, jp: 九能校長, identity: 风林馆高中校长 / 九能兄妹之父, age: 成年, curse: 无, techniques: [], trait: 狂热夏威夷风、曾离家出走三年；推行剃发校规对付乱马, first: 卷12「校长回来了」, conf: ★ }
+      - { name: 猿隐佐助, jp: 猿隠佐助, identity: 九能家家忍, age: 未详, curse: 无, techniques: [猿隐流卡拉克利豪斯术], trait: 动画原创；1989 版前中期顶替五寸钉光的阴谋戏, first: null, source_type: 动画原创, conf: ★ }
+
+  - name: 响家
+    characters:
+      - { name: 响良牙, jp: 響良牙, identity: 我流拳法家 / 长期休学高中生, age: 16, curse: 黑豚溺泉（遇冷水变小黑猪「小P」）, techniques: [爆破点穴, 狮子咆哮弹, 真·狮子咆哮弹], trait: 家族遗传超级路痴、纯情暗恋天道茜、抗打击力极强。, first: 卷2「追杀乱马的男子」, conf: ★ }
+      - { name: 响黑白, jp: 響シロクロ, identity: 良牙家养的狗（毛色半黑半白、雌性、4岁）, age: 4, curse: 无, techniques: [], trait: 想让主人看到自己生的小狗, first: 第103话「良牙回家去」, conf: ★ }
+      - { name: 良牙父母, jp: null, identity: 良牙的双亲, age: 成年, curse: 无, techniques: [], trait: 同样遗传性路痴，全家常年互相找不到, first: 未详, conf: ☆ }
+
+  - name: 猫饭店 / 中国女杰族
+    characters:
+      - { name: 珊璞, jp: シャンプー, identity: 女杰族村武术大会冠军 / 猫饭店看板娘, age: 少女, curse: 猫溺泉（遇冷水变猫）, techniques: [双槌, 女杰族中国拳法, 洗头控脑术], trait: 依族规追杀女乱马后爱上男乱马，自称乱马之妻；直进爱恨分明, first: 第4卷「死亡之吻」, conf: ★ }
+      - { name: 沐丝, jp: ムース, identity: 女杰族男性 / 猫饭店杂工, age: 未详, curse: 鸭子溺泉（遇冷水变鸭）, techniques: [暗器, 秘技鹰爪拳, 白鸟拳, 鸡卵拳, 鸵鸟脚], trait: 超级大近视；暗器藏于袖中与鸭羽；痴恋珊璞, first: 第5卷「沐丝来袭」, conf: ★ }
+      - { name: 可伦, jp: コロン, identity: 珊璞曾祖母 / 猫饭店店长 / 女杰族大宗师, age: 300岁以上（动画设定）, curse: 无, techniques: [火中天津甘栗拳, 飞龙升天破, 爆碎点穴, 点穴, 熊拳, 鲛拳], trait: 称乱马「曾孙女婿」，是乱马实质上的师父；算计又偏袒曾孙女, first: 第10卷「俊郎与可伦」, conf: ★ }
+      - { name: 砒珂, jp: ピンク, identity: 「毒药使者」双胞胎之一 / 来自中国药草村, age: 未详, curse: 无, techniques: [毒草, 藤蔓, 瘴气], trait: 善使毒草；与琳珂共同开发母性花；幼时与珊璞结怨, first: 卷29「毒草的森林」, conf: ★ }
+      - { name: 琳珂, jp: リンク, identity: 「毒药使者」双胞胎之一 / 药草使者, age: 未详, curse: 无, techniques: [解毒剂, 毒草], trait: 善制解毒剂；与砒珂共同开发母性花, first: 卷29「毒草的森林」, conf: ★ }
+      - { name: 猫魔铃, jp: 猫魔鈴, identity: 中国猫妖，本体藏在巨铃中, age: 未详, curse: 无, techniques: [妖术], trait: 喜欢珊璞；持有小铃者被定为「新娘」, first: 卷14「猫魔铃」, conf: '?' }
+
+  - name: 久远寺家
+    characters:
+      - { name: 久远寺右京, jp: 久遠寺右京, identity: 御好烧店「右京轩」店主 / 风林馆高中转校生, age: 16前后, curse: 无, techniques: [巨型铁板铲近战, 小型飞铲, 炸药与呛粉烙饼, 面糊龙], trait: 关西腔；被玄马骗走烙饼车而记仇；初期男装；与茜关系良好, first: 第9卷「烙饼店的右京」, conf: ★ }
+
+  - name: 风林馆高中学生与教师
+    characters:
+      - { name: 小乃东风, jp: 小乃東風, identity: 接骨针灸医师 / 小乃接骨所院长, age: 成年, curse: 无, techniques: [医术与穴位术], trait: 暗恋天道霞并在其面前失态；茜的倾诉对象；骨骼标本叫贝蒂, first: 第1卷早期, conf: ★ }
+      - { name: 二宫雏子, jp: 二ノ宮ひな子, identity: 乱马班第二任班导, age: 成年（体弱）, curse: 无（非溺泉；被八宝斋改造体质，吸「杀气」可变大人）, techniques: [八宝五圆杀, 八宝找零奉还, 八宝五十圆杀, 八宝篮框杀], trait: 暗恋天道早云；靠鱼缸的水维持成人形态, first: 卷25「史上最强的女人」, conf: '?' }
+      - { name: 五寸钉光, jp: 五寸釘光, identity: 风林馆高中1年F组, age: 16, curse: 无, techniques: [秘密摄影, 丑时参稻草人诅咒], trait: 阴沉卑怯、单恋天道茜、最恨乱马, first: 第1卷早期（漫画）, source_type: 原作, conf: ★ }
+      - { name: 浩, jp: ひろし, identity: 同班同学 / 乱马友人, age: 高中1年, curse: 无, techniques: [], trait: 吐槽役，中后期起成为固定班底, first: 中期, conf: ☆ }
+      - { name: 大介, jp: 大介, identity: 同班同学 / 乱马友人, age: 高中1年, curse: 无, techniques: [], trait: 吐槽役同伴, first: 中期, conf: ☆ }
+      - { name: 小百合, jp: さゆり, identity: 同班同学 / 茜的友人, age: 高中1年, curse: 无, techniques: [], trait: 常在旁吐槽茜, first: 中期, conf: ☆ }
+      - { name: 由香, jp: ゆか, identity: 同班同学 / 茜的友人, age: 高中1年, curse: 无, techniques: [], trait: 同小百合, first: 中期, conf: ☆ }
+
+  - name: 咒泉乡
+    characters:
+      - { name: 咒泉乡导游, jp: 呪泉郷のガイド, identity: 咒泉乡向导, age: 成年（已婚）, curse: 无, techniques: [], trait: 熟知各泉典故与女杰族习俗；持有咒泉乡水源地地图；终章被袭, first: 第1卷（其女终章首现）, conf: ★ }
+      - { name: 蒲兰慕, jp: プラム, identity: 咒泉乡导游之女, age: 未详, curse: 无, techniques: [怪力（可举起良牙的伞）], trait: 为警告「咒泉乡有危险」而赴日, first: 卷37「来自咒泉乡的使者」, conf: ★ }
+      - { name: 蕗珠, jp: ルージュ, identity: 咒泉乡居民 / 自称「世界第一美女」, age: 少女, curse: 阿修罗溺泉（遇冷水变三头六臂阿修罗）, techniques: [热风（可把冷水变热水）, 火龙大轮舞, 雷蛇天诛杀], trait: 因「力之源」（实为磁力针灸片）被裤袜太郎偷走而追到日本；六臂易肩酸, first: 卷32「发光的女」, conf: ★ }
+      - { name: 裤袜太郎, jp: パンスト太郎, identity: 八宝斋为其取名者（出生即中咒）, age: 出生即中咒, curse: 牛鹤鳗毛人溺泉 + 章鱼溺泉（牛头猿身鹤翅鳗尾恶魔，后加章鱼触手）, techniques: [裤袜流星脚], trait: 因名字奇耻而暴戾，反复来日逼八宝斋改名, first: 卷18「咒泉乡来的恶魔」, conf: ★ }
+      - { name: 乐京斋, jp: 楽京斎, identity: 八宝斋旧友 / 后为其弟子, age: 约118岁, curse: 童子溺泉（遇冷水变孩童「乐太郎」）, techniques: [秘技锦乃蝶, 雷神猛笔拳, 蝴蝶乱舞], trait: 古代日本两大色狼之一；为夺回锦乃蝶跳泉「年轻过头」, first: 第323话「八宝斋的新弟子」, conf: ★ }
+      - { name: 蛙仙人, jp: 蛙仙人, identity: 复仇者, age: 老年, curse: 池蛙溺泉（青蛙形态）, techniques: [蛙术], trait: 来练马向乱马复仇，曾把玄马、良牙、珊璞变成蛙, source_type: 动画原创, conf: ☆ }
+      - { name: 金尼, jp: キンニー, identity: 咒泉乡保护协会成员, age: 成年, curse: 和尚溺泉（遇冷水变瘦弱温厚、丧失战意）, techniques: [怪力（常态）], trait: 为「滥用变身」而来抓捕乱马一行, source_type: 动画原创, conf: ★ }
+      - { name: 南条亚里沙, jp: 南条ありさ, identity: 转学生, age: 未详, curse: 猫溺泉（遇冷水变猫）, techniques: [], trait: 动画原创；亦为 MEGA-CD 游戏《白兰爱歌》原创女主角, source_type: 动画原创, conf: ★ }
+
+  - name: 云龙家
+    characters:
+      - { name: 云龙明, jp: 雲竜あかり, identity: 经营相扑猪之家, age: 少女, curse: 无, techniques: [], trait: 极度爱猪；良牙的女友，不知良牙会变猪；家训是打赢锦猪才许交往。尖端版译「云龙明丽」, first: 原作中后期（TV/OVA 均未登场）, conf: ★ }
+      - { name: 胜锦, jp: 勝錦, identity: 第十四代横纲相扑猪, age: 未详, curse: 无, techniques: [相扑], trait: 被良牙击败, conf: ☆ }
+
+  - name: 凤凰山一族
+    characters:
+      - { name: 萨夫郎, jp: サフラン, identity: 凤凰山王室继承人, age: 婴儿↔成人（热能耗尽即回婴儿）, curse: 非溺泉；凤凰化, techniques: [巨型火球, 飞行, 天下瞬灭皇球弹, 皇帝火焰翼, 断肢再生], trait: 自私高傲；掐断泉水致使被诅咒者无法治愈；终章被乱马击败, first: 卷37「凤凰山的王子」, conf: ★ }
+      - { name: 纪玛, jp: キーマ, identity: 萨夫郎亲卫队长 / 半海鸟鸟人, age: 未详, curse: 茜溺泉（可变身假扮天道茜）, techniques: [飞鸟千斩翼（日文作水鸟千斩翼）, 剃刀羽毛, 剑术, 指挥鸟群, 印刻卵洗脑], trait: 识破天道茜是乱马弱点并掳走她, first: 卷37, conf: ★ }
+      - { name: 柯尔玛, jp: コルマ, identity: 纪玛部下 / 半乌鸦少年鸟人, age: 未详, curse: 男溺泉（可变人类形态）, techniques: [羽毛攻击, 徒手战], trait: 依赖纪玛指挥、怕冷水, first: 卷37, conf: ★ }
+      - { name: 马飒拉, jp: マサラ, identity: 纪玛部下 / 半乌鸦鸟人, age: 未详, curse: 男溺泉（可变人类形态）, techniques: [同柯尔玛], trait: 同柯尔玛, first: 卷37, conf: ★ }
+
+  - name: 麝香王朝
+    characters:
+      - { name: 哈浦, jp: ハーブ, identity: 麝香王朝王位继承者 / 龙血末裔, age: 青年, curse: 娘溺泉 + 止水桶锁定（女相固定，热水无效）, techniques: [龙精飞翔, 飞刀龙斩破, 飞龙升天破, 气之剑], trait: 1400年男性武道集团末裔；被猴女用止水桶泼中固定成女体，为寻开水壶赴日；胸口是弱点, first: 卷24「宝来山」, conf: ★ }
+      - { name: 来睦, jp: ライム, identity: 哈浦部下 / 虎血兽人, age: 未详, curse: 无（天生兽人，非冷水触发）, techniques: [怪力近战], trait: 从未见过女人、好奇心极强；被良牙狮子咆哮弹击败。英文版作 Lime, first: 卷24, conf: '?' }
+      - { name: 敏杜, jp: ミント, identity: 哈浦部下 / 狐血或狼血兽人, age: 未详, curse: 无（天生兽人）, techniques: [狼牙流星弹, 高速刀法], trait: 敏捷但易分心；被沐丝看穿弱点击败。英文版作 Mint；兽血两源冲突 ? , first: 卷24, conf: '?' }
+
+  - name: 篇章角色
+    characters:
+      - { name: 大文字煎太郎, jp: 大文字煎太郎, identity: 格斗茶道大文字流继承人, age: 未详, curse: 无, techniques: [格斗茶道诸技], trait: 为搅黄祖母安排的相亲而四处挑战强者；先迷天道茜、后恋都大路茶月, first: 卷6「格斗茶道」, conf: ★ }
+      - { name: 大文字家元, jp: 大文字家元, identity: 格斗茶道大文字流家主 / 煎太郎的祖母, age: 成年, curse: 无, techniques: [袱纱鲣钓, 帛纱返], trait: 茶道权威、主持继承人比试；劝煎太郎与门第显赫的良家订婚, conf: ★ }
+      - { name: 都大路茶月, jp: 都大路茶月, identity: 里格斗茶道都大路流家元之女, age: 未详, curse: 无, techniques: [格斗茶道], trait: 被煎太郎恋慕；另译「茶月小姐」, first: 第57话, conf: ★ }
+      - { name: 三千院帝, jp: 三千院帝, identity: 格斗花式滑冰「金童玉女」之一 / 科尔霍兹学园高中, age: 未详, curse: 无, techniques: [格斗滑冰术, 死灵之盆踊], trait: 接吻魔，夺走女乱马初吻；想吻遍所有漂亮女孩, first: 卷3「在溜冰场接吻」, conf: ★ }
+      - { name: 白鸟梓, jp: 白鳥あずさ, identity: 格斗花式滑冰「金童玉女」之一, age: 未详, curse: 无, techniques: [格斗滑冰术, 别离的旋转木马], trait: 盗窃癖；见可爱之物必命名收藏（曾把小P改名「夏绿蒂」）, first: 卷3, conf: ★ }
+      - { name: 今条真理子, jp: 今条マリ子, identity: 青春学园格斗啦啦队队长, age: 未详, curse: 无, techniques: [指挥棒, 剃刀绒球, 飞踢], trait: 迷恋九能带刀，视女乱马为情敌, conf: ★ }
+      - { name: 鹭宫飞鸟, jp: 鷺ノ宮飛鳥, identity: 九能小太刀幼稚园时期的对手, age: 未详, curse: 无, techniques: [白百合风格战法], trait: 外表优雅、手段卑鄙；十年前与小太刀约定「比男朋友」, first: 卷32「小百合飞鸟」, conf: ★ }
+      - { name: 明神隼人, jp: 明神隼人, identity: 章鱼烧职人 / 右京宿敌, age: 与右京相仿, curse: 无, techniques: [驱使章鱼柏多拉斯], trait: 因输掉章鱼烧对御好烧之争而戴章鱼面具六年，复仇成功后摘下, first: 卷33「激斗！面具殊死战」, conf: ★ }
+      - { name: 小夏, jp: 小夏, identity: 「女人里」女忍（实为男儿身）→ 右京轩店员, age: 少年, curse: 无, techniques: [分身术, 手里剑, 烟雾弹, 纸剑, 纸钞旋风], trait: 被继母与姐姐虐待；爱上「第一个对他好的女人」右京。原作登场，动画未登场, first: 卷35「脱离忍者的小夏」, conf: ★ }
+      - { name: 公纹龙, jp: 公紋竜, identity: 公纹道场继承人, age: 青年, curse: 无, techniques: [山千拳], trait: 奉父遗命寻海千拳，假冒乱马住进早乙女家；败于乱马后劝其与母相认, first: 卷28「妈妈，我是乱马」, conf: ★ }
+      - { name: 火车王金之介, jp: 火車王金之介, identity: 火车王流第七代传人, age: 成年, curse: 无, techniques: [火车王流花钱术, 腹语人偶], trait: 流派核心是「自己一分不花、全靠他人供养」；与天道靡比「谁先花自己的钱谁输」，败后负债十亿跑路, first: 第309话, conf: ★ }
+      - { name: 皮可莱特·夏尔丹, jp: ピコレット・シャルダン, identity: 法国格斗饮食高手, age: 成年, curse: 无, techniques: [进食时口裂至半身、舌伸至头顶], trait: 家规禁止被人看见进食之相；「格斗晚宴」对手, first: null, conf: ★ }
+      - { name: 真之介, jp: 真之介, identity: 流幻泽少年, age: 17, curse: 无（非溺泉；依赖「生命之水」，后被苔藓治愈）, techniques: [与八歧大蛇交战], trait: 幼时救茜负伤；向茜告白后又遗忘, first: 卷26「生命之水」, conf: ★ }
+      - { name: 真之介的祖父, jp: 真之介の祖父, identity: 流幻泽猎人, age: 老年, curse: 无, techniques: [], trait: 看似将死实则精力过剩；熟知八头大鲛龙, first: 卷26, conf: ☆ }
+      - { name: 红翼, jp: 紅つばさ, identity: 变装高手, age: 青年, curse: 无, techniques: [拟态伪装（邮筒、看板、树、垃圾桶）], trait: 单恋久远寺右京，曾被误认成女同性恋, first: null, conf: ★ }
+      - { name: 牌王KING, jp: キング, identity: 老千 / 人称赌王K, age: 成年, curse: 无, techniques: [抽鬼牌等扑克（会出千）], trait: 长相酷似黑桃K；除乱马与天道早云外人人可胜他, first: 卷15「赌王KING」, conf: ☆ }
+      - { name: 洒水婆婆, jp: 水まき婆さん, identity: 邻居老妇, age: 老年, curse: 无, techniques: [], trait: 每日门前洒水，常误泼主角团引发变身骚动, first: 全篇穿插, conf: ☆ }
+      - { name: 小介, jp: 小介, identity: 病弱少年, age: 少年, curse: 无, techniques: [], trait: 厌药；为让他吃药而由女乱马陪同约会, first: null, conf: ☆ }
+      - { name: 镜女乱马, jp: 鏡乱馬, identity: 魔镜投影出的女相乱马（实为镜屋寄宿的大小姐芳魂）, age: 外观同乱马, curse: 对冷热水均无变身反应, techniques: [], trait: 迷恋年轻男子；最后与男相镜乱马相恋, first: 卷35「两个乱马」, conf: ★ }
+      - { name: 小铁, jp: 小鉄, identity: 「女人里」色情吃茶店易装忍者 / 小夏的继母, age: 成年, curse: 无, techniques: [爆炸等卑劣手段], trait: 好吃懒做的怪物，虐待小夏, first: 卷35, conf: ★ }
+      - { name: 小梅, jp: 小梅, identity: 「女人里」易装忍者 / 小夏的姐姐, age: 成年, curse: 无, techniques: [同上], trait: 同上, first: 卷35, conf: ★ }
+      - { name: 小枝, jp: 小枝, identity: 「女人里」易装忍者 / 小夏的姐姐, age: 成年, curse: 无, techniques: [同上], trait: 同上, first: 卷35, conf: ★ }
+      - { name: 与太郎, jp: 与太郎, identity: 体弱厌出门的少年, age: 少年, curse: 无, techniques: [], trait: 极爱熊猫；被乱马父子帮助恢复健康, first: null, conf: ☆ }
+      - { name: 海月滨, jp: null, identity: 地名（第36卷第378话「海月浜の阴谋」），不是人物, age: null, curse: null, techniques: [], trait: 关键存在为「水母大王」，性温驯、爱把人抛起；天道茜获赠「海月泳装」后夺冠。原清单误列为人物，已纠正, first: 第378话, conf: ★ }
+
+  - name: 动画原创（1989 版）
+    source_type: 动画原创
+    characters:
+      - { name: 铃铃, jp: リンリン, identity: 珊璞师妹 / 女杰族, age: 未详, curse: 无, techniques: [女杰族拳法], trait: 为替珊璞讨公道来日，得知乱马是男后转为撮合；原作双胞胎砒珂·琳珂据其设计, conf: ★ }
+      - { name: 兰兰, jp: ランラン, identity: 珊璞师妹 / 女杰族, age: 未详, curse: 无, techniques: [女杰族拳法], trait: 同上, conf: ★ }
+      - { name: 大黑香织, jp: 大黒かおり, identity: 乱马的「追加未婚妻」, age: 少女, curse: 无, techniques: [中华汤运送术], trait: 表面文静实则强悍；其父曾以三条黄瓜、一条鱼、一碗饭救活玄马，换来婚约, conf: ★ }
+      - { name: 雷门手鞠, jp: 雷門てまり, identity: 踢馆者, age: 少女, curse: 无, techniques: [格斗踢馆术], trait: 初战击败天道茜夺走道场招牌，二战落败, conf: ★ }
+      - { name: 杨贵妃, jp: 楊貴妃, identity: 寄宿在诅咒胸罩中的古代芳魂, age: 古代, curse: 无, techniques: [惑魅美少年], trait: 热斗篇第28话；因玄马酷似唐玄宗而钟情于他, first: 热斗篇第28话, conf: ☆ }
+      - { name: 武藏小金, jp: 武蔵小金, identity: 前风林馆高中生的幽灵, age: 已故, curse: 无, techniques: [], trait: 性格搞笑不阴森, conf: ☆ }
+      - { name: 珍玄斋, jp: 珍玄斎, identity: 八宝斋之友, age: 老年, curse: 无, techniques: [隐身术], trait: 欲教玄马与早云隐身术, conf: ☆ }
+      - { name: 绿, jp: みどり, identity: 幼稚园保姆, age: 成年, curse: 无, techniques: [], trait: 八宝斋真心动情的对象, conf: ☆ }
+      - { name: 未央, jp: 未央, identity: 天道茜的占卜同好, age: 少女, curse: 无, techniques: [占卜], trait: 预言茜的婚事与八宝斋之死, conf: ☆ }
+      - { name: 小乃绢, jp: 小乃きぬ, identity: 小乃东风之母, age: 老年, curse: 无, techniques: [], trait: 来为儿子选媳，偏好丰臀, conf: ☆ }
+      - { name: 春卷, jp: 春巻, identity: 中国商人, age: 成年, curse: 无, techniques: [], trait: 贩卖速成咒泉乡粉末, conf: ☆ }
+      - { name: 大德寺清康, jp: null, identity: 风林馆高中格斗新体操部（男组）, age: 未详, curse: 无, techniques: [格斗新体操], trait: 动画原创, conf: '?' }
+
+# ══════════════════════════════════════════════════════════════
+# 受诅咒者汇总（角色 ｜ 溺泉 ｜ 变身形态）
+# ══════════════════════════════════════════════════════════════
+
+cursed_roster:
+  - { who: 早乙女乱马, spring: 娘溺泉, form: 女孩（女乱马） }
+  - { who: 早乙女玄马, spring: 熊猫溺泉, form: 大熊猫 }
+  - { who: 响良牙, spring: 黑豚溺泉, form: 小黑猪「小P」 }
+  - { who: 珊璞, spring: 猫溺泉, form: 猫 }
+  - { who: 沐丝, spring: 鸭子溺泉, form: 鸭 }
+  - { who: 裤袜太郎, spring: 牛鹤鳗毛人溺泉 + 章鱼溺泉, form: 牛头猿身鹤翅鳗尾奇美拉（后加章鱼脚） }
+  - { who: 哈浦, spring: 娘溺泉（被止水桶锁定）, form: 女孩（女哈浦） }
+  - { who: 猴子（哈浦的实验对象）, spring: 娘溺泉, form: 猴娘 }
+  - { who: 乐京斋, spring: 童子溺泉, form: 孩童「乐太郎」 }
+  - { who: 蕗珠, spring: 阿修罗溺泉, form: 三头六臂阿修罗 }
+  - { who: 纪玛, spring: 茜溺泉, form: 天道茜的复制体 }
+  - { who: 柯尔玛, spring: 男溺泉, form: 人类形态柯尔玛 }
+  - { who: 马飒拉, spring: 男溺泉, form: 人类形态马飒拉 }
+  - { who: 八宝斋, spring: 双胞胎溺泉, form: 仅头上肿包变两个 }
+  - { who: 蛙仙人, spring: 池蛙溺泉, form: 青蛙形态 }
+  - { who: 金尼, spring: 和尚溺泉, form: 瘦弱温厚、丧失战意 }
+  - { who: 南条亚里沙, spring: 猫溺泉, form: 猫 }
+
+uncursed_notables:
+  - { who: 天道茜, note: 本人未落泉，仅被纪玛用茜溺泉复制过外形 }
+  - { who: 男溺泉, note: 「模板泉」，原作中被视为真解药；作者访谈承认，但为保留女乱马而未治愈 ? }

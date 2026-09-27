@@ -1,0 +1,12 @@
+[
+ {
+  "op": "replace",
+  "path": "/regex_scripts/状态栏界面/replaceString",
+  "value": "```\n<body>\n<div id=\"yx-load\">正在载入面板…</div>\n<script>\n(function(){\n  var U = \"https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-yingxiongtanshuo@22a49be/index.html\";\n  var D = document.getElementById(\"yx-load\");\n  if (typeof $ === \"undefined\") { if (D) D.textContent = \"没载入：这个环境里没有 jQuery\"; return; }\n  $(\"body\").load(U, function (r, st, xhr) {\n    if (st !== \"success\") {\n      if (D) D.textContent = \"没载入：\" + st + \" \" + (xhr ? xhr.status : \"\") + \"　地址：\" + U;\n    } else if (D) { D.remove(); }\n  });\n})();\n</script>\n</body>\n```\n"
+ },
+ {
+  "op": "replace",
+  "path": "/regex_scripts/开局选择界面/replaceString",
+  "value": "```\n<body>\n<div id=\"yx-load\">正在载入选人界面…</div>\n<script>\n(function(){\n  var U = \"https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-yingxiongtanshuo@22a49be/kai.html\";\n  var D = document.getElementById(\"yx-load\");\n  if (typeof $ === \"undefined\") { if (D) D.textContent = \"没载入：这个环境里没有 jQuery\"; return; }\n  $(\"body\").load(U, function (r, st, xhr) {\n    if (st !== \"success\") {\n      if (D) D.textContent = \"没载入：\" + st + \" \" + (xhr ? xhr.status : \"\") + \"　地址：\" + U;\n    } else if (D) { D.remove(); }\n  });\n})();\n</script>\n</body>\n```\n"
+ }
+]

@@ -1,0 +1,164 @@
+@@generate_before
+<%_
+const n = String(getvar('stat_data.剧情.当前节点', { scope: 'local', defaults: '序章-1' }) || '序章-1');
+const deadNow = getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) === true;
+const triggered = getvar('stat_data.剧情.已触发事件', { scope: 'local', defaults: [] }) || [];
+const hasLibMeet = Array.isArray(triggered) && triggered.some((e) => String(e).includes('图书馆接头'));
+_%>
+<%- await getwi(null, '抉择唯一来源铁律') %>
+<%- await getwi(null, '叙事末尾必选格式') %>
+<%_ if (is_prologue) { _%>
+<%- await getwi(null, '序章当前节点选项·常亮') %>
+<%- await getwi(null, '序章写死机读表') %>
+<%- await getwi(null, '序章选项识别与一致性铁律') %>
+<%- await getwi(null, '序章主持') %>
+<%- await getwi(null, '序章节点推进铁律') %>
+<%- await getwi(null, '序章抉择全书-写死表') %>
+<%- await getwi(null, '抉择校验表') %>
+<%- await getwi(null, '序章BE执行范例') %>
+<%- await getwi(null, '序章BE后禁止续玩') %>
+<%_ if (deadNow) { _%>
+<%_ /* 已死亡：不注入序章-1~5 分节点；BE 格式见《死亡结局处理》 */ _%>
+<%_ } else { _%>
+<%_ if (n === '序章-1') { _%>
+<%- await getwi(null, '序章-1-方汉洲当面对质') %>
+<%_ } _%>
+<%_ if (n === '序章-2') { _%>
+<%- await getwi(null, '序章-2-方敏追问') %>
+<%_ } _%>
+<%_ if (n === '序章-3') { _%>
+<%- await getwi(null, '序章-3-去向选择') %>
+<%_ } _%>
+<%_ if (n === '序章-4' && !hasLibMeet) { _%>
+<%- await getwi(null, '序章非法节点熔断') %>
+<%_ } _%>
+<%_ if (n === '序章-4' && hasLibMeet) { _%>
+<%- await getwi(null, '序章-4-图书馆等待') %>
+<%_ } _%>
+<%_ if (n === '序章-5' && hasLibMeet) { _%>
+<%- await getwi(null, '序章-5-秘密基地') %>
+<%_ } _%>
+<%_ if (n === '序章-5' && !hasLibMeet) { _%>
+<%- await getwi(null, '序章非法节点熔断') %>
+<%_ } _%>
+<%_ } _%>
+<%_ } _%>
+<%_ if (is_chapter1 && !dead && prologue_done) { _%>
+<%- await getwi(null, '第一章当前节点选项·常亮') %>
+<%- await getwi(null, '第一章写死机读表') %>
+<%- await getwi(null, '第一章选项识别与一致性铁律') %>
+<%- await getwi(null, '第一章主持') %>
+<%- await getwi(null, '第一章节点推进铁律') %>
+<%- await getwi(null, '第一章抉择全书-写死表') %>
+<%- await getwi(null, '抉择校验表') %>
+<%- await getwi(null, '第一章BE执行范例') %>
+<%- await getwi(null, '第一章BE后禁止续玩') %>
+<%_
+const ch1Order = ['第一章-0','第一章-1','第一章-2','第一章-3','第一章-4','第一章-5','第一章-6','第一章-7','第一章-8','第一章-9','第一章-10','第一章-11','第一章-12','第一章-13','第一章-14','第一章-15'];
+const ch1Ni = ch1Order.indexOf(n);
+const ch1Ci = ch1Order.indexOf(String(checkpoint || '第一章-0'));
+const illegalCh1Advance = ch1Ni >= 0 && ch1Ci >= 0 && ch1Ni > ch1Ci;
+_%>
+<%_ if (illegalCh1Advance) { _%>
+<%- await getwi(null, '第一章非法节点熔断') %>
+<%_ } else if (!deadNow) { _%>
+<%_ if (n === '第一章-0') { _%><%- await getwi(null, '第一章-0-章首') %><%_ } _%>
+<%_ if (n === '第一章-1') { _%><%- await getwi(null, '第一章-1-发布会举手') %><%_ } _%>
+<%_ if (n === '第一章-2') { _%><%- await getwi(null, '第一章-2-战争看法') %><%_ } _%>
+<%_ if (n === '第一章-3') { _%><%- await getwi(null, '第一章-3-领事质问') %><%_ } _%>
+<%_ if (n === '第一章-4') { _%><%- await getwi(null, '第一章-4-潜伏名单') %><%_ } _%>
+<%_ if (n === '第一章-5') { _%><%- await getwi(null, '第一章-5-陪纯子') %><%_ } _%>
+<%_ if (n === '第一章-6') { _%><%- await getwi(null, '第一章-6-纯子问话') %><%_ } _%>
+<%_ if (n === '第一章-7') { _%><%- await getwi(null, '第一章-7-遇见方敏') %><%_ } _%>
+<%_ if (n === '第一章-8') { _%><%- await getwi(null, '第一章-8-三百元') %><%_ } _%>
+<%_ if (n === '第一章-9') { _%><%- await getwi(null, '第一章-9-来过方家') %><%_ } _%>
+<%_ if (n === '第一章-10') { _%><%- await getwi(null, '第一章-10-方老师枪指') %><%_ } _%>
+<%_ if (n === '第一章-11') { _%><%- await getwi(null, '第一章-11-第一次') %><%_ } _%>
+<%_ if (n === '第一章-12') { _%><%- await getwi(null, '第一章-12-学生放出来') %><%_ } _%>
+<%_ if (n === '第一章-13') { _%><%- await getwi(null, '第一章-13-了解同学') %><%_ } _%>
+<%_ if (n === '第一章-14') { _%><%- await getwi(null, '第一章-14-邀请抗日') %><%_ } _%>
+<%_ if (n === '第一章-15') { _%><%- await getwi(null, '第一章-15-叛徒信') %><%_ } _%>
+<%_ } _%>
+<%_ } _%>
+<%_ if (is_chapter2 && !dead && ch1_done) { _%>
+<%- await getwi(null, '第二章当前节点选项·常亮') %>
+<%- await getwi(null, '第二章写死机读表') %>
+<%- await getwi(null, '第二章选项识别与一致性铁律') %>
+<%- await getwi(null, '第二章主持') %>
+<%- await getwi(null, '第二章节点推进铁律') %>
+<%- await getwi(null, '第二章抉择全书-写死表') %>
+<%- await getwi(null, '抉择校验表') %>
+<%- await getwi(null, '第二章BE执行范例') %>
+<%- await getwi(null, '第二章BE后禁止续玩') %>
+<%_
+const ch2Order = ['第二章-0','第二章-1','第二章-2','第二章-3','第二章-4','第二章-5','第二章-6','第二章-7','第二章-8','第二章-9','第二章-10','第二章-11','第二章-12','第二章-13','第二章-14','第二章-15','第二章-16','第二章-17','第二章-18','第二章-19','第二章-20','第二章-21','第二章-22'];
+const ch2Ni = ch2Order.indexOf(n);
+const ch2Ci = ch2Order.indexOf(String(checkpoint || '第二章-0'));
+const illegalCh2Advance = ch2Ni >= 0 && ch2Ci >= 0 && ch2Ni > ch2Ci;
+_%>
+<%_ if (illegalCh2Advance) { _%>
+<%- await getwi(null, '第二章非法节点熔断') %>
+<%_ } else if (!deadNow) { _%>
+<%_ if (n === '第二章-0') { _%><%- await getwi(null, '第二章-0-章首') %><%_ } _%>
+<%_ if (n === '第二章-1') { _%><%- await getwi(null, '第二章-1-李峰开场') %><%_ } _%>
+<%_ if (n === '第二章-2') { _%><%- await getwi(null, '第二章-2-胡一彪') %><%_ } _%>
+<%_ if (n === '第二章-3') { _%><%- await getwi(null, '第二章-3-顾君如') %><%_ } _%>
+<%_ if (n === '第二章-4') { _%><%- await getwi(null, '第二章-4-搭话') %><%_ } _%>
+<%_ if (n === '第二章-5') { _%><%- await getwi(null, '第二章-5-宴会分支') %><%_ } _%>
+<%_ if (n === '第二章-6') { _%><%- await getwi(null, '第二章-6-跟上') %><%_ } _%>
+<%_ if (n === '第二章-7') { _%><%- await getwi(null, '第二章-7-射杀吴') %><%_ } _%>
+<%_ if (n === '第二章-8') { _%><%- await getwi(null, '第二章-8-射杀顾') %><%_ } _%>
+<%_ if (n === '第二章-9') { _%><%- await getwi(null, '第二章-9-答应') %><%_ } _%>
+<%_ if (n === '第二章-10') { _%><%- await getwi(null, '第二章-10-毙了我') %><%_ } _%>
+<%_ if (n === '第二章-11') { _%><%- await getwi(null, '第二章-11-放过') %><%_ } _%>
+<%_ if (n === '第二章-12') { _%><%- await getwi(null, '第二章-12-闪身') %><%_ } _%>
+<%_ if (n === '第二章-13') { _%><%- await getwi(null, '第二章-13-李峰问') %><%_ } _%>
+<%_ if (n === '第二章-14') { _%><%- await getwi(null, '第二章-14-自保共荣') %><%_ } _%>
+<%_ if (n === '第二章-15') { _%><%- await getwi(null, '第二章-15-握手') %><%_ } _%>
+<%_ if (n === '第二章-16') { _%><%- await getwi(null, '第二章-16-据实') %><%_ } _%>
+<%_ if (n === '第二章-17') { _%><%- await getwi(null, '第二章-17-情报') %><%_ } _%>
+<%_ if (n === '第二章-18') { _%><%- await getwi(null, '第二章-18-介意') %><%_ } _%>
+<%_ if (n === '第二章-19') { _%><%- await getwi(null, '第二章-19-武藤') %><%_ } _%>
+<%_ if (n === '第二章-20') { _%><%- await getwi(null, '第二章-20-故人泪') %><%_ } _%>
+<%_ if (n === '第二章-21') { _%><%- await getwi(null, '第二章-21-有几滴') %><%_ } _%>
+<%_ if (n === '第二章-22') { _%><%- await getwi(null, '第二章-22-倒酒') %><%_ } _%>
+<%_ } _%>
+<%_ } _%>
+<%_ if (is_chapter3 && !dead && ch2_done) { _%>
+<%- await getwi(null, '第三章当前节点选项·常亮') %>
+<%- await getwi(null, '第三章写死机读表') %>
+<%- await getwi(null, '第三章选项识别与一致性铁律') %>
+<%- await getwi(null, '第三章主持') %>
+<%- await getwi(null, '第三章节点推进铁律') %>
+<%- await getwi(null, '第三章抉择全书-写死表') %>
+<%- await getwi(null, '抉择校验表') %>
+<%- await getwi(null, '第三章BE执行范例') %>
+<%- await getwi(null, '第三章BE后禁止续玩') %>
+<%_
+const ch3Order = ['第三章-0','第三章-1','第三章-2','第三章-3','第三章-4','第三章-5','第三章-6','第三章-7','第三章-8','第三章-9','第三章-10','第三章-11','第三章-12','第三章-13','第三章-14','第三章-15','第三章-16'];
+const ch3Ni = ch3Order.indexOf(n);
+const ch3Ci = ch3Order.indexOf(String(checkpoint || '第三章-0'));
+const illegalCh3Advance = ch3Ni >= 0 && ch3Ci >= 0 && ch3Ni > ch3Ci;
+_%>
+<%_ if (illegalCh3Advance) { _%>
+<%- await getwi(null, '第三章非法节点熔断') %>
+<%_ } else if (!deadNow) { _%>
+<%_ if (n === '第三章-0') { _%><%- await getwi(null, '第三章-0-澳门商团接头') %><%_ } _%>
+<%_ if (n === '第三章-1') { _%><%- await getwi(null, '第三章-1-庄晓曼试探') %><%_ } _%>
+<%_ if (n === '第三章-2') { _%><%- await getwi(null, '第三章-2-是否承认') %><%_ } _%>
+<%_ if (n === '第三章-3') { _%><%- await getwi(null, '第三章-3-是否交底') %><%_ } _%>
+<%_ if (n === '第三章-4') { _%><%- await getwi(null, '第三章-4-叫住或开枪') %><%_ } _%>
+<%_ if (n === '第三章-5') { _%><%- await getwi(null, '第三章-5-对接人儿子') %><%_ } _%>
+<%_ if (n === '第三章-6') { _%><%- await getwi(null, '第三章-6-舞会三选一') %><%_ } _%>
+<%_ if (n === '第三章-7') { _%><%- await getwi(null, '第三章-7-锄奸计划') %><%_ } _%>
+<%_ if (n === '第三章-8') { _%><%- await getwi(null, '第三章-8-杀方敏或万全') %><%_ } _%>
+<%_ if (n === '第三章-9') { _%><%- await getwi(null, '第三章-9-欺辱方敏') %><%_ } _%>
+<%_ if (n === '第三章-10') { _%><%- await getwi(null, '第三章-10-商贸团安全') %><%_ } _%>
+<%_ if (n === '第三章-11') { _%><%- await getwi(null, '第三章-11-犯人日本人') %><%_ } _%>
+<%_ if (n === '第三章-12') { _%><%- await getwi(null, '第三章-12-利用胡一彪') %><%_ } _%>
+<%_ if (n === '第三章-13') { _%><%- await getwi(null, '第三章-13-捞一笔') %><%_ } _%>
+<%_ if (n === '第三章-14') { _%><%- await getwi(null, '第三章-14-绑架对象') %><%_ } _%>
+<%_ if (n === '第三章-15') { _%><%- await getwi(null, '第三章-15-武藤追问') %><%_ } _%>
+<%_ if (n === '第三章-16') { _%><%- await getwi(null, '第三章-16-章末通关') %><%_ } _%>
+<%_ } _%>
+<%_ } _%>

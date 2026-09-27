@@ -1,0 +1,17 @@
+{
+  "id": "a1b2c3d4-0006-4000-8000-000000000006",
+  "scriptName": "OMNI同步完成占位展开 - 将OmniDone标签替换为变量同步完成挂载点",
+  "findRegex": "/<OmniDone>([\\s\\S]*?)<\\/OmniDone>/gi",
+  "replaceString": "<div class=\"fjb-omni-mount\" data-fjb-omni-done=\"1\"><div class=\"fjb-omni-raw\" data-fjb-omni-raw style=\"white-space:pre-wrap;word-break:break-word\">$1</div></div>",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": 0,
+  "maxDepth": null
+}

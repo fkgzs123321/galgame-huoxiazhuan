@@ -1,0 +1,36 @@
+<!-- A 状态栏 · 时间 / 评价值档位 / 林天 / 玩家 / 绑定花名册 -->
+<div class="hs">
+    <span class="t" id="xb-time">{{format_message_variable::stat_data.世界.时间}}</span>
+    <span class="p">第 <b id="xb-ch">{{format_message_variable::stat_data.世界.章节}}</b> 章 · 第 <b id="xb-turn">{{format_message_variable::stat_data.世界.回合}}</b> 轮</span>
+    <span class="p" style="margin-left:auto">📍 <b id="xb-place">{{format_message_variable::stat_data.世界.地点}}</b> · 镜头 <b id="xb-focus">{{format_message_variable::stat_data.镜头.对象}}</b></span>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="rate">
+    <div class="big" id="xb-rv" style="color:#d8b56a">{{format_message_variable::stat_data.反派状态.评价值}}</div>
+    <div class="rt">
+      <div class="rn" id="xb-rn">巅峰期</div>
+      <div class="rs" id="xb-rs">故意留破绽</div>
+      <div class="track"><i id="xb-rb" style="background:linear-gradient(90deg,#e0913f,#e0444b)"></i></div>
+    </div>
+  </div>
+
+  <div class="hd"><b>林天</b><i id="xb-blown">暴走 0 / 3</i></div>
+  <div class="row"><span class="k">财富</span><span class="v" id="xb-rtier">{{format_message_variable::stat_data.反派状态.财富等级}}</span>
+    <span class="tk"><i id="xb-rasset" style="background:#d8b56a"></i></span>
+    <span class="v" id="xb-rassetv">—</span></div>
+  <div class="row"><span class="k">名额</span><span class="v" id="xb-quota">{{format_message_variable::stat_data.反派状态.已绑定数}} / {{format_message_variable::stat_data.反派状态.绑定名额上限}}</span>
+    <span class="tk"><i id="xb-qb" style="background:#c8503f"></i></span></div>
+  <div class="chips" id="xb-sys"></div>
+
+  <div class="hd"><b>玩家</b><i id="xb-wife">与妻子 亲密</i></div>
+  <div class="row"><span class="k">觉醒度</span><span class="v" id="xb-awk">{{format_message_variable::stat_data.玩家.觉醒度}}</span>
+    <span class="tk"><i id="xb-awb" style="background:#3fa7c9"></i></span>
+    <span class="v" id="xb-awt" style="color:#828b98;min-width:58px">只察觉异常</span></div>
+  <div class="row"><span class="k">反抗力</span><span class="v" id="xb-def">{{format_message_variable::stat_data.玩家.反抗力}}</span>
+    <span class="tk"><i id="xb-deb" style="background:#3fa7c9"></i></span>
+    <span class="v" id="xb-co" style="color:#828b98;min-width:58px">公司正常</span></div>
+
+  <div class="hd"><b>绑定花名册</b><i>时期 · 深度 · 清醒</i></div>
+  <table class="roster" id="xb-roster"></table>

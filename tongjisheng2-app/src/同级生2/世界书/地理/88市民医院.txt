@@ -1,0 +1,175 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 88市民医院 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionHospital = {
+  region_name: '88市民医院',
+  scenes: [
+    '门诊大厅',
+    '住院部',
+    '护士站',
+    '医院小卖部',
+    '急救室'
+  ],
+  time_slot_access: {
+    '早':   { accessible: false, note: '未到门诊时间，仅急诊可用' },
+    '上午': { accessible: true,  note: '门诊时间（09:00-12:00），正常探视' },
+    '下午': { accessible: true,  note: '门诊时间（13:00-17:00），正常探视' },
+    '晚':   { accessible: false, note: '门诊关闭，仅急诊与夜班护士' },
+    '深夜': { accessible: false, note: '仅急诊，探视受限' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["88市民医院"]（4件）：感冒药/维生素/健康体检/住院用品套装',
+  special_events: [
+    { day: 5,  slot: '下午', event_id: 'day05下午_主角生病送医', note: 'hunger ≥ 90 触发，主角被送医，安田爱美照护' },
+    { day: 11, slot: '上午', event_id: 'day11上午_探望爱美',     note: '探望安田爱美工作，戒备期推进' }
+  ],
+  description: '八十八町唯一医院，规模不大但设施齐全，安田爱美工作地。门诊时间（上午/下午）正常开放，晚/深夜仅急诊与夜班护士。安田爱美（9）为常驻 NPC，夜班场景可触发深夜独处。day05 主角 hunger ≥ 90 时强制送医，是生存机制的关键惩罚节点。',
+  location_details: {
+    '门诊大厅': {
+      aliases: ['门诊大厅','大厅','挂号厅'],
+      description: '医院门诊大厅，挂号/候诊/接待地，门诊时间开放',
+      ambient_sounds: '广播叫号/脚步声/低声交谈',
+      default_activities: ['挂号','候诊','咨询','偶遇'],
+      time_slot_descriptions: { '早':'未门诊','上午':'门诊高峰','下午':'门诊高峰','晚':'门诊关闭','深夜':'仅急诊' },
+      weather_modifiers: { '晴':'明亮','雨':'湿滑','雪':'寒冷','暴风雪':'室内' },
+      heroines_likely: [9, 11],
+      bad_end_risk: 'low'
+    },
+    '住院部': {
+      aliases: ['住院部','病房区','病栋'],
+      description: '医院住院部，住院患者区域，探视时间可进入',
+      ambient_sounds: '医疗设备声/护士脚步/低声',
+      default_activities: ['探视','住院','与患者交流'],
+      time_slot_descriptions: { '早':'未探视','上午':'探视时间','下午':'探视时间','晚':'限探视','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [9],
+      bad_end_risk: 'low',
+      events_triggered: ['day05下午_主角生病送医']
+    },
+    '护士站': {
+      aliases: ['护士站','看护站','ナースステーション'],
+      description: '护士站，安田爱美值班地，可探望/交流/触发深夜独处',
+      ambient_sounds: '电话声/医疗记录翻动/设备声',
+      default_activities: ['探望爱美','交流','咨询','深夜独处'],
+      time_slot_descriptions: { '早':'夜班交接','上午':'爱美值班','下午':'爱美值班','晚':'夜班开始','深夜':'爱美夜班(NSFW高发)' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [9],
+      bad_end_risk: 'medium',
+      time_lock: '深夜独处需爱美暧昧期以上',
+      exclusive_choices: ['陪爱美值夜班(好感+)','离开(无变化)'],
+      events_triggered: ['day11上午_探望爱美','爱美深夜独处'],
+      flags_set: ['yasuda_night_shift_count']
+    },
+    '医院小卖部': {
+      aliases: ['小卖部','医院商店','卖店'],
+      description: '医院小卖部，售卖医疗用品与简单生活用品',
+      ambient_sounds: '收银声/包装声/闲聊',
+      default_activities: ['购物','买医疗用品','买零食','社交'],
+      time_slot_descriptions: { '早':'未营业','上午':'营业','下午':'营业','晚':'已关门','深夜':'已关门' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'室内' },
+      heroines_likely: [],
+      bad_end_risk: 'low',
+      flags_set: ['medical_supplies_purchased']
+    },
+    '急救室': {
+      aliases: ['急救室','急诊室','ER'],
+      description: '医院急救室，24小时开放，主角hunger≥90强制送医场景',
+      ambient_sounds: '设备警报/医护人员急促脚步/无线电',
+      default_activities: ['急救','送医','探视急诊'],
+      time_slot_descriptions: { '早':'24h开放','上午':'24h开放','下午':'24h开放','晚':'24h开放','深夜':'24h开放' },
+      weather_modifiers: { '晴':'普通','雨':'普通','雪':'普通','暴风雪':'普通' },
+      heroines_likely: [9],
+      bad_end_risk: 'high',
+      events_triggered: ['day05下午_主角生病送医'],
+      flags_set: ['emergency_count'],
+      time_lock: 'hunger≥90触发强制送医（生存机制惩罚）'
+    },
+    '重症病房外走廊': {
+      aliases: ['重症病房外','ICU走廊','重症监护外'],
+      description: '重症病房外走廊，特殊剧情触发地，氛围压抑',
+      ambient_sounds: '医疗设备嗡鸣/低声交谈/沉重脚步',
+      default_activities: ['探视','触发特殊剧情','等待'],
+      time_slot_descriptions: { '早':'限探视','上午':'限探视','下午':'探视时间','晚':'限探视','深夜':'禁止' },
+      weather_modifiers: { '晴':'普通','雨':'阴沉','雪':'寒冷','暴风雪':'室内' },
+      heroines_likely: [],
+      bad_end_risk: 'high',
+      hidden_location: true,
+      unlock_condition: '特定剧情flag触发（重症患者相关）',
+      flags_set: ['icu_visit_count'],
+      events_triggered: ['重症病房特殊事件']
+    },
+    '樱花树下': {
+      aliases: ['樱花树下','医院樱花树','樱树'],
+      description: '医院花园樱花树下，浪漫场景地，特殊约会点',
+      ambient_sounds: '风声/樱花飘落声/远处鸟鸣',
+      default_activities: ['约会','散步','聊天','触发浪漫事件'],
+      time_slot_descriptions: { '早':'清静','上午':'阳光樱花','下午':'约会推荐','晚':'夜樱浪漫','深夜':'禁止' },
+      weather_modifiers: { '晴':'樱花盛开','雨':'落樱','雪':'雪覆枯枝','暴风雪':'禁入' },
+      heroines_likely: [9, 14],
+      bad_end_risk: 'low',
+      flags_set: ['sakura_date_count'],
+      events_triggered: ['樱花树下约会事件']
+    },
+    '医院花园': {
+      aliases: ['医院花园','庭院','中庭'],
+      description: '医院花园，散步休息地，患者与医护人员休憩场所',
+      ambient_sounds: '鸟鸣/喷泉声/轮椅声',
+      default_activities: ['散步','休息','聊天','偶遇'],
+      time_slot_descriptions: { '早':'清静','上午':'休憩','下午':'散步高峰','晚':'黄昏','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光花园','雨':'躲雨亭','雪':'银装','暴风雪':'禁入' },
+      heroines_likely: [9, 11, 14],
+      bad_end_risk: 'low'
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 7 个地点） */
+const _currentLocationDetail = _regionHospital.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出 ─── */%>
+[区域：88市民医院。八十八町唯一医院，安田爱美（9）工作地。门诊时间（上午/下午）正常开放，晚/深夜仅急诊可用。day05 主角 hunger ≥ 90 触发强制送医事件（生存机制惩罚）。安田爱美夜班为深夜独处 NSFW 高发场景（需关系阶段达标）。商店仅售医疗用品，无生活消费品。当前时段下可遭遇 NPC 已锁定，禁止引入未列出的女角。]
+
+<%= JSON.stringify({
+  region: _regionHospital.region_name,
+  scenes: _regionHospital.scenes,
+  time_slot_access: _regionHospital.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["88市民医院"]',
+  shop_items_count: 4,
+  survival_warning: 'day05 hunger ≥ 90 触发强制送医事件',
+  special_events: _regionHospital.special_events,
+  description: _regionHospital.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

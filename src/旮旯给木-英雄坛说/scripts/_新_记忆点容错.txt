@@ -1,0 +1,39 @@
+  /* ══ 记忆点限制（学过 ≠ 带上）· 出处：姬侠传 ══ */
+  function 记上限() {
+    var 学 = 数(((状态.技能 || {}).基本 || {})["读书写字"], 0);
+    return Math.max(1, Math.floor(学 / 20));
+  }
+  function 记占(名) {
+    var 技 = 状态.技能 || {};
+    var 级 = 数((技.基本 || {})[名], 0) || 数((技.门派 || {})[名], 0);
+    return Math.min(3, 1 + Math.floor(级 / 80));   // 1~3 点
+  }
+  function 已带() {
+    return ((状态.技能装备 || {}).已带) || [];
+  }
+  function 记已用() {
+    var 总 = 0, 列 = 已带();
+    for (var i = 0; i < 列.length; i++) 总 += 记占(列[i]);
+    return 总;
+  }
+
+  /* ══ 容错归一（AI 写得不规范也要认）· 出处：火影的 RANK_ALIASES / STAT_FIELDS ══ */
+  function 归一(状态v) {
+    if (!状态v || typeof 状态v !== "object") return 状态v;
+    var 别名 = {
+      兴奋: "兴奋度", 兴: "兴奋度", 好感: "好感度", 反抗: "反抗值",
+      潜能值: "潜能", 钱: "金钱", 银两: "金钱", 内功: "内力强度",
+      健康: "生命当前", 血: "生命当前", 血上限: "生命上限",
+      悟性值: "悟性", 根骨值: "根骨", 膂力值: "膂力", 敏捷值: "敏捷",
+    };
+    (function 走(o) {
+      if (!o || typeof o !== "object") return;
+      Object.keys(o).forEach(function (k) {
+        var 正 = 别名[k];
+        if (正 && o[正] === undefined) { o[正] = o[k]; }
+        if (o[k] && typeof o[k] === "object") 走(o[k]);
+      });
+    })(状态v);
+    return 状态v;
+  }
+

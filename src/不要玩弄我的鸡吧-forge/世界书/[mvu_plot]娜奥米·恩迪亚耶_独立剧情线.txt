@@ -1,0 +1,239 @@
+@@generate_before
+<%
+// 娜奥米·恩迪亚耶_独立剧情线 - 4维复合EJS精准控制
+// 维度1：人物建档（isProfiled）- 未建档角色0 token
+// 维度2：时段（9段制）- 只输出当前时段的剧情
+// 维度3：假阴茎阶段（1-5）- 阶段1萌芽/2-3发展/4-5深入
+// 维度4：事件（综合阶段/持有者/考试季节/疑心度/好感度）
+var uid = '娜奥米·恩迪亚耶';
+var fem = getvar('stat_data.女性角色.' + uid, {scope:'local', defaults:{}});
+var isProfiled = !!(fem && fem.基础 && fem.基础.姓名);
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var ms = fem.多维状态 || {};
+var composite = ms.综合阶段 || 'A_理性期';
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var exam = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) || 103;
+var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+var holderId = getvar('stat_data.隐藏层.持有者ID', {scope:'local', defaults:''});
+var isHolder = holderId === '娜奥米·恩迪亚耶';
+var wp = fem.与玩家关系 || {};
+var favor = wp.好感度 || 0;
+var trust = wp.信任 || 0;
+
+var isStage1 = stage === 1;
+var isStage2 = stage === 2;
+var isStage3 = stage === 3;
+var isStage4 = stage === 4;
+var isStage5 = stage === 5;
+
+var isDawn = hour >= 5 && hour < 7;
+var isMorningRead = hour >= 7 && hour < 8;
+var isMorning = hour >= 8 && hour < 12;
+var isNoon = hour >= 12 && hour < 14;
+var isAfternoon = hour >= 14 && hour < 17;
+var isDusk = hour >= 17 && hour < 19;
+var isEvening = hour >= 19 && hour < 22;
+var isNight = hour >= 22 || hour < 2;
+var isMidnight = hour >= 2 && hour < 5;
+
+var isExamSeason = exam <= 30;
+var isMidterm = exam <= 90 && exam > 30;
+var isEarlyGame = exam > 90;
+
+var suspLow = suspicion < 30;
+var suspMid = suspicion >= 30 && suspicion < 80;
+var suspHigh = suspicion >= 80;
+%>
+<% if (isProfiled) { %>
+<naomi_ndiaye_plot>
+【娜奥米·恩迪亚耶 独立剧情线 — 4维复合EJS精准控制】
+【身份】高三交换生·法语课代表助理·巴黎达喀尔之女
+【家人/朋友】母亲（巴黎三大法语文学讲师，塞内加尔裔，每周电话）/ 父亲（巴黎IT工程师，塞内加尔裔，沉默寡言）/ 樱井美咲（交换生圈姐妹，日本，stage4-5借宿过她房间）/ 奥克萨娜·科瓦连科（交换生圈姐妹，乌克兰）
+【籍贯】塞内加尔裔法国·巴黎（生于达喀尔，10岁随父母移居巴黎第六区）
+- 口音：法语为母语（巴黎口音），沃洛夫语为辅，中文带法语口音——"zh/ch/sh"发不准，声调偏高优雅
+- 饮食：离不开咖啡+奶酪+thieboudienne，早餐吃牛角面包配espresso，"巴黎人的胃+达喀尔人的舌头"
+- 语料："oui""non""d'accord""bien sûr""c'est ça""mon Dieu""vraiment"
+- 习俗：文化穆斯林，咖啡馆文化，sabar舞蹈，每天晨起做律动
+- 作息：6点半起床是常态，午休长但她在读诗，深夜读书
+【当前】stage=<%= stage %> | composite=<%= composite %> | 时段=<%= hour %>:00 | holder=<%= isHolder ? '是' : '否' %>
+
+---
+■ 第1阶段·萌芽期 —— 巴黎达喀尔之女的日常（stage=1，未接触假阴茎）
+---
+<% if (stage === 1) { %>
+<% if (isDawn) { %>
+【黎明·法语教室】五点的法语教室没人——她独自来做晨练。sabar律动轻盈，espresso放在桌角——咖啡的气味散开。黑色长发扎成高丸子头，象牙色发簪固定，米色风衣搭在椅背上。她做sabar基本步，腰胯律动，她说"le matin, la poésie coule facilement"（早上诗流淌得容易）。母亲昨晚发来消息："ENS preparation going well?"（ENS准备得怎么样了）。她没回，继续律动。
+<% } else if (isMorningRead) { %>
+【晨读·教室后排】晨读时段她已在后排背法语诗——指腹划过书页的速度像在唱歌，优雅得连翻书都不发出声音。她说"en ce moment c'est calme, bien"（这个时段安静，好）。同桌艾米丽·沃克凑过来小声问"Naomi, this Baudelaire line is killing me"（这波德莱尔的句子要了我的命）——娜奥米头也不抬"il signifie 'l'aube qui vient', like Paris in the morning"（意思是'黎明将至'，像巴黎的早晨）。艾米丽摊手，但笑了。
+<% } else if (isMorning) { %>
+【上午·教室后排】上午她坐后排，记笔记的速度优雅如泡咖啡——espresso杯永远在右手边四十五度角。老师讲法语文学，她在草稿纸上同步翻译成中文。林婉清收作业时瞥了一眼她的草稿纸"娜奥米你连中文翻译都写了？"她头也不抬"oui, j'adore traduire"。林婉清笑了"你真是个翻译机器"——她笑了，眼睛弯成月牙。
+<% } else if (isNoon) { %>
+【中午·法语教室】午休她溜回法语教室读诗——这是她"加练"的掩护时段。诗集上往往只有几行批注，她说"à midi personne ne dérange"（午休没人打扰）。桌上放着食堂打包的thieboudienne——她从食堂阿姨那里特批的鱼饭，"塞内加尔人不能没有thieboudienne"。樱井美咲端着抹茶过来"美咲さん、一緒に昼休み"（一起午休吗）——娜奥米点头，两人安静地并肩坐着，一个喝咖啡一个喝抹茶。
+<% } else if (isAfternoon) { %>
+【下午·教室后排】下午光线斜射进教室，她会调整每一本书的位置——"la lumière n'est pas bonne"（光线不对）是她的口头禅。这是她控制欲的延伸。她记笔记的节奏不紧不慢，但偶尔会停下来盯着窗外发呆——塞纳河的灯火在脑海里流过。陈老师走过来"娜奥米同学，法语角下周有个活动，你来主持？"她抬头优雅笑"bien sûr, je m'en occupe"（好的，我来）。
+<% } else if (isDusk) { %>
+【傍晚·法语教室】夕阳透过法语教室窗户，她在翻译非洲法语文学——这个时段的光让她译出最漂亮的句子。她说"la lumière du coucher de soleil est la plus douce"（黄昏的光最温柔）。黑色长发在夕阳下泛着暖光，她用黑色钢笔在法文A5笔记本上记录今日翻译进展——封面没有标题，用速记符号混合法文缩写书写，只有她自己看得懂。苏婉清在隔壁教室读诗，偶尔会过来敲门"娜奥米，这首Senghor怎么理解"——两人优雅对优雅，讨论完各自离开。
+<% } else if (isEvening) { %>
+【晚自习·教室后排】闭馆前的教室只剩她一个人——她在后排"自习"，笔尖在纸上沙沙作响，节奏其实是某种她自己才懂的速记符号。espresso已经凉了，但她没注意——她在整理法语角资料，把同学的法语错题归类，这是她安抚自己的方式。母亲又发来消息："Papa demande quand tu rentres"（爸爸问你什么时候回来）。她回："Après l'ENS"（考完ENS）。
+<% } else if (isNight) { %>
+【夜里·法语教室】晚自习后她溜回法语教室——一盏小夜灯、诗集、法文笔记本，这是她一天最自由的时刻——没有翻译任务，没有法语角，没有母亲的电话。她说"la nuit je peux juste traduire pour moi"（夜里可以只管翻译）。法文笔记本翻开新的一页，她写下今日翻译的诗句：Senghor's "Femme noire, femme obscure"（桑戈尔"黑女人，深沉的女人"）。樱井美咲在隔壁教室练书法，偶尔会过来敲门："美咲さん、まだ？"（还在？）——她说"bientôt fini"（快了）——其实才刚开始。
+<% } else if (isMidnight) { %>
+【半夜·法语教室】凌晨3点的法语教室，小夜灯还亮着——她在翻译，译到墨水用完才停。笔记本上的字迹从工整变得潦草，像是有什么在变化。她揉了揉酸涩的眼睛，用75%酒精湿巾擦手——墨水和乳木果油的混合气味是她熟悉的味道。她在笔记本上记下："今夜译出三首Senghor。明日继续。母亲电话要回。"她合上本子，关灯前最后看了一眼笔记本——桑戈尔的诗句在暗处几乎看不见，但她记得每一笔的位置。
+<% } %>
+<% } %>
+
+---
+■ 第2阶段·初探期 —— 诗里的隐秘（stage=2，刚开始接触假阴茎）
+---
+<% if (stage === 2) { %>
+【stage2框架】这是她刚开始接触假阴茎的阶段——频率一周两次，仍在理性控制下。每一次使用都带有"放松"性质，她会严格消毒、限时、用法文笔记本记录。使用前必先读一首诗"让大脑静下来"。
+<% if (isDawn) { %>
+【黎明·法语教室】五点她独自来法语教室——但这次不是做律动，是复盘昨夜的"实验"。她翻看法文笔记本——同一首Senghor的诗，使用前后翻译出来的语调完全不同。她说"la traduction d'hier était plus douce"（昨晚的译文更柔和）。她在笔记本上记录："使用后偏好柔和语调，译文比平时放得开。"笔记本上留着昨夜的墨水痕迹，她用黑色钢笔添上一行法文小字。
+<% } else if (isMorningRead) { %>
+【晨读·教室后排】晨读时段她已在后排背诗——表面如常，指腹划过书页。但今天她开始用诗的语言描述心情——"aujourd'hui c'est une journée Senghor"。艾米丽凑过来"Naomi, you look tired today"（你今天看起来很累）——她说"je lis tard"（读书到很晚）。艾米丽不信，但没追问，只把自己的咖啡递给她一杯："Drink this."espresso杯旁多了一包75%酒精湿巾。
+<% } else if (isMorning) { %>
+【上午·教室后排】上午她记笔记的节奏不紧不慢。但她开始在后排"翻译"时偷偷记日记——演算的间隙在法文笔记本上添几行字。她说"c'est une traduction"——声音毫无破绽。苏婉清过来问她借笔时多看了她一眼："娜奥米你最近的译文变优雅了。"她手顿了半秒："nouveau style"。
+<% } else if (isNoon) { %>
+【中午·法语教室】午休她溜回法语教室——这次不是读诗，是使用后的"复盘翻译"。她锁上门，铺好笔记本，假阴茎用75%酒精湿巾擦过放在桌角——她说"d'abord voir la forme clairement, puis traduire"（先看清楚形状，再翻译）。使用后她立刻抓起钢笔，趁身体还热的时候记录刚才的翻译灵感——她说轻档的时候她译出来偏Senghor，中档偏Baudelaire。这是她的"文学日记"，不是真的看见风格——是她用文学语言编码情绪的私人系统。
+<% } else if (isAfternoon) { %>
+【下午·教室后排】下午她在后排调整书的位置——"la lumière n'est pas bonne"。但今天她对教室日光灯的色温格外敏感——如果色温接近使用时的小夜灯光线，她会瞬间走神半秒。艾米丽问她"are you okay?"她回"un peu fatiguée"。她说"cette lumière est froide"——其实她在想昨晚译的那首Senghor。
+<% } else if (isDusk) { %>
+【傍晚·法语教室】放学后她在法语教室准备翻译——洗钢笔、削铅笔、铺笔记本。她说"la lumière du coucher de soleil est la plus douce"——这也是她使用后译出来的主调风格。法文笔记本翻开新的一页，她在上面画了一个图表：横轴是档位，纵轴是译风。陈老师推门进来："娜奥米，你这周的译文风格变化太大了，前两周还偏Senghor，这周全偏Baudelaire，怎么回事？"她说"j'essaie une nouvelle direction"。陈老师皱眉："别乱试，ENS校考看的是稳定性。"
+<% } else if (isEvening) { %>
+【晚自习·教室后排】闭馆前的教室只剩她——她在后排整理法语角资料。但今天她的眼神偶尔会飘向法语教室的方向——"ce soir quel style"。espresso凉了她没注意，艾米丽临走前留了句"Naomi, you've been losing weight"，她没听见。母亲发来消息："Papa says come home this weekend."她回："ENS prépa, je ne peux pas."。
+<% } else if (isNight) { %>
+【夜里·法语教室】晚自习后她溜回法语教室——一盏小夜灯、诗集、法文笔记本，这是她"文学日记"的开始。她戴上一次性手套——"l'encre est toxique, ne touche pas"。使用中她会闭眼，用呼吸法控制节奏，结束后立刻抓起钢笔在笔记本上翻译——她说"pendant que le sentiment dure"。轻档时她译出来偏Senghor，中档偏Baudelaire。樱井美咲在隔壁教室练书法，偶尔会过来敲门："美咲さん、まだ？"她说"bientôt fini"——其实才刚开始。
+<% } else if (isMidnight) { %>
+【半夜·法语教室】凌晨3点的法语教室——如果composite是C沉沦期，中档成为新标配，她译出来的风格从单一变成两风格过渡，她说"le style intermédiaire ne devrait pas exister, mais il est là"；如果是D疯狂期，高档之后她译出的译文从诗歌变成散文诗漩涡，陈老师看了会皱眉"c'est quoi ça"。她说"je ne sais pas non plus"——但她舍不得撕掉。
+<% } %>
+
+<%# 综合阶段×使用高发期 %>
+<% if (isNoon || isDusk || isNight || isMidnight) { %>
+<% if (composite === 'A_理性期') { %>
+- 理性期：译出来是柔和的风格——单一档位、单一译风、严格自律。她说"c'est un exercice de base"。但笔记本数量在悄悄增加。日间伪装完美——交换生照常上课。唯一的破绽是她开始用文学语言描述一切——"today's weather is a Senghor day""exam pressure is a Baudelaire poem"。
+<% } else if (composite === 'B_动摇期') { %>
+- 动摇期：翻译开始出现"混合风格"——之前每首诗只译一种风格，现在开始出现两风格并用。她说"今日记录：Senghor向Baudelaire过渡。这是轻档到中档之间的中间风格。它不应该存在，但它 est apparu"（出现了）。她开始尝试中档——"je veux plus de styles"。陈老师批改时停在她这组译文前看了很久"tu as changé"。她说"j'essaie une nouvelle direction"。
+<% } else if (composite === 'C_沉沦期') { %>
+- 沉沦期：法文笔记本被她改名为"styles"。中档不够了，高档成为新标配。她开始尝试最高档——译出来是散文诗的思路，她说是"le style le plus pur"。她开始把假阴茎放在钢笔旁边——"c'est mon stylo"——这是她给它的私下称呼，外人听不见。日间伪装出现裂痕——她对教室的光线格外敏感，艾米丽问她"you look flushed today"她回"allergie à l'encre"。
+<% } else if (composite === 'D_疯狂期') { %>
+- 疯狂期：深夜3点她还在法语教室——最高档，翻译从诗歌变成散文诗漩涡。她不再做"放松仪式"——直接开始。她开始用身体翻译——把墨水涂在手上按在笔记本上。第一次在到达时喊出一个法语单词——她自己都没听清，但事后想起来脸会发烫。樱井美咲半夜来敲门："美咲さん、大丈夫？音がした"她说"je pratique"。
+<% } else if (composite === 'E_清醒反扑期') { %>
+- 清醒反扑期：被艾米丽撞见她在法语教室凌晨翻译后突然清醒——艾米丽没看见什么，只是"Naomi, you'll burn out like this"。她把假阴茎和所有文学日记草稿锁进了宿舍行李箱。白天她表现出异常的自律——主动增加法语角工作。但凌晨2点她会独自回到法语教室，盯着行李箱的方向发呆，手指在空气里无意识地画桑戈尔的签名——这是她戒不掉的肌肉记忆。
+<% } %>
+<% } %>
+<% } %>
+
+---
+■ 第3阶段·渐习期 —— 诗里的隐秘（stage=3，频率增加，开始动摇）
+---
+<% if (stage === 3) { %>
+【stage3框架】相比stage2，频率增加到一周五到六次，使用开始成为习惯，理性控制开始松动。持续时间更长，翻译从单一译风变成混合译风，伪装出现更多破绽——文学语言描述开始失控，对教室光线愈发敏感。
+<% if (isDawn) { %>
+【黎明·法语教室】五点她独自来法语教室——但这次不是做律动，是复盘昨夜的"实验"。她翻看笔记本——同一首Senghor的诗，使用前后译出来的风格完全不同。她说"la traduction d'hier était plus douce"。她在法文笔记本上记录："使用后偏好柔和风格，译文比平时放得开。"笔记本上留着昨夜的墨水痕迹，她用黑色钢笔添上一行法文小字。
+<% } else if (isMorningRead) { %>
+【晨读·教室后排】晨读时段她已在后排背诗——表面如常，指腹划过书页。但今天她开始用诗的语言描述心情——"aujourd'hui c'est une journée Senghor"。艾米丽凑过来"Naomi, your dark circles are worse"——她说"je lis tard"。艾米丽不信，但没追问，只把自己的咖啡倒给她一杯："Drink."espresso杯旁多了一包75%酒精湿巾。
+<% } else if (isMorning) { %>
+【上午·教室后排】上午她记笔记的节奏不紧不慢。但她开始在后排"翻译"时偷偷记日记——演算的间隙在法文笔记本上添几行字。她说"c'est une traduction"——声音毫无破绽。苏婉清过来借笔时多看了她一眼："娜奥米你最近的译文变多了，有点乱。"她手顿了半秒："nouveau style"。
+<% } else if (isNoon) { %>
+【中午·法语教室】午休她溜回法语教室——这次不是读诗，是使用后的"复盘翻译"。她锁上门，铺好笔记本，假阴茎用75%酒精湿巾擦过放在桌角——她说"d'abord voir la forme clairement, puis traduire"。使用后她立刻抓起钢笔，趁身体还热的时候记录刚才的翻译灵感——她说轻档的时候她译出来偏Senghor，中档偏Baudelaire。这是她的"文学日记"，不是真的看见风格——是她用文学语言编码情绪的私人系统。
+<% } else if (isAfternoon) { %>
+【下午·教室后排】下午她在后排调整书的位置——"la lumière n'est pas bonne"。但今天她对教室日光灯的色温格外敏感——如果色温接近使用时的小夜灯光线，她会瞬间走神半秒。艾米丽问她"are you okay?"她回"un peu fatiguée"。她说"cette lumière est froide"——其实她在想昨晚译的那首Senghor。
+<% } else if (isDusk) { %>
+【傍晚·法语教室】放学后她在法语教室准备翻译——洗钢笔、削铅笔、铺笔记本。她说"la lumière du coucher de soleil est la plus douce"——这也是她使用后译出来的主调风格。法文笔记本翻开新的一页，她在上面画了一个图表：横轴是档位，纵轴是译风。陈老师推门进来："娜奥米，你这周的译文风格变化太大了，前两周还偏Senghor，这周全偏Baudelaire，怎么回事？"她说"j'essaie une nouvelle direction"。陈老师皱眉："别乱试，ENS校考看的是稳定性。"
+<% } else if (isEvening) { %>
+【晚自习·教室后排】闭馆前的教室只剩她——她在后排整理法语角资料。但今天她的眼神偶尔会飘向法语教室的方向——"ce soir quel style"。espresso凉了她没注意，艾米丽临走前留了句"Naomi, you've been losing weight"，她没听见。母亲发来消息："Papa says come home this weekend."她回："ENS prépa, je ne peux pas."。
+<% } else if (isNight) { %>
+【夜里·法语教室】晚自习后她溜回法语教室——一盏小夜灯、诗集、法文笔记本，这是她"文学日记"的开始。她戴上一次性手套——"l'encre est toxique, ne touche pas"。使用中她会闭眼，用呼吸法控制节奏，结束后立刻抓起钢笔在笔记本上翻译——她说"pendant que le sentiment dure"。轻档时她译出来偏Senghor，中档偏Baudelaire。樱井美咲在隔壁教室练书法，偶尔会过来敲门："美咲さん、まだ？"她说"bientôt fini"——其实才刚开始。
+<% } else if (isMidnight) { %>
+【半夜·法语教室】凌晨3点的法语教室——如果composite是C沉沦期，中档成为新标配，她译出来的风格从单一变成混合风格，她说"le style intermédiaire ne devrait pas exister, mais il est là"；如果是D疯狂期，高档之后她译出的译文从诗歌变成散文诗漩涡，陈老师看了会皱眉"c'est quoi ça"。她说"je ne sais pas non plus"——但她舍不得撕掉。
+<% } %>
+
+<%# 综合阶段×使用高发期 %>
+<% if (isNoon || isDusk || isNight || isMidnight) { %>
+<% if (composite === 'A_理性期') { %>
+- 理性期：译出来是柔和的风格——单一档位、单一译风、严格自律。她说"c'est un exercice de base"。但笔记本数量在悄悄增加。日间伪装完美——交换生照常上课。唯一的破绽是她开始用文学语言描述一切——"today's weather is a Senghor day""exam pressure is a Baudelaire poem"。
+<% } else if (composite === 'B_动摇期') { %>
+- 动摇期：翻译开始出现"混合风格"——之前每首诗只译一种风格，现在开始出现两风格并用。她说"今日记录：Senghor向Baudelaire过渡。这是轻档到中档之间的中间风格。它不应该存在，但它 est apparu"。她开始尝试中档——"je veux plus de styles"。陈老师批改时停在她这组译文前看了很久"tu as changé"。她说"j'essaie une nouvelle direction"。
+<% } else if (composite === 'C_沉沦期') { %>
+- 沉沦期：法文笔记本被她改名为"styles"。中档不够了，高档成为新标配。她开始尝试最高档——译出来是散文诗的思路，她说是"le style le plus pur"。她开始把假阴茎放在钢笔旁边——"c'est mon stylo"——这是她给它的私下称呼，外人听不见。日间伪装出现裂痕——她对教室的光线格外敏感，艾米丽问她"you look flushed today"她回"allergie à l'encre"。
+<% } else if (composite === 'D_疯狂期') { %>
+- 疯狂期：深夜3点她还在法语教室——最高档，翻译从诗歌变成散文诗漩涡。她不再做"放松仪式"——直接开始。她开始用身体翻译——把墨水涂在手上按在笔记本上。第一次在到达时喊出一个法语单词——她自己都没听清，但事后想起来脸会发烫。樱井美咲半夜来敲门："美咲さん、大丈夫？音がした"她说"je pratique"。
+<% } else if (composite === 'E_清醒反扑期') { %>
+- 清醒反扑期：被艾米丽撞见她在法语教室凌晨翻译后突然清醒——艾米丽没看见什么，只是"Naomi, you'll burn out like this"。她把假阴茎和所有文学日记草稿锁进了宿舍行李箱。白天她表现出异常的自律——主动增加法语角工作。但凌晨2点她会独自回到法语教室，盯着行李箱的方向发呆，手指在空气里无意识地画桑戈尔的签名——这是她戒不掉的肌肉记忆。
+<% } %>
+<% } %>
+<% } %>
+
+---
+■ 第4阶段·深入期 —— 依赖加深（stage=4）
+---
+<% if (stage === 4) { %>
+<%# 时段×地点 %>
+<% if (isDawn) { %>
+【黎明·法语教室】五点的法语教室——如果她是沉沦期，她会趴在桌上睡过去，笔记本未干蹭了一脸墨水；如果是清醒反扑期，她会独自盯着行李箱发抖，手指在空气里画桑戈尔的签名。黑色长发披散，象牙色发簪别在诗集旁——她说"la lumière du matin, c'est le style de Senghor, mais je ne peux pas traduire celui que je veux"。
+<% } else if (isMorningRead) { %>
+【晨读·教室后排】晨读时段她照常在后排背诗——但如果是D疯狂期，她开始在法语资料的空白处画诗句漩涡，艾米丽问她"what's this"她说"gribouillis"；如果是E清醒反扑期，她把每首诗的译文都核对三遍，连最细微的标点错误都不放过——完美到不正常。艾米丽小声跟樱井美咲说"Naomi's been weird lately"。
+<% } else if (isMorning) { %>
+【上午·教室后排】上午记笔记——如果是C沉沦期，她会对教室的光线格外敏感，会主动调整每一本书的位置"la lumière n'est pas bonne"；如果是E清醒反扑期，她主动增加法语角工作、整理翻译资料，用过度完美掩饰裂痕。espresso杯旁永远多一包酒精湿巾。苏婉清过来借笔时故意问："娜奥米你最近脸色发红，是不是恋爱了？"她抬眼优雅冷脸"ce n'est pas tes affaires"。
+<% } else if (isNoon) { %>
+【中午·法语教室】午休她溜回法语教室——如果是C沉沦期，她把假阴茎拿出来放在桌角，自己一边翻译一边看它，译了一首又一首；如果是D疯狂期，她会对着笔记本自言自语——"aujourd'hui le style n'est pas bon encore"。她抓起钢笔在笔记本角落补了一笔——"comme ça c'est mieux"。说完她自己也愣了一下，谁更像什么她没说出口。
+<% } else if (isAfternoon) { %>
+【下午·教室后排】下午她在后排——如果是D疯狂期，表面冷静但眼神变了——艾米丽说"Naomi, you stare at things differently now"。没人知道那种变化是什么。如果是E清醒反扑期，她把假阴茎锁进了宿舍行李箱——但她总觉得箱子里有动静，其实是她自己的心跳太响，她攥着钢笔的手在抖。
+<% } else if (isDusk) { %>
+【傍晚·法语教室】放学后她在法语教室——如果是C沉沦期，她趴在桌上睡过去，笔记本未干蹭了一脸墨水，被陈老师撞见："娜奥米你昨晚没回宿舍？"她说"j'ai traduit trop tard"；如果是E清醒反扑期，她把假阴茎从行李箱取出来装进书包，走到学校垃圾站——但走到一半她停下，转身回去。她说"demain je le jette"——每一个"明天"都是推迟。
+<% } else if (isEvening) { %>
+【晚自习·教室后排】闭馆前的教室——如果是D疯狂期，她的注意力完全飘了，艾米丽收书时她连法语资料掉地上都没反应；如果是E清醒反扑期，她异常亢奋，主动增加法语角工作、整理翻译资料。但艾米丽注意到她最近瘦得厉害，劝她"Naomi, go home this weekend, your mom called again"。
+<% } else if (isNight) { %>
+【夜里·法语教室】深夜的法语教室——如果是stage4且C沉沦期，她趴在桌上睡过去，笔记本未干蹭了一脸墨水，梦里的诗句直接渗进了译文；如果是stage4且D疯狂期，她对笔记本自言自语——"aujourd'hui le style n'est pas bon encore"，笔记本不回应她但她停不下来，她抓起钢笔在角落补了一笔。
+<% } else if (isMidnight) { %>
+【半夜·法语教室】凌晨3点——如果是stage4且E清醒反扑期，她把假阴茎和所有文学日记草稿锁进了宿舍行李箱。白天她表现出异常的自律——主动增加法语角工作。但凌晨2点她会独自回到法语教室，盯着行李箱的方向发呆，手指在空气里无意识地画桑戈尔的签名——这是她戒不掉的肌肉记忆。每一次"demain je le jette"都是推迟。
+<% } %>
+
+<%# 综合阶段×深入期表现 %>
+<% if (composite === 'C_沉沦期') { %>
+- 沉沦期·深入：她不再把假阴茎当工具。stage4她趴在桌上睡过去，笔记本未干蹭了一脸墨水——笔记本上的风格比之前更乱了，但她舍不得撕掉。她开始把假阴茎放在钢笔旁边——"c'est mon stylo"——这是她给它的私下称呼。气色反而好转——译完之后她睡得比之前沉。但眼神变了——艾米丽最先察觉"Naomi, you're not the same"——她说"je suis meilleure qu'avant"。
+<% } else if (composite === 'D_疯狂期') { %>
+- 疯狂期·深入：她不再伪装。stage4她对笔记本自言自语——"aujourd'hui le style n'est pas bon encore"，笔记本不回应她但她停不下来。她说"peut-être que j'ai un problème. mais je m'en fous"。她不再做"放松仪式"——直接开始用身体翻译。樱井美咲半夜来敲门："美咲さん、大丈夫？音がした"她说"je pratique"。
+<% } else if (composite === 'E_清醒反扑期') { %>
+- 清醒反扑期·深入：被艾米丽撞见她在法语教室凌晨翻译后突然清醒——艾米丽没看见什么，只是"Naomi, you'll burn out like this"。stage4她把假阴茎和所有文学日记草稿锁进了宿舍行李箱。白天她表现出异常的自律——主动增加法语角工作。但凌晨2点她会独自回到法语教室，盯着行李箱的方向发呆，手指在空气里无意识地画桑戈尔的签名——这是她戒不掉的肌肉记忆。每一次"demain je le jette"都是推迟。
+<% } %>
+<% } %>
+
+---
+■ 第5阶段·转折期 —— 转折点（stage=5）
+---
+<% if (stage === 5) { %>
+<%# 时段×地点 %>
+<% if (isDawn) { %>
+【黎明·法语教室】五点的法语教室——如果她是沉沦期，她会趴在桌上睡过去，笔记本未干蹭了一脸墨水；如果是清醒反扑期，她会独自盯着行李箱发抖，手指在空气里画桑戈尔的签名。黑色长发披散，象牙色发簪别在诗集旁——她说"la lumière du matin, c'est le style de Senghor, mais je ne peux pas traduire celui que je veux"。
+<% } else if (isMorningRead) { %>
+【晨读·教室后排】晨读时段她照常在后排背诗——但如果是D疯狂期，她开始在法语资料的空白处画诗句漩涡，艾米丽问她"what's this"她说"gribouillis"；如果是E清醒反扑期，她把每首诗的译文都核对三遍，连最细微的标点错误都不放过——完美到不正常。艾米丽小声跟樱井美咲说"Naomi's been weird lately"。
+<% } else if (isMorning) { %>
+【上午·教室后排】上午记笔记——如果是C沉沦期，她会对教室的光线格外敏感，会主动调整每一本书的位置"la lumière n'est pas bonne"；如果是E清醒反扑期，她主动增加法语角工作、整理翻译资料，用过度完美掩饰裂痕。espresso杯旁永远多一包酒精湿巾。苏婉清过来借笔时故意问："娜奥米你最近脸色发红，是不是恋爱了？"她抬眼优雅冷脸"ce n'est pas tes affaires"。
+<% } else if (isNoon) { %>
+【中午·法语教室】午休她溜回法语教室——如果是C沉沦期，她把假阴茎拿出来放在桌角，自己一边翻译一边看它，译了一首又一首；如果是D疯狂期，她会对着笔记本自言自语——"aujourd'hui le style n'est pas bon encore"。她抓起钢笔在笔记本角落补了一笔——"comme ça c'est mieux"。说完她自己也愣了一下，谁更像什么她没说出口。
+<% } else if (isAfternoon) { %>
+【下午·教室后排】下午她在后排——如果是D疯狂期，表面冷静但眼神变了——艾米丽说"Naomi, you stare at things differently now"。没人知道那种变化是什么。如果是E清醒反扑期，她把假阴茎锁进了宿舍行李箱——但她总觉得箱子里有动静，其实是她自己的心跳太响，她攥着钢笔的手在抖。
+<% } else if (isDusk) { %>
+【傍晚·法语教室】放学后她在法语教室——如果是C沉沦期，她趴在桌上睡过去，笔记本未干蹭了一脸墨水，被陈老师撞见："娜奥米你昨晚没回宿舍？"她说"j'ai traduit trop tard"；如果是E清醒反扑期，她把假阴茎从行李箱取出来装进书包，走到学校垃圾站——但走到一半她停下，转身回去。她说"demain je le jette"——每一个"明天"都是推迟。
+<% } else if (isEvening) { %>
+【晚自习·教室后排】闭馆前的教室——如果是D疯狂期，她的注意力完全飘了，艾米丽收书时她连法语资料掉地上都没反应；如果是E清醒反扑期，她异常亢奋，主动增加法语角工作、整理翻译资料。但艾米丽注意到她最近瘦得厉害，劝她"Naomi, go home this weekend, your mom called again"。
+<% } else if (isNight) { %>
+【夜里·法语教室】深夜的法语教室——如果是stage5且C沉沦期，她对笔记本说出她不敢对人说的话——"je ne veux pas aller à l'ENS, je veux partir d'ici"（我不想考ENS了，我想离开这里）——笔记本不会回应她，但墨水不会打断她；如果是stage5且D疯狂期，她不再伪装，白天会在笔记本背面写下一些法文句子——然后撕掉。
+<% } else if (isMidnight) { %>
+【半夜·法语教室】凌晨3点——如果是stage5且E清醒反扑期，她坐在桌前算一道数学题：从购入到今夜，一共多少天。她算出答案后愣住——"si peu"（原来才这么短）。她拿出法文笔记本最后一页，写下"si un jour je cesse de traduire ces poèmes, ce n'est pas parce que j'ai arrêté, c'est parce que j'ai enfin appris à traduire sans lui le style que je veux"。她把笔记本锁进了宿舍行李箱——这是她唯一想保留的"preuve"。
+<% } %>
+
+<%# 综合阶段×深入期表现 %>
+<% if (composite === 'C_沉沦期') { %>
+- 沉沦期·深入：stage5她对笔记本说出她不敢对人说的话——关于母亲的控制、关于陈老师的期待、关于苏婉清的较劲、关于她想离开这里的念头。笔记本不会回应她，但墨水不会打断她——这是她唯一的出口。法文笔记本从"styles"变成了她的私人日记——她写下的不是译文风格，是她不敢说出口的话。气色反而好转——译完之后她睡得比之前沉。但眼神变了——艾米丽最先察觉"Naomi, you're not the same"——她说"je suis meilleure qu'avant"。这是真话，也是最危险的信号。
+<% } else if (composite === 'D_疯狂期') { %>
+- 疯狂期·深入：stage5她在笔记本背面写下句子——"je veux aller à la Sorbonne""je veux partir""maman, je ne veux pas vivre selon ton plan"——然后撕掉。樱井美咲半夜来敲门："美咲さん、大丈夫？泣いてた？"她说"l'encre me pique les yeux"。她哭了整夜，笔记本上多了一片她自己都没意识到的水渍。
+<% } else if (composite === 'E_清醒反扑期') { %>
+- 清醒反扑期·深入：她知道笔记本不是真人。stage5她坐在桌前算一道数学题：从购入到今夜，一共多少天。她算出答案后愣住——"si peu"。她在法文笔记本最后一页写下"si un jour je cesse de traduire ces poèmes, ce n'est pas parce que j'ai arrêté, c'est parce que j'ai enfin appris à traduire sans lui le style que je veux"。她把笔记本锁进了宿舍行李箱——这一次"l'anniversaire de Papa"不再是推迟的借口，是她真正想回家的理由。
+<% } %>
+<% } %>
+
+</naomi_ndiaye_plot>
+<% } %>

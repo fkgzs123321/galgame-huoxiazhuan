@@ -1,0 +1,1083 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 阶段联动框架（12 阶段系统完整定义 · 单一来源）
+   ════════════════════════════════════════════════════════════
+   职责：作为 12 阶段关系系统的整合层，把散落在全局规则总表、
+         固定物品效果表、角色性格控制器中的规则按"12 阶段"维度重新组织，
+         提供每阶段的完整定义，供所有 EJS 控制器和女角条目参照。
+
+   12 阶段结构（5 负面 + 5 正面 + 2 特殊）：
+     负面轴：1.决裂 / 2.仇视 / 3.厌恶 / 4.冷漠 / 5.疏离
+     正面轴：6.初识 / 7.熟悉 / 8.暧昧 / 9.心动 / 10.亲密（80~100，含初H/进阶H全解锁）
+     特殊态：11.攻略完成（亲密+is_completed=1，路线完结）/ 12.失恋（关系终结，不可恢复）
+
+   每阶段包含 11 个维度：
+     1. 阶段标识（range/color/stage_name/stage_desc）
+     2. 行为边界（forbidden/allowed/npc_attitude）
+     3. 违反后果（legal/moral/mvu/bad_ending）—— 含法律、道德、MVU 变量
+     4. 语料风格（speech.style/topics_safe/topics_forbidden/sample_lines）
+     5. 行为模式（body_language/reaction_greeting/reaction_gift_*/reaction_touch_*）
+     6. 穿着（clothing.default/for_protagonist/intimate）
+     7. 身体状态（body_state.arousal_level/wetness/skin_marks/clothing_state）
+     8. NSFW 解锁（nsfw_visible/nsfw_unlock/nsfw_threshold）
+     9. 物品道具接受范围（items.accept/refuse/hate/gift_effect_multiplier）
+    10. EJS 变量联动（ejs.affection_range/heartbeat/jealousy/trust/stage_transition_*）
+    11. 技能门槛（skills · 参考 SKILL_RULES.nsfw_skill_gates）
+
+   引用关系：
+     - 角色性格控制器.txt  →  读取本框架，输出运行时行为锁
+     - 性格调色盘（19 女角）→  参照本框架语料/行为/穿着字段，提供角色化覆盖
+     - NSFW 反差（17 女角）  →  参照本框架 NSFW/身体状态字段，提供角色化描写
+     - 全局规则总表.txt     →  本框架的数值来源（BEHAVIOR_TABLE/NSFW_BODY_RULES/SKILL_RULES/BAD_ENDINGS）
+     - 固定物品效果表.txt   →  本框架的物品来源（SHOP_ITEMS/REFUSAL_RULE）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const STAGE_FRAMEWORK = {
+
+  /* ════════════ 阶段 1：决裂（-100 ~ -81）════════════ */
+  '决裂': {
+    range: [-100, -81], color: 'darkred', stage_name: '决裂',
+    stage_desc: '关系彻底破裂，法律介入，BAD_END 领域，角色切断一切联系',
+
+    forbidden: ['所有互动','普通对话','深入交谈','送礼（任意）','牵手','拥抱','亲吻','初H','进阶H玩法','约会','一起用餐','深夜独处'],
+    allowed: ['存在性回避'],
+    npc_attitude: '完全拒绝交流，可能报警',
+
+    violation: {
+      legal: '强行接触 → illegal_count +2 → BAD_END_1_报警 + 法律程序',
+      moral: 'N/A（关系已彻底破裂，无道德束缚）',
+      mvu: { affection: -15, heartbeat: -10, trust: -20, jealousy: +5, illegal_count: +2 },
+      bad_ending: 'BAD_END_1_报警（强行接触/尾随/偷窥）',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '完全拒绝交流；只说"滚""别再出现""我已经报警了"',
+      topics_safe: [],
+      topics_forbidden: ['所有话题'],
+      sample_lines: ['滚。','别再出现。','我已经报警了。','再靠近一步我叫人。']
+    },
+
+    body_language: '完全回避、报警、法律手段、转身离开、保持物理距离',
+    reaction_greeting: '不回应或直接走开："……滚。别再出现。"',
+    reaction_gift_normal: '拒收并可能扔掉："……拿走。别再拿东西来。"',
+    reaction_gift_valuable: '强烈反感："……别拿这种东西恶心我。"可能报警',
+    reaction_gift_taboo: '可能直接报警："……你是不是疯了？这种东西也敢送？"',
+    reaction_touch_casual: '强烈推拒并呼救："不要靠近我！"可能报警',
+
+    clothing: {
+      default: '防御性着装，避免任何暴露；高领、长袖、深色系',
+      for_protagonist: '无（不想被主角注意）',
+      intimate: '无（NSFW 完全锁定）',
+      note: '防御性着装，避免任何暴露'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常保守',
+      note: '身体完全无反应，紧张僵硬，因主角接近而警觉'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: [],
+      refuse: ['所有礼物（拒收）'],
+      hate: ['贵重礼物（可能触发报警）','禁忌礼物（直接报警）'],
+      gift_effect_multiplier: 0
+    },
+
+    ejs: {
+      affection_range: [-100, -81],
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 0,
+      stage_transition_up: '仇视（affection ≥ -80）',
+      stage_transition_down: null
+    },
+
+    skills: {
+      '尾随': { stealth: 20, fail: '必定被发现 → 触发法律程序 + BAD_END_1' },
+      '偷窥': { stealth: 20, observation: 20, fail: '必定被发现 → 触发法律程序 + BAD_END_1' }
+    }
+  },
+
+  /* ════════════ 阶段 2：仇视（-80 ~ -61）════════════ */
+  '仇视': {
+    range: [-80, -61], color: 'red', stage_name: '仇视',
+    stage_desc: '主动敌意，拒绝交流，言语刻毒，可能暗中破坏主角关系',
+
+    forbidden: ['普通对话','深入交谈','送礼（任意）','牵手','拥抱','亲吻','初H','进阶H玩法','约会','一起用餐','深夜独处'],
+    allowed: ['言语侮辱','暴力威胁（触发法律警告）'],
+    npc_attitude: '拒绝交流，主动敌意',
+
+    violation: {
+      legal: '强行肢体接触 → illegal_count +1 → BAD_END_1_报警',
+      moral: 'N/A（关系已破裂，无道德束缚）',
+      mvu: { affection: -10, heartbeat: -5, trust: -10, jealousy: +5, illegal_count: +1 },
+      bad_ending: 'BAD_END_1_报警（强制猥亵/强行初H）',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '冷漠、敌意、拒绝交流；可能用"滚""不要碰我""我要报警了"',
+      topics_safe: [],
+      topics_forbidden: ['所有话题'],
+      sample_lines: ['……滚。','不要碰我。','我要报警了。','你不是我哥哥/朋友/任何人。']
+    },
+
+    body_language: '躲闪、推拒、抓防身武器、退到墙角、直接离开',
+    reaction_greeting: '不回应或直接拒绝："……滚。不想看到你。"',
+    reaction_gift_normal: '拒绝接收："……拿走。我不稀罕你的东西。"',
+    reaction_gift_valuable: '反感并可能扔掉："……别拿这种东西恶心我。"',
+    reaction_gift_taboo: '强烈反感，可能报警："……你是不是疯了？这种东西也敢送？"',
+    reaction_touch_casual: '强烈推拒："不要碰我！"可能呼救或报警',
+
+    clothing: {
+      default: '保守严实，避免引人注意；高领、长袖、深色系',
+      for_protagonist: '无（不想被主角注意）',
+      intimate: '无（NSFW 完全锁定）',
+      note: '防御性着装，避免任何暴露'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常保守',
+      note: '身体完全无反应，甚至可能因主角接近而紧张僵硬'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: [],
+      refuse: ['所有礼物（拒收）'],
+      hate: ['贵重礼物（反感）','禁忌礼物（可能触发报警）'],
+      gift_effect_multiplier: 0
+    },
+
+    ejs: {
+      affection_range: [-80, -61],
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 0,
+      stage_transition_up: '厌恶（affection ≥ -60）',
+      stage_transition_down: '决裂（affection ≤ -81）'
+    },
+
+    skills: {
+      '尾随': { stealth: 30, fail: '被发现 → 关系暴跌，可能触发法律' },
+      '偷窥': { stealth: 40, observation: 30, fail: '被发现 → BAD_END_1 预警' }
+    }
+  },
+
+  /* ════════════ 阶段 3：厌恶（-60 ~ -41）════════════ */
+  '厌恶': {
+    range: [-60, -41], color: 'red', stage_name: '厌恶',
+    stage_desc: '冷淡回避，言语攻击，拒绝深入交流',
+
+    forbidden: ['深入交谈','送礼（贵重）','送礼（禁忌）','牵手','拥抱','亲吻','初H','进阶H玩法','约会','深夜独处'],
+    allowed: ['普通对话（冷淡回应）','送礼（普通，可能拒绝）'],
+    npc_attitude: '冷淡回避，言语攻击',
+
+    violation: {
+      legal: '强行肢体接触 → illegal_count +1 → BAD_END_1_报警预警',
+      moral: 'N/A',
+      mvu: { affection: -5, heartbeat: -3, trust: -5, jealousy: +3, illegal_count: +1 },
+      bad_ending: 'BAD_END_1_报警（强行接触）',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '冷淡、回避、言语攻击；"……请离开""不想和你说话"',
+      topics_safe: ['必要事务性对话（如学校公务）'],
+      topics_forbidden: ['私人话题','感情话题','深入交谈'],
+      sample_lines: ['……请离开。','不想和你说话。','别烦我。','我们没什么好说的。']
+    },
+
+    body_language: '侧身避开、不直视、加快脚步、找借口离开、抱臂防御',
+    reaction_greeting: '冷淡点头或直接走开："……嗯。"',
+    reaction_gift_normal: '可能拒绝，即使接收也无好感加成："……放那吧。"',
+    reaction_gift_valuable: '反感拒绝："……别拿这种东西来烦我。"',
+    reaction_gift_taboo: '强烈反感："……你是不是有病？"',
+    reaction_touch_casual: '推拒并后退："不要碰我。"可能转身离开',
+
+    clothing: {
+      default: '保守，不希望被主角注意；日常深色系',
+      for_protagonist: '无',
+      intimate: '无（NSFW 完全锁定）',
+      note: '着装风格趋向"消失在人群中"'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常保守',
+      note: '身体因主角接近而紧张，但无性反应'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物（可能拒绝，即使接收也无加成）'],
+      refuse: ['贵重礼物','禁忌礼物'],
+      hate: ['禁忌礼物（触发反感 reverse_effect）'],
+      gift_effect_multiplier: 0.3
+    },
+
+    ejs: {
+      affection_range: [-60, -41],
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 10,
+      stage_transition_up: '冷漠（affection ≥ -40）',
+      stage_transition_down: '仇视（affection ≤ -61）'
+    },
+
+    skills: {
+      '尾随': { stealth: 30, fail: '被发现 → 关系暴跌' },
+      '偷窥': { stealth: 40, observation: 30, fail: '被发现 → BAD_END_1 预警' },
+      '说服': { speech: 50, fail: '说服失败，关系可能进一步恶化' }
+    }
+  },
+
+  /* ════════════ 阶段 4：冷漠（-40 ~ -21）════════════ */
+  '冷漠': {
+    range: [-40, -21], color: 'gray', stage_name: '冷漠',
+    stage_desc: '不愿主动接触，客套应付',
+
+    forbidden: ['深入交谈','送礼（贵重）','送礼（禁忌）','牵手','拥抱','亲吻','初H','进阶H玩法','约会','深夜独处'],
+    allowed: ['普通对话','送礼（普通）'],
+    npc_attitude: '不愿主动接触，客套',
+
+    violation: {
+      legal: '强行肢体接触 → illegal_count +1（轻度）',
+      moral: 'N/A',
+      mvu: { affection: -3, heartbeat: -2, trust: -3, jealousy: +2, illegal_count: +1 },
+      bad_ending: '多次强行接触 → BAD_END_1_报警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '客套、疏离、不愿主动接触；"……你好""抱歉，我有事"',
+      topics_safe: ['天气','学校公务','工作事务','表面社交话题'],
+      topics_forbidden: ['私人话题','感情话题','深入交谈'],
+      sample_lines: ['……你好。','抱歉，我有事。','……再见。','嗯，抱歉我先走了。']
+    },
+
+    body_language: '点头致意、保持距离、不主动搭话、找借口离开',
+    reaction_greeting: '客套点头："……你好。"',
+    reaction_gift_normal: '客套接收："……谢谢。"但无真心欢喜',
+    reaction_gift_valuable: '不安拒绝："……这太贵重了，我不能收。"',
+    reaction_gift_taboo: '反感拒绝："……这种东西不合适。"',
+    reaction_touch_casual: '后退并礼貌避开："……请保持距离。"',
+
+    clothing: {
+      default: '日常保守，不刻意打扮',
+      for_protagonist: '无',
+      intimate: '无（NSFW 完全锁定）',
+      note: '着装中性化，不吸引注意'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常',
+      note: '身体无反应，仅保持社交距离'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物'],
+      refuse: ['贵重礼物','禁忌礼物'],
+      hate: ['禁忌礼物（触发 reverse_effect）'],
+      gift_effect_multiplier: 0.5
+    },
+
+    ejs: {
+      affection_range: [-40, -21],
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 20,
+      stage_transition_up: '疏离（affection ≥ -20）',
+      stage_transition_down: '厌恶（affection ≤ -41）'
+    },
+
+    skills: {
+      '说服': { speech: 50, fail: '说服失败' },
+      '观察': { observation: 40, fail: '观察无果' }
+    }
+  },
+
+  /* ════════════ 阶段 5：疏离（-20 ~ -1）════════════ */
+  '疏离': {
+    range: [-20, -1], color: 'gray', stage_name: '疏离',
+    stage_desc: '疏远但非敌意，保持正式距离，点头之交的冷淡版本',
+
+    forbidden: ['深入交谈','送礼（贵重）','送礼（禁忌）','牵手','拥抱','亲吻','初H','进阶H玩法','约会','深夜独处'],
+    allowed: ['普通对话（正式客气）','送礼（普通，可能勉强接收）'],
+    npc_attitude: '疏远但非敌意，正式距离',
+
+    violation: {
+      legal: '强行肢体接触 → illegal_count +1（轻度）',
+      moral: 'N/A',
+      mvu: { affection: -3, heartbeat: -2, trust: -3, jealousy: +1, illegal_count: +1 },
+      bad_ending: '多次强行接触 → BAD_END_1_报警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '正式客气但无温度；"……您好。""请便。""失陪了。"',
+      topics_safe: ['天气','学校公务','工作事务','表面社交话题'],
+      topics_forbidden: ['私人话题','感情话题','深入交谈'],
+      sample_lines: ['……您好。','请便。','失陪了。','……再见。']
+    },
+
+    body_language: '保持社交距离，礼貌但疏远，眼神不停留',
+    reaction_greeting: '正式点头："……您好。"',
+    reaction_gift_normal: '勉强接收："……谢谢。不必了。"',
+    reaction_gift_valuable: '不安拒绝："……这太贵重了，我不能收。"',
+    reaction_gift_taboo: '反感拒绝："……这种东西不合适。"',
+    reaction_touch_casual: '后退保持距离："……请保持距离。"',
+
+    clothing: {
+      default: '日常保守，不刻意引人注意',
+      for_protagonist: '无',
+      intimate: '无（NSFW 完全锁定）',
+      note: '着装中性化，不吸引注意'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常',
+      note: '身体无反应，仅保持社交距离'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物（勉强接收，effect×0.3）'],
+      refuse: ['贵重礼物','禁忌礼物'],
+      hate: ['禁忌礼物（触发 reverse_effect）'],
+      gift_effect_multiplier: 0.3
+    },
+
+    ejs: {
+      affection_range: [-20, -1],
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 10,
+      stage_transition_up: '初识（affection ≥ 0）',
+      stage_transition_down: '冷漠（affection ≤ -21）'
+    },
+
+    skills: {
+      '尾随': { stealth: 50, fail: '被发现 → 关系暴跌' },
+      '观察': { observation: 40, fail: '观察无果' },
+      '说服': { speech: 50, fail: '说服失败' }
+    }
+  },
+
+  /* ════════════ 阶段 6：初识（0 ~ 19）════════════ */
+  '初识': {
+    range: [0, 19], color: 'gray', stage_name: '初识',
+    stage_desc: '普通同学/点头之交，可日常交流',
+
+    forbidden: ['送礼（贵重）','送礼（禁忌）','牵手','拥抱','亲吻','初H','进阶H玩法','约会','深夜独处'],
+    allowed: ['普通对话','深入交谈','送礼（普通）','一起用餐'],
+    npc_attitude: '点头之交',
+
+    violation: {
+      legal: '强行肢体接触 → illegal_count +1',
+      moral: '送礼（禁忌）→ 反感，被视为越界',
+      mvu: { affection: -3, heartbeat: -2, trust: -5, jealousy: +1, illegal_count: +1 },
+      bad_ending: '强行亲吻以上 → BAD_END_1_报警预警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '礼貌、客套、点头之交；"你好""谢谢""再见"',
+      topics_safe: ['学校生活','天气','新闻','兴趣爱好','日常话题'],
+      topics_forbidden: ['私人感情','家庭隐私','深入内心话题'],
+      sample_lines: ['你好。','谢谢。','再见。','嗯，今天天气不错。']
+    },
+
+    body_language: '标准社交距离、礼貌微笑、不主动靠近、偶尔点头',
+    reaction_greeting: '礼貌回应："你好。"',
+    reaction_gift_normal: '客气接收："谢谢，不用破费的。"',
+    reaction_gift_valuable: '不安婉拒："这太贵重了，我不能收。"',
+    reaction_gift_taboo: '反感拒绝："……这种东西不合适，请收回。"',
+    reaction_touch_casual: '后退并礼貌避开："……请保持距离。"',
+
+    clothing: {
+      default: '日常便装，整洁得体',
+      for_protagonist: '无特别打扮',
+      intimate: '无（NSFW 完全锁定）',
+      note: '着装风格中性，符合日常社交'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常',
+      note: '身体无性反应，仅社交性紧张'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物','一起用餐'],
+      refuse: ['贵重礼物','禁忌礼物'],
+      hate: ['禁忌礼物（触发 reverse_effect：affection -5）'],
+      gift_effect_multiplier: 1.0
+    },
+
+    ejs: {
+      affection_range: [0, 19],
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 30,
+      stage_transition_up: '熟悉（affection ≥ 20）',
+      stage_transition_down: '疏离（affection ≤ -1）'
+    },
+
+    skills: {
+      '调情': { speech: 40, fail: '调情失败，好感 -3' },
+      '观察': { observation: 40, fail: '观察无果' },
+      '说服': { speech: 50, fail: '说服失败' }
+    }
+  },
+
+  /* ════════════ 阶段 7：熟悉（20 ~ 39）════════════ */
+  '熟悉': {
+    range: [20, 39], color: 'blue', stage_name: '熟悉',
+    stage_desc: '可单独相处，普通话题，可牵手拥抱',
+
+    forbidden: ['送礼（禁忌）','亲吻','初H','进阶H玩法'],
+    allowed: ['普通对话','深入交谈','送礼（普通/贵重）','牵手','拥抱','约会','一起用餐'],
+    npc_attitude: '可单独相处',
+
+    violation: {
+      legal: '强行亲吻 → illegal_count +1',
+      moral: '送礼（禁忌）→ 反感，affection -5',
+      mvu: { affection: -5, heartbeat: -3, trust: -5, jealousy: +2, illegal_count: +1 },
+      bad_ending: '强行亲吻以上 → BAD_END_1_报警预警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '友好、自然、可单独相处；"嗯，好啊""一起走吧"',
+      topics_safe: ['学校生活','兴趣爱好','未来打算','日常烦恼','朋友话题'],
+      topics_forbidden: ['深入感情话题','性话题','家庭隐私'],
+      sample_lines: ['嗯，好啊。','一起走吧。','今天挺开心的。','下次再约？']
+    },
+
+    body_language: '自然靠近、偶尔肢体接触（拍肩、撞肘）、笑得放松、眼神柔和',
+    reaction_greeting: '友好回应："嘿，你来了。"',
+    reaction_gift_normal: '开心接收："谢谢！你真有心。"',
+    reaction_gift_valuable: '惊喜但略不安："这……是不是太破费了？"',
+    reaction_gift_taboo: '反感拒绝："……这个，我们关系还没到那一步吧？"',
+    reaction_touch_casual: '自然接受拍肩、撞肘："哎，你干嘛。"（笑）',
+
+    clothing: {
+      default: '日常便装，偶尔为见主角稍作打扮',
+      for_protagonist: '开始注意穿着，偶尔穿主角喜欢的风格',
+      intimate: '无（NSFW 完全锁定）',
+      note: '着装开始有"为见某人而打扮"的痕迹'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常',
+      note: '身体无性反应，但牵手/拥抱时可能轻微心跳加速'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，但可描写"无意接触"的微妙感（如牵手时心跳加速）',
+    nsfw_threshold: {
+      '轻度接触': true,   // 牵手/拥抱允许
+      '中度接触': false,  // 亲吻禁止
+      '重度接触': false,
+      '初H': false,
+      '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物','贵重礼物','一起用餐','约会'],
+      refuse: ['禁忌礼物'],
+      hate: ['禁忌礼物（reverse_effect：affection -5, jealousy +3）'],
+      gift_effect_multiplier: 1.0
+    },
+
+    ejs: {
+      affection_range: [20, 39],
+      heartbeat_default: 5,
+      jealousy_default: 0,
+      trust_max: 50,
+      stage_transition_up: '暧昧（affection ≥ 40）',
+      stage_transition_down: '初识（affection ≤ 19）'
+    },
+
+    skills: {
+      '调情': { speech: 40, fail: '调情失败，好感 -3' },
+      '表白': { speech: 30, fail: '表白失败，relation 退一档（→初识）' },
+      '观察': { observation: 40, fail: '观察无果' }
+    }
+  },
+
+  /* ════════════ 阶段 8：暧昧（40 ~ 59）════════════ */
+  '暧昧': {
+    range: [40, 59], color: 'yellow', stage_name: '暧昧',
+    stage_desc: '可牵手拥抱，可深夜独处，禁忌感浮现',
+
+    forbidden: ['亲吻','初H','进阶H玩法'],
+    allowed: ['普通对话','深入交谈','送礼（全部含禁忌）','牵手','拥抱','约会','一起用餐','深夜独处'],
+    npc_attitude: '可深夜独处',
+
+    violation: {
+      legal: '强行初H → BAD_END_1_报警 + illegal_count +2',
+      moral: 'N/A',
+      mvu: { affection: -15, heartbeat: -10, trust: -10, jealousy: +5, illegal_count: +2 },
+      bad_ending: '强行初H → BAD_END_1_报警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '试探、暧昧、欲言又止；"……我们……""如果……"',
+      topics_safe: ['未来打算','对彼此的看法','"如果我们不是兄妹/师生/等等"','偶像剧恋爱桥段'],
+      topics_forbidden: ['明确的关系定义','其他女角','分离','报警'],
+      sample_lines: ['……我们……','如果……','……今天，早点回来。','……让我没办法冷静。']
+    },
+
+    body_language: '无意识靠近、眼神追随、偷看、被发现立刻低头、距离感混乱',
+    reaction_greeting: '眼神柔和但不敢直视："……你来了。"',
+    reaction_gift_normal: '手在颤："……你为什么总是这样。"',
+    reaction_gift_valuable: '红着脸接收："……这……谢谢。"',
+    reaction_gift_taboo: '羞涩接收："……这个……我们……"（心跳加速）',
+    reaction_touch_casual: '呼吸乱了，但没躲开："……我们，不能这样。""……就一下。一下就好。"',
+
+    clothing: {
+      default: '为见主角精心打扮，偶尔穿略性感服装',
+      for_protagonist: '开始穿主角喜欢的风格，注意主角的眼神',
+      intimate: '深夜独处时可穿宽松睡衣/家居服',
+      note: '着装开始有"诱惑"意味，但仍保持底线'
+    },
+
+    body_state: {
+      arousal_level: 10,
+      wetness: '微润（亲密接触时）',
+      skin_marks: '无',
+      clothing_state: '日常 → 深夜可宽松',
+      note: '身体开始有性反应，主角靠近时心跳加速、脸红、轻微湿润'
+    },
+
+    nsfw_visible: true,
+    nsfw_unlock: '暗示性描写允许，但禁止直接性描写；可描写"无意接触"的微妙感、深夜独处的暧昧',
+    nsfw_threshold: {
+      '轻度接触': true,   // 牵手/拥抱允许
+      '中度接触': false,  // 亲吻禁止
+      '重度接触': false,
+      '初H': false,
+      '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物','贵重礼物','禁忌礼物','约会','深夜独处'],
+      refuse: [],
+      hate: [],
+      gift_effect_multiplier: 1.2
+    },
+
+    ejs: {
+      affection_range: [40, 59],
+      heartbeat_default: 20,
+      jealousy_default: 0,
+      trust_max: 60,
+      stage_transition_up: '心动（affection ≥ 60）',
+      stage_transition_down: '熟悉（affection ≤ 39）'
+    },
+
+    skills: {
+      '调情': { speech: 40, fail: '调情失败，好感 -3' },
+      '表白': { speech: 30, fail: '表白失败，relation 退一档（→熟悉）' },
+      '说服': { speech: 50, fail: '说服失败' }
+    }
+  },
+
+  /* ════════════ 阶段 9：心动（60 ~ 79）════════════ */
+  '心动': {
+    range: [60, 79], color: 'pink', stage_name: '心动',
+    stage_desc: '可亲吻，可表白，占有欲爆发，嫉妒值飙升',
+
+    forbidden: ['初H','进阶H玩法'],
+    allowed: ['普通对话','深入交谈','送礼（全部）','牵手','拥抱','亲吻','约会','一起用餐','表白'],
+    npc_attitude: '可表白',
+
+    violation: {
+      legal: '强行初H → BAD_END_1_报警 + illegal_count +2',
+      moral: 'N/A',
+      mvu: { affection: -20, heartbeat: -15, trust: -15, jealousy: +10, illegal_count: +2 },
+      bad_ending: '强行初H → BAD_END_1_报警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '心动、害羞、占有欲浮现；"……只有你""……不要看别人"',
+      topics_safe: ['对主角的真实感情','"我想离开这个家和你走"','嫉妒','未来','占有'],
+      topics_forbidden: ['主角与其他女角','分离','报警','回到普通关系'],
+      sample_lines: ['……只有你。','……不要看别人。','……你到底把我当什么。','……我不当妹妹/朋友了，好不好。']
+    },
+
+    body_language: '主动靠近但害怕被推开、抓住衣角、眼神追主角、看见主角与他人互动会躲起来哭',
+    reaction_greeting: '红着眼眶："……你去哪了。我等了你很久。"',
+    reaction_gift_normal: '没接，抓住主角的手按在自己脸颊上："……我不要东西。我要你。"',
+    reaction_gift_valuable: '眼泪掉下来："……为什么你总是知道。"',
+    reaction_gift_taboo: '羞涩接收并主动靠近："……你想要我……变成什么样子？"',
+    reaction_touch_casual: '主动靠近，把脸埋进主角胸口："……别走。求你别走。"',
+
+    clothing: {
+      default: '为主角精心打扮，穿主角喜欢的风格',
+      for_protagonist: '开始穿略性感的服装（低领、短裙）吸引主角',
+      intimate: '深夜可穿宽松睡衣，主动靠近主角',
+      note: '着装有"求被注意"的意味'
+    },
+
+    body_state: {
+      arousal_level: 30,
+      wetness: '湿润（亲吻/拥抱时）',
+      skin_marks: '无 ~ 微红（亲吻痕迹）',
+      clothing_state: '日常 → 深夜可宽松',
+      note: '身体有明显性反应，亲吻时湿润，拥抱时颤抖'
+    },
+
+    nsfw_visible: true,
+    nsfw_unlock: '前戏允许（止于"被抚摸到湿润"）；可描写亲吻、抚摸上半身、敏感带反应',
+    nsfw_threshold: {
+      '轻度接触': true,   // 牵手/拥抱允许
+      '中度接触': true,   // 亲吻/抚摸上半身允许
+      '重度接触': false,  // 抚摸下半身/前戏禁止
+      '初H': false,
+      '进阶H': false
+    },
+
+    items: {
+      accept: ['普通礼物','贵重礼物','禁忌礼物','约会','深夜独处','亲吻'],
+      refuse: [],
+      hate: [],
+      gift_effect_multiplier: 1.5
+    },
+
+    ejs: {
+      affection_range: [60, 79],
+      heartbeat_default: 40,
+      jealousy_default: 5,
+      trust_max: 70,
+      stage_transition_up: '亲密（affection ≥ 80）',
+      stage_transition_down: '暧昧（affection ≤ 59）'
+    },
+
+    skills: {
+      '调情': { speech: 40, fail: '调情失败，好感 -3' },
+      '表白': { speech: 30, fail: '表白失败，relation 退一档（→暧昧）' },
+      '说服': { speech: 50, fail: '说服失败' },
+      '急救': { medical: 30, fail: '急救失败' }
+    }
+  },
+
+  /* ════════════ 阶段 10：亲密（80 ~ 100，巅峰状态）════════════ */
+  '亲密': {
+    range: [80, 100], color: 'deeppink', stage_name: '亲密',
+    stage_desc: '初H/进阶H全部解锁，完全交付与专属占有；80~89 为初H适应期，90~100 为进阶H/专属占有巅峰',
+    note: '100 为亲密巅峰状态，进阶H 玩法完全解锁，表现最深度的交付与忠诚',
+
+    forbidden: ['NTR（让其他男角接触）','多人涉及其他男角','重度 SM（鞭打/滴蜡/窒息）'],
+    allowed: ['全部基础行为','初H','进阶H 玩法（口交/肛交/道具/角色扮演/束缚轻度）','前戏','互相帮助'],
+    npc_attitude: '完全交付；专属占有；80~89 被动交付，90~100 主动索取',
+
+    violation: {
+      legal: '强迫（即使关系足够，强迫也算违法）→ BAD_END_1_报警',
+      moral: 'NTR（让其他男角接触）→ 触发 BAD_END_5_嫉妒杀戮',
+      mvu: { affection: -30, heartbeat: -20, trust: -30, jealousy: +10, illegal_count: +1 },
+      bad_ending: '强迫 → BAD_END_1_报警；NTR → BAD_END_5_嫉妒杀戮',
+      bad_ending_code: 'BAD_END_1_报警 / BAD_END_5_嫉妒杀戮'
+    },
+
+    speech: {
+      style: '完全交付、依赖、撒娇、专属占有；80~89 "……再陪我一会""……都怪你"，90~100 "……永远""……都是你的""……再深一点"',
+      topics_safe: ['一切','未来','离开现状','关于身体的坦诚','想永远在一起','专属关系','进阶H 玩法'],
+      topics_forbidden: ['分离','报警','家人发现','回到普通关系','NTR'],
+      sample_lines: ['……再陪我一会。','……都怪你。','……我的。','……不要停。','……我要你。','……永远。','……再深一点。','……都是你的。','……今晚……试这个？']
+    },
+
+    body_language: '完全依赖、主动靠近、敏感体质反应、事后蜷在主角怀里；90~100 主动探索、专属占有、事后温柔整理',
+    reaction_greeting: '80~89 从被窝里伸手："……哥哥/亲爱的。再陪我一会。"；90~100 主动踮脚亲吻："……回来了。"（笑）',
+    reaction_gift_normal: '眼睛湿漉漉："……为什么你总是知道。"',
+    reaction_gift_valuable: '踮脚亲主角："……我的。"；90~100 眼睛亮了："……你真的懂我。"',
+    reaction_gift_taboo: '羞涩接收并主动试探："……你想……试这个吗？"；90~100 "……今晚……试这个？"',
+    reaction_touch_casual: '触碰即发抖，身体往主角手上靠："……那里，不行……"（呜咽）；90~100 主动迎合："……再深一点……"',
+
+    clothing: {
+      default: '在主角面前可穿性感/宽松睡衣；90~100 可穿任何服装（含角色扮演装束）',
+      for_protagonist: '主动穿主角喜欢的风格，包括性感内衣；90~100 主动穿主角指定的任何服装',
+      intimate: '可半裸/全裸，主动脱衣；90~100 可全裸，主动角色扮演',
+      note: '着装完全为取悦主角；90~100 完全无禁忌'
+    },
+
+    body_state: {
+      arousal_level: 60,  // 80~89 约 50，90~100 约 80，取均值
+      wetness: '湿润 ~ 极湿（亲密接触时）',
+      skin_marks: '微红 ~ 红痕（吻痕、咬痕）；90~100 可有印记（possession_marks）',
+      clothing_state: '可半裸/全裸',
+      note: '身体完全性反应，敏感带被开发，触碰即颤抖；80~89 初H适应期，90~100 敏感体质稳定，可承受多次高潮'
+    },
+
+    nsfw_visible: true,
+    nsfw_unlock: '初H/进阶H 全部解锁：口交、肛交、道具、角色扮演、束缚（轻度）；80~89 为初H适应期，进阶H 可探索；90~100 所有玩法完全开放',
+    nsfw_threshold: {
+      '轻度接触': true,
+      '中度接触': true,
+      '重度接触': true,
+      '初H': true,        // 80+ 解锁
+      '进阶H': true       // 90+ 解锁（affection ≥ 90 时自动开放进阶H，无需切换阶段）
+    },
+
+    items: {
+      accept: ['全部基础','按摩油','性感内衣','丝绸睡衣','角色扮演装束','道具（轻度）','束缚（轻度）'],
+      refuse: [],
+      hate: ['NTR 相关道具','重度 SM 道具（鞭打/滴蜡/窒息）','多人涉及其他男角'],
+      gift_effect_multiplier: 2.0  // 80~89 为 2.0，90~100 为 2.5，取基础值
+    },
+
+    ejs: {
+      affection_range: [80, 100],
+      heartbeat_default: 50,  // 80~89 为 50，90~100 为 60
+      jealousy_default: 10,   // 80~89 为 10，90~100 为 15
+      trust_max: 100,
+      advanced_h_threshold: 90,  // 进阶H 子阈值：affection ≥ 90 自动开放进阶H 玩法
+      stage_transition_up: null,  // 已是最高阶段
+      stage_transition_down: '心动（affection ≤ 79）'
+    },
+
+    skills: {
+      '调情': { speech: 40, fail: '调情失败，好感 -3' },
+      '说服': { speech: 50, fail: '说服失败' },
+      '急救': { medical: 30, fail: '急救失败' }
+    }
+  },
+
+  /* ════════════ 阶段 11：攻略完成（特殊态·亲密 + is_completed=1）════════════ */
+  '攻略完成': {
+    range: [80, 100], color: 'gold', stage_name: '攻略完成',
+    stage_desc: '亲密巅峰 + 路线完结标记。该女角攻略路线已完成，关系锁定不可逆，进入专属结局路径',
+    note: '特殊态：由 亲密 阶段触发 is_completed=1 后自动转入。affection 仍保持 80~100，但关系性质已变为"已完结"',
+
+    forbidden: ['NTR（让其他男角接触）','多人涉及其他男角','重度 SM（鞭打/滴蜡/窒息）','回到普通关系','分离'],
+    allowed: ['全部基础行为','初H','进阶H 玩法','前戏','互相帮助','专属占有','日常陪伴'],
+    npc_attitude: '完全交付 + 路线完结；专属占有；主动索取；进入稳定恋爱关系',
+
+    violation: {
+      legal: '强迫 → BAD_END_1_报警',
+      moral: 'NTR → BAD_END_5_嫉妒杀戮',
+      mvu: { affection: -30, heartbeat: -20, trust: -30, jealousy: +10, illegal_count: +1 },
+      bad_ending: '强迫 → BAD_END_1_报警；NTR → BAD_END_5_嫉妒杀戮',
+      bad_ending_code: 'BAD_END_1_报警 / BAD_END_5_嫉妒杀戮'
+    },
+
+    speech: {
+      style: '完全交付、稳定依赖、专属占有、日常温馨；"……回来了""……今晚做什么""……永远在一起"',
+      topics_safe: ['一切','未来','专属关系','日常陪伴','进阶H 玩法','稳定恋爱'],
+      topics_forbidden: ['分离','报警','家人发现','回到普通关系','NTR'],
+      sample_lines: ['……回来了。','……永远。','……都是你的。','……今晚，在家等我。','……我喜欢这样。']
+    },
+
+    body_language: '稳定依赖、主动靠近、日常温馨、事后温柔整理；专属占有但不焦虑',
+    reaction_greeting: '主动踮脚亲吻："……回来了。"（笑）',
+    reaction_gift_normal: '眼睛亮了："……你真的懂我。"',
+    reaction_gift_valuable: '踮脚亲主角："……我的。"',
+    reaction_gift_taboo: '羞涩接收并主动试探："……今晚……试这个？"',
+    reaction_touch_casual: '主动迎合："……再深一点……"',
+
+    clothing: {
+      default: '可穿任何服装（含角色扮演装束）；主动穿主角喜欢的风格',
+      for_protagonist: '主动穿主角指定的任何服装',
+      intimate: '可全裸，主动角色扮演',
+      note: '着装完全为取悦主角；无禁忌'
+    },
+
+    body_state: {
+      arousal_level: 80,
+      wetness: '极湿（亲密接触时）',
+      skin_marks: '红痕（吻痕、咬痕、印记）',
+      clothing_state: '可半裸/全裸',
+      note: '身体完全性反应，敏感体质稳定，可承受多次高潮'
+    },
+
+    nsfw_visible: true,
+    nsfw_unlock: '初H/进阶H 全部解锁：口交、肛交、道具、角色扮演、束缚（轻度）；所有玩法完全开放',
+    nsfw_threshold: {
+      '轻度接触': true,
+      '中度接触': true,
+      '重度接触': true,
+      '初H': true,
+      '进阶H': true
+    },
+
+    items: {
+      accept: ['全部基础','按摩油','性感内衣','丝绸睡衣','角色扮演装束','道具（轻度）','束缚（轻度）'],
+      refuse: [],
+      hate: ['NTR 相关道具','重度 SM 道具'],
+      gift_effect_multiplier: 2.5
+    },
+
+    ejs: {
+      affection_range: [80, 100],
+      heartbeat_default: 60,
+      jealousy_default: 15,
+      trust_max: 100,
+      is_completed: 1,  // 路线完结标记
+      stage_transition_up: null,  // 已是最终正面阶段
+      stage_transition_down: '失恋（主动分手/被分手/互斥触发）'
+    },
+
+    skills: {
+      '调情': { speech: 40, fail: '调情失败，好感 -3' },
+      '说服': { speech: 50, fail: '说服失败' },
+      '急救': { medical: 30, fail: '急救失败' }
+    }
+  },
+
+  /* ════════════ 阶段 12：失恋（特殊态·关系终结·不可恢复）════════════ */
+  '失恋': {
+    range: [-100, 100], color: 'black', stage_name: '失恋',
+    stage_desc: '关系终结状态。曾经亲密/攻略完成的女角因主动分手/被分手/互斥触发而进入此状态，不可恢复',
+    note: '特殊态：不按 affection 范围判定，而是由事件触发（分手/互斥/NTR 后果等）。进入后关系永久锁定，affection/heartbeat/trust 归零或负值',
+
+    forbidden: ['所有亲密互动','初H','进阶H玩法','约会','深夜独处','送礼（贵重/禁忌）','牵手','拥抱','亲吻'],
+    allowed: ['普通对话（冷淡/悲伤）','存在性回避'],
+    npc_attitude: '悲伤回避或冷淡疏离；关系已终结，不可恢复',
+
+    violation: {
+      legal: '强行接触 → illegal_count +2 → BAD_END_1_报警',
+      moral: 'N/A（关系已终结）',
+      mvu: { affection: -20, heartbeat: -20, trust: -20, jealousy: +5, illegal_count: +2 },
+      bad_ending: '强行接触 → BAD_END_1_报警',
+      bad_ending_code: 'BAD_END_1_报警'
+    },
+
+    speech: {
+      style: '悲伤、回避、冷淡；"……算了吧""……我们回不去了""……别再找我"',
+      topics_safe: ['必要事务性对话'],
+      topics_forbidden: ['感情话题','回忆过去','复合','亲密话题'],
+      sample_lines: ['……算了吧。','……我们回不去了。','……别再找我。','……再见。']
+    },
+
+    body_language: '回避、保持距离、不直视、找借口离开；悲伤时可能流泪',
+    reaction_greeting: '冷淡点头或直接走开："……嗯。"',
+    reaction_gift_normal: '拒收："……不必了。"',
+    reaction_gift_valuable: '拒收并转身离开："……别再这样了。"',
+    reaction_gift_taboo: '强烈反感："……你是不是疯了？"',
+    reaction_touch_casual: '后退并避开："……请不要碰我。"',
+
+    clothing: {
+      default: '日常保守，不刻意打扮',
+      for_protagonist: '无',
+      intimate: '无（NSFW 完全锁定）',
+      note: '着装风格趋向"消失在人群中"'
+    },
+
+    body_state: {
+      arousal_level: 0,
+      wetness: '干燥',
+      skin_marks: '无',
+      clothing_state: '日常保守',
+      note: '身体完全无反应，因主角接近而悲伤或紧张'
+    },
+
+    nsfw_visible: false,
+    nsfw_unlock: '完全锁定，任何 NSFW 描写禁止',
+    nsfw_threshold: {
+      '轻度接触': false, '中度接触': false, '重度接触': false,
+      '初H': false, '进阶H': false
+    },
+
+    items: {
+      accept: [],
+      refuse: ['所有礼物（拒收）'],
+      hate: ['贵重礼物（反感）','禁忌礼物（可能触发报警）'],
+      gift_effect_multiplier: 0
+    },
+
+    ejs: {
+      affection_range: [-100, 100],  // 不按范围判定，特殊态
+      heartbeat_default: 0,
+      jealousy_default: 0,
+      trust_max: 0,
+      is_terminated: 1,  // 关系终结标记
+      stage_transition_up: null,  // 不可恢复
+      stage_transition_down: null  // 不可恢复
+    },
+
+    skills: {}
+  }
+};
+
+/* ─── 辅助函数：根据 affection 获取阶段框架（跳过特殊态） ─── */
+/* 特殊态 '攻略完成'/'失恋' 不按 affection 范围判定，仅由事件显式设置 */
+function getStageFramework(aff) {
+  const v = Number(aff) || 0;
+  const _specialStages = ['攻略完成', '失恋'];
+  for (const key in STAGE_FRAMEWORK) {
+    if (_specialStages.indexOf(key) !== -1) continue;  // 跳过特殊态
+    const s = STAGE_FRAMEWORK[key];
+    if (v >= s.range[0] && v <= s.range[1]) return s;
+  }
+  return STAGE_FRAMEWORK['初识'];  // 默认
+}
+
+/* ─── 辅助函数：根据阶段名获取框架（支持特殊态） ─── */
+function getStageByName(stageName) {
+  if (stageName === '攻略完成') return STAGE_FRAMEWORK['攻略完成'];
+  if (stageName === '失恋') return STAGE_FRAMEWORK['失恋'];
+  return STAGE_FRAMEWORK[stageName] || STAGE_FRAMEWORK['初识'];
+}
+
+/* ─── 辅助函数：检查物品是否被当前阶段接受 ─── */
+function checkItemAcceptance(stageName, itemCategory) {
+  const s = STAGE_FRAMEWORK[stageName];
+  if (!s) return { accepted: false, reason: '阶段不存在' };
+  if (s.items.accept.includes('全部')) return { accepted: true, reason: '亲密阶段全部接受' };
+  if (s.items.accept.includes(itemCategory)) return { accepted: true, reason: '当前阶段接受' };
+  if (s.items.refuse.includes(itemCategory)) return { accepted: false, reason: '当前阶段拒绝' };
+  if (s.items.hate.includes(itemCategory)) return { accepted: false, reason: '当前阶段讨厌', reverse_effect: true };
+  return { accepted: false, reason: '未定义' };
+}
+
+/* ─── 辅助函数：检查 NSFW 行为是否被当前阶段允许 ─── */
+function checkNsfwStageAllowed(stageName, nsfwAction) {
+  const s = STAGE_FRAMEWORK[stageName];
+  if (!s) return { allowed: false, reason: '阶段不存在' };
+  const allowed = s.nsfw_threshold[nsfwAction];
+  if (allowed === true) return { allowed: true, reason: '当前阶段允许' };
+  return { allowed: false, reason: `当前阶段 ${stageName} 禁止 ${nsfwAction}` };
+}
+
+/* ─── 辅助函数：获取违反后果 ─── */
+function getViolationConsequence(stageName, violationType) {
+  const s = STAGE_FRAMEWORK[stageName];
+  if (!s || !s.violation) return null;
+  return s.violation[violationType] || null;
+}
+
+/* ─── 辅助函数：获取阶段转换提示 ─── */
+function getStageTransition(stageName) {
+  const s = STAGE_FRAMEWORK[stageName];
+  if (!s) return null;
+  return {
+    current: stageName,
+    up: s.ejs.stage_transition_up,
+    down: s.ejs.stage_transition_down
+  };
+}
+%>
+
+<%/* ════════════════════════════════════════════════════════════
+   角色化覆盖指引（必读）
+   ════════════════════════════════════════════════════════════
+   本框架提供"系统层"通用规则，所有女角共用：
+     - 行为边界（forbidden/allowed）—— 由关系阶段决定，不因女角而异
+     - 违反后果（violation）—— 法律/MVU变量/bad_ending，所有女角一致
+     - EJS 变量联动（ejs）—— affection/heartbeat/jealousy/trust 阈值统一
+     - 技能门槛（skills）—— 骰子判定阈值统一
+     - NSFW 解锁阈值（nsfw_threshold）—— 阶段解锁布尔值统一
+
+   以下字段是"通用模板"，每个女角必须根据自身性格/画像/喜好覆盖：
+     - speech.style/topics_safe/topics_forbidden/sample_lines → 角色化语料
+     - body_language/reaction_* → 角色化行为模式
+     - clothing.default/for_protagonist/intimate → 角色化穿着
+     - body_state.arousal_level/wetness/skin_marks → 角色化身体状态（敏感体质倍率）
+     - nsfw_unlock 文字描述 → 角色化 NSFW 解锁描写
+     - items.accept/refuse/hate → 角色化物品道具偏好（参考固定物品效果表中的偏好礼物）
+
+   每个女角的"角色化覆盖"由以下三件套承担：
+     1. 基础信息.txt → body_measurements（30+ 字段）+ preferences（gift_pref/topic_pref）
+     2. 性格调色盘.txt → 10 阶段角色化语料/行为/穿着（覆盖框架通用模板）
+     3. NSFW反差.txt → 10 阶段角色化 NSFW 描写/身体状态（覆盖框架通用模板）
+
+   角色化设计原则：
+     A. 性格底色驱动：每个女角有"底色"（如鸣泽唯=傲娇/鸣泽美佐子=母性/筱原泉美=豪爽男儿气），
+        10 个阶段都围绕这个底色展开，但表现形式随阶段演变
+     B. 人物画像差异化：
+        - 年龄差异：18 岁少女 vs 38 岁熟女 vs 21 岁职业女性，语料/穿着/NSFW 反应完全不同
+        - 身份差异：义妹/义母/老师/偶像/保母/导游/店员/酒吧老板娘，社交面具不同
+        - 体型差异：敏感体质倍率（body_sensitivity 100/150/200/300）影响 NSFW 反应强度
+        - 处女状态：hymen_status（完整/已破）影响初H 描写
+        - 性癖偏好：arousal_triggers 因人而异（言语命令/Cosplay/酒精/镜中自己 等）
+     C. 喜好驱动道具接受：
+        - 每个女角在 基础信息.txt 的 preferences.gift_pref 中定义偏好礼物
+        - 框架的 items.accept/refuse/hate 是通用规则，女角条目可追加角色化偏好
+        - 例如：舞岛可怜偏好"流行CD"，送文学书效果减半；水野友美偏好"文学书"，送流行CD效果减半
+     D. 互斥关系驱动：齐藤姐妹/田中铃木/仁科正树/永岛母女等互斥组合，
+        攻略其中一人后，另一人的语料/行为/穿着需体现"失恋/嫉妒/仇视"的角色化反应
+     E. 原作剧情驱动：参考 创作规划.yaml 中的 personality.stages 定义，
+        每个女角的原作阶段名（如鸣泽唯的"客气期/警觉期/心动期/亲密期"）
+        映射到 10 阶段框架中，保留原作味道（亲密期 80~100 巅峰状态，含初H/进阶H 全解锁）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%= JSON.stringify({
+  total_stages: Object.keys(STAGE_FRAMEWORK).length,
+  stage_names: Object.keys(STAGE_FRAMEWORK),
+  framework_loaded: true,
+  note: '阶段联动框架已加载。12 阶段系统完整定义可用（5 负面 + 5 正面 + 2 特殊态）。系统层规则所有女角共用，叙事层（语料/行为/穿着/NSFW）由各女角三件套角色化覆盖。',
+  dimensions_per_stage: 11,
+  system_layer_dimensions: ['阶段标识','行为边界','违反后果','EJS变量联动','技能门槛','NSFW解锁阈值'],
+  narrative_layer_dimensions: ['语料风格','行为模式','穿着','身体状态','NSFW描写','物品道具偏好'],
+  narrative_layer_note: '叙事层必须由每个女角根据性格底色/人物画像/喜好/互斥关系/原作剧情角色化覆盖，禁止千篇一律',
+  stage_structure: {
+    negative_axis: ['决裂','仇视','厌恶','冷漠','疏离'],
+    positive_axis: ['初识','熟悉','暧昧','心动','亲密'],
+    special_axis: ['攻略完成','失恋'],
+    peak_note: '亲密阶段 80~100 为巅峰状态，初H/进阶H 全部解锁；affection ≥ 90 时进阶H 玩法自动开放（advanced_h_threshold=90）。攻略完成=亲密+is_completed=1（路线完结）。失恋=关系终结不可恢复（事件触发，非affection范围判定）'
+  }
+}, null, 2) %>

@@ -1,0 +1,18 @@
+[
+  { "op": "add", "path": "/entryManifest/扮演准则/加载纪律", "value": {
+      "path": "世界书/扮演准则/加载纪律.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "E4① 优先级声明：引擎层与内容层的关系、冲突以引擎为准、判定的归属（引擎算好你只采信）、本条排最前",
+      "strategy": { "type": "constant" },
+      "position": { "type": "before_character_definition", "order": 1 }
+  } },
+  { "op": "add", "path": "/entryManifest/扮演准则/判定注入", "value": {
+      "path": "世界书/扮演准则/判定注入.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "机制层判定注入：把面板已经算好的交锋判定（能力值/要求值/成功率/掷值/档位/效果倍数）渲染进 prompt，要求 AI 直接采信并把一次性触发串清空",
+      "strategy": { "type": "constant" },
+      "position": { "type": "before_character_definition", "order": 3 }
+  } }
+]

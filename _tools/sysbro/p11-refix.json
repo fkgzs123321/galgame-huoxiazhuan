@@ -1,0 +1,18 @@
+[
+  { "op": "remove", "path": "/entryManifest/角色/玩家档案_基础信息" },
+  { "op": "remove", "path": "/entryManifest/角色/玩家_心理阶段" },
+  { "op": "add", "path": "/entryManifest/扮演准则/玩家档案", "value": {
+      "path": "世界书/扮演准则/玩家档案.txt",
+      "abstract": "<user> 的档案：三十五岁 A9，苏婉集团副董，青梅竹马二十年结婚七年；外貌识别特征、背景、与苏婉／乐乐／林天／那些女人的关系、他此刻的样子",
+      "keywords": []
+  } },
+  { "op": "add", "path": "/entryManifest/扮演准则/玩家心理阶段", "value": {
+      "path": "世界书/扮演准则/玩家心理阶段.txt",
+      "abstract": "按觉醒度四档段落控制 <user> 的心理与行动倾向：蒙在鼓里／起疑／反扑／收网，每轮只渲染当前一档",
+      "keywords": []
+  } },
+  { "op": "add", "path": "/entryManifest/角色/林天_基础信息/strategy", "value": { "type": "selective", "keys": ["林天", "林总"] } },
+  { "op": "add", "path": "/entryManifest/角色/苏婉_基础信息/strategy", "value": { "type": "selective", "keys": ["苏婉", "婉婉"] } },
+  { "op": "remove", "path": "/entryManifest/角色/林天_多阶段/strategy" },
+  { "op": "remove", "path": "/entryManifest/角色/苏婉_多阶段/strategy" }
+]

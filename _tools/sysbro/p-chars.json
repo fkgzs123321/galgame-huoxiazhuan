@@ -1,0 +1,299 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/陈雪华_基础信息",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_basic character=\"陈雪华\">"
+        },
+        {
+          "file": "世界书/角色/陈雪华/基础信息.txt"
+        },
+        {
+          "content": "</character_basic>"
+        }
+      ],
+      "part": "basic",
+      "scope": "specific",
+      "abstract": "陈雪华的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+      "keywords": [
+        "陈雪华",
+        "小雪"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/陈雪华_性格调色盘",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_palette character=\"陈雪华\">"
+        },
+        {
+          "file": "世界书/角色/陈雪华/性格调色盘.txt"
+        },
+        {
+          "content": "</character_palette>"
+        }
+      ],
+      "part": "personality",
+      "scope": "specific",
+      "abstract": "陈雪华的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+      "keywords": [
+        "陈雪华",
+        "小雪"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/陈雪华_多阶段",
+    "value": {
+      "contents": [
+        {
+          "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '陈雪华' || matchChatMessages(['陈雪华', '小雪'])"
+        },
+        {
+          "content": "---\n<character_stage character=\"陈雪华\">"
+        },
+        {
+          "file": "世界书/角色/陈雪华/多阶段.txt"
+        },
+        {
+          "content": "</character_stage>"
+        }
+      ],
+      "part": "other",
+      "scope": "specific",
+      "abstract": "陈雪华的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+      "keywords": [
+        "陈雪华",
+        "小雪"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/陈雪华_语料库",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_speech character=\"陈雪华\">"
+        },
+        {
+          "file": "世界书/角色/陈雪华/语料库.txt"
+        },
+        {
+          "content": "</character_speech>"
+        }
+      ],
+      "part": "other",
+      "scope": "specific",
+      "abstract": "陈雪华语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+      "keywords": [
+        "陈雪华",
+        "小雪"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/郑秀_基础信息",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_basic character=\"郑秀\">"
+        },
+        {
+          "file": "世界书/角色/郑秀/基础信息.txt"
+        },
+        {
+          "content": "</character_basic>"
+        }
+      ],
+      "part": "basic",
+      "scope": "specific",
+      "abstract": "郑秀的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+      "keywords": [
+        "郑秀",
+        "阿秀"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/郑秀_性格调色盘",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_palette character=\"郑秀\">"
+        },
+        {
+          "file": "世界书/角色/郑秀/性格调色盘.txt"
+        },
+        {
+          "content": "</character_palette>"
+        }
+      ],
+      "part": "personality",
+      "scope": "specific",
+      "abstract": "郑秀的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+      "keywords": [
+        "郑秀",
+        "阿秀"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/郑秀_多阶段",
+    "value": {
+      "contents": [
+        {
+          "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '郑秀' || matchChatMessages(['郑秀', '阿秀'])"
+        },
+        {
+          "content": "---\n<character_stage character=\"郑秀\">"
+        },
+        {
+          "file": "世界书/角色/郑秀/多阶段.txt"
+        },
+        {
+          "content": "</character_stage>"
+        }
+      ],
+      "part": "other",
+      "scope": "specific",
+      "abstract": "郑秀的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+      "keywords": [
+        "郑秀",
+        "阿秀"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/郑秀_语料库",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_speech character=\"郑秀\">"
+        },
+        {
+          "file": "世界书/角色/郑秀/语料库.txt"
+        },
+        {
+          "content": "</character_speech>"
+        }
+      ],
+      "part": "other",
+      "scope": "specific",
+      "abstract": "郑秀语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+      "keywords": [
+        "郑秀",
+        "阿秀"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/沈梦瑶_基础信息",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_basic character=\"沈梦瑶\">"
+        },
+        {
+          "file": "世界书/角色/沈梦瑶/基础信息.txt"
+        },
+        {
+          "content": "</character_basic>"
+        }
+      ],
+      "part": "basic",
+      "scope": "specific",
+      "abstract": "沈梦瑶的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+      "keywords": [
+        "沈梦瑶",
+        "沈总"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/沈梦瑶_性格调色盘",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_palette character=\"沈梦瑶\">"
+        },
+        {
+          "file": "世界书/角色/沈梦瑶/性格调色盘.txt"
+        },
+        {
+          "content": "</character_palette>"
+        }
+      ],
+      "part": "personality",
+      "scope": "specific",
+      "abstract": "沈梦瑶的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+      "keywords": [
+        "沈梦瑶",
+        "沈总"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/沈梦瑶_多阶段",
+    "value": {
+      "contents": [
+        {
+          "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '沈梦瑶' || matchChatMessages(['沈梦瑶', '沈总'])"
+        },
+        {
+          "content": "---\n<character_stage character=\"沈梦瑶\">"
+        },
+        {
+          "file": "世界书/角色/沈梦瑶/多阶段.txt"
+        },
+        {
+          "content": "</character_stage>"
+        }
+      ],
+      "part": "other",
+      "scope": "specific",
+      "abstract": "沈梦瑶的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+      "keywords": [
+        "沈梦瑶",
+        "沈总"
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/沈梦瑶_语料库",
+    "value": {
+      "contents": [
+        {
+          "content": "---\n<character_speech character=\"沈梦瑶\">"
+        },
+        {
+          "file": "世界书/角色/沈梦瑶/语料库.txt"
+        },
+        {
+          "content": "</character_speech>"
+        }
+      ],
+      "part": "other",
+      "scope": "specific",
+      "abstract": "沈梦瑶语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+      "keywords": [
+        "沈梦瑶",
+        "沈总"
+      ]
+    }
+  }
+]

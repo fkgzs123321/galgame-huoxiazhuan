@@ -1,0 +1,320 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 事件 · 圣诞夜
+   ════════════════════════════════════════════════════════════
+   触发条件：12-25 晚时段（day_count=4）
+   事件类型：季节性
+   影响范围：所有已相遇女角（affection≥10）
+   关联调度器：day04_1225.txt → event_day04_christmas_eve_yui/misako/gift
+   关联规则：全局规则总表.txt → DIFFICULTY_MODIFIERS / BEHAVIOR_TABLE / GLOBAL_IMPACT
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ── 读取运行时全局变量（用于难度修正与触发校验） ── */
+const _diff = String(getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' })) || '普通';
+const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 4 })) || 4;
+const _date = String(getvar('stat_data.时间.当前日期', { scope: 'local', defaults: '12-25' })) || '12-25';
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '晚' })) || '晚';
+const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+const _mood = Number(getvar('stat_data.主角.心情', { scope: 'local', defaults: 70 })) || 0;
+const _reputation = Number(getvar('stat_data.主角.声誉', { scope: 'local', defaults: 50 })) || 0;
+
+/* ── 难度修正系数（引用 全局规则总表.txt → DIFFICULTY_MODIFIERS）──
+   轻松：increase×1.5 / jealousy×0.5
+   普通：increase×1.0 / jealousy×1.0
+   挑战：increase×0.9 / jealousy×1.5
+   地狱：increase×0.3 / jealousy×2.5（选任何女角全员嫉妒+10） */
+const _DIFF = {
+  '轻松': { increase_mult: 1.5, jealousy_mult: 0.5, hell_jealousy_all: false, note: '休闲向，好感加成放大，嫉妒抑制' },
+  '普通': { increase_mult: 1.0, jealousy_mult: 1.0, hell_jealousy_all: false, note: '原作难度' },
+  '挑战': { increase_mult: 0.9, jealousy_mult: 1.5, hell_jealousy_all: false, note: '好感增长受限，嫉妒更易累积' },
+  '地狱': { increase_mult: 0.3, jealousy_mult: 2.5, hell_jealousy_all: true, note: '选任何女角都触发其他已相遇女角 jealousy+10' }
+};
+const _dm = _DIFF[_diff] || _DIFF['普通'];
+
+/* 数值修正辅助：基础值 × 难度增益系数 / 嫉妒值 × 难度嫉妒系数 */
+function _adj(base) { return Math.round(base * _dm.increase_mult); }
+function _jea(base) { return Math.round(base * _dm.jealousy_mult); }
+
+/* ── 圣诞夜事件主对象（与 chronicle 表结构对齐）── */
+const christmas_eve = {
+  /* ═══ chronicle 表登记字段 ═══ */
+  event_id: 'event_seasonal_christmas_eve',
+  event_type: '季节性',
+  date: '12-25',
+  time_slot: '晚',
+  location: '八十八町商业区 / 鸣泽家 / 各女角邀约地',
+  heroine_id: null,            // 多选一，由 choice_made 决定
+  title: '圣诞夜的邀约',
+  description: '12月25日晚上，八十八町商业区灯火通明，圣诞装饰遍布。主角收到多个邀约，必须选择一人共度圣诞夜。',
+  choice_made: '',             // 运行时由玩家选择写入
+  is_completed: 0,
+
+  /* ═══ 触发条件 ═══ */
+  trigger: {
+    day_count: 4,
+    date: '12-25',
+    time_slot: '晚',
+    prerequisite: '至少 1 位女角 affection ≥ 10（已相遇）；无邀约时进入"独自度过"分支',
+    auto_trigger: true
+  },
+
+  /* ═══ 影响范围 ═══ */
+  scope: {
+    heroines: [1, 2, 8, 5, 3, 7],   // 唯/美佐子/友美/泉美/可怜/梢江
+    condition: 'affection ≥ 10（已相遇）',
+    mutex_note: '单选一，选定后其余女角触发嫉妒链（参考 GLOBAL_IMPACT）'
+  },
+
+  /* ═══ 分支设计（按女角邀约） ═══ */
+  branches: [
+    /* ── 分支 1：鸣泽唯（义妹邀约）── */
+    {
+      heroine_id: 1,
+      heroine_name: '鸣泽唯',
+      condition: '唯 affection ≥ 20（心动前期阈值）',
+      trigger_threshold: { affection_唯: 20 },
+      scene: '鸣泽家客厅',
+      invitation: '唯穿着米色开衫倚在沙发边，发带松松地束着长发，电视里放着圣诞特番。她瞥见你进门，耳尖泛红地移开视线，小声说："哥哥……今晚陪我过圣诞吧。就我们两个。"桌上摆着她偷偷准备的小蛋糕，歪歪扭扭地插着一根蜡烛。',
+      choices: [
+        {
+          option: '接受唯的邀约，陪她在鸣泽家过圣诞',
+          consequences: {
+            variables: {
+              '鸣泽唯.affection': _adj(15),
+              '鸣泽唯.heartbeat': _adj(10),
+              '鸣泽唯.jealousy': 0,
+              '鸣泽美佐子.jealousy': _jea(5),
+              '主角.mood': _adj(5)
+            },
+            events: ['event_day04_christmas_eve_yui', 'event_day04_christmas_gift'],
+            cg_unlock: 'cg_christmas_eve_yui',
+            bad_ending: null
+          },
+          narrative: '你点了点头，唯的眼睛瞬间亮起来，像是被点亮的圣诞树。她把你拉到沙发边，小心翼翼地点燃那根歪歪扭扭的蜡烛，火光在她睫毛上跳动。"哥哥，许愿吧。"她双手合十，闭眼时却偷偷从指缝看你。许完愿她吹灭蜡烛，奶油沾到鼻尖，你伸手替她擦去，她整个人僵住了，然后红着脸低下头，却把脸往你掌心蹭了蹭。电视里的圣诞歌还在唱，窗外飘着细雪。唯靠在你肩上，小声说："今年的圣诞礼物……就是哥哥在我身边。"这一刻她不再是那个客气的义妹，而是一个在你身边撒娇、渴望被宠爱的女孩。深夜时分，她在你怀里睡着，发带松散，呼吸绵长。'
+        }
+      ]
+    },
+
+    /* ── 分支 2：鸣泽美佐子（义母邀约）── */
+    {
+      heroine_id: 2,
+      heroine_name: '鸣泽美佐子',
+      condition: '美佐子 affection ≥ 15（关怀期阈值）',
+      trigger_threshold: { affection_美佐子: 15 },
+      scene: '咖啡店《憩》后厨 / 鸣泽家厨房',
+      invitation: '美佐子系着围裙，栗色长发盘起，露出白皙的后颈。她正在打奶油，见你进来便笑了："今晚店里早关门，来帮妈妈做圣诞蛋糕吧？唯那孩子今晚和同学出去了，就我们两个。"她指尖沾着奶油，眼神里藏着成年女人独有的温柔与疲惫。',
+      choices: [
+        {
+          option: '接受美佐子的邀约，一起做圣诞蛋糕',
+          consequences: {
+            variables: {
+              '鸣泽美佐子.affection': _adj(15),
+              '鸣泽美佐子.heartbeat': _adj(5),
+              '鸣泽唯.jealousy': _jea(10),
+              '主角.mood': _adj(3)
+            },
+            events: ['event_day04_christmas_eve_misako', 'event_day04_christmas_gift'],
+            cg_unlock: 'cg_christmas_eve_misako',
+            bad_ending: null
+          },
+          narrative: '你在美佐子身边系上围裙，帮她打发奶油。厨房里暖意融融，烤箱飘出黄油香。她教你抹面时握住你的手，温热的手掌贴着你的手背，身体靠得很近，你能闻到她颈间的香水与面粉的奶香混在一起。"你这孩子，手这么巧，将来谁的福分啊。"她笑着说，眼神却有些落寞。蛋糕做好后，她插上蜡烛，关灯只留一盏暖黄的小灯。烛光下她 38 岁的侧脸温柔得不像话，眼角有一点点细纹。她轻声许愿，吹蜡烛时偷偷看了你一眼。然后她给自己倒了一小杯红酒——这是 12-26 起酒后场景的前置铺垫。她抿着酒，红晕爬上脸颊，第一次在你面前卸下了"母亲"的壳，露出一个孤独女人的疲惫与渴望。'
+        }
+      ]
+    },
+
+    /* ── 分支 3：水野友美（青梅邀约）── */
+    {
+      heroine_id: 8,
+      heroine_name: '水野友美',
+      condition: '友美 affection ≥ 20（青馥期阈值）',
+      trigger_threshold: { affection_友美: 20 },
+      scene: '八十八町商业区（88车站前圣诞灯饰）',
+      invitation: '友美抱着一本精装书站在你家门口，黑色长发用发卡别着，文学少女的气质在圣诞夜里格外柔和。"那个……商业区的灯饰今晚亮灯。要一起去看看吗？就、就像小时候那样。"她推了推不存在的眼镜，脸颊微红。',
+      choices: [
+        {
+          option: '接受友美的邀约，去商业区看灯',
+          consequences: {
+            variables: {
+              '水野友美.affection': _adj(15),
+              '水野友美.heartbeat': _adj(10),
+              '水野友美.jealousy': 0,
+              '主角.mood': _adj(5),
+              '主角.money': -500
+            },
+            events: ['event_day04_christmas_gift'],
+            cg_unlock: 'cg_christmas_eve_tomomi',
+            bad_ending: null
+          },
+          narrative: '88车站前的圣诞树亮着暖白灯，街边店铺都挂了彩带。友美走在你身边，时不时肩膀碰一下你的手，又赶紧拉开距离。她带你去看那棵三层楼高的圣诞树，仰头时眼睛里倒映着万千灯火。"记得吗？小时候我们也一起来看过灯。"她轻声说，呼出的白气在冷空气里散开。路过咖啡馆时你请她喝热可可，她捧着杯子，指尖冻得通红，你把她的手握进自己掌心——她没挣开，只是睫毛颤了颤，低下头看杯中倒影。走到白蛇池公园时，空中飘起细雪，池面倒映着灯饰与雪花。友美站在池边，雪落进她的黑发里，像撒了一层糖霜。她忽然回过头，灯火在她身后流转成一片暖黄，她张了张嘴，最终只说了句："今晚……谢谢你。"但那眼神分明说了更多。'
+        }
+      ]
+    },
+
+    /* ── 分支 4：筱原泉美（图书馆偶遇）── */
+    {
+      heroine_id: 5,
+      heroine_name: '筱原泉美',
+      condition: '泉美 affection ≥ 10（兄弟期阈值）',
+      trigger_threshold: { affection_泉美: 10 },
+      scene: '八十八学园图书馆（寒假部分开放）',
+      invitation: '你在商业区闲逛时收到泉美的传呼——她说话像男孩子，但今晚格外低沉："喂，我在图书馆。圣诞夜也懒得回去。你……要是不嫌弃无聊，过来待会儿呗。"她短发利落，射箭部社长的锐利眼神在暖灯下意外柔软。',
+      choices: [
+        {
+          option: '去图书馆陪泉美过圣诞夜',
+          consequences: {
+            variables: {
+              '筱原泉美.affection': _adj(20),  // 孤独者被陪伴的加成
+              '筱原泉美.heartbeat': _adj(5),
+              '主角.mood': _adj(4)
+            },
+            events: ['event_day04_christmas_gift'],
+            cg_unlock: 'cg_christmas_eve_izumi',
+            bad_ending: null
+          },
+          narrative: '图书馆只开了自习区一盏灯，泉美窝在角落，面前摊着一本射箭杂志却没翻几页。见你来她撇撇嘴："还以为你不会来。"语气嫌弃，手却往旁边挪了挪给你腾位置。圣诞夜她一个人待在这里，筱原重工千金的身份在这一刻显得格外讽刺——家人忙着应酬，没人记得她。你递给她一罐自动贩卖机的热咖啡，她接过去时手指碰到你的，僵硬了一下又装作若无其事。你们有一搭没一搭地聊射箭、聊学园、聊她为什么总把头发剪得这么短。聊到后来她忽然沉默，盯着窗外飘雪说："喂，其实……我是不是不像个女孩子啊？"这是她第一次在你面前露出脆弱。你否定后，她别过头，耳尖通红，小声嘀咕："……多管闲事。"但她往你身边靠了靠，肩膀挨着你的肩膀，整个圣诞夜都没再挪开。孤独者被陪伴的加成让她好感涨幅远超平日。'
+        }
+      ]
+    },
+
+    /* ── 分支 5：舞岛可怜（Livehouse 演出）── */
+    {
+      heroine_id: 3,
+      heroine_name: '舞岛可怜',
+      condition: '可怜 affection ≥ 15（初识期阈值）',
+      trigger_threshold: { affection_可怜: 15 },
+      scene: '温泉乡 Livehouse「STAR」',
+      invitation: '后台传呼里传来可怜高傲的声音："今晚 Livehouse 有圣诞演出，我唱压轴。你要是识相就来看。"金发碧眼的人气偶像难得主动邀约，舞台装下的她在后台灯光里闪闪发光。',
+      choices: [
+        {
+          option: '去 Livehouse 看可怜的圣诞演出',
+          consequences: {
+            variables: {
+              '舞岛可怜.affection': _adj(15),
+              '舞岛可怜.heartbeat': _adj(10),
+              '主角.mood': _adj(6),
+              '主角.money': -800
+            },
+            events: ['event_day04_christmas_gift'],
+            cg_unlock: 'cg_christmas_eve_karen',
+            bad_ending: null
+          },
+          narrative: 'Livehouse 挤满了人，圣诞彩灯把舞台染成红绿交错的光河。可怜压轴登场，金发在聚光灯下像火焰一样燃烧，她唱的是一首圣诞情歌，嗓音里带着偶像光环下的孤独。她唱到副歌时，眼神穿过人群，准确无误地落在你身上，仿佛整个 Livehouse 只剩你和她。演出结束后她拉你到后台，卸了妆的她比台上更瘦更累，眼神却亮得惊人。"怎么样，本小姐唱得不错吧？"她仰着下巴问，语气高傲，但攥着矿泉水瓶的手指在发抖。你夸她时她别过脸去，耳尖红透："哼，算你有眼光。"然后她小声补了一句，几乎听不见："……谢谢你来。"人气 No.1 偶像在圣诞夜没有行程，是因为她把今晚留给了一个能让她卸下偶像面具的人。深夜散场，她坚持送你到车站，雪落在她金发上，她忽然拉住你的袖子说："下次……还来听。"'
+        }
+      ]
+    },
+
+    /* ── 分支 6：都筑梢江（酒吧夜色）── */
+    {
+      heroine_id: 7,
+      heroine_name: '都筑梢江',
+      condition: '梢江 affection ≥ 10（跟踪期阈值）',
+      trigger_threshold: { affection_梢江: 10 },
+      scene: '八十八町商业区酒吧「夜色」',
+      invitation: '你在商业区游荡时，被一双马尾的学妹从巷子里拽住。梢江古灵精怪地眨眼："前辈~今晚酒吧夜色有圣诞特调哦。我搞到了入场券，陪我去嘛？"她递来一张烫金卡片，眼睛里闪着狡黠的光。',
+      choices: [
+        {
+          option: '陪梢江去酒吧夜色喝圣诞特调',
+          consequences: {
+            variables: {
+              '都筑梢江.affection': _adj(15),
+              '都筑梢江.heartbeat': _adj(5),
+              '主角.mood': _adj(4),
+              '主角.money': -1000
+            },
+            events: ['event_day04_christmas_gift'],
+            cg_unlock: 'cg_christmas_eve_kozue',
+            bad_ending: null
+          },
+          narrative: '酒吧「夜色」装潢昏暗，圣诞夜有驻唱。梢江虽然才 16，但她不知怎么搞到了入场券，大大方方地拉你坐到吧台。圣诞特调是红绿分层的鸡尾酒，她喝的是无酒精版，你点的是含酒精的。她托着腮看你，双马尾随着身体晃动："前辈，圣诞夜不陪义妹姐姐，来陪我这种小鬼，是不是图谋不轨啊？"她嘴上调侃，眼神却认真。驻唱唱到一首老情歌时，她忽然安静下来，盯着杯里的樱桃说："其实……我一直偷偷跟着前辈。从一年级的社团联合活动开始。"这是她第一次坦白跟踪的起点。你递给她那张烫金入场券作为圣诞礼物，她愣住，然后珍重地收进口袋，笑得像只偷到鱼的猫："哼哼，前辈逃不掉的。"深夜散场，雪下大了，她把围巾分你一半，两个脑袋凑在一条围巾下走回家。'
+        }
+      ]
+    },
+
+    /* ── 分支 7：独自度过（无邀约或拒绝所有）── */
+    {
+      heroine_id: null,
+      heroine_name: '独自度过',
+      condition: '无任何女角 affection ≥ 10，或玩家主动拒绝所有邀约',
+      trigger_threshold: { fallback: true },
+      scene: '主角自宅 / 八十八町街头',
+      invitation: '圣诞夜的商业区人声鼎沸，你却独自走在雪里。路灯把你的影子拉得很长，家家户户的窗户里透出暖黄的光与笑声。没有邀约，或者你都拒绝了。',
+      choices: [
+        {
+          option: '独自在自宅度过圣诞夜',
+          consequences: {
+            variables: {
+              '主角.mood': _adj(-20),
+              '主角.willpower': _adj(-5),
+              '主角.sleep_quality': _adj(5)
+            },
+            events: [],
+            cg_unlock: 'cg_christmas_eve_alone',
+            bad_ending: null
+          },
+          narrative: '你窝在自宅客厅，电视放着圣诞特番却没声音。窗外雪越下越大，商业区的灯火隔着一层雾气，像别人的热闹。冰箱里只剩便利店便当，你热了热凑合吃了，圣诞夜就这样。中途手机响了又停，是各路同学的朋友圈——唯发了和美佐子做蛋糕的照片，友美发了商业区的灯饰，可怜的 Livehouse 转发破万。你划着屏幕，突然觉得这间屋子格外空旷。深夜十一点，你听见隔壁鸣泽家传来唯的笑声，又听见水野家方向友美弹钢琴的声音。整个八十八町都在过圣诞，只有你像被遗忘在时间缝隙里。你关了电视，盯着天花板想——寒假还有 13 天，不能再这样下去了。这一夜你睡得格外沉，但梦里全是空荡荡的街道。'
+        }
+      ]
+    }
+  ],
+
+  /* ═══ 特殊机制：鸣泽家圣诞夜 CG ═══ */
+  special_cg: {
+    name: '鸣泽家圣诞夜',
+    trigger: '选择鸣泽唯或鸣泽美佐子任一分支',
+    cg_id: 'cg_christmas_eve_narusawa_family',
+    description: '鸣泽家客厅三人场景的特殊 CG，需唯与美佐子 affection 均触发过邀约阈值（唯≥20 且 美佐子≥15），且玩家先后与两人互动过。'
+  },
+
+  /* ═══ 难度修正：地狱难度全员嫉妒 ═══ */
+  difficulty_modifiers: {
+    '轻松': '好感加成 ×1.5，嫉妒抑制 ×0.5；选唯/美佐子时对方嫉妒仅 +2/+3',
+    '普通': '标准数值，参考 BEHAVIOR_TABLE 基础值',
+    '挑战': '好感增长 ×0.9，嫉妒 ×1.5；选任一女角，其余已相遇女角 jealousy +3',
+    '地狱': '好感增长 ×0.3，嫉妒 ×2.5；选任何女角都触发其他已相遇女角 jealousy +10（参考 GLOBAL_IMPACT.同日与3+位女角亲密互动）'
+  },
+
+  /* ═══ CG 解锁总表（6 种）═══ */
+  cg_unlocks: [
+    { cg_id: 'cg_christmas_eve_yui',     branch: 1, condition: '选择唯分支',      rarity: '稀有' },
+    { cg_id: 'cg_christmas_eve_misako',  branch: 2, condition: '选择美佐子分支',  rarity: '稀有' },
+    { cg_id: 'cg_christmas_eve_tomomi',  branch: 3, condition: '选择友美分支',    rarity: '稀有' },
+    { cg_id: 'cg_christmas_eve_izumi',   branch: 4, condition: '选择泉美分支',    rarity: '精良' },
+    { cg_id: 'cg_christmas_eve_karen',   branch: 5, condition: '选择可怜分支',    rarity: '稀有' },
+    { cg_id: 'cg_christmas_eve_kozue',   branch: 6, condition: '选择梢江分支',    rarity: '精良' },
+    { cg_id: 'cg_christmas_eve_alone',   branch: 7, condition: '独自度过',        rarity: '普通' }
+  ],
+
+  /* ═══ 时间连续性（与后续事件衔接）═══ */
+  continuity: {
+    next_event: 'event_seasonal_new_year_eve',
+    next_date: '01-01',
+    note: '圣诞夜选择的女角好感积累，将影响跨年参拜的邀约成功率；地狱难度下圣诞夜积累的嫉妒值会在跨年夜集中爆发'
+  }
+};
+
+/* ── 输出运行时校验信息（供 D0 控制器读取）── */
+const _trigger_ok = (_dayCount === 4 && _date === '12-25' && _timeSlot === '晚');
+%>
+
+[同级生2 · 季节性事件 · 圣诞夜 已加载]
+触发校验：day_count=<%= _dayCount %> / date=<%= _date %> / time_slot=<%= _timeSlot %> / 难度=<%= _diff %>
+触发状态：<%= _trigger_ok ? '✓ 满足' : '✗ 未到时机' %>
+当前难度修正：好感增益 ×<%= _dm.increase_mult %> / 嫉妒系数 ×<%= _dm.jealousy_mult %><% if (_dm.hell_jealousy_all) { %> / 地狱全员嫉妒+10 已启用<% } %>
+
+【事件摘要】
+- event_id：event_seasonal_christmas_eve
+- 日期：12-25（day_count=4）晚时段
+- 标题：圣诞夜的邀约
+- 分支数：7（唯/美佐子/友美/泉美/可怜/梢江/独自）
+- 影响范围：所有已相遇女角（affection≥10）
+- CG 可解锁：7 张（含独自度过 1 张 + 鸣泽家特殊 1 张叠加）
+- 后续衔接：跨年（01-01）
+
+【执行规则】
+1. AI 必须先列出当前 affection≥10 的女角清单（按 row_id 排序），仅这些女角可发起邀约。
+2. 玩家单选一人后，立即应用该分支 consequences.variables，其余女角按 GLOBAL_IMPACT 与难度修正累计嫉妒。
+3. 地狱难度下，无论选谁，所有已相遇女角 jealousy +10（_dm.hell_jealousy_all=true）。
+4. 选唯或美佐子时，若两人 affection 均达邀约阈值，叠加 special_cg 鸣泽家圣诞夜 CG。
+5. 圣诞礼物（event_day04_christmas_gift）是否解锁取决于 Day 3 是否购买礼物，未购买则好感加成减半。
+6. 事件完成后在 chronicle 表插入纪要记录（code_index/time_span/summary/chronicle_text）。

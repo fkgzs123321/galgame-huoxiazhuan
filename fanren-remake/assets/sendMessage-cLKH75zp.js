@@ -1,0 +1,1 @@
+import{c as e}from"./gateway/service-BRzUYY5D.js";export{e as sendMessage};

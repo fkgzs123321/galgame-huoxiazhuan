@@ -1,0 +1,183 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 永岛久美子 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=13 / 短线离家出走人妻（1/1~1/5 限时攻略）
+   核心弧线：离家出走→主角收留→日常相处→佐知子来接→攻略完成（五阶段）
+   互斥关系：永岛婆媳（严格互斥——攻略儿媳后婆婆佐知子锁定仇视，反之亦然）
+   身份：八十八町住宅区全职主妇，丈夫常年海外出差；1/1 元日离家出走
+   警告：1/1 收留选择是久美子线唯一入口；1/5 攻略完成（好感≥40）；与佐知子线严格互斥
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 永岛久美子_STORYLINE = {
+  heroine_id: 13,
+  name: '永岛久美子',
+  core_position: {
+    role: '短线离家出走人妻 — 1/1~1/5 限时攻略的孤独少妇',
+    archetype: '丈夫缺席多年的孤独人妻在被收留期间的依赖与渴望',
+    function: '通过"离家出走→主角收留→日常相处→佐知子来接→攻略完成"的五阶段限时弧线，展现少妇在丈夫缺席下的孤独、渴望与情感寄托转移',
+    plot_weight: 'medium — 短线角色（仅1/1-1/5），1/5 攻略完成；与佐知子线（heroine_id=14）严格互斥'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22~12-31',
+      time_slot: '全天',
+      location: '—（未登场）',
+      event: '久美子未登场（锁定）',
+      description: '寒假前半段久美子未登场；按人物出现总表 day1~day10 永岛母女均锁定（locked: [13, 14]），主角无法在八十八町遇到久美子；此期间久美子在永岛家与婆婆佐知子同住，丈夫常年海外出差',
+      triggers_route: '—（未开放）',
+      is_reversible: true,
+      flags: ['flag_kumiko_locked_pre_0101']
+    },
+    {
+      date: '01-01',
+      time_slot: '上午',
+      location: '自宅周边（鸣泽家自宅附近）',
+      event: '主角遇到离家出走的久美子（初次相遇）',
+      description: '元日上午，主角在自宅周边遇到独自徘徊、神色落寞的久美子——她是八十八町住宅区永岛家少夫人（heroine_id=13），因丈夫常年海外出差、与婆婆佐知子关系紧张，元日孤寂难耐离家出走；主角上前关心，好感+5；按人物出现总表 day11（01-01）new_unlock: [13]，佐知子仍锁定（locked: [3, 14]）',
+      triggers_route: '久美子线 — 初次相遇开启线入口',
+      is_reversible: true,
+      flags: ['flag_kumiko_first_meeting', 'flag_kumiko_route_awareness']
+    },
+    {
+      date: '01-01',
+      time_slot: '晚',
+      location: '主角自宅（鸣泽家）',
+      event: '久美子暂住选择（收留/拒绝）',
+      description: '当晚久美子无处可去，主角面临选择：收留则久美子线正式开启（好感+3），暂住鸣泽家自宅；拒绝则久美子线关闭（flag_kumiko_route_closed），后续不可攻略；此为久美子线唯一入口，按人物出现总表 day11 note"01-01 主角在自宅收留久美子"',
+      triggers_route: '久美子线 — ★ 关键分支点（收留=开启 / 拒绝=关闭）',
+      is_reversible: false,
+      flags: ['flag_kumiko_taken_in', 'flag_kumiko_route_active'],
+      note: '★ 不可逆 flag — 一旦拒绝收留，久美子线永久关闭'
+    },
+    {
+      date: '01-02',
+      time_slot: '早',
+      location: '主角自宅',
+      event: '与久美子的早晨',
+      description: '收留后第一个早晨，主角看到居家装扮的久美子在厨房做早餐，少妇温柔居家气息扑面而来；两人共进早餐，闲聊家常，久美子流露对丈夫缺席的孤独与对婆婆的隐忍；好感+3；按人物出现总表 day12（01-02）佐知子仍锁定',
+      triggers_route: '久美子线 — 日常相处阶段开启',
+      is_reversible: true,
+      flags: ['flag_kumiko_morning_0102']
+    },
+    {
+      date: '01-02',
+      time_slot: '下午',
+      location: '八十八町商业区 / 八十八海岸',
+      event: '带久美子外出散心',
+      description: '主角带久美子外出散心：商业区路线（逛街+送小束鲜花/手工巧克力，好感+5）或海岸路线（散步谈心+倾听孤独，好感+4）；久美子在外出中逐渐打开心扉，流露少妇的寂寞与渴望；以邻里身份切入，从倾听她的疲惫与空虚开始',
+      triggers_route: '久美子线 — 好感推进阶段',
+      is_reversible: true,
+      flags: ['flag_kumiko_outing_0102']
+    },
+    {
+      date: '01-03',
+      time_slot: '上午',
+      location: '主角自宅 / 永岛家',
+      event: '佐知子来接久美子（佐知子线登场）',
+      description: '永岛佐知子（heroine_id=14，久美子婆婆）找上门来接久美子回家；按人物出现总表 day13（01-03）new_unlock: [14]，note"佐知子来接久美子"；此时触发永岛婆媳互斥锁——若主角已收留并推进久美子线（好感≥20），佐知子对主角产生警觉与敌意；佐知子线同时登场，但与久美子线严格互斥',
+      triggers_route: '佐知子线 — 佐知子登场（heroine_id=14 开启）；★ 永岛婆媳互斥锁触发',
+      is_reversible: false,
+      flags: ['flag_sachiko_arrival', 'flag_kumiko_sachiko_mutex'],
+      note: '★ 不可逆 flag — 攻略儿媳后婆婆佐知子锁定仇视，反之亦然；伦理锁定不可调和'
+    },
+    {
+      date: '01-03~01-04',
+      time_slot: '全天',
+      location: '主角自宅 / 八十八町',
+      event: '久美子线深化',
+      description: '久美子在主角家暂住期间（1/3~1/4），两人关系深化；通过日常相处（烹饪、散步、深夜独处）建立信任，久美子逐渐将对丈夫缺席的渴望转移到主角身上；以"作为男人填满她"的姿态逐步突破"少妇"框架；独自散步与深夜独处是关键窗口',
+      triggers_route: '久美子线 — 深化阶段',
+      is_reversible: true,
+      flags: ['flag_kumiko_deepening']
+    },
+    {
+      date: '01-05',
+      time_slot: '全天',
+      location: '主角自宅',
+      event: '久美子线高潮 — 达亲密阶段',
+      description: '久美子线高潮日；按人物出现总表 day15（01-05）note"久美子攻略完成（达亲密阶段）"；若好感≥40，触发亲密事件，久美子达亲密阶段，is_completed=1（攻略完成）；久美子将多年孤独与渴望倾泻而出，与主角确立关系；若好感不足则进入普通结局分支',
+      triggers_route: '久美子线 — ★ 攻略完成（好感≥40，is_completed=1）',
+      is_reversible: false,
+      flags: ['flag_kumiko_route_completed', 'flag_kumiko_intimate'],
+      note: '★ 不可逆 flag — 一旦攻略完成，佐知子线永久锁定仇视（flag_sachiko_hostile_locked）'
+    },
+    {
+      date: '01-06~01-07',
+      time_slot: '全天/深夜',
+      location: '—（结局判定）',
+      event: '最终判定',
+      description: '按人物出现总表 day17（01-07）note"所有女角线最终判定"，01-07 深夜触发结局判定：若久美子好感≥60 达成 Good End（久美子选择留在主角身边，与丈夫离婚）；好感≥40 但 <60 达成 Normal End（久美子回到永岛家，但与主角保持秘密关系）；好感<40 达成 Bad End（久美子被佐知子带回，线关闭）',
+      triggers_route: '久美子线 — 结局判定',
+      is_reversible: false,
+      flags: ['flag_kumiko_good_end', 'flag_kumiko_normal_end', 'flag_kumiko_bad_end']
+    }
+  ],
+
+  triggered_routes: {
+    '永岛佐知子线（heroine_id=14）': {
+      role: 'mutex — 严格互斥（婆媳伦理锁定）',
+      trigger_nodes: ['01-03 佐知子来接久美子'],
+      impact: '佐知子于 1/3 来接久美子时登场（day13 new_unlock: [14]）；若主角已推进久美子线（好感≥20），佐知子对主角产生敌意，佐知子线进入"仇视锁定"分支；反之若主角未推进久美子线（1/1 拒绝收留），可转而攻略佐知子，但久美子线锁定关闭；永岛婆媳严格互斥不可调和'
+    }
+  },
+
+  relationship_network: {
+    '主角（鸣泽家）': {
+      type: '邻里 → 收留者 → 情人',
+      detail: '初识为自宅周边遇到的离家出走少妇；收留后建立依赖与信任；攻略完成后成为情人。初始 affection=0/trust=0，1/1 初遇 +5，1/1 收留 +3，1/2 早晨 +3，1/2 外出 +4~5'
+    },
+    '永岛佐知子（heroine_id=14）': {
+      type: '婆婆（严格互斥）',
+      detail: '与久美子同住永岛家，关系微妙；1/3 来接久美子时登场（day13 new_unlock: [14]）；攻略儿媳后婆婆锁定仇视，反之亦然；伦理锁定不可调和'
+    },
+    '丈夫永岛': {
+      type: '缺席丈夫',
+      detail: '常年海外出差，数年未归，婚姻名存实亡；久美子孤独的根源；左手无名指婚戒为丈夫所赠，私下会无意识转动'
+    },
+    '永岛家': {
+      type: '主家',
+      detail: '八十八町住宅区永岛家，佐知子为一家之主；久美子为儿媳，孝顺隐忍；婆媳同住，丈夫缺席'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_kumiko_taken_in',
+      trigger: '01-01 晚 久美子暂住选择',
+      effect: '主角收留久美子，久美子线正式开启（好感+3）',
+      reversibility: '不可逆 — 一旦收留无法回退；若拒绝则永久关闭（flag_kumiko_route_closed）'
+    },
+    {
+      flag: 'flag_kumiko_sachiko_mutex',
+      trigger: '01-03 佐知子来接久美子',
+      effect: '永岛婆媳互斥锁触发；若主角已推进久美子线（好感≥20），佐知子对主角产生敌意，佐知子线锁定仇视',
+      reversibility: '不可逆 — 一旦触发互斥锁，婆媳伦理锁定不可调和'
+    },
+    {
+      flag: 'flag_kumiko_route_completed',
+      trigger: '01-05 久美子线高潮（好感≥40）',
+      effect: '久美子达亲密阶段，is_completed=1，攻略完成；佐知子线永久锁定仇视（flag_sachiko_hostile_locked）',
+      reversibility: '不可逆 — 一旦攻略完成无法回退'
+    },
+    {
+      flag: 'flag_kumiko_intimate',
+      trigger: '01-05 触发亲密事件（好感≥40）',
+      effect: '久美子与主角确立关系，多年孤独与渴望倾泻而出',
+      reversibility: '不可逆 — 一旦确立关系无法回退'
+    },
+    {
+      flag: 'flag_kumiko_good_end',
+      trigger: '01-07 深夜结局判定（好感≥60）',
+      effect: 'Good End — 久美子选择留在主角身边，与丈夫离婚',
+      reversibility: '不可逆 — 结局判定'
+    }
+  ],
+
+  summary: '久美子的剧情线是"离家出走→主角收留→日常相处→佐知子来接→攻略完成"五阶段限时弧线（1/1~1/5），核心功能是展现孤独少妇在丈夫缺席下的情感寄托转移。1/1 收留选择是久美子线唯一入口（拒绝即永久关闭），1/3 佐知子来接触发永岛婆媳严格互斥锁，1/5 攻略完成（好感≥40，is_completed=1），1/7 最终判定（好感≥60 达成 Good End）。与佐知子线（heroine_id=14）严格互斥，攻略儿媳后婆婆佐知子锁定仇视，反之亦然。'
+};
+%>
+
+永岛久美子 · 剧情线已加载。核心定位：短线离家出走人妻（1/1~1/5 限时攻略）。核心弧线：1/1 元日离家出走被主角收留→1/2 日常相处→1/3 佐知子来接触发婆媳互斥锁→1/5 攻略完成（好感≥40，is_completed=1）→1/7 最终判定（好感≥60 Good End）。不可逆 flag：flag_kumiko_taken_in（1/1 收留选择）、flag_kumiko_sachiko_mutex（1/3 婆媳互斥锁）、flag_kumiko_route_completed（1/5 攻略完成）、flag_kumiko_intimate（1/5 亲密事件）。与佐知子线（heroine_id=14）严格互斥，攻略儿媳后婆婆锁定仇视。

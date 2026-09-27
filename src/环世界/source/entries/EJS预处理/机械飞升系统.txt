@@ -1,0 +1,158 @@
+@@generate_before
+<%_
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Medical = Number(getvar('stat_data.殖民者_主角.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p1Armor = getvar('stat_data.殖民者_主角.护甲', { scope: 'local', defaults: '无' }) || '无';
+var p1Trait = getvar('stat_data.殖民者_主角.特质', { scope: 'local', defaults: '' }) || '';
+
+var p2Name = getvar('stat_data.殖民者_2.姓名', { scope: 'local', defaults: '' }) || '';
+var p2Medical = Number(getvar('stat_data.殖民者_2.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p2Armor = getvar('stat_data.殖民者_2.护甲', { scope: 'local', defaults: '无' }) || '无';
+
+var p3Name = getvar('stat_data.殖民者_3.姓名', { scope: 'local', defaults: '' }) || '';
+var p3Medical = Number(getvar('stat_data.殖民者_3.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p3Armor = getvar('stat_data.殖民者_3.护甲', { scope: 'local', defaults: '无' }) || '无';
+
+var p4Name = getvar('stat_data.殖民者_4.姓名', { scope: 'local', defaults: '' }) || '';
+var p4Medical = Number(getvar('stat_data.殖民者_4.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p4Armor = getvar('stat_data.殖民者_4.护甲', { scope: 'local', defaults: '无' }) || '无';
+
+var p5Name = getvar('stat_data.殖民者_5.姓名', { scope: 'local', defaults: '' }) || '';
+var p5Medical = Number(getvar('stat_data.殖民者_5.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p5Armor = getvar('stat_data.殖民者_5.护甲', { scope: 'local', defaults: '无' }) || '无';
+
+var IMPLANT_DB = {
+  'T1_仿生手臂': { tier: 1, 名称: '仿生手臂', 效果: '力量+2', 成本: '钢铁×3-5+组件×1-2+高级组件×1', 医疗需求: 8 },
+  'T1_仿生腿': { tier: 1, 名称: '仿生腿', 效果: '移速+10%', 成本: '钢铁×3-5+组件×1-2+高级组件×1', 医疗需求: 8 },
+  'T1_仿生眼': { tier: 1, 名称: '仿生眼', 效果: '感知+3', 成本: '钢铁×3-5+组件×1-2+高级组件×1', 医疗需求: 8 },
+  'T1_仿生耳': { tier: 1, 名称: '仿生耳', 效果: '听觉增强', 成本: '钢铁×3-5+组件×1-2+高级组件×1', 医疗需求: 8 },
+  'T2_强化肌肉': { tier: 2, 名称: '强化肌肉', 效果: '力量+5,格斗+30%', 成本: '钢铁×3-10+高级组件×2-5+铀×1-3', 医疗需求: 12 },
+  'T2_强化骨骼': { tier: 2, 名称: '强化骨骼', 效果: 'HP+50%,倒下-30%', 成本: '钢铁×3-10+高级组件×2-5+铀×1-3', 医疗需求: 12 },
+  'T2_神经加速器': { tier: 2, 名称: '神经加速器', 效果: '射击+10%,闪避+10%', 成本: '钢铁×3-10+高级组件×2-5+铀×1-3', 医疗需求: 12 },
+  'T2_代谢优化器': { tier: 2, 名称: '代谢优化器', 效果: '食物-30%,疲劳×2', 成本: '钢铁×3-10+高级组件×2-5+铀×1-3', 医疗需求: 12 },
+  'T3_动力甲接口': { tier: 3, 名称: '动力甲接口', 效果: '动力甲+20%', 成本: '高级组件×5-10+特殊材料', 医疗需求: 15 },
+  'T3_灵能放大器': { tier: 3, 名称: '灵能放大器', 效果: '灵能+50%', 成本: '高级组件×5-10+特殊材料', 医疗需求: 15 },
+  'T3_机械族核心': { tier: 3, 名称: '机械族核心', 效果: '骇入+100%', 成本: '高级组件×5-10+特殊材料', 医疗需求: 15 },
+  'T4_意识上传器': { tier: 4, 名称: '意识上传器', 效果: '死亡复活1次', 成本: '高级组件×15-30+AI核心+灵能水晶', 医疗需求: 18 },
+  'T4_时空感知器': { tier: 4, 名称: '时空感知器', 效果: '袭击预警+24h', 成本: '高级组件×15-30+AI核心+灵能水晶', 医疗需求: 18 },
+  'T4_永生芯片': { tier: 4, 名称: '永生芯片', 效果: '停止衰老', 成本: '高级组件×15-30+AI核心+灵能水晶', 医疗需求: 18 }
+};
+
+function _surgeryDifficulty(tier) {
+  var t = Number(tier) || 1;
+  if (t === 1) { return '普通'; }
+  if (t === 2) { return '困难'; }
+  return '极难';
+}
+
+function _surgeryThreshold(medicalSkill, tier) {
+  var med = Number(medicalSkill) || 0;
+  var t = Number(tier) || 1;
+  var base = med * 5;
+  if (t === 1) { return base; }
+  if (t === 2) { return Math.round(base / 2); }
+  return Math.round(base / 5);
+}
+
+function _surgeryCheck(medicalSkill, tier, seed) {
+  var threshold = _surgeryThreshold(medicalSkill, tier);
+  var difficulty = _surgeryDifficulty(tier);
+  var r = _check(threshold, seed, difficulty);
+  return { 阈值: threshold, 难度: difficulty, 骰值: r.roll, 结果: r.result };
+}
+
+function _implantFailure(tier) {
+  var t = Number(tier) || 1;
+  if (t === 1) { return { HP损失: 20, 后果: '植入体损坏' }; }
+  if (t === 2) { return { HP损失: 40, 后果: '可能致残' }; }
+  if (t === 3) { return { HP损失: 60, 后果: '30%死亡' }; }
+  return { HP损失: 80, 后果: '50%死亡' };
+}
+
+function _hasPowerArmorInterface(armor) {
+  var a = String(armor || '');
+  return a.indexOf('动力甲接口') >= 0 ? 1 : 0;
+}
+
+var p1HasInterface = _hasPowerArmorInterface(p1Armor);
+var p1SurgeryT1 = _surgeryCheck(p1Medical, 1, 'p1_t1');
+var p1SurgeryT2 = _surgeryCheck(p1Medical, 2, 'p1_t2');
+var p1SurgeryT3 = _surgeryCheck(p1Medical, 3, 'p1_t3');
+var p1SurgeryT4 = _surgeryCheck(p1Medical, 4, 'p1_t4');
+var p1FailT1 = _implantFailure(1);
+var p1FailT4 = _implantFailure(4);
+_%>
+<机械飞升系统就绪>
+[当前植入状态]
+读取殖民者_主角/2-5的护甲字段(判断是否有动力甲接口)和医疗技能
+
+殖民者状态:
+1. <%= p1Name %> 医疗:<%= p1Medical %> 护甲:<%= p1Armor %> 动力甲接口:<%= p1HasInterface ? '已植入' : '未植入' %>
+2. <%= p2Name %> 医疗:<%= p2Medical %> 护甲:<%= p2Armor %>
+3. <%= p3Name %> 医疗:<%= p3Medical %> 护甲:<%= p3Armor %>
+4. <%= p4Name %> 医疗:<%= p4Medical %> 护甲:<%= p4Armor %>
+5. <%= p5Name %> 医疗:<%= p5Medical %> 护甲:<%= p5Armor %>
+
+[植入体表]
+Tier 1(基础,需医疗研究):
+  仿生手臂: 力量+2
+  仿生腿: 移速+10%
+  仿生眼: 感知+3
+  仿生耳: 听觉增强
+  成本: 钢铁×3-5+组件×1-2+高级组件×1
+  手术需求: 医疗≥8
+
+Tier 2(强化,需高科技+医疗研究):
+  强化肌肉: 力量+5,格斗+30%
+  强化骨骼: HP+50%,倒下-30%
+  神经加速器: 射击+10%,闪避+10%
+  代谢优化器: 食物-30%,疲劳×2
+  成本: 钢铁×3-10+高级组件×2-5+铀×1-3
+  手术需求: 医疗≥12
+
+Tier 3(高级,需机械族研究):
+  动力甲接口: 动力甲+20%
+  灵能放大器: 灵能+50%
+  机械族核心: 骇入+100%
+  成本: 高级组件×5-10+特殊材料
+  手术需求: 医疗≥15
+
+Tier 4(终极,需飞船组件研究):
+  意识上传器: 死亡复活1次
+  时空感知器: 袭击预警+24h
+  永生芯片: 停止衰老
+  成本: 高级组件×15-30+AI核心+灵能水晶
+  手术需求: 医疗≥18
+
+[手术规则]
+成功率公式: _check(医疗×5, seed, 难度)
+4级难度修正:
+  Tier 1: 普通(阈值=医疗×5)
+  Tier 2: 困难(阈值÷2)
+  Tier 3: 极难(阈值÷5)
+  Tier 4: 极难(阈值÷5)+需高级医药×2
+  示例: <%= p1Name %>医疗<%= p1Medical %>
+    T1阈值:<%= p1SurgeryT1.阈值 %> 结果:<%= p1SurgeryT1.结果 %>
+    T2阈值:<%= p1SurgeryT2.阈值 %> 结果:<%= p1SurgeryT2.结果 %>
+    T3阈值:<%= p1SurgeryT3.阈值 %> 结果:<%= p1SurgeryT3.结果 %>
+    T4阈值:<%= p1SurgeryT4.阈值 %> 结果:<%= p1SurgeryT4.结果 %>
+
+手术失败后果:
+  Tier 1: HP-20, 植入体损坏
+  Tier 2: HP-40, 可能致残
+  Tier 3: HP-60, 30%死亡
+  Tier 4: HP-80, 50%死亡
+  示例: T1失败→<%= p1FailT1.后果 %>, T4失败→<%= p1FailT4.后果 %>
+
+[行为校验要求]
+植入手术必须输出行为校验块:
+  行为类型: 植入手术/移除植入体/失败处理
+  执行者: 医生姓名(医疗技能)
+  目标: 植入者姓名
+  植入体: 名称+Tier等级
+  手术检定: _surgeryCheck()结果
+  难度等级: _surgeryDifficulty()结果
+  失败后果: _implantFailure()结果(失败时)
+  材料消耗: 成本清单
+  效果生效: 植入体效果说明
+</机械飞升系统就绪>

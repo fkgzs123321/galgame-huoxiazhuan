@@ -1,0 +1,267 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 自宅周边 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionHomeArea = {
+  region_name: '自宅周边',
+  scenes: [
+    '主角自宅',
+    '鸣泽家(唯与美佐子)',
+    '水野家(友美)',
+    '信良家',
+    '芳树家'
+  ],
+  time_slot_access: {
+    '早':   { accessible: true,  note: '起床时段，邻居陆续出门' },
+    '上午': { accessible: true,  note: '上学/上班路上，街道安静' },
+    '下午': { accessible: true,  note: '放学时段，邻居家可串门' },
+    '晚':   { accessible: true,  note: '回家时段，唯与美佐子多在自宅' },
+    '深夜': { accessible: true,  note: '23:00 后回家触发"晚归"事件，唯/美佐子可能等候或已就寝' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["自宅周边"]（13件）：便利店便当/饭团/三明治/家庭料理/美佐子料理/矿泉水/罐装咖啡/果汁/运动饮料/茶/能量饮料/淋浴券/手作围巾',
+  special_events: [
+    { day: 1,  slot: '早',   event_id: 'day01早_主角起床',     note: '寒假第一天起床，触发开场剧情' },
+    { day: 2,  slot: '晚',   event_id: 'day02晚_鸣泽家晚餐',   note: '与唯、美佐子共进晚餐，家常互动' },
+    { day: 5,  slot: '深夜', event_id: 'day05深夜_唯的噩梦',   note: '唯深夜惊醒，主角安抚，依赖感上升' }
+  ],
+  description: '主角住所附近，邻居住宅集中区，安静的住宅街道。鸣泽家（唯与美佐子）紧邻主角自宅，水野家（友美）在隔壁，信良家与芳树家亦在周边。深夜门禁：23:00 后回家触发"晚归"事件，可能撞见唯等候或美佐子醉酒场景。',
+  location_details: {
+    '主角自宅': {
+      aliases: ['自宅','家','主角家','我们的家'],
+      description: '主角租住的二层独栋住宅，客厅/卧室/书桌为核心活动空间，鸣泽家紧邻隔壁',
+      ambient_sounds: '电视声/厨房做菜声/挂钟走针/窗外邻家动静',
+      default_activities: ['休息','整理道具','写日记','使用书桌','淋浴','就寝'],
+      time_slot_descriptions: { '早':'清晨阳光射入，唯做早餐','上午':'家中无人，安静','下午':'放学后回到家中','晚':'唯/美佐子常来访，家庭时光','深夜':'深夜独处或与唯/美佐子独处场景' },
+      weather_modifiers: { '晴':'阳光洒入客厅','雨':'雨声敲窗','雪':'窗外飘雪安静','暴风雪':'暖炉运作' },
+      heroines_likely: [1, 2],
+      bad_end_risk: 'low'
+    },
+    '主角自宅客厅': {
+      aliases: ['客厅','起居室'],
+      description: '主角自宅一层客厅，沙发/电视/餐桌，家庭互动核心场所',
+      ambient_sounds: '电视节目声/餐盘声/闲聊声',
+      default_activities: ['看电视','聊天','用餐','招待客人'],
+      time_slot_descriptions: { '早':'早餐时光','上午':'空荡','下午':'放学后小憩','晚':'家庭聚会','深夜':'深夜对话/NSFW高发' },
+      weather_modifiers: { '晴':'阳光透过窗帘','雨':'雨声背景','雪':'暖意融融','暴风雪':'窗外观雪' },
+      heroines_likely: [1, 2, 8],
+      bad_end_risk: 'low',
+      events_triggered: ['day01早_主角起床','day02晚_鸣泽家晚餐']
+    },
+    '主角自宅卧室': {
+      aliases: ['卧室','主角房间','2楼卧室'],
+      description: '主角自宅二层卧室，单人床/书架/衣柜，唯或美佐子深夜来访的私密场景',
+      ambient_sounds: '呼吸声/床铺窸窣/窗外风声',
+      default_activities: ['就寝','写日记','独处思考','深夜对话'],
+      time_slot_descriptions: { '早':'起床场景','上午':'无人','下午':'小憩','晚':'准备就寝','深夜':'深夜NSFW高发场所（唯/美佐子来访）' },
+      weather_modifiers: { '晴':'晨光射入','雨':'雨声助眠','雪':'寒意逼人','暴风雪':'被窝温暖' },
+      heroines_likely: [1, 2],
+      bad_end_risk: 'medium',
+      time_lock: '深夜场景需关系阶段达标（唯/美佐子）',
+      events_triggered: ['day05深夜_唯的噩梦']
+    },
+    '主角自宅书桌': {
+      aliases: ['书桌','学习桌'],
+      description: '主角卧室书桌，可整理道具/写日记/查看物品，关键道具管理场所',
+      ambient_sounds: '翻书声/笔尖摩擦声',
+      default_activities: ['整理道具','写日记','查看物品','学习'],
+      time_slot_descriptions: { '早':'整理书包','上午':'无人','下午':'放学后整理','晚':'写日记','深夜':'深夜整理' },
+      weather_modifiers: { '晴':'光线充足','雨':'室内灯光','雪':'台灯暖光','暴风雪':'暖灯下' },
+      heroines_likely: [],
+      bad_end_risk: 'low',
+      flags_set: ['item_inventory_review']
+    },
+    '鸣泽家客厅': {
+      aliases: ['鸣泽家客厅','唯家客厅'],
+      description: '鸣泽家一层客厅，唯与美佐子日常活动空间，可串门拜访',
+      ambient_sounds: '电视声/美佐子做菜声/唯翻杂志声',
+      default_activities: ['串门','聊天','喝茶','看电视'],
+      time_slot_descriptions: { '早':'美佐子做早餐','上午':'唯独处','下午':'唯看书','晚':'母女晚餐时光','深夜':'深夜已熄灯' },
+      weather_modifiers: { '晴':'阳光洒入','雨':'雨声背景','雪':'暖炉旁','暴风雪':'围炉取暖' },
+      heroines_likely: [1, 2],
+      bad_end_risk: 'low',
+      events_triggered: ['day02晚_鸣泽家晚餐']
+    },
+    '鸣泽家卧室(唯)': {
+      aliases: ['唯的卧室','唯房间'],
+      description: '鸣泽唯的私人卧室，玩偶/日记本/少女装饰，亲密互动场所',
+      ambient_sounds: '唯呼吸声/玩偶软声/窗外虫鸣',
+      default_activities: ['聊天','安慰唯','看相册','深夜陪伴'],
+      time_slot_descriptions: { '早':'唯起床','上午':'唯外出','下午':'唯在房','晚':'唯独处','深夜':'深夜陪伴/噩梦安慰' },
+      weather_modifiers: { '晴':'窗帘柔光','雨':'雨声背景','雪':'窗外雪景','暴风雪':'被窝相拥' },
+      heroines_likely: [1],
+      bad_end_risk: 'medium',
+      time_lock: '深夜进入需依赖期以上',
+      events_triggered: ['day05深夜_唯的噩梦']
+    },
+    '鸣泽家主卧(美佐子)': {
+      aliases: ['美佐子卧室','主卧','鸣泽主卧'],
+      description: '鸣泽美佐子的主卧，大床/梳妆台，美佐子醉酒场景高发地',
+      ambient_sounds: '美佐子呼吸声/酒气/梳妆台声响',
+      default_activities: ['探望美佐子','照顾醉酒','深夜对话'],
+      time_slot_descriptions: { '早':'美佐子已起','上午':'无人','下午':'美佐子外出经营咖啡店','晚':'美佐子归来','深夜':'美佐子醉酒场景高发（NSFW需暧昧以上）' },
+      weather_modifiers: { '晴':'晨光柔和','雨':'雨声寂寥','雪':'寒夜独处','暴风雪':'暖被窝' },
+      heroines_likely: [2],
+      bad_end_risk: 'high',
+      time_lock: '深夜NSFW需美佐子暧昧期以上，否则触发 BAD_END_3',
+      exclusive_choices: ['安慰美佐子(好感+)','无视离开(无变化)'],
+      events_triggered: ['美佐子醉酒深夜事件'],
+      flags_set: ['miyako_drunk_count']
+    },
+    '鸣泽家浴室': {
+      aliases: ['浴室','鸣泽家浴室'],
+      description: '鸣泽家浴室，浴缸/淋浴，可能撞见唯或美佐子沐浴的尴尬场景',
+      ambient_sounds: '水声/蒸汽声/淋浴声',
+      default_activities: ['误闯(事件触发)','沐浴(借浴)','退出'],
+      time_slot_descriptions: { '早':'晨浴时段','上午':'无人','下午':'偶尔使用','晚':'晚浴时段','深夜':'深夜沐浴（NSFW高发）' },
+      weather_modifiers: { '晴':'明亮','雨':'湿润','雪':'热气蒸腾','暴风雪':'暖意' },
+      heroines_likely: [1, 2],
+      bad_end_risk: 'high',
+      time_lock: '深夜沐浴撞见需关系阶段达标，否则触发戒备下降',
+      exclusive_choices: ['道歉退出(安全)','偷窥(BAD_END风险)','加入(需高关系)']
+    },
+    '水野家': {
+      aliases: ['水野家','友美家'],
+      description: '水野友美家，安静住宅，友美父母常不在家，书房为关键场景',
+      ambient_sounds: '翻书声/友美弹琴声/窗外鸟鸣',
+      default_activities: ['串门','与友美学习','聊天','参观书房'],
+      time_slot_descriptions: { '早':'友美晨跑出门','上午':'友美上学','下午':'放学后串门','晚':'友美独处','深夜':'已就寝' },
+      weather_modifiers: { '晴':'明亮通风','雨':'雨声轻柔','雪':'温暖室内','暴风雪':'闭门不出' },
+      heroines_likely: [8],
+      bad_end_risk: 'low'
+    },
+    '水野家书房': {
+      aliases: ['友美书房','水野书房'],
+      description: '水野家书房，藏书丰富，友美常在此学习，可发现友美家庭线索',
+      ambient_sounds: '翻书声/笔尖沙沙/窗外风声',
+      default_activities: ['与友美学习','看书','聊天','发现线索'],
+      time_slot_descriptions: { '早':'空荡','上午':'无人','下午':'放学后友美在此','晚':'友美独处学习','深夜':'已熄灯' },
+      weather_modifiers: { '晴':'阳光书页','雨':'雨声伴读','雪':'暖灯下阅读','暴风雪':'闭门阅读' },
+      heroines_likely: [8],
+      bad_end_risk: 'low',
+      flags_set: ['tomumi_family_clue']
+    },
+    '信良家': {
+      aliases: ['川尻家','信良家','川尻信良家'],
+      description: '损友川尻信良家，男NPC住宅，可串门闲聊获取情报，非恋爱场景',
+      ambient_sounds: '游戏机声/零食包装声/男生闲聊',
+      default_activities: ['串门','玩游戏','聊天','获取情报'],
+      time_slot_descriptions: { '早':'信良未起','上午':'信良在家','下午':'串门高峰','晚':'男生聚会','深夜':'已就寝' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'暖炉','暴风雪':'不出门' },
+      heroines_likely: [],
+      npcs_likely: ['川尻信良'],
+      bad_end_risk: 'low',
+      events_triggered: ['信良情报交换']
+    },
+    '芳树家(偷听点)': {
+      aliases: ['芳树家','长冈家','长冈芳树家'],
+      description: '长冈芳树家，可从主角家二楼窗户偷听其家内动静，关键情报获取点',
+      ambient_sounds: '远处电视声/芳树电话声/隐约对话',
+      default_activities: ['偷听','获取情报','观察芳树动向'],
+      time_slot_descriptions: { '早':'芳树出门','上午':'空荡','下午':'偶有动静','晚':'芳树回家','深夜':'电话/密谈高发' },
+      weather_modifiers: { '晴':'窗户清晰','雨':'雨声干扰','雪':'安静','暴风雪':'无法偷听' },
+      heroines_likely: [],
+      npcs_likely: ['长冈芳树'],
+      bad_end_risk: 'medium',
+      flags_set: ['yoshiki_intel_count'],
+      events_triggered: ['芳树情报获取'],
+      time_lock: '深夜偷听触发关键剧情'
+    },
+    '天道新干线家': {
+      aliases: ['天道家','新干线家'],
+      description: '天道新干线家住宅，普通邻里，偶尔可拜访',
+      ambient_sounds: '电视声/家庭日常声',
+      default_activities: ['串门','聊天','邻里互动'],
+      time_slot_descriptions: { '早':'出门','上午':'空','下午':'在家','晚':'家庭时光','深夜':'已就寝' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'暖和','暴风雪':'闭门' },
+      heroines_likely: [],
+      bad_end_risk: 'low'
+    },
+    '永岛家': {
+      aliases: ['永岛家','佐知子家'],
+      description: '永岛佐知子家住宅，佐知子与久美子曾同住，现为佐知子独居（久美子已搬出）',
+      ambient_sounds: '寂寞钟声/佐知子独酌声/窗外风声',
+      default_activities: ['拜访佐知子','聊天','安慰佐知子'],
+      time_slot_descriptions: { '早':'佐知子宿醉','上午':'佐知子外出','下午':'佐知子偶在','晚':'佐知子独酌','深夜':'深夜独处（NSFW需暧昧以上）' },
+      weather_modifiers: { '晴':'明亮','雨':'寂寥','雪':'寒冷','暴风雪':'孤寂' },
+      heroines_likely: [14],
+      bad_end_risk: 'medium',
+      time_lock: '深夜拜访需佐知子暧昧期以上'
+    },
+    '永岛久美子公寓': {
+      aliases: ['久美子公寓','久美子家'],
+      description: '永岛久美子独立公寓，小女孩独自居住的天真场景，需高关系才能进入',
+      ambient_sounds: '卡通片声/久美子哼歌/玩具声',
+      default_activities: ['拜访久美子','陪玩','听故事','送礼物'],
+      time_slot_descriptions: { '早':'久美子上学','上午':'空','下午':'久美子放学回家','晚':'久美子独处','深夜':'已就寝' },
+      weather_modifiers: { '晴':'明亮卡通','雨':'室内玩耍','雪':'温暖被窝','暴风雪':'裹被' },
+      heroines_likely: [13],
+      bad_end_risk: 'medium',
+      time_lock: '进入需久美子信任期以上，否则触发戒备',
+      unlock_condition: '久美子关系 ≥ 信任期'
+    },
+    '变数屋': {
+      aliases: ['变数屋','隐藏小屋','神秘小屋'],
+      description: '自宅周边隐藏的神秘小屋，可触发特殊变数事件，影响剧情走向',
+      ambient_sounds: '神秘钟声/风铃/低语',
+      default_activities: ['探索','触发变数','获取稀有道具'],
+      time_slot_descriptions: { '早':'关闭','上午':'偶现','下午':'偶现','晚':'开启','深夜':'活跃' },
+      weather_modifiers: { '晴':'普通','雨':'神秘','雪':'寂静','暴风雪':'异象' },
+      heroines_likely: [],
+      bad_end_risk: 'high',
+      hidden_location: true,
+      unlock_condition: '特定剧情flag触发',
+      flags_set: ['variable_event_count'],
+      events_triggered: ['变数屋特殊事件']
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 16 个地点） */
+const _currentLocationDetail = _regionHomeArea.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出（v3 · 精简版，npc_schedule 由人物出现总表提供） ─── */%>
+[区域：自宅周边。住宅集中区，邻里关系紧密。主角自宅与鸣泽家、水野家比邻。早/晚/深夜多为家人相处时段，可触发家庭日常与深夜 NSFW 场景。深夜门禁：23:00 后回家触发"晚归"事件。当前时段下可遭遇 NPC 已由「人物出现总表」锁定，禁止引入未列出的女角。]
+
+<%= JSON.stringify({
+  region: _regionHomeArea.region_name,
+  scenes: _regionHomeArea.scenes,
+  time_slot_access: _regionHomeArea.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["自宅周边"]',
+  shop_items_count: 13,
+  special_events: _regionHomeArea.special_events,
+  description: _regionHomeArea.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

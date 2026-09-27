@@ -1,0 +1,219 @@
+import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js'
+import { registerMvuSchema } from 'https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js';
+
+/* ============================================================
+ * KK园区 MVU 变量结构定义（Zod 校验脚本）
+ * 功能：为 MVU 变量提供 Zod schema 校验与默认值兜底
+ * 环境：SillyTavern TavernHelper
+ * 说明：
+ *   - z 与 _ 为 MagVarUpdate bundle 注入的全局变量，无需导入
+ *   - 使用 .prefault() 而非 .default()（Zod 4 规则）
+ *   - 使用 z.coerce.number() + _.clamp 处理数值范围
+ *   - 嵌套 z.object 添加 .prefault({}) 保证可清空
+ *   - 数值字段：z.coerce.number().transform(v => _.clamp(Math.round(v), min, max)).prefault(default)
+ *   - 字符串字段：z.coerce.string().prefault(default)
+ *   - 枚举字段：z.enum([...]).prefault(default)
+ *   - 布尔字段：z.coerce.boolean().prefault(default)
+ *   - 数组字段：z.array(z.coerce.string()).prefault([])
+ *   - 对象字段：z.object({...}).prefault({})
+ *   - 保持幂等性：Schema.parse(Schema.parse(x)) === Schema.parse(x)
+ * ============================================================ */
+
+/* ========= 主 Schema ========= */
+/* 与 schema.ts 全字段一一对应，覆盖所有 MVU 变量 */
+const Schema = z.object({
+  /* ─── 身份系统（4 个） ─── */
+  身份系统: z.object({
+    当前身份: z.coerce.string().prefault(''),
+    身份阶段: z.coerce.string().prefault(''),
+    剧情进度: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 100)).prefault(1),
+    结局分支: z.coerce.string().prefault('')
+  }).prefault({}),
+
+  /* ─── 通用（10 个：时间 2 + 生存 5 + 经济 1 + 位置 1 + 物品 1 + LCG 1） ─── */
+  通用: z.object({
+    时间: z.object({
+      天数: z.coerce.number().transform(v => Math.max(1, Math.round(v))).prefault(1),
+      时段: z.enum(['清晨', '上午', '中午', '下午', '傍晚', '夜晚', '深夜']).prefault('清晨')
+    }).prefault({}),
+    体力: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(80),
+    精神: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(80),
+    饥饿: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(30),
+    脱水: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(20),
+    疲劳: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(20),
+    金钱: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+    当前位置: z.coerce.string().prefault('KK园区大门'),
+    持有物品: z.array(z.coerce.string()).prefault([]),
+    LCG种子: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+  }).prefault({}),
+
+  /* ─── RPG（25 个：六维属性 6 + 未分配点数 1 + 12 技能 + 成长 6+1） ─── */
+  RPG: z.object({
+    /* 六维属性（1-10） */
+    力量: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 10)).prefault(5),
+    敏捷: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 10)).prefault(5),
+    体质: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 10)).prefault(5),
+    智力: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 10)).prefault(5),
+    感知: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 10)).prefault(5),
+    魅力: z.coerce.number().transform(v => _.clamp(Math.round(v), 1, 10)).prefault(5),
+    未分配点数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(30),
+    /* 12 技能（0-100） */
+    诈骗术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    格斗术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    潜行术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    社交术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    技术术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    求生术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    伪装术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    情报收集: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    逃脱术: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    交际手腕: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    暗网操作: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    拷问抗性: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    /* 成长子树 */
+    成长: z.object({
+      力量使用计数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+      敏捷使用计数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+      体质使用计数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+      智力使用计数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+      感知使用计数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+      魅力使用计数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+      技能使用计数: z.record(z.string(), z.coerce.number()).prefault({})
+    }).prefault({})
+  }).prefault({}),
+
+  /* ─── user（4 个·玩家角色属性，0-100） ─── */
+  user: z.object({
+    容貌值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(50),
+    性别稀缺度: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(100),
+    被觊觎度: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    生育价值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0)
+  }).prefault({}),
+
+  /* ─── 身份（4 个子命名空间·对应四种身份路线） ─── */
+  身份: z.object({
+    /* 受害者（11 个：状态 8 + flag 2 + 线索 1） */
+    受害者: z.object({
+      伪装度: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      逃跑准备: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      情报网: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      信任值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      伤势: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      恐惧值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      希望值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(80),
+      被迫度: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      权力接触: z.coerce.boolean().prefault(false),
+      外部援助: z.coerce.boolean().prefault(false),
+      警方线索: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+    }).prefault({}),
+    /* 管理者（6 个） */
+    管理者: z.object({
+      业绩: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      上级信任: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(30),
+      下属忠诚: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(20),
+      良心值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(70),
+      法律风险: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      手上血债: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+    }).prefault({}),
+    /* 打手（4 个） */
+    打手: z.object({
+      忠诚度: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(70),
+      暴力倾向: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(30),
+      良心觉醒: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+      手上血债: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+    }).prefault({}),
+    /* 老板（5 个） */
+    老板: z.object({
+      权力: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(50),
+      财富: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(100000),
+      警方压力: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(10),
+      内部分裂: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(20),
+      手上血债: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+    }).prefault({})
+  }).prefault({}),
+
+  /* ─── 暗网（5 个） ─── */
+  暗网: z.object({
+    拍卖状态: z.enum(['未上架', '拍卖中', '已成交', '已流拍']).prefault('未上架'),
+    拍卖价格: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+    直播次数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+    暗网知名度: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    买家关注: z.array(z.coerce.string()).prefault([])
+  }).prefault({}),
+
+  /* ─── 女性专属（3 个·0-100） ─── */
+  女性专属: z.object({
+    处境值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    羞辱值: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    身体自主权: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(100)
+  }).prefault({}),
+
+  /* ─── 人际（3 个） ─── */
+  人际: z.object({
+    NPC关系: z.record(z.string(), z.coerce.number()).prefault({}),
+    当前在场角色: z.array(z.coerce.string()).prefault([]),
+    互动计数: z.record(z.string(), z.coerce.number()).prefault({})
+  }).prefault({}),
+
+  /* ─── 角色库（3 个） ─── */
+  角色库: z.object({
+    已生成列表: z.array(z.coerce.string()).prefault([]),
+    当前交互角色: z.coerce.string().prefault(''),
+    角色生成计数器: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+  }).prefault({}),
+
+  /* ─── 道德（1 个·-100~100） ─── */
+  道德: z.object({
+    善恶值: z.coerce.number().transform(v => _.clamp(Math.round(v), -100, 100)).prefault(0)
+  }).prefault({}),
+
+  /* ─── 派系（5 个·声望/立场值 0-100） ─── */
+  派系: z.object({
+    园区董事会: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    管理层: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    打手团: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    受害者群: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0),
+    暗网网络: z.coerce.number().transform(v => _.clamp(Math.round(v), 0, 100)).prefault(0)
+  }).prefault({}),
+
+  /* ─── 任务（3 个） ─── */
+  任务: z.object({
+    当前主线任务: z.coerce.string().prefault(''),
+    已接取支线: z.array(z.coerce.string()).prefault([]),
+    已完成任务: z.array(z.coerce.string()).prefault([])
+  }).prefault({}),
+
+  /* ─── 情报库（2 个） ─── */
+  情报库: z.object({
+    已获取情报: z.array(z.coerce.string()).prefault([]),
+    待验证情报: z.array(z.coerce.string()).prefault([])
+  }).prefault({}),
+
+  /* ─── 成就（4 个） ─── */
+  成就: z.object({
+    已达成: z.array(z.coerce.string()).prefault([]),
+    生存天数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+    结识NPC数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0),
+    救助人数: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+  }).prefault({}),
+
+  /* ─── 同伙（2 个） ─── */
+  同伙: z.object({
+    已招募: z.array(z.coerce.string()).prefault([]),
+    待招募候选: z.array(z.coerce.string()).prefault([])
+  }).prefault({}),
+
+  /* ─── 证据（2 个） ─── */
+  证据: z.object({
+    已收集: z.array(z.coerce.string()).prefault([]),
+    已传递: z.coerce.number().transform(v => Math.max(0, Math.round(v))).prefault(0)
+  }).prefault({})
+}).prefault({});
+
+/* ========= 注册并导出 Schema ========= */
+/* 注册到 MVU，供 MagVarUpdate 进行变量校验与默认值填充 */
+registerMvuSchema(Schema);
+
+/* 导出供 MVU.txt 及其他脚本引用 */
+export { Schema };
+export default Schema;

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ST-Compatible Independent RP App Builder"
+  short_description: "从零创建、迁移或改造独立前端形式的 RP 角色卡应用"
+  default_prompt: "使用 $independent-narrative-app，从我的创意或现有角色卡开始，先讨论确认，再设计、实施并验证一个独立 RP 应用。"

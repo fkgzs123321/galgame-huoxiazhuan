@@ -1,0 +1,183 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 9 - 12-30 周六 ═══
+   当日主题：筱原泉美温泉之旅预兆
+   特殊事件：event_day09_izumi_archery / event_day09_izumi_onsen_invite / event_day09_diary_3_window / event_day09_diary_4_window / event_day09_miki_full_reveal / event_day09_karen_unmasked
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day9 场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家/弓箭场遇泉美/鸣泽家客厅交付日记3
+     P2 川尻信良 → 川尻家/弓箭场遇泉美/偶遇时交付日记3/洋子线后续
+     P3 长冈芳树 → 长冈家/弓箭场遇泉美/偶遇时交付日记3/美纪完整揭示关键★
+     P4 西御寺有友 → 西御寺家豪宅/弓箭场遇泉美/日记3不触发/美纪敌意线
+     P5 天道新干线 → 天道家/弓箭场遇泉美/爱美谢礼交付日记4★
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 9,
+  date: '12-30',
+  weekday: '周六',
+  chapter: '寒假核心',
+  theme: '筱原泉美温泉之旅预兆（身份感知独立场景）',
+  special_events: ['event_day09_izumi_archery', 'event_day09_izumi_onsen_invite', 'event_day09_diary_3_window', 'event_day09_diary_4_window', 'event_day09_miki_full_reveal', 'event_day09_karen_unmasked'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '晴',
+  notes: '泉美线开启；温泉之旅前置'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 当日开场场景（身份感知；IDENTITY_PROFILES 仅含 day1，day9 由本文件提供） */
+if (typeof _day9Scenes === 'undefined') var _day9Scenes = {
+  '原作主角': `${_playerName}在鸣泽家起床，唯准备早餐。寒假第九天，泉美线开启日，相沢诚可前往八十八学园弓箭场与筱原泉美对话。同时日记3/日记4 窗口期、美纪完整揭示、可怜卸妆等事件可能触发。`,
+  '川尻信良': `${_playerName}在川尻家起床，独自准备早餐。寒假第九天，泉美线开启日。信良昨日已放弃洋子，本日可前往弓箭场推进泉美线，或继续洋子线后续互动。`,
+  '长冈芳树': `${_playerName}在长冈家起床，独自准备简单早餐。寒假第九天，泉美线开启日。芳树本日核心为美纪完整揭示事件★（若美纪威胁已触发且好感达标），同时可前往弓箭场推进泉美线。`,
+  '西御寺有友': `${_playerName}在西御寺家豪宅起床，佣人已备好早餐。寒假第九天，泉美线开启日。西御寺与美纪同属敌意线，美纪完整揭示事件可能以不同方式触发。日记3 本身份不触发（敌意线）。`,
+  '天道新干线': `${_playerName}在天道家起床，独自准备早餐。寒假第九天，泉美线开启日。${_playerName}（天道本人）昨日已解决爱美事件，本日可触发爱美谢礼交付日记4★。同时可前往弓箭场推进泉美线。`,
+  '自定义': `${_playerName}在${_playerHome}起床，按背景描述安排寒假第九天。泉美线开启日，可前往弓箭场与泉美对话。日记3/日记4 窗口期、美纪完整揭示、可怜卸妆等事件可能触发。`,
+  '未选择': '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+};
+if (typeof _openingScene === 'undefined') var _openingScene = _day9Scenes[_playerIdentity] || _day9Scenes['未选择'];
+
+/* event_day09_diary_3_window：唯交付日记本（身份感知）
+   P1 鸣泽家客厅交付；P2-P6 偶遇时交付；P4 不触发（敌意线） */
+if (typeof _diary3WindowDesc === 'undefined') var _diary3WindowDesc = {
+  '原作主角': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段鸣泽家客厅触发。前置条件同 Day 8。叙事提示：本日仍可触发唯交付日记本事件。`,
+  '川尻信良': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/商业区/学园附近偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（非家庭场景）。`,
+  '长冈芳树': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/商业区/学园附近偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（非家庭场景）。`,
+  '西御寺有友': `第3本·唯交付窗口期★本身份不触发：${_playerName}（西御寺本人）与唯为敌意线，唯不会主动向西御寺交付日记本。日记3 需通过其他身份线获取。`,
+  '天道新干线': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/学园附近偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（师生关系场景）。`,
+  '自定义': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/商业区/学园附近偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（非家庭场景）。`
+};
+
+/* event_day09_diary_4_window：爱美谢礼交付日记4（身份感知）
+   P5 特殊处理：玩家即天道，爱美向天道本人交付 */
+if (typeof _diary4WindowDesc === 'undefined') var _diary4WindowDesc = {
+  '原作主角': `第4本·爱美谢礼窗口期开启（12-30~01-03）。下午时段保育园触发。前置条件：has_met_安田爱美=true AND 安田爱美.affection≥30 AND 爱美获救=true。无好感变化，但解锁 日记4 flag。叙事提示：爱美在保育园后院偷偷交付日记本作为谢礼，暗示樱子病情。`,
+  '川尻信良': `第4本·爱美谢礼窗口期开启（12-30~01-03）。下午时段保育园触发。前置条件同上。无好感变化，但解锁 日记4 flag。叙事提示：爱美在保育园后院偷偷向${_playerName}交付日记本作为谢礼。`,
+  '长冈芳树': `第4本·爱美谢礼窗口期开启（12-30~01-03）。下午时段保育园触发。前置条件同上。无好感变化，但解锁 日记4 flag。叙事提示：爱美在保育园后院偷偷向${_playerName}交付日记本作为谢礼。`,
+  '西御寺有友': `第4本·爱美谢礼窗口期开启（12-30~01-03）。下午时段保育园触发。前置条件同上。无好感变化，但解锁 日记4 flag。叙事提示：爱美在保育园后院偷偷向${_playerName}交付日记本作为谢礼。`,
+  '天道新干线': `第4本·爱美谢礼窗口期开启（12-30~01-03）。下午时段保育园触发。前置条件同上★。无好感变化，但解锁 日记4 flag。叙事提示：爱美在保育园后院偷偷向${_playerName}（天道本人★）交付日记本作为谢礼——昨日爱美事件解决后，爱美对天道的信任体现。此事件以第一人称描写天道的感受，是 P5 身份线的关键收尾。`,
+  '自定义': `第4本·爱美谢礼窗口期开启（12-30~01-03）。下午时段保育园触发。前置条件同上。无好感变化，但解锁 日记4 flag。叙事提示：爱美在保育园后院偷偷向${_playerName}交付日记本作为谢礼。`
+};
+
+/* event_day09_miki_full_reveal：美纪完整揭示（身份感知）
+   P3/P4 特殊处理：敌意线，揭示方式不同 */
+if (typeof _mikiFullRevealDesc === 'undefined') var _mikiFullRevealDesc = {
+  '原作主角': `深夜时段八十八学园神秘地点触发。前置条件：美纪威胁事件=true AND 加藤美纪.affection≥60。${_playerName}见证美纪完整揭示（铃木裕子→加藤美纪的改名缘由、逃避的过去、真实感情）。美纪 affection +10 trust +15（完整信任）。是美纪线深度推进关键点。`,
+  '川尻信良': `深夜时段八十八学园神秘地点触发。前置条件：美纪威胁事件=true AND 加藤美纪.affection≥60。${_playerName}见证美纪完整揭示。美纪 affection +10 trust +15。`,
+  '长冈芳树': `深夜时段八十八学园神秘地点触发。前置条件：美纪威胁事件=true AND 加藤美纪.affection≥60。${_playerName}（偷拍者★，掌握美纪双身份关键证据）见证美纪完整揭示——芳树作为信息源核心，美纪向其坦白全部真相。美纪 affection +10 trust +15（完整信任，敌意线转为信任的特殊路径）。`,
+  '西御寺有友': `深夜时段八十八学园神秘地点触发。前置条件：美纪威胁事件=true AND 加藤美纪.affection≥60。${_playerName}（财阀独生子，与美纪同属敌意线）见证美纪完整揭示——两大敌意角色的深层对话。美纪 affection +10 trust +15（敌意线转为信任的特殊路径，需好感达标）。`,
+  '天道新干线': `深夜时段八十八学园神秘地点触发。前置条件：美纪威胁事件=true AND 加藤美纪.affection≥60。${_playerName}（教师身份）见证美纪完整揭示。美纪 affection +10 trust +15。`,
+  '自定义': `深夜时段八十八学园神秘地点触发。前置条件：美纪威胁事件=true AND 加藤美纪.affection≥60。${_playerName}见证美纪完整揭示。美纪 affection +10 trust +15。`
+};
+
+if (typeof _diary3Final === 'undefined') var _diary3Final = _diary3WindowDesc[_playerIdentity] || _diary3WindowDesc['自定义'];
+if (typeof _diary4Final === 'undefined') var _diary4Final = _diary4WindowDesc[_playerIdentity] || _diary4WindowDesc['自定义'];
+if (typeof _mikiRevealFinal === 'undefined') var _mikiRevealFinal = _mikiFullRevealDesc[_playerIdentity] || _mikiFullRevealDesc['自定义'];
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家自宅早/晚（义妹同居）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（义母经营）',
+    tomomi: '水野友美（row_id=8）：水野家上午/晚（邻家）'
+  },
+  '川尻信良': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（非家庭关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家关系）`,
+    yoko: '南川洋子（row_id=6）：海岸/机车行下午（同班同学，洋子线后续★）'
+  },
+  '长冈芳树': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（非家庭关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偷拍场景（敌意）★本日核心`,
+    miki: '加藤美纪（row_id=4）：学园深夜（敌意→信任，美纪完整揭示★）'
+  },
+  '西御寺有友': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近远观（敌意★，日记3不触发）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家，陌生）`,
+    miki: '加藤美纪（row_id=4）：学园深夜（敌意→信任，美纪完整揭示）',
+    misuzu: '片桐美铃（row_id=11）：学园上午（师生关系紧张）'
+  },
+  '天道新干线': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（师生关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/学园附近偶遇（师生关系）`,
+    aimi: '安田爱美（row_id=9）：保育园下午（爱美线核心★，日记4谢礼交付）',
+    misuzu: '片桐美铃（row_id=11）：学园上午（同事关系）'
+  },
+  '自定义': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（陌生，按玩家背景调整）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段可遇（咖啡店老板娘）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（陌生，按玩家背景调整）`
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+%>
+
+[Day 9 调度器已加载：12-30 周六，主题：筱原泉美温泉之旅预兆（身份感知独立场景）。
+本日特殊事件：event_day09_izumi_archery / event_day09_izumi_onsen_invite / event_day09_diary_3_window / event_day09_diary_4_window / event_day09_miki_full_reveal / event_day09_karen_unmasked。
+本日锁定女角：[13,14]（永岛母女未登场）。
+本日新解锁：无。
+本日天气默认：晴。
+本日备注：泉美线开启；温泉之旅前置。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _profile ? _profile.identity_desc : '未选择' %>
+★ 特殊角色：<%= _profile ? _profile.special_role : '未选择' %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+★ 当日开场：<%= _openingScene %>
+
+【当日事件详情】
+- event_day09_izumi_archery：弓箭场与泉美对话。上午/下午时段八十八学园弓箭场触发，与筱原泉美（row_id=5）对话。泉美好感 +3。前置条件：<%= _playerName %>主动前往弓箭场。泉美练习场景铺垫，可触发指导/观摩特殊对话。
+- event_day09_izumi_onsen_invite：泉美邀请温泉之旅。下午/晚时段触发，泉美邀请<%= _playerName %>参加温泉之旅。前置条件：泉美好感 ≥ 30 触发。
+  - 泉美好感 < 30 → 邀请不触发，仅普通对话
+  - 泉美好感 ≥ 30 → 温泉之旅邀请触发，解锁后续温泉乡场景
+  - 泉美好感 ≥ 40 → 额外解锁泉美心声特殊对话
+- event_day09_diary_3_window：<%= _diary3Final %>
+- event_day09_diary_4_window：<%= _diary4Final %>
+- event_day09_miki_full_reveal：美纪完整揭示（CG_HIDDEN_004）。<%= _mikiRevealFinal %> 叙事提示：揭示加藤美纪双重身份完整真相（铃木裕子→加藤美纪的改名缘由、逃避的过去、真实感情），是美纪线深度推进关键点。
+- event_day09_karen_unmasked：可怜卸妆后偶遇（EV020）。晚时段商业区或电视台触发。前置条件：has_met_舞岛可怜=true AND 可怜.affection≥20。可怜好感 +5（信任加成），设置 karen_unmasked flag。叙事提示：<%= _playerName %>偶然撞见卸下浓妆的可怜，发现其真实面貌，是可怜线关键反转点，也是 日记5 获取的前置条件。
+
+【当日女角出现特殊规则】
+本日为泉美线开启日，弓箭场关键场景。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% } %>
+- 筱原泉美（row_id=5）：八十八学园弓箭场上午/下午
+- 都筑梢江（row_id=7）：八十八学园上午（被动跟踪）
+- 舞岛可怜（row_id=3）：商业区/电视台晚时段
+永岛母女（row_id=13,14）锁定，AI 不可让其出现。
+关键提示：温泉之旅邀请需好感达标，建议优先推进泉美线至好感 ≥ 30。P3/P4 关注美纪完整揭示，P5 关注爱美谢礼交付日记4。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼/在鸣泽家客厅交付日记本"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。
+5. P4（西御寺有友）日记3 不触发（敌意线）；P5（天道新干线）日记4 由爱美向天道本人交付；P3（长冈芳树）美纪完整揭示以偷拍者信息源视角推进。]

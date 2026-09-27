@@ -1,0 +1,175 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 长冈芳树 · 剧情线
+   ════════════════════════════════════════════════════════════
+   npc_id=N2 / 男配角 · 友美线反派 + 美纪线威胁者 + 唯线帮凶
+   核心弧线：偷拍—徘徊—威胁—共谋—误会（五阶段）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 长冈芳树_STORYLINE = {
+  npc_id: 'N2',
+  name: '长冈芳树',
+  core_position: {
+    role: '友美线核心反派 + 美纪线威胁者 + 唯线反派帮凶',
+    archetype: '猥琐问题儿童的堕落弧线 — 偷窥者的威胁升级',
+    function: '通过"偷拍→徘徊→威胁→共谋→误会"五阶段弧线，在友美线/美纪线/唯线三条路线上扮演反派角色，制造主角必须介入的危机',
+    plot_weight: 'medium — 推动 3 条女角线（友美线 + 美纪线 + 唯线）'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22~12-26',
+      time_slot: '全天',
+      location: '八十八学园偷拍地点（体育馆后 / 楼梯口 / 鞋柜区）',
+      event: '偷拍期',
+      description: '芳树寒假首日起加大偷拍频率，目标扩大学校和商业区所有女学生；常在体育馆后 / 楼梯口 / 鞋柜区出没',
+      triggers_route: '友美线 / 美纪线 — 偷拍行为是后续徘徊和威胁的前置',
+      is_reversible: true,
+      flags: ['flag_yoshiki_filming_active']
+    },
+    {
+      date: '12-26~12-27',
+      time_slot: '全天',
+      location: '友美家附近',
+      event: '友美徘徊期',
+      description: '芳树锁定友美为偷拍目标，连续两天在友美家附近徘徊，试图拍到友美的隐私照片；友美发现后极度不安',
+      triggers_route: '友美线 — 友美的不安是芳树从"偷拍"升级到"威胁"的转折点',
+      is_reversible: true,
+      flags: ['flag_yoshiki_tomomi_stalking', 'flag_tomomi_distress_1']
+    },
+    {
+      date: '12-27~12-29',
+      time_slot: '全天',
+      location: '白蛇池公园',
+      event: '美纪威胁期',
+      description: '芳树用偷拍的照片威胁美纪，要求美纪"听话"否则公开照片；威胁地点固定为白蛇池公园',
+      triggers_route: '美纪线 — 芳树的威胁是美纪线核心反派节点',
+      is_reversible: false,
+      flags: ['flag_yoshiki_miki_threat', 'flag_miki_distress_1'],
+      note: '★ 不可逆 flag — 芳树威胁美纪后，美纪线进入"被威胁"分支'
+    },
+    {
+      date: '12-29',
+      time_slot: 'PM4:00',
+      location: '体育馆后面',
+      event: '友美误会事件',
+      description: '芳树在体育馆后面被友美撞见偷拍现场，引发友美误会事件；友美误以为芳树偷拍的是自己',
+      triggers_route: '友美线 — 体育馆后面事件是友美线关键反派节点',
+      is_reversible: false,
+      flags: ['flag_yoshiki_tomomi_incident', 'flag_tomomi_misunderstanding'],
+      note: '★ 不可逆 flag — 若主角在场可化解误会并揭穿芳树；若主角缺席则友美线进入"被芳树抓住把柄"分支'
+    },
+    {
+      date: '01-02起',
+      time_slot: '全天',
+      location: '西御寺家豪宅',
+      event: '西御寺共谋期',
+      description: '芳树与西御寺有友结成利益同盟，共同针对主角和唯；芳树提供偷拍情报，西御寺提供金钱和权势',
+      triggers_route: '唯线 — 芳树作为西御寺的帮凶参与 1/3 旅馆误会事件',
+      is_reversible: false,
+      flags: ['flag_yoshiki_nishimiji_alliance', 'flag_yui_threat_conspiracy'],
+      note: '★ 不可逆 flag — 芳树与西御寺结盟后，唯线进入"双反派联合"分支'
+    }
+  ],
+
+  triggered_female_routes: {
+    '水野友美线（heroine_id=7）': {
+      role: 'core — 友美线核心反派',
+      trigger_nodes: ['12-26~12-27 友美徘徊期', '12-29 PM4:00 体育馆后面误会事件'],
+      impact: '芳树的徘徊和误会事件是友美线核心反派节点；若主角缺席 12/29 体育馆后面事件，友美线进入"被芳树抓住把柄"分支（友美被迫听从芳树要求）'
+    },
+    '加藤美纪线（heroine_id=4）': {
+      role: 'antagonist — 美纪线威胁者',
+      trigger_nodes: ['12-27~12-29 白蛇池公园威胁'],
+      impact: '芳树用偷拍照片威胁美纪是美纪线核心反派节点；若主角未在 12/27~29 介入保护美纪，美纪线进入"被威胁屈服"分支'
+    },
+    '鸣泽唯线（heroine_id=1）': {
+      role: 'assistant — 唯线反派帮凶',
+      trigger_nodes: ['1/2 起与西御寺共谋'],
+      impact: '芳树作为西御寺的帮凶参与 1/3 旅馆误会事件，提供偷拍情报和现场配合'
+    }
+  },
+
+  player_played_branch: {
+    condition: '玩家在开局选择扮演"长冈芳树"作为操作角色',
+    initial_state: {
+      money: 3000,
+      stats: { charm: 35, academic: 45, physical: 60, social: 30, perception: 50, willpower: 20 },
+      skills_bonus: { stealth: 40, observation: 50 },
+      advantage: '潜行/观察技能加成（stealth=40, observation=50）；可触发独特的偷拍/情报收集剧情；偷拍成功可获取女角隐藏信息',
+      disadvantage: '名声极差（willpower=20）；大部分女角初始敌意或零信任；部分工作因名声被拒；金钱起步仅 3000'
+    },
+    exclusive_route: {
+      name: '反派视角情报线',
+      description: '玩家扮演芳树时，可触发独特的偷拍/情报收集剧情分支 — 通过偷拍获取女角隐藏信息，通过情报操控剧情走向',
+      branch_logic: {
+        '偷拍成功路径': '获取女角隐藏信息（如美纪的秘密、友美的弱点），可用于威胁或交换；但偷拍被发现的概率随次数递增',
+        '威胁路径': '用偷拍照片威胁女角，获取短期利益但长期关系崩坏；威胁行为会触发相沢诚（NPC）介入',
+        '情报交换路径': '将偷拍情报提供给西御寺，换取金钱和庇护；但会成为西御寺的棋子',
+        '改邪归正路径（隐藏路线）': '主动销毁偷拍照片并向女角道歉，可触发"赎罪弧线" — 但需要极高勇气和决心，且大多数女角仍不信任'
+      },
+      exclusive_endings: [
+        '专属 Bad End — 芳树被主角和所有女角联手揭发，身败名裂退学',
+        '专属 Normal End — 芳树作为情报贩子苟活，永远躲在阴暗角落',
+        '专属 Hidden Good End（极低概率）— 改邪归正后获得某位女角的原谅（需在 12/29 前完成所有赎罪条件）'
+      ]
+    },
+    locked_routes: '玩家扮演芳树时，友美线/美纪线初始敌意极高（affection=-10~-5/trust=-20~-10），攻略难度地狱级；其他女角也因芳树名声差而初始印象负面'
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'enemy — 被主角鄙视欺压',
+      detail: '主角看不起芳树的偷拍行为，多次冲突；芳树敢怒不敢言，但会偷偷记仇'
+    },
+    '水野友美（heroine_id=7）': {
+      type: 'enemy — 偷拍目标 + 误会事件当事人',
+      detail: '芳树偷拍过友美，友美敌意极高（affection=-10/trust=-20）；12/29 体育馆后面误会事件是两人关系的关键节点'
+    },
+    '加藤美纪（heroine_id=4）': {
+      type: 'enemy — 威胁目标',
+      detail: '芳树用偷拍照片威胁美纪，美纪敌意高（affection=-5/trust=-10）；12/27~29 白蛇池公园威胁是美纪线反派节点'
+    },
+    '西御寺有友（N3）': {
+      type: 'ally — 共谋关系（1/2 起）',
+      detail: '芳树与西御寺是利益同盟非友谊；芳树提供偷拍情报，西御寺提供金钱和权势'
+    },
+    '鸣泽唯（heroine_id=1）': {
+      type: 'indirect — 唯线帮凶（1/2 起）',
+      detail: '芳树通过西御寺间接参与唯线旅馆误会事件，提供偷拍情报和现场配合'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_yoshiki_miki_threat',
+      trigger: '12-27~12-29 白蛇池公园威胁美纪',
+      effect: '芳树威胁美纪后，美纪线进入"被威胁"分支',
+      reversibility: '不可逆 — 威胁行为无法撤回'
+    },
+    {
+      flag: 'flag_yoshiki_tomomi_incident',
+      trigger: '12-29 PM4:00 体育馆后面友美误会事件',
+      effect: '友美误会事件后，若主角缺席则友美线进入"被芳树抓住把柄"分支',
+      reversibility: '不可逆 — 误会事件一旦发生无法撤回'
+    },
+    {
+      flag: 'flag_yoshiki_nishimiji_alliance',
+      trigger: '1/2 起与西御寺共谋',
+      effect: '芳树与西御寺结盟后，唯线进入"双反派联合"分支',
+      reversibility: '不可逆 — 共谋关系一旦建立无法单方面撤回'
+    },
+    {
+      flag: 'flag_tomomi_misunderstanding',
+      trigger: '12-29 PM4:00 体育馆后面友美误会事件',
+      effect: '友美误以为芳树偷拍的是自己，产生极度不安和恐惧',
+      reversibility: '可逆 — 若主角在场揭穿芳树，可化解误会'
+    }
+  ],
+
+  summary: '芳树的剧情线是"偷拍—徘徊—威胁—共谋—误会"五阶段弧线，核心功能是在友美线（12/29 体育馆后面事件）、美纪线（12/27~29 白蛇池公园威胁）、唯线（1/2 起与西御寺共谋）三条路线上扮演反派角色。玩家扮演芳树时，解锁独特的"反派视角情报线"，但友美/美纪初始敌意极高，攻略难度地狱级。'
+};
+%>
+
+长冈芳树 · 剧情线已加载。核心定位：友美线核心反派（12/29 PM4:00 体育馆后面事件）+ 美纪线威胁者（12/27~12/29 白蛇池公园威胁）+ 唯线反派帮凶（1/2 与西御寺共谋）。不可逆 flag：flag_yoshiki_miki_threat（12/27~29 威胁美纪）、flag_yoshiki_tomomi_incident（12/29 友美误会事件）、flag_yoshiki_nishimiji_alliance（1/2 与西御寺共谋）。玩家扮演芳树时解锁独特的"反派视角情报线"。

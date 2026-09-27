@@ -1,0 +1,18 @@
+mvu:
+  enabled: false
+  variableListPath: stat_data
+  hideRegex: true
+  beautifyRegex: true
+html:
+  statusbar:
+    enabled: false
+    variablePaths: []
+    hideRegex: true
+    mode: safe_macro
+regex:
+  scriptsPath: ../source/regex/scripts.yaml
+tavernHelper:
+  scriptsPath: ../source/tavern-helper/scripts.yaml
+ejs:
+  enabled: false
+  entries: []

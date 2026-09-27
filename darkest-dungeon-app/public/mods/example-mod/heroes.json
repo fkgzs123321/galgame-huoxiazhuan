@@ -1,0 +1,42 @@
+[
+  {
+    "id": "example_hero",
+    "name": "Example Hero",
+    "maxHp": [30, 36, 42, 48, 54],
+    "resistances": {
+      "stun": 0.3,
+      "move": 0.3,
+      "bleed": 0.2,
+      "poison": 0.2,
+      "disease": 0.2,
+      "debuff": 0.2,
+      "death_blow": 0.67,
+      "trap": 0.1
+    },
+    "skills": [
+      {
+        "id": "example_strike",
+        "level": 0,
+        "type": "melee",
+        "atk": 0.85,
+        "dmg": 0,
+        "crit": 0.05,
+        "launch": 21,
+        "target": "12",
+        "effects": []
+      }
+    ],
+    "weapons": [
+      { "name": "example_weapon_0", "atk": 0, "dmg_min": 5, "dmg_max": 10, "crit": 0, "spd": 1 }
+    ],
+    "armour": [
+      { "name": "example_armour_0", "def": 0.05, "prot": 0, "hp": 30, "spd": 0 }
+    ],
+    "tags": [],
+    "dodge": [0.05],
+    "crit": [0.0],
+    "dmg": [{ "min": 5, "max": 10 }],
+    "spd": [1],
+    "camping_skills": [{ "id": "encourage" }]
+  }
+]

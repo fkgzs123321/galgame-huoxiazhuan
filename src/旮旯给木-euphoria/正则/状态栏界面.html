@@ -1,0 +1,1052 @@
+```
+<body>
+<div id="gg">
+  <div class="gg-bg"></div>
+
+  <header class="gg-bar">
+    <span class="gg-scene" id="gg-scene">第一关 · 白色密室</span>
+    <span class="gg-clock" id="gg-clock">--:--</span>
+  </header>
+
+  <div class="gg-stage">
+    <section class="gg-dial her">
+      <div class="gg-name">屏幕外的她</div>
+      <div class="gg-box">
+        <div class="gg-quote" id="gg-quote" hidden><p id="gg-quote-t"></p></div>
+        <p class="gg-say" id="gg-want">—</p>
+        <div class="gg-meta">
+          <span class="gg-tag" id="gg-who">—</span>
+          <span class="gg-sep">/</span>
+          <span class="gg-tag" id="gg-mood">好奇</span>
+          <span class="gg-sep">/</span>
+          <span class="gg-tag" id="gg-keep">新手</span>
+          <span class="gg-push"></span>
+          <span class="gg-tag" id="gg-watched">0 小时</span>
+        </div>
+        <div class="gg-meter her">
+          <span class="gg-mk">目的</span>
+          <div class="gg-mt"><div class="gg-mf mf-her" id="gg-aim"></div></div>
+          <span class="gg-mv" id="gg-aim-t">还早</span>
+        </div>
+        <div class="gg-herbody" id="gg-herbody" hidden>
+          <span class="gg-cap">她此刻</span>
+          <p class="gg-hb-now" id="gg-her-now-t"></p>
+          <div class="gg-hb" id="gg-hb-rows"></div>
+        </div>
+
+        <div class="gg-meter her">
+          <span class="gg-mk">兴奋</span>
+          <div class="gg-mt"><div class="gg-mf mf-fuzz" id="gg-fuzz"></div><div class="gg-noise"></div></div>
+          <span class="gg-mv dim">? ? ?</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="gg-dial scene" id="gg-scene-blk" hidden>
+      <div class="gg-name">正在发生</div>
+      <div class="gg-box">
+        <div class="gg-sc-top">
+          <b id="gg-sc-place">—</b>
+          <span id="gg-sc-pose"></span>
+        </div>
+        <p class="gg-sc-beat" id="gg-sc-beat" hidden></p>
+        <div id="gg-sc-people"></div>
+        <div class="gg-sc-foot">
+          <span id="gg-sc-mark" hidden></span>
+          <span id="gg-sc-hersay" hidden></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="gg-dial me">
+      <div class="gg-name me">你</div>
+      <div class="gg-box">
+        <div class="gg-meter">
+          <span class="gg-mk">反抗值</span>
+          <div class="gg-mt"><div class="gg-mf mf-resist" id="gg-resist"></div></div>
+          <span class="gg-mv" id="gg-resist-n">0</span>
+        </div>
+        <div class="gg-meter">
+          <span class="gg-mk">体力</span>
+          <div class="gg-mt"><div class="gg-mf mf-stamina" id="gg-stamina"></div></div>
+          <span class="gg-mv" id="gg-stamina-n">0</span>
+        </div>
+        <div class="gg-meter">
+          <span class="gg-mk flesh">忍耐度</span>
+          <div class="gg-mt"><div class="gg-mf mf-flesh" id="gg-flesh"></div></div>
+          <span class="gg-mv" id="gg-flesh-n">0</span>
+        </div>
+        <p class="gg-body-feel" id="gg-body-feel" hidden></p>
+        <div class="gg-bill">
+          <span id="gg-bill">身体账单 · 0 次 · 敏感 0</span>
+          <span class="gg-look" id="gg-more">细看 ▾</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="gg-typing" id="gg-typing" hidden>
+    <div class="gg-c-head">
+      <span class="gg-c-title">她已经不在选项里了</span>
+      <span class="gg-c-wait">直接打给你的</span>
+    </div>
+    <div class="gg-typing-box">
+      <p id="gg-typing-t"></p><span class="gg-cur"></span>
+    </div>
+  </section>
+
+  <section class="gg-choices" id="gg-turn" hidden>
+    <div class="gg-c-head">
+      <span class="gg-c-title">她正在选择</span>
+      <span class="gg-c-wait" id="gg-wait">光标停住了</span>
+    </div>
+    <ul class="gg-list" id="gg-opts"></ul>
+    <div class="gg-fork">
+      <button class="gg-fork-btn" id="gg-watch" type="button">眼睁睁看着</button>
+      <button class="gg-fork-btn deny" id="gg-reject" type="button" disabled>拒绝</button>
+      <button class="gg-fork-btn custom" id="gg-custom" type="button" disabled>自己来</button>
+    </div>
+    <p class="gg-c-note" id="gg-note" hidden></p>
+    <p class="gg-c-picked" id="gg-picked" hidden></p>
+    <div class="gg-verdict" id="gg-verdict" hidden>
+      <p class="gg-vd-act" id="gg-vd-act"></p>
+      <p class="gg-vd-num" id="gg-vd-num"></p>
+    </div>
+    <div class="gg-custom-box" id="gg-custom-box" hidden>
+      <p class="gg-custom-tip">这一次身体听你的。写一句你想让他做的事、或者想说的话。只此一下。</p>
+      <textarea id="gg-custom-input" rows="2" placeholder="你想让他做什么"></textarea>
+      <div class="gg-custom-acts">
+        <button class="gg-fork-btn custom" id="gg-custom-ok" type="button">就这么做</button>
+        <button class="gg-fork-btn" id="gg-custom-cancel" type="button">算了</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="gg-screen" id="gg-cam">
+    <div class="gg-lens">
+      <div class="gg-scan"></div>
+      <div class="gg-rec"><i></i>REC</div>
+      <div class="gg-face"></div>
+    </div>
+    <div class="gg-lens-cap"><span id="gg-cam-note">正在玩</span></div>
+  </aside>
+
+  <div class="gg-file" id="gg-detail" hidden>
+    <div class="gg-file-h">细看</div>
+    <div id="gg-file-body"></div>
+  </div>
+
+  <div class="gg-frost" id="gg-freeze" hidden>
+    <div class="gg-frost-w" id="gg-freeze-word">冻结</div>
+    <div class="gg-frost-s" id="gg-freeze-sub"></div>
+  </div>
+</div>
+
+<style>
+#gg{
+  --ink:#e9e6df;--ink-2:#b9b4a9;--ink-3:#7b766c;--ink-4:#4d4944;
+  --panel:rgba(16,16,18,.86);--panel-2:rgba(24,24,27,.9);
+  --line:rgba(233,230,223,.12);--line-2:rgba(233,230,223,.2);
+  --her:#dfae5f;--her-dim:rgba(223,174,95,.34);--her-line:rgba(223,174,95,.42);
+  --me:#9ab0bd;--me-dim:rgba(154,176,189,.3);
+  --blood:#cf4a30;--flesh:#c88a90;
+  --f:'Sarasa Gothic SC','Source Han Sans SC','Noto Sans SC',system-ui,-apple-system,sans-serif;
+  --fm:'Sarasa Mono SC',ui-monospace,Menlo,monospace;
+  position:relative;width:100%;max-width:720px;margin:0 auto;padding:12px;
+  background:#08090a;color:var(--ink);font-family:var(--f);font-size:13.5px;line-height:1.7;
+  border-radius:4px;overflow:hidden;
+  box-shadow:0 14px 40px rgba(0,0,0,.6),inset 0 0 0 1px rgba(233,230,223,.06);
+  -webkit-font-smoothing:antialiased;
+}
+#gg *{box-sizing:border-box}
+#gg [hidden]{display:none!important}
+/* 背景：密室的惨白被压成一层很淡的雾 */
+#gg .gg-bg{position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% -10%,rgba(233,230,223,.07),transparent 60%),
+    repeating-linear-gradient(0deg,rgba(233,230,223,.014) 0 1px,transparent 1px 3px)}
+
+#gg .gg-bar{display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:9px;margin-bottom:11px;border-bottom:1px solid var(--line)}
+#gg .gg-scene{font-size:11px;letter-spacing:.24em;color:var(--ink-3)}
+#gg .gg-clock{font-family:var(--fm);font-size:10.5px;letter-spacing:.12em;color:var(--ink-4)}
+
+#gg .gg-stage{display:flex;flex-direction:column;gap:9px;padding-right:88px}
+
+/* ── 文本框：galgame 的对话框 ── */
+#gg .gg-dial{position:relative}
+#gg .gg-name{position:relative;display:inline-block;padding:3px 14px 3px 12px;
+  font-size:11.5px;letter-spacing:.18em;
+  background:var(--panel-2);border:1px solid var(--line-2);border-bottom:none;
+  border-radius:3px 3px 0 0;color:var(--ink-2);transform:translateY(1px)}
+#gg .gg-dial.her .gg-name{color:var(--her);border-color:var(--her-line);
+  background:linear-gradient(180deg,rgba(223,174,95,.14),rgba(24,24,27,.92))}
+#gg .gg-dial.me .gg-name{color:var(--me);border-color:var(--me-dim);
+  background:linear-gradient(180deg,rgba(154,176,189,.12),rgba(24,24,27,.92))}
+#gg .gg-box{background:var(--panel);border:1px solid var(--line-2);border-radius:3px;
+  padding:10px 12px;backdrop-filter:blur(6px);
+  box-shadow:inset 0 1px 0 rgba(233,230,223,.05),0 2px 12px rgba(0,0,0,.4)}
+#gg .gg-dial.her .gg-box{border-color:var(--her-line);
+  background:linear-gradient(180deg,rgba(223,174,95,.05),var(--panel) 46%)}
+
+#gg .gg-say{margin:0 0 7px;font-size:14.5px;color:var(--her);letter-spacing:.02em;
+  min-height:1.4em}
+#gg .gg-say .cur{display:inline-block;width:.55em;height:1.02em;margin-left:1px;
+  background:var(--her);vertical-align:-.14em;animation:ggCur .9s steps(2) infinite}
+@keyframes ggCur{0%,100%{opacity:1}50%{opacity:0}}
+
+#gg .gg-meta{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+#gg .gg-tag{font-size:10.5px;letter-spacing:.1em;color:var(--ink-3)}
+#gg .gg-sep{color:var(--ink-4);font-size:10px}
+#gg .gg-push{margin-left:auto}
+#gg .gg-meta .gg-tag:last-child{font-family:var(--fm)}
+
+#gg .gg-meter{display:flex;align-items:center;gap:9px;margin-top:6px}
+#gg .gg-mk{font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);width:48px;flex:none}
+#gg .gg-mk.flesh{color:var(--flesh)}
+#gg .gg-mt{position:relative;flex:1;height:5px;background:rgba(233,230,223,.07);border-radius:99px;overflow:hidden}
+#gg .gg-mf{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.22,.61,.36,1);position:relative;z-index:2}
+#gg .gg-mf::after{content:'';position:absolute;inset:0;border-radius:99px;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),transparent 62%)}
+#gg .gg-mv{font-family:var(--fm);font-size:11.5px;font-variant-numeric:tabular-nums;
+  width:34px;flex:none;text-align:right;color:var(--ink-2)}
+#gg .gg-mv.dim{width:auto;color:var(--ink-4);font-size:10px}
+.mf-resist{background:linear-gradient(90deg,#7a2a1a,var(--blood));box-shadow:0 0 9px rgba(207,74,48,.45)}
+.mf-stamina{background:linear-gradient(90deg,#3a4b57,var(--me));box-shadow:0 0 7px rgba(154,176,189,.35)}
+.mf-flesh{background:linear-gradient(90deg,#6b3c42,var(--flesh));box-shadow:0 0 7px rgba(200,138,144,.35)}
+.mf-her{background:linear-gradient(90deg,#77551f,var(--her));box-shadow:0 0 9px rgba(223,174,95,.4)}
+.mf-fuzz{background:linear-gradient(90deg,rgba(223,174,95,.25),rgba(223,174,95,.88));
+  filter:blur(1.2px);transition:width .9s ease}
+#gg .gg-noise{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.45;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.16) 0 1px,transparent 1px 4px);
+  animation:ggZ 2.6s linear infinite}
+@keyframes ggZ{from{transform:translateX(0)}to{transform:translateX(4px)}}
+#gg .gg-meter.hot .mf-her{background:linear-gradient(90deg,#8a3520,var(--blood));
+  box-shadow:0 0 13px rgba(207,74,48,.6);animation:ggPulse 2s ease-in-out infinite}
+@keyframes ggPulse{0%,100%{opacity:1}50%{opacity:.6}}
+#gg .gg-meter.hot .gg-mv{color:#e8907c}
+#gg .gg-meter.hot .gg-mk{color:#e8907c}
+
+#gg .gg-body-feel{margin:9px 0 0;font-size:12.5px;line-height:1.7;color:var(--flesh);letter-spacing:.01em}
+#gg .gg-bill{display:flex;justify-content:space-between;align-items:baseline;margin-top:9px;
+  padding-top:8px;border-top:1px solid var(--line);
+  font-size:10.5px;letter-spacing:.06em;color:var(--ink-4)}
+#gg .gg-look{cursor:pointer;letter-spacing:.14em;color:var(--ink-3);user-select:none}
+#gg .gg-look:hover{color:var(--ink)}
+
+/* 她刚才说的那句话 */
+#gg .gg-quote{margin:-2px 0 10px;padding:9px 12px;border-left:2px solid var(--her);
+  background:linear-gradient(90deg,rgba(223,174,95,.09),transparent)}
+#gg .gg-quote p{margin:0;font-size:15px;line-height:1.75;color:var(--her);letter-spacing:.02em}
+
+/* 她此刻的身体 */
+#gg .gg-herbody{margin-top:9px;padding-top:8px;border-top:1px solid var(--her-line)}
+#gg .gg-hb-now{margin:4px 0 7px;font-size:12.5px;color:var(--her);line-height:1.6}
+#gg .gg-hb{display:flex;flex-direction:column;gap:5px}
+#gg .gg-hb-row{display:flex;gap:9px;align-items:baseline;font-size:12.5px;line-height:1.7}
+#gg .gg-hb-row>span:first-child{width:34px;flex:none;font-size:10.5px;letter-spacing:.1em;color:var(--flesh)}
+#gg .gg-hb-row>span:last-child{flex:1;color:var(--ink)}
+#gg .gg-hb-tail{margin-top:5px;padding-top:5px;border-top:1px solid rgba(223,174,95,.18);
+  font-size:11.5px;color:var(--ink-4)}
+#gg .gg-cap{font-size:10px;letter-spacing:.18em;color:var(--ink-4)}
+
+/* 场面：游戏世界里正在发生的事 */
+#gg .gg-dial.scene .gg-name{color:var(--ink-2);border-color:var(--line-2)}
+#gg .gg-dial.scene .gg-box{background:var(--panel-2)}
+#gg .gg-sc-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#gg .gg-sc-top b{font-weight:400;font-size:13px;color:var(--ink)}
+#gg .gg-sc-top span{font-size:12px;color:var(--ink-2)}
+#gg .gg-sc-beat{margin:7px 0 0;font-size:13px;color:var(--her);letter-spacing:.01em;line-height:1.7}
+#gg .gg-pers{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+#gg .gg-pers-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+#gg .gg-pers-name{font-size:13px;color:var(--ink)}
+#gg .gg-pers-tag{font-family:var(--fm);font-size:9.5px;letter-spacing:.1em;
+  padding:1px 6px;border-radius:2px;border:1px solid var(--her-line);color:var(--her)}
+#gg .gg-pers-tag.out{border-color:var(--line-2);color:var(--ink-4)}
+#gg .gg-pers-row{display:flex;gap:9px;align-items:baseline;padding:3px 0;font-size:12px;line-height:1.65}
+#gg .gg-pers-row>span:first-child{width:34px;flex:none;font-size:10.5px;letter-spacing:.1em;color:var(--ink-4)}
+#gg .gg-pers-row>span:last-child{flex:1;color:var(--ink-2)}
+#gg .gg-pers-act>span:first-child{color:var(--flesh)}
+#gg .gg-pers-act>span:last-child{color:var(--ink)}
+#gg .gg-pers-out{font-size:12px;color:var(--ink-4);padding:2px 0}
+#gg .gg-sc-foot{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--ink-4)}
+#gg .gg-sc-foot>span:not(:empty)::before{content:'';display:inline-block;width:3px;height:3px;
+  border-radius:50%;background:var(--ink-4);vertical-align:.35em;margin-right:6px}
+#gg .gg-sc-row{display:flex;gap:9px;align-items:baseline;margin-top:5px;font-size:12px}
+#gg .gg-sc-row b{font-weight:400;color:var(--ink);font-size:12.5px}
+#gg .gg-sc-row span:not(.gg-cap){color:var(--ink-2);flex:1}
+#gg .gg-sc-row .gg-cap{flex:none;width:44px}
+#gg .gg-sc-now{margin:6px 0 0;font-size:13px;color:var(--ink-2);line-height:1.7}
+#gg .gg-sc-who-blk{margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
+#gg .gg-sc-who{margin-top:4px;font-size:12.5px;color:var(--ink-2);line-height:1.8;white-space:pre-line}
+#gg .gg-sc-quote{margin:10px 0 0;padding:8px 11px;border-left:2px solid var(--her-line);
+  background:linear-gradient(90deg,rgba(223,174,95,.07),transparent)}
+#gg .gg-sc-quote p{margin:0;font-size:13px;color:var(--her);line-height:1.7}
+
+/* ── 摄像头 ── */
+#gg .gg-screen{position:absolute;right:12px;top:60px;width:76px}
+#gg .gg-lens{position:relative;height:100px;border-radius:3px;overflow:hidden;
+  border:1px solid var(--her-line);background:#0c0d0e;transition:filter .6s ease,box-shadow .6s ease}
+#gg .gg-cam.live .gg-lens{background:linear-gradient(170deg,#3a2c17,#1d160c 72%);
+  filter:brightness(calc(.55 + var(--hg,1)*.75)) saturate(calc(.7 + var(--hg,1)*.6));
+  box-shadow:0 0 calc(12px + var(--hg,1)*20px) rgba(223,174,95,calc(.08 + var(--hg,1)*.26)),
+    inset 0 0 26px rgba(0,0,0,.65)}
+#gg .gg-cam.paused .gg-lens{background:repeating-linear-gradient(0deg,#232427 0 2px,#191a1d 2px 4px);filter:grayscale(1) brightness(.8)}
+#gg .gg-cam.dark .gg-lens{background:#08090a;filter:none}
+#gg .gg-scan{position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 2px)}
+#gg .gg-cam.live .gg-scan{animation:ggScan 5s linear infinite;opacity:.3}
+@keyframes ggScan{from{transform:translateY(0)}to{transform:translateY(22px)}}
+#gg .gg-rec{position:absolute;top:5px;left:6px;font-family:var(--fm);font-size:8.5px;
+  letter-spacing:.14em;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px}
+#gg .gg-rec i{width:4px;height:4px;border-radius:50%;background:var(--blood);display:block}
+#gg .gg-cam.live .gg-rec i{animation:ggBlink 1.5s ease-in-out infinite}
+@keyframes ggBlink{0%,100%{opacity:1}50%{opacity:.12}}
+#gg .gg-cam.paused .gg-rec,#gg .gg-cam.dark .gg-rec{opacity:.3}
+#gg .gg-cam.paused .gg-rec i,#gg .gg-cam.dark .gg-rec i{animation:none;background:#5a6068}
+#gg .gg-cam.live .gg-face{background:radial-gradient(circle at 62% 40%,rgba(255,228,172,.46) 0%,transparent 33%),
+  radial-gradient(circle at 30% 76%,rgba(255,196,118,.12) 0%,transparent 43%)}
+#gg .gg-lens-cap{text-align:center;padding-top:5px;font-size:10px;letter-spacing:.1em;color:var(--her);opacity:.75}
+#gg .gg-cam.paused .gg-lens-cap,#gg .gg-cam.dark .gg-lens-cap{color:var(--ink-4);opacity:1}
+
+/* ── 选项：galgame 的分歧 ── */
+#gg .gg-choices{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);animation:ggUp .5s ease-out both}
+@keyframes ggUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#gg .gg-c-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+#gg .gg-c-title{font-size:11px;letter-spacing:.26em;color:var(--ink-3)}
+#gg .gg-c-wait{font-family:var(--fm);font-size:10px;letter-spacing:.08em;color:var(--ink-4)}
+#gg .gg-list{list-style:none;margin:0 0 11px;padding:0;display:flex;flex-direction:column;gap:7px}
+#gg .gg-opt{position:relative;display:block;
+  padding:11px 16px 11px 14px;border-radius:3px;cursor:pointer;overflow:hidden;
+  background:linear-gradient(100deg,rgba(233,230,223,.055),rgba(233,230,223,.02));
+  border:1px solid var(--line-2);
+  opacity:.32;filter:blur(.4px);
+  transition:opacity .6s ease,filter .6s ease,border-color .22s ease,transform .22s ease,background .22s ease}
+#gg .gg-opt.lit{opacity:1;filter:none}
+/* 悬停高光从左侧扫过 */
+#gg .gg-opt::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:55%;
+  background:linear-gradient(100deg,transparent,rgba(223,174,95,.14),transparent);
+  transform:skewX(-14deg);transition:left .45s ease}
+#gg .gg-opt.lit:hover{transform:translateX(4px);border-color:var(--her-line);
+  background:linear-gradient(100deg,rgba(223,174,95,.1),rgba(233,230,223,.03))}
+#gg .gg-opt.lit:hover::after{left:120%}
+#gg .gg-opt .idx{font-family:var(--fm);font-size:11px;color:var(--ink-3);flex:none;width:16px;
+  transition:color .2s ease}
+#gg .gg-opt.lit:hover .idx{color:var(--her)}
+#gg .gg-opt-main{display:flex;align-items:center;gap:11px}
+#gg .gg-opt .txt{flex:1;font-size:14px;letter-spacing:.01em}
+#gg .gg-feel{margin:5px 0 0 27px;font-size:11.5px;line-height:1.6;color:var(--ink-3);
+  letter-spacing:.01em;transition:color .2s ease}
+#gg .gg-opt.lit:hover .gg-feel{color:var(--her);opacity:.92}
+#gg .gg-opt.lv-强 .txt,#gg .gg-opt.lv-极 .txt{color:#eda793}
+#gg .gg-opt .cost{font-family:var(--fm);font-size:10.5px;color:var(--ink-4);flex:none;letter-spacing:.06em}
+#gg .gg-opt.picked{border-color:var(--her-line);background:linear-gradient(100deg,rgba(223,174,95,.16),rgba(223,174,95,.04))}
+#gg .gg-opt.picked .idx{color:var(--her)}
+#gg .gg-opt.lv-锁{opacity:.18;cursor:not-allowed;filter:grayscale(1)}
+#gg .gg-opt.lv-锁:hover{transform:none;border-color:var(--line-2)}
+
+#gg .gg-fork{display:flex;gap:8px;justify-content:center}
+#gg .gg-fork-btn{min-width:132px;padding:11px 22px;cursor:pointer;font-family:inherit;font-size:13px;
+  letter-spacing:.1em;border-radius:3px;
+  background:linear-gradient(180deg,rgba(233,230,223,.07),rgba(233,230,223,.02));
+  border:1px solid var(--line-2);color:var(--ink-2);transition:all .2s ease}
+#gg .gg-fork-btn:hover{color:var(--ink);border-color:var(--line-2);
+  background:linear-gradient(180deg,rgba(233,230,223,.13),rgba(233,230,223,.05))}
+#gg .gg-fork-btn.deny{border-color:rgba(207,74,48,.44);color:#e6907c;
+  background:linear-gradient(180deg,rgba(207,74,48,.14),rgba(207,74,48,.03))}
+#gg .gg-fork-btn.deny:hover{color:#fff;border-color:var(--blood);
+  background:linear-gradient(180deg,#d8563a,#a83a24);box-shadow:0 0 20px rgba(207,74,48,.42)}
+#gg .gg-fork-btn.deny:disabled{border-color:var(--line);color:var(--ink-4);cursor:not-allowed;
+  background:linear-gradient(180deg,rgba(233,230,223,.03),transparent);box-shadow:none}
+#gg .gg-c-note{margin:10px 0 0;text-align:center;font-size:11.5px;color:var(--ink-4);letter-spacing:.04em}
+#gg .gg-c-note.warn{color:#e6907c}
+
+/* 她打的字 */
+#gg .gg-typing{margin-top:14px;padding-top:13px;border-top:1px solid var(--her-line);animation:ggUp .5s ease-out both}
+#gg .gg-typing-box{margin-top:8px;padding:14px 16px;border-radius:3px;
+  background:linear-gradient(100deg,rgba(223,174,95,.12),rgba(223,174,95,.03));
+  border:1px solid var(--her-line)}
+#gg .gg-typing-box p{margin:0;font-size:15px;color:var(--her);line-height:1.8;letter-spacing:.02em}
+#gg .gg-cur{display:inline-block;width:.5em;height:1em;background:var(--her);
+  vertical-align:-.12em;margin-left:2px;animation:ggCur .9s steps(2) infinite}
+
+#gg .gg-fork-btn.custom{border-color:rgba(232,180,92,.5);color:#e8b45c}
+#gg .gg-fork-btn.custom:disabled{border-color:var(--line);color:var(--ink-3);opacity:.45}
+#gg .gg-verdict{margin:9px 0 0;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:rgba(255,255,255,.03)}
+#gg .gg-verdict.win{border-color:rgba(127,211,198,.5)}
+#gg .gg-verdict.lose{border-color:rgba(200,90,90,.5)}
+#gg .gg-vd-act{margin:0;font-size:12.5px;line-height:1.7;color:var(--ink-2)}
+#gg .gg-vd-act b{color:var(--her);font-weight:500}
+#gg .gg-vd-num{margin:5px 0 0;font-family:var(--fm);font-size:11px;letter-spacing:.03em;color:var(--ink-3)}
+#gg .gg-custom-echo{margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--ink-2)}
+
+#gg .gg-custom-box{margin:9px 0 0;padding:10px 11px;border:1px solid var(--her-line);border-radius:9px;background:rgba(223,174,95,.06)}
+#gg .gg-custom-tip{margin:0 0 7px;font-size:11.5px;line-height:1.6;color:var(--ink-3)}
+#gg .gg-custom-box textarea{width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:rgba(0,0,0,.22);color:var(--ink);font-size:13px;line-height:1.6;resize:vertical;font-family:inherit}
+#gg .gg-custom-box textarea:focus{outline:none;border-color:var(--her-line)}
+#gg .gg-custom-acts{display:flex;gap:7px;margin-top:8px}
+#gg .gg-c-picked{margin:9px 0 0;text-align:center;font-size:11.5px;letter-spacing:.04em;color:var(--ink-3)}
+#gg .gg-c-picked.miss{color:var(--blood)}
+
+/* ── 细看 ── */
+#gg .gg-file{position:absolute;right:12px;top:60px;width:260px;z-index:6;
+  background:var(--panel-2);border:1px solid var(--line-2);border-radius:3px;
+  backdrop-filter:blur(8px);box-shadow:0 12px 30px rgba(0,0,0,.6);animation:ggUp .3s ease-out both}
+#gg .gg-file-h{padding:8px 12px;border-bottom:1px solid var(--line);
+  font-size:10.5px;letter-spacing:.2em;color:var(--ink-3)}
+#gg #gg-file-body{padding:11px 12px;display:flex;flex-direction:column;gap:11px;
+  max-height:300px;overflow-y:auto}
+#gg .gg-row{display:flex;justify-content:space-between;gap:10px;padding:5px 8px;border-radius:2px;
+  background:rgba(233,230,223,.035);font-size:12px}
+#gg .gg-row.hot{border-left:2px solid var(--blood)}
+#gg .gg-row em{font-style:normal;font-family:var(--fm);font-size:10.5px;color:var(--ink-3)}
+#gg .gg-cap{font-size:10.5px;letter-spacing:.14em;color:var(--ink-4)}
+#gg .gg-know{height:4px;background:rgba(233,230,223,.07);border-radius:99px;overflow:hidden;margin:5px 0 4px}
+#gg .gg-know-f{height:100%;background:linear-gradient(90deg,#8a6524,var(--her));transition:width .5s ease}
+#gg .gg-know-t{margin:0;font-size:11.5px;color:var(--her);opacity:.9}
+
+#gg .gg-girl{margin-bottom:9px;padding:8px 9px;border-radius:3px;background:rgba(233,230,223,.03)}
+#gg .gg-gname{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;font-size:12.5px}
+#gg .gg-gname em{font-style:normal;font-family:var(--fm);font-size:10px;color:var(--ink-4)}
+#gg .gg-organ{display:flex;align-items:baseline;gap:8px;padding:3px 0;font-size:11.5px}
+#gg .gg-organ>span:first-child{width:34px;flex:none;color:var(--ink-3);font-size:10.5px;letter-spacing:.1em}
+#gg .gg-od{font-family:var(--fm);font-size:11px;color:var(--flesh);flex:none;width:22px;text-align:right}
+#gg .gg-organ i{font-style:normal;color:var(--ink-3);font-size:11px;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gg .gg-hu{font-size:9.5px;letter-spacing:.08em;color:var(--blood);flex:none}
+#gg .gg-gmem{margin-top:5px;padding-top:4px;border-top:1px solid var(--line);
+  font-size:11px;color:var(--her);opacity:.85}
+
+#gg .gg-frost{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;
+  backdrop-filter:blur(3px) grayscale(1);animation:ggUp .3s ease-out both}
+#gg .gg-frost.paused{background:rgba(8,9,10,.85)}
+#gg .gg-frost.frozen{background:rgba(6,7,8,.93)}
+#gg .gg-frost-w{font-size:21px;letter-spacing:.5em;text-indent:.5em;color:var(--ink)}
+#gg .gg-frost.frozen .gg-frost-w{color:var(--ink-4)}
+#gg .gg-frost-s{font-size:11px;letter-spacing:.14em;color:var(--ink-3)}
+
+@media (max-width:560px){
+  #gg .gg-stage{padding-right:0}
+  #gg .gg-screen{position:static;width:96px;margin:10px auto 0}
+  #gg .gg-file{position:static;width:auto;margin-top:10px}
+}
+</style>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var picked = null, turnKey = null, typeTimer = null;
+
+  var HER = {
+    gentle:        ['温砚', '带你活着离开这里'],
+    greedy:        ['丰娆', '把每个女角都看过一遍'],
+    smirking:      ['舒晏', '看你挣扎，看你求饶'],
+    daredevil:     ['唐响', '打开那些最极端的分支'],
+    quiet:         ['沈眠', '把这一段剧情推向死亡'],
+    indifferent:   ['莫漾', '没有目的，她自己也不知道'],
+    completionist: ['纪清', '集齐所有 CG 和结局']
+  };
+
+  var DEMO = {
+    主角: { 反抗值: 52, 体力: 98, 状态: '在线', 对她的了解: 34,
+      身体: { 忍耐度: 63, 实感: '撑得住。但手已经在抖，你自己还没发现', 累计次数: 7, 敏感度: 41,
+        身体痕迹: { '左肩的指印': { 来源: '她点的那一下你没躲', 是否消退: false },
+                    '手腕的红痕': { 来源: '反抗时被按住', 是否消退: true } } },
+      痕迹: { '撬开储物柜': { 明显度: 46, 是否被发现: false },
+              '半夜去过天台': { 明显度: 22, 是否被发现: true } },
+      已知软肋: { '在意梨香': { 绕开方式: '改从梨香下手' } },
+      已封死的路: {
+        '当众': { 什么时候: '第九层，让合欢在所有人面前跪下来那一次', 代价: '再没有当众的机会，她要动手只会在没人的时候' },
+        '对人动手': { 什么时候: '第十四层，把梨香推到墙上那一次', 代价: '梨香之后再没被碰过，但她看你的眼神变了' }
+      } },
+    她: { 人设: 'gentle', 熟练度: '上手', 兴奋度: 38, 情绪: '投入', 目的进度: 25, 游玩时长: '12 小时',
+      刚才说的: '……你手别抖。',
+      此刻: '没在看屏幕。头低着',
+      身体: {
+        姿势: '整个人缩进椅子里，一条腿盘上来压着',
+        衣物: '睡袍带子早松了，一边肩全露在外面',
+        动作: '一只手还搭在鼠标上，另一只不在画面里。停过两次',
+        呼吸: '比刚才快，肩在起伏。刚才那一下咽口水你听见了',
+        留下: '桌角多了两张抽出来的纸巾，还没用'
+      } },
+    世界: { 当前关卡: '第一关 · 监视器装置房', 关卡进度: 40,
+      女角: {
+        '莳羽梨香': { 关系: '动摇', 开发度: 12, 身体记忆: '被你碰过的地方会先抖一下',
+          胸: { 开发度: 8, 现状: '隔着校服也能看出立起来了' },
+          阴部: { 开发度: 5, 现状: '已经湿了，她自己还没承认', 破瓜: false },
+          后穴: { 开发度: 0, 现状: '' } },
+        '真中合欢': { 关系: '警惕', 开发度: 0, 身体记忆: '',
+          胸: { 开发度: 0, 现状: '' }, 阴部: { 开发度: 0, 现状: '', 破瓜: false }, 后穴: { 开发度: 0, 现状: '' } },
+        '帆刈叶': { 关系: '依附', 开发度: 28, 身体记忆: '会主动靠过来',
+          胸: { 开发度: 22, 现状: '被从背后握着' },
+          阴部: { 开发度: 14, 现状: '', 破瓜: true },
+          后穴: { 开发度: 4, 现状: '还紧着' } } } },
+    局面: {
+      当前选项: {
+        A: { 文本: '把梨香的手按在墙上', 反抗等级: '中', 反抗消耗: 12,
+             你会是什么样: '她会把脸偏过去，不挣，眼泪掉在你手背上' },
+        B: { 文本: '让合欢看着，不许出声', 反抗等级: '强', 反抗消耗: 30,
+             你会是什么样: '她的视线会一直落在你手上，不说话，也不走' },
+        C: { 文本: '先去找饮用水', 反抗等级: '微', 反抗消耗: 4,
+             你会是什么样: '什么都不会发生。她大概会等你' },
+        D: { 文本: '戴上项圈走到装置前', 反抗等级: '锁', 反抗消耗: 0,
+             你会是什么样: '' }
+      },
+      她的倾向: '鼠标停在第二个上，又移开了',
+      她已选: 'B',
+      误点: false,
+      她打的字: '',
+      场面: {
+        地点: '玻璃房',
+        体位: '站着，从背后，她被压在镜面上，脸朝外',
+        节奏: '很慢。每一下都停半拍，等她抖完了才继续',
+        参与: {
+          '莳羽梨香': { 在内: true,
+            胸: '隔着校服顶起来两点，她用胳膊挡着，挡不住',
+            阴部: '湿到腿上了，她自己还没承认',
+            后穴: '还紧着，没碰过',
+            反应: '膝盖一直在抖，站不太住' },
+          '真中合欢': { 在内: false, 反应: '靠在门边，看着，没走' },
+          '葵菜月': { 在内: false, 反应: '背过身去，手扶着洗面台' },
+          '帆刈叶': { 在内: false, 反应: '站在门外，没进来' }
+        },
+        留痕: '玻璃上有一只手印，还没消',
+        她看到的: '她把音量调小了'
+      }
+    }
+  };
+
+  function sd() {
+    /* 从最新楼层往回找，用【负数深度索引】。
+       依据 @types/function/variables.d.ts:17 ——
+         「如果为负数则为深度索引，例如 -1 表示获取最新的消息楼层」
+       不要用 getLastMessageId() + 正数楼层号：那个函数在 iframe 里不一定可用，
+       拿不到就整个循环不执行，界面会静默退回 DEMO（表现就是「面板全是硬编码」）。
+       负数索引不需要知道 chat.length，稳得多。
+       超出 [-chat.length, chat.length) 会 throw，所以每层单独 try。 */
+    for (var d = 1; d <= 40; d++) {
+      try {
+        var vv = getVariables({ type: 'message', message_id: -d });
+        if (vv && vv.stat_data && vv.stat_data.主角) return vv.stat_data;
+      } catch (e) { break; }
+    }
+    // 兜底一：界面自己所在楼层
+    try {
+      var v = getVariables({ type: 'message' });
+      if (v && v.stat_data && v.stat_data.主角) return v.stat_data;
+    } catch (e) {}
+    // 兜底二：聊天级
+    try {
+      var c = getVariables({ type: 'chat' });
+      if (c && c.stat_data && c.stat_data.主角) return c.stat_data;
+    } catch (e3) {}
+    return DEMO;
+  }
+  function pct(v) { return Math.max(0, Math.min(100, Number(v) || 0)) + '%'; }
+
+  // 按 tavern-ui 规范：建消息 + /trigger 让 AI 铺开下一层
+  // （不能用 /send，那样只发送不触发，下一层会没有正文）
+  function send(text) {
+    try {
+      createChatMessages([{ role: 'user', name: '', message: text }]).then(function () {
+        triggerSlash('/trigger');
+      });
+    } catch (e) {
+      triggerSlash('/send ' + text);
+    }
+  }
+  /* ── 判定引擎（E3 · 反抗判定）─────────────────────────
+     算法出处：项目根的 机制.yaml → T2 状态表 → 反抗值（含成功率公式）
+     LCG 确定性伪随机，禁 Math.random，保证同一回合重渲染结果一致
+     ─────────────────────────────────────────────────────── */
+  var LCG_A = 1664525, LCG_C = 1013904223, LCG_M = 4294967296;
+  var 反抗基础 = { 微: 90, 中: 60, 强: 30, 极: 10, 自定义: 5 };
+  var 反抗消耗表 = { 微: 4, 中: 12, 强: 30, 极: 55, 自定义: 70 };
+  var 熟练罚 = { 新手: 0, 上手: 0.1, 沉浸: 0.2, 狂热: 0.3, 收官: 0.4 };
+
+  function lcgNext(s) { return (LCG_A * s + LCG_C) % LCG_M; }
+
+  /* 掷一次判定。两种走法共用这套骰子与公式：
+     拒绝：对手是她点的那个选项，消耗按它的等级
+     自己来：对手是她对局面的掌控，消耗固定 70、基础成功率 5
+     反抗值由这里直接扣掉，不留给 AI 扣，免得两边重复扣。 */
+  function rollAction(type, key, opt, text) {
+    var d = sd(), m = d.主角 || {}, her = d.她 || {};
+    var 等级 = type === '自定义' ? '自定义' : String((opt && opt.反抗等级) || '中');
+    var 基础 = 反抗基础[等级];
+    if (基础 === undefined) return null;
+    var 消耗 = type === '自定义' ? 70 : (Number(opt && opt.反抗消耗) || 反抗消耗表[等级] || 0);
+    var 现值 = Number(m.反抗值) || 0;
+    if (现值 < 消耗) return { err: '要 ' + 消耗 + ' 点，你有 ' + 现值 + ' 点' };
+    var 兴奋 = Number(her.兴奋度) || 0;
+    var 罚 = 熟练罚[String(her.熟练度 || '新手')];
+    if (罚 === undefined) 罚 = 0;
+    var 率 = 基础 * (1 + 兴奋 / 100 * 0.5) * (1 - 罚);
+    率 = Math.max(1, Math.min(99, 率));
+    var 种子 = Number(m['$骰子种子']) || 20260914;
+    var 新种子 = lcgNext(种子);
+    var 掷 = (lcgNext(新种子) / LCG_M) * 100;
+    var 成 = 掷 <= 率;
+    var 差 = 率 - 50;
+    var 档 = 成
+      ? (差 >= 30 ? ['大成功', 1.5] : 差 >= 10 ? ['成功', 1.0] : ['勉强成功', 0.6])
+      : (差 <= -30 ? ['大失败', 2.0] : ['失败', 1.0]);
+    var 剩余 = Math.max(0, 现值 - 消耗);
+    try {
+      updateVariablesWith(function (v) {
+        var cur = _.get(v, 'stat_data', {});
+        _.set(v, 'stat_data', _.merge({}, cur, {
+          主角: { '$骰子种子': 新种子, 反抗值: 剩余 },
+          局面: {
+            自定义意图: type === '自定义' ? String(text || '') : '',
+            玩家拒绝: type === '拒绝' ? String(key) : '',
+            判定结果: {
+              操作: type,
+              选项: type === '自定义' ? String(text || '') : String((opt && opt.文本) || ''),
+              等级: 等级,
+              消耗: 消耗,
+              剩余反抗值: 剩余,
+              成功率: Math.round(率 * 10) / 10,
+              掷值: Math.round(掷 * 100) / 100,
+              结果: 成 ? '成功' : '失败',
+              档位: 档[0],
+              效果倍数: 档[1]
+            }
+          }
+        }));
+        return v;
+      }, { type: 'message', message_id: -1 });   // -1 = 最新楼层，AI 下一层能读到
+    } catch (e) { console.log('[旮旯给木] 判定写回失败', e); }
+    return { 率: 率, 掷: 掷, 成: 成, 档: 档[0], 消耗: 消耗, 剩余: 剩余 };
+  }
+  function two(n) { return (n < 10 ? '0' : '') + n; }
+  var IDX = ['①', '②', '③', '④', '⑤', '⑥'];
+
+  function clock() {
+    var d = new Date();
+    $('gg-clock').textContent = two(d.getHours()) + ':' + two(d.getMinutes());
+  }
+
+  // 打字机：她的诉求逐字出现，像台词
+  function typeSay(text) {
+    var el = $('gg-want');
+    if (el.dataset.full === text) return;
+    el.dataset.full = text;
+    if (typeTimer) clearInterval(typeTimer);
+    var i = 0;
+    el.innerHTML = '<span></span><span class="cur"></span>';
+    var span = el.firstChild;
+    typeTimer = setInterval(function () {
+      i++;
+      span.textContent = text.slice(0, i);
+      if (i >= text.length) { clearInterval(typeTimer); typeTimer = null; }
+    }, 42);
+  }
+
+  function rows(obj, right, hotKey) {
+    var keys = Object.keys(obj || {});
+    if (!keys.length) return '';
+    return keys.map(function (k) {
+      var v = obj[k] || {};
+      return '<div class="gg-row' + (hotKey && v[hotKey] ? ' hot' : '') + '"><span>' + k +
+        '</span><em>' + (right(v) || '') + '</em></div>';
+    }).join('');
+  }
+
+  function render() {
+    var d = sd(), m = d.主角 || {}, sit = d.局面 || {}, w = d.世界 || {}, her = d.她 || {};
+    var st = m.状态 || '在线';
+
+    /* 她的文本框 */
+    var who = HER[her.人设] || ['—', '—'];
+    $('gg-who').textContent = who[0];
+    $('gg-mood').textContent = her.情绪 || '好奇';
+    $('gg-keep').textContent = her.熟练度 || '新手';
+    $('gg-watched').textContent = her.游玩时长 || '0 小时';
+    typeSay(who[1]);
+
+    var aim = Number(her.目的进度) || 0;
+    $('gg-aim').style.width = pct(aim);
+    var aimRow = $('gg-aim').parentNode.parentNode;
+    aimRow.classList.toggle('hot', aim >= 85);
+    $('gg-aim-t').textContent = aim >= 90 ? '只差一下' : aim >= 60 ? '快拿到' : aim >= 30 ? '正使劲' : aim > 0 ? '刚露头' : '没影子';
+
+    // 她刚才说的那句话
+    var said = her.刚才说的 || '';
+    $('gg-quote').hidden = !said;
+    $('gg-quote-t').textContent = said;
+
+    // 身体实感
+    var feel = (m.身体 || {}).实感 || '';
+    $('gg-body-feel').hidden = !feel;
+    $('gg-body-feel').textContent = feel;
+
+    // 她此刻的身体（<user> 隔着摄像头看得见的）
+    var now = her.此刻 || '';
+    var hb = her.身体 || {};
+    var hbRows = [['姿势', hb.姿势], ['衣物', hb.衣物], ['动作', hb.动作], ['呼吸', hb.呼吸]];
+    var hasHb = !!(now || hbRows.some(function (r) { return r[1]; }));
+    $('gg-herbody').hidden = !hasHb;
+    if (hasHb) {
+      $('gg-her-now-t').hidden = !now;
+      $('gg-her-now-t').textContent = now;
+      $('gg-hb-rows').innerHTML =
+        hbRows.filter(function (r) { return r[1]; }).map(function (r) {
+          return '<div class="gg-hb-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+        }).join('') +
+        (hb.留下 ? '<div class="gg-hb-tail">她那边留下了 · ' + hb.留下 + '</div>' : '');
+    }
+
+    // 场面：正在发生的身体细节
+    var sc = sit.场面 || {};
+    var hasSc = !!(sc.地点 || sc.体位);
+    $('gg-scene-blk').hidden = !hasSc;
+    if (hasSc) {
+      $('gg-sc-place').textContent = sc.地点 || '—';
+      $('gg-sc-pose').textContent = sc.体位 || '';
+      $('gg-sc-beat').hidden = !sc.节奏;
+      $('gg-sc-beat').textContent = sc.节奏 || '';
+      $('gg-sc-mark').textContent = sc.留痕 ? ('留下 · ' + sc.留痕) : '';
+      $('gg-sc-mark').hidden = !sc.留痕;
+      $('gg-sc-hersay').textContent = sc.她看到的 ? ('她 · ' + sc.她看到的) : '';
+      $('gg-sc-hersay').hidden = !sc.她看到的;
+
+      var ppl = sc.参与 || {}, names = Object.keys(ppl);
+      var done = names.filter(function (k) { return (ppl[k] || {}).在内; });
+      var watch = names.filter(function (k) { return !(ppl[k] || {}).在内; });
+      var html = '';
+      done.forEach(function (nm) {
+        var g = ppl[nm] || {};
+        html += '<div class="gg-pers"><div class="gg-pers-head"><span class="gg-pers-name">' + nm +
+          '</span><span class="gg-pers-tag">在里面</span></div>';
+        [['胸', g.胸], ['阴部', g.阴部], ['后穴', g.后穴], ['反应', g.反应]].forEach(function (pr) {
+          if (pr[1]) html += '<div class="gg-pers-row gg-pers-act"><span>' + pr[0] + '</span><span>' + pr[1] + '</span></div>';
+        });
+        html += '</div>';
+      });
+      if (watch.length) {
+        html += '<div class="gg-pers" style="border-top:none;padding-top:4px">';
+        watch.forEach(function (nm) {
+          var g = ppl[nm] || {};
+          html += '<div class="gg-pers-out">' + nm + (g.反应 ? ' ｜ ' + g.反应 : '') + '</div>';
+        });
+        html += '</div>';
+      }
+      $('gg-sc-people').innerHTML = html;
+    }
+
+    var ex = Number(her.兴奋度) || 0;
+    $('gg-fuzz').style.width = pct(ex);
+    $('gg').style.setProperty('--hg', (0.1 + ex / 100 * 0.9).toFixed(2));
+
+    /* 你的文本框 */
+    $('gg-resist').style.width = pct(m.反抗值);
+    $('gg-resist-n').textContent = m.反抗值 == null ? 0 : m.反抗值;
+    $('gg-stamina').style.width = pct(m.体力);
+    $('gg-stamina-n').textContent = m.体力 == null ? 0 : m.体力;
+    var f = m.身体 || {}, fd = Number(f.忍耐度) || 0;
+    $('gg-flesh').style.width = pct(fd);
+    $('gg-flesh-n').textContent = fd;
+    $('gg-bill').textContent = '身体账单 · ' + (f.累计次数 == null ? 0 : f.累计次数) + ' 次 · 敏感 ' + (f.敏感度 == null ? 0 : f.敏感度);
+
+    $('gg-scene').textContent = w.当前关卡 || '—';
+
+    var cam = $('gg-cam');
+    cam.className = 'gg-screen ' + (st === '在线' ? 'live' : st === '暂停' ? 'paused' : 'dark');
+    $('gg-cam-note').textContent = st === '在线' ? '正在玩' : st === '暂停' ? '停手了' : st === '离线' ? '不在' : '没有信号';
+
+    /* 细看 */
+    var k = Number(m.对她的了解) || 0;
+    $('gg-file-body').innerHTML =
+      '<div><div class="gg-cap">对她的了解</div><div class="gg-know"><div class="gg-know-f" style="width:' + pct(k) + '"></div></div>' +
+      '<p class="gg-know-t">' + (k <= 20 ? '只知道她在犹豫' : k <= 50 ? '能看出她中意哪一类' : k <= 80 ? '能看出她盯着哪个选项' : '能确定她会点哪个') + '</p></div>' +
+      (Object.keys(f.身体痕迹 || {}).length ? '<div><div class="gg-cap">身体上的</div>' +
+        rows(f.身体痕迹, function (v) { return v.是否消退 ? '已消退' : '还在'; }, '是否消退') + '</div>' : '') +
+      (Object.keys(m.痕迹 || {}).length ? '<div><div class="gg-cap">你留下的痕迹</div>' +
+        rows(m.痕迹, function (v) { return v.是否被发现 ? '已发现' : '未发现'; }, '是否被发现') + '</div>' : '') +
+      (Object.keys(m.已封死的路 || {}).length ? '<div><div class="gg-cap">已封死的路</div>' +
+        rows(m.已封死的路, function (v) { return v.代价 || ''; }) + '</div>' : '') +
+      (Object.keys(m.已知软肋 || {}).length ? '<div><div class="gg-cap">已知软肋</div>' +
+        rows(m.已知软肋, function (v) { return v.绕开方式 || ''; }) + '</div>' : '') +
+      (Object.keys(w.女角 || {}).length ? '<div><div class="gg-cap">女角</div>' +
+        Object.keys(w.女角).map(function (nm) {
+          var g = w.女角[nm] || {};
+          function organ(label, o, extra) {
+            if (!o) return '';
+            var d = o.开发度 == null ? 0 : o.开发度;
+            var s = o.现状 ? ('<i>' + o.现状 + '</i>') : '';
+            var e = extra || '';
+            return '<div class="gg-organ"><span>' + label + '</span><span class="gg-od">' + d + '</span>' + e + s + '</div>';
+          }
+          return '<div class="gg-girl"><div class="gg-gname">' + nm +
+            '<em>' + (g.关系 || '') + ' · 总开发 ' + (g.开发度 == null ? 0 : g.开发度) + '</em></div>' +
+            organ('胸', g.胸) +
+            organ('阴部', g.阴部, g.阴部 && g.阴部.破瓜 ? '<span class="gg-hu">已破瓜</span>' : '') +
+            organ('后穴', g.后穴) +
+            (g.身体记忆 ? '<div class="gg-gmem">' + g.身体记忆 + '</div>' : '') +
+            '</div>';
+        }).join('') + '</div>' : '');
+
+    /* 她的选择 */
+    var opts = sit.当前选项 || {}, keys = Object.keys(opts);
+    var on = st === '在线' && keys.length > 0;
+    $('gg-turn').hidden = !on;
+
+    var fz = $('gg-freeze');
+    if (st === '冻结' || st === '暂停') {
+      fz.hidden = false;
+      fz.className = 'gg-frost ' + (st === '冻结' ? 'frozen' : 'paused');
+      $('gg-freeze-word').textContent = st === '冻结' ? '冻结' : '她停住了';
+      $('gg-freeze-sub').textContent = st === '冻结' ? '时间不再流动，直到她再次上线' : '她还在，只是停了手。世界不动，你也不动';
+    } else fz.hidden = true;
+
+    // 自由打字态：她跳出选项框自己打字
+    var typed = sit.她打的字 || '';
+    $('gg-typing').hidden = !typed;
+    if (typed) {
+      var tp = $('gg-typing-t');
+      if (tp.dataset.full !== typed) {
+        tp.dataset.full = typed;
+        tp.textContent = typed;
+      }
+    }
+    if (typed) { $('gg-turn').hidden = true; return; }
+
+    if (!on) return;
+
+    var key = keys.map(function (kk) { return kk + (opts[kk] || {}).文本; }).join('|');
+    var isNew = key !== turnKey;
+    turnKey = key;
+    if (isNew) picked = null;
+
+    $('gg-opts').innerHTML = keys.map(function (kk, i) {
+      var o = opts[kk] || {};
+      var cost = o.反抗消耗 ? '耗 ' + o.反抗消耗 : (o.反抗等级 === '锁' ? '' : '耗 0');
+      var feel = o.你会是什么样 || '';
+      return '<li class="gg-opt lv-' + (o.反抗等级 || '中') + '" data-k="' + kk + '">' +
+        '<div class="gg-opt-main">' +
+          '<span class="idx">' + (IDX[i] || (i + 1)) + '</span>' +
+          '<span class="txt">' + (o.文本 || '') + '</span>' +
+          '<span class="cost">' + (o.反抗等级 || '中') + (cost ? ' · ' + cost : '') + '</span>' +
+        '</div>' +
+        (feel ? '<div class="gg-feel">' + feel + '</div>' : '') +
+        '</li>';
+    }).join('');
+
+    var els = $('gg-opts').querySelectorAll('.gg-opt');
+    Array.prototype.forEach.call(els, function (el) {
+      el.onclick = function () {
+        var kk = el.getAttribute('data-k');
+        // 选项是给他挑的。挑中一个，才可以拒它
+        picked = picked === kk ? null : kk;
+        paint();
+      };
+    });
+
+    $('gg-wait').textContent = '光标停住了';
+    if (isNew) {
+      Array.prototype.forEach.call(els, function (el, i) {
+        setTimeout(function () {
+          el.classList.add('lit');
+          if (i === els.length - 1) $('gg-wait').textContent = '等着你';
+        }, 300 * (i + 1));
+      });
+    } else {
+      Array.prototype.forEach.call(els, function (el) { el.classList.add('lit'); });
+      $('gg-wait').textContent = '等着你';
+    }
+
+    paint();
+  }
+
+  function paint() {
+    var d = sd(), m = d.主角 || {}, sit = d.局面 || {};
+    var opts = sit.当前选项 || {};
+    var chosen = String(sit.她已选 || '');            // 她点的（结算层才由 AI 写，这里只用来显示）
+    // ★ 拒绝的对象是 <user> 自己挑的那个，不是「她已选的」——
+    //   他做决定的时候她还没点，所以这里不能依赖 chosen。
+    var sel = picked ? opts[picked] : null;
+    var can = !!sel && (Number(m.反抗值) || 0) >= (Number(sel.反抗消耗) || 999) && sel.反抗等级 !== '锁';
+
+    // 选项列表：只读。高亮她点的那个
+    Array.prototype.forEach.call($('gg-opts').querySelectorAll('.gg-opt'), function (el) {
+      var k = el.getAttribute('data-k');
+      el.classList.toggle('picked', !!picked && k === picked);
+
+    });
+
+    var rj = $('gg-reject');
+    rj.disabled = !can;
+    rj.textContent = picked ? '拒绝这个' : '拒绝';
+
+    // 自己来：凑不够 70 就按不下去
+    var 值 = Number(m.反抗值) || 0;
+    var cj = $('gg-custom');
+    if (cj) {
+      cj.disabled = 值 < 70;
+      // 不能用中文括号：（）会被「上色·内心旁白」正则匹配走，把按钮文案整个换成 span
+      cj.textContent = '自己来 · ' + 值 + '/70';
+    }
+
+    // 她点了哪个
+    var pk = $('gg-picked');
+    if (chosen) {
+      var co = opts[chosen] || {};
+      var miss = !!sit.误点;
+      pk.hidden = false;
+      pk.className = 'gg-c-picked' + (miss ? ' miss' : '');
+      pk.textContent = miss
+        ? '她点了第 ' + chosen + ' 个。手滑了，她想收回'
+        : '她点了第 ' + chosen + ' 个：' + (co.文本 || '');
+    } else pk.hidden = true;
+
+    /* 这一手的回执：他做了什么 + 判成没成。
+       判定结果由界面写进变量，这里只负责把它显示出来。
+       注意：判定结果里的「选项」在自定义时存的就是玩家写的那句，
+       所以回显不依赖被清空的「自定义意图」。 */
+    var vd = sit.判定结果 || {};
+    var vbox = $('gg-verdict');
+    if (vbox) {
+      var vop = String(vd.操作 || '');
+      var vres = String(vd.结果 || '');
+      var vtxt = String(vd.选项 || '').replace(/</g, '&lt;');
+      var vnum = vres + '　档位 ' + String(vd.档位 || '') +
+        '　成功率 ' + String(vd.成功率 || '') + '%　掷值 ' + String(vd.掷值 || '') +
+        '　消耗 ' + String(vd.消耗 || 0) + '　剩 ' + String(vd.剩余反抗值 != null ? vd.剩余反抗值 : '');
+      if (vop === '自定义') {
+        vbox.hidden = false;
+        vbox.className = 'gg-verdict ' + (vres === '成功' ? 'win' : 'lose');
+        $('gg-vd-act').innerHTML = '你自己来：<b>' + vtxt + '</b>';
+        $('gg-vd-num').textContent = vnum;
+      } else if (vop === '拒绝') {
+        vbox.hidden = false;
+        vbox.className = 'gg-verdict ' + (vres === '成功' ? 'win' : 'lose');
+        $('gg-vd-act').innerHTML = '你拒绝了她点的：<b>' + vtxt + '</b>';
+        $('gg-vd-num').textContent = vnum;
+      } else vbox.hidden = true;
+    }
+
+    var nt = $('gg-note');
+    if (sel && !can) {
+      nt.hidden = false; nt.className = 'gg-c-note warn';
+      nt.textContent = sel.反抗等级 === '锁'
+        ? '这是剧情锁。你没有选择的余地。'
+        : ('拒绝它要 ' + (sel.反抗消耗 || 0) + ' 点，你现在 ' + 值 + ' 点，不够。' +
+           (值 < 70 ? '自己来要 70 点，也不够。' : '不过可以自己来。'));
+    } else if (sel) {
+      nt.hidden = false; nt.className = 'gg-c-note';
+      nt.textContent = '你挑的是这一个。拒它要 ' + (sel.反抗消耗 || 0) + ' 点，你现在 ' + 值 + ' 点。她未必会点它。';
+    } else if (chosen) {
+      nt.hidden = false; nt.className = 'gg-c-note';
+      nt.textContent = '她点了第 ' + chosen + ' 个。';
+    } else {
+      nt.hidden = false; nt.className = 'gg-c-note';
+      nt.textContent = '挑一个你不想让她做的，或者就这么看着。';
+    }
+  }
+
+  $('gg-more').onclick = function () {
+    var el = $('gg-detail');
+    el.hidden = !el.hidden;
+    this.textContent = el.hidden ? '细看 ▾' : '收起 ▴';
+  };
+    // 把文本填进酒馆输入框，但不发送。玩家自己按发送键。
+  // 依据 slash_command.txt:227 —— /setinput (string) 将用户输入设置为指定文本。
+  // 不要用 send()：那个会直接建消息并触发 AI 生成，玩家就没机会改或撤了。
+  function fill(text) {
+    /* 写入输入框【并发送】。四步，缺一步 AI 那头就可能收到空。
+       依据 slash_command.txt：
+         /setinput (string)  将用户输入设置为指定文本（只填，不发）
+         /send     (string)  向聊天记录添加用户消息（要带内容）
+         /trigger            触发消息生成
+
+       ★ 为什么要 /send：
+         /setinput 只把字填进输入框，/trigger 触发时取到的**不一定是输入框内容**。
+         实测会变成 AI 侧读到「无显式指令，输入为空」。
+         所以 /send 必须自己带一遍内容 —— 它才是真正写进聊天记录的那一步。
+
+       ★ 为什么中间停一下：
+         让玩家看得见输入框里出现过那句话。停了之后 /send 会把它清掉，
+         那是正常行为（发送完清空输入框），不是 bug。
+
+       ★ 参数用 JSON.stringify 裹起来：
+         文本里有空格、标点、斜杠时，裸拼会被 slash 解析器拆错。
+         JSON.stringify 加上引号转义，整句当一整个参数传。 */
+    var q = JSON.stringify(String(text || ''));
+    try {
+      triggerSlash('/setinput ' + q);
+    } catch (e0) {}
+
+    setTimeout(function () {
+      try {
+        triggerSlash('/send ' + q);
+        triggerSlash('/trigger');
+      } catch (e) {
+        // 兜底一：/send 这条路走不通，用 generate 直接把话交给 AI
+        try {
+          if (typeof generate === 'function') {
+            generate({ user_input: String(text || ''), should_stream: true });
+            return;
+          }
+        } catch (e2) {}
+        // 兜底二：退回酒馆助手自己的 send
+        try { send(text); } catch (e3) { console.log('[旮旯给木] 发送失败', e); }
+      }
+    }, 260);
+  }
+  function flash(msg) {
+    var nt = $('gg-note');
+    if (!nt) return;
+    nt.hidden = false; nt.className = 'gg-c-note warn'; nt.textContent = msg;
+  }
+
+  // 自己来：自己写一条意图，硬夺回身体一下。消耗 70、成功率 5
+  $('gg-custom').onclick = function () {
+    var box = $('gg-custom-box');
+    box.hidden = !box.hidden;
+    if (!box.hidden) { try { $('gg-custom-input').focus(); } catch (e) {} }
+  };
+  $('gg-custom-cancel').onclick = function () {
+    $('gg-custom-box').hidden = true;
+    $('gg-custom-input').value = '';
+  };
+  $('gg-custom-ok').onclick = function () {
+    var text = String($('gg-custom-input').value || '').trim();
+    if (!text) { flash('写一句你想让他做的事'); return; }
+    var r = rollAction('自定义', '', null, text);
+    if (r && r.err) { flash('反抗值' + r.err); return; }
+    $('gg-custom-input').value = '';
+    $('gg-custom-box').hidden = true;
+    fill('自己来：' + text);
+    paint();
+  };
+$('gg-watch').onclick = function () {
+    picked = null; paint();
+    // 只填进输入框，不自动发送。玩家自己按下去
+    fill('（看着，不拒绝）');
+  };
+  $('gg-reject').onclick = function () {
+    var sit = sd().局面 || {};
+    var o = (sit.当前选项 || {})[picked];
+    if (!o) return;
+    // 判定先算好再发。结果写进变量，不写进消息
+    var r = rollAction('拒绝', picked, o, '');
+    if (r && r.err) { flash('反抗值' + r.err); return; }
+    // 消息里不用全角括号和引号（会被上色正则匹配走）。
+    // 说清这是「我不想让她做这个」，不是「她点了这个」。她还没点。
+    fill('我不想让她做这个：第 ' + picked + ' 个，' + (o.文本 || '') + '。她还没点，我是先把这个划掉');
+    picked = null;
+    paint();
+  };
+
+  clock();
+  setInterval(clock, 1000);
+  render();
+  var t = setInterval(render, 900);
+  window.addEventListener('beforeunload', function () { clearInterval(t); if (typeTimer) clearInterval(typeTimer); });
+})();
+</script>
+</body>
+```

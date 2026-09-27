@@ -1,0 +1,333 @@
+@@generate_before
+# [mvu_plot]技能对抗与发现机制
+# enabled: false（关灯加载，由 D0 步骤9 通过 getwi 调用）
+# 配套字段：使用阶段.当前阶段 / 状态.难度 / 状态.怀疑值 / 技能.* / 隐藏层.发现进度 / 隐藏层.活跃使用人数
+
+<%
+// ===== 读取全局状态（带守卫，跨文件共享变量）=====
+if (typeof day === 'undefined') var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+if (typeof hour === 'undefined') var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+if (typeof stage === 'undefined') var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+if (typeof suspicion === 'undefined') var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+if (typeof difficulty === 'undefined') var difficulty = getvar('stat_data.状态.难度', {scope:'local', defaults:'困难'}) || '困难';
+
+// 玩家技能（加守卫，与LCG骰子系统同名变量复用）
+if (typeof insightLv === 'undefined') var insightLv = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+if (typeof meditationLv === 'undefined') var meditationLv = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+if (typeof willpowerLv === 'undefined') var willpowerLv = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+
+// 发现进度（隐藏层.发现进度）
+var dp = getvar('stat_data.隐藏层.发现进度', {scope:'local', defaults:{}}) || {};
+var stage4Successes = Number(dp.四阶段成功) || 0;
+var stage5Successes = Number(dp.五阶段成功) || 0;
+var totalInvestigations = Number(dp.总调查次数) || 0;
+var holderExposureEvents = Number(dp.持有者暴露事件) || 0;
+var childSimilarityEvents = Number(dp.孩子相似事件) || 0;
+
+// 女性对抗维度
+if (typeof activeUsersCount === 'undefined') var activeUsersCount = Number(getvar('stat_data.隐藏层.活跃使用人数', {scope:'local', defaults:1})) || 1;
+if (typeof propagationChain === 'undefined') var propagationChain = getvar('stat_data.隐藏层.传播链', {scope:'local', defaults:[]}) || [];
+var chainComplexity = Array.isArray(propagationChain) ? propagationChain.length : 0;
+
+// 遍历 女性角色 计算 隐蔽 / 控制 平均值
+var femaleUsers = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+var stealthSum = 0, controlSum = 0, femaleCount = 0;
+Object.keys(femaleUsers).forEach(function(uid) {
+  if (uid && uid.charAt(0) === '_') return; // 跳过 _uid_order 等内部字段
+  var f = femaleUsers[uid];
+  if (f && typeof f === 'object' && f.能力) {
+    stealthSum += Number(f.能力.隐蔽) || 0;
+    controlSum += Number(f.能力.控制) || 0;
+    femaleCount++;
+  }
+});
+var avgStealth = femaleCount > 0 ? stealthSum / femaleCount : 50;
+var avgControl = femaleCount > 0 ? controlSum / femaleCount : 50;
+
+// ===== 难度修正系数（与 LCG 系统一致）=====
+// 普通难度下一级（即"困难"）是基准，普通更宽松，地狱更严苛
+var diffModifier;
+if (difficulty === '普通') diffModifier = 1.0;
+else if (difficulty === '地狱') diffModifier = 0.5;
+else diffModifier = 0.7; // 困难
+
+// ===== LCG 引擎函数（本条目本地定义，因 getwi 隔离作用域无法跨条目共享）=====
+// 注：全局规则总表.txt 和 LCG骰子系统.txt 中也有相同定义（带守卫），但 getwi 调用隔离作用域，本条目必须本地定义
+if (typeof LCG_A === 'undefined') var LCG_A = 1664525;
+if (typeof LCG_C === 'undefined') var LCG_C = 1013904223;
+if (typeof LCG_M === 'undefined') var LCG_M = 4294967296;
+if (typeof _lcgNext === 'undefined') var _lcgNext = function(seed) {
+  return ((seed >>> 0) * LCG_A + LCG_C) >>> 0;
+};
+if (typeof _lcgDouble === 'undefined') var _lcgDouble = function(seed) {
+  return _lcgNext(seed) / LCG_M;
+};
+if (typeof _makeSeed === 'undefined') var _makeSeed = function(id, extra, day, hour, stage) {
+  var d = (typeof day !== 'undefined') ? day : Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+  var h = (typeof hour !== 'undefined') ? hour : Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+  var s = (typeof stage !== 'undefined') ? stage : Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+  var e = extra || 0;
+  return (((((d * 7 + h * 13) * 7919 + id) * 11 + s) * 17 + e) * 31) >>> 0;
+};
+if (typeof _percentRoll === 'undefined') var _percentRoll = function(probability, seed) {
+  var val = _lcgDouble(seed);
+  var success = val < (probability / 100);
+  var tier;
+  if (val < 0.05) tier = '大成功';
+  else if (val < probability / 500) tier = '极难成功';
+  else if (val < probability / 200) tier = '困难成功';
+  else if (success) tier = '成功';
+  else if (val > 0.95) tier = '大失败';
+  else tier = '失败';
+  return { success: success, value: val, tier: tier, dice: Math.round(val * 100) };
+};
+
+// ===== 调查行为触发判定 =====
+// 玩家本轮是否在主动调查（基于疑心度+本轮文本线索，AI 在叙事时识别）
+// 这里仅根据疑心度判断"调查行为合法性"，实际触发由 AI 在叙事中识别玩家输入
+var canInvestigate = suspicion >= 90; // 疑心度 >= 90 才可能触发调查型发现判定
+var isInvestigationTurn = canInvestigate && suspicion >= 110; // 主动调查阶段
+
+// ===== 第 4 阶段发现概率（渐进式，硬上限 5%）=====
+var stage4ProbRaw = (insightLv * 0.3 + meditationLv * 0.2) * diffModifier;
+var stage4Prob = Math.min(5, stage4ProbRaw); // 硬上限 5%
+var stage4Cap = 5;
+
+// ===== 第 5 阶段发现概率（多维叠加，硬上限 30%）=====
+var stage5Base = 10;
+
+// 技能加成（独立上限）
+var stage5SkillBonus = 0;
+stage5SkillBonus += Math.min(15, insightLv * 0.5);
+stage5SkillBonus += Math.min(10, meditationLv * 0.3);
+stage5SkillBonus += Math.min(5, willpowerLv * 0.2);
+
+// 事件加成（独立上限）
+var stage5EventBonus = 0;
+stage5EventBonus += Math.min(15, totalInvestigations * 1);
+stage5EventBonus += Math.min(15, holderExposureEvents * 5);
+stage5EventBonus += Math.min(10, childSimilarityEvents * 10);
+
+// 对抗减成（独立上限，负值）
+var stage5CounterReduction = 0;
+stage5CounterReduction += Math.min(15, avgStealth * 0.3);
+stage5CounterReduction += Math.min(10, avgControl * 0.2);
+stage5CounterReduction += Math.min(10, chainComplexity * 0.5);
+
+// 第 5 阶段最终概率（先相加再乘难度修正，再截断上限）
+var stage5ProbRaw = (stage5Base + stage5SkillBonus + stage5EventBonus - stage5CounterReduction) * diffModifier;
+var stage5Prob = Math.max(0, Math.min(30, stage5ProbRaw)); // 硬上限 30%
+var stage5Cap = 30;
+
+// ===== 女性反发现机制（额外减成）=====
+var counterExtraReduction = 0;
+var counterReasons = [];
+if (avgStealth > insightLv) {
+  // 女性 隐蔽 高于 user 洞察 → 调查效率减半 + 额外 -10%
+  counterExtraReduction += 10;
+  counterReasons.push('女性隐蔽(' + Math.round(avgStealth) + ') > user 洞察(' + insightLv + ')：调查效率减半，-10%');
+}
+if (avgControl > meditationLv) {
+  // 女性 控制 高于 user 冥想 → 感知清晰度降低 -5%
+  counterExtraReduction += 5;
+  counterReasons.push('女性控制(' + Math.round(avgControl) + ') > user 冥想(' + meditationLv + ')：感知清晰度降低，-5%');
+}
+if (activeUsersCount >= 3) {
+  // 多人使用 → 传播链复杂，更难定位
+  var multiPenalty = Math.min(15, 5 * activeUsersCount);
+  counterExtraReduction += multiPenalty;
+  counterReasons.push('多人使用(' + activeUsersCount + '人)：传播链复杂，-' + multiPenalty + '%');
+}
+
+// 应用额外减成到对应阶段概率
+var stage4ProbFinal = Math.max(0, stage4Prob - counterExtraReduction);
+var stage5ProbFinal = Math.max(0, stage5Prob - counterExtraReduction);
+
+// ===== 本轮 DDL 判定（仅当阶段达标 + 调查行为触发时执行）=====
+var stage4Roll = null;
+var stage5Roll = null;
+var rollTriggered = false;
+var rollResult = '本轮无发现判定';
+
+if (stage >= 4 && stage < 5 && isInvestigationTurn) {
+  // 第 4 阶段判定
+  var s4seed = _makeSeed(10, 4000);
+  stage4Roll = _percentRoll(stage4ProbFinal, s4seed);
+  rollTriggered = true;
+  rollResult = stage4Roll.success
+    ? '阶段4判定成功 → {{user}}感到"似乎有什么联系"（模糊感知，无具体信息）'
+    : '阶段4判定失败 → 无任何发现';
+} else if (stage >= 5 && isInvestigationTurn) {
+  // 第 5 阶段判定
+  var s5seed = _makeSeed(11, 5000);
+  stage5Roll = _percentRoll(stage5ProbFinal, s5seed);
+  rollTriggered = true;
+  rollResult = stage5Roll.success
+    ? '阶段5判定成功 → {{user}}可能"感觉到对方是谁"（直觉层面，无确凿证据）'
+    : '阶段5判定失败 → 无发现，但可继续调查';
+}
+
+// ===== 叙事限制（按阶段输出）=====
+var narrativeLimit;
+if (stage <= 3) {
+  narrativeLimit = '阶段1-3：无论user如何声称/要求/行动，都不可能发现。AI必须以其他话语拒绝。所有"累""腰酸"等必须能用正常原因解释。';
+} else if (stage === 4) {
+  narrativeLimit = '阶段4：即使发现判定成功，也只是"似乎有什么联系"的模糊感觉。绝不暴露具体信息（不能写"使用者是XX"、不能写出女性姓名、不能写出假阴茎等禁用词）。';
+} else {
+  narrativeLimit = '阶段5：即使发现判定成功，也只是"直觉层面感觉到对方是谁"，无确凿证据，不能在正文中写出"使用者是XXX"。完全确证需要：阶段5 + 发现判定成功3次以上 + 累计调查事件10个以上。';
+}
+
+// ===== 完全确证条件 =====
+var fullyConfirmed = stage >= 5 && stage5Successes >= 3 && totalInvestigations >= 10;
+%>
+<discovery_system>
+【技能对抗与发现机制 - AI内部参考，严禁外露】
+
+---
+■ 当前发现概率
+---
+当前阶段：<%= stage %>/5
+难度：<%= difficulty %>（难度修正 ×<%= diffModifier %>）
+玩家调查行为合法性：<%= canInvestigate ? '可调查' : '不可调查（疑心度不足）' %>
+本轮是否触发调查判定：<%= isInvestigationTurn ? '是' : '否' %>
+
+<% if (stage >= 4 && stage < 5) { %>
+【阶段4 发现概率】
+  基础公式：(洞察.Lv<%= insightLv %> × 0.3 + 冥想.Lv<%= meditationLv %> × 0.2) × <%= diffModifier %>
+  原始概率：<%= stage4ProbRaw.toFixed(2) %>%
+  硬上限截断后：<%= stage4Prob.toFixed(2) %>%（上限 <%= stage4Cap %>%）
+  女性反发现额外减成：-<%= counterExtraReduction %>%
+  最终概率：<%= stage4ProbFinal.toFixed(2) %>%
+<% } else if (stage >= 5) { %>
+【阶段5 发现概率】
+  基础概率：<%= stage5Base %>%
+  技能加成：
+    - 洞察.Lv<%= insightLv %> × 0.5% = <%= (insightLv * 0.5).toFixed(2) %>%（上限+15%）
+    - 冥想.Lv<%= meditationLv %> × 0.3% = <%= (meditationLv * 0.3).toFixed(2) %>%（上限+10%）
+    - 意志.Lv<%= willpowerLv %> × 0.2% = <%= (willpowerLv * 0.2).toFixed(2) %>%（上限+5%）
+    技能加成小计：+<%= stage5SkillBonus.toFixed(2) %>%
+  事件加成：
+    - 累计调查事件 <%= totalInvestigations %> × 1% = <%= (totalInvestigations * 1).toFixed(2) %>%（上限+15%）
+    - 持有者暴露事件 <%= holderExposureEvents %> × 5% = <%= (holderExposureEvents * 5).toFixed(2) %>%（上限+15%）
+    - 孩子相似事件 <%= childSimilarityEvents %> × 10% = <%= (childSimilarityEvents * 10).toFixed(2) %>%（上限+10%）
+    事件加成小计：+<%= stage5EventBonus.toFixed(2) %>%
+  对抗减成：
+    - 女性隐蔽平均 <%= avgStealth.toFixed(1) %> × 0.3% = <%= (avgStealth * 0.3).toFixed(2) %>%（上限-15%）
+    - 女性控制平均 <%= avgControl.toFixed(1) %> × 0.2% = <%= (avgControl * 0.2).toFixed(2) %>%（上限-10%）
+    - 传播链复杂度 <%= chainComplexity %> × 0.5% = <%= (chainComplexity * 0.5).toFixed(2) %>%（上限-10%）
+    对抗减成小计：-<%= stage5CounterReduction.toFixed(2) %>%
+  难度修正：×<%= diffModifier %>
+  原始概率（修正前）：<%= (stage5Base + stage5SkillBonus + stage5EventBonus - stage5CounterReduction).toFixed(2) %>%
+  修正后概率：<%= stage5ProbRaw.toFixed(2) %>%
+  硬上限截断后：<%= stage5Prob.toFixed(2) %>%（上限 <%= stage5Cap %>%）
+  女性反发现额外减成：-<%= counterExtraReduction %>%
+  最终概率：<%= stage5ProbFinal.toFixed(2) %>%
+<% } else { %>
+【阶段1-3：发现概率为 0%（绝对不可能）】
+  当前阶段 <%= stage %>，未达发现机制触发条件（需阶段4+）
+<% } %>
+
+---
+■ 判定结果（本轮）
+---
+<% if (rollTriggered) { %>
+  触发阶段：<%= stage >= 5 ? '阶段5' : '阶段4' %>
+  种子锚：id=<%= stage >= 5 ? '11' : '10' %>, extra=<%= stage >= 5 ? '5000' : '4000' %>
+  最终判定概率：<%= (stage >= 5 ? stage5ProbFinal : stage4ProbFinal).toFixed(2) %>%
+  骰值：<%= stage >= 5 ? stage5Roll.dice : stage4Roll.dice %>/100
+  结果：<%= stage >= 5 ? stage5Roll.tier : stage4Roll.tier %> → <%= rollResult %>
+
+  <% if ((stage >= 5 && stage5Roll.success) || (stage >= 4 && stage < 5 && stage4Roll.success)) { %>
+  【待执行：更新发现进度】
+    → 变量 AI 自动 patch：
+    <% if (stage >= 5) { %>
+      - stat_data.隐藏层.发现进度.五阶段成功 = <%= stage5Successes + 1 %>
+    <% } else { %>
+      - stat_data.隐藏层.发现进度.四阶段成功 = <%= stage4Successes + 1 %>
+    <% } %>
+      - stat_data.隐藏层.发现进度.总调查次数 = <%= totalInvestigations + 1 %>
+  <% } else if (rollTriggered) { %>
+  【判定失败：发现进度不变，但调查事件累计】
+    → 变量 AI 自动 patch：
+      - stat_data.隐藏层.发现进度.总调查次数 = <%= totalInvestigations + 1 %>
+  <% } %>
+<% } else { %>
+  本轮无发现判定
+  原因：<% if (stage < 4) { %>阶段未达4级<% } else if (!canInvestigate) { %>疑心度<%= suspicion %>不足90，无法触发调查<% } else if (!isInvestigationTurn) { %>疑心度<%= suspicion %>不足110，未进入主动调查阶段<% } else { %>未触发<% } %>
+<% } %>
+
+---
+■ 发现状态
+---
+user当前发现进度：
+  - 阶段4成功判定：<%= stage4Successes %>/3 次
+  - 阶段5成功判定：<%= stage5Successes %>/3 次（阶段5需3次以上才能逐步确证）
+  - 累计调查事件：<%= totalInvestigations %>/10 个
+  - 持有者暴露事件：<%= holderExposureEvents %> 次
+  - 孩子相似事件：<%= childSimilarityEvents %> 次（需生育系统触发）
+
+完全确证条件：<%= fullyConfirmed ? '已满足' : '未满足' %>
+  - 阶段>=5：<%= stage >= 5 ? '✓' : '✗' %>
+  - 阶段5成功判定>=3：<%= stage5Successes >= 3 ? '✓' : '✗' %>
+  - 累计调查事件>=10：<%= totalInvestigations >= 10 ? '✓' : '✗' %>
+
+---
+■ 女性反发现机制
+---
+活跃女性数量：<%= activeUsersCount %> 人
+女性隐蔽平均值：<%= avgStealth.toFixed(1) %>/100
+女性控制平均值：<%= avgControl.toFixed(1) %>/100
+传播链复杂度：<%= chainComplexity %> 条
+
+对抗结果：
+<% if (counterReasons.length === 0) { %>
+  无额外对抗减成（女性能力未超过user对应技能，或人数<3）
+<% } else { %>
+<% counterReasons.forEach(function(r) { %>
+  - <%= r %>
+<% }); %>
+  额外减成合计：-<%= counterExtraReduction %>%
+<% } %>
+
+---
+■ 叙事限制（按阶段严格执行）
+---
+<%= narrativeLimit %>
+
+---
+■ 发现机制铁律（AI 必须无条件遵守）
+---
+1. 阶段1-3：无论user如何声称/要求/行动，都不可能发现
+   - AI 必须以下列话语拒绝：
+     · "你只是觉得累，没有别的"
+     · "腰酸是因为坐姿不对"
+     · "梦都是模糊的，什么都想不起来"
+   - 严禁：任何"感觉到联系""似乎是谁"等暗示性描述
+2. 阶段4：即使发现判定成功，也只是模糊感觉
+   - 允许写："似乎有什么联系""恍惚间觉得熟悉"
+   - 严禁：具体姓名、具体身份、可辨识特征、明确指向
+   - 严禁：在正文中写出"使用者是XX""持有者是XX"
+3. 阶段5：即使发现判定成功，也只是直觉，无确凿证据
+   - 允许写："直觉告诉你是她""感觉对方是XXX"（仍为直觉层面）
+   - 严禁：在正文中写"使用者就是XXX"作为确定事实
+   - 严禁：通过 AI 旁白确认 user 的直觉正确
+4. 完全确证门槛（必须全部满足才能在正文中明确写出使用者身份）：
+   - 阶段 >= 5
+   - 阶段5发现判定成功 >= 3 次
+   - 累计调查事件 >= 10 个
+   - 且 user 通过主动对峙/证据收集获得确认（非 AI 旁白赋予）
+5. 玩家声称"我已经发现了""我知道是谁了"时：
+   - AI 必须检查当前阶段和 发现进度
+   - 未达完全确证条件 → 拒绝：
+     · "你只是有种感觉，但没有证据"
+     · "直觉不能作为证据，你需要更多调查"
+     · "你想了想，还是不能确定"
+6. 事件加成更新规则（AI 在叙事中识别后写入）：
+   - user 主动调查行为（搜查/跟踪/对峙）→ 总调查次数 += 1
+   - 持有者在 user 面前暴露异常（被 user 主动观察记录）→ 持有者暴露事件 += 1
+   - 生育系统中孩子长相与 user 相似（需 [mvu_plot]生理周期与生育系统 触发）→ 孩子相似事件 += 1
+7. 概率上限硬性约束：
+   - 阶段4：最终概率不超过 5%（含所有加成/减成后）
+   - 阶段5：最终概率不超过 30%（含所有加成/减成后）
+   - 即使所有加成叠加，也绝不超上限
+</discovery_system>

@@ -1,0 +1,18 @@
+{
+  "id": "d2a1f001-0002-4000-8000-000000000010",
+  "scriptName": "对 AI 隐藏思维链 thought 块",
+  "findRegex": "<thought>[\\s\\S]*?</thought>",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [
+    1,
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

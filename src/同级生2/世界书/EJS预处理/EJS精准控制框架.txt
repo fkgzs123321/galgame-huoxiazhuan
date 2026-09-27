@@ -1,0 +1,651 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · EJS 精准控制框架（按需加载机制）
+   ════════════════════════════════════════════════════════════
+   目标：解决 token 爆炸问题（从 87500 tokens/轮 → ≤15000 tokens/轮）
+   机制：按 scene_mode 精准加载所需模块，非必需模块不加载
+
+   核心原理：
+   1. 当前所有 EJS 预处理文件均为蓝灯（每轮全量加载），造成 token 爆炸
+   2. 本框架定义"场景模式 → 加载策略"映射表，按需决定加载哪些模块
+   3. 实施步骤（见 IMPLEMENTATION_CHECKLIST）：
+      - step_1：拆分全局规则总表为核心+3个扩展
+      - step_2：重构 D0 控制器为核心+调度+输出
+      - step_3：本框架实现按需 getwi 加载（当前文件）
+      - step_4：测试各 scene_mode 的 token 消耗
+
+   使用方法：
+   - 本框架由 D0 系统控制器在核心校验后调用
+   - 根据 scene_mode 决定加载哪些模块
+   - 输出加载清单给 AI 参考
+
+   前置条件（step_1/step_2 完成后完全生效）：
+   - 全局规则总表拆分为 核心(15KB)+扩展-恋爱(8KB)+扩展-经济(6KB)+扩展-事件(5KB)
+   - D0 控制器重构为 核心(4KB)+调度(2KB)+输出(2KB)
+   - index.yaml 中非核心模块改为绿灯/禁用，由本框架按需 getwi 加载
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、读取当前 MVU 状态（用于条件判断）
+   ════════════════════════════════════════════════════════════ */
+const _ejf_scene = getvar('stat_data.场景', { scope: 'local', defaults: {} }) || {};
+const _ejf_time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+const _ejf_heroine = getvar('stat_data.当前女角', { scope: 'local', defaults: {} }) || {};
+
+const _ejf_sceneMode = _ejf_scene.场景模式 || '休息';
+const _ejf_dayCount = Number(_ejf_time.天数) || 1;
+const _ejf_currentHeroineId = _ejf_scene.当前女角名 || '无';
+const _ejf_currentLocation = String(_ejf_scene.当前地点 || '主角自宅客厅');
+const _ejf_affection = Number(_ejf_heroine.好感度) || 0;
+const _ejf_relationshipStage = String(_ejf_heroine.关系阶段 || '初识');
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   二、女角 ID → 名称映射（用于动态构建女角条目路径）
+   ════════════════════════════════════════════════════════════ */
+const EJF_HEROINE_MAP = {
+  1:  '鸣泽唯',
+  2:  '鸣泽美佐子',
+  3:  '舞岛可怜',
+  4:  '加藤美纪',
+  5:  '筱原泉美',
+  6:  '南川洋子',
+  7:  '都筑梢江',
+  8:  '水野友美',
+  9:  '安田爱美',
+  10: '田中美沙',
+  11: '片桐美铃',
+  12: '野野村美里',
+  13: '永岛久美子',
+  14: '永岛佐知子',
+  15: '齐藤澪',
+  16: '齐藤澪奈',
+  17: '铃木美穗',
+  18: '仁科',
+  19: '正树夏子',
+  20: '杉本樱子'
+};
+
+/* 女角条目类型 → getwi 路径构建 */
+function ejf_buildHeroinePath(heroine_id, entry_type) {
+  const _name = EJF_HEROINE_MAP[heroine_id];
+  if (!_name) return null;
+  const _typeMap = {
+    '基础信息':   '角色/' + _name + '/基础信息',
+    '性格调色盘': '角色/' + _name + '/性格调色盘',
+    '三面性':     '角色/' + _name + '/三面性',
+    'NSFW反差':   '角色/' + _name + '/NSFW反差'
+  };
+  return _typeMap[entry_type] || null;
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   三、模块 getwi 路径映射表
+   ════════════════════════════════════════════════════════════ */
+const EJF_MODULE_PATHS = {
+  /* ── 核心模块（每轮必加载，由 D0 核心加载） ── */
+  '全局规则核心':       'EJS预处理/全局规则核心',
+  'LCG骰子':            'EJS预处理/LCG骰子/引擎',
+  'D0控制器':           'EJS预处理/D0系统控制器',
+
+  /* ── 全局规则扩展（按场景加载） ── */
+  '全局规则扩展-恋爱':   'EJS预处理/全局规则扩展-恋爱',
+  '全局规则扩展-经济':   'EJS预处理/全局规则扩展-经济',
+  '全局规则扩展-事件':   'EJS预处理/全局规则扩展-事件',
+
+  /* ── 角色与互动模块 ── */
+  '角色性格控制器':      'EJS预处理/角色性格控制器',
+  '恋爱互动系统':        'EJS预处理/恋爱互动系统',
+  '个人反应属性':        'EJS预处理/个人反应属性',
+  '女角偏好系数表':      'EJS预处理/女角偏好系数表',
+
+  /* ── 系统与数据模块 ── */
+  '属性技能骰子联动':    'EJS预处理/属性技能骰子联动',
+  '属性系统':            'EJS预处理/属性系统',
+  '固定物品效果表':      'EJS预处理/固定物品效果表',
+  '阶段联动框架':        'EJS预处理/阶段联动框架',
+  '变量变化幅度控制':    'EJS预处理/变量变化幅度控制',
+  '时间触发器':          'EJS预处理/时间触发器',
+  '防口胡机制':          'EJS预处理/防口胡机制',
+  '世界观场景控制器':    'EJS预处理/世界观场景控制器',
+
+  /* ── 事件与结局模块 ── */
+  '结局分支矩阵':        '事件/结局分支矩阵',
+  'BAD_END检测':         '事件/破产结局机制',
+  '圣诞夜事件':          '事件/圣诞夜',
+  '跨年事件':            '事件/跨年',
+  '元日事件':            '事件/元日'
+};
+
+/* 注：以下模块路径由其他控制器动态加载，本框架仅记录策略 */
+/* '当前女角性格' / '当前女角NSFW反差' / '当前女角TrueEnd条件' → 动态构建 */
+/* '约会地点数据' / '当前区域SKU' → 由世界观场景控制器加载 */
+/* '打工数据表' / '便利店SKU' / '进阶H数据' / '告白日事件' → 待整合/创建 */
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   四、场景模式 → 加载策略映射表（核心）
+   ════════════════════════════════════════════════════════════ */
+const EJS_LOAD_STRATEGY = {
+  /* 休息模式：只加载核心规则（最小 token） */
+  '休息': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器'],
+    conditional_modules: [],
+    estimated_tokens: 8000,
+    description: '休息模式：仅加载核心规则+骰子+D0控制器'
+  },
+
+  /* 对话模式：加载对话相关模块 */
+  '对话': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '角色性格控制器'],
+    conditional_modules: [
+      { condition: 'current_heroine_id > 0', module: '当前女角性格' },
+      { condition: 'relationship_stage >= 暧昧', module: '恋爱互动系统' }
+    ],
+    estimated_tokens: 12000,
+    description: '对话模式：核心+骰子+D0+角色性格+当前女角+恋爱（如暧昧+）'
+  },
+
+  /* 约会模式：加载约会相关模块 */
+  '约会': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '恋爱互动系统', '角色性格控制器', '全局规则扩展-恋爱'],
+    conditional_modules: [
+      { condition: 'always', module: '约会地点数据' },
+      { condition: 'current_heroine_id > 0', module: '当前女角偏好' }
+    ],
+    estimated_tokens: 15000,
+    description: '约会模式：核心+恋爱+约会地点+女角偏好'
+  },
+
+  /* 打工模式：加载打工相关模块 */
+  '打工': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '全局规则扩展-经济'],
+    conditional_modules: [
+      { condition: 'always', module: '打工数据表' },
+      { condition: 'location.includes("便利店")', module: '便利店SKU' }
+    ],
+    estimated_tokens: 6000,
+    description: '打工模式：核心+经济扩展+打工数据'
+  },
+
+  /* 事件模式：加载事件相关模块 */
+  '事件': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '时间触发器', '全局规则扩展-事件'],
+    conditional_modules: [
+      { condition: 'day_count == 4', module: '圣诞夜事件' },
+      { condition: 'day_count == 10', module: '跨年事件' },
+      { condition: 'day_count == 11', module: '元日事件' },
+      { condition: 'day_count == 17', module: '告白日事件' }
+    ],
+    estimated_tokens: 10000,
+    description: '事件模式：核心+时间触发器+当日事件'
+  },
+
+  /* 购物模式：加载商店相关模块 */
+  '购物': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '全局规则扩展-经济', '固定物品效果表'],
+    conditional_modules: [
+      { condition: 'always', module: '当前区域SKU' }
+    ],
+    estimated_tokens: 7000,
+    description: '购物模式：核心+经济扩展+物品效果+当前区域商品'
+  },
+
+  /* 上学模式：加载学园相关模块 */
+  '上学': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '角色性格控制器'],
+    conditional_modules: [
+      { condition: 'current_heroine_id > 0', module: '当前女角性格' },
+      { condition: 'relationship_stage >= 熟悉', module: '个人反应属性' }
+    ],
+    estimated_tokens: 10000,
+    description: '上学模式：核心+角色性格+当前女角+个人反应'
+  },
+
+  /* H场景模式：加载 H 相关模块 */
+  'H场景': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '恋爱互动系统', '角色性格控制器', '防口胡机制', '全局规则扩展-恋爱'],
+    conditional_modules: [
+      { condition: 'current_heroine_id > 0', module: '当前女角NSFW反差' },
+      { condition: 'affection >= 90', module: '进阶H数据' }
+    ],
+    estimated_tokens: 18000,
+    description: 'H模式：核心+恋爱+性格+NSFW反差+防口胡'
+  },
+
+  /* 告白模式（1/7专属）：加载结局判定模块 */
+  '告白': {
+    required_modules: ['全局规则核心', 'LCG骰子', 'D0控制器', '恋爱互动系统', '属性技能骰子联动', '结局分支矩阵', '防口胡机制', '全局规则扩展-恋爱'],
+    conditional_modules: [
+      { condition: 'current_heroine_id > 0', module: '当前女角TrueEnd条件' },
+      { condition: 'always', module: 'BAD_END检测' }
+    ],
+    estimated_tokens: 20000,
+    description: '告白模式：核心+恋爱+骰子联动+结局矩阵+防口胡（最大加载）'
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   五、条件评估与模块加载函数
+   ════════════════════════════════════════════════════════════ */
+
+/* 关系阶段等级映射（用于 >= 比较）
+   单一真相源：阶段联动框架.txt.STAGE_FRAMEWORK（10 阶段，5 负面 + 5 正面） */
+const EJF_STAGE_RANK = {
+  '决裂': -5, '仇视': -4, '厌恶': -3, '冷漠': -2, '疏离': -1,
+  '初识': 0, '熟悉': 1, '暧昧': 2, '心动': 3, '亲密': 4
+};
+
+function ejf_isStageOrHigher(current_stage, required_stage) {
+  const _cur = EJF_STAGE_RANK[current_stage] !== undefined ? EJF_STAGE_RANK[current_stage] : 0;
+  const _req = EJF_STAGE_RANK[required_stage] !== undefined ? EJF_STAGE_RANK[required_stage] : 0;
+  return _cur >= _req;
+}
+
+/* 条件评估器：解析 condition 字符串并返回布尔值 */
+function ejf_evaluateCondition(condition, context) {
+  if (condition === 'always') return true;
+
+  /* day_count == N */
+  if (condition.startsWith('day_count == ')) {
+    return context.day_count === Number(condition.split('== ')[1]);
+  }
+  /* current_heroine_id > N */
+  if (condition.startsWith('current_heroine_id > ')) {
+    return context.current_heroine_id > Number(condition.split('> ')[1]);
+  }
+  /* relationship_stage >= 阶段名 */
+  if (condition.startsWith('relationship_stage >= ')) {
+    const _stage = condition.split('>= ')[1];
+    return ejf_isStageOrHigher(context.relationship_stage, _stage);
+  }
+  /* affection >= N */
+  if (condition.startsWith('affection >= ')) {
+    return context.affection >= Number(condition.split('>= ')[1]);
+  }
+  /* location.includes("关键词") */
+  if (condition.startsWith('location.includes(')) {
+    const _match = condition.match(/"([^"]+)"/);
+    if (!_match) return false;
+    return context.location.includes(_match[1]);
+  }
+  return false;
+}
+
+/* 模块加载器：返回模块名与 getwi 路径（实际加载由调用方执行） */
+function ejf_loadModule(module_name, context) {
+  /* 动态模块：根据 current_heroine_id 构建路径 */
+  if (module_name === '当前女角性格') {
+    return {
+      name: module_name,
+      path: ejf_buildHeroinePath(context.current_heroine_id, '性格调色盘'),
+      dynamic: true
+    };
+  }
+  if (module_name === '当前女角偏好' || module_name === '当前女角性格偏好') {
+    return {
+      name: module_name,
+      path: 'EJS预处理/女角偏好系数表',
+      dynamic: false
+    };
+  }
+  if (module_name === '当前女角NSFW反差') {
+    return {
+      name: module_name,
+      path: ejf_buildHeroinePath(context.current_heroine_id, 'NSFW反差'),
+      dynamic: true
+    };
+  }
+  if (module_name === '当前女角TrueEnd条件') {
+    return {
+      name: module_name,
+      path: '事件/结局分支矩阵',
+      dynamic: false,
+      note: '加载结局分支矩阵中对应女角的 True End 条件'
+    };
+  }
+
+  /* 静态模块：查 EJF_MODULE_PATHS */
+  const _path = EJF_MODULE_PATHS[module_name];
+  return {
+    name: module_name,
+    path: _path || null,
+    dynamic: false,
+    note: _path ? '' : '模块路径待整合/创建'
+  };
+}
+
+/* 精准加载函数：根据 scene_mode 加载所需模块 */
+function ejf_loadRequiredModules(scene_mode, context) {
+  const _strategy = EJS_LOAD_STRATEGY[scene_mode] || EJS_LOAD_STRATEGY['休息'];
+  const _loaded = [];
+  const _skipped = [];
+
+  /* 1. 加载必需模块 */
+  for (const _name of _strategy.required_modules) {
+    const _mod = ejf_loadModule(_name, context);
+    _loaded.push(_mod);
+  }
+
+  /* 2. 加载条件模块 */
+  for (const _cond of _strategy.conditional_modules) {
+    if (ejf_evaluateCondition(_cond.condition, context)) {
+      const _mod = ejf_loadModule(_cond.module, context);
+      _loaded.push(_mod);
+    } else {
+      _skipped.push({ module: _cond.module, condition: _cond.condition, reason: '条件不满足' });
+    }
+  }
+
+  return {
+    scene_mode: scene_mode,
+    strategy_description: _strategy.description,
+    loaded_modules: _loaded,
+    skipped_modules: _skipped,
+    estimated_tokens: _strategy.estimated_tokens
+  };
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   六、全局规则总表拆分策略
+   ════════════════════════════════════════════════════════════ */
+const GLOBAL_RULES_SPLIT = {
+  '全局规则核心': {
+    original_file: '全局规则总表',
+    size: '15KB（从47KB精简）',
+    load_condition: 'always（每轮必加载）',
+    kept_content: [
+      '时间系统（day_count/time_slot/chapter）',
+      '身份校验（5种player_identity）',
+      '难度修正（4档基础配置）',
+      '基本生存规则（hunger/thirst/fatigue/mood/hygiene）',
+      'BAD_END触发条件（8类简版）'
+    ],
+    removed_content: [
+      '详细物品效果表（移到 固定物品效果表）',
+      '详细女角数据（移到 女角偏好系数表）',
+      '详细技能规则（移到 属性技能骰子联动）'
+    ]
+  },
+
+  '全局规则扩展-恋爱': {
+    original_file: '全局规则总表',
+    size: '8KB',
+    load_condition: 'scene_mode in [对话, 约会, H场景, 告白]',
+    kept_content: [
+      'NSFW硬门槛（5级接触许可）',
+      '关系阶段定义（10阶段分档）',
+      '告白成功率公式引用',
+      '恋爱互动行为表'
+    ]
+  },
+
+  '全局规则扩展-经济': {
+    original_file: '全局规则总表',
+    size: '6KB',
+    load_condition: 'scene_mode in [打工, 购物]',
+    kept_content: [
+      '打工数据表（时薪/时段/体力消耗）',
+      '商品价格表（便利店/咖啡店/餐厅）',
+      '经济护栏（每日收支限制）',
+      '破产判定规则'
+    ]
+  },
+
+  '全局规则扩展-事件': {
+    original_file: '全局规则总表',
+    size: '5KB',
+    load_condition: 'scene_mode == 事件',
+    kept_content: [
+      '事件触发条件表',
+      'flag系统定义',
+      '结局判定规则',
+      '隐藏剧情触发器'
+    ]
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   七、D0 控制器重构策略
+   ════════════════════════════════════════════════════════════ */
+const D0_CONTROLLER_REFACTOR = {
+  current_problem: 'D0控制器每轮全量加载所有模块，token爆炸',
+  new_strategy: 'D0控制器只加载核心，其他按 scene_mode 通过本框架按需加载',
+
+  d0_core: {
+    description: 'D0控制器核心（每轮必加载）',
+    target_size: '4KB',
+    content: [
+      'MVU变量读取（时间/场景/主角/临时/经济/当前女角）',
+      '身份校验（player_identity 固定检查）',
+      '难度系数应用（4档 × 6维度修正）',
+      '时间锁检查（不可跳时段）',
+      '行动次数检查（≤5/日）',
+      '疲劳/体力/心情强制规则',
+      '生存属性检查（hunger/thirst/hygiene）'
+    ],
+    removed: [
+      'getwi("全局规则总表") 全量加载 → 改为 getwi("全局规则核心")',
+      'getwi("固定物品效果表") → 移到购物/事件模式按需加载',
+      'getwi("寒假日程调度器") → 仅当日事件时加载'
+    ]
+  },
+
+  d0_dispatch: {
+    description: 'D0调度器（按 scene_mode 分发）',
+    target_size: '2KB',
+    content: '调用 ejf_loadRequiredModules(scene_mode, context) 获取加载清单，按清单执行 getwi',
+    pseudocode: [
+      'const _loadResult = ejf_loadRequiredModules(_sceneMode, _context);',
+      'for (const _mod of _loadResult.loaded_modules) {',
+      '  if (_mod.path) { <%- await getwi(_mod.path) %> }',
+      '}'
+    ]
+  },
+
+  d0_output: {
+    description: 'D0输出（精简版）',
+    target_size: '2KB',
+    content: '只输出当前轮必要信息（当前状态 + 加载清单 + 警告），不再输出全量规则'
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   八、Token 预算控制
+   ════════════════════════════════════════════════════════════ */
+const TOKEN_BUDGET = {
+  total_per_turn: 30000,
+  breakdown: {
+    system_prompt: 5000,
+    ejs_preprocessing: 15000,
+    heroine_data: 3000,
+    scene_description: 2000,
+    ai_response: 5000
+  }
+};
+
+/* Token 超预算时自动精简策略 */
+function ejf_enforceTokenBudget(load_result) {
+  const _estimated = load_result.estimated_tokens;
+  const _budget = TOKEN_BUDGET.breakdown.ejs_preprocessing;
+
+  if (_estimated <= _budget) {
+    return { action: 'none', message: '预算内' };
+  }
+
+  /* 超预算：按优先级移除低优先级模块 */
+  const _priority = {
+    '高': ['全局规则核心', 'LCG骰子', 'D0控制器', '防口胡机制'],
+    '中': ['角色性格控制器', '恋爱互动系统', '当前女角性格', '当前女角NSFW反差'],
+    '低': ['个人反应属性', '阶段联动框架', '变量变化幅度控制', '属性系统']
+  };
+
+  const _removable = load_result.loaded_modules.filter(m =>
+    _priority['低'].includes(m.name) || _priority['中'].includes(m.name)
+  );
+
+  return {
+    action: 'reduce',
+    message: '超预算，建议移除低优先级模块',
+    removable_modules: _removable.map(m => m.name),
+    current_estimate: _estimated,
+    budget: _budget,
+    new_estimate: _budget
+  };
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   九、执行加载策略
+   ════════════════════════════════════════════════════════════ */
+
+/* 构建上下文对象 */
+const _ejf_context = {
+  day_count: _ejf_dayCount,
+  current_heroine_id: _ejf_currentHeroineId,
+  relationship_stage: _ejf_relationshipStage,
+  affection: _ejf_affection,
+  location: _ejf_currentLocation
+};
+
+/* 执行加载策略 */
+const _ejf_loadResult = ejf_loadRequiredModules(_ejf_sceneMode, _ejf_context);
+
+/* Token 预算检查 */
+const _ejf_budgetCheck = ejf_enforceTokenBudget(_ejf_loadResult);
+
+/* 提取已加载模块名与路径 */
+const _ejf_loadedNames = _ejf_loadResult.loaded_modules.map(m => m.name);
+const _ejf_loadedPaths = _ejf_loadResult.loaded_modules
+  .filter(m => m.path !== null)
+  .map(m => m.path);
+const _ejf_skippedInfo = _ejf_loadResult.skipped_modules.map(s => s.module + '(' + s.condition + ')');
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   十、实施清单
+   ════════════════════════════════════════════════════════════ */
+const IMPLEMENTATION_CHECKLIST = {
+  step_1_split_global_rules: {
+    description: '拆分全局规则总表为核心+扩展',
+    status: '待执行',
+    files_to_create: [
+      'EJS预处理/全局规则核心.txt（15KB，必加载）',
+      'EJS预处理/全局规则扩展-恋爱.txt（8KB，对话/约会/H/告白时加载）',
+      'EJS预处理/全局规则扩展-经济.txt（6KB，打工/购物时加载）',
+      'EJS预处理/全局规则扩展-事件.txt（5KB，事件时加载）'
+    ],
+    index_yaml_change: '原"全局规则总表"条目禁用，新增4个条目',
+    expected_reduction: '从47KB降至核心15KB（休息模式）'
+  },
+
+  step_2_refactor_d0: {
+    description: '重构D0控制器为核心+调度+输出',
+    status: '待执行',
+    files_to_modify: ['EJS预处理/D0系统控制器.txt'],
+    changes: [
+      '移除 getwi("全局规则总表")，改为 getwi("全局规则核心")',
+      '移除 getwi("固定物品效果表")，移到购物/事件模式',
+      'D0调度器调用本框架的 ejf_loadRequiredModules()',
+      'D0输出精简为 ≤2KB'
+    ],
+    expected_reduction: 'D0从全量加载降至核心4KB+调度2KB+输出2KB'
+  },
+
+  step_3_implement_load_strategy: {
+    description: '实现EJS_LOAD_STRATEGY按需加载',
+    status: '已完成（本文件）',
+    files_created: ['EJS预处理/EJS精准控制框架.txt']
+  },
+
+  step_4_test_token_consumption: {
+    description: '测试各scene_mode的token消耗',
+    status: '待执行',
+    test_cases: [
+      '休息模式：预计8000 tokens',
+      '对话模式：预计12000 tokens',
+      '约会模式：预计15000 tokens',
+      '打工模式：预计6000 tokens',
+      '事件模式：预计10000 tokens',
+      '告白模式：预计20000 tokens'
+    ]
+  },
+
+  step_5_update_index_yaml: {
+    description: '更新index.yaml激活策略',
+    status: '待执行',
+    changes: [
+      '核心模块（全局规则核心/LCG骰子/D0控制器/本框架）保持蓝灯',
+      '扩展规则模块改为绿灯（关键词触发）或禁用',
+      '角色模块改为禁用（由角色性格控制器按需getwi）',
+      '事件模块改为绿灯（day_count触发）'
+    ]
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   十一、输出加载清单给 AI
+   ════════════════════════════════════════════════════════════ */
+%>
+[EJS精准控制框架·加载清单]
+{
+  "当前场景模式": "<%= _ejf_sceneMode %>",
+  "加载策略": "<%= _ejf_loadResult.strategy_description %>",
+  "预估Token消耗": <%= _ejf_loadResult.estimated_tokens %>,
+  "Token预算上限": <%= TOKEN_BUDGET.breakdown.ejs_preprocessing %>,
+  "预算检查": "<%= _ejf_budgetCheck.action === 'none' ? '通过' : '超预算' %>",
+  "已加载模块": <%= JSON.stringify(_ejf_loadedNames) %>,
+  "已跳过模块": <%= JSON.stringify(_ejf_skippedInfo) %>,
+  "模块路径清单": <%= JSON.stringify(_ejf_loadedPaths) %>,
+  "当前上下文": {
+    "day_count": <%= _ejf_dayCount %>,
+    "current_heroine_id": <%= _ejf_currentHeroineId %>,
+    "relationship_stage": "<%= _ejf_relationshipStage %>",
+    "affection": <%= _ejf_affection %>,
+    "location": "<%= _ejf_currentLocation %>"
+  }
+}
+[/EJS精准控制框架·加载清单]
+
+<% if (_ejf_budgetCheck.action === 'reduce') { %>
+[EJS精准控制框架·预算警告]
+超预算！当前预估 <%= _ejf_loadResult.estimated_tokens %> tokens > 预算 <%= TOKEN_BUDGET.breakdown.ejs_preprocessing %> tokens。
+建议移除低优先级模块：<%= _ejf_budgetCheck.removable_modules.join(', ') %>
+[/EJS精准控制框架·预算警告]
+<% } %>
+
+<%/* ════════════════════════════════════════════════════════════
+   十二、实施进度提示（AI 可读，不输出给玩家）
+   ════════════════════════════════════════════════════════════ */%>
+<%
+const _ejf_checklist = IMPLEMENTATION_CHECKLIST;
+const _ejf_done = Object.values(_ejf_checklist).filter(s => s.status === '已完成').length;
+const _ejf_total = Object.keys(_ejf_checklist).length;
+%>
+[EJS精准控制框架·实施进度]
+已完成 <%= _ejf_done %>/<%= _ejf_total %> 步：
+<% for (const _key of Object.keys(_ejf_checklist)) { %>
+- <%= _key %>: <%= _ejf_checklist[_key].status %> — <%= _ejf_checklist[_key].description %>
+<% } %>
+
+注意：本框架当前为"声明模式"（输出加载清单，不实际执行getwi）。
+当 step_1（拆分全局规则）和 step_2（重构D0）完成后，切换为"执行模式"：
+将本文件第十节"执行加载策略"中的注释取消，启用实际 getwi 调用。
+[/EJS精准控制框架·实施进度]

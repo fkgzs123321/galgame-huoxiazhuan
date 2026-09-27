@@ -1,0 +1,66 @@
+@@generate_before
+<%_
+var raidCooldown = Number(getvar('stat_data.殖民地.袭击冷却', { scope: 'local', defaults: 96 })) || 96;
+var threatPoints = Number(getvar('stat_data.殖民地.威胁点数', { scope: 'local', defaults: 0 })) || 0;
+var alertLevel = Number(getvar('stat_data.殖民地.警戒等级', { scope: 'local', defaults: 20 })) || 20;
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var lastRaidDay = Number(getvar('stat_data.事件计时器.上次袭击日', { scope: 'local', defaults: 0 })) || 0;
+
+var minInterval;
+if (storyteller === '菲比') { minInterval = 2; }
+else if (storyteller === '兰迪') { minInterval = 1; }
+else { minInterval = 3; }
+
+var daysSinceLastRaid = gameDay - lastRaidDay;
+var cooldownReady = (raidCooldown <= 0);
+var intervalMet = (daysSinceLastRaid >= minInterval);
+var willTrigger = cooldownReady && intervalMet;
+
+var raidIntensity = 0;
+var decayFactor = 0;
+var enemySuggestion = '无';
+if (willTrigger) {
+  decayFactor = Math.round((0.8 + 0.4 * daysSinceLastRaid / 10) * 100) / 100;
+  raidIntensity = Math.round(threatPoints * decayFactor * 100) / 100;
+  if (phase === '拓荒期') {
+    if (raidIntensity < 50) { enemySuggestion = '兔群 / 单只疯兽'; }
+    else { enemySuggestion = '小型掠夺者团伙 (3-5人)'; }
+  } else if (phase === '发展期') {
+    if (raidIntensity < 100) { enemySuggestion = '掠夺者团伙 (5-8人)'; }
+    else { enemySuggestion = '部族袭击队 (8-12人)'; }
+  } else if (phase === '繁荣期') {
+    if (raidIntensity < 200) { enemySuggestion = '精锐佣兵团 (10-15人)'; }
+    else { enemySuggestion = '机械族集群 / 大型围攻 (15+人)'; }
+  } else {
+    enemySuggestion = '机械族终末部队 / 全方位围攻 (20+人)';
+  }
+}
+_%>
+<袭击判定结果>
+[触发条件]
+袭击冷却: <%= raidCooldown %> (需<=0) → <%= cooldownReady ? '满足' : '未满足' %>
+距上次袭击: <%= daysSinceLastRaid %>天 (讲述者<%= storyteller %>最小间隔<%= minInterval %>天) → <%= intervalMet ? '满足' : '未满足' %>
+触发判定: <%= willTrigger ? '触发袭击' : '不触发' %>
+
+<%_ if (willTrigger) { _%>
+[袭击详情]
+袭击强度: <%= raidIntensity %> (威胁<%= threatPoints %> × 衰减系数<%= decayFactor %>)
+警戒等级: <%= alertLevel %>
+敌人类型: <%= enemySuggestion %>
+
+[变更指令]
+stat_data.事件计时器.上次袭击日 = <%= gameDay %>
+stat_data.殖民地.袭击冷却 = 24
+stat_data.殖民地.警戒等级 = <%= alertLevel + 1 %>
+<%_ } else { _%>
+[未触发原因]
+<%_ if (!cooldownReady) { _%>
+冷却未归零: 剩余<%= raidCooldown %>小时
+<%_ } _%>
+<%_ if (!intervalMet) { _%>
+间隔不足: 距上次袭击仅<%= daysSinceLastRaid %>天，<%= storyteller %>需间隔<%= minInterval %>天
+<%_ } _%>
+<%_ } _%>
+</袭击判定结果>

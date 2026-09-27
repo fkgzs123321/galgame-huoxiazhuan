@@ -1,0 +1,3327 @@
+{
+  "projectName": "欲妈群",
+  "worldbookName": "欲妈群",
+  "form": "charactercard",
+  "mvu": true,
+  "description": "",
+  "personality": "",
+  "scenario": "",
+  "creator": "欲妈群项目组",
+  "version": "1.0",
+  "creator_notes": "欲妈群 | MVU + EJS + SPV 三层架构 | 主角：郝佳期的儿子（18岁大学生）",
+  "entryManifest": {
+    "系统核心": {
+      "[mvu_plot]D0系统控制器": {
+        "path": "世界书\\[mvu_plot]D0系统控制器.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 0
+        },
+        "display_index": 0,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]输出格式规范": {
+        "path": "世界书\\[mvu_plot]输出格式规范.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 1
+        },
+        "display_index": 1,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]防口胡与世界观铁律": {
+        "path": "世界书\\[mvu_plot]防口胡与世界观铁律.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 2
+        },
+        "display_index": 2,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot][控制中心]功能开关与配置": {
+        "path": "世界书\\[mvu_plot][控制中心]功能开关与配置.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 3
+        },
+        "display_index": 3,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]共感假阳具系统": {
+        "path": "世界书\\[mvu_plot]共感假阳具系统.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 4
+        },
+        "display_index": 4,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]欲妈群规则": {
+        "path": "世界书\\[mvu_plot]欲妈群规则.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 5
+        },
+        "display_index": 5,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[世界观]欲妈群机制": {
+        "path": "世界书\\[世界观]欲妈群机制.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 6
+        },
+        "display_index": 6,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]阶段晋升系统": {
+        "path": "世界书\\[mvu_plot]阶段晋升系统.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 7
+        },
+        "display_index": 7,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]D20对抗判定系统": {
+        "path": "世界书\\[mvu_plot]D20对抗判定系统.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 8
+        },
+        "display_index": 8,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]玩家指令约束": {
+        "path": "世界书\\[mvu_plot]玩家指令约束.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 9
+        },
+        "display_index": 9,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[总控]阶段": {
+        "path": "世界书\\[总控]阶段.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 10
+        },
+        "display_index": 10,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[总控]剧情与事件": {
+        "path": "世界书\\[总控]剧情与事件.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 11
+        },
+        "display_index": 11,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]高考倒计时系统": {
+        "path": "世界书\\[mvu_plot]高考倒计时系统.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 12
+        },
+        "display_index": 12,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]秘密任务系统": {
+        "path": "世界书\\[mvu_plot]秘密任务系统.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 13
+        },
+        "display_index": 13,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]群内疑云": {
+        "path": "世界书\\[mvu_plot]群内疑云.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 14
+        },
+        "display_index": 14,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]群生态扩展": {
+        "path": "世界书\\[mvu_plot]群生态扩展.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 15
+        },
+        "display_index": 15,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[总控]角色速览": {
+        "path": "世界书\\[总控]角色速览.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 16
+        },
+        "display_index": 16,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]文风门控": {
+        "path": "世界书\\[mvu_plot]文风门控.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 17
+        },
+        "display_index": 17,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]在场味道": {
+        "path": "世界书\\[mvu_plot]在场味道.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 18
+        },
+        "display_index": 18,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]私密通用规范": {
+        "path": "世界书\\[mvu_plot]私密通用规范.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 19
+        },
+        "display_index": 19,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]阶段骨架": {
+        "path": "世界书\\[mvu_plot]阶段骨架.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 20
+        },
+        "display_index": 20,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_plot]词料速查": {
+        "path": "世界书\\[mvu_plot]词料速查.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 21
+        },
+        "display_index": 21,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    },
+    "MVU": {
+      "[initvar]初始(别开)(勿动)": {
+        "path": "世界书\\变量\\initvar.yaml",
+        "keywords": [],
+        "abstract": "MVU初始变量",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "order": 14720
+        },
+        "display_index": 22,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "MVU变量列表": {
+        "path": "世界书\\变量\\变量列表.txt",
+        "keywords": [],
+        "abstract": "MVU变量列表",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "order": 14720
+        },
+        "display_index": 23,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_update]变量输出格式": {
+        "path": "世界书\\变量\\变量输出格式.txt",
+        "keywords": [],
+        "abstract": "MVU变量输出格式",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "order": 14720
+        },
+        "display_index": 24,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[mvu_update]变量更新规则": {
+        "path": "世界书\\变量\\变量更新规则.yaml",
+        "keywords": [],
+        "abstract": "MVU变量更新规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "order": 14720
+        },
+        "display_index": 25,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    },
+    "系统变量": {
+      "[场景]隐秘场所": {
+        "path": "世界书\\[场景]隐秘场所.txt",
+        "keywords": [
+          "隐秘场所",
+          "SPA会所",
+          "私汤民宿",
+          "私人影院",
+          "私教健身房",
+          "VIP试衣间",
+          "私密包厢"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "隐秘场所",
+            "SPA会所",
+            "私汤民宿",
+            "私人影院",
+            "私教健身房",
+            "VIP试衣间",
+            "私密包厢"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 201
+        },
+        "display_index": 26,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[规则]随机欲妈生成": {
+        "path": "世界书\\[规则]随机欲妈生成.txt",
+        "keywords": [
+          "随机欲妈",
+          "新成员",
+          "群成员",
+          "其他妈妈",
+          "新妈妈",
+          "生成欲妈"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "随机欲妈",
+            "新成员",
+            "群成员",
+            "其他妈妈",
+            "新妈妈",
+            "生成欲妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 202
+        },
+        "display_index": 27,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[事件]线下聚会": {
+        "path": "世界书\\[事件]线下聚会.txt",
+        "keywords": [
+          "线下聚会",
+          "聚会",
+          "互换体验",
+          "群交",
+          "现场展示",
+          "私汤民宿包场",
+          "聚会规则"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "线下聚会",
+            "聚会",
+            "互换体验",
+            "群交",
+            "现场展示",
+            "私汤民宿包场",
+            "聚会规则"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 200
+        },
+        "display_index": 28,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    },
+    "其他": {
+      "[文风]阶段性反差": {
+        "path": "世界书\\[文风]阶段性反差.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 329
+        },
+        "display_index": 29,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[文风]冷冽": {
+        "path": "世界书\\[文风]冷冽.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 330
+        },
+        "display_index": 30,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[文风]母猪": {
+        "path": "世界书\\[文风]母猪.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 331
+        },
+        "display_index": 31,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[文风]少妇白洁": {
+        "path": "世界书\\[文风]少妇白洁.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 332
+        },
+        "display_index": 32,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[文风]无尽骚妈": {
+        "path": "世界书\\[文风]无尽骚妈.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 333
+        },
+        "display_index": 33,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "[文风]淫视": {
+        "path": "世界书\\[文风]淫视.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 334
+        },
+        "display_index": 34,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    },
+    "规则系统": {
+      "[mvu_plot]思维链强制输出": {
+        "path": "世界书\\[mvu_plot]思维链强制输出.txt",
+        "keywords": [],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 335
+        },
+        "display_index": 35,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    },
+    "角色档案": {
+      "白露_调色盘": {
+        "path": "世界书\\白露_调色盘.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 236
+        },
+        "display_index": 36,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "白露_基础信息": {
+        "path": "世界书\\白露_基础信息.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 237
+        },
+        "display_index": 37,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "白露_阶段1": {
+        "path": "世界书\\白露_阶段1.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 238
+        },
+        "display_index": 38,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "白露_阶段2": {
+        "path": "世界书\\白露_阶段2.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 239
+        },
+        "display_index": 39,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "白露_阶段3": {
+        "path": "世界书\\白露_阶段3.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 240
+        },
+        "display_index": 40,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "白露_阶段4": {
+        "path": "世界书\\白露_阶段4.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 241
+        },
+        "display_index": 41,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "白露_阶段5": {
+        "path": "世界书\\白露_阶段5.txt",
+        "keywords": [
+          "白露",
+          "白墨",
+          "露"
+        ],
+        "abstract": "分控档案(白露/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白露",
+            "白墨",
+            "露"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 242
+        },
+        "display_index": 42,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_调色盘": {
+        "path": "世界书\\韩雪_调色盘.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 243
+        },
+        "display_index": 43,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_基础信息": {
+        "path": "世界书\\韩雪_基础信息.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 244
+        },
+        "display_index": 44,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_阶段1": {
+        "path": "世界书\\韩雪_阶段1.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 245
+        },
+        "display_index": 45,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_阶段2": {
+        "path": "世界书\\韩雪_阶段2.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 246
+        },
+        "display_index": 46,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_阶段3": {
+        "path": "世界书\\韩雪_阶段3.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 247
+        },
+        "display_index": 47,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_阶段4": {
+        "path": "世界书\\韩雪_阶段4.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 248
+        },
+        "display_index": 48,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "韩雪_阶段5": {
+        "path": "世界书\\韩雪_阶段5.txt",
+        "keywords": [
+          "韩雪",
+          "韩子轩",
+          "韩太太"
+        ],
+        "abstract": "分控档案(韩雪/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩雪",
+            "韩子轩",
+            "韩太太"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 249
+        },
+        "display_index": 49,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_调色盘": {
+        "path": "世界书\\郝佳期_调色盘.txt",
+        "keywords": [],
+        "abstract": "主角档案(_调色盘)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 250
+        },
+        "display_index": 50,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_基础信息": {
+        "path": "世界书\\郝佳期_基础信息.txt",
+        "keywords": [],
+        "abstract": "主角档案(_基础信息)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 251
+        },
+        "display_index": 51,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_阶段1": {
+        "path": "世界书\\郝佳期_阶段1.txt",
+        "keywords": [],
+        "abstract": "主角档案(_阶段1)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 252
+        },
+        "display_index": 52,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_阶段2": {
+        "path": "世界书\\郝佳期_阶段2.txt",
+        "keywords": [],
+        "abstract": "主角档案(_阶段2)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 253
+        },
+        "display_index": 53,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_阶段3": {
+        "path": "世界书\\郝佳期_阶段3.txt",
+        "keywords": [],
+        "abstract": "主角档案(_阶段3)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 254
+        },
+        "display_index": 54,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_阶段4": {
+        "path": "世界书\\郝佳期_阶段4.txt",
+        "keywords": [],
+        "abstract": "主角档案(_阶段4)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 255
+        },
+        "display_index": 55,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "郝佳期_阶段5": {
+        "path": "世界书\\郝佳期_阶段5.txt",
+        "keywords": [],
+        "abstract": "主角档案(_阶段5)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 256
+        },
+        "display_index": 56,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_调色盘": {
+        "path": "世界书\\怜奈_调色盘.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 257
+        },
+        "display_index": 57,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_基础信息": {
+        "path": "世界书\\怜奈_基础信息.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 258
+        },
+        "display_index": 58,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_阶段1": {
+        "path": "世界书\\怜奈_阶段1.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 259
+        },
+        "display_index": 59,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_阶段2": {
+        "path": "世界书\\怜奈_阶段2.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 260
+        },
+        "display_index": 60,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_阶段3": {
+        "path": "世界书\\怜奈_阶段3.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 261
+        },
+        "display_index": 61,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_阶段4": {
+        "path": "世界书\\怜奈_阶段4.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 262
+        },
+        "display_index": 62,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "怜奈_阶段5": {
+        "path": "世界书\\怜奈_阶段5.txt",
+        "keywords": [
+          "怜奈",
+          "温言"
+        ],
+        "abstract": "分控档案(怜奈/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "怜奈",
+            "温言"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 263
+        },
+        "display_index": 63,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_调色盘": {
+        "path": "世界书\\林婉清_调色盘.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 264
+        },
+        "display_index": 64,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_基础信息": {
+        "path": "世界书\\林婉清_基础信息.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 265
+        },
+        "display_index": 65,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_阶段1": {
+        "path": "世界书\\林婉清_阶段1.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 266
+        },
+        "display_index": 66,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_阶段2": {
+        "path": "世界书\\林婉清_阶段2.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 267
+        },
+        "display_index": 67,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_阶段3": {
+        "path": "世界书\\林婉清_阶段3.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 268
+        },
+        "display_index": 68,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_阶段4": {
+        "path": "世界书\\林婉清_阶段4.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 269
+        },
+        "display_index": 69,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "林婉清_阶段5": {
+        "path": "世界书\\林婉清_阶段5.txt",
+        "keywords": [
+          "林婉清",
+          "林子墨",
+          "清教授"
+        ],
+        "abstract": "分控档案(林婉清/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林婉清",
+            "林子墨",
+            "清教授"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 270
+        },
+        "display_index": 70,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_调色盘": {
+        "path": "世界书\\铃_调色盘.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 271
+        },
+        "display_index": 71,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_基础信息": {
+        "path": "世界书\\铃_基础信息.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 272
+        },
+        "display_index": 72,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_阶段1": {
+        "path": "世界书\\铃_阶段1.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 273
+        },
+        "display_index": 73,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_阶段2": {
+        "path": "世界书\\铃_阶段2.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 274
+        },
+        "display_index": 74,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_阶段3": {
+        "path": "世界书\\铃_阶段3.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 275
+        },
+        "display_index": 75,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_阶段4": {
+        "path": "世界书\\铃_阶段4.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 276
+        },
+        "display_index": 76,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "铃_阶段5": {
+        "path": "世界书\\铃_阶段5.txt",
+        "keywords": [
+          "铃",
+          "林悠"
+        ],
+        "abstract": "分控档案(铃/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铃",
+            "林悠"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 277
+        },
+        "display_index": 77,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_调色盘": {
+        "path": "世界书\\秦雨_调色盘.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 278
+        },
+        "display_index": 78,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_基础信息": {
+        "path": "世界书\\秦雨_基础信息.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 279
+        },
+        "display_index": 79,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_阶段1": {
+        "path": "世界书\\秦雨_阶段1.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 280
+        },
+        "display_index": 80,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_阶段2": {
+        "path": "世界书\\秦雨_阶段2.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 281
+        },
+        "display_index": 81,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_阶段3": {
+        "path": "世界书\\秦雨_阶段3.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 282
+        },
+        "display_index": 82,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_阶段4": {
+        "path": "世界书\\秦雨_阶段4.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 283
+        },
+        "display_index": 83,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "秦雨_阶段5": {
+        "path": "世界书\\秦雨_阶段5.txt",
+        "keywords": [
+          "秦雨",
+          "秦朗",
+          "秦老师"
+        ],
+        "abstract": "分控档案(秦雨/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦雨",
+            "秦朗",
+            "秦老师"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 284
+        },
+        "display_index": 84,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_调色盘": {
+        "path": "世界书\\群主_调色盘.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 285
+        },
+        "display_index": 85,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_基础信息": {
+        "path": "世界书\\群主_基础信息.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 286
+        },
+        "display_index": 86,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_阶段1": {
+        "path": "世界书\\群主_阶段1.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 287
+        },
+        "display_index": 87,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_阶段2": {
+        "path": "世界书\\群主_阶段2.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 288
+        },
+        "display_index": 88,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_阶段3": {
+        "path": "世界书\\群主_阶段3.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 289
+        },
+        "display_index": 89,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_阶段4": {
+        "path": "世界书\\群主_阶段4.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 290
+        },
+        "display_index": 90,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "群主_阶段5": {
+        "path": "世界书\\群主_阶段5.txt",
+        "keywords": [
+          "群主",
+          "苏媚",
+          "媚"
+        ],
+        "abstract": "分控档案(群主/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "群主",
+            "苏媚",
+            "媚"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 291
+        },
+        "display_index": 91,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_调色盘": {
+        "path": "世界书\\苏晴_调色盘.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 292
+        },
+        "display_index": 92,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_基础信息": {
+        "path": "世界书\\苏晴_基础信息.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 293
+        },
+        "display_index": 93,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_阶段1": {
+        "path": "世界书\\苏晴_阶段1.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 294
+        },
+        "display_index": 94,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_阶段2": {
+        "path": "世界书\\苏晴_阶段2.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 295
+        },
+        "display_index": 95,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_阶段3": {
+        "path": "世界书\\苏晴_阶段3.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 296
+        },
+        "display_index": 96,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_阶段4": {
+        "path": "世界书\\苏晴_阶段4.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 297
+        },
+        "display_index": 97,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "苏晴_阶段5": {
+        "path": "世界书\\苏晴_阶段5.txt",
+        "keywords": [
+          "苏晴",
+          "苏晨",
+          "晴妈"
+        ],
+        "abstract": "分控档案(苏晴/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏晴",
+            "苏晨",
+            "晴妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 298
+        },
+        "display_index": 98,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_调色盘": {
+        "path": "世界书\\桃桃_调色盘.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 299
+        },
+        "display_index": 99,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_基础信息": {
+        "path": "世界书\\桃桃_基础信息.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 300
+        },
+        "display_index": 100,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_阶段1": {
+        "path": "世界书\\桃桃_阶段1.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 301
+        },
+        "display_index": 101,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_阶段2": {
+        "path": "世界书\\桃桃_阶段2.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 302
+        },
+        "display_index": 102,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_阶段3": {
+        "path": "世界书\\桃桃_阶段3.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 303
+        },
+        "display_index": 103,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_阶段4": {
+        "path": "世界书\\桃桃_阶段4.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 304
+        },
+        "display_index": 104,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "桃桃_阶段5": {
+        "path": "世界书\\桃桃_阶段5.txt",
+        "keywords": [
+          "桃桃",
+          "陶宇"
+        ],
+        "abstract": "分控档案(桃桃/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃桃",
+            "陶宇"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 305
+        },
+        "display_index": 105,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_调色盘": {
+        "path": "世界书\\小夜_调色盘.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 307
+        },
+        "display_index": 107,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_基础信息": {
+        "path": "世界书\\小夜_基础信息.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 308
+        },
+        "display_index": 108,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_阶段1": {
+        "path": "世界书\\小夜_阶段1.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 309
+        },
+        "display_index": 109,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_阶段2": {
+        "path": "世界书\\小夜_阶段2.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 310
+        },
+        "display_index": 110,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_阶段3": {
+        "path": "世界书\\小夜_阶段3.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 311
+        },
+        "display_index": 111,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_阶段4": {
+        "path": "世界书\\小夜_阶段4.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 312
+        },
+        "display_index": 112,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "小夜_阶段5": {
+        "path": "世界书\\小夜_阶段5.txt",
+        "keywords": [
+          "小夜",
+          "夜凉",
+          "夜"
+        ],
+        "abstract": "分控档案(小夜/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小夜",
+            "夜凉",
+            "夜"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 313
+        },
+        "display_index": 113,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_调色盘": {
+        "path": "世界书\\柚子_调色盘.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_调色盘·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 314
+        },
+        "display_index": 114,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_基础信息": {
+        "path": "世界书\\柚子_基础信息.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_基础信息·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 315
+        },
+        "display_index": 115,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_阶段1": {
+        "path": "世界书\\柚子_阶段1.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_阶段1·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 316
+        },
+        "display_index": 116,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_阶段2": {
+        "path": "世界书\\柚子_阶段2.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_阶段2·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 317
+        },
+        "display_index": 117,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_阶段3": {
+        "path": "世界书\\柚子_阶段3.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_阶段3·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 318
+        },
+        "display_index": 118,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_阶段4": {
+        "path": "世界书\\柚子_阶段4.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_阶段4·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 319
+        },
+        "display_index": 119,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      },
+      "柚子_阶段5": {
+        "path": "世界书\\柚子_阶段5.txt",
+        "keywords": [
+          "柚子",
+          "唐野",
+          "柚子辣妈"
+        ],
+        "abstract": "分控档案(柚子/_阶段5·绿灯)",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柚子",
+            "唐野",
+            "柚子辣妈"
+          ]
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 320
+        },
+        "display_index": 120,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    },
+    "玩家": {
+      "玩家档案": {
+        "path": "世界书\\玩家档案.txt",
+        "keywords": [],
+        "abstract": "玩家档案（蓝灯常驻）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_char_definition",
+          "role": "system",
+          "order": 306
+        },
+        "display_index": 106,
+        "recursion": {
+          "prevent_incoming": true,
+          "prevent_outgoing": true
+        }
+      }
+    }
+  },
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "enabled": true,
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": true
+              }
+            ]
+          },
+          "content_path": "MVU.txt",
+          "info": "MVU变量框架"
+        },
+        "ZOD": {
+          "enabled": true,
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "content_path": null,
+          "info": "Zod schema 注册"
+        }
+      },
+      "variables": {}
+    },
+    "regex_scripts": [
+      {
+        "id": "yumq-regex-030-group-chat-beautify",
+        "scriptName": "5群聊消息美化",
+        "findRegex": "/<group_msg>([\\s\\S]*?)<\\/group_msg>/g",
+        "replaceString": "<style>\n.yumq-chat-container { max-width: 95%; margin: 10px auto; background: linear-gradient(180deg, #FFF5F7 0%, #FFEEF3 100%); border-radius: 16px; border: 1.5px solid #FBCFE8; box-shadow: 0 6px 18px rgba(244, 114, 182, 0.15); overflow: hidden; font-family: 'M PLUS Rounded 1c', -apple-system, sans-serif; }\n.yumq-chat-header { background: linear-gradient(90deg, #F472B6, #EC4899); color: #fff; padding: 10px 16px; font-weight: 700; font-size: 0.92em; display: flex; align-items: center; gap: 8px; }\n.yumq-chat-header::before { content: '💭'; font-size: 1.1em; }\n.yumq-chat-body { padding: 12px 14px; max-height: 400px; overflow-y: auto; }\n.yumq-chat-body::-webkit-scrollbar { width: 5px; }\n.yumq-chat-body::-webkit-scrollbar-thumb { background: #F9A8D4; border-radius: 4px; }\n.yumq-chat-line { margin: 8px 0; padding: 8px 12px; border-radius: 12px; font-size: 0.9em; line-height: 1.5; animation: yumqChatIn 0.4s ease; }\n@keyframes yumqChatIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }\n.yumq-chat-name { font-weight: 700; margin-right: 6px; }\n.yumq-chat-time { font-size: 0.75em; color: #9CA3AF; margin-left: 6px; }\n.yumq-chat-line.self { background: rgba(244, 114, 182, 0.15); border-left: 3px solid #F472B6; }\n.yumq-chat-line.self .yumq-chat-name { color: #DB2777; }\n.yumq-chat-line.other { background: rgba(255, 255, 255, 0.6); border-left: 3px solid #FBCFE8; }\n.yumq-chat-line.other .yumq-chat-name { color: #6D5B79; }\n.yumq-chat-line.owner { background: rgba(168, 85, 247, 0.12); border-left: 3px solid #A855F7; }\n.yumq-chat-line.owner .yumq-chat-name { color: #7E22CE; }\n.yumq-chat-line.system { background: rgba(251, 191, 36, 0.15); border-left: 3px solid #FBBF24; font-style: italic; color: #92400E; }\n</style>\n<div class=\"yumq-chat-container\">\n  <div class=\"yumq-chat-header\">欲妈群 · 实时聊天</div>\n  <div class=\"yumq-chat-body\">$1</div>\n</div>",
+        "markdownOnly": true,
+        "promptOnly": false,
+        "placement": [
+          1,
+          2
+        ],
+        "minDepth": null,
+        "maxDepth": null,
+        "runOnEdit": false,
+        "substituteRegex": 0,
+        "trimStrings": [],
+        "disabled": false
+      },
+      {
+        "id": "yumq-regex-040-contest-notify",
+        "scriptName": "6竞赛通知美化",
+        "findRegex": "/<contest_notify>([\\s\\S]*?)<\\/contest_notify>/g",
+        "replaceString": "<style>\n.yumq-contest-container { max-width: 90%; margin: 12px auto; background: linear-gradient(135deg, #FFEDF5 0%, #FFE0EC 50%, #FFD4E5 100%); border-radius: 18px; border: 2px solid #F472B6; box-shadow: 0 8px 24px rgba(244, 114, 182, 0.25); overflow: hidden; font-family: 'M PLUS Rounded 1c', -apple-system, sans-serif; position: relative; }\n.yumq-contest-container::before { content: '🏆'; position: absolute; top: -8px; right: 14px; font-size: 1.6em; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }\n.yumq-contest-header { background: linear-gradient(90deg, #EC4899, #F472B6); color: #fff; padding: 12px 18px; font-weight: 700; font-size: 1em; letter-spacing: 0.5px; }\n.yumq-contest-body { padding: 14px 18px; color: #6D5B79; font-size: 0.92em; line-height: 1.6; white-space: pre-wrap; }\n.yumq-contest-body strong { color: #DB2777; font-weight: 700; }\n.yumq-contest-footer { padding: 8px 18px 12px; font-size: 0.78em; color: #9CA3AF; text-align: right; font-style: italic; }\n</style>\n<div class=\"yumq-contest-container\">\n  <div class=\"yumq-contest-header\">今日竞赛主题</div>\n  <div class=\"yumq-contest-body\">$1</div>\n  <div class=\"yumq-contest-footer\">— 欲妈群 · 妈妈们永不缺席 —</div>\n</div>",
+        "markdownOnly": true,
+        "promptOnly": false,
+        "placement": [
+          1,
+          2
+        ],
+        "minDepth": null,
+        "maxDepth": null,
+        "runOnEdit": false,
+        "substituteRegex": 0,
+        "trimStrings": [],
+        "disabled": false
+      },
+      {
+        "id": "yumq-regex-050-phase-up",
+        "scriptName": "7阶段晋升美化",
+        "findRegex": "/<phase_up>([\\s\\S]*?)<\\/phase_up>/g",
+        "replaceString": "<style>\n.yumq-phase-container { max-width: 92%; margin: 14px auto; background: linear-gradient(135deg, #1a0a1f 0%, #2d1438 50%, #4a1d5c 100%); border-radius: 18px; border: 2px solid #E879F9; box-shadow: 0 10px 30px rgba(232, 121, 249, 0.35), inset 0 1px 0 rgba(255,255,255,0.1); overflow: hidden; font-family: 'M PLUS Rounded 1c', -apple-system, sans-serif; position: relative; }\n.yumq-phase-container::before { content: '✨'; position: absolute; top: 8px; left: 14px; font-size: 1.3em; animation: yumqPhaseTwinkle 1.5s ease-in-out infinite; }\n@keyframes yumqPhaseTwinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }\n.yumq-phase-header { background: linear-gradient(90deg, transparent, rgba(232, 121, 249, 0.3), transparent); color: #F0ABFC; padding: 12px 18px 12px 42px; font-weight: 700; font-size: 1em; letter-spacing: 1px; text-shadow: 0 0 8px rgba(232, 121, 249, 0.5); }\n.yumq-phase-body { padding: 14px 18px; color: #F5D0FE; font-size: 0.92em; line-height: 1.7; white-space: pre-wrap; }\n.yumq-phase-body strong { color: #FBBF24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }\n.yumq-phase-footer { padding: 8px 18px 14px; font-size: 0.78em; color: #C084FC; text-align: right; font-style: italic; opacity: 0.8; }\n</style>\n<div class=\"yumq-phase-container\">\n  <div class=\"yumq-phase-header\">堕落阶段晋升</div>\n  <div class=\"yumq-phase-body\">$1</div>\n  <div class=\"yumq-phase-footer\">— 妈妈的心，正向着无法回头的深渊滑落 —</div>\n</div>",
+        "markdownOnly": true,
+        "promptOnly": false,
+        "placement": [
+          1,
+          2
+        ],
+        "minDepth": null,
+        "maxDepth": null,
+        "runOnEdit": false,
+        "substituteRegex": 0,
+        "trimStrings": [],
+        "disabled": false
+      },
+      {
+        "id": "yumq-regex-060-hide-statbar",
+        "scriptName": "8状态栏对AI隐藏",
+        "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+        "replaceString": "",
+        "markdownOnly": false,
+        "promptOnly": true,
+        "placement": [
+          2
+        ],
+        "minDepth": null,
+        "maxDepth": null,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "trimStrings": [],
+        "disabled": false
+      },
+      {
+        "id": "yumq-regex-070-statbar-ui",
+        "scriptName": "9状态栏界面",
+        "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+        "trimStrings": [],
+        "placement": [
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": true,
+        "promptOnly": false,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "minDepth": 0,
+        "maxDepth": null,
+        "replaceString": "```html\n<body>\n<div id=\"ymq-load\">正在载入状态栏…</div>\n<script>\n(function(){\n  var U=\"https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-yumaqun@c0edcd1/index.html\";\n  var D=document.getElementById(\"ymq-load\");\n  try{ window.__YMQ_URL = U; }catch(e){}   /* ★ 面板要 fetch 自己这份原文来当模板 */\n  if(typeof $===\"undefined\"){ if(D) D.textContent=\"没载入：这个环境里没有 jQuery\"; return; }\n  $(\"body\").load(U,function(r,st,xhr){\n    if(st!==\"success\"){ if(D) D.textContent=\"没载入：\"+st+\" \"+(xhr?xhr.status:\"\")+\"　地址：\"+U; }\n    else if(D){ D.remove(); }\n  });\n})();\n</script>\n</body>\n```\n"
+      },
+      {
+        "id": "yumq-regex-071-d20-beautify",
+        "scriptName": "10判定结果美化",
+        "findRegex": "/<判定>([\\s\\S]*?)<\\/判定>/gi",
+        "replaceString": "<details class=\"judge-card\" style=\"border:1px solid #8b3a52;border-radius:10px;margin:10px 0;background:linear-gradient(135deg,#2b1220,#1e0d17);overflow:hidden;box-shadow:0 2px 10px rgba(139,58,82,0.25)\"><summary style=\"padding:10px 14px;cursor:pointer;background:linear-gradient(90deg,#7c2d47,#a04555);color:#fff;font-weight:bold;font-size:13px;list-style:none;display:flex;align-items:center;gap:6px\">🎲 判定结果 <span style=\"margin-left:auto;font-size:11px;opacity:0.8\">引擎已算好 · 点击展开</span></summary><div style=\"padding:10px 14px;font-size:12px;color:#ffd9e6;line-height:1.75;white-space:pre-wrap;font-family:'Cascadia Code',Consolas,monospace\">$1</div></details>",
+        "trimStrings": [],
+        "placement": [
+          1,
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": true,
+        "promptOnly": false,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "minDepth": 0,
+        "maxDepth": null
+      },
+      {
+        "id": "yumq-reg-ac970542-ec38-4c8f-9705-d89339349cb9",
+        "scriptName": "1隐藏初始变量块（开局那坨）",
+        "findRegex": "/<UpdateVariable>\\s*<initvar>[\\s\\S]*?<\\/initvar>\\s*<\\/UpdateVariable>/gi",
+        "trimStrings": [],
+        "placement": [
+          1,
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": true,
+        "promptOnly": false,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "minDepth": null,
+        "maxDepth": null,
+        "replaceString": "",
+        "source": null
+      },
+      {
+        "id": "yumq-regex-075-var-fold",
+        "scriptName": "2变量更新折叠",
+        "findRegex": "/<UpdateVariable>([\\s\\S]*?)<\\/UpdateVariable>/gi",
+        "replaceString": "<details class=\"mvu-update-detail\" style=\"margin:8px 0;border-left:3px solid #f472b6;padding:4px 12px;background:rgba(244,114,182,0.05);border-radius:4px;\"><summary style=\"cursor:pointer;color:#f472b6;font-size:0.85em;opacity:0.8;\">⚙️ MVU变量更新（点击展开）</summary>\n\n```json\n$1\n```\n\n</details>",
+        "trimStrings": [],
+        "placement": [
+          1,
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": true,
+        "promptOnly": false,
+        "runOnEdit": false,
+        "substituteRegex": 0,
+        "minDepth": null,
+        "maxDepth": null
+      },
+      {
+        "id": "yumq-regex-080-var-hide",
+        "scriptName": "3变量更新对AI隐藏",
+        "findRegex": "/<UpdateVariable>[\\s\\S]*?<\\/UpdateVariable>/gi",
+        "replaceString": "",
+        "trimStrings": [],
+        "placement": [
+          1,
+          2
+        ],
+        "disabled": true,
+        "markdownOnly": false,
+        "promptOnly": true,
+        "runOnEdit": false,
+        "substituteRegex": 0,
+        "minDepth": null,
+        "maxDepth": null
+      },
+      {
+        "id": "b7c41a2e-9d38-4f10-9a55-3e6c18d0f7a2",
+        "scriptName": "秘密任务结算美化",
+        "findRegex": "/<task_result>([\\s\\S]*?)<\\/task_result>/g",
+        "replaceString": "<style>\n.ymq-task{font-size:13px;line-height:1.6;color:#2b2b2b;background:#fdf7ee;border:1px solid #e8d9bf;border-left:3px solid #b8863f;border-radius:6px;padding:8px 11px;margin:6px 0}\n.ymq-task .t{font-weight:600;color:#8a5a1c;margin-bottom:3px}\n.ymq-task .t::before{content:'任务结算 · '}\n</style>\n<div class=\"ymq-task\"><div class=\"t\"></div><div>$1</div></div>",
+        "trimStrings": [],
+        "placement": [
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": true,
+        "promptOnly": false,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "minDepth": null,
+        "maxDepth": null
+      },
+      {
+        "id": "yumq-regex-101-opening-hide",
+        "scriptName": "1开局选择对AI隐藏",
+        "findRegex": "<OpeningSelectUI\\s*/>",
+        "replaceString": "",
+        "trimStrings": [],
+        "placement": [
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": false,
+        "promptOnly": true,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "minDepth": null,
+        "maxDepth": null
+      },
+      {
+        "id": "yumq-regex-100-opening-select",
+        "scriptName": "12开局选择界面",
+        "findRegex": "<OpeningSelectUI\\s*/>",
+        "trimStrings": [],
+        "placement": [
+          2
+        ],
+        "disabled": false,
+        "markdownOnly": true,
+        "promptOnly": false,
+        "runOnEdit": true,
+        "substituteRegex": 0,
+        "minDepth": null,
+        "maxDepth": null,
+        "replaceString": "```html\n<body>\n<style>\n  .ymq-open{font-family:-apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Microsoft YaHei\",sans-serif;max-width:560px;margin:14px auto;padding:16px 16px 20px;border-radius:14px;background:linear-gradient(160deg,rgba(45,16,32,.96),rgba(26,10,20,.97));border:1px solid rgba(244,114,182,.3);color:#fff0f5;line-height:1.7;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.4)}\n  .ymq-open h3{margin:0 0 4px;font-size:17px;font-weight:700;color:#f9a8d4;letter-spacing:.02em}\n  .ymq-open .sub{color:rgba(255,240,245,.55);font-size:12px;margin-bottom:14px;line-height:1.6}\n  .ymq-open h4{margin:14px 0 8px;font-size:13px;color:#f472b6;font-weight:700}\n  .ymq-open .row{display:grid;gap:8px}\n  .ymq-open .row.d3{grid-template-columns:repeat(3,1fr)}\n  .ymq-open .row.d5{grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}\n  .ymq-open button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:10px;border:1px solid rgba(244,114,182,.28);background:rgba(244,114,182,.10);color:#fff0f5;font-family:inherit;font-size:13px;line-height:1.5;cursor:pointer;transition:.15s}\n  .ymq-open button:hover{background:rgba(244,114,182,.22)}\n  .ymq-open button.on{border-color:#ec4899;background:rgba(236,72,153,.32);box-shadow:inset 0 0 0 1px #ec4899}\n  .ymq-open button small{display:block;margin-top:3px;font-size:11px;color:rgba(255,240,245,.5);font-weight:400}\n  .ymq-open button:disabled{opacity:.45;cursor:not-allowed}\n  .ymq-open .go{margin-top:16px;text-align:center;background:rgba(236,72,153,.28);border-color:#ec4899;font-weight:700;padding:12px}\n  .ymq-open .done{margin-top:10px;font-size:12px;color:#f9a8d4;min-height:18px;text-align:center;line-height:1.6}\n</style>\n<div class=\"ymq-open\" id=\"ymq-root\">\n  <h3>开局：先定她怎么下手</h3>\n  <div class=\"sub\">选一组「难度 + 从哪一刻开始」，一共 15 种。定下之后不能改 —— 之后任何「换个难度」的话都不算数。</div>\n\n  <h4>一、难度</h4>\n  <div class=\"row d3\" id=\"ymq-diff\">\n    <button data-d=\"普通\">普通<small>察觉涨得慢，那支东西温和，她的罪恶感还在</small></button>\n    <button data-d=\"困难\">困难<small>标准平衡（推荐）</small></button>\n    <button data-d=\"地狱\">地狱<small>察觉涨得快，那支东西能到 150%，她罪恶感低、暴露概率高</small></button>\n  </div>\n\n  <h4>二、从哪一刻开始</h4>\n  <div class=\"row d5\" id=\"ymq-start\">\n    <button data-s=\"0\">早上七点<small>她跪在两腿中间</small></button>\n    <button data-s=\"1\">晚上十一点半<small>他趴桌上睡着</small></button>\n    <button data-s=\"2\">过了午夜<small>她坐在床沿，手里是他的球衣</small></button>\n    <button data-s=\"3\">午后一点<small>他在床上睡着</small></button>\n    <button data-s=\"4\">晚上十点四十<small>那条旧运动裤</small></button>\n  </div>\n\n  <button class=\"go\" id=\"ymq-ok\">定下来，开始</button>\n  <div class=\"done\" id=\"ymq-done\"></div>\n</div>\n<script>\n(function () {\n  var NS = 'ymq';\n  var ROOT = document.getElementById(NS + '-root');\n  if (!ROOT) return;\n  /* ★★ 防重入（照同级生2）：切 swipe 后这块会重新渲染，不加这个就会反复重跑、卡死 */\n  if (ROOT.getAttribute('data-' + NS + '-init') === '1') return;\n  ROOT.setAttribute('data-' + NS + '-init', '1');\n\n  var 难度 = '';      // 不预选\n  var 场景 = '0';     // 默认停在第 1 条\n  var 已定 = false;\n\n  /* ── 读写：照同级生2，只三条。难度存 chat 层 —— 切 swipe 会重建 message 层的变量，\n        而 chat 层不会被动，所以难度放在 chat 层才留得住。 ── */\n  function allVars() {\n    try { return (typeof getVariables === 'function' ? getVariables({ type: 'chat' }) : {}) || {}; }\n    catch (e) { return {}; }\n  }\n  function walk(o, p) {\n    var q = String(p || '').replace(/^stat_data\\./, '').split('.');\n    var c = (o && o.stat_data !== undefined) ? o.stat_data : o;\n    for (var i = 0; i < q.length && c != null; i++) c = c[q[i]];\n    return c;\n  }\n  function setLocal(o, p, v) {\n    var q = String(p).replace(/^stat_data\\./, '').split('.');\n    if (o.stat_data === undefined) o.stat_data = {};\n    var c = o.stat_data;\n    for (var i = 0; i < q.length - 1; i++) { if (typeof c[q[i]] !== 'object' || c[q[i]] === null) c[q[i]] = {}; c = c[q[i]]; }\n    c[q[q.length - 1]] = v;\n  }\n  function set(p, v) {\n    var full = 'stat_data.' + String(p).replace(/^stat_data\\./, '');\n    try { if (typeof updateVariablesWith === 'function') updateVariablesWith(function (x) { x = x || {}; setLocal(x, full, v); return x; }, { type: 'chat' }); } catch (e) {}\n    try {\n      if (typeof updateVariablesWith === 'function' && typeof getCurrentMessageId === 'function')\n        updateVariablesWith(function (x) { x = x || {}; setLocal(x, full, v); return x; }, { type: 'message', message_id: getCurrentMessageId() });\n    } catch (e) {}\n    try { if (typeof triggerSlash === 'function') triggerSlash('/setvar 欲妈群难度 ' + JSON.stringify(v)); } catch (e) {}\n  }\n\n  function render() {\n    Array.prototype.forEach.call(document.querySelectorAll('#ymq-diff button'), function (b) {\n      b.className = (b.getAttribute('data-d') === 难度) ? 'on' : '';\n    });\n    Array.prototype.forEach.call(document.querySelectorAll('#ymq-start button'), function (b) {\n      b.className = (b.getAttribute('data-s') === 场景) ? 'on' : '';\n    });\n    var ok = document.getElementById('ymq-ok');\n    if (已定) { ok.disabled = true; ok.textContent = '已经定下来了'; }\n    else if (!难度) { ok.disabled = true; ok.textContent = '先选一个难度'; }\n    else { ok.disabled = false; ok.textContent = '定下来，开始：' + 难度 + ' · 「' + 场景 + '」'; }\n  }\n\n  Array.prototype.forEach.call(document.querySelectorAll('#ymq-diff button'), function (b) {\n    b.addEventListener('click', function () { 难度 = b.getAttribute('data-d'); render(); });\n  });\n  Array.prototype.forEach.call(document.querySelectorAll('#ymq-start button'), function (b) {\n    b.addEventListener('click', function () { 场景 = b.getAttribute('data-s'); render(); });\n  });\n\n  /* ★ 确认后「触发对应的开场场景」（照同级生2） */\n  document.getElementById('ymq-ok').addEventListener('click', async function () {\n    if (已定 || !难度) return;\n    var ok = document.getElementById('ymq-ok'), d = document.getElementById('ymq-done');\n    ok.disabled = true; ok.textContent = '正在开局…';\n    /* ★ 难度不再写成变量：15 个开局各自带 initvar（里面已经写好难度），切 swipe 就等于定了难度。 */\n    var 难序={\"普通\":0,\"困难\":1,\"地狱\":2}[难度]||0;\n    var 场序=parseInt(场景, 10) || 0;\n    var swipe_id=难序*5+场序;\n    try {\n      if (typeof setChatMessages === 'function') {\n        await setChatMessages([{ message_id: 0, swipe_id: swipe_id }]);\n        已定 = true;\n        d.textContent = '已定：' + 难度 + '。切到那一刻了 —— 这条消息往上滑一层就是开局。';\n      } else throw new Error('没有 setChatMessages');\n    } catch (e) {\n      try {\n        if (typeof generate === 'function') {\n          generate({ user_input: '【开局】他定下了难度「' + 难度 + '」。从第 ' + (swipe_id + 1) + ' 条开场白那一刻开始。', should_stream: true });\n          已定 = true;\n          d.textContent = '已定：' + 难度 + '。由她开第一局。';\n          render(); return;\n        }\n      } catch (e2) {}\n      已定 = true;\n      d.textContent = '难度已写入，但没能自动跳转（' + e.message + '）。请手动把开场白切到第 ' + (swipe_id + 1) + ' 条。';\n    }\n    render();\n  });\n\n  render();\n})();\n</script>\n</body>\n```\n"
+      }
+    ]
+  },
+  "first_messages": [
+    "开场白/0.txt",
+    "开场白/1.txt",
+    "开场白/2.txt",
+    "开场白/3.txt",
+    "开场白/4.txt",
+    "开场白/5.txt",
+    "开场白/6.txt",
+    "开场白/7.txt",
+    "开场白/8.txt",
+    "开场白/9.txt",
+    "开场白/10.txt",
+    "开场白/11.txt",
+    "开场白/12.txt",
+    "开场白/13.txt",
+    "开场白/14.txt"
+  ],
+  "initvar_overrides": {
+    "开场白/1.txt": "开场白/initvar/1.yaml",
+    "开场白/10.txt": "开场白/initvar/10.yaml",
+    "开场白/11.txt": "开场白/initvar/11.yaml",
+    "开场白/12.txt": "开场白/initvar/12.yaml",
+    "开场白/13.txt": "开场白/initvar/13.yaml",
+    "开场白/14.txt": "开场白/initvar/14.yaml",
+    "开场白/2.txt": "开场白/initvar/2.yaml",
+    "开场白/3.txt": "开场白/initvar/3.yaml",
+    "开场白/4.txt": "开场白/initvar/4.yaml",
+    "开场白/5.txt": "开场白/initvar/5.yaml",
+    "开场白/6.txt": "开场白/initvar/6.yaml",
+    "开场白/7.txt": "开场白/initvar/7.yaml",
+    "开场白/8.txt": "开场白/initvar/8.yaml",
+    "开场白/9.txt": "开场白/initvar/9.yaml"
+  },
+  "zod": {
+    "schemaPath": "schema.ts"
+  }
+}

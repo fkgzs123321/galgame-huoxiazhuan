@@ -1,0 +1,678 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 角色性格控制器（重构 · 三层架构+精准加载+token控制）
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 读取当前女角 ID（含兜底回捞）
+   2. 三层属性读取（基础属性+性格特质+技能系统）
+   3. 8 个性格原型检测（基于三层属性）
+   4. 当前女角精准加载（仅 1 位，不全部加载 20 位）
+   5. 4 维关系值读取与关系阶段判定
+   6. 行为锁 / NSFW 阈值锁 / 嫉妒链 / 互斥关系
+   7. 当前女角互动预判（集成 calcFinalResult 骰子联动）
+   8. 防口胡强制校验（集成 logViolation）
+   9. 精简输出（只输出分档，不输出全部数值）
+   10. 女角 NPC 条目加载（性格调色盘+三面性+NSFW反差；基础信息已改绿灯由酒馆原生关键词激活，避免双份加载）
+
+   核心改进：
+   - 集成三层属性架构（基础属性+个人反应属性+技能系统）
+   - 集成女角偏好系数表（HEROINE_PREFERENCES）
+   - 集成属性技能骰子联动（calcFinalResult）
+   - 集成防口胡机制（logViolation）
+   - 8 个性格原型自动检测
+   - token 控制：精简输出分档，不输出全部数值
+   - 精准加载：只加载当前女角，不全部加载 20 位
+
+   引用关系：
+   - 全局规则总表.txt → BEHAVIOR_TABLE / RELATION_STAGES / DIFFICULTY_MODIFIERS
+   - 属性系统.txt → PLAYER_STATS（第1层基础属性分档参考）
+   - 个人反应属性.txt → PERSONALITY_TRAITS（第2层性格特质分档参考）
+   - 女角偏好系数表.txt → HEROINE_PREFERENCES（当前女角偏好权重来源）
+   - 属性技能骰子联动.txt → calcPlayerPower / calcHeroineRequirement（差值预判，不消耗骰子）
+   - 防口胡机制.txt → logViolation（违规记录）
+   - LCG骰子/引擎.txt → _r()（仅 calcFinalResult 实际判定时使用，预判不消耗）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%/* ─── 0. 预加载依赖数据表（修复：此前未 getwi 导致 HEROINE_PREFERENCES 等常量不可用）
+   女角偏好系数表 → HEROINE_PREFERENCES（当前女角偏好权重来源，必需）
+   个人反应属性   → PERSONALITY_COMBINED_ARCHETYPES（8 原型定义）
+   阶段联动框架   → STAGE_FRAMEWORK（行为锁/阶段联动）─── */%>
+<%- await getwi('女角偏好系数表') %>
+<%- await getwi('个人反应属性') %>
+<%- await getwi('阶段联动框架') %>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 1：读取当前女角姓名并反查数字 ID（保留稳定性）
+   - MVU 变量改为「场景.当前女角名」（字符串姓名，'无'=无对话）
+   - 内部逻辑仍用数字 ID 索引 HEROINE_PREFERENCES / _mutexMap 等
+   - 因此读姓名后反查 _heroineNameMap 得到数字 ID
+   ════════════════════════════════════════════════════════════ */
+const _heroineNameMap = {
+  '鸣泽唯': 1, '唯': 1, '美佐子': 2, '鸣泽美佐子': 2,
+  '舞岛可怜': 3, '可怜': 3, '加藤美纪': 4, '美纪': 4,
+  '筱原泉美': 5, '泉美': 5, '南川洋子': 6, '洋子': 6,
+  '都筑梢江': 7, '梢江': 7, '水野友美': 8, '友美': 8,
+  '安田爱美': 9, '爱美': 9, '田中美沙': 10, '美沙': 10,
+  '片桐美铃': 11, '美铃': 11, '野野村美里': 12, '美里': 12,
+  '永岛久美子': 13, '久美子': 13, '永岛佐知子': 14, '佐知子': 14,
+  '齐藤澪': 15, '澪': 15, '齐藤澪奈': 16, '澪奈': 16,
+  '铃木美穗': 17, '美穗': 17, '仁科': 18, '正树夏子': 19, '夏子': 19,
+  '杉本樱子': 20, '樱子': 20
+};
+
+if (typeof _hid === 'undefined') var _hid = 0;
+var _currentHeroineName = getvar('stat_data.场景.当前女角名', { scope: 'local', defaults: '无' });
+
+/* 反查数字 ID：MVU 姓名 → _heroineNameMap → 数字 ID */
+if (_currentHeroineName && _currentHeroineName !== '无' && _heroineNameMap[_currentHeroineName]) {
+  _hid = _heroineNameMap[_currentHeroineName];
+}
+
+/* 兜底回捞：从最近 4 条消息正则匹配女角姓名关键词 */
+if (!_hid || _hid <= 0) {
+  if (typeof _rescued_hid === 'undefined') var _rescued_hid = 0;
+  _hid = _rescued_hid;
+  if (!_hid) {
+    for (var _ci = 0; _ci <= 3; _ci++) {
+      var _txt = getChatMessage(_ci) || '';
+      for (const _nm in _heroineNameMap) {
+        if (_txt.indexOf(_nm) >= 0) {
+          _hid = _heroineNameMap[_nm];
+          _currentHeroineName = _nm;
+          setvar('_rescued_hid', _hid, { scope: 'local' });
+          break;
+        }
+      }
+      if (_hid > 0) break;
+    }
+  }
+}
+
+/* 当前女角 ID 摘要（用于输出标识，不暴露内部变量） */
+const _currentHeroineId = _hid;
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 2：三层属性读取（基础属性+性格特质+技能系统）
+   ════════════════════════════════════════════════════════════ */
+
+/* 第1层：基础个人属性（stat_data.主角.xxx · 天赋层）
+   移除所有兜底值，变量未初始化时返回 NaN，由调用方处理
+   原因：兜底值（如 _charm=50）会掩盖变量未更新的问题，使用错误数值进行骰子判定 */
+const _playerStats = {
+  charm:       Number(getvar('stat_data.主角.魅力',       { scope: 'local' })),
+  academic:    Number(getvar('stat_data.主角.学业',    { scope: 'local' })),
+  physical:    Number(getvar('stat_data.主角.体力',     { scope: 'local' })),
+  social:      Number(getvar('stat_data.主角.社交',      { scope: 'local' })),
+  perception:  Number(getvar('stat_data.主角.敏感', { scope: 'local' })),
+  willpower:   Number(getvar('stat_data.主角.声誉',  { scope: 'local' }))
+};
+
+/* 第2层：个人反应属性（stat_data.性格.xxx · 性格特质层，不可训练）
+   移除所有兜底值，变量未初始化时返回 NaN */
+const _playerPersonality = {
+  gentleness:   Number(getvar('stat_data.性格.温柔',   { scope: 'local' })),
+  decisiveness: Number(getvar('stat_data.性格.果断', { scope: 'local' })),
+  humor:        Number(getvar('stat_data.性格.幽默',        { scope: 'local' })),
+  cautiousness: Number(getvar('stat_data.性格.谨慎', { scope: 'local' })),
+  extraversion: Number(getvar('stat_data.性格.外向', { scope: 'local' })),
+  rationality:  Number(getvar('stat_data.性格.理性',  { scope: 'local' }))
+};
+
+/* 第3层：技能系统（stat_data.技能.xxx · 可训练层） */
+const _playerSkills = {
+  strength:     Number(getvar('stat_data.技能.力量',     { scope: 'local' })),
+  agility:      Number(getvar('stat_data.技能.敏捷',      { scope: 'local' })),
+  intelligence: Number(getvar('stat_data.技能.智力', { scope: 'local' })),
+  willpower:    Number(getvar('stat_data.技能.意志',    { scope: 'local' })),
+  stealth:      Number(getvar('stat_data.技能.潜行',      { scope: 'local' })),
+  speech:       Number(getvar('stat_data.技能.口才',       { scope: 'local' })),
+  medical:      Number(getvar('stat_data.技能.医学',      { scope: 'local' })),
+  cooking:      Number(getvar('stat_data.技能.烹饪',      { scope: 'local' })),
+  art:          Number(getvar('stat_data.技能.艺术',          { scope: 'local' })),
+  driving:      Number(getvar('stat_data.技能.驾驶',      { scope: 'local' })),
+  romance:      Number(getvar('stat_data.技能.恋爱',     { scope: 'local' })),
+  observation:  Number(getvar('stat_data.技能.观察',  { scope: 'local' }))
+};
+
+/* 当前难度（用于防口胡严格度与骰子联动修正） */
+const _difficulty = getvar('stat_data.临时.当前难度', { scope: 'local' });
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 3：分档辅助函数（输出精简到分档，控制 token）
+   ════════════════════════════════════════════════════════════ */
+
+/* 基础属性分档（5 档，与 SKILL_RULES.threshold_stages 对齐） */
+function getStatTier(value) {
+  const v = Number(value) || 0;
+  if (v >= 90) return '大师';
+  if (v >= 70) return '精通';
+  if (v >= 50) return '熟练';
+  if (v >= 30) return '入门';
+  return '生疏';
+}
+
+/* 性格特质分档（5 档，与 PERSONALITY_TRAITS.thresholds 对齐） */
+function getPersonalityTier(value) {
+  const v = Number(value) || 0;
+  if (v >= 80) return '极尽';
+  if (v >= 60) return '高';
+  if (v >= 40) return '平衡';
+  if (v >= 20) return '低';
+  return '极低';
+}
+
+/* 技能分档（5 档，与 SKILL_RULES.threshold_stages 对齐） */
+function getSkillTier(value) {
+  const v = Number(value) || 0;
+  if (v >= 90) return '大师';
+  if (v >= 70) return '精通';
+  if (v >= 50) return '熟练';
+  if (v >= 30) return '入门';
+  return '生疏';
+}
+
+/* 将三层属性转为分档摘要（不输出数值，控制 token） */
+function buildStatTiers(stats) {
+  const _r = {};
+  for (const _k in stats) _r[_k] = getStatTier(stats[_k]);
+  return _r;
+}
+function buildPersonalityTiers(personality) {
+  const _r = {};
+  for (const _k in personality) _r[_k] = getPersonalityTier(personality[_k]);
+  return _r;
+}
+function buildSkillTiers(skills) {
+  /* 仅输出关键技能，控制 token（其余技能在判定时按需读取） */
+  return {
+    romance:     getSkillTier(skills.romance),
+    observation: getSkillTier(skills.observation),
+    speech:      getSkillTier(skills.speech),
+    stealth:     getSkillTier(skills.stealth),
+    strength:    getSkillTier(skills.strength),
+    intelligence:getSkillTier(skills.intelligence)
+  };
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 4：8 个性格原型定义与检测函数
+   ════════════════════════════════════════════════════════════ */
+/* 8原型定义：参 个人反应属性.txt.PERSONALITY_COMBINED_ARCHETYPES（避免重复） */
+const PLAYER_ARCHETYPES = (typeof PERSONALITY_COMBINED_ARCHETYPES !== 'undefined') ? PERSONALITY_COMBINED_ARCHETYPES : {};
+
+/* 检测主角性格原型（基于三层属性组合匹配，至少 60% 维度匹配才算该原型） */
+function detectPlayerArchetype(stats, personality, skills) {
+  let _bestMatch = null;
+  let _bestScore = 0;
+  for (const _name in PLAYER_ARCHETYPES) {
+    const _arch = PLAYER_ARCHETYPES[_name];
+    let _matched = 0;
+    let _total = 0;
+    for (const _key in _arch.match) {
+      const _range = _arch.match[_key];
+      let _val = 0;
+      if (Object.prototype.hasOwnProperty.call(stats, _key)) _val = Number(stats[_key]) || 0;
+      else if (Object.prototype.hasOwnProperty.call(personality, _key)) _val = Number(personality[_key]) || 0;
+      else if (Object.prototype.hasOwnProperty.call(skills, _key)) _val = Number(skills[_key]) || 0;
+      _total++;
+      if (_val >= _range[0] && _val <= _range[1]) _matched++;
+    }
+    const _score = _total > 0 ? _matched / _total : 0;
+    if (_score > _bestScore && _score >= 0.6) {
+      _bestScore = _score;
+      _bestMatch = {
+        archetype: _name,
+        match_ratio: Math.round(_score * 100) / 100,
+        narrative_style: _arch.narrative_style,
+        strengths: _arch.strengths || [],
+        weaknesses: _arch.weaknesses || []
+      };
+    }
+  }
+  return _bestMatch || {
+    archetype: '平衡型',
+    match_ratio: 0,
+    narrative_style: 'AI标准描写，视情境综合三层属性发挥',
+    strengths: [],
+    weaknesses: []
+  };
+}
+
+const _playerArchetype = detectPlayerArchetype(_playerStats, _playerPersonality, _playerSkills);
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 5：当前女角精准加载（仅 1 位，从 HEROINE_PREFERENCES 读取）
+   ════════════════════════════════════════════════════════════ */
+/* 只加载当前女角数据，不全部加载 20 位（控制 token） */
+let _currentHeroineData = null;
+if (_currentHeroineId > 0 && typeof HEROINE_PREFERENCES !== 'undefined') {
+  _currentHeroineData = HEROINE_PREFERENCES[_currentHeroineId] || null;
+}
+
+/* 女角 ID → 名称兜底表（HEROINE_PREFERENCES 未加载时使用） */
+const _heroineNameFallback = {
+  1: '鸣泽唯', 2: '鸣泽美佐子', 3: '舞岛可怜', 4: '加藤美纪',
+  5: '筱原泉美', 6: '南川洋子', 7: '都筑梢江', 8: '水野友美',
+  9: '安田爱美', 10: '田中美沙', 11: '片桐美铃', 12: '野野村美里',
+  13: '永岛久美子', 14: '永岛佐知子', 15: '齐藤澪', 16: '齐藤澪奈',
+  17: '铃木美穗', 18: '仁科', 19: '正树夏子', 20: '杉本樱子'
+};
+_currentHeroineName = _currentHeroineData ? _currentHeroineData.name : (_heroineNameFallback[_currentHeroineId] || (_currentHeroineName || '无'));
+const _currentHeroineTraits = _currentHeroineData ? _currentHeroineData.character_traits : '';
+const _currentHeroineDiff = _currentHeroineData ? (Number(_currentHeroineData.difficulty_coefficient) || 0) : 0;
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 6：4 维关系值读取与关系阶段判定（10 阶段）
+   ════════════════════════════════════════════════════════════ */
+const _heroineStats = getvar('stat_data.当前女角', { scope: 'local', defaults: {} }) || {};
+const _affection = Number(_heroineStats.好感度) || 0;
+const _heartbeat = Number(_heroineStats.心动值) || 0;
+const _jealousy = Number(_heroineStats.嫉妒值) || 0;
+const _trust = Number(_heroineStats.信任度) || 0;
+
+/* 关系阶段判定：使用 getStageFramework(affection) 获取阶段对象，取 stage_name 字符串 */
+/* 修复：原代码误用 getStageByName(_affection)（该函数接受阶段名字符串而非数值），导致永远返回初识 */
+const _stage = (typeof getStageFramework === 'function') ? getStageFramework(_affection).stage_name : '初识';
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 7：行为锁 / NSFW 阈值锁 / 嫉妒链 / 互斥关系（保留核心机制）
+   ════════════════════════════════════════════════════════════ */
+
+/* 7.1 行为锁：参 阶段联动框架.txt.STAGE_FRAMEWORK[stage].forbidden/allowed（避免重复） */
+const _stageLock = (typeof STAGE_FRAMEWORK !== 'undefined' && STAGE_FRAMEWORK[_stage])
+  ? STAGE_FRAMEWORK[_stage]
+  : ((typeof STAGE_FRAMEWORK !== 'undefined' && STAGE_FRAMEWORK['初识']) || { forbidden: [], allowed: [], npc_attitude: '', nsfw_visible: false });
+
+/* 7.2 NSFW 阈值锁：参 全局规则-NSFW身体规则.txt.nsfw_hard_gates（避免重复）
+   修复：
+   - nsfw_hard_gates 使用组合键名（如 '轻度接触（拥抱/牵手）'），需映射
+   - 阈值对象结构为 { requires: { relationship_stage:[], affection, heartbeat, trust, h_exp? }, fail_changes:{} }
+   - 旧代码误用 t.affection / t.stage，实际应为 t.requires.affection / t.requires.relationship_stage
+   - 旧代码传入 '牵手'/'拥抱' 等简短键名，但 nsfw_hard_gates 键名是 '轻度接触（拥抱/牵手）' 等组合键
+*/
+const _nsfwThreshold = (typeof NSFW_BODY_RULES !== 'undefined' && NSFW_BODY_RULES.nsfw_hard_gates) ? NSFW_BODY_RULES.nsfw_hard_gates : {};
+/* 简短动作名 → nsfw_hard_gates 组合键名映射 */
+const _NSFW_ACTION_MAP = {
+  '牵手':   '轻度接触（拥抱/牵手）',
+  '拥抱':   '轻度接触（拥抱/牵手）',
+  '亲吻':   '中度接触（亲吻/抚摸上半身）',
+  '初H':    '初H',
+  '进阶H':  '进阶H玩法（口交/肛交/多人/道具）'
+};
+function _checkNsfwAllowed(action) {
+  var _gateKey = _NSFW_ACTION_MAP[action] || action;
+  var t = _nsfwThreshold[_gateKey];
+  if (!t) return { allowed: true, reason: '无阈值限制' };
+  var _req = t.requires || {};
+  var _reqAffection = Number(_req.affection) || 0;
+  var _reqHeartbeat = Number(_req.heartbeat) || 0;
+  var _reqTrust = Number(_req.trust) || 0;
+  var _reqHExp = Number(_req.h_exp) || 0;
+  var _reqStages = _req.relationship_stage || _req.stage || [];
+  var _hExp = Number(getvar('stat_data.当前女角.H经验次数', { scope: 'local', defaults: 0 })) || 0;
+  if (_affection < _reqAffection) return { allowed: false, reason: '好感度不足 ' + _affection + '/' + _reqAffection };
+  if (_heartbeat < _reqHeartbeat) return { allowed: false, reason: '心动值不足 ' + _heartbeat + '/' + _reqHeartbeat };
+  if (_trust < _reqTrust) return { allowed: false, reason: '信任度不足 ' + _trust + '/' + _reqTrust };
+  if (_reqHExp > 0 && _hExp < _reqHExp) return { allowed: false, reason: 'H经验不足 ' + _hExp + '/' + _reqHExp };
+  if (_reqStages.length > 0 && _reqStages.indexOf(_stage) === -1) return { allowed: false, reason: '关系阶段不符 ' + _stage + '（需 ' + _reqStages.join('/') + '）' };
+  return { allowed: true, reason: '通过' };
+}
+
+/* 7.3 嫉妒链检查 */
+const _jealousyDeadly = _jealousy >= 90;
+const _jealousyHigh = _jealousy >= 70 && _jealousy < 90;
+const _jealousyMid = _jealousy >= 40 && _jealousy < 70;
+const _jealousyLow = _jealousy >= 20 && _jealousy < 40;
+
+/* 7.4 关系网影响：互斥关系参 全局规则总表.txt.MUTEX_BY_HEROINE_ID（9.B.10 修复版）
+   原实现使用 MUTEX_RELATIONS（以组名为键），导致 _mutexMap[_currentHeroineId] 永远 undefined。
+   现改用 MUTEX_BY_HEROINE_ID（以 heroine_id 为键），可直接命中。
+   互斥触发判定已迁移至 D0系统控制器.txt 步骤 11.8（自动 set flag + UpdateVariable），
+   本控制器仅根据已 set 的 flag 与 partner_id 渲染叙事提示。 */
+const _mutexMap = (typeof MUTEX_BY_HEROINE_ID !== 'undefined') ? MUTEX_BY_HEROINE_ID : ((typeof MUTEX_RELATIONS !== 'undefined') ? MUTEX_RELATIONS : {});
+const _mutexInfo = _mutexMap[_currentHeroineId];
+const _sakurakoMisakoSymbiosis = (_currentHeroineId === 20 || _currentHeroineId === 2);
+/* 9.B.10: 读取互斥已触发 flag，判断互斥是否已生效 */
+const _mutexTriggeredFlags = {
+  15: '齐藤互斥触发', 16: '齐藤互斥触发',
+  10: '田中铃木互斥触发', 17: '田中铃木互斥触发',
+  18: '仁科正树互斥触发', 19: '仁科正树互斥触发',
+  13: '永岛久美子分支', 14: '永岛佐知子分支',
+  5: '泉美H完成', 8: '友美误会解决'
+};
+const _mutexTriggeredFlag = _mutexTriggeredFlags[_currentHeroineId];
+const _mutexAlreadyTriggered = _mutexTriggeredFlag ? (Number(getvar(`stat_data.隐藏.${_mutexTriggeredFlag}`, { scope: 'local', defaults: 0 })) === 1) : false;
+/* 9.B.10: 反向检查——当前女角是否为互斥对象（即玩家攻略了 partner 后被锁定） */
+const _mutexAsPartnerTriggered = _mutexInfo && _mutexTriggeredFlags[_mutexInfo.partner_id]
+  ? (Number(getvar(`stat_data.隐藏.${_mutexTriggeredFlags[_mutexInfo.partner_id]}`, { scope: 'local', defaults: 0 })) === 1)
+  : false;
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 8：当前女角互动预判（集成骰子联动·差值预判版）
+   ════════════════════════════════════════════════════════════
+   更新：LCG 引擎已新增 _rollAction 函数，在 EJS 预处理阶段
+   自动为当前 scene_mode 推断的动作执行 calcFinalResult 判定。
+   本步骤仍保留差值预判（不消耗骰子），作为 AI 的"预期参考"。
+   实际骰子判定结果由 LCG 引擎的 _actionResult 输出（见 <LCG骰子判定结果> 块）。
+   AI 应以 _actionResult 的 tier/success 为准决定行为成败。
+   ════════════════════════════════════════════════════════════ */
+let _interactionPreview = null;
+if (_currentHeroineData && _currentHeroineId > 0) {
+  /* 从场景模式推断可能的动作类型 */
+  const _sceneMode = getvar('stat_data.场景.场景模式', { scope: 'local', defaults: '休息' }) || '休息';
+  const _possibleActions = {
+    '对话':   ['comfort_heroine'],
+    '约会':   ['ask_date', 'give_gift', 'hold_hand'],
+    'H场景':  ['first_h', 'advanced_h'],
+    '告白':   ['confess'],
+    '上学模式': ['comfort_heroine'],
+    '事件模式': ['crisis_response'],
+    '休息':   []
+  };
+  const _actions = _possibleActions[_sceneMode] || [];
+
+  /* 使用 calcPlayerPower + calcHeroineRequirement 计算差值（不消耗骰子） */
+  const _canCalcPower = typeof calcPlayerPower === 'function';
+  const _canCalcReq = typeof calcHeroineRequirement === 'function';
+
+  if (_actions.length > 0 && _canCalcPower && _canCalcReq) {
+    _interactionPreview = {
+      scene_mode: _sceneMode,
+      heroine_id: _currentHeroineId,
+      heroine_name: _currentHeroineName,
+      possible_actions: _actions.map(function(action) {
+        try {
+          const _power = calcPlayerPower(action, _currentHeroineId);
+          const _reqObj = calcHeroineRequirement(action, _currentHeroineId);
+          const _req = _reqObj.value;
+          const _diff = _power - _req;
+          /* 成功率 = 50% + 差值（封顶 5%-95%，与 calcFinalResult 公式一致） */
+          const _successRate = Math.max(5, Math.min(95, 50 + _diff));
+          /* 预判分档基于差值（非实际骰子结果） */
+          const _tierPrediction = _diff >= 30 ? '大成功' :
+                                   _diff >= 10 ? '成功' :
+                                   _diff >= -10 ? '普通' :
+                                   _diff >= -30 ? '失败' : '大失败';
+          return {
+            action: action,
+            action_name: (typeof ACTION_TYPES !== 'undefined' && ACTION_TYPES[action] && ACTION_TYPES[action].name) ? ACTION_TYPES[action].name : action,
+            power: Math.round(_power * 100) / 100,
+            requirement: Math.round(_req * 100) / 100,
+            diff: Math.round(_diff * 100) / 100,
+            success_rate: Math.round(_successRate * 100) / 100,
+            tier_prediction: _tierPrediction,
+            note: '差值预判（不消耗骰子），实际判定见 LCG 引擎 _actionResult'
+          };
+        } catch (e) {
+          return { action: action, error: 'calcFailed:' + (e.message || 'unknown') };
+        }
+      })
+    };
+  } else {
+    _interactionPreview = {
+      scene_mode: _sceneMode,
+      heroine_id: _currentHeroineId,
+      heroine_name: _currentHeroineName,
+      possible_actions: [],
+      note: '当前场景模式无可预判动作或骰子联动引擎未加载'
+    };
+  }
+}
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 9：防口胡强制校验（集成 logViolation，8 步校验清单）
+   ════════════════════════════════════════════════════════════ */
+const _validationResult = {
+  stats_valid: Object.values(_playerStats).every(function(v) { return v >= 0 && v <= 100; }),
+  personality_valid: Object.values(_playerPersonality).every(function(v) { return v >= 0 && v <= 100; }),
+  skills_valid: Object.values(_playerSkills).every(function(v) { return v >= 0 && v <= 100; }),
+  heroine_data_valid: _currentHeroineId === 0 || _currentHeroineData !== null,
+  stage_valid: !!_stageLock,
+  archetype_valid: !!_playerArchetype
+};
+
+let _violationLogged = false;
+if (typeof logViolation === 'function') {
+  if (!_validationResult.stats_valid) {
+    logViolation('invalid_stats', { tier: 'layer1_stats', values: _playerStats }, 'high');
+    _violationLogged = true;
+  }
+  if (!_validationResult.personality_valid) {
+    logViolation('invalid_personality', { tier: 'layer2_personality', values: _playerPersonality }, 'high');
+    _violationLogged = true;
+  }
+  if (!_validationResult.skills_valid) {
+    logViolation('invalid_skills', { tier: 'layer3_skills', values: _playerSkills }, 'high');
+    _violationLogged = true;
+  }
+  if (!_validationResult.heroine_data_valid && _currentHeroineId > 0) {
+    logViolation('invalid_heroine_data', { heroine_id: _currentHeroineId, reason: 'HEROINE_PREFERENCES未加载或女角未定义' }, 'medium');
+    _violationLogged = true;
+  }
+}
+
+/* 8 步校验清单（与 防口胡机制.txt MANDATORY_CHECKLIST 对齐） */
+const _checklistStatus = {
+  step_1_variable_read: true,            /* 本文件步骤 1+2+6 已读取所有相关变量 */
+  step_2_difficulty_check: true,         /* 本文件步骤 2 已读取 _difficulty */
+  step_3_action_validation: true,        /* 本文件步骤 7+8 已校验行为锁与互动预判 */
+  step_4_calc_power: typeof calcPlayerPower === 'function',
+  step_5_calc_requirement: typeof calcHeroineRequirement === 'function',
+  step_6_calc_result: typeof calcFinalResult === 'function',
+  step_7_change_validation: true,         /* 由 变量变化幅度控制.txt + 思维链.txt 负责 */
+  step_8_log: _violationLogged ? '已记录违规' : '本轮无违规'
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 10：精简输出（只输出当前轮必要信息，控制 token）
+   ════════════════════════════════════════════════════════════ */
+
+/* 9.B.15: 友美 H 互斥后 h_locked 状态检测
+   当 泉美H完成=1（泉美已 H）时，友美进入 h_locked 状态：
+   - affection 可继续上升（不锁定告白）
+   - 但 H 行为被拒绝，触发特殊对话
+   - relationship_stage 上限锁定在"暧昧"（不可进入"心动"或"亲密"） */
+const _tomomiHLocked = (_currentHeroineId === 8 && Number(getvar('stat_data.隐藏.泉美H完成', { scope: 'local', defaults: 0 })) === 1);
+
+const CHARACTER_CONTROLLER_OUTPUT = {
+  /* 10.1 主角三层属性摘要（只输出分档，不输出全部数值） */
+  player_summary: {
+    archetype: _playerArchetype.archetype,
+    archetype_match_ratio: _playerArchetype.match_ratio,
+    narrative_style: _playerArchetype.narrative_style,
+    stat_tiers: buildStatTiers(_playerStats),
+    personality_tiers: buildPersonalityTiers(_playerPersonality),
+    skill_tiers: buildSkillTiers(_playerSkills)
+  },
+
+  /* 10.2 当前女角互动预览（如有） */
+  interaction_preview: _interactionPreview,
+
+  /* 10.3 性格原型修正（叙事指导） */
+  archetype_modifiers: {
+    archetype: _playerArchetype.archetype,
+    strengths: _playerArchetype.strengths,
+    weaknesses: _playerArchetype.weaknesses
+  },
+
+  /* 10.4 当前女角关系状态（精简版） */
+  heroine_relation: _currentHeroineId > 0 ? {
+    heroine_id: _currentHeroineId,
+    heroine_name: _currentHeroineName,
+    heroine_traits: _currentHeroineTraits,
+    heroine_difficulty: _currentHeroineDiff,
+    affection_stage: _stage,
+    behavior_lock: {
+      forbidden: _stageLock.forbidden,
+      allowed: _stageLock.allowed,
+      npc_attitude: _stageLock.npc_attitude
+    },
+    nsfw_threshold: {
+      牵手: _checkNsfwAllowed('牵手').allowed,
+      拥抱: _checkNsfwAllowed('拥抱').allowed,
+      亲吻: _checkNsfwAllowed('亲吻').allowed,
+      初H: _checkNsfwAllowed('初H').allowed,
+      进阶H: _checkNsfwAllowed('进阶H').allowed
+    },
+    jealousy_state: {
+      level: _jealousyDeadly ? '致命' : _jealousyHigh ? '高' : _jealousyMid ? '中' : _jealousyLow ? '低' : '无',
+      bad_ending_warning: _jealousyDeadly ? '触发 BAD_END_5_嫉妒杀戮' : _jealousyHigh ? '接近死结局阈值' : '正常'
+    },
+    h_locked: _tomomiHLocked,
+    mutex: _mutexInfo ? { partner_id: _mutexInfo.partner_id, rule: _mutexInfo.rule } : null
+  } : null,
+
+  /* 10.5 防口胡校验状态 */
+  validation: {
+    all_valid: _validationResult.stats_valid && _validationResult.personality_valid && _validationResult.skills_valid && _validationResult.heroine_data_valid,
+    violation_logged: _violationLogged,
+    checklist: _checklistStatus,
+    difficulty: _difficulty
+  },
+
+  /* 10.6 系统元信息 */
+  meta: {
+    version: '3.0',
+    layer_count: 3,
+    heroine_loaded: _currentHeroineId > 0,
+    heroine_count_loaded: _currentHeroineData ? 1 : 0,
+    dice_engine: 'calcPlayerPower+calcHeroineRequirement (差值预判，不消耗骰子)',
+    token_optimized: true,
+    note: '三层架构+精准加载+token控制：仅输出分档不输出数值，仅加载当前女角，预判不消耗骰子'
+  }
+};
+%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   步骤 11：女角 NPC 条目加载（20 选 1，仅在消息存在时加载）
+   保留精准加载逻辑，避免全量加载 20 位女角
+   ════════════════════════════════════════════════════════════ */
+%>
+<% if (typeof lastMessageId !== 'undefined' && lastMessageId > 0 && _currentHeroineId > 0 && _currentHeroineId <= 20) { %>
+
+<%/* ─── 11.2 NSFW 反差段：仅关系阶段 ≥ 暧昧 时追加（20 女角全覆盖） ─── */%>
+<% if (_stageLock.nsfw_visible) { %>
+<% if (_currentHeroineId === 1) { %>
+<%- await getwi('鸣泽唯_NSFW反差') %>
+<% } else if (_currentHeroineId === 2) { %>
+<%- await getwi('鸣泽美佐子_NSFW反差') %>
+<% } else if (_currentHeroineId === 3) { %>
+<%- await getwi('舞岛可怜_NSFW反差') %>
+<% } else if (_currentHeroineId === 4) { %>
+<%- await getwi('加藤美纪_NSFW反差') %>
+<% } else if (_currentHeroineId === 5) { %>
+<%- await getwi('筱原泉美_NSFW反差') %>
+<% } else if (_currentHeroineId === 6) { %>
+<%- await getwi('南川洋子_NSFW反差') %>
+<% } else if (_currentHeroineId === 7) { %>
+<%- await getwi('都筑梢江_NSFW反差') %>
+<% } else if (_currentHeroineId === 8) { %>
+<% if (_tomomiHLocked) { %>
+[友美 H 拒绝提示：h_locked=true（泉美已 H，互斥触发）。禁止任何 H 行为推进（初H/进阶H），仅允许对话/送礼/约会。若主角尝试 H，友美将拒绝："抱歉……我已经知道你和泉美的事了。我们还可以做朋友，但不要再进一步了。"relationship_stage 上限锁定在"暧昧"，不可进入"心动"或"亲密"。affection 可继续上升，告白不锁。]
+<% } else { %>
+<%- await getwi('水野友美_NSFW反差') %>
+<% } %>
+<% } else if (_currentHeroineId === 9) { %>
+<%- await getwi('安田爱美_NSFW反差') %>
+<% } else if (_currentHeroineId === 10) { %>
+<%- await getwi('田中美沙_NSFW反差') %>
+<% } else if (_currentHeroineId === 11) { %>
+<%- await getwi('片桐美铃_NSFW反差') %>
+<% } else if (_currentHeroineId === 12) { %>
+<%- await getwi('野野村美里_NSFW反差') %>
+<% } else if (_currentHeroineId === 13) { %>
+<%- await getwi('永岛久美子_NSFW反差') %>
+<% } else if (_currentHeroineId === 14) { %>
+<%- await getwi('永岛佐知子_NSFW反差') %>
+<% } else if (_currentHeroineId === 15) { %>
+<%- await getwi('齐藤澪_NSFW反差') %>
+<% } else if (_currentHeroineId === 16) { %>
+<%- await getwi('齐藤澪奈_NSFW反差') %>
+<% } else if (_currentHeroineId === 17) { %>
+<%- await getwi('铃木美穗_NSFW反差') %>
+<% } else if (_currentHeroineId === 18) { %>
+<%- await getwi('仁科_NSFW反差') %>
+<% } else if (_currentHeroineId === 19) { %>
+<%- await getwi('正树夏子_NSFW反差') %>
+<% } else if (_currentHeroineId === 20) { %>
+<%- await getwi('杉本樱子_NSFW反差') %>
+<% } %>
+<% } %>
+
+<%/* ─── 11.3 嫉妒链叙事提示 ─── */%>
+<% if (_jealousyDeadly) { %>
+[死结局预警：当前女角嫉妒值 <%= _jealousy %>/100 已达致命级。若再触发任何亲密事件，立即生成 BAD_END_5_嫉妒杀戮叙事：女角因爱生恨行凶，游戏结束。]
+<% } else if (_jealousyHigh) { %>
+[嫉妒链触发：当前女角嫉妒值 <%= _jealousy %>/100。叙事必须体现醋意、不安、试探行为，禁止轻描淡写。若玩家与其他女角亲密互动，本女角 jealousy +10（地狱难度 +25）。]
+<% } else if (_jealousyMid) { %>
+[嫉妒提示：当前女角嫉妒值 <%= _jealousy %>/100。叙事应偶尔体现醋意。]
+<% } %>
+
+<%/* ─── 11.4 互斥关系叙事提示（9.B.10 重写版：基于 MUTEX_BY_HEROINE_ID） ─── */%>
+<% if (_mutexInfo) { %>
+<% if (_sakurakoMisakoSymbiosis) { %>
+[共生提示：当前女角与 row_id=<%= _mutexInfo.partner_id %> 存在共生关系（<%= _mutexInfo.rule %>）。规则：
+1. 若鸣泽美佐子(row_id=2) affection ≤ -21（疏离以下），杉本樱子(row_id=20) affection 强制 -30；
+2. 若杉本樱子病逝（触发 BAD_END_樱子病逝 flag），鸣泽美佐子 affection -40 并锁定仇视阶段；
+3. 反向：若杉本樱子 affection ≥ 60（心动以上），鸣泽美佐子 trust +5（看到主角善待樱子）；
+4. 攻略其一有助于攻略另一，但攻略其一不强制要求攻略另一（共生非互斥）。]
+<% } else if (_mutexAsPartnerTriggered) { %>
+[互斥已触发·被动方：当前女角 row_id=<%= _currentHeroineId %> 已被互斥对象 row_id=<%= _mutexInfo.partner_id %> 锁定。
+触发 flag：<%= _mutexTriggeredFlags[_mutexInfo.partner_id] %>
+影响：<%= JSON.stringify(_mutexInfo.partner_impact) %>
+叙事要求：当前女角对主角态度冷淡甚至敌意，affection/jealousy 已按互斥影响修正；route_locked=<%= _mutexInfo.partner_impact.route_locked || 0 %>，禁止 AI 让其主动接近主角或接受主角告白。]
+<% } else if (_mutexAlreadyTriggered) { %>
+[互斥已触发·主动方：当前女角 row_id=<%= _currentHeroineId %> 已触发互斥，互斥对象 row_id=<%= _mutexInfo.partner_id %> 已锁定。
+触发 flag：<%= _mutexTriggeredFlag %>
+影响对象：<%= JSON.stringify(_mutexInfo.partner_impact) %>
+叙事要求：互斥对象已对主角冷淡甚至敌意；AI 不可在后续剧情中让互斥对象主动接近主角或接受主角告白。]
+<% } else { %>
+[互斥预警·未触发：当前女角 row_id=<%= _currentHeroineId %> 与 row_id=<%= _mutexInfo.partner_id %> 存在互斥关系（<%= _mutexInfo.rule %>）。
+触发条件：<%= _mutexInfo.trigger.description %>
+触发阈值：affection ≥ <%= _mutexInfo.trigger.affection_threshold || 'N/A' %> / 阶段达 <%= _mutexInfo.trigger.stage_threshold || 'N/A' %> / 关联 flag <%= _mutexInfo.trigger.flag_required || _mutexInfo.trigger.flag_auto_set || 'N/A' %>
+影响：<%= JSON.stringify(_mutexInfo.partner_impact) %>
+预警：若主角同时推进互斥对象，达到阈值后立即触发互斥锁定，不可逆。]
+<% } %>
+<% } %>
+
+<%/* ─── 11.5 性格原型叙事指导 ─── */%>
+<%
+let _archetypeGuide = '[主角性格原型：' + _playerArchetype.archetype + '（匹配度 ' + Math.round(_playerArchetype.match_ratio * 100) + '%）\n';
+_archetypeGuide += '叙事风格：' + _playerArchetype.narrative_style + '\n';
+if (_playerArchetype.strengths.length > 0) {
+  _archetypeGuide += '优势修正：' + _playerArchetype.strengths.join('、') + '\n';
+}
+if (_playerArchetype.weaknesses.length > 0) {
+  _archetypeGuide += '劣势修正：' + _playerArchetype.weaknesses.join('、') + '\n';
+}
+_archetypeGuide += ']';
+%><%= _archetypeGuide %>
+
+<% } /* end if lastMessageId > 0 */ %>
+
+<%/* ════════════════════════════════════════════════════════════
+   步骤 12：输出角色性格控制器状态摘要（精简 JSON，控制 token）
+   ════════════════════════════════════════════════════════════ */%>
+[角色性格控制器 已加载。本控制器集成三层属性架构（基础属性+性格特质+技能系统）、女角偏好系数表（HEROINE_PREFERENCES）、属性技能骰子联动（calcPlayerPower+calcHeroineRequirement 差值预判版，不消耗骰子）、防口胡机制（logViolation）、8 个性格原型自动检测。精准加载当前女角（仅 1 位，不全部加载 20 位），精简输出分档（不输出全部数值），控制 token 消耗。AI 必须严格遵守行为锁、NSFW 阈值锁、嫉妒链、互斥关系约束。]
+
+<%= JSON.stringify(CHARACTER_CONTROLLER_OUTPUT, null, 2) %>

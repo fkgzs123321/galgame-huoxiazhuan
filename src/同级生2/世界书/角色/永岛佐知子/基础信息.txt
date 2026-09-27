@@ -1,0 +1,164 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 永岛佐知子 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=14 / 永岛家主妇，祖母型长辈人妻
+   互斥关系：永岛婆媳（伦理锁定，与 row_id=13 久美子严格互斥）
+   核心矛盾：威严祖母 vs 被压抑多年的私下渴望
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 永岛佐知子_INFO = {
+  heroine_id: 14,
+  name: '永岛佐知子',
+  romanization: 'Nagashima Sachiko',
+  age: 52,
+  blood_type: 'AB',
+  identity: '八十八町居民，永岛家主妇，永岛久美子（row_id=13）的婆婆，丈夫永岛已故多年',
+  relationship: '主角邻里人妻长辈，初识为商业区偶遇的优雅夫人；与永岛久美子是婆媳关系，伦理锁定互斥',
+  home: '八十八町住宅区永岛家（与儿媳久美子同住，丈夫已故多年）',
+  birthday: '11-15',
+  height: 162,
+  weight: 54,
+  three_size: 'B92-W62-H92',
+  cup_size: 'F',
+  cv_implied: '成熟优雅低沉女中音，威严中带一丝沙哑',
+
+  appearance: {
+    hair: '黑色长发及肩，常束严谨低发髻，鬓角一丝不苟，发间已有少量银丝但保养得当',
+    eyes: '狭长锐利凤眼，眼色深黑，眼神凌厉如刀，唯有审视茶器或凝视亡夫遗照时才会柔和',
+    body: '身材丰满丰腴，保养极佳，虽年纪却皮肤白皙紧致，腰肢柔软有力，臀部圆润翘挺，成熟女性韵味浓郁',
+    feature: '左眼角有一颗小痣，眉骨高耸，鼻梁挺直；戴一副细金边眼镜，鼻梁上有常年佩戴留下的浅压痕',
+    clothing_default: '外出时着深色和服或素色长款连衣裙，配珍珠项链与玉镯；居家则换宽松深色和服外套，内衬素色衬衣；茶道时必着正装和服'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 52岁威严祖母/INTJ：守寡多年压抑 + 渴望被打破威严而非被崇拜
+  // 性经验来源：亡夫永岛（感情深厚），亡夫去世后守寡多年，将情欲深埋于威严外壳之下
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'F',
+    bust_size: 92,
+    waist_size: 62,
+    hip_size: 92,
+    height: 162,
+    weight: 54,
+    // 胸部详细（6 列）— 成熟女性的丰满，保养极佳
+    nipple_size: '大',
+    nipple_color: '深褐',
+    areola_size: '大',
+    breast_shape: '聚拢',
+    breast_sensitivity: 90,
+    lactation: '无',
+    // 腰部（2 列）— 紧致有力，保养得当
+    waist_shape: '柔软丰腴',
+    waist_sensitivity: 80,
+    // 手部（2 列）— 保养完美的优雅夫人手
+    hand_desc: '纤细白皙，保养完美，指节修长',
+    nail_style: '裸色甲油',
+    // 臀部（3 列）— 圆润翘挺，成熟女性韵味
+    hip_shape: '圆润丰满',
+    hip_sensitivity: 80,
+    anal_desc: '半开发',
+    // 下体详细（8 列）— 已破（亡夫），守寡多年压抑至今
+    pubic_hair: '自然',
+    labia_size: '正常',
+    labia_color: '深褐',
+    vaginal_tightness: '普通偏松',
+    vaginal_special: '蠕动',
+    lubrication_level: '正常',
+    hymen_status: '已破',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 威严祖母的反差：渴望被支配而非被崇拜
+    body_sensitivity: 80,
+    sensitive_zones: '颈侧,锁骨,腰窝,后颈,眼镜架压痕处,手腕内侧',
+    arousal_triggers: '茶道仪式感,亡夫回忆涌上,威严被打破,被支配而非崇拜,深夜茶室独处,和服丝绸摩擦'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 70,           // 魅力（外貌吸引力）
+    academic: 60,        // 学业（学习成绩）
+    physical: 50,        // 体力（体能/运动）
+    social: 45,          // 社交（交际能力）
+    perception: 55,      // 敏感（察言观色/直觉）
+    reputation: 60,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 25,        // 力量（物理对抗/搬运）
+    agility: 45,         // 敏捷（反应/逃跑）
+    intelligence: 60,    // 智力（解谜/计划）
+    will_skill: 45,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 45,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 35,         // 烹饪（料理）
+    art: 50,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 15,        // 格斗（防身）
+    observation: 50,     // 观察（情报收集）
+    romance_skill: 25    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'INTJ',
+    tags: ['威严祖母', '私下渴望', '禁忌长辈'],
+    public_face: '威严不可侵犯的永岛家夫人，规矩严格，礼仪端正',
+    social_face: '偶尔流露孤独的优雅夫人，对主角的"不畏惧"感到好奇',
+    intimate_face: '威严外壳崩塌，成熟女性的情欲倾泻，渴望被支配而非崇拜',
+    core_conflict: '威严祖母 vs 私下渴望——多年的压抑与寡居积攒的情欲，渴望有人能打破她维护了一辈子的威严外壳'
+  },
+
+  preferences: {
+    like_food: ['红茶', '抹茶', '和果子', '日本酒'],
+    hate_food: ['速食', '甜腻奶昔'],
+    hobby: ['茶道', '花道', '能剧', '独自散步', '看古典文学'],
+    gift_pref: ['丝绸睡衣', '品牌化妆品', '银项链', '温泉明信片', '高级餐厅套餐', '手工巧克力'],
+    topic_pref: ['茶道', '花道', '能剧', '古典文学', '家庭（回避亡夫话题）']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '永岛久美子（儿媳，row_id=13）—— 永岛母女伦理锁定互斥：攻略婆婆后儿媳锁定仇视，反之亦然；触发后婆媳关系破裂事件',
+    family: '亡夫永岛（多年前病故，佐知子守寡至今）；儿媳永岛久美子（row_id=13，同住）；儿子（已故，与久美子是夫妻）',
+    friends: ['茶道同好会成员', '花道老师', '商业区老店主们'],
+    deceased_husband_note: '亡夫永岛是佐知子唯一的性经验来源，二人感情深厚；亡夫去世后佐知子守寡多年，将情欲深埋于威严外壳之下'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '必须通过文化话题切入（茶道/能剧/花道/古典文学），证明你能跟上她的智识与品味；以不畏惧她威严的态度引起她的注意；以"对等的长辈交流"姿态建立基础；逐步以言语试探、肢体靠近突破她的威严防线',
+    warning: '强行亲密触发长辈伦理红线；强迫初H触发 BAD_END_1（报警）+ 永岛家婆媳关系破裂事件；与儿媳久美子同时推进会触发互斥锁'
+  }
+};
+%>
+
+永岛佐知子 · 基础信息已加载。当前女角 row_id=14，互斥关系：永岛母女（与 row_id=13 永岛久美子严格互斥——攻略婆婆后儿媳锁定仇视，反之亦然）。核心矛盾：威严祖母外壳 vs 被压抑多年的私下渴望。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 永岛佐知子_INFO.name %>（<%- 永岛佐知子_INFO.age %>岁）
+- 身份: <%- 永岛佐知子_INFO.identity %>
+- 关系: <%- 永岛佐知子_INFO.relationship %>
+- 住所: <%- 永岛佐知子_INFO.home %>
+<%_ if (永岛佐知子_INFO.appearance) { _%>
+- 外貌: <%- [永岛佐知子_INFO.appearance.hair, 永岛佐知子_INFO.appearance.eyes, 永岛佐知子_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (永岛佐知子_INFO.personality) { _%>
+- 性格: <%- 永岛佐知子_INFO.personality.tags ? 永岛佐知子_INFO.personality.tags.join('、') : 永岛佐知子_INFO.personality.public_face %>
+<%_ if (永岛佐知子_INFO.personality.public_face) { _%>- 表面: <%- 永岛佐知子_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (永岛佐知子_INFO.personality.intimate_face) { _%>- 亲密面: <%- 永岛佐知子_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (永岛佐知子_INFO.preferences) { _%>- 喜好: <%- [(永岛佐知子_INFO.preferences.like_food || []).join('/'), '爱好：' + (永岛佐知子_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (永岛佐知子_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(永岛佐知子_INFO.relations) %>
+<%_ } _%>
+<%_ if (永岛佐知子_INFO.strategy) { _%>- 攻略要点: <%- 永岛佐知子_INFO.strategy.best_approach %>
+<%_ if (永岛佐知子_INFO.strategy.warning) { _%>- 警告: <%- 永岛佐知子_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

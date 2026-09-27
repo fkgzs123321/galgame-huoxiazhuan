@@ -1,0 +1,18 @@
+{
+  "id": "yumq-regex-040-contest-notify",
+  "scriptName": "6竞赛通知美化",
+  "findRegex": "/<contest_notify>([\\s\\S]*?)<\\/contest_notify>/g",
+  "replaceString": "<style>\n.yumq-contest-container { max-width: 90%; margin: 12px auto; background: linear-gradient(135deg, #FFEDF5 0%, #FFE0EC 50%, #FFD4E5 100%); border-radius: 18px; border: 2px solid #F472B6; box-shadow: 0 8px 24px rgba(244, 114, 182, 0.25); overflow: hidden; font-family: 'M PLUS Rounded 1c', -apple-system, sans-serif; position: relative; }\n.yumq-contest-container::before { content: '🏆'; position: absolute; top: -8px; right: 14px; font-size: 1.6em; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }\n.yumq-contest-header { background: linear-gradient(90deg, #EC4899, #F472B6); color: #fff; padding: 12px 18px; font-weight: 700; font-size: 1em; letter-spacing: 0.5px; }\n.yumq-contest-body { padding: 14px 18px; color: #6D5B79; font-size: 0.92em; line-height: 1.6; white-space: pre-wrap; }\n.yumq-contest-body strong { color: #DB2777; font-weight: 700; }\n.yumq-contest-footer { padding: 8px 18px 12px; font-size: 0.78em; color: #9CA3AF; text-align: right; font-style: italic; }\n</style>\n<div class=\"yumq-contest-container\">\n  <div class=\"yumq-contest-header\">今日竞赛主题</div>\n  <div class=\"yumq-contest-body\">$1</div>\n  <div class=\"yumq-contest-footer\">— 欲妈群 · 妈妈们永不缺席 —</div>\n</div>",
+  "markdownOnly": true,
+  "promptOnly": false,
+  "placement": [
+    1,
+    2
+  ],
+  "minDepth": null,
+  "maxDepth": null,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "trimStrings": [],
+  "disabled": false
+}

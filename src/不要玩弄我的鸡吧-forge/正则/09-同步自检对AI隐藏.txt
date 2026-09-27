@@ -1,0 +1,15 @@
+{
+  "id": "a1b2c3d4-0209-4000-8000-000000000209",
+  "scriptName": "09-同步自检对AI隐藏",
+  "findRegex": "/<status_sync_check>[\\s\\S]*?<\\/status_sync_check>/gi",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [1, 2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

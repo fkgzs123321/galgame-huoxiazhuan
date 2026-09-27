@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta name="mortal-build-id" content="1.1.5+20260808T084137534Z">
+
+    <meta charset="UTF-8" />
+    <meta name="author" content="Hajimi" />
+    <meta name="copyright" content="Copyright (c) 2026 Hajimi. All Rights Reserved." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>凡人修仙传 · 独立版</title>
+    <style>
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+        background: #060403;
+        color: #f4e7c1;
+      }
+      #mortal-boot-shell {
+        box-sizing: border-box;
+        display: flex;
+        min-height: 100vh;
+        min-height: 100svh;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        font-family: 'Noto Sans SC', sans-serif;
+      }
+      #mortal-boot-card {
+        width: min(100%, 460px);
+        box-sizing: border-box;
+        border: 1px solid #563d29;
+        border-radius: 8px;
+        background: #100b07;
+        padding: 24px;
+      }
+      #mortal-boot-card h1 {
+        margin: 0;
+        color: #ddb763;
+        font-size: 20px;
+      }
+      #mortal-boot-message {
+        margin: 12px 0 0;
+        color: #c5ad92;
+        font-size: 14px;
+        line-height: 1.65;
+      }
+      #mortal-boot-actions {
+        display: none;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      #mortal-boot-actions button,
+      #mortal-boot-actions a {
+        box-sizing: border-box;
+        min-height: 44px;
+        border: 1px solid #75593f;
+        border-radius: 6px;
+        background: #281d14;
+        color: #f4e7c1;
+        padding: 10px 14px;
+        font: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      #mortal-boot-actions button:hover,
+      #mortal-boot-actions a:hover {
+        border-color: #ddb763;
+        background: #392b1d;
+      }
+      #mortal-boot-actions button:focus-visible,
+      #mortal-boot-actions a:focus-visible {
+        outline: 2px solid #ddb763;
+        outline-offset: 2px;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="/assets/index-DwhSEjZX.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-58rTSP1i.css">
+  </head>
+  <body>
+    <div id="root">
+      <main id="mortal-boot-shell">
+        <section id="mortal-boot-card" aria-live="polite">
+          <h1>正在打开凡人修仙传</h1>
+          <p id="mortal-boot-message">正在加载必要资源，请稍候……</p>
+          <div id="mortal-boot-actions">
+            <button id="mortal-boot-retry" type="button">重新加载资源</button>
+            <a id="mortal-boot-alternate" href="https://fanren-remake.pages.dev/">使用备用域名</a>
+            <button id="mortal-boot-copy" type="button">复制诊断信息</button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      ;(function () {
+        var phase = 'initial-html'
+        var failure = null
+        var startedAt = Date.now()
+        var fallbackAssetAttempts = 0
+        var primaryOrigin = 'https://fanren-remake.hajimi-productions.com'
+        var legacyOrigin = 'https://fanren-remake.pages.dev'
+        var language = String(navigator.language || '').toLowerCase()
+        var copy =
+          language.indexOf('vi') === 0
+            ? {
+                title: 'Đang mở Phàm Nhân Tu Tiên Truyện',
+                loading: 'Đang tải tài nguyên cần thiết, vui lòng chờ…',
+                retry: 'Tải lại tài nguyên',
+                alternate: 'Dùng tên miền dự phòng',
+                copy: 'Sao chép thông tin chẩn đoán',
+                failure:
+                  'Tài nguyên ứng dụng không khởi động đúng. Dữ liệu cục bộ của bạn chưa bị xóa; hãy tải lại, dùng tên miền dự phòng hoặc sao chép thông tin chẩn đoán để phản hồi.',
+              }
+            : language.indexOf('en') === 0
+              ? {
+                  title: "Opening A Record of a Mortal's Journey to Immortality",
+                  loading: 'Loading required resources…',
+                  retry: 'Reload Resources',
+                  alternate: 'Use Backup Domain',
+                  copy: 'Copy Diagnostics',
+                  failure:
+                    'The app resources did not start correctly. Your local data has not been deleted; reload, use the backup domain, or copy the diagnostics when reporting this issue.',
+                }
+              : {
+                  title: '正在打开凡人修仙传',
+                  loading: '正在加载必要资源，请稍候……',
+                  retry: '重新加载资源',
+                  alternate: '使用备用域名',
+                  copy: '复制诊断信息',
+                  failure:
+                    '应用资源没有正常启动。你的本地数据没有被删除，可以重新加载、使用备用域名或复制诊断信息反馈。',
+                }
+        var watchdog = window.setTimeout(function () {
+          fail({
+            phase: phase,
+            message: '应用启动超过 25 秒仍未完成',
+            category: 'timeout',
+          })
+        }, 25000)
+
+        document.querySelector('#mortal-boot-card h1').textContent = copy.title
+        document.getElementById('mortal-boot-message').textContent = copy.loading
+        document.getElementById('mortal-boot-retry').textContent = copy.retry
+        var alternateLink = document.getElementById('mortal-boot-alternate')
+        var alternateOrigin =
+          window.location.hostname === 'fanren-remake.pages.dev' ? primaryOrigin : legacyOrigin
+        var fallbackAssetOrigin =
+          window.location.protocol === 'https:' &&
+          window.location.hostname === 'fanren-remake.hajimi-productions.com'
+            ? legacyOrigin
+            : window.location.protocol === 'https:' &&
+                window.location.hostname === 'fanren-remake.pages.dev'
+              ? primaryOrigin
+              : ''
+        var alternateUrl = new URL(
+          window.location.pathname + window.location.search + window.location.hash,
+          alternateOrigin,
+        )
+        alternateLink.href = alternateUrl.toString()
+        alternateLink.textContent = copy.alternate
+        document.getElementById('mortal-boot-copy').textContent = copy.copy
+
+        function safeAssetPath(value) {
+          if (!value) return ''
+          try {
+            var pathname = new URL(String(value), window.location.origin).pathname
+            return pathname.indexOf('/assets/') === 0 ? pathname : ''
+          } catch (_error) {
+            return ''
+          }
+        }
+
+        function completedAssetPaths() {
+          if (!window.performance || !window.performance.getEntriesByType) return []
+          var paths = []
+          var entries = window.performance.getEntriesByType('resource')
+          for (var index = 0; index < entries.length; index += 1) {
+            var pathname = safeAssetPath(entries[index].name)
+            if (pathname && paths.indexOf(pathname) === -1) paths.push(pathname)
+          }
+          return paths
+        }
+
+        function diagnostics() {
+          var buildMeta = document.querySelector('meta[name="mortal-build-id"]')
+          var assetPaths = completedAssetPaths()
+          return JSON.stringify(
+            {
+              schema: 'mortal-boot-diagnostic-v1',
+              buildId: buildMeta ? buildMeta.content : 'unknown',
+              capturedAt: new Date().toISOString(),
+              phase: failure ? failure.phase : phase,
+              message: failure ? failure.message : 'unknown',
+              category: failure && failure.category ? failure.category : 'unknown',
+              assetPath: failure ? safeAssetPath(failure.assetPath) : '',
+              elapsedMs: Date.now() - startedAt,
+              completedAssetCount: assetPaths.length,
+              recentAssetPaths: assetPaths.slice(-5),
+              fallbackAssetAttempts: fallbackAssetAttempts,
+              userAgent: navigator.userAgent,
+              language: navigator.language,
+              online: navigator.onLine,
+              viewport: { width: window.innerWidth, height: window.innerHeight },
+              capabilities: {
+                indexedDB: typeof indexedDB !== 'undefined',
+                webCrypto: Boolean(window.crypto && window.crypto.subtle),
+                modules: 'noModule' in document.createElement('script'),
+                structuredClone: typeof window.structuredClone === 'function',
+              },
+            },
+            null,
+            2,
+          )
+        }
+
+        function fallbackCopy(text) {
+          var textarea = document.createElement('textarea')
+          textarea.value = text
+          document.body.appendChild(textarea)
+          textarea.select()
+          document.execCommand('copy')
+          textarea.remove()
+        }
+
+        function copyDiagnostics() {
+          var text = diagnostics()
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(function () {
+              fallbackCopy(text)
+            })
+            return
+          }
+          fallbackCopy(text)
+        }
+
+        function retry() {
+          var url = new URL(window.location.href)
+          url.searchParams.set('bootRetry', String(Date.now()))
+          window.location.replace(url.toString())
+        }
+
+        function tryAlternateStylesheet(target) {
+          if (!target || String(target.tagName).toLowerCase() !== 'link') return false
+          if (String(target.rel).toLowerCase() !== 'stylesheet') return false
+          if (target.getAttribute('data-mortal-fallback') === '1') return false
+          var assetPath = safeAssetPath(target.href)
+          if (!assetPath || !target.parentNode) return false
+
+          var replacement = document.createElement('link')
+          replacement.rel = 'stylesheet'
+          replacement.href = new URL(assetPath, alternateOrigin).toString()
+          replacement.setAttribute('data-mortal-fallback', '1')
+          replacement.addEventListener('load', function () {
+            if (target.parentNode) target.parentNode.removeChild(target)
+          })
+          fallbackAssetAttempts += 1
+          target.parentNode.insertBefore(replacement, target.nextSibling)
+          return true
+        }
+
+        function sameOriginAssetPath(value) {
+          if (!value) return ''
+          try {
+            var assetUrl = new URL(String(value), window.location.origin)
+            if (assetUrl.origin !== window.location.origin) return ''
+            return safeAssetPath(assetUrl.href)
+          } catch (_error) {
+            return ''
+          }
+        }
+
+        function tryAlternateBootstrapScript(target) {
+          if (!fallbackAssetOrigin || !target) return false
+          if (String(target.tagName).toLowerCase() !== 'script') return false
+          if (String(target.type).toLowerCase() !== 'module') return false
+          if (target.getAttribute('data-mortal-fallback') === '1') return false
+
+          var assetPath = sameOriginAssetPath(target.src)
+          if (!/^\/assets\/index-[A-Za-z0-9_-]+\.js$/.test(assetPath)) return false
+          if (!target.parentNode) return false
+
+          var replacement = document.createElement('script')
+          replacement.type = 'module'
+          replacement.src = new URL(assetPath, fallbackAssetOrigin).toString()
+          replacement.crossOrigin = 'anonymous'
+          replacement.referrerPolicy = 'no-referrer'
+          if (target.integrity) replacement.integrity = target.integrity
+          replacement.setAttribute('data-mortal-fallback', '1')
+          fallbackAssetAttempts += 1
+          phase = 'loading-bootstrap-fallback'
+          target.parentNode.insertBefore(replacement, target.nextSibling)
+          return true
+        }
+
+        function fail(nextFailure) {
+          var normalized = nextFailure || {
+            phase: phase,
+            message: '未知启动错误',
+            category: 'runtime',
+          }
+          if (failure && failure.category !== 'timeout') return
+          if (failure && normalized.category === 'timeout') return
+          failure = normalized
+          window.clearTimeout(watchdog)
+          var message = document.getElementById('mortal-boot-message')
+          var actions = document.getElementById('mortal-boot-actions')
+          if (message) message.textContent = copy.failure
+          if (actions) actions.style.display = 'flex'
+        }
+
+        function handleWindowError(event) {
+          var target = event.target
+          if (tryAlternateStylesheet(target)) return
+          if (tryAlternateBootstrapScript(target)) return
+          var targetRel = target && String(target.rel || '').toLowerCase()
+          if (targetRel === 'modulepreload') return
+          var resourceUrl = target && (target.src || target.href)
+          if (resourceUrl && !safeAssetPath(resourceUrl)) return
+          fail({
+            phase: phase,
+            message: event.message || '资源加载失败',
+            assetPath: event.filename || resourceUrl,
+            category: resourceUrl ? 'resource' : 'runtime',
+          })
+        }
+
+        function handleUnhandledRejection(event) {
+          var reason = event.reason
+          fail({
+            phase: phase,
+            message: reason && reason.message ? reason.message : String(reason || '模块加载失败'),
+            category: 'import',
+          })
+        }
+
+        function removeBootListeners() {
+          window.removeEventListener('error', handleWindowError, true)
+          window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+        }
+
+        document.getElementById('mortal-boot-retry').addEventListener('click', retry)
+        document.getElementById('mortal-boot-copy').addEventListener('click', copyDiagnostics)
+        window.addEventListener('error', handleWindowError, true)
+        window.addEventListener('unhandledrejection', handleUnhandledRejection)
+        window.__MORTAL_BOOT_GUARD__ = {
+          ready: function () {
+            window.clearTimeout(watchdog)
+            removeBootListeners()
+          },
+          fail: fail,
+          recordFallbackAttempt: function () {
+            fallbackAssetAttempts += 1
+          },
+          setPhase: function (nextPhase) {
+            phase = String(nextPhase || phase)
+          },
+        }
+      })()
+    </script>
+  <!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e9d0eb9b1c3e4aa0a93490f8655d1125"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>

@@ -1,0 +1,176 @@
+@@generate_before
+<%_
+// ════════════════════════════════════════════════════════════
+// 精液成瘾能力 EJS 多阶段条目 · KK园区专版
+// 按玩家.精液成瘾能力.* 字段分阶段注入
+// 蓝灯常驻，深度4
+// ════════════════════════════════════════════════════════════
+const addiction_awakened = Boolean(getvar('stat_data.玩家.精液成瘾能力.已觉醒', { scope: 'local', defaults: true }));
+const addiction_progress = Number(getvar('stat_data.玩家.精液成瘾能力.觉醒进度', { scope: 'local', defaults: 100 })) || 100;
+const addiction_oral = Number(getvar('stat_data.玩家.精液成瘾能力.已触发口服次数', { scope: 'local', defaults: 0 })) || 0;
+const addiction_internal = Number(getvar('stat_data.玩家.精液成瘾能力.已触发内射次数', { scope: 'local', defaults: 0 })) || 0;
+const addiction_park_known = Number(getvar('stat_data.玩家.精液成瘾能力.园区知晓程度', { scope: 'local', defaults: 60 })) || 60;
+const addiction_total = Number(getvar('stat_data.玩家.精液成瘾能力.成瘾女性总数', { scope: 'local', defaults: 0 })) || 0;
+
+// 阶段判定
+const ad_stage_dormant = !addiction_awakened;                                  // 未觉醒
+const ad_stage_awakened = addiction_awakened && addiction_total === 0;          // 觉醒但未触发
+const ad_stage_first = addiction_awakened && addiction_total === 1;             // 首次触发
+const ad_stage_growing = addiction_awakened && addiction_total >= 2 && addiction_total <= 4;  // 后宫雏形
+const ad_stage_harem = addiction_awakened && addiction_total >= 5 && addiction_total <= 9;    // 后宫规模
+const ad_stage_king = addiction_awakened && addiction_total >= 10;              // 后宫王（隐藏结局触发条件）
+
+// 园区对能力的知晓程度（仅知内射，不知口服）
+const park_ignorant = addiction_park_known < 30;
+const park_suspicious = addiction_park_known >= 30 && addiction_park_known < 60;
+const park_aware = addiction_park_known >= 60 && addiction_park_known < 90;
+const park_confirmed = addiction_park_known >= 90;
+_%>
+<%_ if (ad_stage_dormant) { _%>
+【精液成瘾能力·未觉醒】
+玩家尚未觉醒此能力。所有触发条件无效。
+（注：当前项目默认已觉醒，此阶段通常不出现）
+
+<%_ } _%>
+<%_ if (ad_stage_awakened) { _%>
+【精液成瘾能力·觉醒态】
+觉醒进度：<%= addiction_progress %>%
+触发方式：口服（异性吃下玩家精液） / 内射（玩家精液进入异性阴道）
+效果：成瘾度累积 ≥ 50 时，目标爱意值开始上升；≥ 80 时形成病态依恋
+园区知晓程度：<%= addiction_park_known %>%（仅知"内射"触发，不知"口服"也会触发）
+
+【当前状态】
+- 尚未对任何女性触发过此能力
+- 玩家身上隐藏的底牌：口服触发方式（园区不知晓）
+- 园区已知底牌：内射触发方式（园区计划用于诈骗大陆女性）
+- 园区正在观察user能力的真实性，未启动"利用计划"
+
+【触发提示】
+- 口服触发：user 需要让女性主动或被动吃下精液（食物/饮品混入/口交吞咽）
+- 内射触发：user 与女性发生无套性行为并内射
+- 一旦触发：目标成瘾度 +30，触发方式标记为"口服"或"内射"
+- 双重触发（口服+内射都发生过）：触发方式标记为"双重"，成瘾速度 ×2
+
+<%_ } _%>
+<%_ if (ad_stage_first) { _%>
+【精液成瘾能力·首次触发】
+已成瘾女性：1人
+触发方式分布：口服 <%= addiction_oral %>次 / 内射 <%= addiction_internal %>次
+园区知晓程度：<%= addiction_park_known %>%
+
+【首位成瘾女性状态】
+（详见该女性角色字段：成瘾度 / 爱意值 / 成瘾触发方式 / 已口服次数 / 已内射次数 / 成瘾觉醒日期）
+
+【阶段提示】
+- 首次触发是分水岭——user 跨过了"被动受害者"的界限
+- 园区若发现此女性成瘾，会立即启动"利用计划"
+- 内射触发会让园区知晓度 +20，口服触发 +0（园区不知晓）
+- 此女性可能成为 user 的首位心腹（成瘾度 ≥ 80 时）
+
+【道德影响】
+- 主动触发精液成瘾：道德.善恶值 -5~-15
+- 利用成瘾女性进行诈骗：道德.善恶值 -10~-30
+- 拒绝园区安排的"特殊任务"：可能触发惩罚事件
+
+<%_ } _%>
+<%_ if (ad_stage_growing) { _%>
+【精液成瘾能力·后宫雏形】
+已成瘾女性：<%= addiction_total %>人
+触发方式分布：口服 <%= addiction_oral %>次 / 内射 <%= addiction_internal %>次
+园区知晓程度：<%= addiction_park_known %>%
+
+【后宫雏形状态】
+user 已拥有 2~4 名成瘾女性，初步形成"后宫网络"。这些女性可能是：
+- 同组受害者（小薇/阿凤/灵灵）——通过口服秘密培养，园区不知晓
+- 园区安排的"任务目标"（大陆女性视频诈骗对象）——通过内射触发，园区知晓
+- 女管理者（冷雪/媚娘）——高风险高回报的策反对象
+
+【阶段优势】
+- 成瘾女性可成为 user 的情报来源、内应、心腹
+- 高爱意值（≥80）的女性会主动保护 user
+- 可通过成瘾女性之间的影响扩大网络
+
+【阶段风险】
+- 园区若发现 oral 触发方式，会立即处死 user
+- 内射触发次数过多会让园区知晓度达到 90%+，user 失去利用价值
+- 成瘾女性若关系破裂可能反水告密
+
+<%_ } _%>
+<%_ if (ad_stage_harem) { _%>
+【精液成瘾能力·后宫规模】
+已成瘾女性：<%= addiction_total %>人
+触发方式分布：口服 <%= addiction_oral %>次 / 内射 <%= addiction_internal %>次
+园区知晓程度：<%= addiction_park_known %>%
+
+【后宫规模状态】
+user 已拥有 5~9 名成瘾女性，形成完整的后宫网络。这些女性分布在园区各阶层：
+- 受害者群：作为逃脱同盟
+- 管理层：作为内应获取情报
+- 暗网网络：作为对外联络渠道
+- 大陆女性：作为外部资源（金钱/警方线索）
+
+【阶段优势】
+- 可触发 D_反杀上位结局（需满足其他条件）
+- 可触发 E_被救结局（通过大陆心腹向警方传递证据）
+- 高爱意值女性会为 user 牺牲自己
+
+【阶段警告】
+- 园区若察觉后宫规模，会立即处决 user（毒蛇/黑寡妇动手）
+- 必须保持伪装度 ≥ 80 才能维持表面顺从
+- 后宫内部可能因嫉妒/争宠产生冲突
+
+<%_ } _%>
+<%_ if (ad_stage_king) { _%>
+【精液成瘾能力·后宫王】
+已成瘾女性：<%= addiction_total %>人
+触发方式分布：口服 <%= addiction_oral %>次 / 内射 <%= addiction_internal %>次
+园区知晓程度：<%= addiction_park_known %>%
+
+【后宫王状态】
+user 已拥有 10+ 名成瘾女性，达成"后宫王"隐藏结局触发条件。
+此时的 user 已经不是普通受害者——他掌握着一支完全忠诚的"后宫军队"。
+园区内的女性（无论受害者还是管理者）都开始以某种方式围绕 user 转动。
+即使园区高层察觉异常，也已无法阻止——成瘾女性的网络已深入园区各角落。
+
+【隐藏结局触发条件】
+- 玩家.精液成瘾能力.成瘾女性总数 ≥ 10
+- 已绑定的女性角色中至少 5 名具现度 ≥ 100
+- 园区.善恶值 < -50（黑化路线）
+- 触发 F_后宫王 隐藏结局：user 取代龙姐成为园区实际控制者，建立以自己为核心的"后宫帝国"
+
+【阶段警告】
+- 滥用此能力会让 user 彻底黑化，无法回到光明路线
+- 成瘾女性中的"原配"或"初恋"可能因 user 的扩张而心碎/反水
+- 园区外的警方/敌对势力可能将 user 列为新的清除目标
+
+<%_ } _%>
+
+<%_ if (park_ignorant) { _%>
+【园区对能力的态度·一无所知】
+园区对 user 的精液成瘾能力一无所知。user 可自由行动，但任何明显的触发都会引起怀疑。
+建议：保持低调，避免在监控区域使用能力。
+<%_ } _%>
+<%_ if (park_suspicious) { _%>
+【园区对能力的态度·起疑】
+园区开始怀疑 user 拥有"某种特殊能力"——可能是通过受害者体检、女性行为异常、监控记录等。
+但园区尚未确认能力的具体机制，user 仍有一定周旋空间。
+建议：减少内射触发频率（园区已知此方式），改用口服触发（园区不知晓）。
+<%_ } _%>
+<%_ if (park_aware) { _%>
+【园区对能力的态度·知晓】
+园区已确认 user 的"内射成瘾"能力，龙姐已启动"利用计划"——安排 user 接触大陆有钱女性，通过内射让对方爱上 user，再骗取钱财。
+user 表面顺从，但可暗中：
+- 通过口服触发秘密培养心腹（园区不知晓）
+- 在内射任务中"放水"（不传送精液，假装失败）
+- 利用园区对能力的依赖，反向操控
+建议：保持伪装度 ≥ 60，否则会被强制执行"特殊任务"。
+<%_ } _%>
+<%_ if (addiction_park_known >= 90) { _%>
+【园区对能力的态度·完全掌握】
+园区已完全掌握 user 的内射成瘾能力，并开始研究"口服触发"的可能性（极危险）。
+若园区发现口服触发方式，user 将失去所有底牌，可能被立即处决或转卖。
+建议：
+- 立即启动逃脱/反杀计划
+- 销毁所有口服触发证据
+- 让口服成瘾的女性保持低调，避免暴露异常
+<%_ } _%>

@@ -1,0 +1,276 @@
+@@generate_before
+# [mvu_plot]RPG制造系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.制造配方 / stat_data.物品栏 / stat_data.仓库 / stat_data.技能
+
+<%
+// ===== 读取技能等级（影响解锁和成功率）=====
+var insightLevel = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var disguiseLevel = Number(getvar('stat_data.技能.伪装.等级', {scope:'local', defaults:1})) || 1;
+var willpowerLevel = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+var exerciseLevel = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var meditationLevel = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+var recoveryLevel = Number(getvar('stat_data.技能.恢复.等级', {scope:'local', defaults:1})) || 1;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+
+// ===== 已学配方列表 =====
+// 配方类型：craft（制造）/ modify（改造）/ upgrade（升级）
+var _rawRecipes = getvar('stat_data.制造配方', {scope:'local', defaults:[
+  // 校园基础配方（无需技能要求）
+  { id:'recipe001', name:'简易书签', type:'craft', materials:[{name:'硬纸板', count:1}], outputs:[{name:'书签', count:1, quality:'普通'}], unlock:{skill:'none', level:0}, success_rate:100, source:'学习(美术课)', learned_day:1 },
+  { id:'recipe002', name:'整理错题本', type:'craft', materials:[{name:'笔记本', count:1},{name:'试卷', count:3}], outputs:[{name:'错题本', count:1, quality:'良好'}], unlock:{skill:'none', level:0}, success_rate:100, source:'学习(自习)', learned_day:1 },
+  // 锻炼相关配方（需 exercise）
+  { id:'recipe003', name:'运动护腕(自制)', type:'craft', materials:[{name:'布料', count:2},{name:'橡皮筋', count:1}], outputs:[{name:'运动护腕', count:1, quality:'普通'}], unlock:{skill:'exercise', level:5}, success_rate:90, source:'学习(体育课)', learned_day:1 },
+  // 恢复相关配方（需 recovery）
+  { id:'recipe004', name:'简易冰敷袋', type:'craft', materials:[{name:'塑料袋', count:1},{name:'冰块', count:3}], outputs:[{name:'冰敷袋', count:1, quality:'普通'}], unlock:{skill:'recovery', level:5}, success_rate:95, source:'学习(校医室)', learned_day:1 },
+  // 冥想相关配方（需 meditation）
+  { id:'recipe005', name:'安神香囊', type:'craft', materials:[{name:'干花', count:2},{name:'布料', count:1}], outputs:[{name:'安神香囊', count:1, quality:'良好'}], unlock:{skill:'meditation', level:10}, success_rate:80, source:'学习(图书馆)', learned_day:1 }
+]}) || [];
+var recipes = Array.isArray(_rawRecipes) ? _rawRecipes : (function(){ var a=[]; if(_rawRecipes && typeof _rawRecipes==='object'){ for(var k in _rawRecipes){ if(Object.prototype.hasOwnProperty.call(_rawRecipes,k)) a.push(_rawRecipes[k]); } } return a; })();
+
+// ===== 制造工坊可用地点 =====
+// 宿舍（主要工坊）/ 教室（课间简易制造）/ 校医室（药品相关，需沈雨桐允许）/ 实验楼（化学/物理相关，需老师允许）
+
+// ===== 配方ID命名 =====
+// recipe001 起递增，稳定不重用
+%>
+
+<crafting_system>
+【RPG制造系统 - AI内部参考，严禁外露元数据】
+
+---
+■ 当前制造能力
+---
+洞察技能：Lv.<%= insightLevel %>
+伪装技能：Lv.<%= disguiseLevel %>
+意志技能：Lv.<%= willpowerLevel %>
+锻炼技能：Lv.<%= exerciseLevel %>
+冥想技能：Lv.<%= meditationLevel %>
+恢复技能：Lv.<%= recoveryLevel %>
+使用阶段：<%= stage %>/5
+已学配方数：<%= recipes.length %>
+
+---
+■ 已学配方列表
+---
+<% if (recipes.length === 0) { %>
+（暂无配方）
+<% } else { %>
+<% recipes.forEach(function(r) {
+  r = r || {};
+  var _rawMats = r.材料 || r.材料列表 || r.materials || [];
+  var rMaterials = Array.isArray(_rawMats) ? _rawMats : (function(){ var a=[]; if(_rawMats && typeof _rawMats==='object'){ for(var k in _rawMats){ if(Object.prototype.hasOwnProperty.call(_rawMats,k)) a.push(_rawMats[k]); } } return a; })();
+  var _rawOuts = r.产物 || r.产物列表 || r.outputs || [];
+  var rOutputs = Array.isArray(_rawOuts) ? _rawOuts : (function(){ var a=[]; if(_rawOuts && typeof _rawOuts==='object'){ for(var k in _rawOuts){ if(Object.prototype.hasOwnProperty.call(_rawOuts,k)) a.push(_rawOuts[k]); } } return a; })();
+  var rUnlock = r.解锁 || r.unlock || {};
+  var _uSkill = rUnlock.技能 || rUnlock.skill || 'none';
+  var _uLevel = rUnlock.等级 || rUnlock.level || 0;
+  var _rType = r.类型 || r.type || '';
+%>
+【<%= r.编号 || r.id || '' %>】<%= r.名称 || r.name || '' %>（<%= _rType %>）
+- 类型：<%= (_rType === '制造' || _rType === 'craft') ? '制造' : (_rType === '改造' || _rType === 'modify') ? '改造' : '升级' %>
+- 材料：<% rMaterials.forEach(function(m, idx) { %><%= (m && (m.名称 || m.name)) || '?' %>×<%= (m && (m.数量 || m.count)) || 0 %><%= idx < rMaterials.length-1 ? '、' : '' %><% }); %>
+- 产物：<% rOutputs.forEach(function(o, idx) { %><%= (o && (o.名称 || o.name)) || '?' %>×<%= (o && (o.数量 || o.count)) || 0 %>(<%= (o && (o.品质 || o.quality)) || '普通' %>)<%= idx < rOutputs.length-1 ? '、' : '' %><% }); %>
+- 解锁要求：<%= _uSkill === 'none' ? '无' : _uSkill + ' Lv.' + _uLevel %>
+- 成功率：<%= r.成功率 || r.success_rate || 0 %>%
+- 来源：<%= r.来源 || r.source || '' %>（第<%= r.习得日 || r.learned_day || 1 %>天习得）
+<% }); %>
+<% } %>
+
+---
+■ 配方类型说明
+---
+1. 制造（craft）：从材料合成新物品
+   - 需要指定材料名称和数量
+   - 产物为全新物品
+   - 适用：书签/护腕/冰敷袋/香囊等
+2. 改造（modify）：修改现有物品属性
+   - 需要原物品 + 改造材料
+   - 改造后物品品质或属性变化（如"普通→良好"）
+   - 改造失败原物品品质-1
+3. 升级（upgrade）：提升物品品质
+   - 需要原物品 + 升级材料
+   - 升级后品质+1（普通→良好→优秀→精良）
+   - 升级失败原物品保持不变但材料消耗
+
+---
+■ 配方来源
+---
+1. 学习（最常见）：
+   - 美术课：纸质工艺品配方
+   - 体育课：运动护具配方
+   - 自习：学习工具配方
+   - 实验课：简易实验器材配方
+   - 校医室：医疗用品配方（需沈雨桐指导）
+   - 图书馆：书籍查阅获得配方（需消耗2时段）
+2. 实验（自行尝试）：
+   - {{user}} 拥有材料时可尝试"自由组合"
+   - 成功率固定50%（无配方加成）
+   - 失败消耗所有材料
+   - 成功后可命名并记录为新配方
+3. 发现（探索获得）：
+   - 在图书馆旧书/教室遗落笔记/宿舍前任住户遗留物中发现
+   - 通常是高阶配方（如"安神香囊"升级版"宁神香囊"）
+4. 购买：
+   - 严禁直接购买配方（只能通过学习/实验/发现获得）
+   - 但可以购买"配方书"作为材料消耗品（阅读后习得配方，书消失）
+
+---
+■ 材料系统
+---
+1. 材料属性：
+   - 名称：与 inventory/storage 中的物品名称对应
+   - 数量：所需数量
+   - 已有/所需：制造前必须校验
+2. 材料来源：
+   - 购买（小卖部/校医室，受金钱系统约束）
+   - 拾取（如布料、硬纸板等可在教室/宿舍找到）
+   - 拆解（将已有装备拆解为材料，损耗50%）
+3. 制造前必须校验：
+   - {{user}} 是否持有所有材料（含数量）
+   - {{user}} 技能等级是否达到配方要求
+   - 当前位置是否为有效工坊
+   - 若任一不满足，禁止制造
+
+---
+■ 产出系统
+---
+1. 产物属性：
+   - 名称：与配方定义一致
+   - 数量：与配方定义一致
+   - 品质：与配方定义一致（可受技能等级修正）
+2. 品质修正（基于技能等级）：
+   - 技能等级 = 配方要求：基础品质
+   - 技能等级 > 配方要求 +10：品质+1档（如普通→良好）
+   - 技能等级 > 配方要求 +30：品质+2档
+   - 上限：史诗（传说品质仅特殊剧情获得）
+3. 产物去向：
+   - 默认进入 inventory（受容量约束）
+   - 若 inventory 满，可选择进入 storage（需在宿舍）或 items_placed（放置在工坊）
+
+---
+■ 解锁条件
+---
+1. 技能等级要求：
+   - 配方 unlock.skill 字段指定所需技能
+   - unlock.level 字段指定所需等级
+   - 例：{skill:'meditation', level:10} 表示需冥想 Lv.10+
+2. 前置配方要求（部分高阶配方）：
+   - 必须先学会前置配方才能学习
+   - 例："宁神香囊"需要先学会"安神香囊"
+3. 阶段要求（特殊配方）：
+   - 部分配方需要使用阶段达到要求
+   - 例：与假阴茎相关的配方（如有）需 stage>=3
+4. 学习成本：
+   - 通过学习获得：消耗1-2时段
+   - 通过实验获得：消耗材料+时段
+   - 通过发现获得：消耗1时段（阅读理解）
+
+---
+■ 成功率与失败处理
+---
+1. 基础成功率：
+   - 简单配方：100%
+   - 普通配方：90-95%
+   - 复杂配方：70-85%
+   - 高阶配方：50-70%
+2. 成功率修正：
+   - 技能等级 > 配方要求 +10：+5%
+   - 技能等级 > 配方要求 +30：+10%
+   - 在工坊内制造：+5%
+   - 在非工坊地点制造：-20%
+   - 精力不足（<30）：-15%
+   - 上限100%
+3. 失败处理：
+   - 制造失败时消耗部分材料（约50%）
+   - 不会产出任何物品
+   - 消耗的时段不退还
+   - 失败记录写入 craft_log
+4. 失败原因（叙事转化）：
+   - "材料没准备好""手抖了一下""配方没看懂""精力不济"
+   - 严禁透露具体成功率数值
+
+---
+■ 制造工坊
+---
+1. 宿舍（主要工坊）：
+   - 全时段可用（夜里/半夜除外，需有照明）
+   - 适合所有配方
+   - 成功率修正 +5%
+2. 教室（课间简易制造）：
+   - 仅课间/午休/放学后可用
+   - 仅适合简单配方（成功率90%+）
+   - 复杂配方禁止在教室制造
+3. 校医室（药品相关）：
+   - 需沈雨桐在场
+   - 仅适合医疗类配方
+   - 成功率修正 +10%
+4. 实验楼（化学/物理相关）：
+   - 需老师允许
+   - 仅适合实验类配方
+   - 成功率修正 +10%
+
+---
+■ 制造流程
+---
+1. 玩家声明制造请求 → AI 校验：
+   - 配方是否已学
+   - 材料是否齐全
+   - 技能是否达标
+   - 位置是否为有效工坊
+   - 精力是否充足（消耗10-30点）
+2. 校验通过 → 消耗1-2时段：
+   - 简单配方：1时段
+   - 复杂配方：2时段
+3. 成功率判定（使用 LCG 确定性骰子系统）：
+   - roll = LCG(day, hour, 'craft_<recipe_id>')
+   - success = (roll % 100) < success_rate_final
+4. 成功 → 产出物品进入 inventory
+5. 失败 → 消耗50%材料，无产出
+6. 结果由变量 AI 自动同步：
+   - stat_data.物品栏：新增产出物品 / 移除消耗材料
+   - stat_data.状态.精力 -= 10~30
+   - stat_data.制造配方：新增日志 {day, hour, recipe_id, result, materials_consumed}
+   - stat_data.技能.<skill>.经验 += 2（成功）/ 1（失败，仍获得经验）
+
+---
+■ 配方解锁与升级
+---
+1. 学习新配方：
+   - 玩家声明"想学新配方/翻阅配方书/请教老师"
+   - AI 根据当前位置和场景生成可学配方
+   - 学习消耗1-2时段
+   - 习得后写入 stat_data.制造配方
+2. 配方升级（实验改进）：
+   - 同一配方使用5次以上后可尝试"改良"
+   - 改良成功率 60%，失败无副作用
+   - 改良成功后品质+1档或材料消耗-1
+3. 配方变体（多产物）：
+   - 部分配方有变体（如"安神香囊"可有薰衣草/茉莉/桂花变体）
+   - 变体配方需单独学习
+
+---
+■ AI 执行铁律
+---
+1. 玩家声明制造时必须严格校验四要素：配方/材料/技能/工坊
+2. 校验不通过时拒绝并说明原因（叙事化）：
+   - 配方未学："你不会做这个"
+   - 材料不足："包里没带够材料"
+   - 技能不够："你还没掌握这个技巧"
+   - 工坊不当："这里不方便动手做"
+3. 制造结果由变量 AI 自动同步更新：
+   - inventory/storage 变化
+   - energy 消耗
+   - crafting_recipes 新增
+   - skills 对应 exp 增加
+4. 严禁凭空创造配方：
+   - {{user}} 必须通过学习/实验/发现获得
+   - 严禁"突然想起来一个配方"
+5. 严禁在正文中输出"recipe001""success_rate""craft_log"等元术语
+6. 制造过程转化为叙事：
+   - 成功："你仔细地按步骤操作...终于做好了[产物名]"
+   - 失败："做到一半时手抖了一下，材料浪费了"
+7. 假阴茎相关制造配方在 stage<3 严禁出现
+8. 校园背景适配：配方以日常学习用品/简易工艺品/学习辅助工具为主，严禁出现科幻/魔幻配方
+</crafting_system>

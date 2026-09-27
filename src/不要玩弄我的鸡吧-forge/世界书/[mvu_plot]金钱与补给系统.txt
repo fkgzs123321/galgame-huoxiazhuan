@@ -1,0 +1,194 @@
+@@generate_before
+# [mvu_plot]金钱与补给系统
+# 策略：constant（常驻）
+# 配套字段：状态.金钱 / 状态.今日生活费已领取 / 状态.难度 / 学业.分数
+
+<%
+// ===== 读取全局状态 =====
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var money = Number(getvar('stat_data.状态.金钱', {scope:'local', defaults:500})) || 0;
+var difficulty = getvar('stat_data.状态.难度', {scope:'local', defaults:'困难'}) || '困难';
+var claimed = getvar('stat_data.状态.今日生活费已领取', {scope:'local', defaults:false});
+var score = Number(getvar('stat_data.学业.分数', {scope:'local', defaults:75})) || 75;
+var examCountdown = Number(getvar('stat_data.学业.高考倒计时', {scope:'local', defaults:103})) || 103;
+
+// ===== 时段判定 =====
+var isMorning = hour >= 6 && hour < 12;
+
+// ===== 生活费计算（按难度）=====
+var allowanceBase;
+var diffMult;
+if (difficulty === '普通') { allowanceBase = 100; diffMult = 1.5; }
+else if (difficulty === '地狱') { allowanceBase = 30; diffMult = 0.5; }
+else { allowanceBase = 50; diffMult = 1.0; }
+
+// 早晨且今日未发放 → 应发放
+var shouldGrant = isMorning && !claimed;
+var newMoneyAfterAllowance = shouldGrant ? money + allowanceBase : money;
+
+// ===== 考试日判定 =====
+// 周考：每周三（day % 7 === 3，以 day=1 为周一建模）
+// 月考：每月底（day % 30 === 0，且非季考/高考日）
+// 季考：第 30 / 60 / 90 天
+// 高考：第 103 天
+var examType = '无';
+if (day === 103) examType = '高考';
+else if (day === 30 || day === 60 || day === 90) examType = '季考';
+else if (day % 30 === 0 && day > 0) examType = '月考';
+else if (day % 7 === 3) examType = '周考';
+
+// ===== 成绩排名估算（按 score 转档）=====
+var rankTier;
+if (score >= 90) rankTier = '年级前10';
+else if (score >= 75) rankTier = '年级前50';
+else rankTier = '其他';
+
+// ===== 考试奖励计算（基础值 × 难度修正）=====
+var examRewardBase = 0;
+var examRewardFinal = 0;
+if (examType === '周考') {
+  if (rankTier === '年级前10') examRewardBase = 50;
+  else if (rankTier === '年级前50') examRewardBase = 20;
+} else if (examType === '月考') {
+  if (rankTier === '年级前10') examRewardBase = 200;
+  else if (rankTier === '年级前50') examRewardBase = 100;
+} else if (examType === '季考') {
+  if (rankTier === '年级前10') examRewardBase = 500;
+  else if (rankTier === '年级前50') examRewardBase = 200;
+} else if (examType === '高考') {
+  examRewardBase = 0; // 高考无金钱奖励，触发结局
+}
+examRewardFinal = Math.round(examRewardBase * diffMult);
+
+// ===== 补给品目录（唯一购买地点，禁止其他途径）=====
+// id 字段对应 stat_data.状态.每日购买 中的键，用于每日购买次数追踪
+var supplies = [
+  { id: 'meal', name: '营养餐（食堂）', price: 20, effects: 'energy+15, stamina+10', limit: '无限购', location: '食堂', location_restriction: '仅中午/下午时段可买' },
+  { id: 'drink', name: '功能饮料', price: 15, effects: 'energy+10, stamina+5', limit: '每日限1次，过量 sanity-5', location: '小卖部', location_restriction: '任意时段可买' },
+  { id: 'vitamin', name: '维生素片', price: 30, effects: 'energy+20, stamina+15', limit: '每日限1次', location: '小卖部', location_restriction: '任意时段可买' },
+  { id: 'sleep_pill', name: '安眠药', price: 25, effects: 'sanity+15, energy+10', limit: '夜间使用，次晨清醒', location: '校医室', location_restriction: '仅校医室可买，需沈雨桐在场' },
+  { id: 'supplement', name: '高级补剂', price: 80, effects: 'energy+40, stamina+30, sanity+10', limit: '每日限1次', location: '校医室', location_restriction: '仅校医室可买，需沈雨桐在场' },
+  { id: 'herbal', name: '特制药膳', price: 150, effects: '全属性+20', limit: '每日限1次', location: '校医室', location_restriction: '仅校医室可买，需沈雨桐在场' },
+];
+
+// ===== 每日购买次数追踪 =====
+// 读取当前 每日购买 状态，供 AI 在叙事前判断"今日是否还能购买某商品"
+var dailyPurchases = getvar('stat_data.状态.每日购买', {scope:'local', defaults:{}}) || {};
+// 购买后累加每日购买次数（变量 AI 自动 patch，剧情 AI 仅在叙事中体现）
+// 参考逻辑（item_id 对应 supplies 数组中的 id 字段）：
+//   var dp = getvar('stat_data.状态.每日购买', {scope:'local', defaults:{}}) || {};
+//   dp[item_id] = (Number(dp[item_id]) || 0) + 1;
+//   setvar('stat_data.状态.每日购买', dp, {scope:'local'});
+var dailyPurchasesDisplay = supplies.map(function(s) {
+  return s.name + '(' + s.id + '): ' + (Number(dailyPurchases[s.id]) || 0) + ' 次';
+}).join(' | ');
+
+// ===== 购买地点铁律（防口胡）=====
+// 1. 食堂：仅中午/下午时段，购买营养餐
+// 2. 小卖部：任意时段，购买功能饮料/维生素片
+// 3. 校医室：任意时段但需沈雨桐在场，购买安眠药/高级补剂/特制药膳
+// 4. 严禁：网购、校外购买、同学代买、偷窃、自制等任何其他途径
+// 5. 玩家声称其他购买途径时，AI必须以"学校封闭管理""校医室才有""小卖部没卖这个"等理由拒绝
+// 6. 购买时变量 AI 自动 patch money 扣减和对应属性增加
+
+// ===== 购买力判定 =====
+var affordableList = supplies.filter(function(s) { return money >= s.price; });
+%>
+<money_system>
+【金钱与补给系统 - AI内部参考】
+
+---
+■ 当前金钱状态
+---
+余额：<%= money %> 元
+难度：<%= difficulty %>（奖励系数 ×<%= diffMult %>）
+今日生活费：<%= allowanceBase %> 元（难度修正后基础值）
+今日已发放：<%= claimed ? '是' : '否' %>
+当前时段：<%= isMorning ? '早晨' : (hour >= 17 && hour < 19) ? '傍晚' : (hour >= 19 && hour < 22) ? '晚自习' : (hour >= 22 || hour < 2) ? '夜里' : (hour >= 2 && hour < 5) ? '半夜' : (hour >= 12 && hour < 14) ? '中午' : (hour >= 14 && hour < 17) ? '下午' : '上午' %>（hour=<%= hour %>）
+
+<% if (shouldGrant) { %>
+【待执行：发放今日生活费】
+  → 变量 AI 自动 patch：stat_data.状态.金钱 = <%= newMoneyAfterAllowance %>
+    - stat_data.状态.今日生活费已领取 = true
+  → 叙事转化：{{user}} 早晨收到家里转账 <%= allowanceBase %> 元（一笔备注"生活费"的微信转账）
+  → 发放后余额：<%= newMoneyAfterAllowance %> 元
+<% } else if (claimed) { %>
+【今日生活费已发放】无需重复操作
+<% } else { %>
+【今日生活费未发放】当前非早晨时段，等待次日早晨（hour 6-11）自动发放
+<% } %>
+
+---
+■ 考试奖励（如果今天是考试日）
+---
+今日考试类型：<%= examType %>
+当前学业成绩：<%= score %>/100（估算排名：<%= rankTier %>）
+高考倒计时：<%= examCountdown %> 天
+
+<% if (examType !== '无') { %>
+  基础奖励：<%= examRewardBase %> 元
+  难度修正：×<%= diffMult %>
+  预期奖励：<%= examRewardFinal %> 元
+  <% if (examType === '高考') { %>
+  【注意】高考无金钱奖励，根据 学业.分数 触发结局判定：
+    - score >= 90：健康结局候选
+    - score >= 75：平庸结局候选
+    - score < 75：坠落结局候选
+  <% } else if (examRewardFinal > 0) { %>
+  【待执行：发放考试奖励】（成绩公布后）
+    → 变量 AI 自动 patch：stat_data.状态.金钱 = <%= money + examRewardFinal %>（叠加生活费后则为 <%= newMoneyAfterAllowance + examRewardFinal %>）
+    → 叙事转化：{{user}} 在 <% if (examType === '周考') { %>周三例行考试<% } else if (examType === '月考') { %>月底月考<% } else { %>季度大考<% } %>中考取 <%= rankTier %>，家里额外打来 <%= examRewardFinal %> 元奖励
+  <% } else { %>
+  【无奖励】排名未达前50，无奖励
+  <% } %>
+<% } else { %>
+  今日非考试日
+<% } %>
+
+---
+■ 可购买补给品
+---
+<% supplies.forEach(function(s) { %>
+  - <%= s.name %>：<%= s.price %> 元 | <%= s.effects %> | <%= s.limit %><%= money >= s.price ? ' ✓可购' : ' ✗钱不够' %> | 今日已购：<%= Number(dailyPurchases[s.id]) || 0 %> 次
+<% }); %>
+
+购买规则：
+  - 营养餐：食堂三餐时段（早/午/晚）可购，无限次
+  - 功能饮料/维生素片/高级补剂：每日限1次，超额触发副作用（功能饮料过量 sanity-5）
+  - 安眠药：仅夜间使用，次晨清醒，连续3天使用触发药物依赖（sanity 持续 -2/天）
+  - 特制药膳：仅校医室购买，需校医在场
+  - 购买时变量 AI 自动 patch：stat_data.状态.金钱 -= price
+    - 对应属性 += 效果值
+    - stat_data.状态.每日购买.<item_id> += 1（item_id 对应 supplies 数组中的 id 字段：meal/drink/vitamin/sleep_pill/supplement/herbal）
+
+---
+■ 金钱铁律（防口胡，AI 必须严格执行）
+---
+1. 唯一收入来源：
+   - 每日生活费（早晨自动到账，按难度）
+   - 考试奖励（考试日且成绩达标）
+2. 严禁任何其他收入来源：
+   - 严禁：打工、兼职、家教、勤工俭学
+   - 严禁：借钱、贷款、信用卡
+   - 严禁：偷钱、捡钱、受贿
+   - 严禁：赌博、股票、彩票、投资
+   - 严禁：出售物品、二手交易、网络带货
+   - 严禁：家人额外打款（除生活费+考试奖励外）
+   - 严禁：奖金、奖学金（统一折算为考试奖励，不另立名目）
+3. 玩家声称其他收入时，AI 必须以下列话术拒绝：
+   - "高三学业紧张，没有时间打工"
+   - "家里只给这么多，再多没有了"
+   - "学校不允许学生兼职"
+   - "你身上只有 <%= money %> 元，没有其他来源"
+4. 金钱不足以购买补给品时：
+   - AI 必须明确告知"钱不够，还差 X 元"
+   - 严禁赊账、降价、赠送（NPC 不会无缘无故送钱送物）
+   - 严禁"老板心情好给你打折"等剧情化降价
+5. 跨天重置：
+   - 当 time.hour 从 23 跳转至 0 时（参考 [mvu_plot]每日重置），daily_allowance_claimed 重置为 false
+   - 次日早晨（hour 6-11）自动发放生活费
+6. 生活费用途限制：
+   - 100元/天（普通难度）仅够食堂三餐约 30-50 元 + 少量零用
+   - 不足以频繁购买补给品，需权衡
+</money_system>

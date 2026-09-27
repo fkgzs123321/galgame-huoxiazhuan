@@ -1,0 +1,49 @@
+$(async () => {
+  await waitGlobalInitialized('Mvu');
+
+  const styleId = 'tavern-beautifier-styles';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      .stat-badge, .skill-badge { transition: all 0.2s ease; }
+      .stat-badge:hover, .skill-badge:hover { transform: scale(1.05); filter: brightness(1.15); }
+      blockquote { transition: border-color 0.3s; }
+      blockquote:hover { border-left-color: #ff69b4 !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  let hook = null;
+  if (typeof window !== 'undefined' && window.TavernHelper) {
+    hook = window.TavernHelper.on('message', function onMessage(message) {
+      const badges = [
+        { pattern: /\*\*精力[:：]\s*(\d+)\s*\/\s*(\d+)\*\*/g, html: '<span class="stat-badge energy-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff1493;margin:0 2px;">⚡ 精力 $1/$2</span>' },
+        { pattern: /\*\*理智[:：]\s*(\d+)\s*\/\s*100\*\*/g, html: '<span class="stat-badge sanity-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff69b4;margin:0 2px;">🧠 理智 $1</span>' },
+        { pattern: /\*\*疑心[:：]\s*(\d+)\s*\/\s*200\*\*/g, html: '<span class="stat-badge suspicion-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff1493;margin:0 2px;">🔍 疑心 $1/200</span>' },
+        { pattern: /\*\*沉沦[:：]\s*(\d+)\s*\/\s*200\*\*/g, html: '<span class="stat-badge corruption-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff1493;margin:0 2px;">🌑 沉沦 $1/200</span>' },
+        { pattern: /\*\*阶段[:：]\s*(\d+)\s*\/\s*5\*\*/g, html: '<span class="stat-badge stage-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff69b4;margin:0 2px;">📊 阶段 $1/5</span>' },
+        { pattern: /\*\*学业[:：]\s*(\d+)\s*\/\s*5\*\*/g, html: '<span class="stat-badge academic-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff85a2;margin:0 2px;">📚 学业 $1/5</span>' },
+        { pattern: /\*\*体力[:：]\s*(\d+)\s*\/\s*(\d+)\*\*/g, html: '<span class="stat-badge health-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff69b4;margin:0 2px;">💪 体力 $1/$2</span>' },
+      ];
+      for (const b of badges) message = message.replace(b.pattern, b.html);
+      message = message.replace(/\*\*(冥想|锻炼|洞察|伪装|恢复|意志)[:：]\s*Lv\.(\d+)\s*\((\d+)\/100\)\*\*/g,
+        '<span class="skill-badge" style="display:inline-block;background:rgba(255,182,193,0.2);backdrop-filter:blur(6px);border:1px solid rgba(255,105,180,0.4);border-radius:10px;padding:1px 8px;font-size:0.85em;color:#ff1493;margin:0 2px;">🏅 $1 Lv.$2 ($3/100)</span>');
+      message = message.replace(/\|([█▌▎▍▋▊▉]+)(\s*)([█▌▎▍▋▊▉]*)\|\s*(\d+)%/g,
+        '<div style="display:inline-block;width:120px;height:14px;background:rgba(255,192,203,0.2);border-radius:7px;overflow:hidden;vertical-align:middle;position:relative;">' +
+        '<div style="width:$4%;height:100%;background:linear-gradient(90deg,#ffb6c1,#ff1493);border-radius:7px;transition:width 0.3s;"></div>' +
+        '</div> <span style="font-size:0.8em;color:#ff69b4;">$4%</span>');
+      message = message.replace(/^>\s*(.+)$/gm, '<blockquote style="border-left:3px solid #ff69b4;margin:8px 0;padding:4px 12px;color:#8b3a52;background:rgba(255,182,193,0.08);border-radius:0 8px 8px 0;">$1</blockquote>');
+      message = message.replace(/^---\s*$/gm, '<hr style="border:none;border-top:1px solid rgba(255,105,180,0.3);margin:12px 0;">');
+      message = message.replace(/^___\s*$/gm, '<hr style="border:none;border-top:1px dashed rgba(255,105,180,0.4);margin:12px 0;">');
+      message = message.replace(/^(⚠|❗|🔴|🟡)\s*(.+)$/gm,
+        '<div style="background:rgba(255,105,180,0.1);border-left:3px solid #ff1493;padding:6px 12px;margin:8px 0;color:#ff1493;font-size:0.9em;border-radius:0 8px 8px 0;">$1 $2</div>');
+      if (message.includes('[状态栏]') || message.includes('[StatusBar]')) {
+        message = message.replace(/\[状态栏\]/g, '');
+        message = message.replace(/\[StatusBar\]/g, '');
+      }
+      return message;
+    });
+  }
+  $(window).on('pagehide', () => { if (hook && window.TavernHelper) window.TavernHelper.removeListener('message', hook); });
+});

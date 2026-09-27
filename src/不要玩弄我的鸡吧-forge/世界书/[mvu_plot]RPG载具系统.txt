@@ -1,0 +1,327 @@
+@@generate_before
+# [mvu_plot]RPG载具系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.载具 / stat_data.时间 / stat_data.环境
+
+<%
+// ===== 读取玩家金钱和位置 =====
+var money = Number(getvar('stat_data.状态.金钱', {scope:'local', defaults:500})) || 0;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var currentLocation = getvar('stat_data.环境.位置', {scope:'local', defaults:'高三2班教室'}) || '高三2班教室';
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+
+// ===== 已拥有/可使用的载具 =====
+// 校园背景适配：以自行车/电动车为主，汽车极少（走读生/老师）
+var _rawVehicles = getvar('stat_data.载具', {scope:'local', defaults:[
+  {
+    id:'vehicle001',
+    type:'自行车',
+    brand:'捷安特 ATX 660',
+    plate:'无牌照（校园车）',
+    location:'教学楼前车棚',
+    state:'停放',
+    owner_type:'自有',
+    owner:'{{user}}',
+    energy_type:'人力',
+    energy_value:100,
+    durability:'完好',
+    seats:[
+      { name:'驾驶座', occupied_by:null, seatbelt:false },
+      { name:'后座', occupied_by:null, seatbelt:false }
+    ],
+    storage:[ { name:'车筐', capacity:5, items:[] } ],
+    acquired:'购买',
+    acquired_day:1,
+    acquired_cost:200
+  },
+  {
+    id:'vehicle002',
+    type:'校车',
+    brand:'宇通 ZK6105',
+    plate:'京A·12345',
+    location:'校门口',
+    state:'停放',
+    owner_type:'学校公用',
+    owner:'圣德女子学院',
+    energy_type:'油量',
+    energy_value:80,
+    durability:'完好',
+    seats:[
+      { name:'驾驶座', occupied_by:'校车司机', seatbelt:true },
+      { name:'副驾驶', occupied_by:null, seatbelt:false },
+      { name:'后排1', occupied_by:null, seatbelt:false },
+      { name:'后排2', occupied_by:null, seatbelt:false },
+      { name:'后排3', occupied_by:null, seatbelt:false }
+    ],
+    storage:[ { name:'行李舱', capacity:20, items:[] } ],
+    acquired:'学校公用',
+    acquired_day:0,
+    acquired_cost:0,
+    usage_restriction:'仅周末/节假日往返市区，需提前预约'
+  }
+]}) || [];
+var vehicles = Array.isArray(_rawVehicles) ? _rawVehicles : (function(){ var a=[]; if(_rawVehicles && typeof _rawVehicles==='object'){ for(var k in _rawVehicles){ if(Object.prototype.hasOwnProperty.call(_rawVehicles,k)) a.push(_rawVehicles[k]); } } return a; })();
+
+// ===== 载具类型与属性说明 =====
+// 自行车：人力驱动，速度慢，无能源消耗（除体力），适合校园内短途
+// 电动车：电力驱动，速度中等，需充电，适合校园-市区短途
+// 摩托车：油量驱动，速度快，需加油，{{user}}无驾照（需家长授权）
+// 汽车：油量驱动，速度快，{{user}}无驾照，通常为NPC/校车
+// 校车：学校公用，固定路线（校园-市区），仅周末/节假日运行
+
+// ===== 载具状态 =====
+// 停放 / 行驶 / 维修 / 损坏 / 失窃 / 报废
+
+// ===== 耐久度 =====
+// 完好 / 轻微磨损 / 需要维修 / 严重损坏 / 报废
+%>
+
+<vehicle_system>
+【RPG载具系统 - AI内部参考，严禁外露元数据】
+
+---
+■ 当前载具概览
+---
+拥有/可使用载具数：<%= vehicles.length %>
+当前金钱：<%= money %> 元
+当前位置：<%= currentLocation %>
+
+---
+■ 载具列表
+---
+<% vehicles.forEach(function(v) {
+  v = v || {};
+%>
+【<%= v.编号 || v.id || '' %>】<%= v.类型 || v.type || '' %> - <%= v.品牌 || v.brand || '' %>
+- 车牌：<%= v.牌照 || v.车牌 || v.plate || '' %>
+- 位置：<%= v.位置 || v.location || '' %>
+- 状态：<%= v.状态 || v.state || '' %>
+- 归属：<%= v.所有者类型 || v.owner_type || '' %>（<%= v.所有者 || v.owner || '' %>）
+- 能源：<%= v.能源类型 || v.energy_type || '' %>（剩余 <%= v.能源值 || v.energy_value || 0 %>%）
+- 耐久：<%= v.耐久度 || v.durability || '' %>
+- 获得方式：<%= v.获取方式 || v.acquired || '' %>（第<%= v.获取日 || v.acquired_day || 1 %>天，花费 <%= v.获取价格 || v.acquired_cost || 0 %> 元）
+<% if (v.使用限制 || v.usage_restriction) { %>- 使用限制：<%= v.使用限制 || v.usage_restriction %><% } %>
+
+座位详情：
+<%
+var _vSeats = Array.isArray(v.seats) ? v.seats : (function(){var a=[]; if(v.seats&&typeof v.seats==='object'){for(var k in v.seats){if(Object.prototype.hasOwnProperty.call(v.seats,k))a.push(v.seats[k]);}}return a;})();
+_vSeats.forEach(function(s) {
+  s = s || {};
+%>
+  - <%= s.名称 || s.name || '?' %>：<%= s.占用者 || s.occupied_by || '空' %><%= s.seatbelt ? '（系安全带）' : '（未系）' %>
+<% }); %>
+
+储物空间：
+<%
+var _vStorage = Array.isArray(v.storage) ? v.storage : (function(){var a=[]; if(v.storage&&typeof v.storage==='object'){for(var k in v.storage){if(Object.prototype.hasOwnProperty.call(v.storage,k))a.push(v.storage[k]);}}return a;})();
+_vStorage.forEach(function(st) {
+  st = st || {};
+  st.items = st.items || [];
+%>
+  - <%= st.名称 || st.name || '?' %>：<%= st.items.length %>/<%= st.容量 || st.capacity || 0 %> 件
+<% }); %>
+<% }); %>
+
+---
+■ 载具类型说明
+---
+| 类型 | 速度 | 能源 | 适用场景 | {{user}}可用性 |
+|------|------|------|---------|---------------|
+| 自行车 | 慢 | 人力（体力） | 校园内短途 | 自有可用 |
+| 电动车 | 中 | 电量（需充电） | 校园-市区短途 | 需购买/借用 |
+| 摩托车 | 快 | 油量（需加油） | 市区通勤 | 无驾照，家长授权可借 |
+| 汽车 | 快 | 油量（需加油） | 长途 | 无驾照，仅搭乘 |
+| 校车 | 中 | 油量 | 校园-市区固定路线 | 仅周末/节假日 |
+
+校园背景适配说明：
+- 学生基本以自行车/步行为主
+- 电动车少数走读生使用
+- 摩托车/汽车学生极少拥有（无驾照）
+- 校车为公用资源，固定时刻表
+
+---
+■ 载具属性详解
+---
+1. 品牌型号：
+   - 自行车：捷安特/美利达/凤凰等常见品牌
+   - 电动车：雅迪/爱玛/小牛等
+   - 校车：宇通/金龙等大巴
+2. 车牌：
+   - 自行车：无牌照（校园车标识）
+   - 电动车：校园车牌
+   - 校车：正式车牌
+3. 位置：
+   - 停放点：教学楼前车棚/宿舍区车棚/校门口/食堂旁
+   - 行驶中：记录目的地
+4. 状态：
+   - 停放：默认状态
+   - 行驶：使用中
+   - 维修：在修理店（消耗金钱+时段）
+   - 损坏：需维修才能使用
+   - 失窃：被偷（需报警，恢复概率低）
+   - 报废：无法修复
+
+---
+■ 能源系统
+---
+1. 人力（自行车）：
+   - 消耗 {{user}} 体力（每公里-5体力）
+   - 无需补充能源，但体力耗尽无法骑行
+2. 电量（电动车）：
+   - 满电100%，每公里-3%
+   - 充电：宿舍/车棚充电桩（消耗2-4小时充满）
+   - 充电期间不可使用
+   - 电量<20%时速度降低
+3. 油量（摩托车/汽车/校车）：
+   - 满油100%，每公里-2%
+   - 加油：校外加油站（学生不便）
+   - 校车由学校统一加油
+4. 能源不足处理：
+   - 自行车：体力耗尽只能推行（速度×0.3）
+   - 电动车：电量耗尽只能推行
+   - 汽车/摩托车：油量耗尽无法行驶
+
+---
+■ 耐久度系统
+---
+| 耐久度 | 描述 | 影响 |
+|--------|------|------|
+| 完好 | 全新状态 | 速度100% |
+| 轻微磨损 | 正常使用痕迹 | 速度95% |
+| 需要维修 | 出现异响/刹车不灵 | 速度80%，骑行有风险 |
+| 严重损坏 | 关键部件损坏 | 速度50%，易抛锚 |
+| 报废 | 无法修复 | 不可使用 |
+
+耐久度退化：
+- 每骑行10公里，耐久度有10%概率下降1级
+- 摔倒/碰撞：耐久度直接下降1级
+- 维修：消耗金钱+时段恢复1-2级
+  · 自行车：10-30元，1时段
+  · 电动车：30-80元，2时段
+  · 摩托车：100-300元，3时段
+  · 校车：由学校维修，无需玩家介入
+
+---
+■ 座位系统
+---
+1. 驾驶座：
+   - {{user}} 骑车时占用
+   - 自行车/电动车必须有驾照？否（校园内无需）
+   - 摩托车/汽车必须有驾照（学生通常无）
+2. 副驾驶/后座：
+   - 可搭载NPC（需NPC同意）
+   - 搭载NPC影响关系（亲密+，单独相处机会）
+   - 后座载人时速度-10%
+3. 安全带：
+   - 自行车/电动车：无安全带
+   - 摩托车：头盔（可选，不戴风险+）
+   - 汽车/校车：必须系安全带
+4. 占用规则：
+   - 同一座位不可同时占用
+   - NPC 上下车需要时段（在停车点）
+   - 行驶中不可换座
+
+---
+■ 储物空间
+---
+1. 自行车车筐：
+   - 容量：5件
+   - 适合放小件（书本/水杯/书包）
+   - 严禁放贵重物品（易丢失）
+2. 电动车踏板/后座储物：
+   - 容量：8件
+   - 适合放中等物品
+3. 摩托车后备箱：
+   - 容量：10件
+   - 适合放贵重物品（可上锁）
+4. 汽车后备箱：
+   - 容量：20件
+   - 适合放大件物品
+5. 校车行李舱：
+   - 容量：20件
+   - 仅周末/节假日使用
+
+---
+■ 获得方式
+---
+1. 购买：
+   - 自行车：200-500元（小卖部旁车行/校门口车行）
+   - 电动车：1500-3000元（校外车行，需请假外出）
+   - 摩托车：禁止学生购买（无驾照）
+   - 汽车：禁止学生购买
+2. 借用：
+   - 向NPC借用（需关系亲密+NPC有车）
+   - 借用期间损坏需赔偿
+3. 偷窃：
+   - 严禁（高风险，被发现触发严重后果）
+   - {{user}} 性格不允许主动偷窃（除非终局分支）
+4. 赠与：
+   - 家长赠送（如生日礼物）
+   - NPC赠送（极高好感度）
+
+---
+■ 校车使用规则
+---
+1. 运行时刻：
+   - 周五下午17:00：校园→市区
+   - 周日下午17:00：市区→校园
+   - 节假日特殊班次（需通知）
+2. 预约规则：
+   - 需提前1天在宿舍管理处预约
+   - 每班次限30人（先到先得）
+   - 高三学生优先（高考冲刺期）
+3. 票价：免费（学校提供）
+4. 行李限制：每人2件，总重不超20kg
+5. 校车司机：
+   - 固定司机（NPC，可建立关系但不影响剧情）
+   - 严禁与司机发生剧情冲突
+
+---
+■ 载具使用流程
+---
+1. 玩家声明使用载具 → AI 校验：
+   - 载具是否在当前位置
+   - 载具状态是否可用（非维修/损坏/失窃/报废）
+   - 能源是否充足
+   - 耐久度是否允许
+2. 校验通过 → 消耗对应时段：
+   - 校园内骑行：不消耗时段（同区域内）
+   - 跨区域骑行：1时段
+   - 校园→市区：3-5时段（需请假）
+3. 移动结果：
+   - 更新载具 location 为目的地
+   - 更新 {{user}} environment.location 为目的地
+   - 消耗能源/体力
+   - 耐久度有概率下降
+4. 由变量 AI 自动同步：
+   - stat_data.载具.<vehicle_id>.位置 = 目的地
+   - stat_data.载具.<vehicle_id>.能源 -= 消耗
+   - stat_data.载具.<vehicle_id>.状态 = '行驶' → '停放'（结束后）
+   - stat_data.环境.位置 = 目的地
+   - stat_data.状态.体力 -= 体力消耗（仅自行车）
+
+---
+■ AI 执行铁律
+---
+1. 载具状态必须实时更新，严禁"瞬移"载具
+2. 载具不在我位置时禁止使用（除非步行去载具位置）
+3. 能源耗尽时禁止继续行驶
+4. 严禁学生无驾照驾驶摩托车/汽车（剧情允许家长授权特例）
+5. 校车严格按时刻表运行，非运行时段不可使用
+6. 载具损坏必须维修后才能使用
+7. 偷窃载具在终局前禁止（{{user}} 性格不允许）
+8. 严禁在正文中输出"vehicle001""energy_value""durability"等元术语
+9. 载具叙事转化：
+   - "你骑上自行车，往食堂方向去"
+   - "校车在校门口等着，司机师傅招呼你上车"
+   - "电动车没电了，只能推着走"
+10. 载具与剧情联动：
+    - 单独与NPC骑车 → 关系亲密度+
+    - 校车上偶遇NPC → 触发对话机会
+    - 载具故障 → 可能延迟到达，影响活动/考试
+11. 校园背景适配：载具系统作为辅助，不作为核心玩法
+    - 高三学生以步行为主，载具使用频率低
+    - 校园面积适中，步行足够
+    - 载具主要用于周末/节假日外出场景
+</vehicle_system>

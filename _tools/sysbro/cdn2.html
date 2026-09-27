@@ -1,0 +1,337 @@
+```
+<body>
+<!-- 系统哥的末日 · 前端界面（CDN 产物，由 _ui_repo/xitongge 构建，勿手改） -->
+<!-- 分件: 状态栏.html / 交涉.html / 评论.html / 页脚.html / 共享.css / 脚本.js -->
+<style>
+#xb-root {
+    --bg:#0e1014; --panel:#161a21; --panel2:#1c2128; --line:#2a3038;
+    --ink:#e6e9ee; --dim:#828b98; --dim2:#5c6572;
+    --hot:#e0444b; --warm:#e0913f; --cool:#3fa7c9; --green:#3fae72;
+    --gold:#d8b56a; --accent:#c8503f;
+    font-family:-apple-system,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+    background:var(--bg); color:var(--ink);
+    border:1px solid var(--line); border-radius:14px;
+    padding:12px 13px; margin:12px 0; font-size:13px; line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  #xb-root * { box-sizing:border-box; }
+  #xb-root .hs { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+  #xb-root .hs .t { font-size:14px; font-weight:600; letter-spacing:.3px; }
+  #xb-root .hs .p { color:var(--dim); font-size:11.5px; }
+  #xb-root .hr { height:1px; background:var(--line); margin:10px 0; }
+  #xb-root .hd { display:flex; align-items:center; gap:6px; margin:12px 0 7px; }
+  #xb-root .hd::before { content:''; width:3px; height:12px; border-radius:2px; background:var(--accent); }
+  #xb-root .hd b { font-size:11.5px; font-weight:600; letter-spacing:1px; color:var(--dim); }
+  #xb-root .hd i { font-style:normal; font-size:10.5px; color:var(--dim2); margin-left:auto; }
+  #xb-root .rate { display:flex; align-items:center; gap:11px; }
+  #xb-root .rate .big { font-size:30px; font-weight:700; line-height:1; min-width:62px; font-variant-numeric:tabular-nums; }
+  #xb-root .rate .rt { flex:1; min-width:0; }
+  #xb-root .rate .rn { font-size:13px; font-weight:600; }
+  #xb-root .rate .rs { font-size:10.5px; color:var(--dim); margin-top:2px; }
+  #xb-root .track { height:7px; border-radius:4px; background:#0a0c10; margin-top:5px; overflow:hidden; border:1px solid var(--line); }
+  #xb-root .track > i { display:block; height:100%; width:0; border-radius:3px; transition:width .45s cubic-bezier(.4,0,.2,1),background .3s; }
+  #xb-root .row { display:flex; align-items:center; gap:8px; padding:3px 0; }
+  #xb-root .row .k { width:52px; flex:none; color:var(--dim); font-size:11.5px; }
+  #xb-root .row .v { font-size:12.5px; font-variant-numeric:tabular-nums; min-width:38px; }
+  #xb-root .row .v.up { color:var(--hot); font-weight:700; }
+  #xb-root .row .v.dn { color:var(--green); font-weight:700; }
+  #xb-root .row .tk { flex:1; height:6px; border-radius:4px; background:#0a0c10; overflow:hidden; border:1px solid var(--line); }
+  #xb-root .row .tk > i { display:block; height:100%; width:0; transition:width .45s cubic-bezier(.4,0,.2,1); }
+  #xb-root .chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+  #xb-root .chips > span { display:inline-flex; align-items:baseline; gap:4px; padding:2px 7px;
+    border-radius:6px; background:var(--panel2); border:1px solid var(--line); font-size:11px; color:var(--dim); }
+  #xb-root .chips > span b { font-size:12px; color:var(--ink); font-variant-numeric:tabular-nums; }
+  #xb-root .chips > span.off { opacity:.4; }
+  #xb-root table.roster { width:100%; border-collapse:collapse; margin-top:6px; }
+  #xb-root table.roster td { padding:3.5px 0; border-bottom:1px dashed #23293180; font-size:11.5px; vertical-align:middle; }
+  #xb-root table.roster tr:last-child td { border-bottom:none; }
+  #xb-root table.roster .nm { width:56px; color:var(--ink); }
+  #xb-root table.roster .nm.focus { color:var(--gold); font-weight:600; }
+  #xb-root table.roster .st { width:66px; color:var(--dim); }
+  #xb-root table.roster .dm { color:var(--dim2); font-variant-numeric:tabular-nums; text-align:right; width:28px; }
+  #xb-root table.roster .tk { width:74px; padding-left:7px; }
+  #xb-root table.roster .tk > span { display:block; height:5px; border-radius:3px; background:#0a0c10; overflow:hidden; border:1px solid var(--line); }
+  #xb-root table.roster .tk > span > i { display:block; height:100%; width:0; transition:width .4s; }
+  #xb-root .lv1 { background:var(--dim2); }
+  #xb-root .lv2 { background:var(--warm); }
+  #xb-root .lv3 { background:var(--hot); }
+  #xb-root .dual { display:flex; gap:10px; }
+  #xb-root .dual > div { flex:1; min-width:0; background:var(--panel2); border:1px solid var(--line); border-radius:9px; padding:7px 9px; }
+  #xb-root .dual .lb { font-size:10.5px; color:var(--dim); }
+  #xb-root .dual .nb { font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; }
+  #xb-root .dice { display:flex; align-items:center; gap:7px; margin-top:7px; flex-wrap:wrap; }
+  #xb-root .dice .d { padding:3px 8px; border-radius:6px; background:var(--panel2); border:1px solid var(--line); font-size:11.5px; font-variant-numeric:tabular-nums; }
+  #xb-root .dice .d b { color:var(--ink); }
+  #xb-root .dice .vs { color:var(--dim2); font-size:11px; }
+  #xb-root .dice .jd { padding:3px 9px; border-radius:6px; font-size:11.5px; background:var(--panel2); border:1px solid var(--line); }
+  #xb-root .dice .jd.w { border-color:#3fae7255; color:var(--green); }
+  #xb-root .dice .jd.l { border-color:#e0444b55; color:var(--hot); }
+  #xb-root .evi { margin-top:6px; font-size:11px; color:var(--dim); word-break:break-all; }
+  #xb-root .evi b { color:var(--ink); font-weight:500; }
+  #xb-root .cmt { background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--gold);
+    border-radius:8px; padding:7px 10px; font-size:11.5px; color:var(--dim); }
+  #xb-root .cmt .tn { color:var(--gold); font-size:10.5px; }
+  #xb-root .foot { margin-top:10px; color:var(--dim2); font-size:10.5px; text-align:right; }
+</style>
+
+<div id="xb-root">
+<!-- A 状态栏 · 时间 / 评价值档位 / 林天 / 玩家 / 绑定花名册 -->
+<div class="hs">
+    <span class="t" id="xb-time">{{format_message_variable::stat_data.世界.时间}}</span>
+    <span class="p">第 <b id="xb-ch">{{format_message_variable::stat_data.世界.章节}}</b> 章 · 第 <b id="xb-turn">{{format_message_variable::stat_data.世界.回合}}</b> 轮</span>
+    <span class="p" style="margin-left:auto">📍 <b id="xb-place">{{format_message_variable::stat_data.世界.地点}}</b> · 镜头 <b id="xb-focus">{{format_message_variable::stat_data.镜头.对象}}</b></span>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="rate">
+    <div class="big" id="xb-rv" style="color:#d8b56a">{{format_message_variable::stat_data.反派状态.评价值}}</div>
+    <div class="rt">
+      <div class="rn" id="xb-rn">巅峰期</div>
+      <div class="rs" id="xb-rs">故意留破绽</div>
+      <div class="track"><i id="xb-rb" style="background:linear-gradient(90deg,#e0913f,#e0444b)"></i></div>
+    </div>
+  </div>
+
+  <div class="hd"><b>林天</b><i id="xb-blown">暴走 0 / 3</i></div>
+  <div class="row"><span class="k">财富</span><span class="v" id="xb-rtier">{{format_message_variable::stat_data.反派状态.财富等级}}</span>
+    <span class="tk"><i id="xb-rasset" style="background:#d8b56a"></i></span>
+    <span class="v" id="xb-rassetv">—</span></div>
+  <div class="row"><span class="k">名额</span><span class="v" id="xb-quota">{{format_message_variable::stat_data.反派状态.已绑定数}} / {{format_message_variable::stat_data.反派状态.绑定名额上限}}</span>
+    <span class="tk"><i id="xb-qb" style="background:#c8503f"></i></span></div>
+  <div class="chips" id="xb-sys"></div>
+
+  <div class="hd"><b>玩家</b><i id="xb-wife">与妻子 亲密</i></div>
+  <div class="row"><span class="k">觉醒度</span><span class="v" id="xb-awk">{{format_message_variable::stat_data.玩家.觉醒度}}</span>
+    <span class="tk"><i id="xb-awb" style="background:#3fa7c9"></i></span>
+    <span class="v" id="xb-awt" style="color:#828b98;min-width:58px">只察觉异常</span></div>
+  <div class="row"><span class="k">反抗力</span><span class="v" id="xb-def">{{format_message_variable::stat_data.玩家.反抗力}}</span>
+    <span class="tk"><i id="xb-deb" style="background:#3fa7c9"></i></span>
+    <span class="v" id="xb-co" style="color:#828b98;min-width:58px">公司正常</span></div>
+
+  <div class="hd"><b>绑定花名册</b><i>时期 · 深度 · 清醒</i></div>
+  <table class="roster" id="xb-roster"></table>
+<!-- B 交涉面板 · 共识分 / 骰值对 / 判定 / 四维 / 证据链 -->
+<div class="hd"><b>交涉</b><i id="xb-jt">未进行</i></div>
+  <div>
+    <div class="dual">
+      <div><div class="lb" id="xb-jwho">对象 —</div><div class="nb" id="xb-jme" style="color:#3fa7c9">0</div><div class="lb">他的共识分</div></div>
+      <div><div class="lb" id="xb-jstage">幕次 —</div><div class="nb" id="xb-jop" style="color:#e0444b">0</div><div class="lb">对手的共识分</div></div>
+    </div>
+    <div class="dice">
+      <span class="d">他 <b id="xb-jdm">—</b></span><span class="vs">对</span>
+      <span class="d">对手 <b id="xb-jdo">—</b></span>
+      <span class="jd" id="xb-jjd">—</span>
+    </div>
+    <div class="chips" id="xb-jattr"></div>
+    <div class="evi" id="xb-jev">证据链：无</div>
+  </div>
+<!-- C 评论条 · 倾向 / 热评 -->
+<div class="hd"><b>读者</b><i id="xb-trend">叫好</i></div>
+  <div class="cmt" id="xb-cmt">评论区暂时没什么动静。</div>
+<div class="foot">九号与十号目标要等升阶后才开</div>
+</div>
+
+<script>
+(async function () {
+  var NS = 'xb';
+  var ROOT = document.getElementById(NS + '-root');
+  if (!ROOT || ROOT.getAttribute('data-' + NS + '-init') === '1') return;
+  ROOT.setAttribute('data-' + NS + '-init', '1');
+
+  var 名单 = ['苏婉','陈雪华','林雅芝','王秀兰','赵敏','孙莉','周慧敏','吴琼','郑秀','沈梦瑶'];
+  /* 档位名与语义：与 世界书/阶段指导/评价值档位主持 一致，改一处必须同改另一处 */
+  var 档 = [
+    [100, '满分狂欢', '肆无忌惮，金色特权解锁', '#e0444b'],
+    [ 80, '巅峰期',   '故意留破绽',           '#e0913f'],
+    [ 60, '警觉期',   '收着演，加快进度',     '#d8b56a'],
+    [ 40, '危机期',   '收敛，查对手软肋',     '#3fa7c9'],
+    [ 20, '崩坏期',   '动违法手段，判断开始出错', '#5c6572'],
+    [  1, '解绑边缘', '卖惨洗白，生命保护解除', '#3fae72'],
+    [  0, '系统解绑', '前两次为暴走，第三次真解绑', '#5c6572']
+  ];
+  var 觉醒名 = [[71, '能推出系统的存在'], [31, '开始拼凑模式'], [0, '只察觉异常']];
+  var PREV = {};
+
+  /* ── MVU 变量读法：从最新楼层往回找最多 15 层；只认 assistant 楼层；逐级兜底 ── */
+  async function allVars() {
+    try {
+      var maxId = 0;
+      try { maxId = getLastMessageId(); } catch (e0) {}
+      for (var i = 0; i < 15; i++) {
+        var cid = maxId - i;
+        if (cid < 0) break;
+        var msg = null;
+        try { msg = await getChatMessages(cid); } catch (e1) { continue; }
+        if (Array.isArray(msg)) msg = msg[0];
+        if (!msg) continue;
+        if (msg.role && msg.role !== 'assistant') continue;
+        var v = null;
+        try {
+          if (window.Mvu && Mvu.getMvuData) v = await Mvu.getMvuData({ type: 'message', message_id: msg.message_id });
+          else if (typeof getVariables === 'function') v = await getVariables({ type: 'message', message_id: msg.message_id });
+        } catch (e2) {}
+        if (v && v.stat_data) return v.stat_data;
+      }
+    } catch (e) {}
+    try {
+      if (typeof getVariables === 'function') {
+        var c = await getVariables({ type: 'chat' });
+        if (c && c.stat_data) return c.stat_data;
+      }
+    } catch (e3) {}
+    return {};
+  }
+
+  function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[<>&"]/g, function (c) {
+      return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' })[c];
+    });
+  }
+  function money(v) {
+    var x = n(v, 0);
+    if (x >= 1e8) return (Math.round(x / 1e7) / 10) + ' 亿';
+    if (x >= 1e4) return (Math.round(x / 1e3) / 10) + ' 万';
+    return String(Math.round(x));
+  }
+  function setNum(id, val) {
+    var el = document.getElementById(NS + '-' + id); if (!el) return;
+    var nv = Math.round(n(val, 0)), old = PREV[id];
+    el.textContent = nv;
+    if (old !== undefined && old !== nv) {
+      el.className = 'v ' + (nv > old ? 'up' : 'dn');   /* 涨红跌绿 */
+      setTimeout(function () { el.className = 'v'; }, 1200);
+    }
+    PREV[id] = nv;
+  }
+  function setBar(id, val, color) {
+    var el = document.getElementById(NS + '-' + id); if (!el) return;
+    el.style.width = Math.max(0, Math.min(100, n(val, 0))) + '%';
+    if (color) el.style.background = color;
+  }
+  function setTxt(id, s) { var el = document.getElementById(NS + '-' + id); if (el) el.textContent = s; }
+  function setHtml(id, s) { var el = document.getElementById(NS + '-' + id); if (el) el.innerHTML = s; }
+
+  function render(v) {
+    v = v || {};
+    /* ─── A 状态栏 ─── */
+    var W = v.世界 || {};
+    setTxt('time', W.时间 || '—');
+    setTxt('ch', n(W.章节, 1));
+    setTxt('turn', n(W.回合, 1));
+    setTxt('place', W.地点 || '—');
+    var focus = (v.镜头 || {}).对象 || '—';
+    setTxt('focus', focus);
+
+    var R = v.反派状态 || {};
+    var rv = Math.round(n(R.评价值, 0)), cur = 档[档.length - 1];
+    for (var i = 0; i < 档.length; i++) { if (rv >= 档[i][0]) { cur = 档[i]; break; } }
+    setNum('rv', rv);
+    var rvEl = document.getElementById(NS + '-rv');
+    if (rvEl) rvEl.style.color = cur[3];
+    setTxt('rn', cur[1]);
+    setTxt('rs', cur[2]);
+    setBar('rb', rv);
+
+    setTxt('rtier', R.财富等级 || '—');
+    setTxt('rassetv', '资产 ' + money(R.资产));
+    setBar('rasset', (n(R.资产, 0) / 5e9) * 100);
+    setTxt('quota', n(R.已绑定数, 0) + ' / ' + n(R.绑定名额上限, 8));
+    setBar('qb', (n(R.已绑定数, 0) / Math.max(1, n(R.绑定名额上限, 8))) * 100);
+    setTxt('blown', '暴走 ' + n(R.系统暴走次数, 0) + ' / 3');
+
+    var sys = [
+      ['时停', R.时停剩余], ['预感', R.预感剩余], ['掌控', R.掌控剩余], ['救场', R.救场剩余],
+      ['洗白', R.强制洗白可用 ? 1 : 0], ['积分', R.财富积分], ['第四面墙', R.第四面墙剩余]
+    ];
+    setHtml('sys', sys.map(function (x) {
+      return '<span' + (n(x[1], 0) ? '' : ' class="off"') + '>' + x[0] + '<b>' + n(x[1], 0) + '</b></span>';
+    }).join(''));
+
+    var P = v.玩家 || {};
+    var aw = Math.round(n(P.觉醒度, 0));
+    setNum('awk', aw); setBar('awb', aw);
+    for (var j = 0; j < 觉醒名.length; j++) { if (aw >= 觉醒名[j][0]) { setTxt('awt', 觉醒名[j][1]); break; } }
+    var df = Math.round(n(P.反抗力, 0));
+    setNum('def', df); setBar('deb', df);
+    setTxt('co', '公司' + (P.公司状态 || '正常'));
+    setTxt('wife', '与妻子 ' + (P.与妻子关系 || '亲密'));
+
+    var Book = v.绑定花名册 || {};
+    setHtml('roster', 名单.map(function (nm) {
+      var w = Book[nm] || {};
+      var d = Math.round(n(w.绑定深度, 0));
+      var f = Math.round(n(w.清醒频率, 0));
+      var cls = d >= 80 ? 'lv3' : (d >= 40 ? 'lv2' : 'lv1');
+      return '<tr>' +
+        '<td class="nm' + (nm === focus ? ' focus' : '') + '">' + esc(nm) + '</td>' +
+        '<td class="st">' + esc(w.时期 || '当前目标') + '</td>' +
+        '<td class="tk"><span><i class="' + cls + '" style="width:' + d + '%"></i></span></td>' +
+        '<td class="dm">' + d + '</td>' +
+        '<td class="dm">' + f + '</td>' +
+        '</tr>';
+    }).join(''));
+
+    /* ─── B 交涉面板 ─── */
+    var J = v.交涉状态 || {};
+    var on = !!J.进行中;
+    setTxt('jt', on ? '进行中' : '未进行');
+    setTxt('jwho', '对象 ' + (J.对象 || '—'));
+    setTxt('jstage', '幕次 ' + (J.幕次 || '—') + ' · 第 ' + n(J.回合, 0) + ' 回合');
+    setNum('jme', J.玩家共识分);
+    setNum('jop', J.对手共识分);
+    setTxt('jdm', on ? n(J.上轮玩家骰, 0) : '—');
+    setTxt('jdo', on ? n(J.上轮对手骰, 0) : '—');
+    var jd = document.getElementById(NS + '-jjd');
+    if (jd) {
+      var label = String(J.上轮判定 || '—');
+      jd.textContent = on ? label : '—';
+      jd.className = 'jd' + (/玩家|压住|把话说死|扳|胜/.test(label) ? ' w'
+        : (/对手|林天|失手|败|刮擦|被压/.test(label) ? ' l' : ''));
+    }
+    var AT = P.交涉 || {};
+    setHtml('jattr', ['气势', '口才', '情报', '地位'].map(function (k) {
+      return '<span>' + k + '<b>' + Math.round(n(AT[k], 0)) + '</b></span>';
+    }).join(''));
+    var ev = String(P.证据链 || '').trim();
+    setHtml('jev', ev ? '证据链：<b>' + esc(ev) + '</b>' : '证据链：无');
+
+    /* ─── C 评论条 ─── */
+    var C = v.评论 || {};
+    setTxt('trend', C.倾向 || '叫好');
+    var hot = String(C.热门 || '').trim();
+    setHtml('cmt', hot ? '<span class="tn">热评</span><br>' + esc(hot) : '评论区暂时没什么动静。');
+  }
+
+  var 指纹 = '';
+  function 指纹取(s) { try { return JSON.stringify(s || {}); } catch (e) { return String(Date.now()); } }
+  function 重绘(force) {
+    allVars().then(function (v) {
+      var f = 指纹取(v);
+      if (force || f !== 指纹) { 指纹 = f; try { render(v); } catch (e) {} }
+    }).catch(function () {});
+  }
+
+  try { if (typeof waitGlobalInitialized === 'function') await waitGlobalInitialized('Mvu'); } catch (e) {}
+  重绘(true);
+
+  try {
+    var ctx = (typeof SillyTavern !== 'undefined' && SillyTavern.getContext) ? SillyTavern.getContext() : null;
+    if (ctx && ctx.eventSource && ctx.eventTypes) {
+      var T = ctx.eventTypes;
+      [T.MESSAGE_UPDATED, T.MESSAGE_RENDERED, T.MESSAGE_SWIPED, T.CHAT_CHANGED, T.GENERATION_ENDED,
+       T.VARIABLES_UPDATED, T.VARIABLE_CHANGED]
+        .forEach(function (t) { if (t) ctx.eventSource.on(t, function () { 重绘(false); }); });
+    }
+  } catch (e) {}
+  try {
+    if (typeof Mvu !== 'undefined' && Mvu.eventOn && Mvu.events) {
+      Mvu.eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, function () { 重绘(true); });
+    }
+  } catch (e) {}
+  try { setInterval(function () { 重绘(false); }, 1500); } catch (e) {}
+})();
+</script>
+</body>
+```

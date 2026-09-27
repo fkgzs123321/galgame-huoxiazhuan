@@ -1,0 +1,251 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 世界观场景控制器
+   ════════════════════════════════════════════════════════════
+   职责（执行顺序）：
+   1. 读取场景 MVU 变量
+   2. 按 current_location 加载6大章节场景描述（选1）：
+      - 余杭镇（客栈/十里坡/码头/杂货铺）
+      - 仙灵岛（灵月宫/仙池/灵脉/渡口）
+      - 苏州（林家堡/比武擂台/商埠/隐龙窟）
+      - 京城（长安/刘府/皇宫/财神庙）
+      - 蜀山锁妖塔（大殿/祖师堂/练剑场/塔顶/九层塔/九幽阵/囚室）
+      - 苗疆（白苗族村/黑苗族村/神木林/祭坛/王宫）
+   3. 商店物品查表：当前区域可购买商品 SKU 列表（金创药/还神丹/还魂丹/解毒丹/帐篷/灵玉等）
+   4. 按章节进度加载日期专属场景（仙灵岛结缘/比武招亲/京城彩依/锁妖塔/苗疆决战/结局）
+   5. 时段专属场景描述（5时段：早/上午/下午/晚/深夜）
+   6. 天气场景叠加（晴/阴/雨/雪/雾）
+   7. 战斗触发固定金额查表（基础经验 × 难度系数 × LCG 档位）
+   8. 强制人物锁定（核心 token 控制，按地点自动出现NPC）
+   9. 输出本轮场景合法性清单给 AI
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明；LCG 骰子引擎可选
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取场景 MVU 变量 ─── */
+const _scene = getvar('stat_data.场景', { scope: 'local', defaults: {} }) || {};
+const _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+const _world = getvar('stat_data.世界', { scope: 'local', defaults: {} }) || {};
+const _protag = getvar('stat_data.主角', { scope: 'local', defaults: {} }) || {};
+const _temp = getvar('stat_data.临时', { scope: 'local', defaults: {} }) || {};
+
+const _location = _scene.当前地点 || '余杭镇客栈';
+const _chapter = Number(_world.当前章节) || 1;
+const _tslot = _time.时段 || '早';
+const _weather = _time.天气 || '晴';
+const _sceneMode = _scene.场景模式 || '探索';
+const _difficulty = _temp.当前难度 || '普通';
+
+/* 主角状态 */
+const _hp = Number(_protag.生命) || 100;
+const _mp = Number(_protag.灵力) || 50;
+const _lv = Number(_protag.等级) || 1;
+
+/* ─── 2. 章节区域判定（6大章节） ─── */
+function _resolveChapter(loc) {
+  if (loc.includes('余杭') || loc.includes('客栈') || loc.includes('十里坡') || loc.includes('码头') || loc.includes('杂货铺')) return '余杭镇';
+  if (loc.includes('仙灵') || loc.includes('灵月') || loc.includes('仙池') || loc.includes('灵脉') || loc.includes('渡口')) return '仙灵岛';
+  if (loc.includes('苏州') || loc.includes('林家堡') || loc.includes('擂台') || loc.includes('比武') || loc.includes('商埠') || loc.includes('隐龙窟')) return '苏州';
+  if (loc.includes('京城') || loc.includes('长安') || loc.includes('刘府') || loc.includes('皇宫') || loc.includes('财神庙')) return '京城';
+  if (loc.includes('蜀山') || loc.includes('锁妖塔') || loc.includes('大殿') || loc.includes('祖师堂') || loc.includes('练剑场') || loc.includes('塔顶') || loc.includes('九层') || loc.includes('九幽') || loc.includes('囚室')) return '蜀山锁妖塔';
+  if (loc.includes('苗疆') || loc.includes('白苗') || loc.includes('黑苗') || loc.includes('神木林') || loc.includes('祭坛') || loc.includes('王宫')) return '苗疆';
+  return '余杭镇';
+}
+const _region = _resolveChapter(_location);
+
+/* ─── 3. 商店物品查表 ─── */
+const SHOP_ITEMS = (typeof SHOP_ITEMS !== 'undefined') ? SHOP_ITEMS : {
+  '金创药':   { price: 50,   category: '药品', desc: '恢复少量生命，战斗中常用基础药' },
+  '还神丹':   { price: 200,  category: '药品', desc: '恢复中等灵力，施法者必备' },
+  '还魂丹':   { price: 500,  category: '药品', desc: '复活濒死队友，珍稀道具' },
+  '解毒丹':   { price: 80,   category: '药品', desc: '解除中毒与蛊毒状态' },
+  '帐篷':     { price: 300,  category: '装备', desc: '野外露营恢复体力灵力' },
+  '灵玉':     { price: 1000, category: '材料', desc: '灵力镶嵌载体，可镶嵌五灵' },
+  '雄黄酒':   { price: 30,   category: '药品', desc: '解毒驱邪，苗疆常用' },
+  '玉菩提':   { price: 800,  category: '材料', desc: '提升法术修为的稀有材料' }
+};
+
+const SHOP_BY_CHAPTER = (typeof SHOP_BY_CHAPTER !== 'undefined') ? SHOP_BY_CHAPTER : {
+  '余杭镇':       ['金创药', '解毒丹', '帐篷', '雄黄酒'],
+  '仙灵岛':       [],
+  '苏州':         ['金创药', '还神丹', '解毒丹', '帐篷'],
+  '京城':         ['金创药', '还神丹', '还魂丹', '解毒丹', '帐篷', '灵玉', '玉菩提'],
+  '蜀山锁妖塔':   ['还魂丹', '灵玉', '玉菩提'],
+  '苗疆':         ['解毒丹', '还魂丹', '灵玉', '雄黄酒']
+};
+
+const _shopItemList = (SHOP_BY_CHAPTER[_region] || []).map(name => {
+  const item = SHOP_ITEMS[name] || {};
+  return { name, price: item.price, category: item.category, desc: item.desc };
+});
+
+/* ─── 4. 战斗触发固定金额查表（基础经验 × 难度系数 × LCG档位） ─── */
+const BASE_EXP = (typeof BASE_EXP !== 'undefined') ? BASE_EXP : {
+  '十里坡山贼':   20,
+  '苗人喽啰':     30,
+  '隐龙窟蛇妖':   80,
+  '京城鬼怪':     120,
+  '锁妖塔妖魔':   200,
+  '苗疆蛊虫':     150,
+  '拜月护法':     400,
+  '水魔兽':       600
+};
+
+const BATTLE_BY_CHAPTER = (typeof BATTLE_BY_CHAPTER !== 'undefined') ? BATTLE_BY_CHAPTER : {
+  '余杭镇':       ['十里坡山贼', '苗人喽啰'],
+  '仙灵岛':       [],
+  '苏州':         ['隐龙窟蛇妖'],
+  '京城':         ['京城鬼怪'],
+  '蜀山锁妖塔':   ['锁妖塔妖魔'],
+  '苗疆':         ['苗疆蛊虫', '拜月护法', '水魔兽']
+};
+
+const LCG_TIER_MULT = (typeof LCG_TIER_MULT !== 'undefined') ? LCG_TIER_MULT : {
+  '大失败': 0.5,
+  '失败':   0.8,
+  '普通':   1.0,
+  '成功':   1.2,
+  '大成功': 1.5,
+  '暴击':   2.0
+};
+
+const _diffConfig = (typeof DIFFICULTY_MODIFIERS !== 'undefined' && DIFFICULTY_MODIFIERS[_difficulty]) || {
+  '简单': { exp_mult: 0.8, dice_threshold_mult: 0.9 },
+  '普通': { exp_mult: 1.0, dice_threshold_mult: 1.0 },
+  '困难': { exp_mult: 1.3, dice_threshold_mult: 1.1 },
+  '噩梦': { exp_mult: 1.6, dice_threshold_mult: 1.2 }
+}[_difficulty] || { exp_mult: 1.0, dice_threshold_mult: 1.0 };
+
+/* 当前区域可遭遇敌人与经验计算 */
+const _availableBattles = (BATTLE_BY_CHAPTER[_region] || []).map(enemy => {
+  const base = BASE_EXP[enemy] || 0;
+  return {
+    enemy,
+    base_exp: base,
+    exp_formula: '基础经验(' + base + ') × 难度系数(' + _diffConfig.exp_mult + ') × LCG档位',
+    rule: '实际经验 = base × diff_mult × lcg_tier_mult'
+  };
+});
+
+/* ─── 5. 强制人物锁定（按地点自动出现NPC） ─── */
+const NPC_BY_CHAPTER = (typeof NPC_BY_CHAPTER !== 'undefined') ? NPC_BY_CHAPTER : {
+  '余杭镇':       ['李逍遥', '李大娘', '王小虎', '丁秀兰', '苗族神秘人'],
+  '仙灵岛':       ['赵灵儿', '灵月宫主(姥姥)', '苗人首领'],
+  '苏州':         ['林月如', '林天南', '刘晋元', '姬三娘'],
+  '京城':         ['刘晋元', '彩依', '蝶精彩依', '京城富商'],
+  '蜀山锁妖塔':   ['酒剑仙', '剑圣', '殷若拙', '独孤宇云', '塔中妖魔'],
+  '苗疆':         ['阿奴', '盖罗娇', '拜月教主', '巫王', '赵灵儿(若存活)']
+};
+
+const _npcList = NPC_BY_CHAPTER[_region] || [];
+%>
+
+<%/* ─── 6. 加载对应章节区域条目（6选1） ─── */%>
+<% if (_region === '余杭镇') { %>
+<%- await getwi('地理/余杭镇') %>
+<% } else if (_region === '仙灵岛') { %>
+<%- await getwi('地理/仙灵岛') %>
+<% } else if (_region === '苏州') { %>
+<%- await getwi('地理/苏州') %>
+<% } else if (_region === '京城') { %>
+<%- await getwi('地理/京城') %>
+<% } else if (_region === '蜀山锁妖塔') { %>
+<%- await getwi('地理/蜀山锁妖塔') %>
+<% } else if (_region === '苗疆') { %>
+<%- await getwi('地理/苗疆') %>
+<% } %>
+
+<%/* ─── 7. 章节进度专属场景（关键节点） ─── */%>
+<% if (_chapter === 1) { %>
+<%- await getwi('事件/余杭镇初遇苗人') %>
+<% } else if (_chapter === 2) { %>
+<%- await getwi('事件/仙灵岛结缘') %>
+<% } else if (_chapter === 3) { %>
+<%- await getwi('事件/比武招亲') %>
+<% } else if (_chapter === 4) { %>
+<%- await getwi('事件/京城彩依') %>
+<% } else if (_chapter === 5) { %>
+<%- await getwi('事件/锁妖塔之变') %>
+<% } else if (_chapter === 6) { %>
+<%- await getwi('事件/苗疆决战') %>
+<% } else if (_chapter >= 7) { %>
+<%- await getwi('事件/结局') %>
+<% } %>
+
+<%/* ─── 8. 时段专属场景描述（5时段） ─── */%>
+<% if (_tslot === '深夜') { %>
+[时段设定：深夜（子时~寅时，23:00~05:00）。城镇宵禁，街市无人。客栈闭门，蜀山塔内妖气更盛，苗疆祭坛有夜祭活动。深夜战斗妖魔威力+20%，主角灵力恢复加快。可触发夜袭/潜行/盗宝等场景。fatigue过高将强制休息。]
+<% } else if (_tslot === '晚') { %>
+[时段设定：晚（酉时~亥时，17:00~23:00）。日落西山，商埠陆续打烊。客栈晚餐时段，可触发宴饮剧情。比武擂台夜间休赛。京城刘府夜间有蝶精彩依出没。]
+<% } else if (_tslot === '下午') { %>
+[时段设定：下午（午时~申时，12:00~17:00）。阳气渐弱，适合外出探索与赶路。十里坡/隐龙窟/神木林等野外区域活动高峰。比武擂台开赛时段。]
+<% } else if (_tslot === '上午') { %>
+[时段设定：上午（辰时~巳时，07:00~12:00）。商铺开市，杂货铺/商埠可购物。蜀山练剑场晨练时段。适合拜访NPC、推进剧情主线。]
+<% } else { %>
+[时段设定：早（卯时，05:00~07:00）。天色初明，客栈早餐时段。李大娘准备早饭，可接取日常任务。野外妖魔较弱，适合低等级练功。]
+<% } %>
+
+<%/* ─── 9. 天气场景叠加（晴/阴/雨/雪/雾） ─── */%>
+<% if (_weather === '雨') { %>
+[天气：下雨。户外移动速度减慢，十里坡/隐龙窟易触发泥石流。水系法术威力+20%，火系法术威力-20%。仙灵岛仙池灵气充盈。锁妖塔潮湿，部分妖魔活跃度下降。]
+<% } else if (_weather === '雪') { %>
+[天气：飘雪。苗疆神木林/蜀山高处积雪，行进困难。火系法术消耗+30%。京城财神庙香客减少。余杭镇码头船只停航。]
+<% } else if (_weather === '雾') { %>
+[天气：大雾。仙灵岛灵脉/苗疆祭坛/锁妖塔九幽阵视野受限，易迷路。隐藏事件触发率上升，但遭遇偷袭概率+30%。]
+<% } else if (_weather === '阴') { %>
+[天气：阴天。妖魔活跃度略升，战斗遭遇率+10%。比武擂台照常进行。商埠客流减少。]
+<% } else { %>
+[天气：晴朗。阳气充沛，适合外出与赶路。火系法术威力+10%。野外练功效率最佳。]
+<% } %>
+
+<%/* ─── 10. 强制人物锁定（核心 token 控制） ─── */%>
+[人物锁定指令：本时段（章节=<%= _chapter %>, 时段=<%= _tslot %>, 地点=<%= _location %>, 区域=<%= _region %>）只能出现「仙剑奇侠传1」剧情中合理存在于该地点的NPC。
+当前区域强制NPC列表（JSON）：[<%= _npcList.join(' / ') %>]
+禁止引入未在列表中且不合理出现在该地点的NPC。如玩家试图主动接触未列出NPC，必须用以下方式拒绝：
+- 若该NPC当前位置不在此地点：以"她/他不在此处"为由拒绝
+- 若该NPC当前章节尚未登场：以"主角尚未遇见她/他"为由拒绝
+- 若该NPC已死亡或离队：以"她/他已不在"为由拒绝
+强行违反此锁定将触发剧情崩坏保护机制（详见防口胡条目）。
+
+区域商店：当前区域可购买商品已通过固定物品表锁定，AI 不可私自生成商品。商品 SKU 见下方 JSON 输出。
+战斗经验：当前区域可遭遇敌人与基础经验已通过固定金额表锁定，AI 不可私自设定经验。实际经验 = 基础经验 × 难度系数（<%= _diffConfig.exp_mult %>）× LCG档位（大失败×0.5/失败×0.8/普通×1.0/成功×1.2/大成功×1.5/暴击×2.0）。]
+
+<%/* ─── 11. 输出本轮场景合法性清单给 AI ─── */%>
+<%= JSON.stringify({
+  scene: {
+    region: _region,
+    location: _location,
+    chapter: _chapter,
+    time_slot: _tslot,
+    weather: _weather,
+    scene_mode: _sceneMode,
+    difficulty: _difficulty
+  },
+  protagonist: {
+    hp: _hp,
+    mp: _mp,
+    level: _lv
+  },
+  shop: {
+    available_items: _shopItemList,
+    rule: 'AI 不可私自生成物品，必须从此 SKU 列表选择。价格固定，难度不影响价格。仙灵岛无商店。'
+  },
+  battles: {
+    available: _availableBattles,
+    exp_formula: '基础经验 × 难度系数(' + _diffConfig.exp_mult + ') × LCG档位',
+    rule: 'AI 不可私自设定战斗经验，必须按公式计算。LCG档位由骰子引擎决定。'
+  },
+  character_lock: {
+    region: _region,
+    forced_npcs: _npcList,
+    rule: '只能出现剧情合理存在于该地点的NPC',
+    violation_protection: '强行违反触发剧情崩坏保护机制'
+  }
+}, null, 2) %>
+
+<%/* ─── 12. 本轮场景摘要（供AI决策） ─── */%>
+<%_ /* 摘要：以人类可读格式再次确认当前场景上下文 */ _%>
+[本轮场景摘要：第<%= _chapter %>章 · <%= _region %> · <%= _location %> · <%= _tslot %> · 天气<%= _weather %> · 模式<%= _sceneMode %> · 难度<%= _difficulty %>]
+[主角状态：LV<%= _lv %> / HP<%= _hp %> / MP<%= _mp %>]
+[当前可购商品数：<%= _shopItemList.length %>件 | 当前可遭遇敌人数：<%= _availableBattles.length %>种 | 当前强制NPC数：<%= _npcList.length %>人]
+[AI须严格遵守上方JSON清单，不得擅自添加未列出物品/敌人/NPC，违者触发防口胡机制。]

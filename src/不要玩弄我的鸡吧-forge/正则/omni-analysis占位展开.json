@@ -1,0 +1,17 @@
+{
+  "id": "a1b2c3d4-0007-4000-8000-000000000007",
+  "scriptName": "OMNI预分析占位展开 - 将OmniAnalysis标签替换为变量预分析挂载点",
+  "findRegex": "/<OmniAnalysis>([\\s\\S]*?)<\\/OmniAnalysis>/gi",
+  "replaceString": "<div class=\"fjb-omni-mount\" data-fjb-omni-analysis=\"1\"><div class=\"fjb-omni-raw\" data-fjb-omni-raw style=\"white-space:pre-wrap;word-break:break-word\">$1</div></div>",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": 0,
+  "maxDepth": null
+}

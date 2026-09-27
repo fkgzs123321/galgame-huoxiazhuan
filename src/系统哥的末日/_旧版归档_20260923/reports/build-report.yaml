@@ -1,0 +1,14 @@
+schemaVersion: 5
+generatedAt: '2026-07-16T08:00:13.596Z'
+project:
+  id: project_mr1fetuw_6bd2c43e
+  name: 系统哥的末日
+  output: character_card
+validation:
+  errors: 0
+  warnings: 0
+  infos: 0
+outputs:
+  - target: character_card
+    path: E:\Games\写卡\tavern_resource-main\.worldbook\projects\系统哥的末日\exports\系统哥的末日.card.json
+    backup_path: E:\Games\写卡\tavern_resource-main\.worldbook\backups\系统哥的末日.card.2026-07-16T08-00-13-612Z.bak.json

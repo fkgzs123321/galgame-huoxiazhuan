@@ -1,0 +1,181 @@
+// 面板加「丹房」（炼丹小游戏）
+const fs = require('fs');
+const p = 'src/旮旯给木-英雄坛说/正则/_面板逻辑.js';
+let t = fs.readFileSync(p, 'utf8');
+
+// ── ① 炼丹引擎 + 界面 ──
+const 炼丹 = [
+  '  /* ════════════════════════════════════════════════════════════',
+  '     丹房（炼丹）★ 纯前端算，不花 AI 额度',
+  '     机制来自参考项目「姬侠传」：温度是资源+风险，完成度与品质此消彼长',
+  '     ════════════════════════════════════════════════════════════ */',
+  '  var 丹 = null;   // 炼丹状态（不持久化，一次会话内有效）',
+  '',
+  '  function 开丹() {',
+  '    if (!丹) 起炉();',
+  '    画();',
+  '  }',
+  '  function 起炉() {',
+  '    var 药 = (D.炼丹 || {}).药材 || [];',
+  '    var 投 = {};',
+  '    药.forEach(function (y) { 投[y.名] = 2; });   // 默认每味 2 个 = 8 个',
+  '    丹 = { 投: 投, 炉温: 20, 品质: 0, 完成度: 0, 次: 0, 上限: 15, 事件s: [], 停: false, 护主: false };',
+  '  }',
+  '  function 投药数() { var n = 0; for (var k in 丹.投) n += 数(丹.投[k]); return n; }',
+  '  function 丹倍率() {',
+  '    var w = 丹.炉温;',
+  '    if (w <= 30) return 0.3 + (w / 30) * 0.2;',
+  '    if (w <= 70) return 0.5 + ((w - 30) / 40) * 0.5;',
+  '    return Math.min(1.8, 1.0 + ((w - 70) / 30) * 0.8);',
+  '  }',
+  '  function 丹态() {',
+  '    var w = 丹.炉温;',
+  '    if (w > 100) return { 名: "炸炉", 色: "#e05a4a" };',
+  '    if (w > 90) return { 名: "将炸", 色: "#e5769a" };',
+  '    if (w > 70) return { 名: "炽热", 色: "#e5a04a" };',
+  '    if (w >= 30) return { 名: "正常", 色: "#5fc98d" };',
+  '    return { 名: "冷寂", 色: "#5ca3d8" };',
+  '  }',
+  '  function 掷(a, b) { return a + Math.random() * (b - a); }',
+  '  function 炼丹一(op) {',
+  '    if (丹.停) return;',
+  '    var 倍 = 丹倍率(), 表 = {',
+  '      猛火: { 温: [25, 35], 品: [-5, -2], 完: [0, 0] },',
+  '      文火: { 温: [5, 10], 品: [3, 6], 完: [4, 8] },',
+  '      投药: { 温: [-15, -5], 品: [2, 4], 完: [8, 15] },',
+  '      冷凝: { 温: [-30, -20], 品: [8, 12], 完: [0, 2] },',
+  '      淬炼: { 温: [5, 10], 品: [5, 8], 完: [-10, -5] },',
+  '    }[op];',
+  '    if (!表) return;',
+  '    丹.炉温 = Math.max(0, 丹.炉温 + 掷(表.温[0], 表.温[1]));',
+  '    var p倍 = (op === "猛火" || op === "淬炼") ? 1 : 倍;',
+  '    丹.品质 = 夹(丹.品质 + 掷(表.品[0], 表.品[1]) * (表.品[1] > 0 ? p倍 : 1), 0, 100);',
+  '    丹.完成度 = 夹(丹.完成度 + 掷(表.完[0], 表.完[1]) * (表.完[1] > 0 ? 倍 : 1), 0, 100);',
+  '    丹.次++;',
+  '    // 随机事件（15%）',
+  '    if (Math.random() < 0.15) {',
+  '      var 事 = ((D.炼丹 || {}).随机事件 || []);',
+  '      if (事.length) {',
+  '        var e = 事[Math.floor(Math.random() * 事.length)];',
+  '        丹.事件s.push(e.标 + e.名);',
+  '        if (e.名 === "祥瑞") 丹.品质 = 夹(丹.品质 + 15, 0, 100);',
+  '        else if (e.名 === "寒潮") 丹.炉温 = Math.max(0, 丹.炉温 - 15);',
+  '        else if (e.名 === "护主") 丹.护主 = true;',
+  '        if (丹.事件s.length > 6) 丹.事件s.shift();',
+  '      }',
+  '    }',
+  '    // 炸炉判定',
+  '    if (丹.炉温 > 100 && !丹.护主) { 丹.停 = true; 丹.炸了 = true; }',
+  '    else if (丹.炉温 > 100 && 丹.护主) { 丹.炉温 = 95; 丹.护主 = false; }',
+  '    if (丹.次 >= 丹.上限 || 丹.完成度 >= 100) 丹.停 = true;',
+  '    画();',
+  '  }',
+  '  function 取丹() {',
+  '    if (!丹) return;',
+  '    var 产 = ((D.炼丹 || {}).产出 || []);',
+  '    var q = 丹.品质, 得 = null;',
+  '    for (var i = 0; i < 产.length; i++) {',
+  '      var a = 产[i].品质;',
+  '      if (a === "100" && q >= 100) { 得 = 产[i]; break; }',
+  '      if (a === "90~99" && q >= 90 && q < 100) { 得 = 产[i]; break; }',
+  '      if (a === "75~89" && q >= 75 && q < 90) { 得 = 产[i]; break; }',
+  '      if (a === "50~74" && q >= 50 && q < 75) { 得 = 产[i]; break; }',
+  '      if (a === "< 50" && q < 50) { 得 = 产[i]; break; }',
+  '    }',
+  '    if (!得) 得 = { 丹: "（无产出）", 效果: "白费一批药材" };',
+  '    // 落账：扣药材、加丹药（接现有变量）',
+  '    写(function (sd) {',
+  '      sd.背包 = sd.背包 || [];',
+  '      sd.资源 = sd.资源 || {};',
+  '      if (得.丹 && 得.丹.indexOf("无产出") < 0) sd.背包.push({ 名: 得.丹, 品质: 得.档 || "上品" });',
+  '      Object.keys(丹.投).forEach(function (k) {',
+  '        var 持 = (sd.资源[k] == null) ? 数(丹.投[k]) * 10 : 0;   // 无库存则按够算',
+  '        if (持) return;',
+  '      });',
+  '    });',
+  '    alert("炼成：" + 得.丹 + "（品质 " + Math.round(丹.品质) + "）\\n" + 得.效果);',
+  '    丹 = null;',
+  '    画();',
+  '  }',
+  '',
+  '  function 画丹房() {',
+  '    if (!丹) 起炉();',
+  '    var 态 = 丹态(), 倍 = 丹倍率();',
+  '    var 药 = ((D.炼丹 || {}).药材) || [];',
+  '    var H = "";',
+  '    H += \'<div class="yx-r"><div class="yx-c yx-w"><div class="yx-ttl">丹房 <em>（每周一次 · 纯前端算，不耗额度）</em></div>\';',
+  '    // 三个数',
+  '    H += \'<div class="yx-bw"><span class="lb">炉温</span><div class="yx-bar\"><i style="width:\' + Math.min(100, 丹.炉温) + \'%;background:\' + 态.色 + \'"></i></div><span class="vl" style="color:\' + 态.色 + \'">\' + Math.round(丹.炉温) + "　" + 态.名 + "</span></div>";',
+  '    H += \'<div class="yx-bw"><span class="lb">品质</span><div class="yx-bar"><i class="ar" style="width:\' + 丹.品质 + \'%"></i></div><span class="vl">\' + Math.round(丹.品质) + "</span></div>";',
+  '    H += \'<div class="yx-bw"><span class="lb">完成</span><div class="yx-bar"><i class="tk" style="width:\' + 丹.完成度 + \'%"></i></div><span class="vl">\' + Math.round(丹.完成度) + "/100</span></div>";',
+  '    H += \'<div class="yx-nt">炉温倍率 ×\' + 倍.toFixed(2) + "　（0~30 低效 ｜ 31~70 稳定 ｜ 71~100 高效但危险）　★ 过 100 炸炉</div>";',
+  '    // 操作',
+  '    if (!丹.停) {',
+  '      H += \'<div class="yx-foes" style="margin-top:11px">\';',
+  '      ((D.炼丹 || {}).五种操作 || []).forEach(function (o) {',
+  '        H += \'<button class="yx-btn" data-dan="\' + E(o.名) + \'" title="\' + E(o.说明) + \'">\' + E(o.名) + "</button>";',
+  '      });',
+  '      H += "</div>";',
+  '      H += \'<div class="yx-nt">剩余操作 \' + (丹.上限 - 丹.次) + " / " + 丹.上限 + "　（淬炼降完成度但提品质 —— 取舍）</div>";',
+  '    } else {',
+  '      H += \'<div class="yx-ops" style="margin-top:12px"><button class="yx-btn pri" id="yx-qd">取丹</button>\';',
+  '      H += \'<button class="yx-btn" id="yx-cq">重起一炉</button></div>\';',
+  '    }',
+  '    if (丹.事件s.length) H += \'<div class="yx-nt">事件：\' + 丹.事件s.join("　") + "</div>";',
+  '    // 投药',
+  '    H += \'<div class="yx-k2">投药（共 \' + 投药数() + \' 个，6~10 个；投得多起手品质高）</div>\';',
+  '    H += \'<div class="yx-chips">\' + 药.map(function (y) {',
+  '      return \'<span class="yx-ch clk yx-yao" data-y="\' + E(y.名) + \'">\' + E(y.名) + "（" + E(y.对应) + "）" + 丹.投[y.名] + \'</span>\';',
+  '    }).join("") + "</div>";',
+  '    H += \'<div class="yx-nt">起手品质 =（投药数 − 6）× 5　→　现在 \' + Math.max(0, (投药数() - 6) * 5) + "</div>";',
+  '    H += "</div></div>";',
+  '    return H;',
+  '  }',
+  '',
+].join('\n');
+
+// 插到「说明」段之前
+t = t.replace('  /* ── 说明 ── */', 炼丹 + '  /* ── 说明 ── */');
+
+// ── ② 页签加「丹房」 ──
+t = t.replace(
+  "{ id: \"body\", 名: \"身体\" },",
+  "{ id: \"body\", 名: \"身体\" },\n    { id: \"dan\", 名: \"丹房\" },"
+);
+t = t.replace(
+  "    if (页 === 'help')",
+  "    if (页 === 'dan') { 体.innerHTML = 画丹房(); 绑丹房(); return; }\n    if (页 === 'help')"
+);
+
+// ── ③ 绑事件 ──
+t = t.replace('  /* ── 说明 ── */', [
+  '  function 绑丹房() {',
+  '    [].forEach.call(document.querySelectorAll("[data-dan]"), function (b) {',
+  '      b.addEventListener("click", function () { 炼丹一(b.getAttribute("data-dan")); });',
+  '    });',
+  '    [].forEach.call(document.querySelectorAll(".yx-yao"), function (c) {',
+  '      c.addEventListener("click", function () {',
+  '        var k = c.getAttribute("data-y");',
+  '        丹.投[k] = 数(丹.投[k]) + 1; if (投药数() > 10) 丹.投[k] = 数(丹.投[k]) - 1;',
+  '        if (数(丹.投[k]) > 4) 丹.投[k] = 4;',
+  '        画();',
+  '      });',
+  '    });',
+  '    var q = document.getElementById("yx-qd"); if (q) q.addEventListener("click", 取丹);',
+  '    var c2 = document.getElementById("yx-cq"); if (c2) c2.addEventListener("click", function () { 起炉(); 画(); });',
+  '  }',
+  '',
+  '  /* ── 说明 ── */',
+].join('\n'));
+
+fs.writeFileSync(p, t);
+console.log('✅ 丹房已加（' + Math.round(Buffer.byteLength(t, 'utf8') / 1024) + ' KB）');
+
+// ── ④ 生成器带上炼丹 ──
+const gp = 'src/旮旯给木-英雄坛说/scripts/gen-panel.cjs';
+let g = fs.readFileSync(gp, 'utf8');
+if (!g.includes('炼丹:')) {
+  g = g.replace('  面板配置: 物品与品质.面板配置 || {},', '  面板配置: 物品与品质.面板配置 || {},\n  炼丹: 读(path.join(契约, \'炼丹.yaml\'), {}),');
+  fs.writeFileSync(gp, g);
+  console.log('✅ 生成器带上 炼丹');
+}

@@ -1,0 +1,20 @@
+名称: 第三章BE后禁止续玩
+类型: 事件
+启用: false
+激活策略:
+  类型: 蓝灯
+  优先级: 57
+插入位置:
+  类型: 指定深度
+  角色: system
+  深度: 0
+  顺序: 223
+
+内容: |
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '' }) === '第三章' && getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) === true
+
+  【第三章 · BE 后禁止续玩】
+
+  已死亡=true。本楼只收束 BE 叙事 + branches；**禁止**推进节点、禁止进入第四章。
+
+  @@endif

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>战斗面板 · 同级生2</title>
+<style>
+:root{
+  --bg-0:#0a0e1a;--bg-1:#161a2e;--bg-card:rgba(28,32,58,.9);
+  --c-text:#f3f4f6;--c-dim:#9ca3af;--c-border:rgba(224,82,94,.25);
+  --c-danger:#ef4444;--c-warn:#f59e0b;--c-safe:#10b981;--c-gold:#d9a441;--c-blue:#3b82f6;--c-pink:#f472b6;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+.bt{background:linear-gradient(160deg,#0d1322,#1a1f36);border:1px solid var(--c-border);border-radius:12px;padding:12px 14px;margin:6px 0;box-shadow:0 6px 20px rgba(0,0,0,.55)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid rgba(224,82,94,.3);margin-bottom:10px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:700;letter-spacing:.5px;color:var(--c-danger)}
+.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(163,113,247,.12);border:1px solid rgba(163,113,247,.3);color:#d2a8ff;white-space:nowrap}
+.pill.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:var(--c-warn)}
+.pill.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:var(--c-danger)}
+.pill.safe{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);color:var(--c-safe)}
+.pill.hell{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.5);color:#fca5a5;font-weight:700}
+.rfr{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0}
+.rfr.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* 分区标题 */
+.bt-sec{font-size:var(--fs-xs);font-weight:700;color:var(--c-dim);margin:12px 0 6px;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.bt-sec::before{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(224,82,94,.35),transparent)}
+/* 判定卡 */
+.bt-judge{border:1px solid rgba(224,82,94,.4);border-radius:10px;background:linear-gradient(150deg,rgba(224,82,94,.12),rgba(163,113,247,.07) 60%);padding:10px 12px}
+.bj-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.bj-name{font-size:var(--fs-md);font-weight:700}
+.bj-tier{font-size:var(--fs-xs);font-weight:700;padding:2px 10px;border-radius:999px;letter-spacing:.5px}
+.bj-tier.cs{background:linear-gradient(90deg,#10b981,#34d399);color:#04342c}
+.bj-tier.s{background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.5);color:#34d399}
+.bj-tier.n{background:rgba(148,163,184,.15);border:1px solid rgba(148,163,184,.4);color:#cbd5e1}
+.bj-tier.f{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.45);color:#fbbf24}
+.bj-tier.cf{background:linear-gradient(90deg,#ef4444,#f87171);color:#4a0b0b}
+.bj-mult{font-size:var(--fs-xs);color:var(--c-gold);font-weight:700;margin-left:auto}
+.bj-rate{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bj-label{font-size:var(--fs-xs);color:var(--c-dim);width:3.4em;flex-shrink:0}
+.bt-bar{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;min-width:30px}
+.bt-fill{height:100%;border-radius:4px;transition:width .4s}
+.bt-fill.rate{background:linear-gradient(90deg,#e0525e,#f59e0b)}
+.bj-rate-n{font-size:var(--fs-sm);font-weight:700;width:3em;text-align:right}
+.bj-roll{font-size:var(--fs-xs);padding:2px 8px;border-radius:6px;margin-left:auto}
+.bj-roll.ok{background:rgba(16,185,129,.15);color:#34d399}
+.bj-roll.ng{background:rgba(239,68,68,.15);color:#f87171}
+.bj-vs{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);padding:6px 0;border-top:1px dashed rgba(224,82,94,.25);border-bottom:1px dashed rgba(224,82,94,.25)}
+.bj-vs b{font-size:var(--fs-sm);color:var(--c-text)}
+.bj-dv{font-weight:700;font-size:var(--fs-sm)}
+.bj-dv.win{color:#34d399}.bj-dv.lose{color:#f87171}
+.bj-bd{font-size:var(--fs-xs);color:var(--c-dim);margin-top:6px}
+.bj-desc{font-size:var(--fs-xs);color:var(--c-dim);margin-top:4px;line-height:1.5}
+/* 历史列表 */
+.bt-hist{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.hist-item{display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.04)}
+.hist-day{color:var(--c-dim);width:4.5em;flex-shrink:0}
+.hist-act{flex:1;color:var(--c-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-tier{font-size:10px;padding:1px 6px;border-radius:999px;flex-shrink:0}
+.hist-tier.cs{background:rgba(16,185,129,.2);color:#34d399}
+.hist-tier.s{background:rgba(16,185,129,.15);color:#34d399}
+.hist-tier.n{background:rgba(148,163,184,.12);color:#cbd5e1}
+.hist-tier.f{background:rgba(245,158,11,.15);color:#fbbf24}
+.hist-tier.cf{background:rgba(239,68,68,.18);color:#f87171}
+.hist-rate{color:var(--c-dim);width:3.5em;text-align:right;flex-shrink:0}
+.hist-roll{width:4em;text-align:right;flex-shrink:0;font-weight:700}
+.hist-roll.ok{color:#34d399}.hist-roll.ng{color:#f87171}
+/* 六维 */
+.bt-row{display:flex;align-items:center;gap:4px;margin:3px 0;font-size:var(--fs-xs)}
+.bt-k{width:2.6em;color:var(--c-dim);text-align:right;flex-shrink:0}
+.bt-fill.p{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.bt-fill.h{background:linear-gradient(90deg,#a371f7,#c4a5ff)}
+.bt-v{width:2.2em;text-align:center;font-weight:700;flex-shrink:0}
+.bt-dv{width:3em;text-align:center;font-size:var(--fs-xs);font-weight:700;flex-shrink:0}
+.bt-dv.win{color:#34d399}.bt-dv.lose{color:#f87171}.bt-dv.eq{color:var(--c-dim)}
+.bt-extra-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:var(--fs-xs);color:var(--c-dim)}
+.bt-extra{background:rgba(163,113,247,.1);border:1px solid rgba(163,113,247,.25);border-radius:6px;padding:2px 8px}
+/* 关系仪表 */
+.bt-rel{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:4px}
+.rel-item{display:flex;align-items:center;gap:6px;font-size:var(--fs-xs)}
+.rel-k{width:2em;color:var(--c-dim);flex-shrink:0}
+.rel-track{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.rel-fill{height:100%;border-radius:4px;transition:width .4s}
+.rel-v{width:2.4em;text-align:right;font-weight:700;flex-shrink:0}
+.bt-empty{text-align:center;color:var(--c-dim);font-size:var(--fs-sm);padding:14px 0}
+.bt-empty .dim{font-size:var(--fs-xs);opacity:.65;margin-top:6px}
+.loading{text-align:center;color:var(--c-dim);padding:16px;font-size:var(--fs-sm)}
+</style>
+</head>
+<body>
+<div id="bt-root">
+  <div class="loading" id="bt-loading">正在载入战斗面板…</div>
+  <div class="bt" id="bt-body" style="display:none"></div>
+</div>
+<script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* ===== 战斗面板 · 同级生2 · 独立自包含 ===== */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+function deepMergeStat(base,extra){
+  if(!extra||typeof extra!=='object')return base;
+  var out={};
+  for(var k in base){out[k]=base[k]}
+  for(var k2 in extra){
+    if(extra[k2]&&typeof extra[k2]==='object'&&!Array.isArray(extra[k2])&&base[k2]&&typeof base[k2]==='object'&&!Array.isArray(base[k2])){
+      out[k2]=deepMergeStat(base[k2],extra[k2]);
+    }else{out[k2]=extra[k2]}
+  }
+  return out;
+}
+function parseEmbeddedStat(){
+  var el=document.getElementById('mvu-stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'){
+      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+function hasMeaningfulStatData(stat){return stat&&typeof stat==='object'&&!Array.isArray(stat)&&Object.keys(stat).length>0}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;return hasMeaningfulStatData(stat)?stat:null}
+function resolveMessageId(){
+  try{
+    var frame=window.frameElement;
+    if(frame){var el=frame;while(el){if(el.classList&&el.classList.contains('mes')){var id=parseInt(el.getAttribute('mesid'),10);if(id>=0)return id}el=el.parentElement}}
+  }catch(e){}
+  var fn=pickHostFn('getIframeName');
+  if(fn){try{var name=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}}
+  if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;
+  var cf=pickHostFn('getCurrentMessageId');
+  if(cf){try{var id2=cf();if(typeof id2==='number'&&id2>=0)return id2}catch(e){}}
+  return -1;
+}
+function getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}
+function readStatDataSync(){
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+async function readStatDataAsync(){
+  try{
+    if(typeof getLastMessageId==='function'){
+      var maxId=getLastMessageId();
+      var Mvu=getMvu();
+      var gv=pickHostFn('getVariables');
+      for(var i=0;i<15;i++){
+        var cid=maxId-i;if(cid<0)break;
+        var msg=null;
+        try{msg=getChatMessages(cid)}catch(e){continue}
+        if(Array.isArray(msg))msg=msg[0];
+        if(!msg||msg.role!=='assistant')continue;
+        var mid=msg.message_id;
+        if(typeof mid!=='number'||mid<0)continue;
+        var v=null;
+        try{
+          if(Mvu&&typeof Mvu.getMvuData==='function'){v=await Mvu.getMvuData({type:'message',message_id:mid});}
+          else if(gv){v=await gv({type:'message',message_id:mid});}
+        }catch(e){}
+        var stat=pickStatData(v);
+        if(stat&&hasMeaningfulStatData(stat))return deepMergeStat(DEFAULT_STAT,stat);
+      }
+    }
+  }catch(e){}
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+var DEFAULT_STAT={
+  "时间":{"当前日期":"12-22","星期":"周五","时段":"早","当前时间":"08:00","天数":1,"季节":"冬","章节":"寒假前奏","天气":"晴"},
+  "场景":{"当前地点":"主角自宅客厅","当前女角名":"无","场景模式":"休息"},
+  "主角":{"玩家身份":"原作主角","玩家姓名":"{{user}}","魅力":50,"学业":50,"体力":80,"社交":50,"敏感":50,"声誉":50,"疲劳":20,"心情":70,"睡眠质量":70},
+  "当前女角":{"姓名":"无","关系阶段":"初识","好感度":0,"心动值":0,"信任度":0,"嫉妒值":0,"魅力":0,"学业":0,"体力":0,"社交":0,"敏感":0,"声誉":0,"力量":0,"敏捷":0,"智力":0},
+  "临时":{"最近判定":"","判定历史":"[]","当前难度":"普通","上次选择结果":""}
+};
+var State={loading:true,refreshing:false,mvu:null};
+function mvuObj(key){return(State.mvu&&State.mvu[key])||{}}
+function parseJudge(str){try{var o=JSON.parse(str||'null');return o&&typeof o==='object'?o:null}catch(e){return null}}
+function parseHistory(str){try{var a=JSON.parse(str||'[]');return Array.isArray(a)?a:[]}catch(e){return []}}
+var TIER_LABEL={critical_success:'大成功',success:'成功',normal:'普通',failure:'失败',critical_failure:'大失败'};
+function tierCls(t){return(t==='critical_success')?'cs':(t==='success')?'s':(t==='normal')?'n':(t==='failure')?'f':'cf'}
+/* 判定卡 */
+function renderJudge(rj){
+  var tier=rj.tier||'normal';
+  var rate=parseInt(rj.success_rate)||0;
+  var pv=parseFloat(rj.power)||0,rv=parseFloat(rj.requirement)||0,dv=(pv-rv);
+  var dTxt=(dv>=0?'+':'')+dv.toFixed(1);
+  var dCls=dv>=0?'win':'lose';
+  var roll=parseFloat(rj.roll)||0;
+  var rollOk=rj.success?'ok':'ng';
+  var bd=rj.breakdown||{};
+  var bdTxt='';
+  if(bd.req_stage!==undefined) bdTxt='基础 '+bd.req_base+' · 阶段 '+bd.req_stage+(bd.req_stage_mod>0?'+'+bd.req_stage_mod:bd.req_stage_mod<0?bd.req_stage_mod:'')+' · 难度'+(bd.req_difficulty_mod>0?'+'+bd.req_difficulty_mod:bd.req_difficulty_mod);
+  return '<div class="bt-judge">'
+    +'<div class="bj-head"><span class="bj-name">'+esc(rj.action_name||rj.action_type||'判定')+'</span>'
+    +'<span class="bj-tier '+tierCls(tier)+'">'+esc(TIER_LABEL[tier]||tier)+'</span>'
+    +(rj.effect_mult!==undefined?'<span class="bj-mult">效果 ×'+rj.effect_mult+'</span>':'')
+    +'</div>'
+    +'<div class="bj-rate"><span class="bj-label">成功率</span>'
+    +'<div class="bt-bar"><div class="bt-fill rate" style="width:'+Math.max(0,Math.min(100,rate))+'%"></div></div>'
+    +'<span class="bj-rate-n">'+rate+'%</span>'
+    +'<span class="bj-roll '+rollOk+'">骰 '+roll+'/100 '+(rj.success?'✓':'✗')+'</span>'
+    +'</div>'
+    +'<div class="bj-vs"><span>主角能力 <b>'+pv.toFixed(1)+'</b></span>'
+    +'<span class="bj-dv '+dCls+'">'+dTxt+'</span>'
+    +'<span>女角需求 <b>'+rv.toFixed(1)+'</b></span></div>'
+    +(bdTxt?'<div class="bj-bd">'+esc(bdTxt)+'</div>':'')
+    +(rj.tier_desc?'<div class="bj-desc">'+esc(rj.tier_desc)+'</div>':'')
+    +'</div>';
+}
+/* 历史列表 */
+function renderHistory(hist){
+  if(!hist||!hist.length)return'';
+  var rows='';
+  for(var i=0;i<hist.length&&i<5;i++){
+    var h=hist[i];
+    var day=h.t?'Day'+String(h.t).padStart(2,'0'):'——';
+    var slot=h.s||'';
+    var act=h.a||'判定';
+    var tier=TIER_LABEL[h.tier]||h.tier||'';
+    rows+='<div class="hist-item"><span class="hist-day">'+esc(day)+(slot?' '+esc(slot):'')+'</span>'
+      +'<span class="hist-act">'+esc(act)+'</span>'
+      +'<span class="hist-tier '+tierCls(h.tier)+'">'+esc(tier)+'</span>'
+      +'<span class="hist-rate">'+esc(h.rate||0)+'%</span>'
+      +'<span class="hist-roll '+(h.ok?'ok':'ng')+'">'+esc(h.roll||0)+(h.ok?' ✓':' ✗')+'</span></div>';
+  }
+  return '<div class="bt-sec">判定历史（最近 '+Math.min(hist.length,5)+'）</div><div class="bt-hist">'+rows+'</div>';
+}
+/* 六维对抗 */
+function renderStats(p,h){
+  var pairs=[['魅力',p.魅力,h.魅力],['学业',p.学业,h.学业],['体力',p.体力,h.体力],['社交',p.社交,h.社交],['敏感',p.敏感,h.敏感],['声誉',p.声誉,h.声誉]];
+  var rows='';
+  for(var i=0;i<pairs.length;i++){
+    var pv=parseInt(pairs[i][1])||0,hv=parseInt(pairs[i][2])||0;
+    var dv=pv-hv;
+    var w=Math.abs(dv)<=5?'eq':(dv>0?'win':'lose');
+    var dTxt=(dv>0?'+':'')+dv;
+    rows+='<div class="bt-row"><span class="bt-k">'+pairs[i][0]+'</span>'
+      +'<div class="bt-bar"><div class="bt-fill p" style="width:'+Math.max(0,Math.min(100,pv))+'%"></div></div>'
+      +'<span class="bt-v">'+pv+'</span>'
+      +'<span class="bt-dv '+w+'">'+dTxt+'</span>'
+      +'<span class="bt-v">'+hv+'</span>'
+      +'<div class="bt-bar"><div class="bt-fill h" style="width:'+Math.max(0,Math.min(100,hv))+'%"></div></div>'
+      +'<span class="bt-k">'+pairs[i][0]+'</span></div>';
+  }
+  var extra='';
+  var ek=[['力量','#ef4444'],['敏捷','#f59e0b'],['智力','#3b82f6']];
+  for(var j=0;j<3;j++){
+    var ev=parseInt(h[ek[j][0]])||0;
+    extra+='<span class="bt-extra" style="border-color:'+ek[j][1]+'55;color:'+ek[j][1]+'">'+ek[j][0]+' '+ev+'</span>';
+  }
+  return '<div class="bt-sec">六维对抗</div>'+rows+'<div class="bt-extra-row">'+extra+'</div>';
+}
+/* 关系仪表 */
+function relBar(label,val,max,color){
+  val=parseInt(val)||0;max=max||100;
+  var w=Math.max(0,Math.min(100,val/max*100));
+  return '<div class="rel-item"><span class="rel-k">'+label+'</span>'
+    +'<div class="rel-track"><div class="rel-fill" style="width:'+w+'%;background:'+color+'"></div></div>'
+    +'<span class="rel-v">'+val+'</span></div>';
+}
+function renderRel(h){
+  var aff=parseInt(h.好感度)||0,hb=parseInt(h.心动值)||0,tr=parseInt(h.信任度)||0,je=parseInt(h.嫉妒值)||0;
+  return '<div class="bt-sec">关系仪表</div><div class="bt-rel">'
+    +relBar('好感',aff,100,aff>=80?'#10b981':aff>=40?'#d9a441':'#6aa8d8')
+    +relBar('心动',hb,100,'#f472b6')
+    +relBar('信任',tr,100,'#3b82f6')
+    +relBar('嫉妒',je,100,je>=60?'#ef4444':'#9ca3af')
+    +'</div>';
+}
+/* 主渲染 */
+function render(){
+  var p=mvuObj('主角'),h=mvuObj('当前女角'),sc=mvuObj('场景'),tp=mvuObj('临时');
+  var hname=h.姓名||'无';
+  var isReal=hname!=='无'&&hname!==''&&hname!=='0';
+  var stage=h.关系阶段||'初识';
+  var stageCls=(stage==='暧昧'||stage==='心动'||stage==='亲密')?'warn':(stage==='决裂'||stage==='仇视'||stage==='厌恶')?'danger':'';
+  var diff=tp.当前难度||'普通';
+  var diffCls=diff==='地狱'?'hell':(diff==='挑战'?'danger':(diff==='普通'?'':'safe'));
+  var head='<div class="hd"><div class="hd-l">'
+    +'<span class="hd-t">⚔ 战斗面板</span>'
+    +'<span class="pill">'+esc(sc.场景模式||'休息')+'</span>'
+    +(isReal?'<span class="pill">'+esc(hname)+'</span>':'')
+    +'<span class="pill '+stageCls+'">'+esc(stage)+'</span>'
+    +'<span class="pill '+diffCls+'">'+esc(diff)+'</span>'
+    +'</div>'
+    +'<button class="rfr'+(State.refreshing?' spinning':'')+'" data-act="refresh">🔄</button>'
+    +'</div>';
+  var rj=parseJudge(tp.最近判定);
+  var hist=parseHistory(tp.判定历史);
+  var judgeHtml=rj&&rj.action_name?renderJudge(rj):'';
+  var histHtml=renderHistory(hist);
+  var html=head;
+  if(isReal){
+    html+=judgeHtml+histHtml+renderStats(p,h)+renderRel(h);
+  }else{
+    html+=(judgeHtml?judgeHtml:'')+(histHtml?histHtml:'')
+      +'<div class="bt-empty">当前无女角在场，未进入对抗判定。<div class="dim">判定发生时自动显示 LCG 骰子结果</div></div>';
+  }
+  return html;
+}
+async function refresh(){
+  if(State.refreshing)return;
+  State.refreshing=true;
+  var bodyEl=document.getElementById('bt-body');
+  try{
+    State.mvu=await readStatDataAsync();
+    if(bodyEl){bodyEl.innerHTML=render();}
+  }catch(e){}
+  State.refreshing=false;
+  var btn=document.querySelector('[data-act=refresh]');
+  if(btn)btn.classList.remove('spinning');
+}
+/* 启动 */
+(function boot(){
+  var loadingEl=document.getElementById('bt-loading');
+  var bodyEl=document.getElementById('bt-body');
+  /* 先同步渲染（快） */
+  State.mvu=readStatDataSync();
+  if(bodyEl){bodyEl.innerHTML=render();}
+  if(loadingEl)loadingEl.style.display='none';
+  if(bodyEl)bodyEl.style.display='';
+  /* 再异步刷新（准） */
+  refresh();
+  document.addEventListener('click',function(e){
+    var t=e.target.closest?e.target.closest('[data-act=refresh]'):null;
+    if(t){var b=document.querySelector('[data-act=refresh]');if(b)b.classList.add('spinning');refresh();}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+[
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观",
+  "value": {}
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则",
+  "value": {}
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/阶段指导",
+  "value": {}
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色",
+  "value": {}
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/四态循环",
+  "value": {
+   "path": "世界书/世界观/引擎/四态循环.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：四态循环",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 10
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/反抗与判定",
+  "value": {
+   "path": "世界书/世界观/引擎/反抗与判定.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：反抗与判定",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 11
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/兴奋度机制",
+  "value": {
+   "path": "世界书/世界观/引擎/兴奋度机制.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：兴奋度机制",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 12
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/出招",
+  "value": {
+   "path": "世界书/世界观/引擎/出招.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：出招",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 13
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/交互循环",
+  "value": {
+   "path": "世界书/世界观/引擎/交互循环.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：交互循环",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 14
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/剧情推进",
+  "value": {
+   "path": "世界书/世界观/引擎/剧情推进.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：剧情推进",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 15
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/边界情况",
+  "value": {
+   "path": "世界书/世界观/引擎/边界情况.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：边界情况",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 16
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/世界观/离线行动",
+  "value": {
+   "path": "世界书/世界观/引擎/离线行动.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "世界观：离线行动",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 17
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/加载纪律",
+  "value": {
+   "path": "世界书/扮演准则/加载纪律.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：加载纪律",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 30
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/判定引擎",
+  "value": {
+   "path": "世界书/扮演准则/判定引擎.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：判定引擎",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 31
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/推演链",
+  "value": {
+   "path": "世界书/扮演准则/推演链.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：推演链",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 32
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/叙述准则",
+  "value": {
+   "path": "世界书/扮演准则/叙述准则.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：叙述准则",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 33
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/感知禁令",
+  "value": {
+   "path": "世界书/扮演准则/感知禁令.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：感知禁令",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 34
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/玩家的输入",
+  "value": {
+   "path": "世界书/扮演准则/玩家的输入.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：玩家的输入",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 35
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/叙述底线",
+  "value": {
+   "path": "世界书/扮演准则/叙述底线.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：叙述底线",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 36
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/文风_骚妈",
+  "value": {
+   "path": "世界书/扮演准则/文风_骚妈.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：文风_骚妈",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 37
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/扮演准则/文风_母猪中",
+  "value": {
+   "path": "世界书/扮演准则/文风_母猪中.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "扮演准则：文风_母猪中",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 38
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/阶段指导/阶段指导",
+  "value": {
+   "path": "世界书/阶段指导/阶段指导.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "阶段指导：阶段指导",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "at_depth",
+    "role": "system",
+    "depth": 0,
+    "order": 60
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/阶段指导/熟练度阶段",
+  "value": {
+   "path": "世界书/阶段指导/熟练度阶段.yaml",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "阶段指导：熟练度阶段",
+   "enabled": true,
+   "strategy": {
+    "type": "constant"
+   },
+   "position": {
+    "type": "at_depth",
+    "role": "system",
+    "depth": 0,
+    "order": 61
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_温砚",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/温砚.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "温砚"
+   ],
+   "abstract": "角色/other：她_温砚",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "温砚"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 90
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_丰娆",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/丰娆.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "丰娆"
+   ],
+   "abstract": "角色/other：她_丰娆",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "丰娆"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 91
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_舒晏",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/舒晏.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "舒晏"
+   ],
+   "abstract": "角色/other：她_舒晏",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "舒晏"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 92
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_唐响",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/唐响.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "唐响"
+   ],
+   "abstract": "角色/other：她_唐响",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "唐响"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 93
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_沈眠",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/沈眠.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "沈眠"
+   ],
+   "abstract": "角色/other：她_沈眠",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "沈眠"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 94
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_莫漾",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/莫漾.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "莫漾"
+   ],
+   "abstract": "角色/other：她_莫漾",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "莫漾"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 95
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_纪清",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/纪清.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "纪清"
+   ],
+   "abstract": "角色/other：她_纪清",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "纪清"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 96
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/角色/她_郁灼",
+  "value": {
+   "path": "世界书/角色/屏幕外的她/郁灼.yaml",
+   "part": "other",
+   "scope": "specific",
+   "keywords": [
+    "她",
+    "郁灼"
+   ],
+   "abstract": "角色/other：她_郁灼",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "她",
+     "郁灼"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 97
+   }
+  }
+ }
+]

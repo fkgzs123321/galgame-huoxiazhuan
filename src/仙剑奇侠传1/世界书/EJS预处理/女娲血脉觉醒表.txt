@@ -1,0 +1,207 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 女娲血脉觉醒表（女娲后人专属觉醒系统）
+   ════════════════════════════════════════════════════════════
+   职责：女娲后人血脉觉醒 4 阶段表 / 觉醒条件 / 觉醒效果 / 角色判定
+   加载策略：由主调度控制器按 stat_data.当前章节 与 stat_data.队伍.成员 条件加载
+     - 第 3 章+ 或 女娲后人入队后：加载（觉醒系统开放）
+     - 第 1-2 章：不加载（女娲血脉未觉醒，节省 token）
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明
+   define() 模式：注册 NUWA_BLOODLINE 全局常量，供角色条目/战斗调度器/章节触发器引用
+   变量路径（与 schema.ts 对齐）：
+     stat_data.当前章节        当前所在章节（1-6）
+     stat_data.章节事件完成表  已完成的关键事件名集合
+     stat_data.队伍.成员       队伍成员（键名为角色名，含 赵灵儿/青儿/巫后）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取 MVU 当前运行时状态（供觉醒阶段判定与摘要输出） ─── */
+if (typeof _nuwaCurrentChapter === 'undefined') var _nuwaCurrentChapter = Number(getvar('stat_data.当前章节', { scope: 'local', defaults: 1 })) || 1;
+if (typeof _nuwaCompletedEvents === 'undefined') var _nuwaCompletedEvents = getvar('stat_data.章节事件完成表', { scope: 'local', defaults: [] }) || [];
+if (typeof _nuwaPartyMembers === 'undefined') var _nuwaPartyMembers = getvar('stat_data.队伍.成员', { scope: 'local', defaults: {} }) || {};
+
+/* ════════════════════════════════════════════════════════════
+   一、女娲血脉觉醒系统
+   ════════════════════════════════════════════════════════════ */
+const NUWA_BLOODLINE = {
+  // ───── 适用角色（女娲后人三脉）─────
+  characters: ['赵灵儿', '青儿', '巫后'],
+  is_nuwa_descendant: function (characterName) {
+    return NUWA_BLOODLINE.characters.indexOf(characterName) !== -1;
+  },
+
+  // ───── 觉醒 4 阶段表 ─────
+  stages: {
+    1: {
+      name: '凡胎',
+      multiplier: 1.0,
+      desc: '尚未觉醒，凡人之躯，灵力微弱，无女娲血脉特殊能力',
+      unlock: '默认状态（出生即为凡胎）',
+      abilities: [],
+      restrictions: '无法感知妖气，无法使用女娲秘术'
+    },
+    2: {
+      name: '灵脉',
+      multiplier: 1.5,
+      desc: '女娲灵脉初显，可感知妖气方向与强弱，灵力小幅提升',
+      unlock: '章节 ≥ 3 或 女娲后人遭遇危机时被动触发（需先触发「妖气感知」事件）',
+      abilities: ['妖气感知（探测范围内妖魔气息）'],
+      restrictions: '仅可感知，无主动女娲秘术'
+    },
+    3: {
+      name: '女娲之力',
+      multiplier: 2.0,
+      desc: '女娲之力觉醒，可调用女娲秘术，五灵亲和大幅提升',
+      unlock: '章节 ≥ 5 或 完成「女娲祭坛」觉醒仪式',
+      abilities: [
+        '补天术：群体回复 + 净化异常状态',
+        '造化诀：临时为队友附加增益（武力/灵力/身法 +30%，3 回合）',
+        '九天玄女召唤：召唤玄女之灵协同攻击，群体神圣伤害'
+      ],
+      restrictions: '女娲秘术消耗灵力较高（每次 60+），需注意灵力储备'
+    },
+    4: {
+      name: '补天',
+      multiplier: 3.0,
+      desc: '补天之境，五灵归一，可封印水魔兽；代价是死亡或永久封印自身',
+      unlock: '章节 6 最终战 且 集齐五灵珠（金/木/水/火/土）+ 女娲石',
+      abilities: [
+        '封印水魔兽：终极封印术，需以女娲后人之身为引',
+        '补天术·极：补天术最高形态，全队满血复活 + 全异常解除',
+        '九天玄女·真身：玄女真身降临，神圣伤害 ×5'
+      ],
+      restrictions: '使用封印术后角色进入「封印」状态，永久离队（剧情锁定）'
+    }
+  },
+
+  // ───── 觉醒条件检查 ─────
+  awakening_conditions: {
+    '灵脉': {
+      require_character: '女娲后人（赵灵儿/青儿/巫后）',
+      require_event: '妖气感知',
+      fallback_trigger: '章节 ≥ 3 或 女娲后人遭遇危机（HP < 30% 时被动觉醒）',
+      check: function (characterName) {
+        if (!NUWA_BLOODLINE.is_nuwa_descendant(characterName)) return false;
+        if (_nuwaCompletedEvents.indexOf('妖气感知') !== -1) return true;
+        if (_nuwaCurrentChapter >= 3) return true;
+        return false;
+      }
+    },
+    '女娲之力': {
+      require_character: '女娲后人（赵灵儿/青儿/巫后）',
+      require_event: '女娲祭坛',
+      fallback_trigger: '章节 ≥ 5 或 觉醒仪式完成',
+      check: function (characterName) {
+        if (!NUWA_BLOODLINE.is_nuwa_descendant(characterName)) return false;
+        if (_nuwaCompletedEvents.indexOf('女娲祭坛') !== -1) return true;
+        if (_nuwaCurrentChapter >= 5) return true;
+        return false;
+      }
+    },
+    '补天': {
+      require_character: '女娲后人（赵灵儿/青儿/巫后）',
+      require_event: '集齐五灵珠（金/木/水/火/土）+ 女娲石',
+      fallback_trigger: '章节 = 6 最终战',
+      check: function (characterName) {
+        if (!NUWA_BLOODLINE.is_nuwa_descendant(characterName)) return false;
+        if (_nuwaCurrentChapter !== 6) return false;
+        // 五灵珠 + 女娲石收集检查（事件完成表）
+        var orbs = ['金灵珠', '木灵珠', '水灵珠', '火灵珠', '土灵珠'];
+        for (var i = 0; i < orbs.length; i++) {
+          if (_nuwaCompletedEvents.indexOf(orbs[i]) === -1) return false;
+        }
+        if (_nuwaCompletedEvents.indexOf('女娲石') === -1) return false;
+        return true;
+      }
+    }
+  },
+
+  // ───── 觉醒后效果 ─────
+  effects: {
+    '灵脉阶段': [
+      '灵力上限 ×1.5',
+      '可感知妖气（探索时显示范围内妖魔等级与数量）'
+    ],
+    '女娲之力阶段': [
+      '灵力上限 ×2.0',
+      '解锁女娲秘术：补天术 / 造化诀 / 九天玄女召唤',
+      '法术伤害提升至原 ×3（仅女娲秘术）',
+      '免疫五灵克制（不被任何系克制，相生关系照常）'
+    ],
+    '补天阶段': [
+      '灵力上限 ×3.0',
+      '女娲秘术全部解锁并强化',
+      '法术伤害提升至原 ×3（含所有五灵法术）',
+      '免疫五灵克制',
+      '可封印水魔兽（终章剧情杀招）',
+      '使用封印术后角色进入「封印」状态，永久离队'
+    ]
+  },
+
+  // ───── 工具函数：获取角色当前觉醒阶段 ─────
+  getStage: function (characterName) {
+    if (!NUWA_BLOODLINE.is_nuwa_descendant(characterName)) {
+      return { index: 0, stage: null, desc: '非女娲后人，无法觉醒' };
+    }
+    if (NUWA_BLOODLINE.awakening_conditions['补天'].check(characterName)) {
+      return { index: 4, stage: NUWA_BLOODLINE.stages[4], desc: '补天之境，最终觉醒' };
+    }
+    if (NUWA_BLOODLINE.awakening_conditions['女娲之力'].check(characterName)) {
+      return { index: 3, stage: NUWA_BLOODLINE.stages[3], desc: '女娲之力觉醒' };
+    }
+    if (NUWA_BLOODLINE.awakening_conditions['灵脉'].check(characterName)) {
+      return { index: 2, stage: NUWA_BLOODLINE.stages[2], desc: '灵脉初显' };
+    }
+    return { index: 1, stage: NUWA_BLOODLINE.stages[1], desc: '凡胎之躯' };
+  },
+
+  // ───── 工具函数：判定角色是否在队 ─────
+  isInParty: function (characterName) {
+    return _nuwaPartyMembers && Object.prototype.hasOwnProperty.call(_nuwaPartyMembers, characterName);
+  }
+};
+
+define('NUWA_BLOODLINE', NUWA_BLOODLINE);
+%>
+
+<%_ // ───────── 参考摘要（输出给 AI 使用）───────── _%>
+<%_ var _nuwaInParty = NUWA_BLOODLINE.characters.filter(function (n) { return NUWA_BLOODLINE.isInParty(n); }); _%>
+<%_ var _nuwaStageMap = {}; _%>
+<%_ _nuwaInParty.forEach(function (n) { _nuwaStageMap[n] = NUWA_BLOODLINE.getStage(n); }); _%>
+【女娲血脉觉醒表 · 参考摘要】
+
+■ 适用角色
+- 赵灵儿 / 青儿 / 巫后（女娲后人三脉）
+- 非女娲后人无法觉醒，无法使用女娲秘术
+
+■ 觉醒 4 阶段表
+- 凡胎（默认）：灵力 ×1.0，无特殊能力，无法感知妖气
+- 灵脉（章节≥3 或 女娲后人遭遇危机）：灵力 ×1.5，可感知妖气
+- 女娲之力（章节≥5 或 觉醒仪式完成）：灵力 ×2.0，可使用女娲秘术（补天术/造化诀/九天玄女）
+- 补天（章节 6 最终战）：灵力 ×3.0，可封印水魔兽，代价是死亡或封印自身
+
+■ 觉醒条件检查
+- 角色必须是女娲后人（赵灵儿/青儿/巫后）
+- 灵脉阶段：需触发「妖气感知」事件（或 章节≥3 / 危机被动触发）
+- 女娲之力：需完成「女娲祭坛」觉醒仪式（或 章节≥5）
+- 补天：需集齐五灵珠（金/木/水/火/土）+ 女娲石，且 章节=6 最终战
+
+■ 觉醒后效果
+- 灵脉：灵力 ×1.5 + 妖气感知
+- 女娲之力：
+  · 解锁女娲秘术：补天术 / 造化诀 / 九天玄女召唤
+  · 法术伤害提升至原 ×3（仅女娲秘术）
+  · 免疫五灵克制
+- 补天：
+  · 灵力 ×3.0 + 女娲秘术全部强化
+  · 法术伤害 ×3（含所有五灵法术）
+  · 免疫五灵克制
+  · 可封印水魔兽（终章剧情杀招）
+  · 使用封印术后角色进入「封印」状态，永久离队
+
+■ 当前运行时状态（MVU 读取）
+- 当前章节：<%= _nuwaCurrentChapter %>
+- 队中女娲后人：<%= _nuwaInParty.length > 0 ? _nuwaInParty.join(' / ') : '无' %>
+<%_ _nuwaInParty.forEach(function (n) { _%>
+- <%= n %>：觉醒阶段 <%= _nuwaStageMap[n].index %>（<%= _nuwaStageMap[n].stage ? _nuwaStageMap[n].stage.name : '非女娲后人' %>）｜灵力倍率 <%= _nuwaStageMap[n].stage ? '×' + _nuwaStageMap[n].stage.multiplier : '×1.0' %>
+<%_ }); _%>

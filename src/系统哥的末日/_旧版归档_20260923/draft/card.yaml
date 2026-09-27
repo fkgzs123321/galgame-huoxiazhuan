@@ -1,0 +1,18 @@
+name: 系统哥的末日
+description: ''
+personality: ''
+scenario: ''
+first_mes: ../source/fields/first_mes.md
+alternate_greetings: []
+mes_example: ''
+creator_notes: ''
+system_prompt: ''
+post_history_instructions: ''
+creator: ''
+character_version: '1.0'
+talkativeness: '0.5'
+fav: false
+tags: []
+worldbook:
+  include: true
+  name: 系统哥的末日

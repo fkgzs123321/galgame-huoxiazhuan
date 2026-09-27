@@ -1,0 +1,42 @@
+[
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_温砚/position/order",
+  "value": 40
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_丰娆/position/order",
+  "value": 41
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_舒晏/position/order",
+  "value": 42
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_唐响/position/order",
+  "value": 43
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_沈眠/position/order",
+  "value": 44
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_莫漾/position/order",
+  "value": 45
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_纪清/position/order",
+  "value": 46
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_郁灼/position/order",
+  "value": 47
+ }
+]

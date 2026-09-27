@@ -1,0 +1,15 @@
+{
+  "id": "fjb-inner-monologue-fallback",
+  "scriptName": "内心独白兜底美化",
+  "findRegex": "/<p\\s+style=\"[^\"]*?(?:color\\s*:\\s*#5A4A63|font-style\\s*:\\s*italic)[^\"]*\"\\s*>\\s*【([^】]+)】\\s*([\\s\\S]*?)<\\/p>/g",
+  "replaceString": "<div class=\"fjb-mono fjb-mono-thought\"><div class=\"fjb-mono-head\"><span class=\"fjb-mono-icon\">💭</span><span class=\"fjb-mono-char\">$1</span><span class=\"fjb-mono-type\">thought</span></div><div class=\"fjb-mono-body\">$2</div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

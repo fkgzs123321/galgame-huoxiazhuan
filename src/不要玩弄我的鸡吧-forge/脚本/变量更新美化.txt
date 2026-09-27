@@ -1,0 +1,26 @@
+$(async () => {
+  await waitGlobalInitialized('Mvu');
+  let hook = null;
+  if (typeof window !== 'undefined' && window.TavernHelper) {
+    hook = window.TavernHelper.on('message', function onMessage(message) {
+      // 注：UpdateVariable / UpdateTable / Thinking 块的折叠美化与AI隐藏
+      //     全部由 01~07 号正则脚本接管（见 正则/ 目录），
+      //     此脚本仅负责正则不覆盖的杂项清理与时间戳美化。
+
+      // 1. 清理其他隐藏块（不属于 UpdateVariable/UpdateTable/Thinking 的）
+      message = message.replace(/<\|不发送\|>[\s\S]*?<\|\/不发送\|>/g, '');
+      message = message.replace(/<!--\s*不发送[\s\S]*?-->/g, '');
+      message = message.replace(/\[\/\/\]:\s*#\s*\(不发送\)[\s\S]*?(?=\n\n|\n---|\n$|$)/g, '');
+      message = message.replace(/\*\*\[不发送\]\*\*[\s\S]*?(?=\n\n|\n---|\n$)/g, '');
+      message = message.replace(/<thought>[\s\S]*?<\/thought>/g, '');
+      message = message.replace(/<system>[\s\S]*?<\/system>/gi, '');
+
+      // 2. 时间戳美化
+      message = message.replace(/\*\*📅\s*(.+?)\*\*\n/g, '<div style="font-size:0.85em;color:#888;margin:4px 0;">📅 $1</div>\n');
+      message = message.replace(/\*\*⏰\s*(.+?)\*\*\n/g, '<div style="font-size:0.85em;color:#888;margin:4px 0;">⏰ $1</div>\n');
+
+      return message;
+    });
+  }
+  $(window).on('pagehide', () => { if (hook && window.TavernHelper) window.TavernHelper.removeListener('message', hook); });
+});

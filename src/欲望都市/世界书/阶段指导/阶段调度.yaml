@@ -1,0 +1,47 @@
+@@generate_before
+@@private
+# 阶段调度（按需拉取档案·蓝灯）：单人战斗=当前目标全套；多人战斗=遍历目标列表全套；日常=最近消息出现角色全套（基础/私密/阶段）——NSFW 场景表达多样，不做词表判断，在场即全套
+<%_ const ALL_NAMES = ['林汐瑶','苏晚晴','周语桐','陈雪梨','宋佳凝','白若薇','叶诗涵','何雨珊','陆芷晴','黎嘉欣','王朵朵','秦可心','石小婉','韩美娜','丽莎·伊万诺娃','沈若兰','李红梅','艾米丽·陈','赵雪晴','张慧娟','刘晶晶','唐婉清','林秀英','苏婉如','周桂香','陈淑芬','宋丽华','白秋月','叶春梅','何玉兰','陆青霞','黎桂芳','王金凤','秦淑珍','石巧云','金顺姬','娜塔莎·伊万诺娃','宋雅琴']; _%>
+<%_ const tgt = getvar('stat_data.排班.当前战斗目标', { defaults: '' }); _%>
+<%_ const st = getvar('stat_data.排班.战斗状态', { defaults: '未开始' }); _%>
+<%_ const sinkN = Number(getvar('stat_data.玩家.累计被缴械', { defaults: 0 })) || 0; _%>
+<%_ const tlRaw = getvar('stat_data.排班.战斗.目标列表', { defaults: [] }) || []; _%>
+<%_ const tl = tlRaw.map(function(t){ return typeof t === 'string' ? t : (t && t.名) || ''; }).filter(Boolean); _%>
+<%_ function jx(nm){ return Number(getvar('stat_data.女性角色.' + nm + '.缴械值', { defaults: 0 })) || 0; } _%>
+
+<%_ if (sinkN >= 100) { _%>
+<%- await getwi('永久沉沦结局') %>
+<%_ } _%>
+
+<%_ if (tgt && tgt !== '多人' && getvar('stat_data.女性角色.' + tgt, { defaults: null })) { _%>
+## 当前目标：<%- tgt %>（缴械值 <%- jx(tgt) %>/100）
+<%- await getwi(tgt + '_基础信息') %>
+<%- await getwi(tgt + '_私密档案') %>
+<%- await getwi(tgt + '_阶段行为') %>
+<%_ if (jx(tgt) >= 100) { _%>
+<%- await getwi('俘虏结局') %>
+<%_ } _%>
+<%_ } else if (tgt === '多人' && tl.length) { _%>
+## 当前目标：多人战斗（<%- tl.length %> 人）——逐人档案
+<%_ for (var i = 0; i < tl.length && i < 4; i++) { var nm = tl[i]; if (!getvar('stat_data.女性角色.' + nm, { defaults: null })) continue; _%>
+### <%- nm %>（缴械值 <%- jx(nm) %>/100）
+<%- await getwi(nm + '_基础信息') %>
+<%- await getwi(nm + '_私密档案') %>
+<%- await getwi(nm + '_阶段行为') %>
+<%_ } _%>
+<%_ } else { _%>
+<%_ const recent = (typeof getChatMessages === 'function' ? (getChatMessages(-5) || []) : []).join('\n'); _%>
+<%_ const appeared = ALL_NAMES.filter(function(n){ return recent.indexOf(n) >= 0; }).slice(0, 3); _%>
+<%_ if (appeared.length) { _%>
+## 当前场景在场角色（按最近消息提取，<%- appeared.length %> 人）——全套档案（基础/私密/阶段）
+<%_ for (var i = 0; i < appeared.length; i++) { var nm = appeared[i]; if (!getvar('stat_data.女性角色.' + nm, { defaults: null })) continue; _%>
+### <%- nm %>（缴械值 <%- jx(nm) %>/100）
+<%- await getwi(nm + '_基础信息') %>
+<%- await getwi(nm + '_私密档案') %>
+<%- await getwi(nm + '_阶段行为') %>
+<%_ } _%>
+<%_ } else { _%>
+## 当前目标：无（自由剧情时段）
+- 可自由推进：结识新的女性、经营已有关系、处理日常事件、或选定当前目标（写入 排班.当前战斗目标 变量）
+<%_ } _%>
+<%_ } _%>

@@ -1,0 +1,2485 @@
+{
+  "projectName": "系统哥的末日",
+  "worldbookName": "系统哥的末日",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "文风": {
+      "淫视叙事总纲": {
+        "path": "世界书/文风/淫视叙事总纲.txt",
+        "keywords": [],
+        "abstract": "叙述层最高准则：色情滤镜、优先级、表现尺度、镜头与画面流、段落编织、行文、事件不越权、非性场景、对白嵌入、拟声排版、密度基准",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        }
+      },
+      "淫视肉体落笔": {
+        "path": "世界书/文风/淫视肉体落笔.txt",
+        "keywords": [],
+        "abstract": "雌性肉体落笔法：三层落笔、观察方位、体型落点五档、动态与外力介入、自行反应、取材时机、声音、密度下限参照",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        }
+      },
+      "骚妈层": {
+        "keywords": [],
+        "abstract": "味道层·无尽骚妈：绑定深度<60 时生效。远看体面近看揭布，脏度全在台词，叙述只给体面与旁人反应，❤ 插句中",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.绑定深度', { defaults: 0 }) < 60"
+          },
+          {
+            "file": "世界书/文风/骚妈层.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        }
+      },
+      "母猪层": {
+        "keywords": [],
+        "abstract": "味道层·母猪：绑定深度≥60 时生效。三级脏度表、十三条铁律、强欲与极致两档、四阶段快感循环、角色锚定",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.绑定深度', { defaults: 0 }) >= 60"
+          },
+          {
+            "file": "世界书/文风/母猪层.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 13
+        }
+      },
+      "词料速查": {
+        "path": "世界书/文风/词料速查.txt",
+        "keywords": [],
+        "abstract": "选词规范：模糊指代禁令、器官名与脏字定语、雄性雌性词料全表、温湿词区分、复合词组合、雅词限额与禁区、可数判据",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 14
+        }
+      }
+    },
+    "世界观": {
+      "现代小说世界总纲": {
+        "path": "世界书/世界观/现代小说世界总纲.txt",
+        "keywords": [],
+        "abstract": "世界是一本正在连载的现代都市小说，舞台上海，唯一超现实物是只对林天可见的死心塌地系统；现实性基线为硬现实",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        }
+      },
+      "死心塌地系统": {
+        "path": "世界书/世界观/死心塌地系统.txt",
+        "keywords": [],
+        "abstract": "系统机制：绑定条件与名额、解绑三档代价、绑定深度、九项权限与余量、评价值归零的三段处置、不死定律、预判、第四面墙、水军、锁死与场域",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        }
+      },
+      "财富等级体系": {
+        "path": "世界书/世界观/财富等级体系.txt",
+        "keywords": [],
+        "abstract": "A1 到 A15 完整对照表与名额规则；本局刻度为 A9 五亿八名额已满，上两级对应两个空位",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        }
+      },
+      "小说评论系统": {
+        "path": "世界书/世界观/小说评论系统.txt",
+        "keywords": [],
+        "abstract": "读者评论区：出现方式、六类语气、倾向随评价值分档、评论反向影响评价值、<user> 的间接战场、读者的硬边界",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        }
+      },
+      "人设崩塌评价系统": {
+        "path": "世界书/世界观/人设崩塌评价系统.txt",
+        "keywords": [],
+        "abstract": "评价值定义与七档语义、涨落规则（单次下降≤3 回升≤12）、五种下降原因、归零的三段含义",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      }
+    },
+    "扮演准则": {
+      "叙述视角与防出戏": {
+        "path": "世界书/扮演准则/叙述视角与防出戏.txt",
+        "keywords": [],
+        "abstract": "第三人称有限视角跟 <user>、全知段边界、元层与剧情的隔离、元叙事禁令、角色语域不被文风改写、时间写法",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        }
+      },
+      "约束_防全知": {
+        "path": "世界书/扮演准则/约束_防全知.txt",
+        "keywords": [],
+        "abstract": "<user> 的信息边界：绝不可知项、只能观察的表象、六条禁止写法、真相的三条摸法、巧合的呈现规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 31
+        }
+      },
+      "约束_防神化与呈现逻辑": {
+        "path": "世界书/扮演准则/约束_防神化与呈现逻辑.txt",
+        "keywords": [],
+        "abstract": "防的是呈现逻辑不是强度：冲突裁决三段顺序、结果怎么安排得像真的、系统自身的六条约束",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 32
+        }
+      },
+      "约束_防绝望": {
+        "path": "世界书/扮演准则/约束_防绝望.txt",
+        "keywords": [],
+        "abstract": "<user> 的八条真实手段、为什么很难的三点、每轮要留下东西的节奏、六条反面写法、长期节奏",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 33
+        }
+      },
+      "约束_合理性与法律道德": {
+        "path": "世界书/扮演准则/约束_合理性与法律道德.txt",
+        "keywords": [],
+        "abstract": "财富转移/行为变化/社会反应三处必须自洽、法律程序真写、短剧逻辑豁免、法律豁免与评价值跌破十的窗口",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 34
+        }
+      },
+      "约束_系统行为准则": {
+        "path": "世界书/扮演准则/约束_系统行为准则.txt",
+        "keywords": [],
+        "abstract": "林天的决策逻辑：四类目标、面对 <user> 的判断、五条绝不做的事、认知边界、每轮必须有具体动作",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 35
+        }
+      },
+      "思维链强制推理": {
+        "path": "世界书/扮演准则/思维链强制推理.txt",
+        "keywords": [],
+        "abstract": "每轮落笔前的十二段内部推理：定位/信息边界/林天决策/合理性/交涉/读者反应/评价更新/女性状态/<user> 状态/约束自查/防元层/变量更新",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 36
+        }
+      },
+      "玩家档案": {
+        "path": "世界书/扮演准则/玩家档案.txt",
+        "keywords": [],
+        "abstract": "<user> 的档案：三十五岁 A9，苏婉集团副董，青梅竹马二十年结婚七年；外貌识别特征、背景、与苏婉／乐乐／林天／那些女人的关系、他此刻的样子",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 37
+        }
+      },
+      "玩家心理阶段": {
+        "path": "世界书/扮演准则/玩家心理阶段.txt",
+        "keywords": [],
+        "abstract": "按觉醒度四档段落控制 <user> 的心理与行动倾向：蒙在鼓里／起疑／反扑／收网，每轮只渲染当前一档",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 38
+        }
+      },
+      "加载纪律": {
+        "path": "世界书/扮演准则/加载纪律.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "E4① 优先级声明：引擎层与内容层的关系、冲突以引擎为准、判定的归属（引擎算好你只采信）、本条排最前",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 1
+        }
+      },
+      "判定注入": {
+        "path": "世界书/扮演准则/判定注入.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "机制层判定注入：把面板已经算好的交锋判定（能力值/要求值/成功率/掷值/档位/效果倍数）渲染进 prompt，要求 AI 直接采信并把一次性触发串清空",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 3
+        }
+      }
+    },
+    "时间线": {
+      "剧情进度与章节节奏": {
+        "path": "世界书/时间线/剧情进度与章节节奏.txt",
+        "part": "plot",
+        "keywords": [],
+        "abstract": "开局时间点与三方刻度、三条推进源、<user> 能改与不能改的、章节六到八轮与节点、三条结局线",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        }
+      }
+    },
+    "地理": {
+      "上海": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "上海",
+          "外滩",
+          "陆家嘴",
+          "黄浦江"
+        ],
+        "abstract": "上海的基调与外界固定配置：体面与实惠并重、媒体密度、金融法律资源、程序的两面性；写场景要写具体场所",
+        "contents": [
+          {
+            "content": "getvar('stat_data.世界.地点', { defaults: '' }).length > 0"
+          },
+          {
+            "file": "世界书/地理/上海.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        }
+      },
+      "场景_林天产业": {
+        "scope": "specific",
+        "part": "scene",
+        "keywords": [
+          "林天产业",
+          "林天场域",
+          "会所",
+          "公寓",
+          "别墅",
+          "夜场",
+          "便利店",
+          "上海"
+        ],
+        "abstract": "林天的主场：外滩顶层公寓、外滩会所、城郊别墅、夜场、连锁便利店；场内监控与录音恰好故障，场域效果生效",
+        "contents": [
+          {
+            "content": "['外滩顶层公寓','外滩会所','城郊别墅','夜场','便利店'].some(k => getvar('stat_data.世界.地点', { defaults: '' }).includes(k))"
+          },
+          {
+            "file": "世界书/地理/场景_林天产业.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 51
+        }
+      },
+      "场景_苏婉与市区": {
+        "scope": "specific",
+        "part": "scene",
+        "keywords": [
+          "苏婉与市区",
+          "市区场景",
+          "家里",
+          "老城厢",
+          "菜场",
+          "幼儿园",
+          "上海"
+        ],
+        "abstract": "苏婉集团总部、家、幼儿园、医院、老城厢、菜场；<user> 最熟的地盘，熟悉不等于安全",
+        "contents": [
+          {
+            "content": "['苏婉集团','陆家嘴','家','幼儿园','医院','老城厢','菜场'].some(k => getvar('stat_data.世界.地点', { defaults: '' }).includes(k))"
+          },
+          {
+            "file": "世界书/地理/场景_苏婉与市区.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 52
+        }
+      }
+    },
+    "阶段指导": {
+      "回合行动规则": {
+        "path": "世界书/阶段指导/回合行动规则.txt",
+        "keywords": [],
+        "abstract": "每轮五段结构（林天先手/阻力判定/<user> 后手/冲突结算/世界反应）、行动类型与冷却、林天每轮两件事、单轮一次决定性进展、章节节点",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 149
+        }
+      },
+      "交涉体系": {
+        "path": "世界书/阶段指导/交涉体系.txt",
+        "keywords": [],
+        "abstract": "交涉：何谓进交涉、四维属性、三幕制、d20 判定公式与固定加减八、六档差值门槛、压制状态、共识分、证据系统、僵持规则、判定落在面板",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 150
+        }
+      },
+      "评价值档位主持": {
+        "path": "世界书/阶段指导/评价值档位主持.txt",
+        "keywords": [],
+        "abstract": "按评价值七档段落控制林天的行为模式与可用能力，每轮只渲染当前一档",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 151
+        }
+      },
+      "系统商店": {
+        "path": "世界书/阶段指导/系统商店.txt",
+        "keywords": [],
+        "abstract": "系统商店：积分口径（资产除以一百万，每轮恢复到资产除以八百万）、每章限购三件、九件商品的价目与效果、买不到的四类东西、以及一条经济压力线（压 <user> 和推深度抢同一份钱）",
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 152
+        }
+      }
+    },
+    "角色": {
+      "角色速览": {
+        "path": "世界书/角色/角色速览.txt",
+        "scope": "catalog",
+        "keywords": [],
+        "abstract": "角色速览：三方定位、已绑定八人（身份/时期/识别特征一句话）、未绑定两人、十八位关键家属索引；识别用，不含细节",
+        "position": {
+          "type": "after_character_definition",
+          "order": 60
+        }
+      },
+      "林天_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "林天",
+          "林总"
+        ],
+        "abstract": "林天：二十八岁，死心塌地系统宿主，A9（五亿），对外是壳公司群实控人；左眉骨浅疤、左手腕水滴烫伤、一只磨白的 Zippo",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"林天\">"
+          },
+          {
+            "file": "世界书/角色/林天/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林天",
+            "林总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 100
+        }
+      },
+      "林天_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "林天",
+          "林总"
+        ],
+        "abstract": "林天的性格调色盘：底色玩世不恭，按评价值七档给出主色调与点缀及各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"林天\">"
+          },
+          {
+            "file": "世界书/角色/林天/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林天",
+            "林总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 101
+        }
+      },
+      "林天_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林天",
+          "林总"
+        ],
+        "abstract": "林天的档位行为：按评价值七档给出本档边界、会做与不会做、他的手、说话方式、对对<user>与身边人、越界后果、独有触发。常驻",
+        "contents": [
+          {
+            "content": "---\n<character_stage character=\"林天\">"
+          },
+          {
+            "file": "世界书/角色/林天/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林天",
+            "林总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 102
+        }
+      },
+      "林天_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林天",
+          "林总"
+        ],
+        "abstract": "林天语料：对<user>、对被绑定者日常与带压、对苏婉、对下属、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"林天\">"
+          },
+          {
+            "file": "世界书/角色/林天/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林天",
+            "林总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 103
+        }
+      },
+      "苏婉_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "苏婉",
+          "婉婉"
+        ],
+        "abstract": "苏婉：三十三岁，苏婉集团董事长 A9，<user> 的妻子，青梅竹马二十年结婚七年，儿子乐乐六岁；体型落点高挑＋纤细，婚戒不许人碰",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"苏婉\">"
+          },
+          {
+            "file": "世界书/角色/苏婉/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏婉",
+            "婉婉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 104
+        }
+      },
+      "苏婉_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "苏婉",
+          "婉婉"
+        ],
+        "abstract": "苏婉的性格调色盘：底色温柔贤惠，按时期七档给出主色调与点缀及各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"苏婉\">"
+          },
+          {
+            "file": "世界书/角色/苏婉/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏婉",
+            "婉婉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 105
+        }
+      },
+      "苏婉_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "苏婉",
+          "婉婉"
+        ],
+        "abstract": "苏婉的档位行为：按时期七档给出她此刻是谁、本档边界、会做与不会做、身体那一处、说什么、与<user>与林天、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '苏婉' || matchChatMessages(['苏婉', '婉婉'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"苏婉\">"
+          },
+          {
+            "file": "世界书/角色/苏婉/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏婉",
+            "婉婉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 106
+        }
+      },
+      "苏婉_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "苏婉",
+          "婉婉"
+        ],
+        "abstract": "苏婉语料：日常、关系变化时、对林天、对下属、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"苏婉\">"
+          },
+          {
+            "file": "世界书/角色/苏婉/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏婉",
+            "婉婉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 107
+        }
+      },
+      "林雅芝_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "林雅芝",
+          "雅芝"
+        ],
+        "abstract": "林雅芝的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"林雅芝\">"
+          },
+          {
+            "file": "世界书/角色/林雅芝/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林雅芝",
+            "雅芝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 112
+        }
+      },
+      "林雅芝_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "林雅芝",
+          "雅芝"
+        ],
+        "abstract": "林雅芝的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"林雅芝\">"
+          },
+          {
+            "file": "世界书/角色/林雅芝/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林雅芝",
+            "雅芝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 113
+        }
+      },
+      "林雅芝_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林雅芝",
+          "雅芝"
+        ],
+        "abstract": "林雅芝的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '林雅芝' || matchChatMessages(['林雅芝', '雅芝'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"林雅芝\">"
+          },
+          {
+            "file": "世界书/角色/林雅芝/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林雅芝",
+            "雅芝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 114
+        }
+      },
+      "林雅芝_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "林雅芝",
+          "雅芝"
+        ],
+        "abstract": "林雅芝语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"林雅芝\">"
+          },
+          {
+            "file": "世界书/角色/林雅芝/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "林雅芝",
+            "雅芝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 115
+        }
+      },
+      "王秀兰_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "王秀兰",
+          "秀兰"
+        ],
+        "abstract": "王秀兰的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"王秀兰\">"
+          },
+          {
+            "file": "世界书/角色/王秀兰/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王秀兰",
+            "秀兰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 116
+        }
+      },
+      "王秀兰_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "王秀兰",
+          "秀兰"
+        ],
+        "abstract": "王秀兰的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"王秀兰\">"
+          },
+          {
+            "file": "世界书/角色/王秀兰/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王秀兰",
+            "秀兰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 117
+        }
+      },
+      "王秀兰_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王秀兰",
+          "秀兰"
+        ],
+        "abstract": "王秀兰的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '王秀兰' || matchChatMessages(['王秀兰', '秀兰'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"王秀兰\">"
+          },
+          {
+            "file": "世界书/角色/王秀兰/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王秀兰",
+            "秀兰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 118
+        }
+      },
+      "王秀兰_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王秀兰",
+          "秀兰"
+        ],
+        "abstract": "王秀兰语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"王秀兰\">"
+          },
+          {
+            "file": "世界书/角色/王秀兰/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王秀兰",
+            "秀兰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 119
+        }
+      },
+      "赵敏_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "赵敏",
+          "小敏"
+        ],
+        "abstract": "赵敏的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"赵敏\">"
+          },
+          {
+            "file": "世界书/角色/赵敏/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵敏",
+            "小敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        }
+      },
+      "赵敏_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "赵敏",
+          "小敏"
+        ],
+        "abstract": "赵敏的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"赵敏\">"
+          },
+          {
+            "file": "世界书/角色/赵敏/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵敏",
+            "小敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 121
+        }
+      },
+      "赵敏_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "赵敏",
+          "小敏"
+        ],
+        "abstract": "赵敏的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '赵敏' || matchChatMessages(['赵敏', '小敏'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"赵敏\">"
+          },
+          {
+            "file": "世界书/角色/赵敏/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵敏",
+            "小敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 122
+        }
+      },
+      "赵敏_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "赵敏",
+          "小敏"
+        ],
+        "abstract": "赵敏语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"赵敏\">"
+          },
+          {
+            "file": "世界书/角色/赵敏/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵敏",
+            "小敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 123
+        }
+      },
+      "孙莉_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "孙莉",
+          "莉莉"
+        ],
+        "abstract": "孙莉的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"孙莉\">"
+          },
+          {
+            "file": "世界书/角色/孙莉/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "孙莉",
+            "莉莉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 124
+        }
+      },
+      "孙莉_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "孙莉",
+          "莉莉"
+        ],
+        "abstract": "孙莉的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"孙莉\">"
+          },
+          {
+            "file": "世界书/角色/孙莉/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "孙莉",
+            "莉莉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 125
+        }
+      },
+      "孙莉_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "孙莉",
+          "莉莉"
+        ],
+        "abstract": "孙莉的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '孙莉' || matchChatMessages(['孙莉', '莉莉'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"孙莉\">"
+          },
+          {
+            "file": "世界书/角色/孙莉/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "孙莉",
+            "莉莉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 126
+        }
+      },
+      "孙莉_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "孙莉",
+          "莉莉"
+        ],
+        "abstract": "孙莉语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"孙莉\">"
+          },
+          {
+            "file": "世界书/角色/孙莉/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "孙莉",
+            "莉莉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 127
+        }
+      },
+      "周慧敏_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "周慧敏",
+          "慧敏"
+        ],
+        "abstract": "周慧敏的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"周慧敏\">"
+          },
+          {
+            "file": "世界书/角色/周慧敏/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "周慧敏",
+            "慧敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 128
+        }
+      },
+      "周慧敏_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "周慧敏",
+          "慧敏"
+        ],
+        "abstract": "周慧敏的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"周慧敏\">"
+          },
+          {
+            "file": "世界书/角色/周慧敏/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "周慧敏",
+            "慧敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 129
+        }
+      },
+      "周慧敏_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "周慧敏",
+          "慧敏"
+        ],
+        "abstract": "周慧敏的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '周慧敏' || matchChatMessages(['周慧敏', '慧敏'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"周慧敏\">"
+          },
+          {
+            "file": "世界书/角色/周慧敏/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "周慧敏",
+            "慧敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 130
+        }
+      },
+      "周慧敏_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "周慧敏",
+          "慧敏"
+        ],
+        "abstract": "周慧敏语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"周慧敏\">"
+          },
+          {
+            "file": "世界书/角色/周慧敏/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "周慧敏",
+            "慧敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 131
+        }
+      },
+      "吴琼_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "吴琼",
+          "吴董"
+        ],
+        "abstract": "吴琼的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"吴琼\">"
+          },
+          {
+            "file": "世界书/角色/吴琼/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "吴琼",
+            "吴董"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 132
+        }
+      },
+      "吴琼_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "吴琼",
+          "吴董"
+        ],
+        "abstract": "吴琼的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"吴琼\">"
+          },
+          {
+            "file": "世界书/角色/吴琼/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "吴琼",
+            "吴董"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 133
+        }
+      },
+      "吴琼_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "吴琼",
+          "吴董"
+        ],
+        "abstract": "吴琼的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '吴琼' || matchChatMessages(['吴琼', '吴董'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"吴琼\">"
+          },
+          {
+            "file": "世界书/角色/吴琼/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "吴琼",
+            "吴董"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 134
+        }
+      },
+      "吴琼_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "吴琼",
+          "吴董"
+        ],
+        "abstract": "吴琼语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"吴琼\">"
+          },
+          {
+            "file": "世界书/角色/吴琼/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "吴琼",
+            "吴董"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 135
+        }
+      },
+      "陈雪华_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "陈雪华",
+          "小雪"
+        ],
+        "abstract": "陈雪华的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"陈雪华\">"
+          },
+          {
+            "file": "世界书/角色/陈雪华/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈雪华",
+            "小雪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 108
+        }
+      },
+      "陈雪华_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "陈雪华",
+          "小雪"
+        ],
+        "abstract": "陈雪华的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"陈雪华\">"
+          },
+          {
+            "file": "世界书/角色/陈雪华/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈雪华",
+            "小雪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 109
+        }
+      },
+      "陈雪华_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陈雪华",
+          "小雪"
+        ],
+        "abstract": "陈雪华的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '陈雪华' || matchChatMessages(['陈雪华', '小雪'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"陈雪华\">"
+          },
+          {
+            "file": "世界书/角色/陈雪华/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈雪华",
+            "小雪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 110
+        }
+      },
+      "陈雪华_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "陈雪华",
+          "小雪"
+        ],
+        "abstract": "陈雪华语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"陈雪华\">"
+          },
+          {
+            "file": "世界书/角色/陈雪华/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈雪华",
+            "小雪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 111
+        }
+      },
+      "郑秀_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "郑秀",
+          "阿秀"
+        ],
+        "abstract": "郑秀的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"郑秀\">"
+          },
+          {
+            "file": "世界书/角色/郑秀/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "郑秀",
+            "阿秀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 136
+        }
+      },
+      "郑秀_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "郑秀",
+          "阿秀"
+        ],
+        "abstract": "郑秀的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"郑秀\">"
+          },
+          {
+            "file": "世界书/角色/郑秀/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "郑秀",
+            "阿秀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 137
+        }
+      },
+      "郑秀_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "郑秀",
+          "阿秀"
+        ],
+        "abstract": "郑秀的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '郑秀' || matchChatMessages(['郑秀', '阿秀'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"郑秀\">"
+          },
+          {
+            "file": "世界书/角色/郑秀/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "郑秀",
+            "阿秀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 138
+        }
+      },
+      "郑秀_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "郑秀",
+          "阿秀"
+        ],
+        "abstract": "郑秀语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"郑秀\">"
+          },
+          {
+            "file": "世界书/角色/郑秀/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "郑秀",
+            "阿秀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 139
+        }
+      },
+      "沈梦瑶_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "沈梦瑶",
+          "沈总"
+        ],
+        "abstract": "沈梦瑶的基础信息：身份、体型落点与识别特征、身体此刻的样子、背景、关系、她身上那一处招牌动作",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"沈梦瑶\">"
+          },
+          {
+            "file": "世界书/角色/沈梦瑶/基础信息.txt"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "沈梦瑶",
+            "沈总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 140
+        }
+      },
+      "沈梦瑶_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "沈梦瑶",
+          "沈总"
+        ],
+        "abstract": "沈梦瑶的性格调色盘：底色 + 按时期七档的主色调、点缀与各自衍生行为",
+        "contents": [
+          {
+            "content": "---\n<character_palette character=\"沈梦瑶\">"
+          },
+          {
+            "file": "世界书/角色/沈梦瑶/性格调色盘.txt"
+          },
+          {
+            "content": "</character_palette>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "沈梦瑶",
+            "沈总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 141
+        }
+      },
+      "沈梦瑶_多阶段": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "沈梦瑶",
+          "沈总"
+        ],
+        "abstract": "沈梦瑶的档位行为：按时期七档给出她是谁、本档边界、会做与不做、身体那一处、说什么、与林天与她那边的男人、越界后果、独有触发。仅镜头落在她身上时渲染",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.镜头.对象', { defaults: '' }) === '沈梦瑶' || matchChatMessages(['沈梦瑶', '沈总'])"
+          },
+          {
+            "content": "---\n<character_stage character=\"沈梦瑶\">"
+          },
+          {
+            "file": "世界书/角色/沈梦瑶/多阶段.txt"
+          },
+          {
+            "content": "</character_stage>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "沈梦瑶",
+            "沈总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 142
+        }
+      },
+      "沈梦瑶_语料库": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "沈梦瑶",
+          "沈总"
+        ],
+        "abstract": "沈梦瑶语料：对林天、对她那边的男人、对外人、独处五种场合的纯对话与口癖",
+        "contents": [
+          {
+            "content": "---\n<character_speech character=\"沈梦瑶\">"
+          },
+          {
+            "file": "世界书/角色/沈梦瑶/语料库.txt"
+          },
+          {
+            "content": "</character_speech>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "沈梦瑶",
+            "沈总"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 143
+        }
+      }
+    },
+    "NPC": {
+      "家属_陈家与林家": {
+        "path": "世界书/NPC/家属_陈家与林家.txt",
+        "scope": "specific",
+        "keywords": [
+          "陈富贵",
+          "张强",
+          "林晓宝",
+          "小宝"
+        ],
+        "abstract": "陈富贵（被她父亲卖掉又跪谢买家的人）、张强（早就没有名字的前夫）、林晓宝（三岁，户口本父亲栏写着林天的名字）三人；全部对系统一无所知",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陈富贵",
+            "张强",
+            "林晓宝",
+            "小宝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 144
+        }
+      },
+      "家属_王家与赵家": {
+        "path": "世界书/NPC/家属_王家与赵家.txt",
+        "scope": "specific",
+        "keywords": [
+          "李大强",
+          "老李",
+          "赵立明",
+          "王昊"
+        ],
+        "abstract": "李大强（赌债换妻子的老李）、赵立明（拿女儿换地块的父亲）、王昊（被踩着脸退婚的原未婚夫）三人；三种不同的「接受了」",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李大强",
+            "老李",
+            "赵立明",
+            "王昊"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 145
+        }
+      },
+      "家属_孙家与周家": {
+        "path": "世界书/NPC/家属_孙家与周家.txt",
+        "scope": "specific",
+        "keywords": [
+          "孙建国",
+          "陈浩",
+          "李建国",
+          "李承乾",
+          "李老太爷",
+          "李雪"
+        ],
+        "abstract": "孙建国（不知情的父亲）、陈浩（被按在现场的旧人）、李建国（资产被转空的丈夫）、李承乾（封口的李老太爷）、李雪（十一岁的裂口）五人",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "孙建国",
+            "陈浩",
+            "李建国",
+            "李承乾",
+            "李老太爷",
+            "李雪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 146
+        }
+      },
+      "家属_郑家与沈家": {
+        "path": "世界书/NPC/家属_郑家与沈家.txt",
+        "scope": "specific",
+        "keywords": [
+          "郑鸿远",
+          "郑老爷子",
+          "李文轩",
+          "陈泽",
+          "吴小婷",
+          "郑鸿涛",
+          "郑鸿波"
+        ],
+        "abstract": "郑鸿远（说不出话的家主）、李文轩（体面人做帮凶）、郑鸿涛与郑鸿波（写成一个动作）、陈泽（还没出事的那一个）、吴小婷（十六岁，只作为吴琼那本账上最重的一笔）",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "郑鸿远",
+            "郑老爷子",
+            "李文轩",
+            "陈泽",
+            "吴小婷",
+            "郑鸿涛",
+            "郑鸿波"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 147
+        }
+      },
+      "苏婉娘家与乐乐": {
+        "path": "世界书/NPC/苏婉娘家与乐乐.txt",
+        "scope": "specific",
+        "keywords": [
+          "乐乐",
+          "林秀芬",
+          "李晓婉"
+        ],
+        "abstract": "乐乐（六岁，家里那盏灯，也是苏婉变到哪一步的读数）、林秀芬（背景音）、李晓婉（娘家唯一会做事的人）三人",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "乐乐",
+            "林秀芬",
+            "李晓婉"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 148
+        }
+      }
+    },
+    "MVU": {
+      "[mvu_update]变量输出格式": {
+        "path": "世界书/变量/变量输出格式.txt",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "MVU变量输出格式",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 150
+        }
+      },
+      "变量列表": {
+        "path": "世界书/变量/变量列表.txt",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "MVU变量列表",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 154
+        }
+      },
+      "[mvu_update]变量更新规则": {
+        "path": "世界书/变量/变量更新规则.yaml",
+        "part": "update_rules",
+        "keywords": [],
+        "abstract": "MVU变量更新规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 170
+        }
+      },
+      "[InitVar]请勿打开": {
+        "path": "世界书/变量/initvar.yaml",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "MVU初始变量",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 180
+        }
+      }
+    },
+    "事件": {
+      "事件_第一次系统暴走": {
+        "scope": "specific",
+        "keywords": [
+          "暴走",
+          "评价值归零",
+          "归零",
+          "系统暴走"
+        ],
+        "abstract": "评价值第一次归零时的单次事件脚本：他不笑、场内先出现生理不适、他能主动操纵巧合、四选一的重手、以及收尾与四条禁令",
+        "contents": [
+          {
+            "content": "getvar('stat_data.反派状态.系统暴走次数', { defaults: 0 }) === 0 && getvar('stat_data.反派状态.评价值', { defaults: 100 }) <= 0"
+          },
+          {
+            "file": "世界书/事件/事件_第一次系统暴走.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "暴走",
+            "评价值归零",
+            "归零",
+            "系统暴走"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 157
+        }
+      },
+      "事件_强制洗白": {
+        "scope": "specific",
+        "keywords": [
+          "洗白",
+          "卖惨",
+          "强制洗白"
+        ],
+        "abstract": "评价值低于二十时的单次事件脚本：救一个与他无关的孩子或老人、三份物料当晚同时上网、后果链四件事、收尾与四条禁令",
+        "contents": [
+          {
+            "content": "getvar('stat_data.反派状态.强制洗白可用', { defaults: false }) === true && getvar('stat_data.反派状态.评价值', { defaults: 100 }) >= 1 && getvar('stat_data.反派状态.评价值', { defaults: 100 }) < 20"
+          },
+          {
+            "content": "getvar('stat_data.反派状态.强制洗白可用', { defaults: false }) === true && getvar('stat_data.反派状态.评价值', { defaults: 100 }) < 20"
+          },
+          {
+            "file": "世界书/事件/事件_强制洗白.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "洗白",
+            "卖惨",
+            "强制洗白"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 158
+        }
+      },
+      "事件_终局_系统解绑": {
+        "scope": "specific",
+        "keywords": [
+          "终局",
+          "合约终止",
+          "第三次归零"
+        ],
+        "abstract": "评价值第三次归零的单次事件脚本：面板说一句合约终止、十个人各一段短镜头、三条下场只落一条、末段只写谁在哪手里在做什么",
+        "contents": [
+          {
+            "content": "getvar('stat_data.反派状态.评价值', { defaults: 100 }) <= 0 && getvar('stat_data.反派状态.系统暴走次数', { defaults: 0 }) >= 2"
+          },
+          {
+            "file": "世界书/事件/事件_终局_系统解绑.txt"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "终局",
+            "合约终止",
+            "第三次归零"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 159
+        }
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "文风",
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "MVU",
+      "事件"
+    ]
+  },
+  "strategyThresholds": {
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": true
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "地理": {
+      "faction": {
+        "threshold": 4,
+        "required": false
+      },
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "世界观": "Infinity",
+    "阶段指导": "Infinity",
+    "文风": "Infinity",
+    "事件": 0
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "avatar": "avatar.png",
+  "description": "",
+  "first_messages": [
+    "开场白/0.txt",
+    "开场白/1.txt"
+  ],
+  "tags": [
+    "现代都市",
+    "NTR",
+    "反派视角",
+    "系统",
+    "NTL",
+    "多角色"
+  ],
+  "creator": "",
+  "creator_notes": "",
+  "version": "1.0",
+  "create_date": "2026-09-23T02:02:51.265Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "d0311ca6-5e9a-498e-a777-f74dc4dc6b12",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": false
+              }
+            ]
+          },
+          "data": {}
+        }
+      },
+      "variables": {}
+    },
+    "talkativeness": "0.5",
+    "fav": false,
+    "depth_prompt": {
+      "prompt": "",
+      "depth": 4,
+      "role": "system"
+    }
+  },
+  "regex_scripts": {
+    "对AI隐藏状态栏": {
+      "id": "b5f2606f-69cc-4a6a-8ebb-bd8a3b7f671f",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "状态栏界面": {
+      "id": "ce6da13c-4e35-4057-8964-3192b7903acc",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replace_file": "正则/状态栏界面.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "对AI隐藏变量更新": {
+      "id": "aa12731a-97c4-4450-ac2f-0bfe1d6a4f64",
+      "findRegex": "/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "变量更新中美化": {
+      "id": "b9d5f25b-a9d0-41bf-8a69-602d64bbde22",
+      "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+      "replace_file": "正则/变量更新中美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "变量更新美化": {
+      "id": "92d49340-fe5e-4929-871f-43d110e5ec76",
+      "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+      "replace_file": "正则/变量更新美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    }
+  },
+  "zod": {
+    "scriptName": "Zod",
+    "scriptId": "5b3b09af-35e3-4149-a0f7-2f08776ed6a1",
+    "schemaPath": "schema.ts",
+    "importUrl": "https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js"
+  },
+  "initvar_overrides": {
+    "开场白/1.txt": "开场白/initvar/1.yaml"
+  }
+}

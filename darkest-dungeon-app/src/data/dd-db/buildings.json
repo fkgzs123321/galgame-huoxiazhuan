@@ -1,0 +1,1892 @@
+{
+  "abbey": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 2,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "activities": [
+        {
+          "id": "meditation",
+          "data": {
+            "side_effects": {
+              "chance": 0.375,
+              "results": [
+                {
+                  "type": "activity_lock",
+                  "chance": 1,
+                  "data": []
+                },
+                {
+                  "type": "go_missing",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 0.75,
+                      "duration": 1
+                    },
+                    {
+                      "chance": 0.25,
+                      "duration": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "enlightened"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "improved_balance"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "meditator"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "calm"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "unquiet_mind"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_trinket",
+                  "chance": 0,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_trinket",
+                  "chance": 0,
+                  "data": []
+                }
+              ]
+            },
+            "requirements": [
+              {
+                "type": "not_have_quirks",
+                "data": {
+                  "quirk_library_names": [
+                    "unquiet_mind",
+                    "alcoholism",
+                    "gambler",
+                    "love_interest",
+                    "god_fearing",
+                    "flagellant"
+                  ]
+                }
+              }
+            ],
+            "miscellaneous": {
+              "caretaker_friendly": true
+            },
+            "cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1000
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 850
+                },
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 700
+                },
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_requirement_code": "f"
+              }
+            ],
+            "stress_upgrades": [
+              {
+                "heal_low": 45,
+                "heal_high": 45
+              },
+              {
+                "heal_low": 56,
+                "heal_high": 56,
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "heal_low": 70,
+                "heal_high": 70,
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "affliction_cure_upgrades": [
+              {
+                "chance": 1
+              },
+              {
+                "chance": 0.1,
+                "upgrade_requirement_code": "g"
+              }
+            ]
+          }
+        },
+        {
+          "id": "prayer",
+          "data": {
+            "side_effects": {
+              "chance": 0.375,
+              "results": [
+                {
+                  "type": "activity_lock",
+                  "chance": 2,
+                  "data": []
+                },
+                {
+                  "type": "go_missing",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 0.75,
+                      "duration": 1
+                    },
+                    {
+                      "chance": 0.25,
+                      "duration": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "god_fearing"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "witness"
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "buff_library_ids": [
+                        "townPrayerDestressBuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_currency",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "type": "gold",
+                      "amount": 1000
+                    }
+                  ]
+                },
+                {
+                  "type": "add_trinket",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_trinket",
+                  "chance": 0,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                }
+              ]
+            },
+            "requirements": [
+              {
+                "type": "not_have_quirks",
+                "data": {
+                  "quirk_library_names": [
+                    "witness",
+                    "faithless",
+                    "alcoholism",
+                    "gambler",
+                    "love_interest",
+                    "enlightened",
+                    "flagellant"
+                  ]
+                }
+              }
+            ],
+            "miscellaneous": {
+              "caretaker_friendly": true
+            },
+            "cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1250
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1050
+                },
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 900
+                },
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_requirement_code": "f"
+              }
+            ],
+            "stress_upgrades": [
+              {
+                "heal_low": 55,
+                "heal_high": 55
+              },
+              {
+                "heal_low": 69,
+                "heal_high": 69,
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "heal_low": 86,
+                "heal_high": 86,
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "affliction_cure_upgrades": [
+              {
+                "chance": 1
+              },
+              {
+                "chance": 0.1,
+                "upgrade_requirement_code": "g"
+              }
+            ]
+          }
+        },
+        {
+          "id": "flagellation",
+          "data": {
+            "side_effects": {
+              "chance": 0.375,
+              "results": [
+                {
+                  "type": "activity_lock",
+                  "chance": 2,
+                  "data": []
+                },
+                {
+                  "type": "go_missing",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 0.75,
+                      "duration": 1
+                    },
+                    {
+                      "chance": 0.25,
+                      "duration": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "flagellant"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "faithless"
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "buff_library_ids": [
+                        "townFlagellationDMGLowBuff",
+                        "townFlagellationDMGHighBuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "buff_library_ids": [
+                        "townFlagellationBleedDebuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "add_trinket",
+                  "chance": 0,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_trinket",
+                  "chance": 0,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                }
+              ]
+            },
+            "requirements": [
+              {
+                "type": "not_have_quirks",
+                "data": {
+                  "quirk_library_names": [
+                    "faithless",
+                    "alcoholism",
+                    "gambler",
+                    "love_interest",
+                    "enlightened",
+                    "god_fearing"
+                  ]
+                }
+              }
+            ],
+            "miscellaneous": {
+              "caretaker_friendly": true
+            },
+            "cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1500
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1300
+                },
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1100
+                },
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_requirement_code": "f"
+              }
+            ],
+            "stress_upgrades": [
+              {
+                "heal_low": 65,
+                "heal_high": 65
+              },
+              {
+                "heal_low": 81,
+                "heal_high": 81,
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "heal_low": 100,
+                "heal_high": 100,
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "affliction_cure_upgrades": [
+              {
+                "chance": 1
+              },
+              {
+                "chance": 0.1,
+                "upgrade_requirement_code": "g"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "blacksmith": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 3,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "equipment_cost_discount_upgrades": [
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "blacksmith.cost",
+          "upgrade_requirement_code": "a"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "blacksmith.cost",
+          "upgrade_requirement_code": "b"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "blacksmith.cost",
+          "upgrade_requirement_code": "c"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "blacksmith.cost",
+          "upgrade_requirement_code": "d"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "blacksmith.cost",
+          "upgrade_requirement_code": "e"
+        }
+      ]
+    }
+  },
+  "camping_trainer": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 0,
+      "highest_dungeon_level": 2
+    },
+    "data": {
+      "camping_skill_cost_discount_upgrades": [
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "camping_trainer.cost",
+          "upgrade_requirement_code": "a"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "camping_trainer.cost",
+          "upgrade_requirement_code": "b"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "camping_trainer.cost",
+          "upgrade_requirement_code": "c"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "camping_trainer.cost",
+          "upgrade_requirement_code": "d"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "camping_trainer.cost",
+          "upgrade_requirement_code": "e"
+        }
+      ]
+    }
+  },
+  "circus": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 2,
+      "highest_dungeon_level": 0
+    },
+    "data": {}
+  },
+  "graveyard": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 0,
+      "highest_dungeon_level": 0
+    },
+    "data": {}
+  },
+  "guild": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 3,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "combat_skill_cost_discount_upgrades": [
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "guild.cost",
+          "upgrade_requirement_code": "a"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "guild.cost",
+          "upgrade_requirement_code": "b"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "guild.cost",
+          "upgrade_requirement_code": "c"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "guild.cost",
+          "upgrade_requirement_code": "d"
+        },
+        {
+          "discount_percent": 0.1,
+          "upgrade_tree_id": "guild.cost",
+          "upgrade_requirement_code": "e"
+        }
+      ]
+    }
+  },
+  "nomad_wagon": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 0,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "stores": [
+        {
+          "id": "trinket_supply",
+          "data": {
+            "number_of_trinkets_upgrades": [
+              {
+                "amount": 2
+              },
+              {
+                "amount": 4,
+                "upgrade_tree_id": "nomad_wagon.numitems",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "amount": 6,
+                "upgrade_tree_id": "nomad_wagon.numitems",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "amount": 8,
+                "upgrade_tree_id": "nomad_wagon.numitems",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "amount": 12,
+                "upgrade_tree_id": "nomad_wagon.numitems",
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "trinket_cost_discount_upgrades": [
+              {
+                "discount_percent": 0.1,
+                "upgrade_tree_id": "nomad_wagon.cost",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "discount_percent": 0.1,
+                "upgrade_tree_id": "nomad_wagon.cost",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "discount_percent": 0.1,
+                "upgrade_tree_id": "nomad_wagon.cost",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "discount_percent": 0.1,
+                "upgrade_tree_id": "nomad_wagon.cost",
+                "upgrade_requirement_code": "d"
+              },
+              {
+                "discount_percent": 0.1,
+                "upgrade_tree_id": "nomad_wagon.cost",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "trinket_sell_value_discount_upgrades": [
+              {
+                "discount_percent": 0.85
+              }
+            ],
+            "rarity_generation_table": [
+              {
+                "rarity": "very_common",
+                "chance": 6
+              },
+              {
+                "rarity": "common",
+                "chance": 5
+              },
+              {
+                "rarity": "uncommon",
+                "chance": 4
+              },
+              {
+                "rarity": "rare",
+                "chance": 2
+              },
+              {
+                "rarity": "very_rare",
+                "chance": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "sanitarium": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 4,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "activities": [
+        {
+          "id": "treatment",
+          "data": {
+            "positive_quirk_cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 7500
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 6750
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 6000
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 5250
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 4500
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "d"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 3750
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "negative_quirk_cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1500
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1350
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1200
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1050
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 900
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "d"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 750
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "permanent_negative_quirk_cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 5000
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 4500
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 4000
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 3500
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 3000
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "d"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 2500
+                },
+                "upgrade_tree_id": "sanitarium.cost",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_tree_id": "sanitarium.slots",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_tree_id": "sanitarium.slots",
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "quirk_treatment_upgrades": [
+              {
+                "chance": 1
+              }
+            ]
+          }
+        },
+        {
+          "id": "disease_treatment",
+          "data": {
+            "disease_quirk_cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 750
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 650
+                },
+                "upgrade_tree_id": "sanitarium.disease_quirk_cost",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 550
+                },
+                "upgrade_tree_id": "sanitarium.disease_quirk_cost",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 450
+                },
+                "upgrade_tree_id": "sanitarium.disease_quirk_cost",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "disease_quirk_cure_all_chance_upgrades": [
+              {
+                "chance": 0.33
+              },
+              {
+                "chance": 0.67,
+                "upgrade_tree_id": "sanitarium.disease_quirk_cost",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "chance": 1,
+                "upgrade_tree_id": "sanitarium.disease_quirk_cost",
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_tree_id": "sanitarium.slots",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_tree_id": "sanitarium.slots",
+                "upgrade_requirement_code": "c"
+              }
+            ],
+            "quirk_treatment_upgrades": [
+              {
+                "chance": 1
+              }
+            ],
+            "requirements": [
+              {
+                "type": "is_diseased",
+                "data": {}
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "stage_coach": {
+    "on_start_town_visit_priority": 0,
+    "requirements": {
+      "number_of_quests_finished": 0,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "stores": [
+        {
+          "id": "hero_recruit",
+          "data": {
+            "first_hero_classes": [
+              "plague_doctor",
+              "vestal"
+            ],
+            "number_of_recruits_upgrades": [
+              {
+                "amount": 2
+              },
+              {
+                "amount": 3,
+                "upgrade_tree_id": "stage_coach.numrecruits",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "amount": 4,
+                "upgrade_tree_id": "stage_coach.numrecruits",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "amount": 5,
+                "upgrade_tree_id": "stage_coach.numrecruits",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "amount": 6,
+                "upgrade_tree_id": "stage_coach.numrecruits",
+                "upgrade_requirement_code": "d"
+              },
+              {
+                "amount": 7,
+                "upgrade_tree_id": "stage_coach.numrecruits",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "roster_size_upgrades": [
+              {
+                "amount": 9
+              },
+              {
+                "amount": 12,
+                "upgrade_tree_id": "stage_coach.rostersize",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "amount": 16,
+                "upgrade_tree_id": "stage_coach.rostersize",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "amount": 20,
+                "upgrade_tree_id": "stage_coach.rostersize",
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "amount": 24,
+                "upgrade_tree_id": "stage_coach.rostersize",
+                "upgrade_requirement_code": "d"
+              },
+              {
+                "amount": 28,
+                "upgrade_tree_id": "stage_coach.rostersize",
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "upgraded_recruits_upgrades": [
+              {
+                "level": 1,
+                "chance": 0.1875,
+                "number_of_extra_positive_quirks": 0,
+                "number_of_extra_negative_quirks": 0,
+                "number_of_extra_combat_skills": 0,
+                "number_of_extra_camping_skills": 1,
+                "guaranteed_previous_raid_dead_hero_levels": [
+                  3
+                ],
+                "upgrade_tree_id": "stage_coach.upgraded_recruits",
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "level": 2,
+                "chance": 0.125,
+                "number_of_extra_positive_quirks": 1,
+                "number_of_extra_negative_quirks": 1,
+                "number_of_extra_combat_skills": 1,
+                "number_of_extra_camping_skills": 1,
+                "guaranteed_previous_raid_dead_hero_levels": [
+                  4
+                ],
+                "upgrade_tree_id": "stage_coach.upgraded_recruits",
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "level": 3,
+                "chance": 0.0625,
+                "number_of_extra_positive_quirks": 2,
+                "number_of_extra_negative_quirks": 2,
+                "number_of_extra_combat_skills": 2,
+                "number_of_extra_camping_skills": 2,
+                "guaranteed_previous_raid_dead_hero_levels": [
+                  5,
+                  6
+                ],
+                "upgrade_tree_id": "stage_coach.upgraded_recruits",
+                "upgrade_requirement_code": "c"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "statue": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 0,
+      "highest_dungeon_level": 0
+    },
+    "data": {}
+  },
+  "tavern": {
+    "on_start_town_visit_priority": 1,
+    "requirements": {
+      "number_of_quests_finished": 2,
+      "highest_dungeon_level": 0
+    },
+    "data": {
+      "activities": [
+        {
+          "id": "bar",
+          "data": {
+            "side_effects": {
+              "chance": 0.375,
+              "results": [
+                {
+                  "type": "activity_lock",
+                  "chance": 1,
+                  "data": []
+                },
+                {
+                  "type": "go_missing",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 0.75,
+                      "duration": 1
+                    },
+                    {
+                      "chance": 0.25,
+                      "duration": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "alcoholism"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "resolution"
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 3,
+                  "data": [
+                    {
+                      "chance": 0.33,
+                      "buff_library_ids": [
+                        "townHungoverAccDebuff",
+                        "townHungoverDEFDebuff"
+                      ]
+                    },
+                    {
+                      "chance": 0.67,
+                      "buff_library_ids": [
+                        "townDrinkingHPBuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_currency",
+                  "chance": 0.5,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "type": "gold",
+                      "amount": 500
+                    }
+                  ]
+                },
+                {
+                  "type": "add_trinket",
+                  "chance": 0,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_trinket",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 2,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 2,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 2,
+                      "rarity": "very_common"
+                    }
+                  ]
+                }
+              ]
+            },
+            "requirements": [
+              {
+                "type": "not_have_quirks",
+                "data": {
+                  "quirk_library_names": [
+                    "resolution",
+                    "gambler",
+                    "love_interest",
+                    "enlightened",
+                    "god_fearing",
+                    "flagellant"
+                  ]
+                }
+              }
+            ],
+            "miscellaneous": {
+              "caretaker_friendly": true
+            },
+            "cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1000
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 850
+                },
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 700
+                },
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_requirement_code": "f"
+              }
+            ],
+            "stress_upgrades": [
+              {
+                "heal_low": 45,
+                "heal_high": 45
+              },
+              {
+                "heal_low": 56,
+                "heal_high": 56,
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "heal_low": 70,
+                "heal_high": 70,
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "affliction_cure_upgrades": [
+              {
+                "chance": 1
+              },
+              {
+                "chance": 0.1,
+                "upgrade_requirement_code": "g"
+              }
+            ]
+          }
+        },
+        {
+          "id": "gambling",
+          "data": {
+            "side_effects": {
+              "chance": 0.375,
+              "results": [
+                {
+                  "type": "activity_lock",
+                  "chance": 3,
+                  "data": []
+                },
+                {
+                  "type": "go_missing",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 0.75,
+                      "duration": 1
+                    },
+                    {
+                      "chance": 0.25,
+                      "duration": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "gambler"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "known_cheat"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "bad_gambler"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "skilled_gambler"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_currency",
+                  "chance": 1.2,
+                  "data": [
+                    {
+                      "chance": 0.4,
+                      "type": "gold",
+                      "amount": 2000
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_currency",
+                  "chance": 1.8,
+                  "data": [
+                    {
+                      "chance": 0.6,
+                      "type": "gold",
+                      "amount": 1000
+                    }
+                  ]
+                },
+                {
+                  "type": "add_trinket",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_trinket",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 2,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 3,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 3,
+                      "rarity": "very_common"
+                    }
+                  ]
+                }
+              ]
+            },
+            "requirements": [
+              {
+                "type": "not_have_quirks",
+                "data": {
+                  "quirk_library_names": [
+                    "known_cheat",
+                    "alcoholism",
+                    "love_interest",
+                    "enlightened",
+                    "god_fearing",
+                    "flagellant"
+                  ]
+                }
+              }
+            ],
+            "miscellaneous": {
+              "caretaker_friendly": true
+            },
+            "cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1250
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1050
+                },
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 900
+                },
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_requirement_code": "f"
+              }
+            ],
+            "stress_upgrades": [
+              {
+                "heal_low": 55,
+                "heal_high": 55
+              },
+              {
+                "heal_low": 69,
+                "heal_high": 69,
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "heal_low": 86,
+                "heal_high": 86,
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "affliction_cure_upgrades": [
+              {
+                "chance": 1
+              },
+              {
+                "chance": 0.1,
+                "upgrade_requirement_code": "g"
+              }
+            ]
+          }
+        },
+        {
+          "id": "brothel",
+          "data": {
+            "side_effects": {
+              "chance": 0.375,
+              "results": [
+                {
+                  "type": "activity_lock",
+                  "chance": 2,
+                  "data": []
+                },
+                {
+                  "type": "go_missing",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 0.75,
+                      "duration": 1
+                    },
+                    {
+                      "chance": 0.25,
+                      "duration": 2
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "love_interest"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "syphilis"
+                    }
+                  ]
+                },
+                {
+                  "type": "add_quirk",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "quirk_library_name": "deviant_tastes"
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 2,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "buff_library_ids": [
+                        "townBrothelSPDBuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "buff_library_ids": [
+                        "townBrothelSPDDebuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "apply_buff",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "buff_library_ids": [
+                        "townBrothelDestressBuff"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_currency",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "type": "gold",
+                      "amount": 750
+                    }
+                  ]
+                },
+                {
+                  "type": "add_trinket",
+                  "chance": 0,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "very_common"
+                    }
+                  ]
+                },
+                {
+                  "type": "remove_trinket",
+                  "chance": 1,
+                  "data": [
+                    {
+                      "chance": 1,
+                      "rarity": "very_rare"
+                    },
+                    {
+                      "chance": 1,
+                      "rarity": "rare"
+                    },
+                    {
+                      "chance": 3,
+                      "rarity": "uncommon"
+                    },
+                    {
+                      "chance": 3,
+                      "rarity": "common"
+                    },
+                    {
+                      "chance": 3,
+                      "rarity": "very_common"
+                    }
+                  ]
+                }
+              ]
+            },
+            "requirements": [
+              {
+                "type": "not_have_quirks",
+                "data": {
+                  "quirk_library_names": [
+                    "deviant_tastes",
+                    "alcoholism",
+                    "gambler",
+                    "enlightened",
+                    "god_fearing",
+                    "flagellant"
+                  ]
+                }
+              }
+            ],
+            "miscellaneous": {
+              "caretaker_friendly": true
+            },
+            "cost_upgrades": [
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1500
+                }
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1300
+                },
+                "upgrade_requirement_code": "b"
+              },
+              {
+                "cost_currency": {
+                  "type": "gold",
+                  "amount": 1110
+                },
+                "upgrade_requirement_code": "e"
+              }
+            ],
+            "slot_upgrades": [
+              {
+                "number_of_slots": 1
+              },
+              {
+                "number_of_slots": 2,
+                "upgrade_requirement_code": "c"
+              },
+              {
+                "number_of_slots": 3,
+                "upgrade_requirement_code": "f"
+              }
+            ],
+            "stress_upgrades": [
+              {
+                "heal_low": 65,
+                "heal_high": 65
+              },
+              {
+                "heal_low": 81,
+                "heal_high": 81,
+                "upgrade_requirement_code": "a"
+              },
+              {
+                "heal_low": 100,
+                "heal_high": 100,
+                "upgrade_requirement_code": "d"
+              }
+            ],
+            "affliction_cure_upgrades": [
+              {
+                "chance": 1
+              },
+              {
+                "chance": 0.1,
+                "upgrade_requirement_code": "g"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

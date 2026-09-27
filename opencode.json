@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": [".skills"]
+  },
+  "references": {
+    "STDB": {
+      "path": ".skills/STDB",
+      "description": "ST 开发指南数据库（SillyTavern 全栈开发参考）：A2 角色卡格式规范、A3 世界书优化、B1 变量更新规则、C1 前端基础-TavernHelper 与 iframe、C2 前端应用-状态栏与控制中心、C4 数据库表格模板、D1 git 挂载与资源加载、D2 大卡性能优化。制卡/改卡/前端开发时按需查阅对应分册"
+    },
+    "tavern-cards-src": {
+      "path": ".skills/tavern-cards",
+      "description": "ai4rpg/tavern-cards 仓库源码（tavern-cards 与 tavern-ui 两个 skill 的宿主仓库），含 scripts/ 制卡工具（tavern-cards-forge.mjs 等）与完整 references 分册"
+    }
+  }
+}

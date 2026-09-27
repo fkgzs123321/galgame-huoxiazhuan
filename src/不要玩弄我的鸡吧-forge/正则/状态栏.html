@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
+<title>状态栏 · 不要玩弄我的鸡吧</title>
+<style>
+/* fjb-* 美化标记样式主版本位于 bubble.css（含 11 类组件 + 关键帧动画 + data-attribute 变色）。
+   通过 @import 加载；本文件已移除内联 fjb-* 重复定义以避免维护分歧。
+   注意：@import 必须位于 <style> 开头（CSS 规范要求 @import 先于其他规则）。 */
+@import url('bubble.css');
+:root{
+  --bg-0:#fff0f5;--bg-1:#ffe4ec;--bg-card:rgba(255,192,203,.2);
+  --c-text:#4a0e2e;--c-dim:#7a2d4d;--c-border:rgba(255,105,180,.3);
+  --c-danger:#d63558;--c-warn:#e0607f;--c-orange:#db4f73;--c-safe:#c4476e;--c-accent:#d63384;--c-blue:#b8327a;--c-pink:#c2185b;--c-silver:#9e3a5e;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+.sb{position:sticky;bottom:0;background:linear-gradient(135deg,var(--c-bg-grad1),var(--c-bg-grad2));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--c-border);border-radius:18px;padding:12px 14px;margin:6px 0;box-shadow:0 4px 20px var(--c-shadow)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:700;color:var(--c-accent);letter-spacing:1px}
+.hd-sub{font-size:var(--fs-xs);color:var(--c-dim);width:100%;margin-top:2px}
+.pill{font-size:var(--fs-xs);padding:4px 10px;border-radius:14px;background:var(--c-bg-pill);border:1px solid var(--c-bg-pill-border);color:var(--c-accent);white-space:nowrap;font-weight:600}
+.pill.warn{background:var(--c-bg-pill);border-color:var(--c-bg-pill-border);color:var(--c-warn)}
+.pill.danger{background:var(--c-bg-pill);border-color:var(--c-bg-pill-border);color:var(--c-danger)}
+.pill.safe{background:var(--c-bg-pill);border-color:var(--c-bg-pill-border);color:var(--c-safe)}
+.pill.silver{background:var(--c-bg-pill);border-color:var(--c-bg-pill-border);color:var(--c-silver)}
+.rfr{min-width:44px;min-height:44px;background:var(--c-bg-btn-hover);border:1px solid var(--c-border);color:var(--c-accent);border-radius:14px;padding:6px 12px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s;font-weight:600}
+.rfr:hover{color:var(--c-text);background:var(--c-bg-btn-active)}
+.rfr.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+details.block{background:var(--c-bg-card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--c-border);border-radius:16px;padding:0;margin-bottom:8px;overflow:hidden}
+details.block>summary{font-size:var(--fs-sm);font-weight:700;padding:10px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none;color:var(--c-text)}
+details.block>summary::-webkit-details-marker{display:none}
+details.block[open]>summary{border-bottom:1px solid var(--c-border)}
+details.block[open]>summary .caret{transform:rotate(90deg)}
+details.block>summary .caret{margin-left:auto;transition:transform .2s}
+.card-t.player{color:var(--c-safe)}
+.card-t.heroine{color:var(--c-accent)}
+.card-t.skill{color:#a01543}
+.card-t.academic{color:var(--c-blue)}
+.card-t.symptom{color:var(--c-pink)}
+.card-t.hidden{color:var(--c-dim)}
+.card-t.list{color:var(--c-accent)}
+.card-t.event{color:var(--c-silver)}
+.block-body{padding:8px 12px 10px;display:block}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:6px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px}
+.kv{display:flex;flex-direction:column;gap:1px}
+.kv .k{font-size:var(--fs-xs);color:var(--c-dim);font-weight:500}
+.kv .v{font-size:var(--fs-sm);font-weight:600;color:var(--c-text)}
+.v.danger{color:var(--c-danger)}.v.warn{color:var(--c-warn)}.v.safe{color:var(--c-safe)}.v.neutral{color:var(--c-dim)}.v.accent{color:var(--c-accent)}.v.blue{color:var(--c-blue)}.v.pink{color:var(--c-pink)}.v.silver{color:var(--c-silver)}
+.bar{margin:4px 0}
+.bar-h{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px;font-weight:500}
+.bar-h .bv{color:var(--c-text);font-weight:600}
+.bar-t{height:8px;border-radius:6px;background:var(--c-bg-card);overflow:hidden}
+.bar-f{height:100%;border-radius:6px;transition:width .5s ease;width:0}
+.bar-f.r{background:linear-gradient(90deg,#ff6b8a,#ff1493)}
+.bar-f.o{background:linear-gradient(90deg,#ff85a2,#ff69b4)}
+.bar-f.y{background:linear-gradient(90deg,#ffb6c1,#ff85a2)}
+.bar-f.g{background:linear-gradient(90deg,#ffb6d9,#ff69b4)}
+.bar-f.b{background:linear-gradient(90deg,#ffc0cb,#ff85a2)}
+.bar-f.p{background:linear-gradient(90deg,#ff1493,#ff69b4)}
+/* ===== 每轮变更高亮动画 ===== */
+@keyframes highlight-pulse{0%{background:rgba(255,215,0,.35);box-shadow:0 0 0 2px rgba(255,165,0,.6)}30%{background:rgba(255,215,0,.22)}60%{background:rgba(255,215,0,.12)}100%{background:transparent;box-shadow:none}}
+.kv.changed,.bar.changed{animation:highlight-pulse 3.4s ease-out;border-radius:8px;padding-left:2px;padding-right:2px}
+.pill.changed{animation:highlight-pulse 3.4s ease-out}
+.hd-sub.changed{animation:highlight-pulse 3.4s ease-out;border-radius:4px;padding:2px 4px}
+.kv.changed .v,.bar.changed .bv,.bar.changed .bar-h span:first-child{font-weight:800}
+.kv.changed .v{color:#ff4500!important;text-shadow:0 0 4px rgba(255,165,0,.5)}
+.sect-title{font-size:var(--fs-xs);color:var(--c-dim);margin:8px 0 4px;font-weight:600;border-bottom:1px solid rgba(255,182,193,.3);padding-bottom:3px}
+.heroine-item{background:var(--c-bg-card);border:1px solid rgba(255,182,193,.35);border-radius:12px;padding:6px 8px;margin-bottom:4px;cursor:pointer;transition:background .2s}
+.heroine-item:hover{background:var(--c-bg-pill)}
+.heroine-item.active{border-color:rgba(255,105,180,.5);background:var(--c-bg-btn-hover)}
+.heroine-row{display:flex;justify-content:space-between;align-items:center;gap:4px;flex-wrap:wrap}
+.heroine-name{font-weight:700;font-size:var(--fs-sm);color:var(--c-accent)}
+.heroine-role{font-size:var(--fs-xs);color:var(--c-dim);font-weight:500}
+.heroine-stats{display:flex;gap:4px;margin-top:2px;font-size:var(--fs-xs);color:var(--c-dim);flex-wrap:wrap;font-weight:500}
+.shop-item{cursor:pointer;transition:background .15s}
+.shop-item.buyable:hover{background:var(--c-bg-pill)}
+.shop-item.disabled{opacity:.5;cursor:not-allowed}
+.shop-status{font-size:var(--fs-xs);padding:3px 10px;border-radius:10px;text-align:right;margin-top:3px;font-weight:600}
+.shop-status.buyable{color:var(--c-safe)}
+.shop-status.disabled{color:var(--c-danger)}
+.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--c-bg-overlay);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:10px}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(135deg,var(--c-bg-modal-grad1),var(--c-bg-modal-grad2));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--c-border);border-radius:20px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;padding:14px;box-shadow:0 8px 32px var(--c-shadow)}
+.modal-title{font-size:var(--fs-md);font-weight:700;margin-bottom:10px;color:var(--c-accent);display:flex;justify-content:space-between;align-items:center}
+.modal-close{min-width:44px;min-height:44px;background:var(--c-bg-pill);border:1px solid var(--c-border);color:var(--c-accent);border-radius:12px;padding:4px 10px;cursor:pointer;font-size:var(--fs-md)}
+.nsfw-tag{font-size:var(--fs-xs);padding:2px 6px;border-radius:8px;background:rgba(255,107,138,.15);border:1px solid rgba(255,107,138,.3);color:#ff6b8a;margin-left:4px}
+.sb-pages{min-height:150px}
+.sb-page{display:none}
+.sb-nav{display:flex;justify-content:flex-start;align-items:stretch;gap:3px;padding:8px 0 0;border-top:1px solid var(--c-border);margin-top:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,105,180,.3) transparent}
+.sb-nav::-webkit-scrollbar{height:4px}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,105,180,.3);border-radius:2px}
+.sb-nav button{flex:0 0 auto;min-width:42px;min-height:44px;background:var(--c-bg-btn);border:1px solid var(--c-border);color:var(--c-dim);border-radius:12px;padding:6px 4px;cursor:pointer;font-size:var(--fs-xs);transition:all .2s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);white-space:nowrap;font-family:var(--font)}
+.sb-nav button.active{background:var(--c-bg-btn-active);border-color:var(--c-accent);color:var(--c-accent);font-weight:700;box-shadow:0 2px 8px rgba(255,105,180,.2)}
+.sb-nav button:hover{background:var(--c-bg-btn-hover);color:var(--c-accent)}
+.skill-card{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:12px;padding:8px 10px;margin-bottom:8px}
+.skill-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.skill-name{font-weight:700;font-size:var(--fs-sm);color:var(--c-accent)}
+.skill-tier{font-size:var(--fs-xs);padding:2px 8px;border-radius:8px;font-weight:700}
+.skill-tier.tg{background:rgba(255,182,217,.2);color:var(--c-safe)}
+.skill-tier.tb{background:var(--c-bg-btn-hover);color:var(--c-blue)}
+.skill-tier.ty{background:rgba(255,182,217,.2);color:var(--c-warn)}
+.skill-tier.to{background:rgba(255,158,196,.2);color:var(--c-orange)}
+.skill-tier.tr{background:rgba(255,107,138,.2);color:var(--c-danger)}
+.skill-desc{font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:4px}
+.skill-foot{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-top:2px}
+.skill-next{color:var(--c-accent)}
+.event-filter{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px}
+.filter-btn{min-height:44px;background:var(--c-bg-btn);border:1px solid var(--c-border);color:var(--c-dim);border-radius:10px;padding:4px 10px;cursor:pointer;font-size:var(--fs-xs);font-family:var(--font)}
+.filter-btn.active{background:var(--c-bg-btn-active);color:var(--c-accent);border-color:var(--c-accent)}
+.event-timeline{position:relative;padding-left:12px;border-left:2px solid var(--c-border)}
+.event-item{margin-bottom:6px;padding:6px 8px;background:var(--c-bg-skill);border-radius:8px;border:1px solid var(--c-border)}
+.event-row{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.event-type{font-size:var(--fs-xs);font-weight:700;color:var(--c-accent);padding:1px 6px;border-radius:6px;background:var(--c-bg-event-type)}
+.event-time{font-size:var(--fs-xs);color:var(--c-dim)}
+.event-desc{font-size:var(--fs-xs);color:var(--c-text);margin-top:3px;line-height:1.4}
+.setting-btn{min-height:44px;background:var(--c-bg-btn);border:1px solid var(--c-border);color:var(--c-dim);border-radius:12px;padding:8px;cursor:pointer;font-size:var(--fs-sm);transition:all .2s;text-align:center;font-family:var(--font)}
+.setting-btn.active{background:var(--c-bg-btn-active);border-color:var(--c-accent);color:var(--c-accent);font-weight:700}
+.setting-btn:hover{background:var(--c-bg-btn-hover);color:var(--c-accent)}
+.switch-label{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:12px;font-size:var(--fs-sm);color:var(--c-dim);cursor:pointer;min-height:44px}
+.switch-label input{margin:0;width:16px;height:16px}
+.empty-state{text-align:center;color:var(--c-dim);padding:30px 10px;font-size:var(--fs-md)}
+.batch-bar{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 8px;background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:10px;margin-bottom:6px}
+.batch-bar .batch-info{font-size:var(--fs-xs);color:var(--c-dim)}
+.batch-btn{min-height:36px;background:var(--c-bg-bar);border:1px solid var(--c-border);color:var(--c-accent);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:var(--fs-xs);font-family:var(--font)}
+.batch-btn:hover{background:var(--c-bg-bar-hover)}
+.batch-btn.danger{color:var(--c-danger);border-color:rgba(255,107,138,.3)}
+.record-item{position:relative}
+.record-item .batch-check{position:absolute;top:6px;right:8px;width:16px;height:16px}
+.rec-expand-btn{font-size:var(--fs-xs);padding:2px 8px;border-radius:8px;background:var(--c-bg-event-type);border:1px solid var(--c-border);color:var(--c-accent);cursor:pointer;margin-top:3px}
+.rec-expand-btn:hover{background:var(--c-bg-bar-hover)}
+.rec-detail{display:none;padding:6px 8px;margin-top:4px;background:var(--c-bg-btn);border-radius:8px;font-size:var(--fs-xs);line-height:1.5}
+.rec-detail.show{display:block}
+.event-importance{font-size:var(--fs-xs);padding:1px 6px;border-radius:6px;font-weight:700;margin-left:4px}
+.event-importance.high{background:rgba(255,107,138,.2);color:var(--c-danger)}
+.event-importance.mid{background:rgba(255,158,196,.2);color:var(--c-warn)}
+.event-importance.low{background:rgba(255,182,217,.15);color:var(--c-safe)}
+.radar-svg{display:block;margin:6px auto;max-width:200px;width:100%;height:auto}
+.radar-svg polygon.data{fill:rgba(255,105,180,.25);stroke:var(--c-accent);stroke-width:1.5;transition:all .4s ease}
+.radar-svg circle.dot{fill:var(--c-accent)}
+.radar-svg text{fill:var(--c-dim);font-size:9px;text-anchor:middle;dominant-baseline:middle}
+.radar-svg line.grid{stroke:rgba(255,182,193,.2);stroke-width:.5}
+.task-card{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:12px;padding:8px 10px;margin-bottom:6px;border-left:3px solid var(--c-accent)}
+.task-card.main{border-left-color:var(--c-warn)}
+.task-card.side{border-left-color:var(--c-blue)}
+.task-card.daily{border-left-color:var(--c-safe)}
+.task-card.hidden_t,.task-card.hidden{border-left-color:var(--c-pink)}
+.task-type-tag{font-size:var(--fs-xs);padding:1px 6px;border-radius:6px;font-weight:700}
+.task-type-tag.main{background:rgba(255,158,196,.2);color:var(--c-warn)}
+.task-type-tag.side{background:rgba(255,133,162,.2);color:var(--c-blue)}
+.task-type-tag.daily{background:rgba(255,182,217,.2);color:var(--c-safe)}
+.task-type-tag.hidden_t,.task-type-tag.hidden{background:rgba(255,20,147,.2);color:var(--c-pink)}
+.task-diff-tag{font-size:var(--fs-xs);padding:1px 5px;border-radius:5px;font-weight:700}
+.task-diff-tag.d-d{background:rgba(200,200,200,.15);color:#ccc}
+.task-diff-tag.d-c{background:rgba(180,200,220,.15);color:#b4c8dc}
+.task-diff-tag.d-b{background:rgba(150,180,200,.2);color:#96b4c8}
+.task-diff-tag.d-a{background:rgba(255,182,193,.2);color:var(--c-warn)}
+.task-diff-tag.d-s{background:rgba(255,158,196,.25);color:var(--c-orange)}
+.task-diff-tag.d-ss{background:rgba(255,107,138,.25);color:var(--c-danger)}
+.task-status-tag{font-size:var(--fs-xs);padding:1px 6px;border-radius:6px}
+.task-status-tag.todo{background:rgba(200,200,200,.15);color:#ccc}
+.task-status-tag.doing{background:rgba(133,162,255,.15);color:#85a2ff}
+.task-status-tag.done{background:rgba(120,200,130,.2);color:#78c882}
+.task-status-tag.failed{background:rgba(255,107,138,.2);color:var(--c-danger)}
+.rule-card{background:var(--c-bg-btn);border:1px solid var(--c-border);border-radius:12px;padding:8px 10px;margin-bottom:6px}
+.rule-card.world{border-left:3px solid var(--c-blue)}
+.rule-card.school{border-left:3px solid var(--c-warn)}
+.rule-card h4{font-size:var(--fs-sm);color:var(--c-accent);margin-bottom:4px}
+.rule-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:var(--fs-xs);color:var(--c-dim)}
+.shop-quality{font-size:var(--fs-xs);padding:1px 5px;border-radius:5px;font-weight:700;margin-left:4px}
+.shop-quality.common{background:rgba(200,200,200,.15);color:#ccc}
+.shop-quality.fine{background:rgba(120,160,220,.2);color:#78a0dc}
+.shop-quality.rare{background:rgba(180,120,220,.2);color:#b478dc}
+.shop-quality.epic{background:rgba(255,158,96,.25);color:#ff9e60}
+.shop-quality.legend{background:rgba(255,200,80,.25);color:#ffc850}
+.shop-stock-tag{font-size:var(--fs-xs);padding:1px 5px;border-radius:5px}
+.shop-stock-tag.plenty{background:rgba(120,200,130,.2);color:#78c882}
+.shop-stock-tag.tight{background:rgba(255,200,80,.2);color:#ffc850}
+.shop-stock-tag.low{background:rgba(255,158,96,.2);color:#ff9e60}
+.shop-stock-tag.none{background:rgba(200,200,200,.15);color:#999}
+.env-card{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:12px;padding:8px 10px;margin-bottom:6px}
+.env-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-top:4px}
+.env-item{background:rgba(255,182,193,.1);border-radius:8px;padding:4px 8px;font-size:var(--fs-xs)}
+.env-item .k{color:var(--c-dim)}.env-item .v{color:var(--c-accent);font-weight:600}
+.radar-signal{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:10px;margin-bottom:4px}
+.radar-type{font-size:var(--fs-xs);padding:1px 6px;border-radius:6px;font-weight:700;white-space:nowrap}
+.radar-type.person{background:rgba(255,133,162,.2);color:var(--c-blue)}
+.radar-type.vehicle{background:rgba(180,120,220,.2);color:#b478dc}
+.radar-type.building{background:rgba(255,182,217,.2);color:var(--c-safe)}
+.radar-type.item{background:rgba(52,152,219,.2);color:#3498db}
+.radar-strength{font-size:var(--fs-xs);padding:1px 5px;border-radius:5px;font-weight:700}
+.radar-strength.strong{background:rgba(255,107,138,.2);color:var(--c-danger)}
+.radar-strength.medium{background:rgba(255,158,96,.2);color:var(--c-orange)}
+.radar-strength.weak{background:rgba(200,200,200,.15);color:#ccc}
+.radar-strength.very_weak{background:rgba(200,200,200,.1);color:#999}
+.radar-strength.trace{background:rgba(200,200,200,.08);color:#888}
+.radar-threat{font-size:var(--fs-xs);padding:1px 5px;border-radius:5px}
+.radar-threat.harmless{background:rgba(120,200,130,.2);color:#78c882}
+.radar-threat.suspicious{background:rgba(255,200,80,.2);color:#ffc850}
+.radar-threat.hostile{background:rgba(255,158,96,.2);color:var(--c-orange)}
+.radar-threat.extreme{background:rgba(255,107,138,.2);color:var(--c-danger)}
+.radar-threat.unknown{background:rgba(200,200,200,.15);color:#999}
+.asset-section{margin-bottom:8px}
+.asset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px}
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+@media(max-width:480px){.char-grid{grid-template-columns:repeat(2,1fr)}}
+.char-card{background:var(--c-bg-card);border:1px solid rgba(255,182,193,.35);border-radius:10px;padding:6px 8px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:2px;min-width:0;overflow:hidden}
+.char-card:hover{background:var(--c-bg-pill);transform:translateY(-2px);box-shadow:0 4px 12px rgba(255,105,180,.15)}
+.char-card.danger{border-color:rgba(231,76,60,.5);background:rgba(231,76,60,.05)}
+.char-card.warn{border-color:rgba(243,156,18,.5);background:rgba(243,156,18,.05)}
+.char-card.safe{border-color:rgba(46,204,113,.4)}
+.char-card.highlight{box-shadow:0 0 0 3px var(--c-accent),0 4px 16px rgba(255,105,180,.4);animation:charCardHighlight 1.5s ease}
+@keyframes charCardHighlight{0%,100%{box-shadow:0 0 0 3px var(--c-accent),0 4px 16px rgba(255,105,180,.4)}50%{box-shadow:0 0 0 4px var(--c-accent),0 6px 20px rgba(255,105,180,.6)}}
+.char-card-head{display:flex;align-items:center;gap:4px;min-width:0}
+.char-card-icon{font-size:14px;flex-shrink:0}
+.char-card-name{font-weight:700;color:var(--c-text);font-size:var(--fs-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.char-card-role{font-size:10px;color:var(--c-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.char-card-stats{display:flex;justify-content:space-between;font-size:10px;color:var(--c-dim);margin-top:2px}
+.char-card-stage{font-size:10px;font-weight:600;padding:1px 4px;border-radius:4px;background:rgba(255,105,180,.12);color:var(--c-accent);text-align:center;margin-top:2px}
+.char-card-cls{font-size:9px;color:var(--c-dim);text-align:center;border-top:1px solid rgba(255,182,193,.2);padding-top:2px;margin-top:2px}
+.asset-card{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:10px;padding:6px 8px}
+.asset-card .name{font-weight:600;font-size:var(--fs-sm);color:var(--c-accent)}
+.asset-card .qty{font-size:var(--fs-xs);color:var(--c-dim);float:right}
+.asset-card .meta{font-size:var(--fs-xs);color:var(--c-dim);margin-top:2px}
+.craft-layout{display:flex;gap:8px;flex-wrap:wrap}
+.craft-list{flex:1;min-width:200px}
+.craft-detail{flex:1;min-width:200px}
+.craft-recipe{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:10px;padding:6px 8px;margin-bottom:4px;cursor:pointer}
+.craft-recipe.active{border-color:var(--c-accent);background:rgba(255,105,180,.15)}
+.craft-search{width:100%;padding:6px 8px;background:var(--c-bg-btn);border:1px solid var(--c-border);border-radius:10px;color:var(--c-text);font-size:var(--fs-sm);margin-bottom:6px;font-family:var(--font)}
+.craft-search::placeholder{color:var(--c-dim)}
+.craft-mat{display:flex;justify-content:space-between;font-size:var(--fs-xs);padding:2px 0}
+.craft-mat .ok{color:#78c882}.craft-mat .no{color:var(--c-danger)}
+.craft-diff{background:rgba(255,182,193,.08);border-radius:8px;padding:6px;margin:4px 0}
+.craft-diff-row{display:flex;justify-content:space-between;font-size:var(--fs-xs);padding:1px 0}
+.craft-diff-row .before{color:var(--c-dim);text-decoration:line-through}
+.craft-diff-row .after{color:var(--c-safe);font-weight:600}
+.craft-flash{animation:craftFlash .6s ease}
+@keyframes craftFlash{0%{background:rgba(120,200,130,.3)}100%{background:transparent}}
+.vehicle-card,.residence-card{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:12px;padding:8px 10px;margin-bottom:6px}
+.vehicle-status{font-size:var(--fs-xs);padding:1px 6px;border-radius:6px;font-weight:700}
+.vehicle-status.parked{background:rgba(133,162,255,.15);color:#85a2ff}
+.vehicle-status.moving{background:rgba(120,200,130,.2);color:#78c882}
+.vehicle-status.repair{background:rgba(255,200,80,.2);color:#ffc850}
+.vehicle-status.damaged{background:rgba(255,107,138,.2);color:var(--c-danger)}
+.sub-card{background:rgba(255,182,193,.08);border:1px solid rgba(255,182,193,.2);border-radius:8px;padding:5px 8px;margin:4px 0;font-size:var(--fs-xs)}
+@media(max-width:480px){.g{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:repeat(2,1fr)}.hd-t{font-size:var(--fs-sm)}.hd-l{width:100%}.sb-nav button{padding:6px 2px;font-size:10px}.skill-card{padding:6px 8px}}
+@media(max-width:360px){.g{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.sb-nav button{padding:4px 1px;font-size:9px}}
+/* fjb-* 11 类美化标记样式（状态/技能/阶段/结局/物品/购买/任务接取/任务完成/事件/关系/女性阶段）
+   已统一迁移至 bubble.css（含更丰富的关键帧动画与 data-attribute 变色规则）。
+   本文件通过顶部 @import url('bubble.css') 加载，不再保留内联副本以避免维护分歧。 */
+/* ===== 女性详情模态窗扩展样式（对齐 user 技能卡深度） ===== */
+.heroine-skill-card{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:12px;padding:8px 10px;margin-bottom:8px}
+.heroine-skill-card .skill-desc{font-size:var(--fs-xs);color:var(--c-dim);margin:2px 0 4px 0;line-height:1.4;padding:0 2px}
+.heroine-radar{display:flex;justify-content:center;align-items:center;margin:6px 0;padding:4px 0}
+.heroine-radar .radar-svg{max-width:220px}
+.heroine-holder-block{margin:6px 0;border-radius:14px;padding:6px 8px;transition:background .2s}
+.heroine-holder-highlight{border:2px solid var(--c-danger);background:rgba(255,107,138,.08);box-shadow:0 0 8px rgba(255,107,138,.2)}
+.heroine-relation-item{background:var(--c-bg-skill);border:1px solid var(--c-border);border-radius:10px;padding:6px 8px;margin-bottom:4px}
+.heroine-persona-faces{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.heroine-persona-face{font-size:var(--fs-xs);padding:3px 10px;border-radius:10px;font-weight:700;border:1px solid var(--c-border);display:inline-block}
+.heroine-power-tag{font-size:var(--fs-sm);padding:4px 12px;border-radius:10px;font-weight:700;background:var(--c-bg-pill);border:1px solid var(--c-border);color:var(--c-accent);display:inline-block}
+</style>
+</head>
+<body>
+<div id="sb-root">
+  <div class="loading" id="sb-loading">✦ 不要玩弄我的鸡吧 状态栏加载中 …</div>
+  <div class="sb" id="sb-body" style="display:none">
+    <div class="sb-pages">
+      <div class="sb-page" id="page-status" data-page="status"></div>
+      <div class="sb-page" id="page-env" data-page="env" style="display:none"></div>
+      <div class="sb-page" id="page-characters" data-page="characters" style="display:none"></div>
+      <div class="sb-page" id="page-skills" data-page="skills" style="display:none"></div>
+      <div class="sb-page" id="page-radar" data-page="radar" style="display:none"></div>
+      <div class="sb-page" id="page-events" data-page="events" style="display:none"></div>
+      <div class="sb-page" id="page-tasks" data-page="tasks" style="display:none"></div>
+      <div class="sb-page" id="page-rules" data-page="rules" style="display:none"></div>
+      <div class="sb-page" id="page-assets" data-page="assets" style="display:none"></div>
+      <div class="sb-page" id="page-crafting" data-page="crafting" style="display:none"></div>
+      <div class="sb-page" id="page-vehicle" data-page="vehicle" style="display:none"></div>
+      <div class="sb-page" id="page-residence" data-page="residence" style="display:none"></div>
+      <div class="sb-page" id="page-shop" data-page="shop" style="display:none"></div>
+      <div class="sb-page" id="page-endings" data-page="endings" style="display:none"></div>
+      <div class="sb-page" id="page-schedule" data-page="schedule" style="display:none"></div>
+      <div class="sb-page" id="page-settings" data-page="settings" style="display:none"></div>
+    </div>
+    <div class="sb-nav">
+      <button data-page="status" class="active">📊状态</button>
+      <button data-page="env">🌍环境</button>
+      <button data-page="characters">👥角色</button>
+      <button data-page="skills">🏅技能</button>
+      <button data-page="radar">📡雷达</button>
+      <button data-page="events">📅事件</button>
+      <button data-page="tasks">📜任务</button>
+      <button data-page="rules">📐规则</button>
+      <button data-page="assets">🎒资产</button>
+      <button data-page="crafting">🔨制造</button>
+      <button data-page="vehicle">🚗载具</button>
+      <button data-page="residence">🏠居所</button>
+      <button data-page="shop">🛒商店</button>
+      <button data-page="schedule">📚课程</button>
+      <button data-page="endings">🎬结局</button>
+      <button data-page="settings">⚙设置</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+<script>
+// 注：原 {{format_message_variable::stat_data}} 宏在 iframe srcdoc 中不会被 ST 替换，已移除
+// 数据获取统一走 postMessage 桥接（fjb-mvu-stat-request → fjb-mvu-stat-data）
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostValue(name){if(window[name]!==undefined)return window[name];for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}return undefined}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+function parseEmbeddedStat(){var el=document.getElementById('mvu-stat-embed');if(!el)return null;var raw=(el.textContent||el.innerText||'').trim();if(!raw||raw.indexOf('format_message_variable')>=0)return null;try{var parsed=JSON.parse(raw);if(parsed&&typeof parsed==='object'){if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;return parsed}}catch(e){}return null}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+// 通用：record 对象转数组（兼容旧 array 数据；record 的 key 存入元素 _key 字段供 id 回退使用）
+function recToArray(x){if(!x)return [];if(Array.isArray(x))return x;if(typeof x==='object'){var arr=[];for(var k in x){if(!Object.prototype.hasOwnProperty.call(x,k))continue;var v=x[k];if(v&&typeof v==='object'&&!Array.isArray(v)){if(!v._key)v._key=k;arr.push(v)}else{arr.push(v)}}return arr}return []}
+// 通用：record 对象的 key 列表（用于 某人清醒/某人崩坏 等key即角色名的场景）
+function recKeys(x){if(!x||typeof x!=='object'||Array.isArray(x))return [];return Object.keys(x)}
+function resolveMessageIdFromDom(){try{var frame=window.frameElement;if(frame&&frame.closest){var mes=frame.closest('.mes');if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(id>=0)return id}}var el=frame;while(el){if(el.classList&&el.classList.contains('mes')){var id2=parseInt(el.getAttribute('mesid'),10);if(id2>=0)return id2}el=el.parentElement}}catch(e){}return -1}
+function resolveMessageIdFromIframeName(){var fn=pickHostValue('getIframeName');if(typeof fn==='function'){try{var name=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}}return -1}
+function resolveMessageId(){var fromDom=resolveMessageIdFromDom();if(fromDom>=0)return fromDom;var fromName=resolveMessageIdFromIframeName();if(fromName>=0)return fromName;if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;var fn=pickHostValue('getCurrentMessageId');if(typeof fn==='function'){try{return fn()}catch(e){}}return -1}
+function getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;return hasData(stat)?stat:null}
+var cachedStatFromBridge=null;
+function readStatDataSync(){if(cachedStatFromBridge&&hasData(cachedStatFromBridge))return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);var embedded=parseEmbeddedStat();if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);return deepMergeStat(DEFAULT_STAT,{})}
+// 桥接获取：优先从控制中心发布的 FjbHudBridge 取数据（与控制中心桥接同构）
+function getHudBridge(){try{var B=window.FjbHudBridge||(window.parent&&window.parent.__FJB_HUD_BRIDGE)||null;return B}catch(e){return null}}
+async function readStatFromBridge(){var B=getHudBridge();if(!B)return null;try{if(typeof B.getVariables==='function'){var v=B.getVariables();if(v&&v.stat_data&&hasData(v.stat_data))return deepMergeStat(DEFAULT_STAT,v.stat_data)}}catch(e){}try{if(typeof B.waitForMvu==='function'){var mvu=await B.waitForMvu(3000);if(mvu&&typeof mvu.getMvuData==='function'){var mid=typeof B.getCurrentMessageId==='function'?B.getCurrentMessageId():-1;if(mid>=0){var mv=await mvu.getMvuData({type:'message',message_id:mid});var stat=pickStatData(mv);if(stat&&hasData(stat))return deepMergeStat(DEFAULT_STAT,stat)}}}}catch(e){}return null}
+async function readStatDataAsync(){// 优先桥接
+var bridgeStat=await readStatFromBridge();if(bridgeStat&&hasData(bridgeStat))return bridgeStat;
+// 方案1: 直接用 latest 从 MVU/getVariables 读取
+try{var Mvu=getMvu();var gv=pickHostValue('getVariables');if(Mvu&&typeof Mvu.getMvuData==='function'){var v=await Mvu.getMvuData({type:'message',message_id:'latest'});var stat=pickStatData(v);if(stat&&hasData(stat))return deepMergeStat(DEFAULT_STAT,stat)}if(gv){var v2=await gv({type:'message',message_id:'latest'});var stat2=pickStatData(v2);if(stat2&&hasData(stat2))return deepMergeStat(DEFAULT_STAT,stat2)}}catch(e){}
+// 方案2: 从最新消息往前找
+try{var fnGetLast=pickHostValue('getLastMessageId');var fnGetMsg=pickHostValue('getChatMessages');if(typeof fnGetLast==='function'&&typeof fnGetMsg==='function'){var maxId=fnGetLast();var Mvu2=getMvu();var gv2=pickHostValue('getVariables');for(var i=0;i<15;i++){var cid=maxId-i;if(cid<0)break;var msg=null;try{msg=fnGetMsg(cid)}catch(e){continue}if(Array.isArray(msg))msg=msg[0];if(!msg||msg.role!=='assistant')continue;var mid=msg.message_id;if(typeof mid!=='number'||mid<0)continue;var v=null;try{if(Mvu2&&typeof Mvu2.getMvuData==='function'){v=await Mvu2.getMvuData({type:'message',message_id:mid})}else if(gv2){v=await gv2({type:'message',message_id:mid})}}catch(e){}var stat=pickStatData(v);if(stat&&hasData(stat))return deepMergeStat(DEFAULT_STAT,stat)}}}catch(e){}
+var embedded=parseEmbeddedStat();if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);return deepMergeStat(DEFAULT_STAT,{})}
+function requestStatFromBridge(){var mesId=resolveMessageId();var payload={type:'fjb-mvu-stat-request',messageId:mesId};var origin=window.location.origin||'*';for(var i=0;i<TH_HOSTS.length;i++){try{TH_HOSTS[i].postMessage(payload,origin)}catch(e){}}}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function barClass4(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'y';if(v>=30)return'o';return'r'}
+function barClass5(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'b';if(v>=40)return'y';if(v>=20)return'o';return'r'}
+// ===== 每轮变更高亮系统 =====
+// 保存上一轮的 stat_data 哈希快照，对比字段变化时为 kv 添加 .changed 类
+var __lastSnapshot=null;var __currentSnapshot=null;var __changedKeys={};
+function __hashVal(v){if(v==null)return'null';if(typeof v==='object'){var keys=Object.keys(v).sort();var s='';for(var i=0;i<keys.length;i++)s+=keys[i]+':'+__hashVal(v[keys[i]])+';';return s}return String(v)}
+function __diffPath(prev,curr,prefix){prefix=prefix||'';if(prev==null&&curr==null)return;if(typeof prev!=='object'||typeof curr!=='object'||prev==null||curr==null){if(__hashVal(prev)!==__hashVal(curr)){__changedKeys[prefix]=true}return}var keys=Object.keys(prev).concat(Object.keys(curr).filter(function(k){return prev[k]===undefined}));var seen={};for(var i=0;i<keys.length;i++){var k=keys[i];if(seen[k])continue;seen[k]=true;__diffPath(prev[k],curr[k],prefix?prefix+'.'+k:k)}}
+function startDiffTracking(newStat){__changedKeys={};if(__lastSnapshot!=null){__diffPath(__lastSnapshot,newStat,'')}__currentSnapshot=newStat}
+function commitSnapshot(){__lastSnapshot=__currentSnapshot;__currentSnapshot=null;setTimeout(function(){__changedKeys={}},3500)}
+function hasChanged(key){return !!__changedKeys[key]}
+function kv(k,v,cls,ck){var ch=(ck&&hasChanged(ck))?' changed':'';return '<div class="kv'+ch+'"><span class="k">'+k+'</span><span class="v'+(cls?' '+cls:'')+'">'+esc(v)+'</span></div>'}
+function bar(label,val,max,cls,ck){max=max||100;var v=num(val,0);cls=cls||barClass4;var ch=(ck&&hasChanged(ck))?' changed':'';return '<div class="bar'+ch+'"><div class="bar-h"><span>'+label+'</span><span class="bv">'+v+'/'+max+'</span></div><div class="bar-t"><div class="bar-f '+cls(v)+'" style="width:'+pct(v,max)+'%"></div></div></div>'}
+
+var DEFAULT_STAT={基础信息:{姓名:"玩家",性别:"男",年龄:18,学校:"私立圣德女子学院",班级:"高三2班"},时间:{天数:1,小时:8,分钟:0,时段:"晨读",星期:"周一",日期:"02-24 周一",学期:"高三下",学期天数:1,考试期:"无",距高考天数:103},状态:{精力:80,精力上限:80,理智:80,健康:75,压力:10,怀疑值:0,堕落值:0,金钱:500,难度:"困难",体力:80,体力上限:80,每日购买:{营养餐:0,功能饮料:0,维生素片:0,安眠药:0,高级补剂:0,特制药膳:0}},技能:{冥想:{等级:5,经验:0,今日已用:0,今日上限:50},锻炼:{等级:3,经验:0,今日已用:0,今日上限:40},洞察:{等级:3,经验:0,今日已用:0,今日上限:40},伪装:{等级:3,经验:0,今日已用:0,今日上限:30},恢复:{等级:5,经验:0,今日已用:0,今日上限:30},意志:{等级:3,经验:0,今日已用:0,今日上限:30}},使用阶段:{当前阶段:1,总使用次数:0,今日使用:0,今日上限:5,最后使用日:0,最后使用时:-99,阶段进度:0,经验:0,今日经验:0,今日经验上限:30},学业:{分数:75,阶段:3,今日学习次数:0,考试倒计时:7,老师关注度:0},症状:{疲劳描述:"暂无异常",敏感描述:"暂无异常",外观描述:"气色正常",理智描述:"情绪稳定"},环境:{天气:"阴冷",温度:"8°C",位置:"高三2班教室",湿度:"65%",季节:"早春",天气描述:"阴沉寒冷的早晨",环境描述:"教室里弥漫着晨读的紧张气氛"},检定建议:[],任务:[],规则变化:{世界变化:[],学校变化:[]},雷达:{信号:[],最后扫描日:0,最后扫描时:-99},物品栏:[],仓库:[],已放置物品:[],制造配方:[],载具:[],居所:[],商店商品:[],隐藏层:{真相:"",持有者ID:"林婉清",持有者获取方式:"淘宝购买",持有者获取日:1,持有者历史:[],传播链:[],确认使用者:[],最后持有者:null,最后榨取量:0,射精被阻止:false,清醒射精:false,使用模式:"内置",使用节奏:"正常",当前场景:"宿舍夜间",活跃使用人数:0,上一日:0,觉醒进度:0,发现进度:{四阶段成功:0,五阶段成功:0,总调查次数:0,持有者暴露事件:0,孩子相似事件:0},持有者包裹状态:"已送达待拆",持有者首次使用日:1,近期事件:[],难度已锁定:false},女性角色:{},关系图谱:{},事件:[],结局:{健康:false,平庸:false,真相揭示:false,坠落:false,崩坏:false,黑市掌控:false,同归于尽:false,未解之谜:false,某人清醒:[],某人崩坏:[]},陌生模板:{},配置:{经验阈值:[0,30,100,200,350],学业阈值:[0,40,60,75,90,100],天数阈值:[0,30,60,95,102],难度倍率:{玩家经验:[1.0,0.7,0.5],玩家今日上限:[1.3,1.0,0.7],玩家精力消耗:[0.8,1.0,1.3],玩家理智消耗:[0.8,1.0,1.3],玩家怀疑值:[0.7,1.0,1.3],玩家金钱获取:[1.3,1.0,0.7],玩家压力增长:[0.7,1.0,1.3],玩家健康恢复:[1.3,1.0,0.7],玩家技能经验:[1.2,1.0,0.8],初始精力:[100,80,60],初始理智:[100,80,60],初始精力上限:[100,80,60],初始体力上限:[100,80,60],初始金钱:[800,500,300],初始健康:[90,75,60],初始压力:[5,10,20],女性使用频率:[0.7,1.0,1.3],女性传播:[0.7,1.0,1.3],女性技能成长:[0.7,1.0,1.3],女性好感增长:[0.7,1.0,1.3],女性信任增长:[0.7,1.0,1.3],女性阶段升级:[0.7,1.0,1.3],女性初始能力上限:[60,80,100],女性初始好感:[30,40,50],女性初始信任:[50,60,70],女性初始理性:[90,80,70],女性初始执念:[10,20,30]},LCG常数:{天数乘数:7,小时乘数:13,ID乘数:7919,阶段乘数:11}},UID计数器:{女性:0,事件:0}};
+
+function deepMergeStat(dst,src){if(!src||typeof src!=='object')return dst;var out={};try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}for(var k in src){if(!Object.prototype.hasOwnProperty.call(src,k))continue;var sv=src[k],dv=out[k];if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){out[k]=deepMergeStat(dv,sv)}else{out[k]=sv}}return out}
+function mvuObj(key,sub){var o=DEFAULT_STAT;try{o=State.mvu||DEFAULT_STAT}catch(e){}if(!o||typeof o!=='object')o=DEFAULT_STAT;var v=o[key];if(v&&typeof v==='object'&&sub!==undefined)v=v[sub];return v||{}}
+var State={loading:true,refreshing:false,mvu:{},expanded:{},charClassFilter:'全部',charSearch:'',scheduleWeekDay:'周一',charHighlight:''};
+var currentPage='status';
+var currentTheme='pink';
+var currentEventFilter='all';
+var currentRadarFilter='all';
+var craftSearchText='';
+var THEMES={pink:{'--c-text':'#4a0e2e','--c-dim':'rgba(74,14,46,.68)','--c-accent':'#d63384','--c-pink':'#c2185b','--c-danger':'#d63558','--c-warn':'#e0607f','--c-orange':'#db4f73','--c-safe':'#c4476e','--c-blue':'#b8327a','--c-silver':'#9e3a5e','--c-bg-main':'rgba(255,240,245,.92)','--c-bg-grad1':'rgba(255,240,245,.92)','--c-bg-grad2':'rgba(255,228,236,.88)','--c-bg-card':'rgba(255,255,255,.45)','--c-bg-pill':'rgba(255,192,203,.25)','--c-bg-pill-border':'rgba(255,182,193,.4)','--c-bg-btn':'rgba(255,192,203,.12)','--c-bg-btn-hover':'rgba(255,192,203,.2)','--c-bg-btn-active':'rgba(255,105,180,.25)','--c-bg-overlay':'rgba(255,182,193,.55)','--c-bg-modal-grad1':'#fff0f5','--c-bg-modal-grad2':'#ffe4ec','--c-bg-skill':'rgba(255,192,203,.1)','--c-bg-event':'rgba(255,192,203,.1)','--c-bg-event-type':'rgba(255,192,203,.15)','--c-bg-task':'rgba(255,192,203,.1)','--c-bg-bar':'rgba(255,192,203,.18)','--c-bg-bar-hover':'rgba(255,105,180,.2)','--c-shadow':'rgba(255,105,180,.18)','--c-border':'rgba(255,182,193,.3)'},purple:{'--c-text':'#fff0f5','--c-dim':'rgba(255,240,245,.75)','--c-accent':'#9b59b6','--c-pink':'#8e44ad','--c-danger':'#e74c3c','--c-warn':'#f1c40f','--c-orange':'#e67e22','--c-safe':'#2ecc71','--c-blue':'#3498db','--c-silver':'#bdc3c7','--c-bg-main':'rgba(45,27,61,.92)','--c-bg-grad1':'rgba(45,27,61,.92)','--c-bg-grad2':'rgba(26,15,46,.88)','--c-bg-card':'rgba(255,255,255,.08)','--c-bg-pill':'rgba(155,89,182,.25)','--c-bg-pill-border':'rgba(155,89,182,.4)','--c-bg-btn':'rgba(155,89,182,.12)','--c-bg-btn-hover':'rgba(155,89,182,.2)','--c-bg-btn-active':'rgba(155,89,182,.35)','--c-bg-overlay':'rgba(26,15,46,.65)','--c-bg-modal-grad1':'#2d1b3d','--c-bg-modal-grad2':'#1a0f2e','--c-bg-skill':'rgba(155,89,182,.1)','--c-bg-event':'rgba(155,89,182,.1)','--c-bg-event-type':'rgba(155,89,182,.15)','--c-bg-task':'rgba(155,89,182,.1)','--c-bg-bar':'rgba(155,89,182,.18)','--c-bg-bar-hover':'rgba(155,89,182,.25)','--c-shadow':'rgba(155,89,182,.25)','--c-border':'rgba(155,89,182,.3)'},dark:{'--c-text':'#fff0f5','--c-dim':'rgba(255,240,245,.75)','--c-accent':'#e74c3c','--c-pink':'#c0392b','--c-danger':'#e74c3c','--c-warn':'#f39c12','--c-orange':'#e67e22','--c-safe':'#2ecc71','--c-blue':'#3498db','--c-silver':'#95a5a6','--c-bg-main':'rgba(26,26,46,.92)','--c-bg-grad1':'rgba(26,26,46,.92)','--c-bg-grad2':'rgba(22,33,62,.88)','--c-bg-card':'rgba(255,255,255,.06)','--c-bg-pill':'rgba(231,76,60,.25)','--c-bg-pill-border':'rgba(231,76,60,.4)','--c-bg-btn':'rgba(231,76,60,.12)','--c-bg-btn-hover':'rgba(231,76,60,.2)','--c-bg-btn-active':'rgba(231,76,60,.35)','--c-bg-overlay':'rgba(0,0,0,.65)','--c-bg-modal-grad1':'#1a1a2e','--c-bg-modal-grad2':'#16213e','--c-bg-skill':'rgba(231,76,60,.1)','--c-bg-event':'rgba(231,76,60,.1)','--c-bg-event-type':'rgba(231,76,60,.15)','--c-bg-task':'rgba(231,76,60,.1)','--c-bg-bar':'rgba(231,76,60,.18)','--c-bg-bar-hover':'rgba(231,76,60,.25)','--c-shadow':'rgba(231,76,60,.25)','--c-border':'rgba(231,76,60,.3)'}};
+function cardTitle(cls,icon,text,key){var open=State.expanded[key]?' open':'';return '<details class="block"'+open+' data-key="'+key+'"><summary class="card-t '+cls+'">'+icon+' '+text+'<span class="caret">▶</span></summary><div class="block-body">'}
+
+function renderHeader(){var t=mvuObj('时间'),s=mvuObj('状态'),us=mvuObj('使用阶段'),ac=mvuObj('学业'),sy=mvuObj('症状'),cfg=mvuObj('配置');var diff=s.难度||'困难';var diffCls=diff==='地狱'?'danger':(diff==='困难'?'warn':'safe');var diffIdx=diff==='普通'?0:(diff==='地狱'?2:1);var dm=cfg.难度倍率||{};var sus=s.怀疑值||0;var cor=s.堕落值||0;var susCls=sus>=150?'danger':(sus>=70?'warn':'silver');var corCls=cor>=120?'danger':(cor>=60?'warn':'silver');var _slot=t.时段||'';if(!_slot){var _h=Number(t.小时)||8;if(_h>=5&&_h<7)_slot='早晨';else if(_h>=7&&_h<8)_slot='晨读';else if(_h>=8&&_h<12)_slot='上午';else if(_h>=12&&_h<14)_slot='中午';else if(_h>=14&&_h<17)_slot='下午';else if(_h>=17&&_h<19)_slot='傍晚';else if(_h>=19&&_h<22)_slot='晚自习';else if(_h>=22||_h<2)_slot='夜里';else _slot='半夜'}// 时间显示用 HH:MM 格式（分钟字段缺失时补 0）
+var _hh=Number(t.小时)||8;var _mm=Number(t.分钟)||0;var _hhStr=(_hh<10?'0'+_hh:''+_hh);var _mmStr=(_mm<10?'0'+_mm:''+_mm);var peECost=(dm.玩家精力消耗||[0.8,1.0,1.3])[diffIdx];var term=t.学期||'高三下';// 精力/体力上限 fallback：优先读 stat_data 值，其次按难度索引读配置层初始值
+var _emFallback=(dm.初始精力上限||[100,80,60])[diffIdx]||80;var _em=Number(s.精力上限)||_emFallback;var _staFallback=(dm.初始体力上限||[100,80,60])[diffIdx]||80;var _staM=Number(s.体力上限)||_staFallback;return '<div class="hd"><div class="hd-l"><span class="hd-t">✦ 不要玩弄我的鸡吧</span><span class="pill'+(hasChanged('时间.天数')?' changed':'')+'">第'+esc(t.天数||1)+'天</span><span class="pill'+(hasChanged('时间.学期')?' changed':'')+'">'+esc(term)+'</span><span class="pill'+(hasChanged('时间.日期')?' changed':'')+'">'+esc(t.日期||'')+' '+esc(t.星期||'')+'</span><span class="pill safe'+(hasChanged('时间.小时')||hasChanged('时间.分钟')?' changed':'')+'">'+esc(_slot)+' '+_hhStr+':'+_mmStr+'</span><span class="pill '+diffCls+'">'+esc(diff)+' ⚙×'+peECost+'</span><span class="pill '+susCls+(hasChanged('状态.怀疑值')?' changed':'')+'">🔍 '+esc(sus)+'/200</span><span class="pill '+corCls+(hasChanged('状态.堕落值')?' changed':'')+'">🌑 '+esc(cor)+'/200</span><span class="pill warn'+(hasChanged('状态.金钱')?' changed':'')+'">💰 '+esc(s.金钱||0)+'元</span><span class="pill warn'+(hasChanged('时间.距高考天数')?' changed':'')+'">📚 距高考 '+esc(t.距高考天数||103)+'天</span><span class="pill '+(ac.考试倒计时<=3?'danger':(ac.考试倒计时<=7?'warn':'safe'))+(hasChanged('学业.考试倒计时')?' changed':'')+'">📝 下次考试 '+esc(ac.考试倒计时||7)+'天</span><span class="hd-sub'+(hasChanged('学业.分数')||hasChanged('使用阶段.当前阶段')?' changed':'')+'">学业 '+esc(ac.分数||75)+' ('+esc(ac.阶段||3)+'/5) · 使用阶段 '+esc(us.当前阶段||1)+'/5 · 难度系数索引='+diffIdx+'</span></div><button class="rfr'+(State.refreshing?' spinning':'')+'" data-act="refresh">✦</button></div>'+bar('精力 '+esc(s.精力||0)+'/'+esc(_em),s.精力||0,_em,barClass4,'状态.精力')+bar('理智',s.理智||0,100,barClass5,'状态.理智')+bar('疑心',s.怀疑值||0,200,barClass4,'状态.怀疑值')+bar('沉沦',s.堕落值||0,200,barClass4,'状态.堕落值')+bar('体力 '+esc(s.体力||0)+'/'+esc(_staM)+(s.体力<=10?' ⚠濒危':(s.体力<=20?' ⚠疲劳':'')),s.体力||0,_staM,barClass4,'状态.体力')+'<div class="g" style="margin-top:4px">'+kv('健康',s.健康||0,'',  '状态.健康')+(s.压力>50?'<span class="v warn'+(hasChanged('状态.压力')?' changed':'')+'">压力:'+esc(s.压力)+'</span>':'<span'+(hasChanged('状态.压力')?' class="changed"':'')+'>压力:'+esc(s.压力)+'</span>')+kv('距高考',(t.距高考天数||103)+'天','warn','时间.距高考天数')+kv('下次考试',(ac.考试倒计时||7)+'天',ac.考试倒计时<=3?'danger':(ac.考试倒计时<=7?'warn':''),'学业.考试倒计时')+'</div>'+'<div style="font-size:var(--fs-xs);color:var(--c-dim);margin-top:4px">'+esc(sy.疲劳描述||'')+' · '+esc(sy.理智描述||'')+'</div>'}
+
+function renderSymptoms(){var sy=mvuObj('症状');return cardTitle('symptom','📋','当前症状','symptom')+'<div class="g2">'+kv('身体感受',sy.疲劳描述||'暂无')+kv('异常感知',sy.敏感描述||'暂无')+kv('外人看来',sy.外观描述||'正常')+kv('心理状态',sy.理智描述||'稳定')+'</div></div></details>'}
+
+function renderCheckSuggestions(){var cs=recToArray(mvuObj('检定建议'));if(cs.length===0)return '';var body='';cs.forEach(function(item,idx){if(!item||!item.显示文本)return;body+='<div class="heroine-item" style="cursor:default"><div class="heroine-row"><span class="heroine-name" style="color:var(--c-silver)">'+(idx+1)+'. '+esc(item.显示文本)+'</span></div>';if(item.骰子命令){body+='<div class="heroine-stats"><span>指令: '+esc(item.骰子命令)+'</span></div>'}body+='</div>'});if(!body)return '';return cardTitle('event','🎲','检定建议 ('+cs.length+')','checkSuggestions')+body+'</div></details>'}
+
+function skillTier(lv){lv=parseInt(lv)||1;if(lv>=81)return '大师';if(lv>=61)return '高级';if(lv>=41)return '中级';if(lv>=21)return '初级';return '入门'}
+function skillTierCls(lv){lv=parseInt(lv)||1;if(lv>=81)return 'tg';if(lv>=61)return 'tb';if(lv>=41)return 'ty';if(lv>=21)return 'to';return 'tr'}
+function skillBarCls(lv){lv=parseInt(lv)||1;if(lv>=81)return 'g';if(lv>=61)return 'b';if(lv>=41)return 'y';if(lv>=21)return 'o';return 'r'}
+function nextTierInfo(lv){lv=parseInt(lv)||1;if(lv>=81)return '已满级';if(lv>=61)return '→ 大师 (Lv.81+)';if(lv>=41)return '→ 高级 (Lv.61+)';if(lv>=21)return '→ 中级 (Lv.41+)';return '→ 初级 (Lv.21+)'}
+
+function renderPageStatus(){return renderHeader()+renderRadarSVG()+renderSymptoms()+renderCheckSuggestions()}
+
+function renderPageCharacters(){var fu=mvuObj('女性角色');var keys=Object.keys(fu).filter(function(k){return k&&fu[k]&&fu[k].基础&&fu[k].基础.姓名});
+var body='';
+// 搜索框 + 班级筛选
+body+='<div class="char-toolbar" style="margin-bottom:8px">';
+body+='<input id="char-search" class="char-search" placeholder="搜索姓名/UID/班级..." value="'+esc(State.charSearch||'')+'" style="width:100%;padding:6px 10px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-bg-card);color:var(--c-text);font-size:var(--fs-sm)">';
+body+='</div>';
+// 班级分组提取
+var classGroups={};
+keys.forEach(function(k){var h=fu[k];var b=h.基础||{};var cls=b.班级名||b.班级||'';
+// 教职工判断优先（教职工可能没有班级，但有教授科目）
+var isStaff=!!(b.角色==='老师'||b.角色==='教师'||b.身份==='老师'||b.身份==='教师'||b.身份==='教职工'||b.教授科目||b.是否班主任||b.工号);
+if(isStaff){cls='教职工'}
+else if(!cls){cls='其他'}
+// 标准化班级名
+else if(cls.indexOf('高三')>=0){
+  if(cls.indexOf('1班')>=0)cls='高三1班';
+  else if(cls.indexOf('2班')>=0)cls='高三2班';
+  else if(cls.indexOf('3班')>=0)cls='高三3班';
+  else cls='高三其他';
+}
+else if(cls.indexOf('高二')>=0){cls='高二'}
+else if(cls.indexOf('高一')>=0){cls='高一'}
+else if(b.住宿&&b.住宿.indexOf('不住校')>=0){cls='不住校'}
+else{cls='其他'}
+if(!classGroups[cls])classGroups[cls]=[];
+classGroups[cls].push(k)});
+// 班级顺序
+var classOrder=['高三2班','高三1班','高三3班','高二','高一','教职工','不住校','其他'];
+var activeClass=State.charClassFilter||'全部';
+// 筛选条
+body+='<div class="event-filter" style="margin-bottom:8px;overflow-x:auto;white-space:nowrap">';
+body+='<button class="filter-btn'+(activeClass==='全部'?' active':'')+'" data-act="char-filter-class" data-val="全部">全部 '+keys.length+'</button>';
+classOrder.forEach(function(c){if(classGroups[c]){body+='<button class="filter-btn'+(activeClass===c?' active':'')+'" data-act="char-filter-class" data-val="'+esc(c)+'">'+esc(c)+' '+classGroups[c].length+'</button>'}});
+body+='</div>';
+if(keys.length===0){body+='<div class="empty-state">暂无女性数据</div>';return body}
+// 按筛选过滤
+var searchQ=(State.charSearch||'').trim().toLowerCase();
+var filteredKeys=[];
+classOrder.forEach(function(c){
+  if(!classGroups[c])return;
+  if(activeClass!=='全部'&&activeClass!==c)return;
+  classGroups[c].forEach(function(k){
+    var h=fu[k];var b=h.基础||{};
+    var name=(b.姓名||'').toLowerCase();var cls=b.班级名||b.班级||'';
+    var uid=(k||'').toLowerCase();
+    if(searchQ){
+      if(name.indexOf(searchQ)<0&&uid.indexOf(searchQ)<0&&cls.toLowerCase().indexOf(searchQ)<0)return;
+    }
+    filteredKeys.push({key:k,group:c});
+  });
+});
+// 渲染：按班级分组九宫格
+if(filteredKeys.length===0){body+='<div class="empty-state">无匹配角色</div>';return body}
+if(activeClass==='全部'){
+  // 全部模式：按班级分组展示
+  classOrder.forEach(function(c){
+    if(!classGroups[c])return;
+    var arr=filteredKeys.filter(function(x){return x.group===c});
+    if(arr.length===0)return;
+    body+='<div class="sect-title">'+esc(c)+' ('+arr.length+')</div>';
+    body+='<div class="char-grid">';
+    arr.forEach(function(item){
+      var h=fu[item.key];body+=renderCharCard(h,item.key);
+    });
+    body+='</div>';
+  });
+}else{
+  // 单组模式：仅展示选中班级
+  body+='<div class="char-grid">';
+  filteredKeys.forEach(function(item){
+    var h=fu[item.key];body+=renderCharCard(h,item.key);
+  });
+  body+='</div>';
+}
+return body}
+function renderCharCard(h,key){var b=h.基础||{};var name=b.姓名||'--';var role=b.角色||b.身份||'';var cls=b.班级名||b.班级||'';var fav=h.与玩家关系?h.与玩家关系.好感度||0:0;var stage=h.阶段轨迹?h.阶段轨迹.当前阶段||1:1;var ms=h.多维状态||{};var cs=ms.综合阶段||'A_理性期';var sLabel=stageLabel(cs);var san=ms.理智!==undefined?ms.理智:100;
+var isTeacher=(role==='老师'||role==='教师'||b.身份==='老师'||b.身份==='教师'||b.身份==='教职工'||b.教授科目||b.是否班主任||b.工号);
+var cls1=ms.理性!==undefined?(ms.理性<50?'danger':(ms.理性<70?'warn':'safe')):'';
+var charIcon=isTeacher?'👩‍🏫':'👧';
+return '<div class="char-card '+cls1+'" data-act="heroine-detail" data-key="'+esc(key)+'" id="char-card-'+esc(key)+'"><div class="char-card-head"><span class="char-card-icon">'+charIcon+'</span><span class="char-card-name">'+esc(name)+'</span></div>'+(role?'<div class="char-card-role">'+esc(role)+'</div>':'')+'<div class="char-card-stats"><span>阶段 '+stage+'/5</span><span>好感 '+fav+'</span></div><div class="char-card-stage '+(san<50?'warn':'')+'">'+esc(sLabel)+'</div>'+((cls&&(State.charClassFilter||'全部')==='全部')?'':'<div class="char-card-cls">'+esc(cls)+'</div>')+'</div>'}
+
+function renderPageSkills(){var sk=mvuObj('技能')||{};var defDescs={冥想:'恢复理智，缓解精神压力',锻炼:'提升体力，增强体魄',洞察:'观察细节，发现隐藏信息',伪装:'隐藏真实想法与状态',恢复:'快速恢复精力与体力',意志:'抵抗精神侵蚀与诱惑'};var keys=Object.keys(sk);if(keys.length===0)keys=Object.keys(defDescs);var seen={};var body='';keys.forEach(function(k){if(seen[k])return;seen[k]=true;var s=sk[k]||{};var lv=parseInt(s.等级)||1;var ex=parseInt(s.经验)||0;var dm=parseInt(s.今日上限)||15;var du=parseInt(s.今日已用)||0;var expMax=100*(lv+1);var tier=skillTier(lv);var tierCls=skillTierCls(lv);var barCls=skillBarCls(lv);var nextT=nextTierInfo(lv);var desc=defDescs[k]||'自定义技能';body+='<div class="skill-card"><div class="skill-head"><span class="skill-name">'+esc(k)+'</span><span class="skill-tier '+tierCls+'">'+tier+'</span></div><div class="skill-desc">'+esc(desc)+'</div><div class="bar-h"><span>Lv.'+lv+'</span><span class="bv">EXP '+ex+'/'+expMax+'</span></div><div class="bar-t"><div class="bar-f '+barCls+'" style="width:'+pct(ex,expMax)+'%"></div></div><div class="skill-foot"><span>今日 '+du+'/'+dm+'</span><span class="skill-next">'+nextT+'</span></div></div>'});return body}
+
+var EVENT_DISPLAY_LIMIT=20;
+// 类型映射：中文类型为标准（对齐变量更新规则），兼容旧的英文类型
+var EVENT_TYPE_NAMES={'冲突':'冲突','对话':'对话','遭遇':'遭遇','警告':'警告','使用':'使用','症状':'症状','调查':'调查','社交':'社交','考试':'考试','结局':'结局','阶段归档':'阶段归档','任务':'任务','规则变化':'规则变化','use':'使用','symptom':'症状','investigate':'调查','social':'社交','exam':'考试','ending':'结局'};
+var EVENT_TYPE_ICONS={'冲突':'⚔️','对话':'💬','遭遇':'👀','警告':'⚠️','使用':'🔞','症状':'🏥','调查':'🔍','社交':'👥','考试':'📝','结局':'🎬','阶段归档':'📦','任务':'📋','规则变化':'📜'};
+function eventImportanceTag(imp){imp=Number(imp)||0;var cls,txt;if(imp>=4){cls='high';txt='★重要'}else if(imp>=3){cls='mid';txt='◆中等'}else{cls='low';txt='·一般'}return '<span class="event-importance '+cls+'">'+txt+'</span>'}
+function eventIdSortValue(id){id=String(id||'');var m=/(\d+)/.exec(id);return m?parseInt(m[1],10):0}
+// 参与者数组转字符串（支持数组/字符串/null）
+function eventParticipants(ev){var p=ev.参与者;if(Array.isArray(p)){return p.map(function(x){return typeof x==='object'?(x.姓名||x.名称||x.uid||String(x)):String(x)}).join('、')}return p||''}
+function renderPageEvents(){var hidden=mvuObj('隐藏层');var events=recToArray(hidden.近期事件);if(events.length===0){return '<div class="empty-state">暂无事件记录</div>'}
+// 按 event id 数值降序排序
+var sorted=events.slice().sort(function(a,b){return eventIdSortValue(b.事件id||b.编号||b.事件编号||b.id)-eventIdSortValue(a.事件id||a.编号||a.事件编号||a.id)});
+// 统计实际存在的类型，动态生成筛选按钮
+var existTypes={};sorted.forEach(function(ev){var t=ev.类型||ev.type||'unknown';if(t&&!existTypes[t])existTypes[t]=true});
+var filtered=sorted.filter(function(ev){if(currentEventFilter==='all')return true;return (ev.类型||ev.type||'unknown')===currentEventFilter});
+var limited=filtered.slice(0,EVENT_DISPLAY_LIMIT);
+var body='<div class="event-filter">';body+='<button class="filter-btn '+('all'===currentEventFilter?'active':'')+'" data-act="filter-event" data-val="all">全部 ('+sorted.length+')</button>';Object.keys(existTypes).forEach(function(t){var txt=EVENT_TYPE_NAMES[t]||t;var cnt=sorted.filter(function(ev){return (ev.类型||ev.type||'unknown')===t}).length;body+='<button class="filter-btn '+(t===currentEventFilter?'active':'')+'" data-act="filter-event" data-val="'+esc(t)+'">'+esc(txt)+' ('+cnt+')</button>'});body+='</div>';
+if(filtered.length>EVENT_DISPLAY_LIMIT){body+='<div class="batch-bar"><span class="batch-info">显示最近 '+EVENT_DISPLAY_LIMIT+' 条 / 共 '+filtered.length+' 条</span></div>'}
+body+='<div class="event-timeline">';limited.forEach(function(ev,idx){var type=ev.类型||ev.type||'unknown';var typeText=EVENT_TYPE_NAMES[type]||type;var typeIcon=EVENT_TYPE_ICONS[type]||'•';var time=ev.时间||ev.时间戳||ev.日||ev.time||ev.timestamp||ev.day||'第'+(idx+1)+'条';var eid=ev.事件id||ev.编号||ev.事件编号||ev.id||('ev_'+idx);var summary=ev.摘要||ev.描述||ev.简述||ev.文本||ev.标题||ev.description||ev.desc||ev.text||ev.title||'';var imp=Number(ev.重要度||ev.重要性||ev.优先级||ev.importance||ev.priority||0);var impact=ev.影响||ev.impact||'';var hooks=ev.后续钩子||ev.钩子们||ev.钩子||ev.hooks||ev.hook||'';var loc=ev.地点||ev.位置||ev.location||'';var parts=eventParticipants(ev);var updateTime=ev.更新时间||'';var inner='<div class="event-row"><span class="event-type" title="'+esc(type)+'">'+typeIcon+' '+esc(typeText)+'</span>'+eventImportanceTag(imp)+'<span class="event-time" title="事件ID:'+esc(eid)+'">'+esc(time)+'</span></div><div class="event-desc">'+esc(summary)+'</div>'+(loc||parts?'<div class="heroine-stats">'+(loc?'<span>📍 '+esc(loc)+'</span>':'')+(parts?'<span>👥 '+esc(parts)+'</span>':'')+'</div>':'');var detail='';detail+='<div class="heroine-stats"><span>事件ID: '+esc(eid)+'</span><span>类型: '+esc(typeText)+'</span><span>重要度: '+imp+'/5</span></div>';if(time){detail+='<div class="heroine-stats"><span>⏱ 时间: '+esc(time)+'</span>'+(updateTime?'<span>更新: '+esc(updateTime)+'</span>':'')+'</div>'}if(loc){detail+='<div class="heroine-stats"><span>📍 地点: '+esc(loc)+'</span></div>'}if(parts){detail+='<div class="heroine-stats"><span>👥 参与者: '+esc(parts)+'</span></div>'}if(summary){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>摘要:</strong> '+esc(summary)+'</div>'}if(impact){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,193,7,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>影响:</strong> '+esc(impact)+'</div>'}if(hooks){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,105,180,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>后续钩子:</strong> '+esc(hooks)+'</div>'}body+=renderRecordItem('events',eid,inner,detail)});body+='</div>';return body}
+
+function renderPageShop(){var s=mvuObj('状态'),t=mvuObj('时间'),fu=mvuObj('女性角色');var money=Number(s.金钱)||0;var hour=Number(t.小时)||8;var timeSlot=t.时段||'';var shenUid=null;Object.keys(fu).forEach(function(k){if(fu[k]&&fu[k].权力==='校医')shenUid=k});var shen=shenUid?fu[shenUid]:{};var nar=shen.叙事||{};var shenPresent=(nar.在场状态==='在场');var dailyPurchases=s.每日购买||{};var shopGoods=mvuObj('商店商品');var shopArr=recToArray(shopGoods);var hasDynamicShop=shopArr.length>0;
+// 品质色阶（静态标签枚举，中文值映射）
+function qualityTag(q){var map={'普通':'普通','优良':'优良','稀有':'稀有','史诗':'史诗','传说':'传说',common:'普通',fine:'优良',rare:'稀有',epic:'史诗',legend:'传说'};var cls=q||'普通';var name=map[cls]||'普通';var clsEn=map[cls]||cls;return '<span class="shop-quality '+clsEn+'">'+name+'</span>'}
+// 库存色阶（静态标签枚举）
+function stockTag(stock,max){stock=Number(stock)||0;max=Number(max)||0;var cls,txt;if(max<=0){cls='none';txt='已售罄'}else if(stock<=0){cls='none';txt='售罄'}else if(stock<=max*0.2){cls='low';txt='即将售罄'}else if(stock<=max*0.5){cls='tight';txt='紧俏'}else{cls='plenty';txt='充足'}return '<span class="shop-stock-tag '+cls+'">'+txt+'</span>'}
+var body='';
+// 动态商品（MVU 商店商品 变量驱动，如黑市/特殊事件商品）
+if(hasDynamicShop){body+='<div class="sect-title">商贸货物 (动态)</div>';body+=renderBatchBar('shop_dynamic',shopArr.length+' 件');shopArr.forEach(function(g,idx){var id=g.编号||g.名称||('shop_'+idx);var name=g.名称||'未知';var price=Number(g.价格)||0;var quality=g.品质||'普通';var stock=Number(g.库存);var stockMax=Number(g.库存上限)||0;var desc=g.描述||g.效果||'';var loc=g.位置||'';var limit=g.限制||'';var dailyUsed=dailyPurchases[id]||0;var affordable=money>=price;var limitOk=!limit||limit==='无限购'||dailyUsed===0;var stockOk=isNaN(stock)?true:stock>0;var available=limitOk&&stockOk;var status;if(!stockOk){status='已售罄'}else if(!limitOk){status='今日已购'}else if(!affordable){status='还差 '+(price-money)+' 元'}else{status='可购买'}var cls=(!available||!affordable)?'disabled':'buyable';var inner='<div class="heroine-item shop-item '+cls+'" data-item="'+esc(id)+'" data-price="'+price+'" data-name="'+esc(name)+'">';inner+='<div class="heroine-row"><span class="heroine-name">'+esc(name)+qualityTag(quality)+'</span><span class="heroine-stat">'+price+'元</span></div>';if(desc){inner+='<div class="heroine-stats"><span>效果: '+esc(desc)+'</span></div>'}inner+='<div class="heroine-stats"><span>📍 '+esc(loc)+'</span><span>限购: '+esc(limit||'无限')+'</span>'+stockTag(stock,stockMax)+'</div><div class="shop-status '+cls+'">'+status+'</div></div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span><span>品质: '+esc(quality)+'</span><span>价格: '+price+'元</span></div>';if(desc){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>描述/效果:</strong> '+esc(desc)+'</div>'}detail+='<div class="heroine-stats"><span>库存: '+(isNaN(stock)?'无限':stock)+'</span><span>库存上限: '+(stockMax||'无限')+'</span></div>';if(loc){detail+='<div class="heroine-stats"><span>📍 位置: '+esc(loc)+'</span></div>'}if(limit){detail+='<div class="heroine-stats"><span>限制: '+esc(limit)+'</span></div>'}detail+='<div class="heroine-stats"><span>今日已购: '+dailyUsed+'</span><span> affordability: '+(affordable?'✓可购':'✗不足')+'</span></div>';body+=renderRecordItem('shop_dynamic',id,inner,detail)})}
+// 校园补给（固定游戏设计目录，非动态状态——硬编码为游戏规则常量）
+body+='<div class="sect-title">校园补给</div>';var supplies=[{id:'营养餐',name:'营养餐（食堂）',price:20,effects:'精力+15, 体力+10',limit:'无限购',location:'食堂',time_restriction:(hour>=5&&hour<=8)||(hour>=12&&hour<=14)||(hour>=17&&hour<=20)},{id:'功能饮料',name:'功能饮料（小卖部）',price:15,effects:'精力+10, 体力+5',limit:'每日限1次',location:'小卖部',time_restriction:true},{id:'维生素片',name:'维生素片（小卖部）',price:30,effects:'精力+20, 体力+15',limit:'每日限1次',location:'小卖部',time_restriction:true},{id:'安眠药',name:'安眠药（校医室）',price:25,effects:'理智+15, 精力+10',limit:'夜间使用',location:'校医室',time_restriction:hour>=22||hour<5},{id:'高级补剂',name:'高级补剂（校医室）',price:80,effects:'精力+40, 体力+30, 理智+10',limit:'每日限1次',location:'校医室',time_restriction:true},{id:'特制药膳',name:'特制药膳（校医室）',price:150,effects:'全属性+20',limit:'每日限1次',location:'校医室',time_restriction:true}];supplies.forEach(function(sp){var dailyUsed=dailyPurchases[sp.id]||0;var affordable=money>=sp.price;var shenOk=sp.location!=='校医室'||shenPresent;var timeOk=sp.time_restriction;var limitOk=sp.limit==='无限购'||dailyUsed===0;var available=timeOk&&shenOk&&limitOk;var status;if(!shenOk){status='需校医在场'}else if(!timeOk){if(sp.id==='营养餐'){status='需三餐时段'}else if(sp.id==='安眠药'){status='需夜间(22:00后)'}else{status='时段不符'}}else if(!limitOk){status='今日已购'}else if(!affordable){status='还差 '+(sp.price-money)+' 元'}else{status='可购买'}var cls=(!available||!affordable)?'disabled':'buyable';body+='<div class="heroine-item shop-item '+cls+'" data-item="'+esc(sp.id)+'" data-price="'+sp.price+'" data-name="'+esc(sp.name)+'">';body+='<div class="heroine-row"><span class="heroine-name">'+esc(sp.name)+'</span><span class="heroine-stat">'+sp.price+'元</span></div>';body+='<div class="heroine-stats"><span>效果: '+esc(sp.effects)+'</span><span>地点: '+esc(sp.location)+'</span><span>限购: '+esc(sp.limit)+'</span></div>';body+='<div class="shop-status '+cls+'">'+status+'</div>';body+='</div>'});return body}
+
+// ===== P0-3: SVG 属性雷达图（六维） =====
+function renderRadarSVG(){var sk=mvuObj('技能');var vals=[num(sk.冥想&&sk.冥想.等级,1),num(sk.锻炼&&sk.锻炼.等级,1),num(sk.洞察&&sk.洞察.等级,1),num(sk.伪装&&sk.伪装.等级,1),num(sk.恢复&&sk.恢复.等级,1),num(sk.意志&&sk.意志.等级,1)];var labels=['冥想','锻炼','洞察','伪装','恢复','意志'];var max=100;var cx=100,cy=100,r=70;var pts=[];var dots=[];var grid=[];for(var ring=1;ring<=4;ring++){var rr=r*ring/4;var gp=[];for(var i=0;i<6;i++){var ang=-Math.PI/2+i*Math.PI/3;gp.push((cx+rr*Math.cos(ang)).toFixed(1)+','+(cy+rr*Math.sin(ang)).toFixed(1))}grid.push('<polygon class="grid" points="'+gp.join(' ')+'" fill="none" stroke="rgba(255,182,193,.2)" stroke-width=".5"/>')}for(var j=0;j<6;j++){var ang2=-Math.PI/2+j*Math.PI/3;var rv=Math.max(0,Math.min(max,vals[j]));var rr2=r*rv/max;var x=cx+rr2*Math.cos(ang2);var y=cy+rr2*Math.sin(ang2);pts.push(x.toFixed(1)+','+y.toFixed(1));dots.push('<circle class="dot" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.5"/>')}var spokes='';for(var k=0;k<6;k++){var ang3=-Math.PI/2+k*Math.PI/3;var x2=cx+r*Math.cos(ang3);var y2=cy+r*Math.sin(ang3);spokes+='<line class="grid" x1="'+cx+'" y1="'+cy+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';var lx=cx+(r+12)*Math.cos(ang3);var ly=cy+(r+12)*Math.sin(ang3);spokes+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'">'+labels[k]+' '+vals[k]+'</text>'}return '<svg class="radar-svg" viewBox="0 0 200 200">'+grid.join('')+spokes+'<polygon class="data" points="'+pts.join(' ')+'"/>'+dots.join('')+'</svg>'}
+
+// ===== 女性能力六维雷达图（仿 renderRadarSVG，6 维：技能/隐蔽/持久/控制/诱惑/欲望） =====
+function renderHeroineRadar(h){var ab=h.能力||{};var vals=[num(ab.技能等级,0),num(ab.隐蔽,0),num(ab.持久,0),num(ab.控制,0),num(ab.诱惑,0),num(ab.欲望,0)];var labels=['使用技巧','隐蔽能力','耐力持久','控制力','诱惑力','欲望值'];var max=100;var cx=100,cy=100,r=70;var pts=[];var dots=[];var grid=[];for(var ring=1;ring<=4;ring++){var rr=r*ring/4;var gp=[];for(var i=0;i<6;i++){var ang=-Math.PI/2+i*Math.PI/3;gp.push((cx+rr*Math.cos(ang)).toFixed(1)+','+(cy+rr*Math.sin(ang)).toFixed(1))}grid.push('<polygon class="grid" points="'+gp.join(' ')+'" fill="none" stroke="rgba(255,182,193,.2)" stroke-width=".5"/>')}for(var j=0;j<6;j++){var ang2=-Math.PI/2+j*Math.PI/3;var rv=Math.max(0,Math.min(max,vals[j]));var rr2=r*rv/max;var x=cx+rr2*Math.cos(ang2);var y=cy+rr2*Math.sin(ang2);pts.push(x.toFixed(1)+','+y.toFixed(1));dots.push('<circle class="dot" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.5"/>')}var spokes='';for(var k=0;k<6;k++){var ang3=-Math.PI/2+k*Math.PI/3;var x2=cx+r*Math.cos(ang3);var y2=cy+r*Math.sin(ang3);spokes+='<line class="grid" x1="'+cx+'" y1="'+cy+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'"/>';var lx=cx+(r+12)*Math.cos(ang3);var ly=cy+(r+12)*Math.sin(ang3);spokes+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'">'+labels[k]+' '+vals[k]+'</text>'}return '<div class="heroine-radar"><svg class="radar-svg" viewBox="0 0 200 200">'+grid.join('')+spokes+'<polygon class="data" points="'+pts.join(' ')+'"/>'+dots.join('')+'</svg></div>'}
+
+// ===== P0-1: 通用记录渲染器（展开/折叠 + 批量删除） =====
+var batchSelectMode=false;var batchSelected={};
+function renderBatchBar(category,label){var count=batchSelected[category]?Object.keys(batchSelected[category]).filter(function(k){return batchSelected[category][k]}).length:0;return '<div class="batch-bar"><span class="batch-info">'+(batchSelectMode?'已选 '+count+' 条':'共 '+label+' 条')+'</span><div><button class="batch-btn" data-act="toggle-batch" data-cat="'+category+'">'+(batchSelectMode?'退出选择':'批量选择')+'</button>'+(batchSelectMode?'<button class="batch-btn danger" data-act="batch-delete" data-cat="'+category+'">删除选中</button>':'')+'</div></div>'}
+function renderRecordItem(category,id,innerHtml,detailHtml){var checked=batchSelectMode&&batchSelected[category]&&batchSelected[category][id]?'checked':'';var check=batchSelectMode?'<input type="checkbox" class="batch-check" data-act="batch-check" data-cat="'+category+'" data-id="'+esc(id)+'" '+checked+'>':'';var expandBtn=detailHtml?'<button class="rec-expand-btn" data-act="toggle-detail" data-id="'+esc(id)+'">展开</button>':'';return '<div class="heroine-item record-item">'+check+innerHtml+expandBtn+(detailHtml?'<div class="rec-detail" id="detail-'+esc(id)+'">'+detailHtml+'</div>':'')+'</div>'}
+
+// ===== P1-1: 任务 tab =====
+function taskTypeTag(t){var clsMap={'主线':'main','支线':'side','日常':'daily','隐藏':'hidden'};var cls=clsMap[t]||'daily';return '<span class="task-type-tag '+cls+'">'+esc(t||'日常')+'</span>'}
+function taskDiffTag(d){var map={D:'d-d',C:'d-c',B:'d-b',A:'d-a',S:'d-s',SS:'d-ss'};var cls=map[d]||'d-d';return '<span class="task-diff-tag '+cls+'">'+(d||'D')+'</span>'}
+function taskStatusTag(s){var clsMap={'待接':'todo','进行中':'doing','已完成':'done','失败':'failed'};var cls=clsMap[s]||'todo';return '<span class="task-status-tag '+cls+'">'+esc(s||'待接')+'</span>'}
+function renderPageTasks(){var tasks=recToArray(mvuObj('任务'));if(tasks.length===0){return '<div class="empty-state">暂无任务记录</div>'}var body=renderBatchBar('任务',tasks.length+' 个任务');tasks.forEach(function(tk,idx){var id=tk.编号||tk._key||('task_'+idx);var type=tk.类型||'日常';var diff=tk.难度||'D';var status=tk.状态||'待接';var title=tk.标题||tk.描述||'未命名任务';var desc=tk.描述||'';var progress=tk.进度||'';var rewards=tk.奖励||{};var deadline=tk.截止||'';var stage=tk.阶段||'';var publisher=tk.发布者||'';var pubLoc=tk.发布地点||'';var triggerDay=tk.触发日||'';var acceptDay=tk.接受日||'';var repeat=tk.重复||'';var rewardStr='';if(rewards&&typeof rewards==='object'){var parts=[];if(rewards.金钱)parts.push('💰 '+rewards.金钱+'元');if(rewards.经验&&Object.keys(rewards.经验).length>0){var expParts=[];for(var ek in rewards.经验){if(Object.prototype.hasOwnProperty.call(rewards.经验,ek))expParts.push(ek+'+'+rewards.经验[ek])}parts.push('✨ 经验:'+expParts.join(','))}if(rewards.物品){var itemArr=recToArray(rewards.物品);if(itemArr.length>0){var itemParts=itemArr.map(function(it){return typeof it==='object'?(it.名称||it.标题||'物品')+'x'+(it.数量||1):String(it)});parts.push('🎁 物品:'+itemParts.join(','))}}rewardStr=parts.join(' / ')}else if(typeof rewards==='string'){rewardStr=rewards}var cls=type;var inner='<div class="heroine-row"><span class="heroine-name">'+esc(title)+'</span>'+taskTypeTag(type)+taskDiffTag(diff)+taskStatusTag(status)+'</div><div class="heroine-stats"><span>'+esc(progress?('进度: '+progress):'')+'</span><span>'+esc(deadline?('截止: '+deadline):'')+'</span></div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span><span>类型: '+esc(type)+'</span><span>难度: '+esc(diff)+'</span><span>状态: '+esc(status)+'</span></div>';if(desc){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>描述:</strong> '+esc(desc)+'</div>'}if(progress||stage){detail+='<div class="heroine-stats">'+(progress?'<span>📊 进度: '+esc(progress)+'</span>':'')+(stage?'<span>阶段: '+esc(stage)+'</span>':'')+'</div>'}if(deadline){detail+='<div class="heroine-stats"><span>⏰ 截止: '+esc(deadline)+'</span></div>'}if(publisher||pubLoc){detail+='<div class="heroine-stats">'+(publisher?'<span>👤 发布者: '+esc(publisher)+'</span>':'')+(pubLoc?'<span>📍 发布地点: '+esc(pubLoc)+'</span>':'')+'</div>'}if(triggerDay||acceptDay){detail+='<div class="heroine-stats">'+(triggerDay?'<span>📅 触发日: D'+esc(triggerDay)+'</span>':'')+(acceptDay?'<span>✓ 接受日: D'+esc(acceptDay)+'</span>':'')+'</div>'}if(repeat){detail+='<div class="heroine-stats"><span>🔁 重复: '+esc(repeat)+'</span></div>'}if(rewardStr){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,193,7,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>奖励:</strong> '+esc(rewardStr)+'</div>'}body+=renderRecordItem('任务',id,inner,detail)});return body}
+
+// ===== P1-2: 规则变化 tab =====
+function renderPageRules(){var rc=mvuObj('规则变化');var world=recToArray(rc.世界变化);var school=recToArray(rc.学校变化);var body='';if(world.length===0){body+='<div class="empty-state">暂无世界变化记录</div>'}else{body+='<div class="sect-title">◆ 世界变化 ('+world.length+')</div>';body+=renderBatchBar('world',world.length+' 条');world.forEach(function(w,idx){var id=w.编号||w._key||w.id||('world_'+idx);var title=w.标题||w.title||w.rule||'未知变化';var content=w.内容||w.content||w.rule||'';var scope=w.范围||w.scope||'';var target=w.目标||w.target||'';var strength=w.强度||w.strength||'';var source=w.来源||w.source||'';var expire=w.过期||w.expire||'';var note=w.备注||w.note||'';var reward=w.奖励||w.奖惩||'';var inner='<div class="heroine-row"><span class="heroine-name">'+esc(title)+'</span></div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span></div>';if(content){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>内容:</strong> '+esc(content)+'</div>'}if(scope||target||strength){detail+='<div class="heroine-stats">'+(scope?'<span>范围: '+esc(scope)+'</span>':'')+(target?'<span>目标: '+esc(target)+'</span>':'')+(strength?'<span>强度: '+esc(strength)+'</span>':'')+'</div>'}if(source||expire){detail+='<div class="heroine-stats">'+(source?'<span>来源: '+esc(source)+'</span>':'')+(expire?'<span>⏰ 过期: '+esc(expire)+'</span>':'')+'</div>'}if(reward){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,193,7,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>奖励/奖惩:</strong> '+esc(reward)+'</div>'}if(note){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,105,180,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>备注:</strong> '+esc(note)+'</div>'}body+='<div class="rule-card world">'+renderRecordItem('world',id,inner,detail)+'</div>'})}if(school.length===0){body+='<div class="empty-state">暂无校规变化记录</div>'}else{body+='<div class="sect-title">■ 校规变化 ('+school.length+')</div>';body+=renderBatchBar('school',school.length+' 条');school.forEach(function(sc,idx){var id=sc.编号||sc._key||sc.id||('school_'+idx);var title=sc.标题||sc.title||sc.rule||'未知校规';var content=sc.内容||sc.content||sc.rule||'';var target=sc.目标||sc.target||'';var scope=sc.范围||sc.scope||'';var strength=sc.强度||'';var source=sc.来源||sc.source||'';var expire=sc.过期||'';var note=sc.备注||'';var reward=sc.奖励||sc.奖惩||sc.reward||sc.reward_punishment||'';var inner='<div class="heroine-row"><span class="heroine-name">'+esc(title)+'</span></div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span></div>';if(content){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>内容:</strong> '+esc(content)+'</div>'}if(target||scope||strength){detail+='<div class="heroine-stats">'+(target?'<span>目标: '+esc(target)+'</span>':'')+(scope?'<span>范围: '+esc(scope)+'</span>':'')+(strength?'<span>强度: '+esc(strength)+'</span>':'')+'</div>'}if(source||expire){detail+='<div class="heroine-stats">'+(source?'<span>来源: '+esc(source)+'</span>':'')+(expire?'<span>⏰ 过期: '+esc(expire)+'</span>':'')+'</div>'}if(reward){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,193,7,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>奖励/奖惩:</strong> '+esc(reward)+'</div>'}if(note){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,105,180,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>备注:</strong> '+esc(note)+'</div>'}body+='<div class="rule-card school">'+renderRecordItem('school',id,inner,detail)+'</div>'})}return body}
+
+function renderPageSettings(){var s=mvuObj('状态');var diff=s.难度||'困难';var hidden=mvuObj('隐藏层')||{};var isLocked=hidden.难度已锁定||false;var day=Number(mvuObj('时间','天数'))||1;var locked=isLocked||day>1;var body='';body+='<div class="sect-title">难度切换'+(locked?' <span class="warn" style="font-size:var(--fs-xs)">已锁定</span>':' <span class="safe" style="font-size:var(--fs-xs)">仅开局可选</span>')+'</div><div class="g2">';['普通','困难','地狱'].forEach(function(d){body+='<button class="setting-btn '+(d===diff?'active':'')+(locked&&d!==diff?' disabled':'')+'" '+(locked?'disabled':'')+' data-act="set-difficulty" data-val="'+d+'">'+d+(d===diff&&locked?' ✓':'')+'</button>'});body+='</div>';if(locked){body+='<div class="warn" style="font-size:var(--fs-xs);padding:4px 8px">⚠ 难度已在开局锁定，不可中途更改</div>'}body+='<div class="sect-title">状态栏主题</div><div class="g2">';[{id:'pink',name:'粉色'},{id:'purple',name:'紫色'},{id:'dark',name:'深色'}].forEach(function(th){body+='<button class="setting-btn '+(th.id===currentTheme?'active':'')+'" data-act="set-theme" data-val="'+th.id+'">'+th.name+'</button>'});body+='</div>';body+='<div class="sect-title">功能开关</div><div class="g2">';[{id:'floatball',name:'悬浮球'},{id:'opening',name:'开局页'},{id:'diy',name:'DIY'},{id:'media_lib',name:'媒体库'},{id:'auto_refresh',name:'自动刷新'},{id:'event_notify',name:'事件通知'}].forEach(function(sw){var checked=ccSwitchState[sw.id]?'checked':'';body+='<label class="switch-label"><input type="checkbox" data-act="toggle-fn" data-val="'+sw.id+'" '+checked+'><span>'+sw.name+'</span></label>'});body+='</div>';body+='<div class="sect-title">关于</div><div style="font-size:var(--fs-xs);color:var(--c-dim);padding:6px 4px;line-height:1.6">不要玩弄我的鸡吧 RPG 状态栏 · 多页面架构<br>当前主题：'+currentTheme+' · 当前难度：'+esc(diff)+'</div>';return body}
+
+function renderHeroineDetail(key){var fu=mvuObj('女性角色');var h=fu[key];if(!h)return;var b=h.基础||{},ns=h.NSFW||{},wl=h.与玩家关系||{},ab=h.能力||{},st=h.阶段轨迹||{},ceilings=h.能力上限||{},growth=h.成长||{},habits=h.使用习惯||{},propa=h.传播||{},cross=h.交叉影响||{},relNet=h.关系网||{},femPower=h.权力||'',femAcad=h.学业||{},holder=h.持有者信息||{},persona=h.人格||{};var hidden=mvuObj('隐藏层')||{};var isHolder=(hidden.持有者ID===key);var todayGrowth=num(ab.今日成长已用,0);var todayMax=num(ab.今日成长上限,10);var body='';body+=renderHeroineRadar(h);body+='<div class="sect-title">基础信息</div><div class="g2">'+kv('姓名',b.姓名||'--')+kv('身份',b.角色||b.身份||'--')+kv('年龄',b.年龄||'--')+kv('班级',b.班级名||b.班级||'--')+kv('位置',(h.叙事&&h.叙事.位置)||'--')+kv('关系',wl.关系||'--')+'</div>';body+='<div class="sect-title">好感与阶段</div><div class="g2">'+kv('好感',wl.好感度||0)+kv('熟稔',wl.熟悉度||0)+kv('互动次数',wl.互动次数||0)+kv('使用阶段',st.当前阶段||1)+'/5'+kv('硬上限',st.硬上限||5)+'</div>';var ms=h.多维状态||{};if(ms.理性!==undefined){var cs=ms.综合阶段||'A_理性期';body+='<div class="sect-title">多维心理状态</div><div class="g2">'+kv('综合阶段',stageLabel(cs),'accent')+kv('阶段描述',stageDesc(cs),'')+kv('理性',ms.理性,ms.理性<50?'danger':'')+kv('痴迷',ms.执念,ms.执念>50?'warn':'')+kv('学业压力',ms.学业压力,ms.学业压力>80?'danger':'')+kv('逃离倾向',ms.逃避意识,ms.逃避意识>60?'warn':'')+kv('精神值',ms.理智,ms.理智<50?'danger':'')+kv('技巧等级',ms.技能等级||0,'')+'</div>'+bar('理性',ms.理性||0,100,barClass4)+bar('痴迷',ms.执念||0,100,barClass4)+bar('学业压力',ms.学业压力||0,100,barClass4)+bar('精神',ms.理智||0,100,barClass5)}if(ab.技能等级!==undefined||ab.隐蔽!==undefined||ab.诱惑!==undefined){body+='<div class="sect-title">能力 <span class="nsfw-tag">18+</span></div>';var femSkills=[{key:'技能等级',capKey:'技能上限',expKey:'技能经验',name:'使用技巧',desc:'假阴茎使用熟练度，影响使用成功率'},{key:'隐蔽',capKey:'隐蔽上限',expKey:'隐蔽经验',name:'隐蔽能力',desc:'隐藏使用痕迹的能力，影响被发现概率'},{key:'持久',capKey:'持久上限',expKey:'持久经验',name:'耐力持久',desc:'使用时长延长能力，影响单次续航'},{key:'控制',capKey:'控制上限',expKey:'控制经验',name:'控制力',desc:'控制使用节奏的能力，影响临界点掌控'},{key:'诱惑',capKey:'诱惑上限',expKey:'诱惑经验',name:'诱惑力',desc:'执念驱动的主动诱惑能力，影响主动发起概率'},{key:'欲望',capKey:'欲望上限',expKey:'欲望经验',name:'欲望值',desc:'执念驱动的内在欲望强度，影响使用频率'}];femSkills.forEach(function(sk){var lv=parseInt(ab[sk.key])||0;var tier=skillTier(lv||1);var tierCls=skillTierCls(lv||1);var barCls=skillBarCls(lv||1);var cap=parseInt(ceilings[sk.capKey])||100;var exp=parseInt(growth[sk.expKey])||0;var expMax=Math.max(10,lv*10);body+='<div class="heroine-skill-card"><div class="skill-head"><span class="skill-name">'+sk.name+'</span><span class="skill-tier '+tierCls+'">'+tier+'</span></div><div class="skill-desc">'+sk.desc+'</div><div class="bar-h"><span>Lv.'+lv+'/'+cap+'</span><span class="bv">EXP '+exp+'/'+expMax+'</span></div><div class="bar-t"><div class="bar-f '+barCls+'" style="width:'+pct(exp,expMax)+'%"></div></div><div class="skill-foot"><span>今日成长 '+todayGrowth+'/'+todayMax+'</span><span class="skill-next">'+nextTierInfo(lv||1)+'</span></div></div>'})}if(ns.假阴茎经验){body+='<div class="sect-title">身体档案 <span class="nsfw-tag">18+</span></div><div class="g2">'+kv('高潮次数',(ns.假阴茎经验?ns.假阴茎经验.高潮次数||0:0))+kv('使用次数',ns.假阴茎经验?ns.假阴茎经验.使用次数||0:0)+kv('熟练度',ns.假阴茎经验?ns.假阴茎经验.熟练度||0:0)+kv('敏感度',ns.假阴茎经验?ns.假阴茎经验.敏感度||0:0)+'</div>'}var rp=h.生育||{};if(rp.周期日!==undefined){body+='<div class="sect-title">生理周期 <span class="nsfw-tag">18+</span></div><div class="g2">'+kv('周期日',rp.周期日+'/28','')+kv('周期阶段',rp.周期阶段||'行经期',rp.周期阶段==='排卵期'?'warn':'')+kv('怀孕状态',rp.怀孕状态>0?rp.怀孕状态+'日':'未孕',rp.怀孕状态>0?'warn':'safe')+kv('怀孕阶段',rp.怀孕阶段||'未孕',rp.怀孕阶段!=='未孕'?'warn':'')+kv('分娩结果',rp.分娩结果||'未分娩',rp.分娩结果==='风险'?'danger':'')+kv('产后恢复',rp.产后天数>0?rp.产后天数+'日':'无','')+kv('子女数',rp.孩子数||0,'')+'</div>'}var nar=h.叙事||{};if(nar.场景标签||nar.最后场景){body+='<div class="sect-title">叙事状态</div><div class="g2">'+kv('场景标签',nar.场景标签||'--')+kv('最近场景',nar.最后场景||'--')+kv('当前状态',nar.状态||'--')+'</div>'}
+// ===== 身体档案（静态·NSFW详细） =====
+var bd=h.身体||{};if(bd.罩杯||bd.肛门描述||bd.阴道描述){
+body+='<div class="sect-title">身体档案 <span class="nsfw-tag">18+</span></div>';
+// 基础数据
+body+='<div class="g2">'+kv('罩杯',bd.罩杯||'--','accent')+kv('胸围',bd.胸围厘米||bd.胸围||'--')+kv('腰围',bd.腰围||'--')+kv('臀围',bd.臀围||'--')+kv('身高',bd.身高||'--')+kv('体重',bd.体重||'--')+'</div>';
+body+='<div class="g2">'+kv('体型',bd.体型||'--','blue')+kv('阴毛',bd.阴毛||'--','silver')+kv('泌乳',bd.泌乳?'是':'否',bd.泌乳?'warn':'safe')+'</div>';
+// 乳房详细
+body+='<div class="g2">'+kv('乳房形状',bd.乳房形状||'--','accent')+kv('乳房质感',bd.乳房质感||'--')+kv('乳头大小',bd.乳头大小||'--')+kv('乳头颜色',bd.乳头颜色||'--','pink')+kv('乳晕大小',bd.乳晕大小||'--')+kv('乳晕颜色',bd.乳晕颜色||'--','pink')+'</div>';
+body+='<div class="g2">'+kv('乳房敏感',bd.乳房敏感度||'--','warn')+kv('腰部敏感',bd.腰部敏感度||'--','warn')+kv('臀部敏感',bd.臀部敏感度||'--','warn')+'</div>';
+// 阴部详细
+body+='<div class="g2">'+kv('阴唇',bd.阴唇描述||'--','pink')+kv('阴道',bd.阴道描述||'--','pink')+kv('阴蒂',bd.阴蒂描述||'--','pink')+kv('分泌物',bd.分泌物描述||'--','accent')+'</div>';
+// 其他部位
+body+='<div class="g2">'+kv('肛门',bd.肛门描述||'--')+kv('臀部形状',bd.臀形||'--')+kv('腰部形状',bd.腰形||'--')+kv('大腿',bd.大腿描述||'--')+kv('双脚',bd.足部描述||'--')+'</div>';
+body+='<div class="g2">'+kv('手部',bd.手部描述||'--')+kv('指甲',bd.指甲风格||'--')+'</div>';
+}
+// ===== 当前动态状态（衣着/内衣/月经/卫生用品/身体反应） =====
+var cs=h.当前状态||{};if(cs.上衣||cs.月经阶段||cs.兴奋度!==undefined){
+body+='<div class="sect-title">当前动态状态 <span class="nsfw-tag">18+</span> <span class="v dim" style="font-size:var(--fs-xs)">更新于第'+(cs.最后更新时||0)+'时段</span></div>';
+// 外衣着装
+body+='<div class="g2">'+kv('外套',cs.上衣||'--')+kv('外裤/裙',cs.下装||'--')+kv('外衣细节',cs.外衣细节||'无')+'</div>';
+// 内衣
+body+='<div class="g2">'+kv('文胸',cs.文胸||'--',cs.文胸==='无'?'warn':'')+kv('文胸色',cs.文胸颜色||'--')+kv('内裤',cs.内裤||'--',cs.内裤==='无'?'warn':'')+kv('内裤色',cs.内裤颜色||'--')+'</div>';
+// 月经状态
+var menCls=cs.是否月经?'danger':(cs.月经阶段==='排卵期'?'warn':'');
+body+='<div class="g2">'+kv('周期阶段',cs.月经阶段||'--',menCls)+kv('周期日',cs.月经日||0+'/35')+kv('经血量',cs.经量||'无',cs.经量==='量大'?'danger':(cs.经量==='中等'?'warn':''))+kv('是否经期',cs.是否月经?'是':'否',cs.是否月经?'danger':'safe')+'</div>';
+// 卫生用品
+body+='<div class="g2">'+kv('卫生用品',cs.卫生用品||'无')+kv('上次更换',cs.更换时间||'--')+'</div>';
+// 身体反应状态
+var arousCls=cs.兴奋度>=70?'danger':(cs.兴奋度>=30?'warn':'');
+var lubrCls=cs.润滑度>=70?'danger':(cs.润滑度>=30?'warn':'');
+var nipCls=cs.乳头状态==='勃起'||cs.乳头状态==='肿胀'?'warn':'';
+var cltCls=cs.阴蒂状态==='勃起'||cs.阴蒂状态==='充血'?'warn':'';
+var tempCls=cs.体温>=37.5?'warn':(cs.体温<=35.5?'warn':'');
+body+='<div class="g2">'+kv('兴奋度',cs.兴奋度||0+'/100',arousCls)+kv('润滑度',cs.润滑度||0+'/100',lubrCls)+kv('乳头状态',cs.乳头状态||'柔软',nipCls)+kv('阴蒂状态',cs.阴蒂状态||'休眠',cltCls)+kv('体温',cs.体温||36.5+'°C',tempCls)+'</div>';
+body+=bar('兴奋度',cs.兴奋度||0,100,barClass4)+bar('润滑度',cs.润滑度||0,100,barClass4);
+// 处子与洗澡
+var virCls=cs.是否处女?'safe':'';
+body+='<div class="g2">'+kv('处女',cs.是否处女?'是':'否',virCls)+kv('处女膜',cs.处女膜状态||'--')+kv('上次洗澡',cs.最后洗澡时间||'--')+'</div>';
+}
+// ===== 能力上限区块（6项：技能/隐蔽/持久/控制/诱惑/欲望） =====
+if(ceilings.技能上限||ceilings.隐蔽上限||ceilings.持久上限||ceilings.控制上限||ceilings.诱惑上限||ceilings.欲望上限){body+='<div class="sect-title">能力上限</div><div class="g2">'+kv('技能上限',ceilings.技能上限||100)+kv('隐蔽上限',ceilings.隐蔽上限||100)+kv('持久上限',ceilings.持久上限||100)+kv('控制上限',ceilings.控制上限||100)+kv('诱惑上限',ceilings.诱惑上限||100)+kv('欲望上限',ceilings.欲望上限||100)+'</div>'}
+// ===== 成长进度区块（6项经验 + 总次数 + 今日成长） =====
+if(growth.技能经验||growth.隐蔽经验||growth.持久经验||growth.控制经验||growth.诱惑经验||growth.欲望经验||growth.总次数){body+='<div class="sect-title">成长进度</div><div class="g2">'+kv('技能经验',growth.技能经验||0)+kv('隐蔽经验',growth.隐蔽经验||0)+kv('持久经验',growth.持久经验||0)+kv('控制经验',growth.控制经验||0)+kv('诱惑经验',growth.诱惑经验||0)+kv('欲望经验',growth.欲望经验||0)+kv('总次数',growth.总次数||0)+kv('今日成长',todayGrowth+'/'+todayMax)+'</div>';body+=bar('技能经验',growth.技能经验||0,Math.max(10,(parseInt(ab.技能等级)||1)*10),barClass4);body+=bar('隐蔽经验',growth.隐蔽经验||0,Math.max(10,(parseInt(ab.隐蔽)||1)*10),barClass4);body+=bar('持久经验',growth.持久经验||0,Math.max(10,(parseInt(ab.持久)||1)*10),barClass4);body+=bar('控制经验',growth.控制经验||0,Math.max(10,(parseInt(ab.控制)||1)*10),barClass4);body+=bar('诱惑经验',growth.诱惑经验||0,Math.max(10,(parseInt(ab.诱惑)||1)*10),barClass4);body+=bar('欲望经验',growth.欲望经验||0,Math.max(10,(parseInt(ab.欲望)||1)*10),barClass4)}
+// ===== 使用习惯区块 =====
+if(habits.偏好时段||habits.偏好地点||habits.使用风格){body+='<div class="sect-title">使用习惯</div><div class="g2">'+kv('偏好时段',habits.偏好时段||'--')+kv('偏好地点',habits.偏好地点||'--')+kv('使用风格',habits.使用风格||'--')+kv('特殊道具',habits.特殊道具||'--')+kv('冥想阈值',habits.冥想阈值||'--')+kv('伪装阈值',habits.伪装阈值||'--')+kv('最低阶段',habits.最低阶段||'--')+'</div>'}
+// ===== 传播属性区块 =====
+if(propa.倾向!==undefined||propa.方式||propa.偏好目标){body+='<div class="sect-title">传播属性</div><div class="g2">'+kv('倾向',propa.倾向!==undefined?propa.倾向:'--')+kv('方式',propa.方式||'--')+kv('偏好目标',Array.isArray(propa.偏好目标)?propa.偏好目标.join('、'):(propa.偏好目标||'--'))+'</div>';if(propa.倾向!==undefined){var propaPct=Math.round(num(propa.倾向,0)*100);body+=bar('传播倾向',propaPct,100,barClass4)}}
+// ===== 交叉影响区块 =====
+if(cross.学业||cross.纪律||cross.经济){body+='<div class="sect-title">交叉影响</div><div class="g2">'+kv('学业',cross.学业||'--')+kv('纪律',cross.纪律||'--')+kv('经济',cross.经济||'--')+kv('社交',cross.社交||'--')+kv('精力消耗',cross.精力消耗||'--')+kv('理智消耗',cross.理智消耗||'--')+'</div>'}
+// ===== 关系网区块 =====
+if(relNet&&typeof relNet==='object'&&Object.keys(relNet).length>0){body+='<div class="sect-title">关系网</div>';Object.keys(relNet).forEach(function(rk){var r=relNet[rk];if(!r||typeof r!=='object')return;var trust=num(r.信任,0);body+='<div class="heroine-relation-item"><div class="heroine-row"><span class="heroine-name">'+esc(rk)+'</span><span class="heroine-role">'+esc(r.类型||'--')+'</span></div><div class="heroine-stats"><span>信任: '+trust.toFixed(2)+'</span><span>亲密度: '+esc(r.亲密度||'--')+'</span></div></div>'})}
+// ===== 权力区块 =====
+if(femPower){body+='<div class="sect-title">权力</div><div><span class="heroine-power-tag">'+esc(femPower)+'</span></div>'}
+// ===== 学业区块 =====
+if(femAcad.分数!==undefined||femAcad.阶段){body+='<div class="sect-title">学业</div><div class="g2">'+kv('分数',femAcad.分数!==undefined?femAcad.分数:'--')+kv('阶段',femAcad.阶段||'--')+kv('表现',femAcad.表现||'--')+'</div>';if(femAcad.分数!==undefined){body+=bar('学业分数',femAcad.分数||0,100,barClass4)}}
+// ===== 持有者信息区块（当前持有者高亮） =====
+if(holder.是否初始持有者!==undefined||holder.获取方式||isHolder){var holderCls=isHolder?' heroine-holder-highlight':'';body+='<div class="heroine-holder-block'+holderCls+'"><div class="sect-title">持有者信息'+(isHolder?' <span class="pill danger">当前持有者</span>':'')+'</div><div class="g2">'+kv('是否持有者',(holder.是否初始持有者!==undefined?holder.是否初始持有者:isHolder)?'是':'否')+kv('获取方式',holder.获取方式||hidden.持有者获取方式||'--')+kv('获取日',holder.获取日||hidden.持有者获取日||'--')+kv('包裹状态',holder.包裹状态||hidden.持有者包裹状态||'--')+kv('是否使用过',holder.是否使用过!==undefined?(holder.是否使用过?'是':'否'):'--')+kv('使用次数',holder.使用次数||'--')+'</div></div>'}
+// ===== 人格三面区块（折叠详情） =====
+if(persona.表色||persona.间色||persona.底色){var personaKey='heroine-persona-'+key;var personaOpen=State.expanded[personaKey]?' open':'';body+='<details class="block"'+personaOpen+' data-key="'+esc(personaKey)+'"><summary class="card-t heroine">🎭 人格三面<span class="caret">▶</span></summary><div class="block-body">';body+='<div class="heroine-persona-faces"><span class="heroine-persona-face" style="background:'+esc(persona.表色||'#ccc')+'22;color:'+esc(persona.表色||'#ccc')+'">表色 '+esc(persona.表色||'--')+'</span><span class="heroine-persona-face" style="background:'+esc(persona.间色||'#ccc')+'22;color:'+esc(persona.间色||'#ccc')+'">间色 '+esc(persona.间色||'--')+'</span><span class="heroine-persona-face" style="background:'+esc(persona.底色||'#ccc')+'22;color:'+esc(persona.底色||'#ccc')+'">底色 '+esc(persona.底色||'--')+'</span></div>';var pub=persona.公众面||{};var intF=persona.亲密面||{};var tru=persona.真实面||{};body+='<div class="sect-title">公众面</div><div class="g2">'+kv('行为',pub.行为||'--')+kv('言语',pub.言语||'--')+'</div>';body+='<div class="sect-title">亲密面</div><div class="g2">'+kv('行为',intF.行为||'--')+kv('言语',intF.言语||'--')+'</div>';body+='<div class="sect-title">真实面</div><div class="g2">'+kv('欲望',tru.欲望||'--')+kv('恐惧',tru.恐惧||'--')+'</div>';body+='</div></details>'}
+showModal(esc(b.姓名||key)+' · 详情',body)}
+
+function renderPageByName(page){if(page==='status')return renderPageStatus();if(page==='env')return renderPageEnv();if(page==='characters')return renderPageCharacters();if(page==='skills')return renderPageSkills();if(page==='radar')return renderPageRadar();if(page==='events')return renderPageEvents();if(page==='tasks')return renderPageTasks();if(page==='rules')return renderPageRules();if(page==='assets')return renderPageAssets();if(page==='crafting')return renderPageCrafting();if(page==='vehicle')return renderPageVehicle();if(page==='residence')return renderPageResidence();if(page==='shop')return renderPageShop();if(page==='schedule')return renderPageSchedule();if(page==='endings')return renderPageEndings();if(page==='settings')return renderPageSettings();return ''}
+
+// ===== 课程表 tab =====
+// 对齐 schema.ts 课程表：周一~周日，每天含 时段/节次/科目/老师/老师UID/教室/类型/备注
+// 高亮当日 + 当前时段 + 显示当前/下节课程
+function renderPageSchedule(){var sched=mvuObj('课程表')||{};var study=mvuObj('学业')||{};var time=mvuObj('时间')||{};var females=mvuObj('女性角色')||{};var body='';
+
+// 头部：当前课程 + 下节课程
+var cur=study.当前课程||'';var curT=study.当前老师||'';var next=study.下节课程||'';var nextT=study.下节老师||'';
+body+='<div class="hd"><div class="hd-l"><span class="hd-t">📚 课程表</span>';
+if(cur){body+='<span class="pill warn">当前: '+esc(cur)+' · '+esc(curT)+'</span>'}
+if(next){body+='<span class="pill">下节: '+esc(next)+' · '+esc(nextT)+'</span>'}
+body+='</div></div>';
+
+// 周选择
+var weekDay=State.scheduleWeekDay||time.星期||'周一';
+var weekDays=['周一','周二','周三','周四','周五','周六','周日'];
+body+='<div class="event-filter">';
+weekDays.forEach(function(d){body+='<button class="filter-btn'+(d===weekDay?' active':'')+'" data-act="switch-schedule-week" data-val="'+esc(d)+'">'+esc(d)+'</button>'});
+body+='</div>';
+
+// 当日课程
+var daySched=sched[weekDay]||[];
+if(daySched.length===0){body+='<div class="empty-state">'+esc(weekDay)+' 没有课程（休息日）</div>'}
+else{
+  body+='<div class="event-timeline">';
+  var lastSlot='';
+  daySched.forEach(function(c,i){
+    var slot=c.时段||'';
+    if(slot!==lastSlot){body+='<div class="sect-title">'+esc(slot)+'</div>';lastSlot=slot}
+    var type=c.type||c.类型||'正课';
+    var typeColor={'正课':'var(--c-blue)','体育':'var(--c-warn)','实验':'var(--c-orange)','活动':'var(--c-pink)','班会':'var(--c-danger)','自习':'var(--c-dim)','早读':'var(--c-accent)'}[type]||'var(--c-dim)';
+    body+='<div class="event-item">';
+    body+='<div class="event-row"><span class="event-type" style="background:'+typeColor+'22;color:'+typeColor+'">第'+(c.节次||c['节次']||(i+1))+'节 · '+esc(type)+'</span><span class="event-time">📍 '+esc(c.教室||c['教室']||'高三2班')+'</span></div>';
+    body+='<div class="event-desc"><b>'+esc(c.科目||c['科目']||'自习')+'</b>';
+    var teacher=c.老师||c['老师']||'';
+    var teacherUID=c.老师_UID||c['老师 UID']||c['老师UID']||'';
+    if(teacher){
+      var tJump=females[teacherUID];
+      if(tJump){body+=' · 👩‍🏫 <button class="teacher-jump-btn" data-act="goto-characters" data-uid="'+esc(teacherUID)+'" style="background:transparent;border:none;color:var(--c-accent);cursor:pointer;padding:0 4px;text-decoration:underline;font-size:inherit">'+esc(teacher)+' →</button>'}
+      else{body+=' · 👩‍🏫 '+esc(teacher)}
+    }
+    var note=c.备注||c['备注']||'';
+    if(note){body+='<br><span style="color:var(--c-dim)">📝 '+esc(note)+'</span>'}
+    body+='</div>';
+    // 老师卡片
+    if(teacherUID&&females[teacherUID]){
+      var t=females[teacherUID];var tb=t.基础||{};
+      body+='<button class="rec-expand-btn" data-act="toggle-detail" data-id="sched-'+i+'">老师详情</button>';
+      body+='<div class="rec-detail" id="detail-sched-'+i+'">';
+      body+='<div class="heroine-stats"><span>姓名: '+esc(tb.姓名||teacherUID)+'</span><span>身份: '+esc(tb.身份||'')+'</span><span>科目: '+esc(tb.教授科目||'')+'</span></div>';
+      if(tb.职务){body+='<div class="heroine-stats"><span>职务: '+esc(tb.职务)+'</span></div>'}
+      if(tb.办公室){body+='<div class="heroine-stats"><span>办公室: '+esc(tb.办公室)+'</span></div>'}
+      if(tb.住宿){body+='<div class="heroine-stats"><span>住宿: '+esc(tb.住宿)+'</span></div>'}
+      var tt=t.叙事||{};
+      if(tt.外貌){body+='<div class="heroine-stats" style="margin-top:4px"><span>外貌: '+esc(tt.外貌)+'</span></div>'}
+      if(tt.简介){body+='<div class="heroine-stats"><span>简介: '+esc(tt.简介)+'</span></div>'}
+      body+='<div class="heroine-stats" style="margin-top:4px"><button class="rec-expand-btn" data-act="goto-characters" data-uid="'+esc(teacherUID)+'" style="background:var(--c-accent);color:#fff">进入角色页 →</button></div>';
+      body+='</div>';
+    }
+    body+='</div>';
+  });
+  body+='</div>';
+}
+
+// 老师总览
+body+='<div class="sect-title">👩‍🏫 任课老师一览</div>';
+var teacherMap={};
+Object.keys(females).forEach(function(k){var f=females[k];if(!f||typeof f!=='object')return;var b=f.基础||{};if(b.角色==='老师'||b.身份==='教师'||b.教授科目){teacherMap[k]={uid:k,name:b.姓名||k,subject:b.教授科目||'',title:b.职务||b.身份||'',office:b.办公室||'',isClassTeacher:b.是否班主任||false}}});
+var tArr=Object.values(teacherMap);
+if(tArr.length===0){body+='<div class="empty-state">暂无老师档案</div>'}
+else{
+  tArr.sort(function(a,b){return(a.subject||'').localeCompare(b.subject||'')});
+  body+='<div class="g2">';
+  tArr.forEach(function(t){
+    var badge=t.isClassTeacher?'<span class="pill danger">班主任</span>':'';
+    body+='<div class="heroine-item" data-act="goto-characters" data-uid="'+esc(t.uid)+'" style="cursor:pointer">';
+    body+='<div class="heroine-row"><span class="heroine-name">'+esc(t.subject)+' · '+esc(t.name)+'</span>'+badge+'</div>';
+    body+='<div class="heroine-stats"><span>'+esc(t.title)+'</span>'+(t.office?'<span>📍 '+esc(t.office)+'</span>':'')+'</div>';
+    body+='</div>';
+  });
+  body+='</div>';
+}
+
+return body}
+
+function switchScheduleWeek(d){State.scheduleWeekDay=d;render()}
+
+// ===== 结局 tab =====
+// 对齐 schema.ts EndingTrackSchema：健康/平庸/真相揭示/坠落/崩坏/黑市掌控/同归于尽/未解之谜/某人清醒/某人崩坏
+// 隐藏层补充：坏结局已触发/坏结局类型/坏结局描述
+function renderPageEndings(){var endings=mvuObj('结局')||{};var hidden=mvuObj('隐藏层')||{};var body='';
+var triggered=hidden.坏结局已触发||false;var badType=hidden.坏结局类型||'';var badDesc=hidden.坏结局描述||'';
+var hasBad=triggered||badType;
+if(hasBad){body+='<div class="heroine-item" style="border-color:rgba(255,107,138,.5);background:rgba(255,107,138,.08)"><div class="heroine-row"><span class="heroine-name" style="color:var(--c-danger)">⚠ 坏结局已触发</span><span class="pill danger">'+esc(badType||'未知')+'</span></div>'+(badDesc?'<div class="heroine-stats" style="margin-top:4px"><span>'+esc(badDesc)+'</span></div>':'')+'</div>'}
+var allEndings=[
+  {key:'健康',name:'健康结局',icon:'💊',desc:'身体损害过度',cls:triggered&&badType==='健康'?'danger':(endings.健康?'warn':'safe')},
+  {key:'平庸',name:'平庸结局',icon:'📭',desc:'平凡度过高中',cls:triggered&&badType==='平庸'?'danger':(endings.平庸?'warn':'safe')},
+  {key:'真相揭示',name:'真相揭示',icon:'👁',desc:'真相大白',cls:triggered&&badType==='真相揭示'?'danger':(endings.真相揭示?'warn':'safe')},
+  {key:'坠落',name:'坠落结局',icon:'📉',desc:'堕落沉沦',cls:triggered&&badType==='坠落'?'danger':(endings.坠落?'warn':'safe')},
+  {key:'崩坏',name:'崩坏结局',icon:'💔',desc:'人格解离',cls:triggered&&badType==='崩坏'?'danger':(endings.崩坏?'warn':'safe')},
+  {key:'黑市掌控',name:'黑市掌控',icon:'🌑',desc:'掌控黑市',cls:triggered&&badType==='黑市掌控'?'danger':(endings.黑市掌控?'warn':'safe')},
+  {key:'同归于尽',name:'同归于尽',icon:'☠',desc:'全员覆灭',cls:triggered&&badType==='同归于尽'?'danger':(endings.同归于尽?'warn':'safe')},
+  {key:'未解之谜',name:'未解之谜',icon:'❓',desc:'悬念未解',cls:triggered&&badType==='未解之谜'?'danger':(endings.未解之谜?'warn':'safe')}
+];
+body+='<div class="sect-title">🎬 结局追踪</div><div class="g2">';
+allEndings.forEach(function(e){var isOn=!!endings[e.key];var isCurrentBad=triggered&&badType===e.key;var stateLabel=isCurrentBad?'已触发(当前)':(isOn?'已触发':'未达成');body+='<div class="heroine-item" style="padding:6px 8px"><div class="heroine-row"><span>'+e.icon+' '+esc(e.name)+'</span>'+(isCurrentBad?'<span class="pill danger">'+stateLabel+'</span>':(isOn?'<span class="pill warn">已触发</span>':'<span class="pill silver">未达成</span>'))+'</div><div class="heroine-stats"><span>'+esc(e.desc)+'</span></div></div>'});
+body+='</div>';
+var awakeArr=recKeys(endings.某人清醒);
+var brokenArr=recKeys(endings.某人崩坏);
+if(awakeArr.length>0){body+='<div class="sect-title">👁 某人清醒 ('+awakeArr.length+')</div><div class="g2">';awakeArr.forEach(function(n){body+='<div class="heroine-item" style="padding:4px 8px"><div class="heroine-row"><span>👤 '+esc(n)+'</span><span class="pill warn">已清醒</span></div></div>'});body+='</div>'}
+if(brokenArr.length>0){body+='<div class="sect-title">💥 某人崩坏 ('+brokenArr.length+')</div><div class="g2">';brokenArr.forEach(function(n){body+='<div class="heroine-item" style="padding:4px 8px;border-color:rgba(255,107,138,.4)"><div class="heroine-row"><span>👤 '+esc(n)+'</span><span class="pill danger">已崩坏</span></div></div>'});body+='</div>'}
+if(!hasBad&&awakeArr.length===0&&brokenArr.length===0){body+='<div class="empty-state">暂无结局触发记录</div>'}
+return body}
+
+// ===== 环境 tab =====
+function renderPageEnv(){var t=mvuObj('时间'),s=mvuObj('状态'),ac=mvuObj('学业');var env=mvuObj('环境')||{};var ts=t.时段||'';if(!ts){var hour=Number(t.小时)||8;if(hour>=5&&hour<7)ts='早晨';else if(hour>=7&&hour<8)ts='晨读';else if(hour>=8&&hour<12)ts='上午';else if(hour>=12&&hour<14)ts='中午';else if(hour>=14&&hour<17)ts='下午';else if(hour>=17&&hour<19)ts='傍晚';else if(hour>=19&&hour<22)ts='晚自习';else if(hour>=22||hour<2)ts='夜里';else ts='半夜'}var body='<div class="env-card"><div class="heroine-row"><span class="heroine-name">🌍 当前环境</span></div><div class="env-grid">';body+='<div class="env-item"><span class="k">日期</span> <span class="v">第'+(t.天数||1)+'天</span></div>';body+='<div class="env-item"><span class="k">时段</span> <span class="v">'+esc(ts)+'</span></div>';body+='<div class="env-item"><span class="k">星期</span> <span class="v">'+esc(t.星期||'周一')+'</span></div>';body+='<div class="env-item"><span class="k">距高考</span> <span class="v">'+(t.距高考天数||103)+'天</span></div>';body+='<div class="env-item"><span class="k">下次考试</span> <span class="v">'+(ac.考试倒计时||7)+'天</span></div>';var weather=env.天气||env.天气描述||'';if(weather){body+='<div class="env-item"><span class="k">天气</span> <span class="v">'+esc(weather)+'</span></div>'}var temp=env.温度||env.气温||'';if(temp){body+='<div class="env-item"><span class="k">温度</span> <span class="v">'+esc(temp)+'</span></div>'}var loc=env.位置||env.当前位置||'';if(loc){body+='<div class="env-item"><span class="k">位置</span> <span class="v">'+esc(loc)+'</span></div>'}var humid=env.湿度||'';if(humid){body+='<div class="env-item"><span class="k">湿度</span> <span class="v">'+esc(humid)+'</span></div>'}body+='</div></div>';var activities=recToArray(env.活动);if(activities.length>0){body+='<div class="sect-title">📋 近期活动 ('+activities.length+')</div>';body+=renderBatchBar('env_activities',activities.length+' 项');activities.forEach(function(a,idx){var id=a.编号||a._key||('act_'+idx);var title=a.标题||a.名称||'未知活动';var deadline=a.截止||a.时间||'';var desc=a.描述||a.简述||'';var inner='<div class="heroine-row"><span class="heroine-name">'+esc(title)+'</span>'+(deadline?'<span class="heroine-stat">'+esc(deadline)+'</span>':'')+'</div>';body+=renderRecordItem('env_activities',id,inner,desc?'<div>'+esc(desc)+'</div>':'')})}var news=recToArray(env.新闻);if(news.length>0){body+='<div class="sect-title">📢 近期新闻 ('+news.length+')</div>';body+=renderBatchBar('env_news',news.length+' 条');news.forEach(function(n,idx){var id=n.编号||n._key||('news_'+idx);var title=n.标题||n.头条||'未知新闻';var heat=n.热度||n.重要性||0;var heatTag=heat>=80?'<span class="event-importance high">热议</span>':(heat>=50?'<span class="event-importance mid">关注</span>':'<span class="event-importance low">一般</span>');var content=n.内容||n.摘要||'';var inner='<div class="heroine-row"><span class="heroine-name">'+esc(title)+'</span>'+heatTag+'</div>';body+=renderRecordItem('env_news',id,inner,content?'<div>'+esc(content)+'</div>':'')})}if(activities.length===0){if(news.length===0){body+='<div class="empty-state">暂无环境信息</div>'}}return body}
+
+// ===== 雷达 tab =====
+function renderPageRadar(){var radarRaw=mvuObj('雷达');var radar=recToArray(radarRaw&&radarRaw.信号);if(radar.length===0){return '<div class="empty-state">暂无雷达信号</div>'}var typeIcons={'人员':'◉','物品':'◆','载具':'▣','建筑':'▤'};var typeClsMap={'人员':'person','物品':'item','载具':'vehicle','建筑':'building'};var strengthClsMap={'强':'strong','中':'medium','弱':'weak','极弱':'very_weak','残影':'trace'};var threatClsMap={'无害':'harmless','可疑':'suspicious','敌对':'hostile','极高':'extreme','未知':'unknown'};var existTypes={};radar.forEach(function(sig){var t=sig.类型||'人员';if(!existTypes[t])existTypes[t]=true});var body='<div class="event-filter">';body+='<button class="filter-btn '+(currentRadarFilter==='all'?'active':'')+'" data-act="filter-radar" data-val="all">全部 ('+radar.length+')</button>';Object.keys(existTypes).forEach(function(t){var cnt=radar.filter(function(s){return (s.类型||'人员')===t}).length;body+='<button class="filter-btn '+(t===currentRadarFilter?'active':'')+'" data-act="filter-radar" data-val="'+esc(t)+'">'+(typeIcons[t]||'◉')+' '+esc(t)+' ('+cnt+')</button>'});body+='</div>';var filtered=radar.filter(function(sig){if(currentRadarFilter==='all')return true;return (sig.类型||'人员')===currentRadarFilter});body+=renderBatchBar('radar',filtered.length+' 条信号');filtered.forEach(function(sig,idx){var id=sig.编号||sig._key||('sig_'+idx);var type=sig.类型||'人员';var strength=sig.强度||'弱';var threat=sig.威胁||'未知';var desc=sig.描述||sig.简述||'';var distance=sig.距离||'';var location=sig.位置||'';var day=sig.探测日||'';var hour=sig.探测时||'';var note=sig.备注||'';var direction=sig.方向||sig.方位||'';var unit=sig.单位||sig.单位描述||'';var source=sig.来源||sig.所属||'';var name=sig.名称||sig.目标名称||'';var icon=typeIcons[type]||'◉';var typeCls=typeClsMap[type]||'person';var strengthCls=strengthClsMap[strength]||'weak';var threatCls=threatClsMap[threat]||'unknown';var inner='<div class="radar-signal"><span style="font-size:var(--fs-md)">'+icon+'</span><span class="radar-type '+typeCls+'">'+esc(type)+'</span><span class="radar-strength '+strengthCls+'">'+esc(strength)+'</span><span class="radar-threat '+threatCls+'">'+esc(threat)+'</span>'+(distance!==''?'<span class="heroine-stat">距 '+esc(distance)+'</span>':'')+'</div>'+(name?'<div class="heroine-stats"><span>名称: '+esc(name)+'</span></div>':'')+'<div class="heroine-stats">'+(location?'<span>📍 '+esc(location)+'</span>':'')+(day!==''?'<span>D'+esc(day)+(hour!==''?' '+esc(hour)+':00':'')+'</span>':'')+'</div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span><span>类型: '+esc(type)+'</span><span>强度: '+esc(strength)+'</span><span>威胁: '+esc(threat)+'</span></div>';if(name){detail+='<div class="heroine-stats"><span>名称: '+esc(name)+'</span></div>'}if(direction||unit){detail+='<div class="heroine-stats">'+(direction?'<span>🧭 方向: '+esc(direction)+'</span>':'')+(unit?'<span>单位: '+esc(unit)+'</span>':'')+'</div>'}if(source){detail+='<div class="heroine-stats"><span>来源: '+esc(source)+'</span></div>'}if(distance||location){detail+='<div class="heroine-stats">'+(distance?'<span>📏 距离: '+esc(distance)+'</span>':'')+(location?'<span>📍 位置: '+esc(location)+'</span>':'')+'</div>'}if(day!==''||hour!==''){detail+='<div class="heroine-stats"><span>⏱ 探测日: D'+esc(day||'-')+'</span><span>探测时: '+esc(hour||'-')+':00</span></div>'}if(desc){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>描述:</strong> '+esc(desc)+'</div>'}if(note){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,193,7,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>备注:</strong> '+esc(note)+'</div>'}body+=renderRecordItem('radar',id,inner,detail)});return body}
+
+// ===== 资产库 tab =====
+// 字段对齐 schema.ts InventoryItemSchema：编号/名称/标题/数量/量/类型/品质/状态/位置/所有者/可堆叠/标签/描述
+function renderPageAssets(){var inv=recToArray(mvuObj('物品栏'));var storage=recToArray(mvuObj('仓库'));var placed=recToArray(mvuObj('已放置物品'));var body='';function renderSection(title,arr,cat){if(!arr||arr.length===0)return '';var html='<div class="asset-section"><div class="sect-title">'+title+' ('+arr.length+')</div>';html+=renderBatchBar(cat,arr.length+' 件');html+='<div class="asset-grid">';arr.forEach(function(it,idx){if(!it||typeof it!=='object')it={};var id=it.编号||it._key||('item_'+cat+idx);var name=it.名称||it.标题||'未知物品';var qty=it.数量||it.量||1;var type=it.类型||'';var quality=it.品质||'';var status=it.状态||'';var location=it.位置||'';var owner=it.所有者||'';var desc=it.描述||'';var tags=Array.isArray(it.标签)?it.标签:[];var stackable=it.可堆叠;var inner='<div class="asset-card"><span class="name">'+esc(name)+'</span>'+(qty>1?'<span class="qty">x'+qty+'</span>':'')+'<div class="meta">'+(type?'<span>'+esc(type)+'</span>':'')+(quality?'<span> '+esc(quality)+'</span>':'')+(status?'<span> '+esc(status)+'</span>':'')+'</div>'+(location?'<div class="meta">📍 '+esc(location)+'</div>':'')+(owner?'<div class="meta">👤 '+esc(owner)+'</div>':'')+'</div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span><span>数量: '+qty+'</span>'+(stackable!==undefined?'<span>可堆叠: '+(stackable?'是':'否')+'</span>':'')+'</div>';if(type){detail+='<div class="heroine-stats"><span>类型: '+esc(type)+'</span>'+(quality?'<span>品质: '+esc(quality)+'</span>':'')+(status?'<span>状态: '+esc(status)+'</span>':'')+'</div>'}if(location){detail+='<div class="heroine-stats"><span>📍 位置: '+esc(location)+'</span></div>'}if(owner){detail+='<div class="heroine-stats"><span>👤 所有者: '+esc(owner)+'</span></div>'}if(desc){detail+='<div style="margin-top:4px;padding:4px 6px;background:var(--c-bg-pill);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>描述:</strong> '+esc(desc)+'</div>'}if(tags.length>0){detail+='<div class="heroine-stats" style="margin-top:4px"><span>🏷 标签: '+tags.map(function(t){return esc(String(t))}).join(' / ')+'</span></div>'}html+=renderRecordItem(cat,id,inner,detail)});html+='</div></div>';return html}body+=renderSection('🎒 持有物',inv,'物品栏');body+=renderSection('📦 仓库',storage,'仓库');body+=renderSection('📍 放置中',placed,'已放置物品');if(!inv.length&&!storage.length&&!placed.length){body+='<div class="empty-state">暂无资产记录</div>'}return body}
+
+// ===== 制造工坊 tab =====
+var craftSelectedId=null;var craftFilter='all';
+function renderPageCrafting(){var recipes=recToArray(mvuObj('制造配方'));if(recipes.length===0){return '<div class="empty-state">暂无制造配方</div>'}var body='<div class="craft-layout"><div class="craft-list">';body+='<input type="text" class="craft-search" id="craft-search" placeholder="搜索配方..." value="">';body+='<div class="event-filter">';body+='<button class="filter-btn '+(craftFilter==='all'?'active':'')+'" data-act="filter-craft" data-val="all">全部</button>';body+='<button class="filter-btn '+(craftFilter==='制造'?'active':'')+'" data-act="filter-craft" data-val="制造">制造</button>';body+='<button class="filter-btn '+(craftFilter==='改造'?'active':'')+'" data-act="filter-craft" data-val="改造">改造</button>';body+='<button class="filter-btn '+(craftFilter==='升级'?'active':'')+'" data-act="filter-craft" data-val="升级">升级</button>';body+='</div>';var filtered=recipes.filter(function(r){if(craftFilter!=='all'&&(r.类型||'制造')!==craftFilter)return false;if(craftSearchText){var name=(r.名称||r.标题||'').toLowerCase();if(name.indexOf(craftSearchText.toLowerCase())<0)return false}return true});filtered.forEach(function(r,idx){var id=r.编号||r._key||('recipe_'+idx);var name=r.名称||r.标题||'未知配方';var type=r.类型||'制造';var desc=r.描述||r.简述||'';var cls=(id===craftSelectedId)?'active':'';body+='<div class="craft-recipe '+cls+'" data-act="select-craft" data-id="'+esc(id)+'"><div class="heroine-row"><span class="heroine-name">'+esc(name)+'</span><span class="heroine-stat">'+esc(type)+'</span></div>'+(desc?'<div class="heroine-stats"><span>'+esc(desc.substring(0,40))+'</span></div>':'')+'</div>'});body+='</div>';body+='<div class="craft-detail">';if(craftSelectedId){var sel=recipes.find(function(r){return (r.编号||'')===craftSelectedId})||(filtered[0]||null);if(sel){var name=sel.名称||sel.标题||'未知配方';var desc=sel.描述||sel.简述||'';var materials=recToArray(sel.材料||sel.材料列表);var outputs=recToArray(sel.产物||sel.输出);var unlock=sel.解锁条件||sel.解锁||'';var before=recToArray(sel.之前||sel.预览之前);var after=recToArray(sel.之后||sel.预览之后);body+='<div class="sect-title">🔧 '+esc(name)+'</div>';if(desc){body+='<div class="heroine-stats" style="margin-bottom:6px">'+esc(desc)+'</div>'}if(unlock){body+='<div class="heroine-stats" style="color:var(--c-warn)">解锁条件: '+esc(unlock)+'</div>'}if(Array.isArray(materials)&&materials.length>0){body+='<div class="sect-title">材料清单</div>';materials.forEach(function(m){var mname=m.名称||m.物品||'';var need=m.需要||m.需求||1;var have=m.拥有||m.已有||0;var ok=have>=need;body+='<div class="craft-mat"><span>'+esc(mname)+'</span><span class="'+(ok?'ok':'no')+'">'+have+'/'+need+(ok?' ✅':' ❌')+'</span></div>'})}if(Array.isArray(before)&&before.length>0&&Array.isArray(after)&&after.length>0){body+='<div class="sect-title">改造对比</div><div class="craft-diff">';for(var i=0;i<before.length;i++){var b=before[i]||{};var a=after[i]||{};body+='<div class="craft-diff-row"><span class="before">'+esc(b.标签||b.键||'')+' '+esc(b.值||'')+'</span><span>→</span><span class="after">'+esc(a.值||'')+'</span></div>'}body+='</div>'}if(Array.isArray(outputs)&&outputs.length>0){body+='<div class="sect-title">产出</div>';outputs.forEach(function(o){var oname=o.名称||o.物品||'';var oqty=o.数量||o.量||1;body+='<div class="craft-mat"><span>'+esc(oname)+'</span><span class="ok">x'+oqty+'</span></div>'})}body+='<button class="batch-btn" data-act="execute-craft" data-id="'+esc(craftSelectedId)+'" style="width:100%;margin-top:8px">确认制造</button>'}}else{body+='<div class="empty-state">选择左侧配方查看详情</div>'}body+='</div></div>';return body}
+
+// ===== 载具 tab =====
+function renderPageVehicle(){var vehicles=recToArray(mvuObj('载具'));if(vehicles.length===0){return '<div class="empty-state">暂无载具记录</div>'}var body=renderBatchBar('载具',vehicles.length+' 辆');vehicles.forEach(function(v,idx){var id=v.编号||v._key||('veh_'+idx);var type=v.类型||v.载具类型||'';var brand=v.品牌||v.型号||'';var plate=v.牌照||v.车牌||'';var location=v.位置||'';var status=v.状态||v.移动状态||'停放';var energy=v.能源||v.燃料||'';var durability=v.耐久||v.状况||'';var maintenance=v.维护||'';var seats=recToArray(v.座位);var storage=recToArray(v.储物||v.货物);var inner='<div class="vehicle-card"><div class="heroine-row"><span class="heroine-name">'+esc(brand||type||'载具')+'</span><span class="vehicle-status">'+esc(status)+'</span></div><div class="heroine-stats">'+(type?'<span>'+esc(type)+'</span>':'')+(plate?'<span>车牌: '+esc(plate)+'</span>':'')+(location?'<span>📍 '+esc(location)+'</span>':'')+'</div><div class="heroine-stats">'+(energy!==''?'<span>能源: '+esc(energy)+'</span>':'')+(durability!==''?'<span>耐久: '+esc(durability)+'</span>':'')+(maintenance?'<span>维护: '+esc(maintenance)+'</span>':'')+'</div></div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span>'+(type?'<span>类型: '+esc(type)+'</span>':'')+'<span>状态: '+esc(status)+'</span></div>';if(brand||plate){detail+='<div class="heroine-stats">'+(brand?'<span>品牌: '+esc(brand)+'</span>':'')+(plate?'<span>牌照: '+esc(plate)+'</span>':'')+'</div>'}if(location){detail+='<div class="heroine-stats"><span>📍 位置: '+esc(location)+'</span></div>'}if(energy||durability||maintenance){detail+='<div class="heroine-stats">'+(energy?'<span>能源: '+esc(energy)+'</span>':'')+(durability?'<span>耐久: '+esc(durability)+'</span>':'')+(maintenance?'<span>维护: '+esc(maintenance)+'</span>':'')+'</div>'}if(Array.isArray(seats)&&seats.length>0){detail+='<div class="sect-title">座位详情 ('+seats.length+')</div>';seats.forEach(function(st,sidx){var stType=st.类型||st.座位类型||'';var stUser=st.使用者||st.占用者||'';var stStatus=st.状态||'';var stAvail=st.可用||'';var stNote=st.备注||'';detail+='<div class="sub-card"><div class="heroine-row"><span>'+(stType||'座位'+(sidx+1))+'</span>'+(stUser?'<span>👤 '+esc(stUser)+'</span>':'<span class="heroine-stat">空位</span>')+'</div><div class="heroine-stats">'+(stStatus?'<span>状态: '+esc(stStatus)+'</span>':'')+(stAvail?'<span>可用: '+esc(stAvail)+'</span>':'')+'</div>'+(stNote?'<div class="heroine-stats"><span>备注: '+esc(stNote)+'</span></div>':'')+'</div>'})}if(Array.isArray(storage)&&storage.length>0){detail+='<div class="sect-title">储物空间 ('+storage.length+')</div>';storage.forEach(function(st,sidx){var stName=st.名称||st.物品||'';var stQty=st.量||st.数量||1;var stCap=st.容量||'';var stContent=st.内容||'';var stStatus=st.状态||'';detail+='<div class="sub-card"><div class="heroine-row"><span>'+esc(stName||'物品'+(sidx+1))+'</span><span>x'+esc(stQty)+'</span></div><div class="heroine-stats">'+(stCap?'<span>容量: '+esc(stCap)+'</span>':'')+(stStatus?'<span>状态: '+esc(stStatus)+'</span>':'')+'</div>'+(stContent?'<div class="heroine-stats"><span>内容: '+esc(stContent)+'</span></div>':'')+'</div>'})}body+=renderRecordItem('载具',id,inner,detail)});return body}
+
+// ===== 居所 tab =====
+function renderPageResidence(){var residences=recToArray(mvuObj('居所'));if(residences.length===0){return '<div class="empty-state">暂无居所记录</div>'}var body=renderBatchBar('居所',residences.length+' 处');residences.forEach(function(r,idx){var id=r.编号||r._key||('res_'+idx);var type=r.类型||r.居所类型||'';var status=r.状态||r.居住状态||'';var location=r.位置||'';var security=r.安全等级||'';var police=r.治安||'';var lastVisit=r.最后访问日||'';var note=r.备注||'';var rooms=recToArray(r.房间);var facilities=recToArray(r.公共设施);var inner='<div class="residence-card"><div class="heroine-row"><span class="heroine-name">'+esc(type||'居所')+'</span>'+(status?'<span class="heroine-stat">'+esc(status)+'</span>':'')+'</div>'+(location?'<div class="heroine-stats"><span>📍 '+esc(location)+'</span></div>':'')+'</div>';var detail='';detail+='<div class="heroine-stats"><span>编号: '+esc(id)+'</span>'+(type?'<span>类型: '+esc(type)+'</span>':'')+(status?'<span>状态: '+esc(status)+'</span>':'')+'</div>';if(location){detail+='<div class="heroine-stats"><span>📍 位置: '+esc(location)+'</span></div>'}if(security||police){detail+='<div class="heroine-stats">'+(security?'<span>🔒 安全等级: '+esc(security)+'</span>':'')+(police?'<span>🚔 治安: '+esc(police)+'</span>':'')+'</div>'}if(lastVisit){detail+='<div class="heroine-stats"><span>📅 最后访问: D'+esc(lastVisit)+'</span></div>'}if(note){detail+='<div style="margin-top:4px;padding:4px 6px;background:rgba(255,193,7,.1);border-radius:6px;font-size:var(--fs-xs);line-height:1.5"><strong>备注:</strong> '+esc(note)+'</div>'}if(rooms.length>0){detail+='<div class="sect-title">房间 ('+rooms.length+')</div>';rooms.forEach(function(rm,ridx){var roomType=rm.类型||rm.房间类型||'';var occupants=Array.isArray(rm.居住者们)?rm.居住者们:[];var occupant=rm.居住者||rm.人员||'';var privacy=rm.隐私||rm.隐私等级||'';var cleanliness=rm.清洁度||rm.整洁度||'';var comfort=rm.舒适度||rm.舒适||'';var atmosphere=rm.氛围||'';var lock=rm.门锁||'';var roomStatus=rm.状态||rm.房间状态||'';var facilitiesList=Array.isArray(rm.设施们)?rm.设施们:[];var facilityStr=rm.设施||'';var todos=Array.isArray(rm.待办们)?rm.待办们:[];var todoStr=rm.待办||'';var lastClean=rm.最后清洁日||'';var roomNote=rm.备注||'';detail+='<div class="sub-card"><div class="heroine-row"><span>'+(roomType||'房间'+(ridx+1))+'</span>'+(roomStatus?'<span class="heroine-stat">'+esc(roomStatus)+'</span>':'')+'</div>'+(occupants.length>0?'<div class="heroine-stats"><span>👥 居住者: '+occupants.map(function(o){return esc(String(o))}).join('、')+'</span></div>':(occupant?'<div class="heroine-stats"><span>👤 '+esc(occupant)+'</span></div>':''))+'<div class="heroine-stats">'+(privacy?'<span>隐私: '+esc(privacy)+'</span>':'')+(cleanliness!==''?'<span>整洁: '+esc(cleanliness)+'</span>':'')+(comfort!==''?'<span>舒适: '+esc(comfort)+'</span>':'')+'</div>'+(atmosphere?'<div class="heroine-stats"><span>氛围: '+esc(atmosphere)+'</span></div>':'')+(lock?'<div class="heroine-stats"><span>🔒 门锁: '+esc(lock)+'</span></div>':'')+(facilitiesList.length>0?'<div class="heroine-stats"><span>设施: '+facilitiesList.map(function(f){return esc(String(f))}).join('、')+'</span></div>':(facilityStr?'<div class="heroine-stats"><span>设施: '+esc(facilityStr)+'</span></div>':''))+(todos.length>0?'<div class="heroine-stats"><span>📋 待办: '+todos.map(function(t){return esc(String(t))}).join('、')+'</span></div>':(todoStr?'<div class="heroine-stats"><span>📋 待办: '+esc(todoStr)+'</span></div>':''))+(lastClean?'<div class="heroine-stats"><span>🧹 最后清洁: D'+esc(lastClean)+'</span></div>':'')+(roomNote?'<div class="heroine-stats"><span>备注: '+esc(roomNote)+'</span></div>':'')+'</div>'})}if(facilities.length>0){detail+='<div class="sect-title">公共设施 ('+facilities.length+')</div>';facilities.forEach(function(f,fidx){var fType=f.类型||f.设施类型||'';var fName=f.名称||f.设施||'';var fStatus=f.状态||f.开放状态||'';var fUser=f.占用者||f.当前人员||'';var fClean=f.清洁度||'';var fPrivacy=f.隐私||'';var fNote=f.备注||'';detail+='<div class="sub-card"><div class="heroine-row"><span>'+(fType||fName||'设施'+(fidx+1))+'</span>'+(fStatus?'<span class="heroine-stat">'+esc(fStatus)+'</span>':'')+'</div>'+(fUser?'<div class="heroine-stats"><span>👤 占用者: '+esc(fUser)+'</span></div>':'')+'<div class="heroine-stats">'+(fClean?'<span>清洁: '+esc(fClean)+'</span>':'')+(fPrivacy?'<span>隐私: '+esc(fPrivacy)+'</span>':'')+'</div>'+(fNote?'<div class="heroine-stats"><span>备注: '+esc(fNote)+'</span></div>':'')+'</div>'})}body+=renderRecordItem('居所',id,inner,detail)});return body}
+
+function switchPage(page){currentPage=page;render()}
+
+function notifyCC(type,payload){try{var msg={type:type};if(payload)for(var k in payload)if(Object.prototype.hasOwnProperty.call(payload,k))msg[k]=payload[k];var origin=window.location.origin||'*';window.postMessage(msg,origin);if(window.parent&&window.parent!==window)window.parent.postMessage(msg,origin);if(window.top&&window.top!==window)window.top.postMessage(msg,origin)}catch(e){}}
+function findHostTextarea(){for(var i=0;i<TH_HOSTS.length;i++){try{var doc=TH_HOSTS[i].document;if(doc){var el=doc.querySelector('#send_textarea textarea')||doc.querySelector('textarea#send_textarea');if(el)return el}}catch(e){}}return null}
+var ccSwitchState={floatball:true,opening:true,media_lib:false,auto_refresh:true,event_notify:true,diy:false};
+function requestCCState(){notifyCC('fjb-cc-get-state',{})}
+function switchTheme(theme){currentTheme=theme;var root=document.documentElement;var t=THEMES[theme]||THEMES.pink;for(var k in t){if(Object.prototype.hasOwnProperty.call(t,k))root.style.setProperty(k,t[k])}try{localStorage.setItem('fjb-status-theme',theme)}catch(e){}notifyCC('fjb-set-theme',{theme:theme});render()}
+function loadPersistedTheme(){try{var t=localStorage.getItem('fjb-status-theme');if(t&&THEMES[t]){currentTheme=t;var root=document.documentElement;var tv=THEMES[t];for(var k in tv){if(Object.prototype.hasOwnProperty.call(tv,k))root.style.setProperty(k,tv[k])}}}catch(e){}}
+function setDifficulty(diff){notifyCC('fjb-set-difficulty',{difficulty:diff});var s=State.mvu;if(s&&s.stats)s.stats.difficulty=diff;render()}
+// 女性综合阶段中文映射
+var STAGE_LABELS={'A_理性期':'理性期','B_动摇期':'动摇期','C_沉沦期':'沉沦期','D_疯狂期':'疯狂期','E_崩坏期':'崩坏期'};
+function stageLabel(cs){if(!cs)return '理性期';if(STAGE_LABELS[cs])return STAGE_LABELS[cs];var m=/^([A-E])_/.exec(cs);return m?(m[1]+'阶段'):'理性期'}
+function stageShort(cs){if(!cs)return 'A';var m=/^([A-E])/.exec(cs);return m?m[1]:'A'}
+function stageDesc(cs){var map={'A_理性期':'理性·未受影响','B_动摇期':'动摇·开始好奇','C_沉沦期':'沉沦·主动寻求','D_疯狂期':'疯狂·无法自拔','E_崩坏期':'崩坏·人格解离'};return map[cs]||'未知状态'}
+
+// 展开状态持久化（防止 render() 重新渲染丢失展开的详情）
+var expandedDetailIds={};
+function saveExpandedDetails(){expandedDetailIds={};var els=document.querySelectorAll('.rec-detail.show');for(var i=0;i<els.length;i++){var id=els[i].getAttribute('id');if(id)expandedDetailIds[id]=true}var openDetails=document.querySelectorAll('details.block[open]');for(var j=0;j<openDetails.length;j++){var key=openDetails[j].getAttribute('data-key');if(key)State.expanded[key]=true}}
+function restoreExpandedDetails(){for(var id in expandedDetailIds){if(Object.prototype.hasOwnProperty.call(expandedDetailIds,id)){var el=document.getElementById(id);if(el)el.classList.add('show');var btn=document.querySelector('[data-act="toggle-detail"][data-id="'+id.replace(/^detail-/,'')+'"]');if(btn)btn.textContent='收起'}}}
+function render(){var loadingEl=document.getElementById('sb-loading');var bodyEl=document.getElementById('sb-body');if(!bodyEl)return;if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}loadingEl.style.display='none';bodyEl.style.display='';saveExpandedDetails();var pageEls=document.querySelectorAll('.sb-page');for(var i=0;i<pageEls.length;i++){var p=pageEls[i].getAttribute('data-page');if(p===currentPage){pageEls[i].style.display='block';pageEls[i].innerHTML=renderPageByName(p)}else{pageEls[i].style.display='none'}}var navBtns=document.querySelectorAll('.sb-nav button');for(var j=0;j<navBtns.length;j++){if(navBtns[j].getAttribute('data-page')===currentPage)navBtns[j].classList.add('active');else navBtns[j].classList.remove('active')}restoreExpandedDetails()}
+
+function showModal(title,content){var overlay=document.getElementById('modal-overlay');var modal=document.getElementById('modal-content');modal.innerHTML='<div class="modal-title"><span>'+esc(title)+'</span><button class="modal-close" data-act="close-modal">✕</button></div>'+content;overlay.className='modal-overlay show'}
+function closeModal(){document.getElementById('modal-overlay').className='modal-overlay'}
+
+function bindEvents(){var root=document.getElementById('sb-root');root.addEventListener('toggle',function(e){var t=e.target;if(t&&t.tagName==='DETAILS'){var key=t.getAttribute('data-key');if(key){State.expanded[key]=t.hasAttribute('open')}}},true);root.addEventListener('click',function(e){var navBtn=e.target.closest('.sb-nav button');if(navBtn){switchPage(navBtn.getAttribute('data-page'));return}var t=e.target.closest('[data-act]');if(!t)return;var act=t.getAttribute('data-act');if(act==='refresh'){refresh()}else if(act==='heroine-detail'){renderHeroineDetail(t.getAttribute('data-key'))}else if(act==='set-difficulty'){var val=t.getAttribute('data-val');setDifficulty(val);var input=findHostTextarea();if(input){input.value='切换难度为'+val;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus()}}else if(act==='set-theme'){switchTheme(t.getAttribute('data-val'))}else if(act==='filter-event'){currentEventFilter=t.getAttribute('data-val');render()}
+// P0-1: 批量选择/展开折叠/批量删除
+else if(act==='toggle-batch'){batchSelectMode=!batchSelectMode;if(!batchSelectMode)batchSelected={};render()}
+else if(act==='toggle-detail'){var did=t.getAttribute('data-id');var el=document.getElementById('detail-'+did);if(el){var isShow=el.classList.toggle('show');t.textContent=isShow?'收起':'展开'}}
+else if(act==='batch-delete'){var cat=t.getAttribute('data-cat');if(batchSelected[cat]){var ids=Object.keys(batchSelected[cat]).filter(function(k){return batchSelected[cat][k]});if(ids.length>0){var input=findHostTextarea();if(input){input.value='删除'+cat+'记录: '+ids.join(', ');input.dispatchEvent(new Event('input',{bubbles:true}));input.focus()}}}}
+else if(act==='filter-radar'){currentRadarFilter=t.getAttribute('data-val');render()}
+else if(act==='filter-craft'){craftFilter=t.getAttribute('data-val');render()}
+else if(act==='select-craft'){craftSelectedId=t.getAttribute('data-id');render()}
+else if(act==='execute-craft'){var cid=t.getAttribute('data-id');var input=findHostTextarea();if(input){input.value='执行制造: '+cid;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus()}}
+else if(act==='switch-schedule-week'){switchScheduleWeek(t.getAttribute('data-val'))}
+else if(act==='char-filter-class'){State.charClassFilter=t.getAttribute('data-val')||'全部';render()}
+else if(act==='goto-characters'){var gotoUid=t.getAttribute('data-uid')||'';switchPage('characters');State.charSearch=gotoUid;State.charClassFilter='全部';State.charHighlight=gotoUid;render();setTimeout(function(){var card=document.getElementById('char-card-'+gotoUid);if(card){card.classList.add('highlight');card.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){card.classList.remove('highlight')},3000)}},200)}
+});
+root.addEventListener('input',function(e){var t=e.target;if(!t)return;if(t.id==='craft-search'){craftSearchText=t.value;render()}else if(t.id==='char-search'){State.charSearch=t.value;render()}});
+root.addEventListener('change',function(e){var t=e.target;if(!t)return;if(t.getAttribute('data-act')==='toggle-fn'){var sw=t.getAttribute('data-val');ccSwitchState[sw]=t.checked;notifyCC('fjb-cc-set-switch',{key:sw,value:t.checked})}else if(t.getAttribute('data-act')==='batch-check'){var cat=t.getAttribute('data-cat');var id=t.getAttribute('data-id');if(!batchSelected[cat])batchSelected[cat]={};batchSelected[cat][id]=t.checked;var bar=document.querySelector('.batch-bar .batch-info');if(bar){var count=Object.keys(batchSelected[cat]).filter(function(k){return batchSelected[cat][k]}).length;bar.textContent='已选 '+count+' 条'}}});root.addEventListener('click',function(e){var item=e.target.closest('.shop-item.buyable');if(!item)return;var itemId=item.getAttribute('data-item');var price=Number(item.getAttribute('data-price'))||0;var itemName=item.getAttribute('data-name')||item.querySelector('.heroine-name').textContent;var input=findHostTextarea();if(input){input.value='购买'+itemName+'（'+price+'元）';input.dispatchEvent(new Event('input',{bubbles:true}));input.focus()}});document.getElementById('modal-overlay').addEventListener('click',function(e){var t=e.target.closest('[data-act]');if(t&&t.getAttribute('data-act')==='close-modal'){closeModal()}})}
+
+async function refresh(){if(State._refreshing)return;State._refreshing=true;State.refreshing=true;var quickStat=readStatDataSync();if(hasData(quickStat)){State.mvu=quickStat;State.loading=false}startDiffTracking(State.mvu);render();try{var realStat=await readStatDataAsync();if(hasData(realStat)){State.mvu=realStat;cachedStatFromBridge=realStat;State.loading=false}}catch(e){}startDiffTracking(State.mvu);State._refreshing=false;State.refreshing=false;render();commitSnapshot();requestStatFromBridge()}
+
+(function init(){bindEvents();loadPersistedTheme();var autoRefresh=function(){if(!ccSwitchState.auto_refresh)return;setTimeout(refresh,800)};var hostEventOn=pickHostValue('eventOn');try{if(typeof hostEventOn==='function'){hostEventOn('GENERATION_ENDED',autoRefresh);hostEventOn('MESSAGE_EDITED',autoRefresh);hostEventOn('mag_variable_update_ended',autoRefresh);hostEventOn('MESSAGE_SWIPED',autoRefresh);hostEventOn('chat_changed',autoRefresh);hostEventOn('chat_loaded',autoRefresh)}}catch(e){}
+// HUD 桥接信号订阅（与变量订阅桥接同构）：控制中心 emitHudSignal('data-changed') 时自动刷新
+try{var B=getHudBridge();if(B&&typeof B.subscribeHud==='function'){B.subscribeHud(function(signal,payload){try{if(signal==='data-changed'){if(payload&&payload.stat_data&&hasData(payload.stat_data)){cachedStatFromBridge=payload.stat_data;State.mvu=deepMergeStat(DEFAULT_STAT,payload.stat_data);State.loading=false;render()}else{refresh()}}}catch(e){}})}}catch(e){}
+window.addEventListener('message',function(e){try{if(e.origin&&e.origin!==window.location.origin)return;var data=e.data;if(data&&data.type==='fjb-mvu-stat-data'&&data.stat_data){var mesId=resolveMessageId();if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;if(hasData(data.stat_data)){cachedStatFromBridge=data.stat_data;State.mvu=deepMergeStat(DEFAULT_STAT,data.stat_data);State.loading=false;render()}return}if(data&&data.type==='fjb-set-theme'&&data.theme){currentTheme=data.theme;var root=document.documentElement;var t=THEMES[currentTheme]||THEMES.pink;for(var k in t){if(Object.prototype.hasOwnProperty.call(t,k))root.style.setProperty(k,t[k])}render();return}if(data&&data.type==='fjb-cc-state'&&data.state){if(data.state.switches)ccSwitchState=data.state.switches;if(data.state.theme){currentTheme=data.state.theme;var root2=document.documentElement;var t2=THEMES[currentTheme]||THEMES.pink;for(var k2 in t2){if(Object.prototype.hasOwnProperty.call(t2,k2))root2.style.setProperty(k2,t2[k2])}}render();return}}catch(x){}});
+// 初始化数据源：优先桥接 → 嵌入宏 → postMessage 请求
+var embedded=parseEmbeddedStat();if(embedded)cachedStatFromBridge=embedded;
+// 优先尝试桥接同步获取
+try{var B2=getHudBridge();if(B2&&typeof B2.getVariables==='function'){var bv=B2.getVariables();if(bv&&bv.stat_data&&hasData(bv.stat_data))cachedStatFromBridge=bv.stat_data}}catch(e){}
+requestStatFromBridge();requestCCState();refresh();
+// 显式设置桥接就绪标记（供控制中心 4 条件握手检测，boot 脚本已设置，此处双保险）
+try{document.documentElement.setAttribute('data-fjb-hud-ready','1')}catch(e){}
+console.log('[不要玩弄我的鸡吧] 状态栏已初始化, 桥接:'+((typeof getHudBridge()==='object')?'可用':'不可用'))})();
+</script>
+</body>
+</html>

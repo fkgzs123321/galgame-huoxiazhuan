@@ -1,0 +1,159 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 3 - 12-24 周日 ═══
+   当日主题：平安夜，商业区与温泉乡活动（身份感知独立场景）
+   特殊事件：event_day03_christmas_eve_shopping / event_day03_christmas_eve_cafe / event_day03_diary_2_window / event_day03_misako_route_open
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day3 场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家/商业区采购礼物/咖啡店义母美佐子/美佐子线开启
+     P2 川尻信良 → 川尻家/机车行找洋子/商业区偶遇洋子
+     P3 长冈芳树 → 长冈家/偷拍美纪双身份谜团/商业区潜行
+     P4 西御寺有友 → 西御寺家豪宅/商业区闲逛/计划骚扰唯
+     P5 天道新干线 → 天道家/保育园接触爱美/爱美线推进
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 3,
+  date: '12-24',
+  weekday: '周日',
+  chapter: '寒假前奏',
+  theme: '平安夜，商业区与温泉乡活动（身份感知独立场景）',
+  special_events: ['event_day03_christmas_eve_shopping', 'event_day03_christmas_eve_cafe', 'event_day03_diary_2_window', 'event_day03_misako_route_open'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '晴',
+  notes: '永岛母女未登场；圣诞礼物需在本日购买；按身份解锁对应核心女角'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _playerIdentityDesc === 'undefined') var _playerIdentityDesc = _profile ? _profile.identity_desc : '未选择';
+if (typeof _playerSpecialRole === 'undefined') var _playerSpecialRole = _profile ? _profile.special_role : '未选择';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家早/晚（义妹，圣诞礼物对象）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段 + 鸣泽家晚/深夜（义母，圣诞礼物对象，美佐子线开启）',
+    tomomi: '水野友美（row_id=8）：水野家上午/晚（邻家，可赠送礼物）',
+    commerce: '舞岛可怜（row_id=3）/田中美沙（row_id=10）/野野村美里（row_id=12）：商业区（身份中立）'
+  },
+  '川尻信良': {
+    yui: '鸣泽唯（row_id=1）：商业区/学园附近偶遇（认识但不熟）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：商业区偶遇（非邻家，陌生）',
+    yoko: '南川洋子（row_id=6）：机车行/商业区偶遇（同班同学，洋子线核心，可赠送礼物）★本日核心',
+    commerce: '舞岛可怜（row_id=3）/田中美沙（row_id=10）/野野村美里（row_id=12）：商业区（身份中立）'
+  },
+  '长冈芳树': {
+    yui: '鸣泽唯（row_id=1）：商业区/学园附近偶遇（陌生，非家庭关系）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：商业区/住宅区偷拍场景（敌意）★本日核心（谨慎潜行）',
+    miki: '加藤美纪（row_id=4）：商业区/学园偷拍场景（敌意，发现双身份谜团）',
+    commerce: '舞岛可怜（row_id=3）/田中美沙（row_id=10）/野野村美里（row_id=12）：商业区（身份中立）'
+  },
+  '西御寺有友': {
+    yui: '鸣泽唯（row_id=1）：商业区/学园远观（敌意）★本日核心（禁止骚扰，仅远观）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：商业区偶遇（非邻家，陌生）',
+    miki: '加藤美纪（row_id=4）：商业区偶遇（敌意）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室/商业区偶遇（师生关系紧张）',
+    commerce: '舞岛可怜（row_id=3）/田中美沙（row_id=10）/野野村美里（row_id=12）：商业区（身份中立）'
+  },
+  '天道新干线': {
+    yui: '鸣泽唯（row_id=1）：商业区/学园附近偶遇（师生关系，陌生）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：商业区偶遇（师生关系，陌生）',
+    aimi: '安田爱美（row_id=9）：保育园/商业区偶遇（有特殊企图）★本日核心',
+    misuzu: '片桐美铃（row_id=11）：学园教师室/商业区偶遇（同事关系）',
+    commerce: '舞岛可怜（row_id=3）/田中美沙（row_id=10）/野野村美里（row_id=12）：商业区（身份中立）'
+  },
+  '自定义': {
+    yui: '鸣泽唯（row_id=1）：商业区/学园附近偶遇（陌生，按玩家背景调整）',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》全时段（咖啡店老板娘）',
+    tomomi: '水野友美（row_id=8）：商业区偶遇（陌生，按玩家背景调整）',
+    commerce: '舞岛可怜（row_id=3）/田中美沙（row_id=10）/野野村美里（row_id=12）：商业区（身份中立）'
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+
+/* 事件描述（身份感知，用具体名字） */
+if (typeof _morningDesc === 'undefined') var _morningDesc = _dayScene ? _dayScene.morning : '玩家身份未初始化，等待玩家选择 P1-P6。';
+if (typeof _afternoonDesc === 'undefined') var _afternoonDesc = _dayScene ? _dayScene.afternoon : '等待玩家选择身份。';
+if (typeof _eveningDesc === 'undefined') var _eveningDesc = _dayScene ? _dayScene.evening : '等待玩家选择身份。';
+if (typeof _diaryHint === 'undefined') var _diaryHint = _dayScene ? _dayScene.diary_hint : '玩家身份未初始化。';
+
+/* event_day03_christmas_eve_shopping：商业区采购礼物（P1 家庭礼物；P2-P6 非亲属礼物） */
+if (typeof _shoppingDesc === 'undefined') var _shoppingDesc = (_playerIdentity === '原作主角')
+  ? '商业区采购圣诞礼物。' + _playerName + ' 下午/晚前往八十八町商业区采购圣诞礼物。礼物选项影响 Day 4 圣诞事件好感加成：唯礼物（丝带发饰/手作甜点，义妹）唯好感额外 +2；美佐子礼物（红酒/咖啡豆，义母）美佐子好感额外 +2；礼物未购买 → Day 4 圣诞事件好感加成减半'
+  : '商业区采购圣诞礼物。' + _playerName + ' 下午/晚前往八十八町商业区采购圣诞礼物。礼物选项影响 Day 4 圣诞事件好感加成：唯礼物（丝带发饰/手作甜点，非亲属朋友）唯好感额外 +2；美佐子礼物（红酒/咖啡豆，咖啡店老板娘）美佐子好感额外 +2；礼物未购买 → Day 4 圣诞事件好感加成减半';
+
+/* event_day03_christmas_eve_cafe：咖啡店圣诞特饮（P1 义母；P2-P6 老板娘） */
+if (typeof _cafeDesc === 'undefined') var _cafeDesc = (_playerIdentity === '原作主角')
+  ? '咖啡店圣诞特饮。咖啡店《憩》推出圣诞限定特饮，' + _playerName + ' 可遇义母美佐子/可怜/美沙。商业区氛围装饰，铺垫 Day 4 鸣泽家圣诞夜'
+  : '咖啡店圣诞特饮。咖啡店《憩》推出圣诞限定特饮，' + _playerName + ' 可遇老板娘美佐子/可怜/美沙（均非玩家亲属）。商业区氛围装饰，铺垫 Day 4 圣诞夜偶遇';
+
+/* event_day03_diary_2_window：梦仙人还书窗口期（P2 玩家即川尻信良本人） */
+if (typeof _diary2Desc === 'undefined') var _diary2Desc = (_playerIdentity === '川尻信良')
+  ? '第2本·梦仙人还书窗口期持续（12-23~12-28）。任意时段温泉乡占卜馆触发。前置条件同 Day 2。叙事提示：' + _playerName + '（川尻信良本人）自行前往占卜馆还书，建议在 12-28 前完成'
+  : '第2本·梦仙人还书窗口期持续（12-23~12-28）。任意时段温泉乡占卜馆触发。前置条件同 Day 2。叙事提示：本日仍可推进川尻信良还书任务，' + _playerName + ' 可陪同前往，建议在 12-28 前完成';
+
+/* event_day03_misako_route_open：美佐子线攻略窗口（P1 自宅家庭；P2-P6 仅咖啡店非家庭） */
+if (typeof _misakoRouteDesc === 'undefined') var _misakoRouteDesc = (_playerIdentity === '原作主角')
+  ? '美佐子线攻略窗口开启（12/24~1/6）。全时段咖啡店《憩》或鸣泽家自宅触发。前置条件：美佐子好感 ≥ 10。无额外好感变化。叙事提示：美佐子线正式开放，' + _playerName + ' 可在窗口期内集中推进美佐子好感至亲密阶段，解锁酒后/浴室洗背等关键家庭事件'
+  : '美佐子线攻略窗口开启（12/24~1/6）。全时段咖啡店《憩》或' + _playerHome + '周边触发（美佐子非玩家亲属，不住玩家住所）。前置条件：美佐子好感 ≥ 10。无额外好感变化。叙事提示：美佐子线正式开放，' + _playerName + ' 可在窗口期内集中推进美佐子好感至亲密阶段，解锁酒后/偶遇等关键事件（非家庭关系）';
+%>
+
+[Day 3 调度器已加载：12-24 周日，主题：平安夜（身份感知独立场景）。
+本日特殊事件：event_day03_christmas_eve_shopping / event_day03_christmas_eve_cafe / event_day03_diary_2_window / event_day03_misako_route_open。
+本日锁定女角：[13,14]（永岛母女未登场）。
+本日新解锁：无。
+本日天气默认：晴。
+本日备注：永岛母女未登场；圣诞礼物需在本日购买；按身份解锁对应核心女角。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _playerIdentityDesc %>
+★ 特殊角色：<%= _playerSpecialRole %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+
+【当日事件详情】
+- event_day03_christmas_eve_shopping：<%= _shoppingDesc %>。场景描述：<%= _afternoonDesc %>
+- event_day03_christmas_eve_cafe：<%= _cafeDesc %>。
+- event_day03_diary_2_window：<%= _diary2Desc %>。叙事提示：<%= _diaryHint %>
+- event_day03_misako_route_open：<%= _misakoRouteDesc %>。
+
+【当日女角出现特殊规则】
+本日为平安夜，商业区活动频繁。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% if (_heroineRule.commerce) { %>- <%= _heroineRule.commerce %><% } %>
+<% } %>
+其余未列出女角锁定（含永岛母女 row_id=13,14），AI 不可让其出现。
+关键提示：圣诞礼物必须在本日购买，否则影响 Day 4 事件。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。]

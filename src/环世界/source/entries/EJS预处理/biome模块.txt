@@ -1,0 +1,90 @@
+@@generate_before
+<%_
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+var temperature = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var season = getvar('stat_data.殖民地.季节', { scope: 'local', defaults: '春' }) || '春';
+var weather = getvar('stat_data.殖民地.天气', { scope: 'local', defaults: '晴' }) || '晴';
+
+var biomeTable = [
+  { name: '温带森林', temps: { '春': 15, '夏': 25, '秋': 10, '冬': -5 }, trait: '平衡型', resource: '木材丰富', challenge: '无明显短板' },
+  { name: '沙漠', temps: { '春': 30, '夏': 45, '秋': 20, '冬': 5 }, trait: '极热', resource: '仙人掌药材', challenge: '水源稀缺' },
+  { name: '冻原', temps: { '春': -5, '夏': 10, '秋': -10, '冬': -30 }, trait: '极寒', resource: '采矿丰富', challenge: '生长季短' },
+  { name: '热带雨林', temps: { '春': 28, '夏': 32, '秋': 27, '冬': 26 }, trait: '高温潮湿', resource: '木材丰富', challenge: '病毒多' },
+  { name: '极地', temps: { '春': -20, '夏': -5, '秋': -25, '冬': -45 }, trait: '致命寒冷', resource: '采矿极丰富', challenge: '几乎无种植' }
+];
+
+function _biomeByName(name) {
+  for (var i = 0; i < biomeTable.length; i++) {
+    if (biomeTable[i].name === name) { return biomeTable[i]; }
+  }
+  return biomeTable[0];
+}
+
+var slotTempMod = { '清晨': 3, '上午': 3, '中午': 8, '下午': 8, '傍晚': 2, '夜晚': 2, '深夜': -5 };
+
+function _biomeTemp(biomeName, season, timeSlot) {
+  var b = _biomeByName(biomeName);
+  var base = b.temps[season] || 20;
+  var mod = slotTempMod[timeSlot] || 0;
+  return Math.round((base + mod) * 100) / 100;
+}
+
+var currentBiome = _biomeByName(biome);
+var computedTemp = _biomeTemp(biome, season, '中午');
+var extremeWeather = [
+  { name: '寒潮', delta: -15, duration: '3-5天', effect: '温度-15°C,作物减产' },
+  { name: '热浪', delta: 12, duration: '3-5天', effect: '温度+12°C,中暑风险' },
+  { name: '火山冬天', delta: -20, duration: '30天', effect: '温度-20°C,作物产量×0.2' },
+  { name: '冷锋', delta: -8, duration: '1-2天', effect: '温度-8°C,短期寒冷' },
+  { name: '暖流', delta: 6, duration: '1-2天', effect: '温度+6°C,短期温暖' }
+];
+_%>
+<biome系统就绪>
+[当前biome]
+生态群落: <%= biome %>
+当前温度: <%= temperature %>°C
+季节: <%= season %>
+天气: <%= weather %>
+群落特性: <%= currentBiome.trait %> / 资源<%= currentBiome.resource %> / 挑战<%= currentBiome.challenge %>
+
+[5种biome表]
+<%_ for (var i = 0; i < biomeTable.length; i++) { var b = biomeTable[i]; _%>
+<%= (i+1) %>. <%= b.name %> (<%= b.trait %>)
+   四季温度: 春<%= b.temps['春'] %>°C / 夏<%= b.temps['夏'] %>°C / 秋<%= b.temps['秋'] %>°C / 冬<%= b.temps['冬'] %>°C
+   特性: <%= b.trait %>
+   资源: <%= b.resource %>
+   挑战: <%= b.challenge %>
+<%_ } _%>
+
+[温度规则]
+昼夜温差修正 (按时段叠加):
+  清晨(06-12) +3°C
+  中午(12-18) +8°C (最热)
+  傍晚(18-00) +2°C
+  深夜(00-06) -5°C (最冷)
+
+biome温度计算: biome基础季节温度 + 时段修正
+- 当前<%= biome %> <%= season %> 中午计算温度: <%= computedTemp %>°C
+- 当前实际温度: <%= temperature %>°C
+
+极端天气5种:
+<%_ for (var i = 0; i < extremeWeather.length; i++) { var w = extremeWeather[i]; _%>
+  <%= w.name %>: 温度<%= w.delta >= 0 ? '+' : '' %><%= w.delta %>°C / 持续<%= w.duration %> / <%= w.effect %>
+<%_ } _%>
+
+biome温度应用:
+- 温带森林: 平衡,无明显短板
+- 沙漠: 极端高温,夏季可达45°C,需降温设施
+- 冻原: 极端寒冷,生长季仅夏季短窗口
+- 热带雨林: 全年高温潮湿,疾病风险高
+- 极地: 致命寒冷,几乎无法种植,依赖采矿
+
+[行为校验要求]
+biome相关行为必须输出行为校验块:
+<biome行为校验>
+- 群落名称 / 季节温度 / 时段温度
+- 温度计算 (基础/时段修正/最终值)
+- 极端天气判定 (是否触发/类型/持续/效果)
+- 资源产出修正 (按biome特性)
+</biome行为校验>
+</biome系统就绪>

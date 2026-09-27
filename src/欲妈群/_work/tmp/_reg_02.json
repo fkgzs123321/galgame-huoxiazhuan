@@ -1,0 +1,18 @@
+{
+  "id": "yumq-regex-050-phase-up",
+  "scriptName": "7阶段晋升美化",
+  "findRegex": "/<phase_up>([\\s\\S]*?)<\\/phase_up>/g",
+  "replaceString": "<style>\n.yumq-phase-container { max-width: 92%; margin: 14px auto; background: linear-gradient(135deg, #1a0a1f 0%, #2d1438 50%, #4a1d5c 100%); border-radius: 18px; border: 2px solid #E879F9; box-shadow: 0 10px 30px rgba(232, 121, 249, 0.35), inset 0 1px 0 rgba(255,255,255,0.1); overflow: hidden; font-family: 'M PLUS Rounded 1c', -apple-system, sans-serif; position: relative; }\n.yumq-phase-container::before { content: '✨'; position: absolute; top: 8px; left: 14px; font-size: 1.3em; animation: yumqPhaseTwinkle 1.5s ease-in-out infinite; }\n@keyframes yumqPhaseTwinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }\n.yumq-phase-header { background: linear-gradient(90deg, transparent, rgba(232, 121, 249, 0.3), transparent); color: #F0ABFC; padding: 12px 18px 12px 42px; font-weight: 700; font-size: 1em; letter-spacing: 1px; text-shadow: 0 0 8px rgba(232, 121, 249, 0.5); }\n.yumq-phase-body { padding: 14px 18px; color: #F5D0FE; font-size: 0.92em; line-height: 1.7; white-space: pre-wrap; }\n.yumq-phase-body strong { color: #FBBF24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }\n.yumq-phase-footer { padding: 8px 18px 14px; font-size: 0.78em; color: #C084FC; text-align: right; font-style: italic; opacity: 0.8; }\n</style>\n<div class=\"yumq-phase-container\">\n  <div class=\"yumq-phase-header\">堕落阶段晋升</div>\n  <div class=\"yumq-phase-body\">$1</div>\n  <div class=\"yumq-phase-footer\">— 妈妈的心，正向着无法回头的深渊滑落 —</div>\n</div>",
+  "markdownOnly": true,
+  "promptOnly": false,
+  "placement": [
+    1,
+    2
+  ],
+  "minDepth": null,
+  "maxDepth": null,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "trimStrings": [],
+  "disabled": false
+}

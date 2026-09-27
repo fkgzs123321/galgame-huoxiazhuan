@@ -1,0 +1,327 @@
+@@generate_before
+<%_
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Shoot = Number(getvar('stat_data.殖民者_主角.射击', { scope: 'local', defaults: 5 })) || 5;
+var p1Melee = Number(getvar('stat_data.殖民者_主角.格斗', { scope: 'local', defaults: 5 })) || 5;
+var p1Weapon = getvar('stat_data.殖民者_主角.武器', { scope: 'local', defaults: '无' }) || '无';
+var p1Armor = getvar('stat_data.殖民者_主角.护甲', { scope: 'local', defaults: '无' }) || '无';
+var p1Head = Number(getvar('stat_data.殖民者_主角.头部', { scope: 'local', defaults: 100 })) || 100;
+var p1Torso = Number(getvar('stat_data.殖民者_主角.躯干', { scope: 'local', defaults: 100 })) || 100;
+var p1LArm = Number(getvar('stat_data.殖民者_主角.左臂', { scope: 'local', defaults: 100 })) || 100;
+var p1RArm = Number(getvar('stat_data.殖民者_主角.右臂', { scope: 'local', defaults: 100 })) || 100;
+var p1LLeg = Number(getvar('stat_data.殖民者_主角.左腿', { scope: 'local', defaults: 100 })) || 100;
+var p1RLeg = Number(getvar('stat_data.殖民者_主角.右腿', { scope: 'local', defaults: 100 })) || 100;
+
+var p2Name = getvar('stat_data.殖民者_2.姓名', { scope: 'local', defaults: '' }) || '';
+var p2Shoot = Number(getvar('stat_data.殖民者_2.射击', { scope: 'local', defaults: 5 })) || 5;
+var p2Weapon = getvar('stat_data.殖民者_2.武器', { scope: 'local', defaults: '无' }) || '无';
+var p2Armor = getvar('stat_data.殖民者_2.护甲', { scope: 'local', defaults: '无' }) || '无';
+
+var p3Name = getvar('stat_data.殖民者_3.姓名', { scope: 'local', defaults: '' }) || '';
+var p3Shoot = Number(getvar('stat_data.殖民者_3.射击', { scope: 'local', defaults: 5 })) || 5;
+var p3Weapon = getvar('stat_data.殖民者_3.武器', { scope: 'local', defaults: '无' }) || '无';
+
+var p4Name = getvar('stat_data.殖民者_4.姓名', { scope: 'local', defaults: '' }) || '';
+var p4Shoot = Number(getvar('stat_data.殖民者_4.射击', { scope: 'local', defaults: 5 })) || 5;
+var p4Weapon = getvar('stat_data.殖民者_4.武器', { scope: 'local', defaults: '无' }) || '无';
+
+var p5Name = getvar('stat_data.殖民者_5.姓名', { scope: 'local', defaults: '' }) || '';
+var p5Shoot = Number(getvar('stat_data.殖民者_5.射击', { scope: 'local', defaults: 5 })) || 5;
+var p5Weapon = getvar('stat_data.殖民者_5.武器', { scope: 'local', defaults: '无' }) || '无';
+
+var temperature = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var alertLevel = Number(getvar('stat_data.殖民地.警戒等级', { scope: 'local', defaults: 20 })) || 20;
+
+var COVER_DB = {
+  '无掩体': { 闪避: 0.5, 减伤: 0.0 },
+  '轻掩体': { 闪避: 1.0, 减伤: 0.2 },
+  '重掩体': { 闪避: 1.5, 减伤: 0.4 }
+};
+
+function _armorValue(armorName) {
+  if (typeof ARMOR_DB === 'undefined') return 0;
+  for (var cat in ARMOR_DB) {
+    if (ARMOR_DB[cat][armorName] != null) {
+      return ARMOR_DB[cat][armorName].减伤 || 0;
+    }
+  }
+  return 0;
+}
+
+function _hitChance(shootSkill, targetMoving, coverType, injured, nightNoLight, nightWithLight) {
+  var base = Math.min(95, 35 + (Number(shootSkill) || 0) * 3);
+  var mod = 1.0;
+  if (targetMoving) { mod *= 0.7; }
+  var cv = COVER_DB[coverType] || COVER_DB['无掩体'];
+  mod *= cv.闪避;
+  if (injured) { mod *= 0.5; }
+  if (nightNoLight) { mod *= 0.4; }
+  else if (nightWithLight) { mod *= 0.8; }
+  return Math.round(base * mod * 100) / 100;
+}
+
+/* 公式以DDL骰子引擎为准，禁止本地修改 */
+function _damageCalc(weaponDamage, shootSkill, bodyPart, armorValue, coverType) {
+  var base = (Number(weaponDamage) || 0) * (0.5 + (Number(shootSkill) || 0) * 0.025);
+  var partMod = 1.0;
+  if (bodyPart === '头部') { partMod = 2.0; }
+  else if (bodyPart === '躯干') { partMod = 1.0; }
+  else { partMod = 0.7; }
+  var armorReduce = Math.max(0.1, 1 - (Number(armorValue) || 0) / 100);
+  var cv = COVER_DB[coverType] || COVER_DB['无掩体'];
+  var coverReduce = 1.0 - cv.减伤;
+  var final = base * partMod * armorReduce * coverReduce;
+  return Math.round(final * 100) / 100;
+}
+
+function _woundGrade(damage) {
+  var d = Number(damage) || 0;
+  if (d >= 50) { return { 等级: '致命伤', HP扣除: d, 倒下概率: 0.8, 技能降效: 0.3 }; }
+  if (d >= 30) { return { 等级: '重伤', HP扣除: d, 倒下概率: 0.3, 技能降效: 0.5 }; }
+  if (d >= 15) { return { 等级: '中伤', HP扣除: d, 倒下概率: 0.0, 技能降效: 0.7 }; }
+  return { 等级: '轻伤', HP扣除: d, 倒下概率: 0.0, 技能降效: 1.0 };
+}
+
+function _downCheck(partHP, partName) {
+  var hp = Number(partHP) || 0;
+  if (hp <= 0) {
+    if (partName === '头部' || partName === '躯干') { return { 倒下: true, 濒死: true, 原因: partName + 'HP归零' }; }
+    return { 倒下: false, 濒死: false, 原因: partName + '丧失功能' };
+  }
+  return { 倒下: false, 濒死: false, 原因: '可战斗' };
+}
+
+function _rescueChance(medSkill, seed, difficulty) {
+  var val = (Number(medSkill) || 0) * 5;
+  var r = _check(val, seed, difficulty);
+  return { 抢救成功率: r.threshold, 骰值: r.roll, 结果: r.result };
+}
+
+/* 暴击判定: 暴击率 = max(0, (射击技能-10)×2)%, 近战暴击率 = max(0, (格斗技能-10)×3)%
+   暴击伤害 = 武器伤害 × 2.0, 大成功时暴击伤害 × 3.0 */
+function _critCheck(skill, type, seed) {
+  var skl = Number(skill) || 0;
+  var t = String(type) || 'ranged';
+  var critRate;
+  if (t === 'melee') {
+    critRate = Math.max(0, (skl - 10) * 3);
+  } else {
+    critRate = Math.max(0, (skl - 10) * 2);
+  }
+  var roll = _lcgRoll(seed + '_crit');
+  var isCrit = roll < critRate;
+  var isSuper = roll < (critRate * 0.1);
+  return {
+    暴击率: critRate,
+    骰值: roll,
+    暴击: isCrit,
+    超级暴击: isSuper,
+    伤害倍率: isSuper ? 3.0 : (isCrit ? 2.0 : 1.0)
+  };
+}
+
+/* 闪避判定: 闪避率 = min(60, 格斗技能×3 + 移动修正)%
+   移动修正: 静止0 / 移动+5 / 奔跑+10 / 受伤-10 / 卧床-30 */
+function _dodgeCheck(skill, moveState, seed) {
+  var skl = Number(skill) || 0;
+  var ms = String(moveState) || '静止';
+  var moveMod;
+  if (ms === '奔跑') moveMod = 10;
+  else if (ms === '移动') moveMod = 5;
+  else if (ms === '受伤') moveMod = -10;
+  else if (ms === '卧床') moveMod = -30;
+  else moveMod = 0;
+  var dodgeRate = Math.min(60, skl * 3 + moveMod);
+  var roll = _lcgRoll(seed + '_dodge');
+  var dodged = roll < dodgeRate;
+  return { 闪避率: dodgeRate, 骰值: roll, 闪避: dodged };
+}
+
+/* 弹药消耗: 每次远程攻击消耗1弹药, 霰弹枪消耗4弹药, 重机枪消耗5弹药
+   弹药归0时无法远程攻击, 需补充弹药 */
+function _ammoConsume(weaponName, currentAmmo) {
+  var w = String(weaponName) || '';
+  var consume = 1;
+  if (w.indexOf('霰弹') >= 0) consume = 4;
+  else if (w.indexOf('重机枪') >= 0) consume = 5;
+  else if (w.indexOf('冲锋') >= 0) consume = 3;
+  var remaining = Math.max(0, (Number(currentAmmo) || 0) - consume);
+  return {
+    武器: w,
+    消耗: consume,
+    剩余: remaining,
+    可射击: remaining > 0,
+    耗尽: remaining === 0
+  };
+}
+
+/* 武器耐久: 每次攻击-1耐久, 耐久归0时伤害×0.5并需修理
+   修理需在锻造台/高科技研究台执行, 修复率 = 建设×2.5% */
+function _weaponDurability(currentDurability, maxDurability) {
+  var cur = Math.max(0, (Number(currentDurability) || 0) - 1);
+  var max = Number(maxDurability) || 100;
+  var pct = max > 0 ? (cur / max * 100) : 0;
+  var damageMod;
+  if (cur === 0) damageMod = 0.5;
+  else if (pct < 25) damageMod = 0.7;
+  else if (pct < 50) damageMod = 0.85;
+  else damageMod = 1.0;
+  return {
+    当前耐久: cur,
+    最大耐久: max,
+    耐久百分比: Math.round(pct),
+    伤害修正: damageMod,
+    需修理: cur === 0 || pct < 25
+  };
+}
+
+/* 多次命中判定: 冲锋枪3发/霰弹枪10弹丸/重机枪5发
+   每发独立命中判定, 总伤害 = Σ各发伤害 */
+function _multiHitCheck(skill, weaponName, baseDamage, seed) {
+  var w = String(weaponName) || '';
+  var shots = 1;
+  if (w.indexOf('霰弹') >= 0) shots = 4;
+  else if (w.indexOf('重机枪') >= 0) shots = 5;
+  else if (w.indexOf('冲锋') >= 0) shots = 3;
+  if (shots === 1) {
+    return { 弹药数: 1, 命中数: 1, 总伤害: baseDamage, 命中详情: [{ 发数: 1, 命中: true, 伤害: baseDamage }] };
+  }
+  var totalDamage = 0;
+  var hits = 0;
+  var details = [];
+  var baseHit = Math.min(95, 35 + (Number(skill) || 0) * 3);
+  for (var i = 0; i < shots; i++) {
+    var roll = _lcgRoll(seed + '_shot' + i);
+    var hit = roll < baseHit;
+    var dmg = hit ? baseDamage : 0;
+    totalDamage += dmg;
+    if (hit) hits++;
+    details.push({ 发数: i + 1, 骰值: roll, 命中: hit, 伤害: dmg });
+  }
+  return { 弹药数: shots, 命中数: hits, 总伤害: Math.round(totalDamage * 100) / 100, 命中详情: details };
+}
+
+/* 范围伤害: 火箭筒范围5格/能量炮范围3格/手榴弹范围3格
+   中心100%伤害, 边缘-50%, 范围外0% */
+function _areaDamage(centerDamage, targetDistance, blastRadius) {
+  var dmg = Number(centerDamage) || 0;
+  var dist = Math.max(0, Number(targetDistance) || 0);
+  var radius = Math.max(1, Number(blastRadius) || 3);
+  var damageMod;
+  if (dist === 0) damageMod = 1.0;
+  else if (dist <= radius / 2) damageMod = 1.0;
+  else if (dist <= radius) damageMod = 0.5;
+  else damageMod = 0;
+  return {
+    中心伤害: dmg,
+    目标距离: dist,
+    爆破半径: radius,
+    伤害修正: damageMod,
+    实际伤害: Math.round(dmg * damageMod * 100) / 100,
+    在范围内: dist <= radius
+  };
+}
+
+var isNight = (timeSlot === '夜晚' || timeSlot === '深夜');
+var p1ArmorVal = _armorValue(p1Armor);
+var p2ArmorVal = _armorValue(p2Armor);
+_%>
+<战斗系统就绪>
+[当前战斗状态]
+警戒等级: <%= alertLevel %>
+时段: <%= timeSlot %> (夜间战斗:<%= isNight ? '是' : '否' %>)
+
+参战者状态:
+1. <%= p1Name %> - 武器:<%= p1Weapon %> 射击:<%= p1Shoot %> 格斗:<%= p1Melee %> 护甲:<%= p1Armor %>(<%= p1ArmorVal %>%)
+   部位HP: 头<%= p1Head %> 躯干<%= p1Torso %> 左臂<%= p1LArm %> 右臂<%= p1RArm %> 左腿<%= p1LLeg %> 右腿<%= p1RLeg %>
+2. <%= p2Name %> - 武器:<%= p2Weapon %> 射击:<%= p2Shoot %> 护甲:<%= p2Armor %>(<%= p2ArmorVal %>%)
+3. <%= p3Name %> - 武器:<%= p3Weapon %> 射击:<%= p3Shoot %>
+4. <%= p4Name %> - 武器:<%= p4Weapon %> 射击:<%= p4Shoot %>
+5. <%= p5Name %> - 武器:<%= p5Weapon %> 射击:<%= p5Shoot %>
+
+[战斗规则]
+命中公式: 最终命中率 = 基础命中率(射击技能, min(95, 35+skill×3)) × 修正系数
+  修正系数: 目标移动×0.7 / 掩体(无×0.5,轻×1.0,重×1.5) / 受伤×0.5 / 夜间无灯×0.4 / 夜间有灯×0.8
+  示例: <%= p1Name %>射击技能<%= p1Shoot %> → 基础命中率<%= Math.min(95, 35 + p1Shoot * 3) %>%
+
+伤害公式: 基础伤害 = 武器伤害 × (0.5 + 射击技能 × 0.025)
+部位修正: 头部×2.0 / 躯干×1.0 / 四肢×0.7
+装甲减免: max(0.1, 1 - 装甲值/100)
+掩体减伤: 无掩体0% / 轻掩体(沙袋)20% / 重掩体(墙后)40%
+最终伤害 = 基础伤害 × 部位修正 × 装甲减免 × (1 - 掩体减伤)
+
+装甲减伤值(本表为战斗快速查询,完整数据查数值表_装甲):
+  无/无甲/布衣/防寒衣/防毒面具/夜视仪: 0% | 毛皮大衣: 5% | 皮甲: 15% | 防弹头盔: 25%
+  防弹衣: 30% | 战术头盔: 40% | 战术甲: 45% | 动力头盔: 60% | 动力甲: 65%
+
+伤口分级:
+  轻伤: 伤害<15, HP-5~10, 技能降效×1.0
+  中伤: 伤害15-29, HP-15~25, 技能降效×0.7
+  重伤: 伤害30-49, HP-30~50, 倒下概率30%, 技能降效×0.5
+  致命伤: 伤害≥50, HP-50+, 倒下概率80%, 技能降效×0.3
+
+倒下判定: 部位HP归零 → 头/躯干濒死倒下, 四肢丧失功能
+濒死抢救: 抢救窗口2轮, 抢救成功率 = _check(医疗技能×5, seed, 难度)
+  普通难度: 阈值=医疗×5 / 困难: 阈值=医疗×2.5 / 极难: 阈值=医疗×1
+
+暴击判定: _critCheck(技能, 类型, seed)
+  远程暴击率 = max(0, (射击-10)×2)% / 近战暴击率 = max(0, (格斗-10)×3)%
+  暴击伤害倍率×2.0, 超级暴击(骰值<暴击率×0.1)伤害倍率×3.0
+  示例: <%= p1Name %>射击<%= p1Shoot %> → 远程暴击率<%= Math.max(0, (p1Shoot - 10) * 2) %>%
+
+闪避判定: _dodgeCheck(格斗, 移动状态, seed)
+  闪避率 = min(60, 格斗×3 + 移动修正), 上限60%
+  移动修正: 静止0 / 移动+5 / 奔跑+10 / 受伤-10 / 卧床-30
+  示例: <%= p1Name %>格斗<%= p1Melee %> 静止 → 闪避率<%= Math.min(60, p1Melee * 3) %>%
+
+弹药消耗: _ammoConsume(武器名, 当前弹药)
+  常规武器-1 / 冲锋枪-3 / 霰弹枪-4 / 重机枪-5
+  弹药归0 → 无法远程攻击, 需补弹
+
+武器耐久: _weaponDurability(当前耐久, 最大耐久)
+  每次攻击-1耐久, 耐久百分比影响伤害修正
+  ≥50% → ×1.0 / 25~49% → ×0.85 / 1~24% → ×0.7 / 0 → ×0.5且需修理
+  修理: 锻造台/高科技研究台, 修复率 = 建设技能×2.5%
+
+连射/散射: _multiHitCheck(技能, 武器名, 基础伤害, seed)
+  冲锋枪3发 / 霰弹枪4弹丸 / 重机枪5发, 每发独立命中(基础命中率35+技能×3)
+  总伤害 = Σ各发命中伤害
+
+爆破范围: _areaDamage(中心伤害, 目标距离, 爆破半径)
+  火箭筒半径5格 / 能量炮半径3格 / 手榴弹半径3格
+  距离≤半径/2 → 100%伤害 / 半径/2<距离≤半径 → 50%伤害 / 超出半径 → 0
+
+[战斗流程]
+1. 攻击方选择武器与目标, 调用_ammoConsume()检查弹药(耗尽则无法远程攻击)
+2. 调用_weaponDurability()扣除耐久, 获取伤害修正
+3. 命中判定: _hitChance()计算命中率(基础×修正系数)
+4. 闪避判定: _dodgeCheck(目标格斗, 目标移动状态, seed) — 目标可闪避时优先判定
+5. 暴击判定: _critCheck(攻击方技能, 武器类型, seed) — 命中后判定暴击与超级暴击
+6. 连射判定: 冲锋枪/霰弹/重机枪调用_multiHitCheck()逐发命中; 单发武器跳过
+7. 伤害计算: _damageCalc() × 暴击倍率 × 耐久修正 × 连射命中数
+8. 爆破武器调用_areaDamage()计算范围伤害
+9. 伤口分级: _woundGrade()判定伤情
+10. 倒下判定: _downCheck()判定目标状态
+
+[行为校验要求]
+战斗行为必须输出行为校验块:
+  行为类型: 攻击/防御/躲避/征召/撤退
+  执行者: 殖民者姓名
+  武器: 武器名称(查WEAPON_DB获取伤害/射程/攻速)
+  技能等级: 射击或格斗技能值
+  目标: 敌人名称/部位
+  命中判定: _hitChance()计算结果(基础命中率×修正系数)
+  闪避判定: _dodgeCheck()结果(闪避率/骰值/是否闪避)
+  暴击判定: _critCheck()结果(暴击率/骰值/暴击/超级暴击/伤害倍率)
+  伤害计算: _damageCalc()计算结果(基础×部位×装甲×掩体)
+  弹药消耗: _ammoConsume()结果(消耗/剩余/可射击/耗尽)
+  武器耐久: _weaponDurability()结果(当前耐久/耐久百分比/伤害修正/需修理)
+  连射命中: _multiHitCheck()结果(弹药数/命中数/总伤害/命中详情) — 仅连射武器
+  爆破范围: _areaDamage()结果(实际伤害/在范围内) — 仅爆破武器
+  部位: 命中部位(头/躯干/四肢)
+  装甲减免: max(0.1, 1-装甲值/100)
+  最终伤害: 计算结果(含暴击倍率与耐久修正)
+  伤口分级: _woundGrade()判定(轻伤/中伤/重伤/致命伤)
+  倒下判定: _downCheck()结果
+</战斗系统就绪>

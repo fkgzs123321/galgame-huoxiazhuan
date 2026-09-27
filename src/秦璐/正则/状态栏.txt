@@ -1,0 +1,7 @@
+```
+<body>
+<script>
+$('body').load('https://testingcf.jsdelivr.net/gh/shujshujun/my-tavern-scripts@qin1.1.1/dist/秦璐重置版/界面/状态栏/index.html')
+</script>
+</body>
+```

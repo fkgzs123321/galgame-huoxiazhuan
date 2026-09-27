@@ -1,0 +1,36 @@
+# 正则条目: 5群聊消息美化
+# id: yumq-regex-030-group-chat-beautify
+# disabled: false
+# placement: [1,2]
+# markdownOnly: true
+# promptOnly: false
+# runOnEdit: false
+# substituteRegex: 0
+
+=== findRegex ===
+/<group_msg>([\s\S]*?)<\/group_msg>/g
+
+=== replaceString ===
+<style>
+.yumq-chat-container { max-width: 95%; margin: 10px auto; background: linear-gradient(180deg, #FFF5F7 0%, #FFEEF3 100%); border-radius: 16px; border: 1.5px solid #FBCFE8; box-shadow: 0 6px 18px rgba(244, 114, 182, 0.15); overflow: hidden; font-family: 'M PLUS Rounded 1c', -apple-system, sans-serif; }
+.yumq-chat-header { background: linear-gradient(90deg, #F472B6, #EC4899); color: #fff; padding: 10px 16px; font-weight: 700; font-size: 0.92em; display: flex; align-items: center; gap: 8px; }
+.yumq-chat-header::before { content: '💭'; font-size: 1.1em; }
+.yumq-chat-body { padding: 12px 14px; max-height: 400px; overflow-y: auto; }
+.yumq-chat-body::-webkit-scrollbar { width: 5px; }
+.yumq-chat-body::-webkit-scrollbar-thumb { background: #F9A8D4; border-radius: 4px; }
+.yumq-chat-line { margin: 8px 0; padding: 8px 12px; border-radius: 12px; font-size: 0.9em; line-height: 1.5; animation: yumqChatIn 0.4s ease; }
+@keyframes yumqChatIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+.yumq-chat-name { font-weight: 700; margin-right: 6px; }
+.yumq-chat-time { font-size: 0.75em; color: #9CA3AF; margin-left: 6px; }
+.yumq-chat-line.self { background: rgba(244, 114, 182, 0.15); border-left: 3px solid #F472B6; }
+.yumq-chat-line.self .yumq-chat-name { color: #DB2777; }
+.yumq-chat-line.other { background: rgba(255, 255, 255, 0.6); border-left: 3px solid #FBCFE8; }
+.yumq-chat-line.other .yumq-chat-name { color: #6D5B79; }
+.yumq-chat-line.owner { background: rgba(168, 85, 247, 0.12); border-left: 3px solid #A855F7; }
+.yumq-chat-line.owner .yumq-chat-name { color: #7E22CE; }
+.yumq-chat-line.system { background: rgba(251, 191, 36, 0.15); border-left: 3px solid #FBBF24; font-style: italic; color: #92400E; }
+</style>
+<div class="yumq-chat-container">
+  <div class="yumq-chat-header">欲妈群 · 实时聊天</div>
+  <div class="yumq-chat-body">$1</div>
+</div>

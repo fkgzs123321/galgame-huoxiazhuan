@@ -1,0 +1,33 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/角色速览",
+    "value": {
+      "path": "世界书/角色/角色速览.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "12 人一表速览（玩家+庄里四人+山外七客）：公开身份+一眼识别，零身份信息",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "after_character_definition", "order": 101 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/玩家_基础信息",
+    "value": {
+      "scope": "specific",
+      "part": "basic",
+      "keywords": [],
+      "abstract": "<user> 投宿旅人档案：20 岁摄影师，12 分之 1 真实参与者，身份由脚本指派",
+      "contents": [
+        { "content": "<character_basic character=\"<user>\">" },
+        { "file": "世界书/角色/旅人/基础信息.yaml" },
+        { "content": "</character_basic>" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "after_character_definition", "order": 130 }
+    }
+  }
+]

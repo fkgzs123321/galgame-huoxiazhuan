@@ -1,0 +1,80 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/庄晚棠",
+    "value": {
+      "path": "世界书/NPC/庄晚棠.yaml",
+      "scope": "specific",
+      "keywords": ["庄晚棠", "老板娘"],
+      "abstract": "38 岁老板娘：圆融压场，笑意不到眼底，祖上留下这座庄（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 201 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/白蘅",
+    "value": {
+      "path": "世界书/NPC/白蘅.yaml",
+      "scope": "specific",
+      "keywords": ["白蘅", "管家"],
+      "abstract": "26 岁管家：寡言精确，夜里有人在走廊见过她（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 202 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/灶婶",
+    "value": {
+      "path": "世界书/NPC/灶婶.yaml",
+      "scope": "specific",
+      "keywords": ["灶婶", "厨娘"],
+      "abstract": "45 岁厨娘：热络迷信护食，山里长大认得狼毒草（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 203 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/小满",
+    "value": {
+      "path": "世界书/NPC/小满.yaml",
+      "scope": "specific",
+      "keywords": ["小满", "女侍"],
+      "abstract": "19 岁本地女侍：怯懦依赖嘴快，老人警告过她别在庄里过血月（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 204 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/姜芸",
+    "value": {
+      "path": "世界书/NPC/姜芸.yaml",
+      "scope": "specific",
+      "keywords": ["姜芸", "医生"],
+      "abstract": "34 岁医生：冷静求实控制欲，验尸结论能带偏所有人（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 205 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/NPC/苏黎",
+    "value": {
+      "path": "世界书/NPC/苏黎.yaml",
+      "scope": "specific",
+      "keywords": ["苏黎", "主播"],
+      "abstract": "24 岁网红主播：张扬表演型敏感，信号断了但镜头还在录（表面层零身份）",
+      "enabled": true,
+      "strategy": { "type": "selective" },
+      "position": { "type": "after_character_definition", "order": 206 }
+    }
+  }
+]

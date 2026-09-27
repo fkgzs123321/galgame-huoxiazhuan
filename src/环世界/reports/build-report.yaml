@@ -1,0 +1,17 @@
+schemaVersion: 5
+generatedAt: '2026-07-13T01:39:56.052Z'
+project:
+  id: project_mrelijzg_7336ef8c
+  name: 环世界
+  output: both
+validation:
+  errors: 0
+  warnings: 67
+  infos: 58
+outputs:
+  - target: worldbook
+    path: E:\Games\写卡\tavern_resource-main\.worldbook\projects\环世界\exports\环世界.worldbook.json
+    backup_path: E:\Games\写卡\tavern_resource-main\.worldbook\backups\环世界.worldbook.2026-07-13T01-39-56-083Z.bak.json
+  - target: character_card
+    path: E:\Games\写卡\tavern_resource-main\.worldbook\projects\环世界\exports\环世界.card.json
+    backup_path: E:\Games\写卡\tavern_resource-main\.worldbook\backups\环世界.card.2026-07-13T01-39-56-157Z.bak.json

@@ -1,0 +1,144 @@
+[
+ {
+  "op": "add",
+  "path": "/regex_scripts/数值变化上色",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b0",
+   "findRegex": "/[（(]([^）)]*(?:膂力|敏捷|根骨|悟性|潜能|经验|金钱|食物|饮水|生命|内力|法力|容貌|福缘|好感度|反抗值|兴奋度|熟练度|目的进度|世界的裂缝|岁数|月|她的期限|战力|声望|等级|技能)[^）)]+)[)）]/g",
+   "trimStrings": [],
+   "placement": [
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 0,
+   "replace_file": "正则/上色_数值变化.html"
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/判定结果高亮",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b1",
+   "findRegex": "/【([^】]{1,24})】/g",
+   "trimStrings": [],
+   "placement": [
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 0,
+   "replace_file": "正则/上色_判定结果.html"
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/屏幕外的人上色",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b2",
+   "findRegex": "/〔([^〕]+)〕/g",
+   "trimStrings": [],
+   "placement": [
+    1,
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 0,
+   "replace_file": "正则/上色_屏幕外的人.html"
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/游戏角色上色",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b3",
+   "findRegex": "/「([^」]+)」/g",
+   "trimStrings": [],
+   "placement": [
+    1,
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 0,
+   "replace_file": "正则/上色_游戏角色.html"
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/user上色",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b4",
+   "findRegex": "/（((?![^）]*(?:反抗值|好感度|潜能|经验|金钱|生命|内力|兴奋度|熟练度|目的进度|裂缝|战力|声望))[^）]+)）/g",
+   "trimStrings": [],
+   "placement": [
+    1,
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 0,
+   "replace_file": "正则/上色_user.html"
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/对AI隐藏变量更新",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b5",
+   "findRegex": "/<\\s*(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/",
+   "trimStrings": [],
+   "placement": [
+    1,
+    2
+   ],
+   "markdownOnly": false,
+   "promptOnly": true,
+   "runOnEdit": false,
+   "substituteRegex": 0,
+   "replaceString": ""
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/变量更新美化",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b6",
+   "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+   "trimStrings": [],
+   "placement": [
+    1,
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 1,
+   "replace_file": "正则/变量更新美化.html"
+  }
+ },
+ {
+  "op": "add",
+  "path": "/regex_scripts/变量更新中美化",
+  "value": {
+   "id": "00000000-0000-4000-8000-00000000b7",
+   "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+   "trimStrings": [],
+   "placement": [
+    1,
+    2
+   ],
+   "markdownOnly": true,
+   "promptOnly": false,
+   "runOnEdit": false,
+   "substituteRegex": 1,
+   "replace_file": "正则/变量更新中美化.html"
+  }
+ }
+]

@@ -1,0 +1,21 @@
+```
+<body>
+<!-- 系统哥的末日 · 前端界面 loader
+     ★ 面板本身在 CDN 仓库里，不在这张卡里：
+       https://github.com/fkgzs123321/galgame-xitongge
+     四块面板: 状态栏 / 她的档案 / 交涉面板 / 评论条（分件在仓库根，成品单页是 index.html）
+     ⚠ 改了面板要跑 _ui_repo/xitongge/push.cjs，它会重建、上传、并把新 commit 回填到这里
+     ⚠ 必须带 commit：不带会被 jsDelivr 缓存住，改了看不到变化 -->
+<div id="xb-load" style="padding:12px;color:#828b98;font-size:12px">正在载入界面…</div>
+<script>
+(function () {
+  var U = "https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-xitongge@2cd5c24/index.html";
+  var D = document.getElementById("xb-load");
+  if (typeof $ === "undefined") { if (D) D.textContent = "界面没载入：这个环境里没有 jQuery"; return; }
+  $("body").load(U, function (r, st) {
+    if (st === "error" && D) D.textContent = "界面没载入：CDN 取不到 " + U;
+  });
+})();
+</script>
+</body>
+```

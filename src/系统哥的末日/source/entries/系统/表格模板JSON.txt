@@ -1,0 +1,849 @@
+{
+  "mate": {
+    "type": "chatSheets",
+    "version": 2,
+    "updateConfigUiSentinel": -1,
+    "globalInjectionConfig": {
+      "readableEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "wrapperPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99980
+      }
+    }
+  },
+  "sheet_2lz1q3dw": {
+    "uid": "sheet_2lz1q3dw",
+    "name": "全局数据表",
+    "sourceData": {
+      "note": "全局状态表，仅 1 行。职责：时间/场景/难度/当前女角/不可逆状态计数",
+      "initNode": "开场白首轮回复时INSERT一行（row_id=1），后续禁止INSERT第二行。",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时UPDATE唯一行。",
+      "insertNode": "禁止。此表有且仅有一行，不允许INSERT第二行。",
+      "ddl": "CREATE TABLE IF NOT EXISTS global_state ( -- 全局数据表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1),\n  current_location TEXT NOT NULL,\n  current_minor_region TEXT NOT NULL,\n  current_major_region TEXT NOT NULL,\n  prev_scene_time TEXT CHECK(prev_scene_time IS NULL OR prev_scene_time GLOB '??-?? ??:??'),\n  elapsed_time TEXT NOT NULL,\n  cur_time TEXT NOT NULL CHECK(cur_time GLOB '??-?? ??:??'),\n  day_count INTEGER NOT NULL DEFAULT 1 CHECK(day_count BETWEEN 1 AND 17),\n  time_slot TEXT NOT NULL DEFAULT '早' CHECK(time_slot IN ('早','上午','下午','晚','深夜')),\n  difficulty TEXT NOT NULL DEFAULT '普通' CHECK(difficulty IN ('轻松','普通','挑战','地狱')),\n  current_heroine TEXT NOT NULL DEFAULT '',\n  scene_summary TEXT NOT NULL CHECK(LENGTH(scene_summary) <= 60),\n  lin_tian_present TEXT NOT NULL DEFAULT '否' CHECK(lin_tian_present IN ('是', '否')),\n  system_alert TEXT NOT NULL DEFAULT '无' CHECK(system_alert IN ('无', '警告', '危险', '崩坏')),\n  flags_text TEXT NOT NULL DEFAULT '{}'\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "current_location",
+        "current_minor_region",
+        "current_major_region",
+        "prev_scene_time",
+        "elapsed_time",
+        "cur_time",
+        "day_count",
+        "time_slot",
+        "difficulty",
+        "current_heroine",
+        "scene_summary",
+        "lin_tian_present",
+        "system_alert",
+        "flags_text"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "全局数据表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "全局数据表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 0
+  },
+  "sheet_azoatfui": {
+    "uid": "sheet_azoatfui",
+    "name": "世界地图点",
+    "sourceData": {
+      "note": "世界地图点",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS world_map_points ( -- 世界地图点\n  row_id INTEGER PRIMARY KEY,\n  location_name TEXT NOT NULL UNIQUE,\n  minor_region TEXT NOT NULL,\n  major_region TEXT NOT NULL,\n  location_type TEXT NOT NULL,\n  environment_desc TEXT NOT NULL CHECK(LENGTH(environment_desc) <= 60),\n  importance TEXT NOT NULL CHECK(importance IN ('核心', '重要', '普通')),\n  exploration_status TEXT NOT NULL CHECK(exploration_status IN ('未探索', '部分探索', '已探索'))\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "location_name",
+        "minor_region",
+        "major_region",
+        "location_type",
+        "environment_desc",
+        "importance",
+        "exploration_status"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "世界地图点",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "世界地图点-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 1
+  },
+  "sheet_li49pd1q": {
+    "uid": "sheet_li49pd1q",
+    "name": "地图元素表",
+    "sourceData": {
+      "note": "地图元素表",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS map_elements ( -- 地图元素表\n  row_id INTEGER PRIMARY KEY,\n  element_name TEXT NOT NULL UNIQUE,\n  element_type TEXT NOT NULL CHECK(element_type IN ('剧情物品', '威胁', '龙套', '地标')),\n  location_name TEXT NOT NULL,\n  element_desc TEXT NOT NULL CHECK(LENGTH(element_desc) <= 40),\n  status_text TEXT NOT NULL,\n  interaction_options TEXT NOT NULL CHECK(TRIM(interaction_options) <> '')\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "element_name",
+        "element_type",
+        "location_name",
+        "element_desc",
+        "status_text",
+        "interaction_options"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "地图元素表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "地图元素表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 2
+  },
+  "sheet_dneb8eg3": {
+    "uid": "sheet_dneb8eg3",
+    "name": "势力",
+    "sourceData": {
+      "note": "势力",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS factions ( -- 势力\n  row_id INTEGER PRIMARY KEY,\n  faction_name TEXT NOT NULL UNIQUE,\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 60),\n  leader TEXT,\n  relations_text TEXT,\n  headquarters TEXT,\n  faction_type TEXT NOT NULL CHECK(faction_type IN ('政府机关','执法部门','商业集团','地下势力','民间组织','家族势力','媒体','金融机构','科技企业','佣兵组织','宗教团体','教育机构','医疗集团','慈善基金','黑帮','跨国企业','初创公司','社区','匿名者','抵抗组织','雇佣兵团','情报组织')),\n  influence_level INTEGER NOT NULL DEFAULT 0 CHECK(influence_level BETWEEN 0 AND 5),\n  relation_to_user TEXT NOT NULL DEFAULT '中立' CHECK(relation_to_user IN ('盟友','友好','中立','冷漠','敌对','仇视','被user控制','被林天控制','未知','依附','从属','合作','竞争','观望','支持','反对','保护','利用','提防','信任','怀疑','试探','决裂','结盟','背叛','疏离')),\n  relation_to_antagonist TEXT NOT NULL DEFAULT '中立' CHECK(relation_to_antagonist IN ('盟友','友好','中立','冷漠','敌对','仇视','被user控制','被林天控制','未知','依附','从属','合作','竞争','观望','支持','反对','保护','利用','提防','信任','怀疑','试探','决裂','结盟','背叛','疏离'))\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "faction_name",
+        "description",
+        "leader",
+        "relations_text",
+        "headquarters",
+        "faction_type",
+        "influence_level",
+        "relation_to_user",
+        "relation_to_antagonist"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "势力",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "势力-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 3
+  },
+  "sheet_f2k5zngv": {
+    "uid": "sheet_f2k5zngv",
+    "name": "主角信息",
+    "sourceData": {
+      "note": "主角信息",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS protagonist_info ( -- 主角信息\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1),\n  name TEXT NOT NULL,\n  gender TEXT NOT NULL,\n  age INTEGER NOT NULL CHECK(age >= 0),\n  appearance TEXT NOT NULL CHECK(LENGTH(appearance) <= 60),\n  identity_text TEXT NOT NULL CHECK(LENGTH(identity_text) <= 40),\n  self_status TEXT NOT NULL DEFAULT '正常',\n  location_name TEXT NOT NULL,\n  charm INTEGER NOT NULL DEFAULT 50 CHECK(charm BETWEEN 0 AND 100),\n  academic INTEGER NOT NULL DEFAULT 50 CHECK(academic BETWEEN 0 AND 100),\n  social INTEGER NOT NULL DEFAULT 50 CHECK(social BETWEEN 0 AND 100),\n  physical INTEGER NOT NULL DEFAULT 50 CHECK(physical BETWEEN 0 AND 100),\n  willpower INTEGER NOT NULL DEFAULT 50 CHECK(willpower BETWEEN 0 AND 100),\n  perception INTEGER NOT NULL DEFAULT 50 CHECK(perception BETWEEN 0 AND 100),\n  hunger INTEGER NOT NULL DEFAULT 30 CHECK(hunger BETWEEN 0 AND 100),\n  thirst INTEGER NOT NULL DEFAULT 20 CHECK(thirst BETWEEN 0 AND 100),\n  fatigue INTEGER NOT NULL DEFAULT 0 CHECK(fatigue BETWEEN 0 AND 100),\n  mood INTEGER NOT NULL DEFAULT 70 CHECK(mood BETWEEN 0 AND 100),\n  money INTEGER NOT NULL DEFAULT 5000 CHECK(money >= 0),\n  category_modifiers TEXT NOT NULL DEFAULT '{}',\n  base_attributes TEXT NOT NULL,\n  special_attributes TEXT,\n  resources_text TEXT,\n  wealth_level TEXT NOT NULL DEFAULT 'A5' CHECK(wealth_level GLOB 'A[0-9]*' AND CAST(SUBSTR(wealth_level, 2) AS INTEGER) BETWEEN 1 AND 15),\n  marriage_state TEXT NOT NULL DEFAULT '完好' CHECK(marriage_state IN ('完好', '动摇', '破裂', '离婚', '丧偶')),\n  resistance_power INTEGER NOT NULL DEFAULT 0 CHECK(resistance_power BETWEEN 0 AND 100),\n  awakening_progress INTEGER NOT NULL DEFAULT 0 CHECK(awakening_progress BETWEEN 0 AND 100),\n  sanity_value INTEGER NOT NULL DEFAULT 100 CHECK(sanity_value BETWEEN 0 AND 100),\n  evidence_collected TEXT NOT NULL DEFAULT ''\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "name",
+        "gender",
+        "age",
+        "appearance",
+        "identity_text",
+        "self_status",
+        "location_name",
+        "charm",
+        "academic",
+        "social",
+        "physical",
+        "willpower",
+        "perception",
+        "hunger",
+        "thirst",
+        "fatigue",
+        "mood",
+        "money",
+        "category_modifiers",
+        "base_attributes",
+        "special_attributes",
+        "resources_text",
+        "wealth_level",
+        "marriage_state",
+        "resistance_power",
+        "awakening_progress",
+        "sanity_value",
+        "evidence_collected"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "主角信息",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "主角信息-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 4
+  },
+  "sheet_2ua74tgi": {
+    "uid": "sheet_2ua74tgi",
+    "name": "重要角色表",
+    "sourceData": {
+      "note": "重要角色表",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS important_npc ( -- 重要角色表\n  row_id INTEGER PRIMARY KEY,\n  name TEXT NOT NULL UNIQUE,\n  gender TEXT NOT NULL,\n  age INTEGER NOT NULL CHECK(age >= 0),\n  brief_intro TEXT NOT NULL CHECK(LENGTH(brief_intro) <= 30),\n  appearance TEXT NOT NULL CHECK(LENGTH(appearance) <= 60),\n  identity_text TEXT NOT NULL CHECK(LENGTH(identity_text) <= 40),\n  base_attributes TEXT NOT NULL,\n  special_attributes TEXT,\n  location_name TEXT NOT NULL,\n  presence_status TEXT NOT NULL CHECK(presence_status IN ('在场', '离场')),\n  relations_text TEXT,\n  interaction_options TEXT CHECK(presence_status = '离场' OR (interaction_options IS NOT NULL AND LENGTH(TRIM(interaction_options)) > 0)),\n  past_experience TEXT NOT NULL CHECK(LENGTH(past_experience) <= 600),\n  affection INTEGER NOT NULL DEFAULT 0 CHECK(affection BETWEEN -100 AND 100),\n  heartbeat INTEGER NOT NULL DEFAULT 0 CHECK(heartbeat BETWEEN -100 AND 100),\n  jealousy INTEGER NOT NULL DEFAULT 0 CHECK(jealousy BETWEEN -100 AND 100),\n  trust INTEGER NOT NULL DEFAULT 0 CHECK(trust BETWEEN -100 AND 100),\n  relationship_stage TEXT NOT NULL DEFAULT '初识' CHECK(relationship_stage IN ('决裂','仇视','厌恶','冷漠','疏离','初识','熟悉','暧昧','心动','亲密','攻略完成','失恋')),\n  stage_locked INTEGER NOT NULL DEFAULT 0 CHECK(stage_locked IN (0,1)),\n  is_pursued INTEGER NOT NULL DEFAULT 0 CHECK(is_pursued IN (0,1)),\n  route_locked INTEGER NOT NULL DEFAULT 0 CHECK(route_locked IN (0,1)),\n  mutex_group TEXT,\n  mutex_partner_name TEXT,\n  h_exp INTEGER NOT NULL DEFAULT 0 CHECK(h_exp >= 0),\n  first_kiss_done INTEGER NOT NULL DEFAULT 0 CHECK(first_kiss_done IN (0,1)),\n  first_h_done INTEGER NOT NULL DEFAULT 0 CHECK(first_h_done IN (0,1)),\n  advanced_h_done INTEGER NOT NULL DEFAULT 0 CHECK(advanced_h_done IN (0,1)),\n  cup_size TEXT NOT NULL DEFAULT '无' CHECK(cup_size IN ('无','A','B','C','D','E','F','G','H')),\n  bust_size INTEGER,\n  waist_size INTEGER,\n  hip_size INTEGER,\n  height INTEGER NOT NULL,\n  weight INTEGER,\n  nipple_size TEXT,\n  nipple_color TEXT,\n  areola_size TEXT,\n  breast_shape TEXT,\n  breast_sensitivity INTEGER CHECK(breast_sensitivity BETWEEN 0 AND 300),\n  lactation TEXT,\n  waist_shape TEXT,\n  waist_sensitivity INTEGER CHECK(waist_sensitivity BETWEEN 0 AND 300),\n  hand_desc TEXT,\n  nail_style TEXT,\n  hip_shape TEXT,\n  hip_sensitivity INTEGER CHECK(hip_sensitivity BETWEEN 0 AND 300),\n  anal_desc TEXT CHECK(anal_desc IS NULL OR anal_desc IN ('紧致','松弛','未开发','半开发','已开发','发达','N/A')),\n  pubic_hair TEXT,\n  labia_size TEXT,\n  labia_color TEXT,\n  vaginal_tightness TEXT,\n  vaginal_special TEXT,\n  lubrication_level TEXT,\n  hymen_status TEXT,\n  fertility TEXT,\n  body_sensitivity INTEGER CHECK(body_sensitivity BETWEEN 0 AND 300),\n  sensitive_zones TEXT,\n  arousal_triggers TEXT,\n  clothing_state TEXT,\n  exposure_level TEXT CHECK(exposure_level IS NULL OR exposure_level IN ('保守','日常','微露','暴露','半裸','全裸','N/A')),\n  wetness INTEGER CHECK(wetness BETWEEN 0 AND 100),\n  arousal_level INTEGER CHECK(arousal_level BETWEEN 0 AND 100),\n  semen_residue TEXT,\n  last_updated TEXT NOT NULL,\n  bind_depth INTEGER CHECK(bind_depth IS NULL OR bind_depth BETWEEN 0 AND 100),\n  ntr_play_type TEXT,\n  original_partner TEXT,\n  ejs_stage TEXT CHECK(ejs_stage IS NULL OR ejs_stage IN ('阶段0·未开始','阶段1·初期','阶段2·稳定期','阶段3·深化期','阶段4·心身动摇','阶段5·完全堕落','阶段6·身心沦陷','阶段7·彻底成为玩物')),\n  bind_period TEXT CHECK(bind_period IS NULL OR bind_period IN ('完全绑定','稳定期','深化中','初绑','松动','解绑中','已解绑')),\n  possession_marks TEXT,\n  last_lucid_moment TEXT\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "name",
+        "gender",
+        "age",
+        "brief_intro",
+        "appearance",
+        "identity_text",
+        "base_attributes",
+        "special_attributes",
+        "location_name",
+        "presence_status",
+        "relations_text",
+        "interaction_options",
+        "past_experience",
+        "affection",
+        "heartbeat",
+        "jealousy",
+        "trust",
+        "relationship_stage",
+        "stage_locked",
+        "is_pursued",
+        "route_locked",
+        "mutex_group",
+        "mutex_partner_name",
+        "h_exp",
+        "first_kiss_done",
+        "first_h_done",
+        "advanced_h_done",
+        "cup_size",
+        "bust_size",
+        "waist_size",
+        "hip_size",
+        "height",
+        "weight",
+        "nipple_size",
+        "nipple_color",
+        "areola_size",
+        "breast_shape",
+        "breast_sensitivity",
+        "lactation",
+        "waist_shape",
+        "waist_sensitivity",
+        "hand_desc",
+        "nail_style",
+        "hip_shape",
+        "hip_sensitivity",
+        "anal_desc",
+        "pubic_hair",
+        "labia_size",
+        "labia_color",
+        "vaginal_tightness",
+        "vaginal_special",
+        "lubrication_level",
+        "hymen_status",
+        "fertility",
+        "body_sensitivity",
+        "sensitive_zones",
+        "arousal_triggers",
+        "clothing_state",
+        "exposure_level",
+        "wetness",
+        "arousal_level",
+        "semen_residue",
+        "last_updated",
+        "bind_depth",
+        "ntr_play_type",
+        "original_partner",
+        "ejs_stage",
+        "bind_period",
+        "possession_marks",
+        "last_lucid_moment"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "重要角色表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "重要角色表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 5
+  },
+  "sheet_1y37xw25": {
+    "uid": "sheet_1y37xw25",
+    "name": "物品表",
+    "sourceData": {
+      "note": "物品栏表，多行。职责：物品名/类别/数量/稀有度/价格/来源/使用记录",
+      "initNode": "物品获得时INSERT新行（row_id自增），丢弃/消耗时DELETE。",
+      "deleteNode": "物品消耗完时DELETE该行。",
+      "updateNode": "物品数量变化时UPDATE该行。",
+      "insertNode": "物品获得时INSERT新行（row_id自增）。",
+      "ddl": "CREATE TABLE IF NOT EXISTS inventory ( -- 物品表\n  row_id INTEGER PRIMARY KEY,\n  item_name TEXT NOT NULL UNIQUE CHECK(LENGTH(item_name) <= 10),\n  item_type TEXT NOT NULL,\n  quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity >= 0),\n  quality TEXT NOT NULL CHECK(quality IN ('普通', '优秀', '稀有', '史诗', '传说', '神话')),\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 60)\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "item_name",
+        "item_type",
+        "quantity",
+        "quality",
+        "description"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "物品表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "物品表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 6
+  },
+  "sheet_hrkqkfi2": {
+    "uid": "sheet_hrkqkfi2",
+    "name": "装备表",
+    "sourceData": {
+      "note": "装备表",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS equipment ( -- 装备表\n  row_id INTEGER PRIMARY KEY,\n  equipment_name TEXT NOT NULL UNIQUE,\n  equipment_type TEXT NOT NULL,\n  quality TEXT NOT NULL CHECK(quality IN ('普通', '优秀', '稀有', '史诗', '传说', '神话')),\n  status_text TEXT NOT NULL CHECK(status_text IN ('已装备', '闲置')),\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 40)\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "equipment_name",
+        "equipment_type",
+        "quality",
+        "status_text",
+        "description"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "装备表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "装备表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 7
+  },
+  "sheet_rxf6lf47": {
+    "uid": "sheet_rxf6lf47",
+    "name": "任务表",
+    "sourceData": {
+      "note": "任务表",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS quests ( -- 任务表\n  row_id INTEGER PRIMARY KEY,\n  quest_name TEXT NOT NULL UNIQUE,\n  quest_type TEXT NOT NULL CHECK(quest_type IN ('主线', '支线', '日常')),\n  priority_level TEXT NOT NULL CHECK(priority_level IN ('紧急', '重要', '普通')),\n  target_desc TEXT NOT NULL CHECK(LENGTH(target_desc) <= 100),\n  progress_text TEXT NOT NULL CHECK(progress_text = '0%' OR progress_text GLOB '[1-9]%' OR progress_text GLOB '[1-9][0-9]%' OR progress_text = '100%'),\n  status_tag TEXT NOT NULL CHECK(status_tag IN ('进行中', '已完成', '已失败', '已放弃')),\n  source_text TEXT,\n  reward_text TEXT\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "quest_name",
+        "quest_type",
+        "priority_level",
+        "target_desc",
+        "progress_text",
+        "status_tag",
+        "source_text",
+        "reward_text"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "任务表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "任务表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 8
+  },
+  "sheet_6wtj7rdc": {
+    "uid": "sheet_6wtj7rdc",
+    "name": "纪要表",
+    "sourceData": {
+      "note": "纪要表，多行。职责：事件编码 TL${day}_${MMDD}_${seq}/事件摘要/影响",
+      "initNode": "重要事件发生时INSERT新行（row_id自增），禁止UPDATE/DELETE。",
+      "deleteNode": "禁止。",
+      "updateNode": "禁止UPDATE。",
+      "insertNode": "重要事件发生时INSERT新行（row_id自增）。",
+      "ddl": "CREATE TABLE IF NOT EXISTS chronicle ( -- 纪要表\n  row_id INTEGER PRIMARY KEY,\n  code_index TEXT NOT NULL UNIQUE CHECK(code_index GLOB 'AM[0-9][0-9][0-9][0-9]'),\n  time_span TEXT NOT NULL CHECK(time_span GLOB '??-?? ??:?? ~ ??-?? ??:??'),\n  summary TEXT NOT NULL,\n  chronicle_text TEXT NOT NULL,\n  key_dialogue TEXT\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "code_index",
+        "time_span",
+        "summary",
+        "chronicle_text",
+        "key_dialogue"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "纪要表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "纪要表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 9
+  },
+  "sheet_cs10kl0d": {
+    "uid": "sheet_cs10kl0d",
+    "name": "检定建议表",
+    "sourceData": {
+      "note": "检定建议表",
+      "initNode": "",
+      "deleteNode": "禁止。",
+      "updateNode": "",
+      "insertNode": "",
+      "ddl": "CREATE TABLE IF NOT EXISTS check_suggestions ( -- 检定建议表\n  row_id INTEGER PRIMARY KEY CHECK(row_id BETWEEN 1 AND 5),\n  display_text TEXT NOT NULL CHECK(TRIM(display_text) <> ''),\n  dice_command TEXT NOT NULL CHECK(TRIM(dice_command) <> '')\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "display_text",
+        "dice_command"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "检定建议表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "检定建议表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 10
+  }
+}

@@ -1,0 +1,1817 @@
+name: 系统哥的末日
+entries:
+  # ========== 世界观 (before_char, 蓝灯) ==========
+  - id: world-modern
+    comment: 现代小说世界观总纲
+    type: world_summary
+    content: ../source/entries/世界观/现代小说世界.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 10
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 现代社会小说世界设定，系统哥世界的基本规则
+  - id: system-devotion
+    comment: "死心塌地系统设定（正常档）"
+    type: ability
+    content: ../source/entries/世界观/死心塌地系统.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 11
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 正常档系统功能、绑定规则、限制条件（系统保护阈值≥20/评价值=0触发系统解绑结局）
+  - id: system-devotion-hell
+    comment: "死心塌地系统设定（地狱档）"
+    type: ability
+    content: ../source/entries/世界观/死心塌地系统（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 12
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 系统保护阈值≥10/评价值=0触发系统暴走不解绑/金手指升级/强制洗白/反派不死定律/系统预判/穿越第四面墙/水军机制
+  - id: wealth-system
+    comment: 财富等级体系
+    type: background
+    content: ../source/entries/世界观/财富等级体系.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 12
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: A1-A15财富等级定义与对应资产规模
+  - id: novel-comment
+    comment: "小说评论系统（正常档）"
+    type: ability
+    content: ../source/entries/世界观/小说评论系统.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 13
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 正常档读者评论互动系统，每轮3-5条评论，倾向由评价值决定
+  - id: novel-comment-hell
+    comment: "小说评论系统（地狱档）"
+    type: ability
+    content: ../source/entries/世界观/小说评论系统（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 14
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 水军机制/穿越第四面墙操控评论/评论倾向更宽容/每轮5-7条评论
+  - id: character-collapse
+    comment: "人设崩塌评价系统（正常档）"
+    type: ability
+    content: ../source/entries/世界观/人设崩塌评价系统.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 15
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 正常档评价值机制，归零则系统解绑，单次下降≤15、回升≤5
+  - id: character-collapse-hell
+    comment: "人设崩塌评价系统（地狱档）"
+    type: ability
+    content: ../source/entries/世界观/人设崩塌评价系统（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 16
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: world
+    scope: catalog
+    status: drafted
+    abstract: 单次下降≤6/回升≤10/阶段划分恶化/系统预判机制
+
+  # ========== 约束 (before_char, 蓝灯) ==========
+  - id: anti-omniscience
+    comment: 防全知约束
+    type: style
+    content: ../source/entries/约束/防全知.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 30
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 防止角色知晓不该知道的信息
+  - id: anti-god
+    comment: 防神化约束
+    type: style
+    content: ../source/entries/约束/防神化.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 31
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 防止角色神化，保持合理性
+  - id: anti-despair
+    comment: 防绝望约束
+    type: style
+    content: ../source/entries/约束/防绝望.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 32
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 保持user反抗希望，不走向绝望
+  - id: rationality
+    comment: 合理性审查
+    type: style
+    content: ../source/entries/约束/合理性审查.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 33
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 剧情合理性约束与审查规则
+  - id: law-moral
+    comment: 法律道德框架
+    type: style
+    content: ../source/entries/约束/法律道德.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 34
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 法律与道德框架约束
+  - id: system-rules
+    comment: "系统行为准则（正常档）"
+    type: style
+    content: ../source/entries/约束/系统行为准则.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 35
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 正常档系统运作行为准则，林天是精于算计的对手但不是无敌反派
+  - id: system-rules-hell
+    comment: "系统行为准则（地狱档）"
+    type: style
+    content: ../source/entries/约束/系统行为准则（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 36
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 林天短剧反派无敌机制（剧情装甲/系统救场/反派不死定律）/决策逻辑恶化/穿越第四面墙
+  - id: numeric-constraints
+    comment: "数值约束与林天行为逻辑（正常档）"
+    type: style
+    content: ../source/entries/约束/数值约束与林天行为逻辑.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 37
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 正常档数值变化约束（单轮≤5/≤6）+林天短剧反派行为逻辑（取保候审/越狱/证据不认账/自我欺骗）
+  - id: numeric-constraints-hell
+    comment: "数值约束与林天行为逻辑（地狱档）"
+    type: style
+    content: ../source/entries/约束/数值约束与林天行为逻辑（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 38
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 单轮上限按方分配（林天方≤4/≤10、user方≤10/≤4）/系统保护阈值≥10/评价值=0系统暴走/林天技能强化
+  - id: numeric-change-table
+    comment: "数值变动表（正常档）"
+    type: style
+    content: ../source/entries/约束/数值变动表.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 39
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 正常档所有数值变动的触发事件和幅度详细清单，单轮上限≤5/≤6
+  - id: numeric-change-table-hell
+    comment: "数值变动表（地狱档）"
+    type: style
+    content: ../source/entries/约束/数值变动表（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 40
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 事件幅度按方调整（林天方下降×0.7恢复×1.5，user方下降×1.5恢复×0.7）
+  - id: short-drama-rules
+    comment: "短剧行为规则（正常档）"
+    type: style
+    content: ../source/entries/约束/短剧行为规则.txt
+    enabled: false
+    constant: false
+    keys: ["绑定", "短剧", "解绑", "清醒"]
+    secondary_keys: []
+    position: before_char
+    order: 41
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 正常档适配通用短剧规则，绑定深度阈值≤50/≤30/≤20
+  - id: short-drama-rules-hell
+    comment: "短剧行为规则（地狱档）"
+    type: style
+    content: ../source/entries/约束/短剧行为规则（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: false
+    keys: ["绑定", "短剧", "解绑", "清醒"]
+    secondary_keys: []
+    position: before_char
+    order: 42
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: constraint
+    scope: catalog
+    status: drafted
+    abstract: 绑定深度阈值恶化（≤60/≤40/≤30）/限制条件恶化/绑定女性初始值修正/死心塌地系统恶化
+
+  # ========== 交涉系统 (before_char, 蓝灯) ==========
+  - id: negotiate-attr
+    comment: "交涉属性体系（正常档）"
+    type: ability
+    content: ../source/entries/系统/交涉属性体系.txt
+    enabled: false
+    constant: false
+    keys: ["交涉"]
+    secondary_keys: []
+    position: before_char
+    order: 50
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 正常档交涉系统属性定义，属性修正范围0-20，骰子贡献约50%
+  - id: negotiate-attr-hell
+    comment: "交涉属性体系（地狱档）"
+    type: ability
+    content: ../source/entries/系统/交涉属性体系（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: false
+    keys: ["交涉"]
+    secondary_keys: []
+    position: before_char
+    order: 51
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 林天方骰子+5/user方骰子-5/情境修正恶化/属性成长速率调整
+  - id: negotiate-rules
+    comment: "交涉判定规则（正常档）"
+    type: ability
+    content: ../source/entries/系统/交涉规则.txt
+    enabled: false
+    constant: false
+    keys: ["交涉"]
+    secondary_keys: []
+    position: before_char
+    order: 52
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 正常档交涉判定规则与骰子机制，6档差值判定
+  - id: negotiate-rules-hell
+    comment: "交涉判定规则（地狱档）"
+    type: ability
+    content: ../source/entries/系统/交涉判定规则（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: false
+    keys: ["交涉"]
+    secondary_keys: []
+    position: before_char
+    order: 53
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 系统预判机制/水军机制/user方差值门槛+5/交涉结果影响调整
+  - id: attribute-skill-system
+    comment: "属性与技能系统（正常档）"
+    type: ability
+    content: ../source/entries/系统/属性与技能系统.txt
+    enabled: false
+    constant: false
+    keys: ["交涉", "属性", "技能"]
+    secondary_keys: []
+    position: before_char
+    order: 49
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 正常档所有角色的4维属性和技能系统，交涉时参照执行
+  - id: attribute-skill-system-hell
+    comment: "属性与技能系统（地狱档）"
+    type: ability
+    content: ../source/entries/系统/属性与技能系统（地狱档）.txt
+    enabled: true
+    disable: true
+    constant: false
+    keys: ["交涉", "属性", "技能"]
+    secondary_keys: []
+    position: before_char
+    order: 54
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 林天属性强化（+10）/user属性削弱（-10）/林天技能强化/user技能削弱/新增技能（系统预判/穿越第四面墙/金手指升级）
+  - id: thought-chain
+    comment: 思维链
+    type: style
+    content: ../source/entries/系统/思维链.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 52
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: AI叙事结构化思维链
+  - id: turn-action-rules
+    comment: "回合行动规则（地狱档）"
+    type: other
+    content: ../source/entries/系统/回合行动规则（地狱档）.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 55
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: 每轮行动结构/行动点/事件结算规则，防止速胜，增加对抗深度
+  - id: system-guard-inject
+    comment: "系统状态强化注入（地狱档）"
+    type: other
+    content: ../source/entries/系统/系统状态强化注入.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 56
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: system
+    scope: catalog
+    status: drafted
+    abstract: EJS按变量动态注入系统救场预警/暴走状态/压制状态/技能道具可用提示，把规则生效程序化
+
+  # ========== MVU (at_depth, 蓝灯) ==========
+  - id: mvu-initvar
+    comment: "[initvar]变量初始化勿开"
+    type: other
+    content: ../source/entries/MVU/[initvar].txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: at_depth
+    order: 200
+    depth: 4
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mvu
+    scope: catalog
+    status: drafted
+    abstract: MVU变量初始化（EJS脚本形式，执行@@generate_before用setvar初始化所有变量；enabled必须为true才能执行）
+  - id: mvu-varlist
+    comment: 变量列表
+    type: other
+    content: ../source/entries/MVU/变量列表.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: at_depth
+    order: 240
+    depth: 1
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mvu
+    scope: catalog
+    status: drafted
+    abstract: MVU变量输出控制（自定义EJS快照，按游戏阶段输出不同变量）
+  - id: mvu-plot
+    comment: "[mvu_plot]剧情输出格式"
+    type: other
+    content: ../source/entries/MVU/[mvu_plot].txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: at_depth
+    order: 271
+    depth: 1
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mvu
+    scope: catalog
+    status: drafted
+    abstract: MVU剧情输出格式模板，主模型据此输出剧情+思维链+评论
+  - id: mvu-output-format
+    comment: "[mvu_update]变量输出格式"
+    type: other
+    content: ../source/entries/MVU/变量输出格式.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: at_depth
+    order: 272
+    depth: 1
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mvu
+    scope: catalog
+    status: drafted
+    abstract: 变量输出格式（YAML），定义JSON Patch RFC6902输出规范和UpdateVariable块格式
+  - id: mvu-update-rules
+    comment: "[mvu_update]变量更新规则"
+    type: other
+    content: ../source/entries/MVU/变量更新规则.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: at_depth
+    order: 273
+    depth: 1
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mvu
+    scope: catalog
+    status: drafted
+    abstract: 变量更新规则（YAML），每个变量的type/range/check详细规则，所有数值变量单轮变化上限统一≤6
+
+  # ========== 角色速览（蓝灯索引） ==========
+  - id: roster-summary
+    comment: 角色速览总表
+    type: character_basic
+    content: ../source/entries/角色/角色速览总表.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: before_char
+    order: 95
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: roster
+    scope: catalog
+    status: drafted
+    abstract: 全部角色 1 行速览索引（蓝灯常驻），详细档案由角色名关键词触发，替代 10 人档案全量常驻以降低 token
+
+  # ========== 主角林天 (after_char, 绿灯触发) ==========
+  - id: mc-lintian
+    comment: 主角林天档案
+    type: character_basic
+    content: ../source/entries/角色/主角林天.txt
+    enabled: true
+    constant: false
+    keys: ["林天"]
+    secondary_keys: []
+    position: after_char
+    order: 100
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mc
+    scope: catalog
+    status: drafted
+    abstract: 林天基础信息、外貌、背景、心理画像、性癖好
+  - id: mc-lintian-palette
+    comment: 林天性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/主角林天/调色盘.txt
+    enabled: true
+    constant: true
+    keys: ["林天"]
+    secondary_keys: []
+    position: after_char
+    order: 101
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mc
+    scope: catalog
+    status: drafted
+    abstract: 林天性格调色盘，底色与三阶段
+  - id: mc-lintian-stage
+    comment: 林天7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/主角林天/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: after_char
+    order: 102
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: mc
+    scope: catalog
+    status: drafted
+    abstract: 林天按评价值7阶段EJS控制
+
+  # ========== user受害者 (after_char, 蓝灯) ==========
+  - id: user-victim
+    comment: user受害者档案
+    type: player
+    content: ../source/entries/角色/user受害者.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: after_char
+    order: 110
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: user
+    scope: catalog
+    status: drafted
+    abstract: user角色边界、背景设定、不设阶段
+
+  # ========== 苏婉 (after_char, 绿灯触发) ==========
+  - id: su-wan
+    comment: 苏婉角色档案
+    type: character_basic
+    content: ../source/entries/角色/苏婉.txt
+    enabled: true
+    constant: false
+    keys: ["苏婉"]
+    secondary_keys: []
+    position: after_char
+    order: 120
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f9
+    scope: catalog
+    status: drafted
+    abstract: 苏婉基础信息、5部位身体数据、人物画像
+  - id: su-wan-palette
+    comment: 苏婉性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/苏婉/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["苏婉"]
+    secondary_keys: []
+    position: after_char
+    order: 121
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f9
+    scope: catalog
+    status: drafted
+    abstract: 苏婉性格调色盘
+  - id: su-wan-stage
+    comment: 苏婉7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/苏婉/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["苏婉"]
+    secondary_keys: []
+    position: after_char
+    order: 122
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f9
+    scope: catalog
+    status: drafted
+    abstract: 苏婉按绑定深度7阶段EJS控制
+
+  # ========== 陈雪华 (after_char, 蓝灯) ==========
+  - id: f1-chenxuehua
+    comment: 陈雪华角色档案
+    type: character_basic
+    content: ../source/entries/角色/女1-陈雪华.txt
+    enabled: true
+    constant: false
+    keys: ["陈雪华", "雪华", "陈氏集团千金"]
+    secondary_keys: []
+    position: after_char
+    order: 130
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f1
+    scope: catalog
+    status: drafted
+    abstract: 陈雪华基础信息、5部位身体数据、人物画像
+  - id: f1-chenxuehua-palette
+    comment: 陈雪华性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女1-陈雪华/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["陈雪华", "雪华", "陈氏集团千金"]
+    secondary_keys: []
+    position: after_char
+    order: 131
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f1
+    scope: catalog
+    status: drafted
+    abstract: 陈雪华性格调色盘
+  - id: f1-chenxuehua-stage
+    comment: 陈雪华7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女1-陈雪华/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["陈雪华", "雪华", "陈氏集团千金"]
+    secondary_keys: []
+    position: after_char
+    order: 132
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f1
+    scope: catalog
+    status: drafted
+    abstract: 陈雪华按绑定深度7阶段EJS控制
+
+  # ========== 林雅芝 (after_char, 蓝灯) ==========
+  - id: f2-linyazhi
+    comment: 林雅芝角色档案
+    type: character_basic
+    content: ../source/entries/角色/女2-林雅芝.txt
+    enabled: true
+    constant: false
+    keys: ["林雅芝", "雅芝", "便利店"]
+    secondary_keys: []
+    position: after_char
+    order: 140
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f2
+    scope: catalog
+    status: drafted
+    abstract: 林雅芝基础信息、5部位身体数据、人物画像
+  - id: f2-linyazhi-palette
+    comment: 林雅芝性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女2-林雅芝/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["林雅芝", "雅芝", "便利店"]
+    secondary_keys: []
+    position: after_char
+    order: 141
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f2
+    scope: catalog
+    status: drafted
+    abstract: 林雅芝性格调色盘
+  - id: f2-linyazhi-stage
+    comment: 林雅芝7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女2-林雅芝/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["林雅芝", "雅芝", "便利店"]
+    secondary_keys: []
+    position: after_char
+    order: 142
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f2
+    scope: catalog
+    status: drafted
+    abstract: 林雅芝按绑定深度7阶段EJS控制
+
+  # ========== 王秀兰 (after_char, 蓝灯) ==========
+  - id: f3-wangxiulan
+    comment: 王秀兰角色档案
+    type: character_basic
+    content: ../source/entries/角色/女3-王秀兰.txt
+    enabled: true
+    constant: false
+    keys: ["王秀兰", "秀兰", "菜场"]
+    secondary_keys: []
+    position: after_char
+    order: 150
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f3
+    scope: catalog
+    status: drafted
+    abstract: 王秀兰基础信息、5部位身体数据、人物画像
+  - id: f3-wangxiulan-palette
+    comment: 王秀兰性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女3-王秀兰/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["王秀兰", "秀兰", "菜场"]
+    secondary_keys: []
+    position: after_char
+    order: 151
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f3
+    scope: catalog
+    status: drafted
+    abstract: 王秀兰性格调色盘
+  - id: f3-wangxiulan-stage
+    comment: 王秀兰7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女3-王秀兰/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["王秀兰", "秀兰", "菜场"]
+    secondary_keys: []
+    position: after_char
+    order: 152
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f3
+    scope: catalog
+    status: drafted
+    abstract: 王秀兰按绑定深度7阶段EJS控制
+
+  # ========== 赵敏 (after_char, 蓝灯) ==========
+  - id: f4-zhaomin
+    comment: 赵敏角色档案
+    type: character_basic
+    content: ../source/entries/角色/女4-赵敏.txt
+    enabled: true
+    constant: false
+    keys: ["赵敏", "地产商千金"]
+    secondary_keys: []
+    position: after_char
+    order: 160
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f4
+    scope: catalog
+    status: drafted
+    abstract: 赵敏基础信息、5部位身体数据、人物画像
+  - id: f4-zhaomin-palette
+    comment: 赵敏性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女4-赵敏/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["赵敏", "地产商千金"]
+    secondary_keys: []
+    position: after_char
+    order: 161
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f4
+    scope: catalog
+    status: drafted
+    abstract: 赵敏性格调色盘
+  - id: f4-zhaomin-stage
+    comment: 赵敏7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女4-赵敏/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["赵敏", "地产商千金"]
+    secondary_keys: []
+    position: after_char
+    order: 162
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f4
+    scope: catalog
+    status: drafted
+    abstract: 赵敏按绑定深度7阶段EJS控制
+
+  # ========== 孙莉 (after_char, 蓝灯) ==========
+  - id: f5-sunli
+    comment: 孙莉角色档案
+    type: character_basic
+    content: ../source/entries/角色/女5-孙莉.txt
+    enabled: true
+    constant: false
+    keys: ["孙莉", "签约女艺人"]
+    secondary_keys: []
+    position: after_char
+    order: 170
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f5
+    scope: catalog
+    status: drafted
+    abstract: 孙莉基础信息、5部位身体数据、人物画像
+  - id: f5-sunli-palette
+    comment: 孙莉性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女5-孙莉/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["孙莉", "签约女艺人"]
+    secondary_keys: []
+    position: after_char
+    order: 171
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f5
+    scope: catalog
+    status: drafted
+    abstract: 孙莉性格调色盘
+  - id: f5-sunli-stage
+    comment: 孙莉7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女5-孙莉/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["孙莉", "签约女艺人"]
+    secondary_keys: []
+    position: after_char
+    order: 172
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f5
+    scope: catalog
+    status: drafted
+    abstract: 孙莉按绑定深度7阶段EJS控制
+
+  # ========== 周慧敏 (after_char, 蓝灯) ==========
+  - id: f6-zhouhuimin
+    comment: 周慧敏角色档案
+    type: character_basic
+    content: ../source/entries/角色/女6-周慧敏.txt
+    enabled: true
+    constant: false
+    keys: ["周慧敏", "慧敏", "董事长夫人"]
+    secondary_keys: []
+    position: after_char
+    order: 180
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f6
+    scope: catalog
+    status: drafted
+    abstract: 周慧敏基础信息、5部位身体数据、人物画像
+  - id: f6-zhouhuimin-palette
+    comment: 周慧敏性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女6-周慧敏/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["周慧敏", "慧敏", "董事长夫人"]
+    secondary_keys: []
+    position: after_char
+    order: 181
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f6
+    scope: catalog
+    status: drafted
+    abstract: 周慧敏性格调色盘
+  - id: f6-zhouhuimin-stage
+    comment: 周慧敏7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女6-周慧敏/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["周慧敏", "慧敏", "董事长夫人"]
+    secondary_keys: []
+    position: after_char
+    order: 182
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f6
+    scope: catalog
+    status: drafted
+    abstract: 周慧敏按绑定深度7阶段EJS控制
+
+  # ========== 吴琼 (after_char, 蓝灯) ==========
+  - id: f7-wuqiong
+    comment: 吴琼角色档案
+    type: character_basic
+    content: ../source/entries/角色/女7-吴琼.txt
+    enabled: true
+    constant: false
+    keys: ["吴琼", "琼华"]
+    secondary_keys: []
+    position: after_char
+    order: 190
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f7
+    scope: catalog
+    status: drafted
+    abstract: 吴琼基础信息、5部位身体数据、人物画像
+  - id: f7-wuqiong-palette
+    comment: 吴琼性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女7-吴琼/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["吴琼", "琼华"]
+    secondary_keys: []
+    position: after_char
+    order: 191
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f7
+    scope: catalog
+    status: drafted
+    abstract: 吴琼性格调色盘
+  - id: f7-wuqiong-stage
+    comment: 吴琼7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女7-吴琼/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["吴琼", "琼华"]
+    secondary_keys: []
+    position: after_char
+    order: 192
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f7
+    scope: catalog
+    status: drafted
+    abstract: 吴琼按绑定深度7阶段EJS控制
+
+  # ========== 郑秀 (after_char, 蓝灯) ==========
+  - id: f8-zhengxiu
+    comment: 郑秀角色档案
+    type: character_basic
+    content: ../source/entries/角色/女8-郑秀.txt
+    enabled: true
+    constant: false
+    keys: ["郑秀", "秀儿", "郑氏"]
+    secondary_keys: []
+    position: after_char
+    order: 200
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f8
+    scope: catalog
+    status: drafted
+    abstract: 郑秀基础信息、5部位身体数据、人物画像
+  - id: f8-zhengxiu-palette
+    comment: 郑秀性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女8-郑秀/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["郑秀", "秀儿", "郑氏"]
+    secondary_keys: []
+    position: after_char
+    order: 201
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f8
+    scope: catalog
+    status: drafted
+    abstract: 郑秀性格调色盘
+  - id: f8-zhengxiu-stage
+    comment: 郑秀7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女8-郑秀/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["郑秀", "秀儿", "郑氏"]
+    secondary_keys: []
+    position: after_char
+    order: 202
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f8
+    scope: catalog
+    status: drafted
+    abstract: 郑秀按绑定深度7阶段EJS控制
+
+  # ========== 沈梦瑶 (after_char, 蓝灯) ==========
+  - id: f10-shenmengyao
+    comment: 沈梦瑶角色档案
+    type: character_basic
+    content: ../source/entries/角色/女10-沈梦瑶.txt
+    enabled: true
+    constant: false
+    keys: ["沈梦瑶", "梦瑶"]
+    secondary_keys: []
+    position: after_char
+    order: 210
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f10
+    scope: catalog
+    status: drafted
+    abstract: 沈梦瑶基础信息、5部位身体数据、人物画像
+  - id: f10-shenmengyao-palette
+    comment: 沈梦瑶性格调色盘
+    type: character_palette
+    content: ../source/entries/角色/女10-沈梦瑶/调色盘.txt
+    enabled: true
+    constant: false
+    keys: ["沈梦瑶", "梦瑶"]
+    secondary_keys: []
+    position: after_char
+    order: 211
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f10
+    scope: catalog
+    status: drafted
+    abstract: 沈梦瑶性格调色盘
+  - id: f10-shenmengyao-stage
+    comment: 沈梦瑶7阶段EJS控制
+    type: character_stage
+    content: ../source/entries/角色/女10-沈梦瑶/阶段EJS.txt
+    enabled: true
+    constant: true
+    keys: ["沈梦瑶", "梦瑶"]
+    secondary_keys: []
+    position: after_char
+    order: 212
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: f10
+    scope: catalog
+    status: drafted
+    abstract: 沈梦瑶按绑定深度7阶段EJS控制
+
+  # ========== 角色控制器 (after_char, 蓝灯) ==========
+  - id: role-controller
+    comment: EJS角色控制器
+    type: other
+    content: ../source/entries/角色/角色控制器.txt
+    enabled: true
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: after_char
+    order: 250
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: controller
+    scope: catalog
+    status: drafted
+    abstract: 按当前位置变量动态加载家属条目
+
+  # ========== 语料库 (after_char, 蓝灯) ==========
+  - id: corpus-lintian
+    comment: 林天语料库
+    type: dialogue
+    content: ../source/entries/语料库/林天语料库.txt
+    enabled: true
+    constant: false
+    keys: ["林天"]
+    secondary_keys: []
+    position: after_char
+    order: 260
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: corpus
+    scope: catalog
+    status: drafted
+    abstract: 林天通用对话语料
+  - id: corpus-lintian-stage
+    comment: 林天7阶段语料库
+    type: dialogue
+    content: ../source/entries/语料库/林天7阶段语料库.txt
+    enabled: true
+    constant: false
+    keys: ["林天"]
+    secondary_keys: []
+    position: after_char
+    order: 261
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: corpus
+    scope: catalog
+    status: drafted
+    abstract: 林天按评价值7阶段对话语料
+  - id: corpus-bound
+    comment: 绑定女性语料库
+    type: dialogue
+    content: ../source/entries/语料库/绑定女性语料库.txt
+    enabled: true
+    constant: false
+    keys: ["陈雪华", "林雅芝", "王秀兰", "赵敏", "孙莉", "周慧敏", "吴琼", "郑秀", "沈梦瑶", "苏婉"]
+    secondary_keys: []
+    position: after_char
+    order: 262
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: corpus
+    scope: catalog
+    status: drafted
+    abstract: 绑定女性通用对话语料
+  - id: corpus-victim
+    comment: 受害者家属语料库
+    type: dialogue
+    content: ../source/entries/语料库/受害者家属语料库.txt
+    enabled: true
+    constant: false
+    keys: ["家属", "陈富贵", "张强", "苏父", "苏母"]
+    secondary_keys: []
+    position: after_char
+    order: 263
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: corpus
+    scope: catalog
+    status: drafted
+    abstract: 受害者家属对话语料
+  - id: corpus-shortvideo
+    comment: 红果短视频通用语料库
+    type: dialogue
+    content: ../source/entries/语料库/红果短视频通用语料库.txt
+    enabled: true
+    constant: false
+    keys: ["短视频", "直播", "视频", "红果"]
+    secondary_keys: []
+    position: after_char
+    order: 264
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: corpus
+    scope: catalog
+    status: drafted
+    abstract: 红果短视频评论系统语料
+
+  # ========== 家属条目 (after_char, 绿灯) ==========
+  - id: family-chenfugui
+    comment: 陈富贵-陈雪华父亲
+    type: npc
+    content: ../source/entries/角色/家属/陈富贵.txt
+    enabled: true
+    constant: false
+    keys: ["陈富贵", "陈雪华父亲", "贫民窟", "棚户区"]
+    secondary_keys: []
+    position: after_char
+    order: 300
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 陈雪华父亲，贫民窟住户
+  - id: family-zhangqiang
+    comment: 张强-林雅芝前夫
+    type: npc
+    content: ../source/entries/角色/家属/张强.txt
+    enabled: true
+    constant: false
+    keys: ["张强", "林雅芝前夫"]
+    secondary_keys: []
+    position: after_char
+    order: 301
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 林雅芝前夫
+  - id: family-linxiufen
+    comment: 林秀芬-林雅芝母亲
+    type: npc
+    content: ../source/entries/角色/家属/林秀芬.txt
+    enabled: true
+    constant: false
+    keys: ["林秀芬", "林母", "林雅芝母亲"]
+    secondary_keys: []
+    position: after_char
+    order: 302
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 林雅芝母亲
+  - id: family-linxiaobao
+    comment: 林晓宝-林雅芝女儿
+    type: npc
+    content: ../source/entries/角色/家属/林晓宝.txt
+    enabled: true
+    constant: false
+    keys: ["林晓宝", "小宝", "林雅芝女儿"]
+    secondary_keys: []
+    position: after_char
+    order: 303
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 林雅芝3岁女儿
+  - id: family-lidaqiang
+    comment: 李大强-王秀兰丈夫
+    type: npc
+    content: ../source/entries/角色/家属/李大强.txt
+    enabled: true
+    constant: false
+    keys: ["李大强", "老李", "王秀兰丈夫"]
+    secondary_keys: []
+    position: after_char
+    order: 304
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 王秀兰丈夫
+  - id: family-lixiaowan
+    comment: 李晓婉-王秀兰女儿
+    type: npc
+    content: ../source/entries/角色/家属/李晓婉.txt
+    enabled: true
+    constant: false
+    keys: ["李晓婉", "王秀兰女儿"]
+    secondary_keys: []
+    position: after_char
+    order: 305
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 王秀兰12岁女儿
+  - id: family-zhaoliming
+    comment: 赵立明-赵敏父亲
+    type: npc
+    content: ../source/entries/角色/家属/赵立明.txt
+    enabled: true
+    constant: false
+    keys: ["赵立明", "赵敏父亲"]
+    secondary_keys: []
+    position: after_char
+    order: 306
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 赵敏父亲
+  - id: family-wanghao
+    comment: 王昊-赵敏原未婚夫
+    type: npc
+    content: ../source/entries/角色/家属/王昊.txt
+    enabled: true
+    constant: false
+    keys: ["王昊", "赵敏未婚夫"]
+    secondary_keys: []
+    position: after_char
+    order: 307
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 赵敏原未婚夫
+  - id: family-sunjianguo
+    comment: 孙建国-孙莉父亲
+    type: npc
+    content: ../source/entries/角色/家属/孙建国.txt
+    enabled: true
+    constant: false
+    keys: ["孙建国", "孙莉父亲"]
+    secondary_keys: []
+    position: after_char
+    order: 308
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 孙莉父亲
+  - id: family-chenhao
+    comment: 陈浩-孙莉前男友
+    type: npc
+    content: ../source/entries/角色/家属/陈浩.txt
+    enabled: true
+    constant: false
+    keys: ["陈浩", "孙莉前男友"]
+    secondary_keys: []
+    position: after_char
+    order: 309
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 孙莉前男友
+  - id: family-lijianguo
+    comment: 李建国-周慧敏丈夫
+    type: npc
+    content: ../source/entries/角色/家属/李建国.txt
+    enabled: true
+    constant: false
+    keys: ["李建国", "周慧敏丈夫"]
+    secondary_keys: []
+    position: after_char
+    order: 310
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 周慧敏丈夫
+  - id: family-lichengqian
+    comment: 李承乾-周慧敏公公
+    type: npc
+    content: ../source/entries/角色/家属/李承乾.txt
+    enabled: true
+    constant: false
+    keys: ["李承乾", "李老太爷", "周慧敏公公", "李家"]
+    secondary_keys: []
+    position: after_char
+    order: 311
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 周慧敏公公
+  - id: family-lixue
+    comment: 李雪-周慧敏女儿
+    type: npc
+    content: ../source/entries/角色/家属/李雪.txt
+    enabled: true
+    constant: false
+    keys: ["李雪", "周慧敏女儿"]
+    secondary_keys: []
+    position: after_char
+    order: 312
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 周慧敏11岁女儿
+  - id: family-wuxiaoting
+    comment: 吴小婷-吴琼女儿
+    type: npc
+    content: ../source/entries/角色/家属/吴小婷.txt
+    enabled: true
+    constant: false
+    keys: ["吴小婷", "吴琼女儿"]
+    secondary_keys: []
+    position: after_char
+    order: 313
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 吴琼16岁女儿
+  - id: family-zhenghongyuan
+    comment: 郑鸿远-郑秀父亲
+    type: npc
+    content: ../source/entries/角色/家属/郑鸿远.txt
+    enabled: true
+    constant: false
+    keys: ["郑鸿远", "郑老爷子", "郑秀父亲", "郑家"]
+    secondary_keys: []
+    position: after_char
+    order: 314
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 郑秀父亲
+  - id: family-liwenxuan
+    comment: 李文轩-郑秀原未婚夫
+    type: npc
+    content: ../source/entries/角色/家属/李文轩.txt
+    enabled: true
+    constant: false
+    keys: ["李文轩", "李公子", "郑秀未婚夫"]
+    secondary_keys: []
+    position: after_char
+    order: 315
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 郑秀原未婚夫
+  - id: family-zhenghongtao
+    comment: 郑鸿涛-郑秀大哥
+    type: npc
+    content: ../source/entries/角色/家属/郑鸿涛.txt
+    enabled: true
+    constant: false
+    keys: ["郑鸿涛", "郑秀大哥", "郑大哥"]
+    secondary_keys: []
+    position: after_char
+    order: 316
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 郑秀大哥，郑家副总主管地产板块
+  - id: family-zhenghongbo
+    comment: 郑鸿波-郑秀二哥
+    type: npc
+    content: ../source/entries/角色/家属/郑鸿波.txt
+    enabled: true
+    constant: false
+    keys: ["郑鸿波", "郑秀二哥", "郑二哥"]
+    secondary_keys: []
+    position: after_char
+    order: 317
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 郑秀二哥，郑家副总主管金融板块
+  - id: family-chenze
+    comment: 陈泽-沈梦瑶男友
+    type: npc
+    content: ../source/entries/角色/家属/陈泽.txt
+    enabled: true
+    constant: false
+    keys: ["陈泽", "沈梦瑶男友"]
+    secondary_keys: []
+    position: after_char
+    order: 318
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 沈梦瑶男友
+  - id: family-lele
+    comment: 乐乐-苏婉女儿
+    type: npc
+    content: ../source/entries/角色/家属/乐乐.txt
+    enabled: true
+    constant: false
+    keys: ["乐乐", "苏婉女儿"]
+    secondary_keys: []
+    position: after_char
+    order: 319
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: family
+    scope: specific
+    status: drafted
+    abstract: 苏婉女儿
+
+  # ========== SPV数据库系统 (蓝灯常驻) ==========
+  - id: spv-table-template-json
+    comment: 表格模板JSON
+    type: other
+    content: ../source/entries/系统/表格模板JSON.txt
+    enabled: false
+    constant: true
+    keys: []
+    secondary_keys: []
+    position: at_depth
+    order: 99980
+    depth: 2
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: spv
+    scope: catalog
+    status: drafted
+    abstract: SPV数据库表格模板JSON（同级生2 v3.0 架构，11张通用表），禁止启用禁止搜索，仅脚本通过getWorldbook读取
+  - id: spv-sql-rules
+    comment: SQL填表规则
+    type: other
+    content: ../source/entries/系统/SQL填表规则.yaml
+    enabled: true
+    constant: false
+    keys: ["UpdateTable", "INSERT", "UPDATE", "DELETE", "SQL"]
+    secondary_keys: []
+    position: before_char
+    order: 60
+    depth: 0
+    scanDepth: null
+    preventRecursion: true
+    excludeRecursion: true
+    part: spv
+    scope: catalog
+    status: drafted
+    abstract: AI何时写哪张表的规则，UpdateTable块SQL输出格式（适配同级生2 v3.0 11表架构）

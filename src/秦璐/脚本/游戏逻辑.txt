@@ -1,0 +1,1 @@
+import 'https://testingcf.jsdelivr.net/gh/shujshujun/my-tavern-scripts@qin1.1.1/dist/秦璐重置版/脚本/游戏逻辑/index.js';

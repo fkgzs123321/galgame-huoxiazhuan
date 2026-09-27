@@ -1,0 +1,102 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · NSFW总控（分控层）
+   ════════════════════════════════════════════════════════════
+   关灯加载：enabled:false，由 D0 通过 getwi('[总控]NSFW') 调用
+   职责：
+   1. 按场景模式加载NSFW规则
+   2. 使用场景：加载使用触发器、传播规则、沉沦度、具现度、射精判定、精力消耗
+   3. 调查场景：加载疑心度、调查解锁、技能对抗
+   4. 终局场景：加载终局分支与守卫规则
+   5. 阶段相关规则（阶段感知/晋升/守卫/多维演化/阶段专属规则）已移交 [总控]阶段 负责，本控制器不重复加载
+   6. token优化：只加载当前场景必需的NSFW规则
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+// ===== 读取场景与阶段状态（由D0已读取，此处重新读取确保独立可用）=====
+var _stats = getvar('stat_data.状态', { scope: 'local', defaults: {} }) || {};
+var _useStage = getvar('stat_data.使用阶段', { scope: 'local', defaults: {} }) || {};
+var _hidden = getvar('stat_data.隐藏层', { scope: 'local', defaults: {} }) || {};
+var _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+
+var _stage = Number(_useStage.当前阶段) || 1;
+var _totalUses = Number(_useStage.总使用次数) || 0;
+var _todayUses = Number(_useStage.今日使用) || 0;
+var _suspicion = Number(_stats.怀疑值) || 0;
+var _corruption = Number(_stats.堕落值) || 0;
+var _hour = Number(_time.小时) || 8;
+
+// 9时段计算
+var _nsfwTimeSlot = '上午';
+if (_hour >= 5 && _hour < 7) _nsfwTimeSlot = '早晨';
+else if (_hour >= 7 && _hour < 8) _nsfwTimeSlot = '晨读';
+else if (_hour >= 8 && _hour < 12) _nsfwTimeSlot = '上午';
+else if (_hour >= 12 && _hour < 14) _nsfwTimeSlot = '中午';
+else if (_hour >= 14 && _hour < 17) _nsfwTimeSlot = '下午';
+else if (_hour >= 17 && _hour < 19) _nsfwTimeSlot = '傍晚';
+else if (_hour >= 19 && _hour < 22) _nsfwTimeSlot = '晚自习';
+else if (_hour >= 22 || _hour < 2) _nsfwTimeSlot = '夜里';
+else _nsfwTimeSlot = '半夜';
+var _isNight = (_nsfwTimeSlot === '夜里' || _nsfwTimeSlot === '半夜');
+
+// 场景模式识别（与读取变量过滤.txt一致：使用=夜里/半夜 + 阶段≥1 + 今日有使用或活跃使用者>0）
+var _nsfwSceneMode = '日常';
+var _nsfwActiveUsers = Number(_hidden.活跃使用人数) || 0;
+if (_suspicion >= 150 || _totalUses >= 100 || _corruption >= 150) {
+  _nsfwSceneMode = '终局';
+} else if (_isNight && _stage >= 1 && (_todayUses > 0 || _nsfwActiveUsers > 0)) {
+  _nsfwSceneMode = '使用';
+} else if (_suspicion >= 70) {
+  _nsfwSceneMode = '调查';
+}
+%>
+
+[nsfw_total_control]
+【NSFW总控 · 场景调度】
+══════════════════════════════════════════════
+场景模式：<%= _nsfwSceneMode %> | 阶段：<%= _stage %>/5 | 时段：<%= _nsfwTimeSlot %>
+加载策略：按场景+阶段精准加载NSFW规则子模块
+══════════════════════════════════════════════
+[/nsfw_total_control]
+
+<%/* ─── 核心NSFW规则（每轮必加载） ─── */%>
+<%/* 注：阶段感知控制器、阶段守卫·症状控制、阶段专属规则、阶段晋升系统、多维状态演化规则
+     已移交 [总控]阶段 负责，本控制器不重复加载，避免token浪费
+     注：综合防口胡与世界观铁律、变量输出格式 已设为蓝灯常驻（参考同级生2），本控制器不重复加载 */%>
+<%- await getwi('[mvu_plot]绝对叙事隔离规则') %>
+<%- await getwi('[mvu_plot]变量隔离显示规则') %>
+
+<%/* ─── 按场景模式加载NSFW规则子模块 ───
+   去重策略：
+   - 调查/传播/终局规则由 [总控]剧情 按进度加载（进度驱动，更可靠）
+   - 技能对抗与发现机制由 [总控]事件 按调查场景加载
+   - 本控制器只加载场景专属的 NSFW 规则（使用触发器/精力/射精/沉沦/具现度/生理周期等） */%>
+<% if (_nsfwSceneMode === '使用') { %>
+  <%/* 使用场景：性爱战斗走【战斗面板】本地结算（对齐欲望都市）；
+     女性使用触发器脚本 降级为面板不可用时的兜底（避免双重扣精力）；
+     非战斗类数值（沉沦/具现度/生理周期/怀疑值增长）仍由脚本/AI 维护 */%>
+  <%- await getwi('[mvu_plot]玩家防御与对抗规则') %>
+  <%- await getwi('战斗系统') %>
+  <%- await getwi('技能树') %>
+  <%- await getwi('道具与恢复系统') %>
+  <%- await getwi('[mvu_plot]女性使用触发器') %>
+  <%- await getwi('[mvu_plot]女性使用触发器脚本') %>
+  <%- await getwi('[mvu_plot]精力消耗计算规则') %>
+  <%- await getwi('[mvu_plot]射精判定与精液系统') %>
+  <%- await getwi('[mvu_plot]沉沦度系统') %>
+  <%- await getwi('[mvu_plot]具现度成长系统') %>
+  <%- await getwi('[mvu_plot]女性使用者管理') %>
+  <%- await getwi('[mvu_plot]生理周期与生育系统') %>
+  <%- await getwi('[mvu_plot]被使用时受限视角叙事') %>
+  <%/* ★面板结算铁律：性爱战斗的 精力/理智/怀疑值/堕落值/技能经验 以【性爱战斗结算】块为准，
+     女性使用触发器脚本 仅在其他行为（非性爱对抗）或面板不可用时兜底结算 */%>
+<% } else if (_nsfwSceneMode === '调查') { %>
+  <%/* 调查场景：加载防御规则（调查/传播/终局规则已由[总控]剧情按进度加载） */%>
+  <%- await getwi('[mvu_plot]玩家防御与对抗规则') %>
+<% } else if (_nsfwSceneMode === '终局') { %>
+  <%/* 终局场景：加载防御规则（终局分支规则已由[总控]剧情按进度加载） */%>
+  <%- await getwi('[mvu_plot]玩家防御与对抗规则') %>
+<% } else { %>
+  <%/* 日常/社交/学业/开局：行为菜单已由 [总控]事件 按场景加载，此处不重复 */%>
+  <%/* 注：玩家指令约束系统已由 D0 加载，此处不重复 */%>
+<% } %>

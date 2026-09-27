@@ -1,0 +1,12 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/角色/肖途-行为基调",
+    "value": {
+      "part": "personality",
+      "path": "世界书/角色/肖途/行为基调.yaml",
+      "abstract": "肖途性格底色",
+      "keywords": ["肖途"]
+    }
+  }
+]

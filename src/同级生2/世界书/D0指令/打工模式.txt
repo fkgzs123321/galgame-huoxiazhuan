@@ -1,0 +1,170 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · D0指令 · 打工模式
+   ════════════════════════════════════════════════════════════
+   职责：当 场景模式='打工' 时加载，定义该模式的系统提示与规则
+   由D0系统控制器（按 临时.场景模式）加载
+   引用全局规则总表：SURVIVAL_RULES / DIFFICULTY_MODIFIERS / SKILL_RULES / BEHAVIOR_TABLE / BASE_SALARY
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const WORK_MODE = {
+  mode_name: '打工',
+  time_cost: '1时段（早/上午/下午/晚可选，深夜禁止——童工法）',
+  turn_actions_cost: 1,
+  allowed_actions: [
+    '选择打工地点（6种工作类型）',
+    '完成工作内容（按工作类型执行）',
+    '领取工作报酬',
+    '与同事/顾客互动（可能触发指导事件）',
+    '工作中遭遇特殊事件（受表扬/批评/加班费）'
+  ],
+  forbidden_actions: [
+    '深夜打工（违反童工法，触发 BAD_END_7_法律制裁 预警）',
+    '疲劳≥80 强行打工（触发晕倒事件，当日所有行动取消）',
+    '体力≤20 强行打工（触发晕倒事件）',
+    '违法打工（如黑工/偷窃，违法计数 +1）',
+    '饥饿≥90 强行打工（强制送医取消当日工作）'
+  ],
+  work_types: [
+    // income 字段已删除：单一来源为 全局规则总表.txt 的 BASE_SALARY（基础日薪 × DIFFICULTY_MODIFIERS.money_mult × LCG_TIER_MODIFIER）
+    {
+      name: '便利店打工',
+      requires: '无犯罪记录（违法计数=0）',
+      fatigue_cost: 15,
+      mentor: '野野村美里(row_id=12)可能指导',
+      note: '门槛低，安全稳定，口才 训练 +1'
+    },
+    {
+      name: '咖啡店帮忙',
+      requires: '美佐子好感≥10',
+      fatigue_cost: 12,
+      mentor: '鸣泽美佐子(row_id=2)可能指导',
+      note: '与美佐子互动加成，烹饪 训练 +1'
+    },
+    {
+      name: '车站搬运',
+      requires: '力量≥30（SKILL_RULES.skills.strength）',
+      fatigue_cost: 20,
+      mentor: '无',
+      note: '体力消耗大，力量 训练 +2'
+    },
+    {
+      name: '家教',
+      requires: '学业≥60 或 智力≥50',
+      fatigue_cost: 10,
+      mentor: '无',
+      note: '高收入脑力工作，学业 +1 / 智力 训练 +1'
+    },
+    {
+      name: '温泉旅馆服务',
+      requires: '无门槛',
+      fatigue_cost: 15,
+      mentor: '无',
+      note: '温泉乡区域限定，观察 训练 +1'
+    },
+    {
+      name: '偶像助理',
+      requires: '舞岛可怜(row_id=3)好感≥10',
+      fatigue_cost: 10,
+      mentor: '舞岛可怜(row_id=3)可能指导',
+      note: '偶像线前置工作，观察 训练 +1'
+    }
+  ],
+  variable_changes: {
+    fatigue: '+10~20（以 BEHAVIOR_TABLE[jobName].changes.fatigue 为准 × DIFFICULTY_MODIFIERS[difficulty].decrease_mult + WORK_SURVIVAL_COST.costs[jobName].extra_fatigue）',
+    mood: '-5~+5（受同事/顾客互动影响：被表扬+5，被批评-5，普通±0）',
+    hunger: '+15~25/时段（SURVIVAL_RULES.hunger.auto_increment_per_slot × DIFFICULTY_MODIFIERS.survival_hunger_mult + WORK_SURVIVAL_COST.costs[jobName].extra_hunger）',
+    thirst: '+18~20/时段（SURVIVAL_RULES.thirst.auto_increment_per_slot × DIFFICULTY_MODIFIERS.survival_thirst_mult + WORK_SURVIVAL_COST.costs[jobName].extra_thirst）',
+    money: '+800~2000（基础日薪 BASE_SALARY × DIFFICULTY_MODIFIERS.money_mult × LCG_TIER_MODIFIER）',
+    skill_gain: '力量 +2（车站搬运）/ 学业 +1（家教）/ 口才 +1（便利店/咖啡店）/ 烹饪 +1（咖啡店）/ 观察 +1（温泉旅馆/偶像助理）'
+  },
+  difficulty_modifiers: {
+    '轻松': '收入 ×1.2（money_mult=1.2），疲劳增量 ×0.5（decrease_mult=0.5），生存递增 ×0.8',
+    '普通': '收入 ×1.0（基准），疲劳增量 ×1.0，生存递增 ×1.0',
+    '挑战': '收入 ×0.9（money_mult=0.9），疲劳增量 ×1.2（decrease_mult=1.2），生存递增 ×1.2',
+    '地狱': '收入 ×0.3（money_mult=0.3），疲劳增量 ×2.0（decrease_mult=2.0），生存递增 ×1.5'
+  },
+  special_triggers: [
+    '临时.连续无收入天数 ≥ 3 → BAD_END_3_破产 预警（金钱≤0 时立即触发）',
+    '主角.饥饿 ≥ 90 → 强制送医取消当日工作，金钱 -2000，饥饿 重置为 50',
+    '主角.口渴 ≥ 90 → 强制送医取消当日工作，金钱 -1500，口渴 重置为 30',
+    '野野村美里(row_id=12) 好感 ≥ 20 且在便利店打工 → 触发"美里指导"事件，口才 +3',
+    '鸣泽美佐子(row_id=2) 好感 ≥ 30 且在咖啡店帮忙 → 触发"美佐子料理"互动，饥饿 -20',
+    '舞岛可怜(row_id=3) 好感 ≥ 30 且在偶像助理工作 → 触发"可怜后台访问"事件',
+    '天气为雨/暴雪 且在温泉旅馆服务 → 室内工作不受影响，但 心情 -2（沉闷）',
+    'LCG 骰子档位为 gold → 触发"特殊贡献"事件，收入 ×2.0（LCG_TIER_MODIFIER.gold.mult）'
+  ],
+  system_prompt: `[打工模式 · 系统提示模板]
+你正在生成同级生2 打工场景的叙事。请按以下结构生成：
+
+【场景环境】描写工作场所的氛围（便利店收银台/咖啡店吧台/车站月台/学生家中/温泉旅馆服务台/偶像助理后台），包括时段（早/上午/下午/晚）、天气、人流密度。突出 1995 年日本小镇冬日气息。
+
+【工作过程】详细描写主角的工作内容（至少 3 个具体动作）：
+- 便利店：扫码结账/补货上架/清洁地面/处理临期商品
+- 咖啡店《憩》：端盘子/调制咖啡/招待客人/擦拭桌椅
+- 车站搬运：扛行李/指挥乘客/搬运邮件/卸货
+- 家教：讲解习题/批改作业/与学生家长寒暄
+- 温泉旅馆服务：引导客人/整理浴场/递送毛巾
+- 偶像助理：搬运器材/调试音响/协助乐队/清理后台
+穿插 1-2 位同事或顾客的简短互动（不超过 3 句对话）。
+
+【同事/顾客互动】如果满足触发条件，安排对应 NPC 出现：
+- 便利店：野野村美里可能在休息时段过来买便当，交谈中透露旅行代理店工作
+- 咖啡店《憩》：美佐子作为老板娘指导或关心主角，可能端出试做料理
+- 车站：偶遇到外地来的女角（按当日 schedule 锁定表）
+- 家教：可描写学生家庭的氛围与家长态度
+- 温泉旅馆：可描写旅馆老板/客人互动
+- 偶像助理：舞岛可怜在排练或休息，可能从后台经过
+
+【报酬领取】工作结束后结算金钱（BASE_SALARY × DIFFICULTY_MODIFIERS.money_mult × LCG_TIER_MODIFIER），同时扣除疲劳/体力消耗，应用 饥饿/口渴 自动递增。必须显式写出金额变化。
+
+【输出格式】生成 200-400 字叙事段落，第一人称（"我"的视角）。变量更新由额外模型处理，禁止输出 <UpdateVariable> 块。叙事结束后按顺序输出：
+<StatusPlaceHolderImpl/>
+<BattleUI/>
+<UpdateTable>
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '打工·<location>', '<纪要200-600字，含地点/工作描述/疲劳fatigue变化/心情mood变化/收入money金额>');
+</UpdateTable>
+
+请严格遵守 SURVIVAL_RULES（饥饿/口渴每时段自动递增）与 DIFFICULTY_MODIFIERS（难度系数修正收入与疲劳）。禁止让主角在 疲劳≥80 时继续打工。深夜禁止打工（童工法）。`
+};
+%>
+
+[D0指令 · 打工模式已加载]
+mode_name: <%= WORK_MODE.mode_name %>
+time_cost: <%= WORK_MODE.time_cost %>
+turn_actions_cost: <%= WORK_MODE.turn_actions_cost %>（每楼层 30 分钟，本时段楼层数 = 本时段累计楼层数）
+
+【允许行动】
+<% WORK_MODE.allowed_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【禁止行动】
+<% WORK_MODE.forbidden_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【工作类型与报酬】
+（基础日薪见 BASE_SALARY，实际收入 = 基础日薪 × DIFFICULTY_MODIFIERS.money_mult × LCG_TIER_MODIFIER）
+<% WORK_MODE.work_types.forEach(w => { %>- <%= w.name %>：基础日薪 <%= BASE_SALARY[w.name] || '未定义' %>，门槛：<%= w.requires %>，疲劳 +<%= w.fatigue_cost %>，<%= w.note %>
+<% }); %>
+
+【变量变化规则（引用全局规则总表）】
+- 疲劳: <%= WORK_MODE.variable_changes.fatigue %>
+- 心情: <%= WORK_MODE.variable_changes.mood %>
+- 饥饿: <%= WORK_MODE.variable_changes.hunger %>
+- 口渴: <%= WORK_MODE.variable_changes.thirst %>
+- 现金: <%= WORK_MODE.variable_changes.money %>
+- 技能加成: <%= WORK_MODE.variable_changes.skill_gain %>
+
+【难度修正（引用 DIFFICULTY_MODIFIERS）】
+<% Object.keys(WORK_MODE.difficulty_modifiers).forEach(d => { %>- <%= d %>：<%= WORK_MODE.difficulty_modifiers[d] %>
+<% }); %>
+
+【特殊事件触发】
+<% WORK_MODE.special_triggers.forEach(t => { %>- <%= t %>
+<% }); %>
+
+【系统提示模板】
+<%= WORK_MODE.system_prompt %>
+
+[打工模式规则输出完毕。AI 必须按上述系统提示生成叙事，并严格执行变量变化规则。]

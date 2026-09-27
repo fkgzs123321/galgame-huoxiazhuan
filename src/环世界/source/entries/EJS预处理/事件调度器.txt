@@ -1,0 +1,135 @@
+@@generate_before
+<%_
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var mood1 = Number(getvar('stat_data.殖民者_主角.心情', { scope: 'local', defaults: 50 })) || 50;
+
+var lastRaidDay = Number(getvar('stat_data.事件计时器.上次袭击日', { scope: 'local', defaults: 0 })) || 0;
+var lastTradeDay = Number(getvar('stat_data.事件计时器.上次贸易日', { scope: 'local', defaults: 0 })) || 0;
+var lastDiseaseDay = Number(getvar('stat_data.事件计时器.上次疾病日', { scope: 'local', defaults: 0 })) || 0;
+var lastMentalDay = Number(getvar('stat_data.事件计时器.上次精神事件日', { scope: 'local', defaults: 0 })) || 0;
+var lastSpecialDay = Number(getvar('stat_data.事件计时器.上次特殊事件日', { scope: 'local', defaults: 0 })) || 0;
+var lastMeteorDay = Number(getvar('stat_data.事件计时器.上次陨石日', { scope: 'local', defaults: 0 })) || 0;
+var lastMigrationDay = Number(getvar('stat_data.事件计时器.上次动物迁徙日', { scope: 'local', defaults: 0 })) || 0;
+
+var storytellerParams = {
+  '卡桑德拉': { '拓荒期': 0.3, '发展期': 0.6, '繁荣期': 1.0, '终局期': 1.8 },
+  '菲比': { '拓荒期': 0.1, '发展期': 0.3, '繁荣期': 0.6, '终局期': 1.0 },
+  '兰迪': { '拓荒期': 'random', '发展期': 'random', '繁荣期': 'random', '终局期': 'random' }
+};
+
+function _storytellerFactor(storyteller, phase, seed) {
+  var params = storytellerParams[storyteller] || storytellerParams['卡桑德拉'];
+  var base = params[phase];
+  if (base === 'random') {
+    var roll = _lcgRoll(seed + '_randy', 1, 100)[0];
+    if (phase === '拓荒期') { return Math.round((0.1 + roll / 100 * 0.7) * 100) / 100; }
+    if (phase === '发展期') { return Math.round((0.2 + roll / 100 * 1.0) * 100) / 100; }
+    if (phase === '繁荣期') { return Math.round((0.3 + roll / 100 * 1.7) * 100) / 100; }
+    return Math.round((0.5 + roll / 100 * 2.5) * 100) / 100;
+  }
+  return base;
+}
+
+function _checkCooldown(gameDay, lastDay, minInterval) {
+  var elapsed = gameDay - lastDay;
+  return { elapsed: elapsed, ready: elapsed >= minInterval, remaining: Math.max(0, minInterval - elapsed) };
+}
+
+function _eventRoll(seed, probability) {
+  var roll = _lcgRoll(seed, 1, 100)[0];
+  return { roll: roll, success: roll <= probability * 100 };
+}
+
+var stMod = _storytellerFactor(storyteller, phase, 'storyteller_' + gameDay);
+var disasterCD = _checkCooldown(gameDay, lastSpecialDay, 15);
+var tradeCD = _checkCooldown(gameDay, lastTradeDay, 7);
+var diseaseCD = _checkCooldown(gameDay, lastDiseaseDay, 20);
+var specialCD = _checkCooldown(gameDay, lastSpecialDay, 30);
+var meteorCD = _checkCooldown(gameDay, lastMeteorDay, 30);
+var mechCD = _checkCooldown(gameDay, lastRaidDay, 45);
+
+var disasterRoll = _eventRoll('disaster_' + gameDay, 0.3 * stMod);
+var tradeRoll = _eventRoll('trade_' + gameDay, 0.5 * stMod);
+var diseaseRoll = _eventRoll('disease_' + gameDay, 0.2 * stMod);
+var meteorRoll = _eventRoll('meteor_' + gameDay, 0.1 * stMod);
+
+var eventTypes = [
+  { type: '袭击', handler: '袭击触发器', cooldown: '另计', note: '已由袭击触发器处理' },
+  { type: '自然灾害', cooldown: '10-20天', examples: '寒潮/热浪/火山冬天/闪电风暴/虫害' },
+  { type: '贸易', cooldown: '7-15天', examples: '商队到访/轨道交易' },
+  { type: '疾病', cooldown: '15-30天', examples: '流感/瘟疫/感染/伤口感染' },
+  { type: '精神事件', cooldown: '每轮', examples: '崩溃/灵感/通灵 (心情触发)' },
+  { type: '特殊', cooldown: '20-40天', examples: '陨石/难民/逃亡者/远古危险' },
+  { type: '机械族', cooldown: '30-60天', examples: '机械族袭击/机械集群 (需触发条件)' }
+];
+_%>
+<事件调度系统就绪>
+[当前事件状态]
+游戏日: <%= gameDay %> / 阶段: <%= phase %> / 故事讲述者: <%= storyteller %>
+主角心情: <%= mood1 %> / 讲述者修正系数: <%= stMod %>
+
+[事件冷却状态]
+自然灾害: 距上次<%= disasterCD.elapsed %>天 (冷却10-20天) → <%= disasterCD.ready ? '可触发' : '剩' + disasterCD.remaining + '天' %>
+贸易: 距上次<%= tradeCD.elapsed %>天 (冷却7-15天) → <%= tradeCD.ready ? '可触发' : '剩' + tradeCD.remaining + '天' %>
+疾病: 距上次<%= diseaseCD.elapsed %>天 (冷却15-30天) → <%= diseaseCD.ready ? '可触发' : '剩' + diseaseCD.remaining + '天' %>
+特殊: 距上次<%= specialCD.elapsed %>天 (冷却20-40天) → <%= specialCD.ready ? '可触发' : '剩' + specialCD.remaining + '天' %>
+陨石: 距上次<%= meteorCD.elapsed %>天 (冷却20-40天) → <%= meteorCD.ready ? '可触发' : '剩' + meteorCD.remaining + '天' %>
+机械族: 距上次袭击<%= mechCD.elapsed %>天 (冷却30-60天) → <%= mechCD.ready ? '可触发' : '剩' + mechCD.remaining + '天' %>
+
+[事件调度规则]
+1. 事件类型表:
+<%_ for (var i = 0; i < eventTypes.length; i++) { var e = eventTypes[i]; _%>
+   <%= e.type %>: 冷却<%= e.cooldown %> / <%= e.examples %>
+<%_ } _%>
+
+2. 触发流程:
+   ① 检查事件计时器各冷却
+   ② 冷却归零 → _lcgRoll概率检定 (基础概率×讲述者修正)
+   ③ 触发成功 → 生成事件描述 → 写入chronicle
+   ④ 执行事件效果
+   ⑤ 重置冷却
+
+3. 阶段修正:
+   拓荒期降低灾难概率 / 繁荣期增加袭击概率 / 终局期全事件升级
+
+[本轮事件检定示范]
+自然灾害: 骰值<%= disasterRoll.roll %> (需≤<%= Math.round(0.3 * stMod * 100) %>) → <%= disasterRoll.success ? '触发' : '未触发' %>
+贸易: 骰值<%= tradeRoll.roll %> (需≤<%= Math.round(0.5 * stMod * 100) %>) → <%= tradeRoll.success ? '触发' : '未触发' %>
+疾病: 骰值<%= diseaseRoll.roll %> (需≤<%= Math.round(0.2 * stMod * 100) %>) → <%= diseaseRoll.success ? '触发' : '未触发' %>
+陨石: 骰值<%= meteorRoll.roll %> (需≤<%= Math.round(0.1 * stMod * 100) %>) → <%= meteorRoll.success ? '触发' : '未触发' %>
+
+[特殊事件]
+1. 远古危险:
+   古代舱室,可能含机械族/宝箱/危险/灵能水晶
+   触发: 挖掘深层矿时_lcgRoll(1-100)≤20
+
+2. 难民:
+   1-3人求加入,接受可能混入间谍
+   触发: 特殊事件冷却归零时_lcgRoll(1-100)≤30
+   间谍检测: _check(社交×3,seed,'困难')
+
+3. 逃亡者:
+   被追捕者求庇护
+   拒绝: 被追兵杀死 / 接受: 引发追兵袭击
+   触发: 特殊事件冷却归零时_lcgRoll(1-100)≤20
+
+4. 陨石:
+   落下含钢铁/白银/黄金的陨石
+   触发: 陨石冷却归零时_lcgRoll(1-100)≤10
+   产量: _lcgRoll(1-100)×0.5 钢铁 + _lcgRoll(1-100)×0.2 白银
+
+5. 火山冬天:
+   -20°C持续30天,阳光遮蔽作物×0.2
+   触发: 自然灾害检定大失败时(roll≥96)
+
+[行为校验要求]
+事件触发必须输出行为校验块:
+<事件触发校验>
+- 事件类型 / 触发条件 / 检定结果
+- 事件描述 / 影响范围 / 持续时间
+- 效果执行 (变量变更/状态影响)
+- 冷却重置 (新冷却值写入事件计时器)
+</事件触发校验>
+</事件调度系统就绪>

@@ -1,0 +1,48 @@
+{
+  "name": "同级生2 独立前端卡",
+  "short_name": "同级生2",
+  "description": "同级生2 独立前端卡 · 恋爱模拟引擎,基于 SillyTavern 角色卡迁移的独立前端 RP 应用。支持 8AI 细粒度分工、多视图 UI、NPC 自然行动系统、酒馆预设兼容等增强模块。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1625",
+  "theme_color": "#e91e63",
+  "categories": ["entertainment", "games", "books"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "新游戏",
+      "short_name": "新游戏",
+      "description": "开始新的游戏周目",
+      "url": "./#/new-game"
+    },
+    {
+      "name": "继续游戏",
+      "short_name": "继续",
+      "description": "从最近存档继续",
+      "url": "./#/continue"
+    },
+    {
+      "name": "E2E 验证",
+      "short_name": "验证",
+      "description": "运行端到端验证套件",
+      "url": "./#/e2e"
+    }
+  ]
+}

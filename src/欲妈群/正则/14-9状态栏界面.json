@@ -1,0 +1,17 @@
+{
+  "id": "yumq-regex-070-statbar-ui",
+  "scriptName": "9状态栏界面",
+  "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": 0,
+  "maxDepth": null,
+  "replace_file": "正则/状态栏界面.html"
+}

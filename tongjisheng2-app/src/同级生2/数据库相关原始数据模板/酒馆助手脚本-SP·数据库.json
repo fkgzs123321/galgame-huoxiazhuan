@@ -1,0 +1,17 @@
+{
+  "type": "script",
+  "enabled": true,
+  "name": "SP·数据库",
+  "id": "f5160a6d-ee87-4fa5-b7ed-0dfe74f1e5c1",
+  "content": "import 'https://gcore.jsdelivr.net/gh/AlbusKen/shujuku@spv8.4/index.js'",
+  "info": "发公告出新版本时把v8.4改成对应的版本号就行了",
+  "button": {
+    "enabled": true,
+    "buttons": []
+  },
+  "data": {},
+  "export_with": {
+    "data": true,
+    "button": true
+  }
+}

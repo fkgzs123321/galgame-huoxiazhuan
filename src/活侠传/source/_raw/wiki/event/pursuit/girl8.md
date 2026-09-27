@@ -1,0 +1,139 @@
+﻿---
+title: 龍湘結緣攻略
+description: 龍湘結緣攻略
+aside: false
+outline: [2, 3]
+sidebar: false
+borderless: true
+tags:
+    - 結婚
+    - 成親
+    - 龍湘
+---
+
+# {{ $frontmatter.title }}
+
+<p align="center"><img src="/images/characters/girl_8/girl8_drumstick.webp" style="width:300px"></p>
+
+## 結緣必要條件
+<table>
+<tr>
+<td>編號</td>
+<td>時間</td>
+<td>事件</td>
+<td>內容</td>
+<td>建議及備註</td>
+</tr>
+<tr>
+<td>1</td>
+<td>第三年九月下旬
+    <br>及第三年十月上旬</td>
+<td><MarkdownWrapper>[錦香宮作客](/event/simple/3-09-3-錦香宮事件集)</MarkdownWrapper></td>
+<td><Girl8Icon>龍湘</Girl8Icon>好感度≧40，觸發<MarkdownWrapper>[龍湘夜遊](/event/simple/3-09-3-龍湘夜遊)</MarkdownWrapper>，事件過程不重要。</td>
+<td>好感度刷法: 
+    <br>• 在唐門時可刷外堡的龍湘聽講事件，需先觸發<MarkdownWrapper>[初識福韞](/event/simple/1-09-2-初識福韞)</MarkdownWrapper>
+    及<MarkdownWrapper>[龍湘遭竊](/event/simple/1-09-2-龍湘遭竊)</MarkdownWrapper>事件。
+    <br>• 在錦香宮時可以刷華音閣。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>第三年十月中旬</td>
+<td><MarkdownWrapper>[武林大會](/event/simple/3-10-2-錦香真相.html#龍湘求助)</MarkdownWrapper></td>
+<td><Girl8Icon>龍湘</Girl8Icon>好感度≧30，錦香宮被揭發後，選擇📖「不顧旁人冷眼收留龍湘」。</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>第三年十一月中旬起，
+    <br>到條件5時間點為止</td>
+<td>
+    <li><MarkdownWrapper>[龍湘練劍](/system/training/)</MarkdownWrapper></li>
+    <li><MarkdownWrapper>[龍湘心事](/event/simple/3-11-2-龍湘心事)</MarkdownWrapper></li>
+</td>
+<td>• 先確保心上人為<Girl8Icon>龍湘</Girl8Icon>
+    <br>• 至後山挑柴隨機觸發<MarkdownWrapper>[龍湘練劍](/system/training/)</MarkdownWrapper>(需滿足條件2)，選擇📖「我來告訴你，用劍」。
+    <br>• 無論勝負，若滿足條件1，進入<MarkdownWrapper>[龍湘心事](/event/simple/3-11-2-龍湘心事)</MarkdownWrapper>事件，開啟📜閒聊。
+    <br>• 閒聊完📜「初識之時」與📜「錦香宮」後，選擇📜「龍湘的心事」(需心上人為龍湘)，接著滿足以下任一條件:
+    <br>1. 若修養中庸以上，觸發🎲天命並擲骰到【≧60】「說」。
+    <br>2. 若修養暴躁以下，且選擇📖「不了我不問了」，觸發🎲天命後擲骰到【≧80】「說」。
+    <br>3. 若修養暴躁以下，且選擇📖「不了我不問了」，並觸發🎲天命後擲骰到【<60】「存心想砍妳」；或選擇📖「真拿你沒辦法」，則再次觸發🗡️對決。只要不要在落敗後選擇📖「我輸了，聽不得妳的心事了」即可。
+    <br>• 閒聊📜「心魔」，在被問及心上人時，選擇📖「我有心上人，就是妳」。</td>
+<td>本事件實際到第四年一月下旬期間都能觸發，但如果在條件5時間點後才觸發，則無法結緣。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>第三年十二月上旬，剩一次行動時</td>
+<td><MarkdownWrapper>[眾人的決策](/event/detailed_description/3-12-1-眾人的決策)</MarkdownWrapper></td>
+<td>決策結果不可以是遣散唐門。</td>
+<td>• 若遣散唐門，且滿足條件2，進入後山會觸發:
+    <br>1. 若有其他結緣者，心上人為<Girl8Icon>龍湘</Girl8Icon>，選擇📖「湘姊，妳要不要跟我來呢?」，🗡️對決勝利後，選擇📖「我是不會放妳走的」，會進入<MarkdownWrapper>[汗青書24: 趕海人](/event/ends/end-24)</MarkdownWrapper>，無法結緣。
+    <br>2. 其他情況，會觸發龍湘三年之約事件，無法結緣。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>• 第三年十二月下旬(不成立西武林盟而頑抗到底)
+    <br>• 或第四年一月下旬(成立西武林盟)</td>
+<td>龍湘結緣</td>
+<td>• 需滿足條件3、4才能觸發。
+    <br>• 完成此事件，獲得道具【龍湘的髮簪】後，即完成結緣。</td>
+<td>• 無論戰鬥輸贏都能與龍湘結緣，但若戰鬥輸給龍湘(8回合後的自動落敗除外)會無法與龍淵對話。
+    <br>• 若第二年走不留學-客棧線，由於經歷了<MarkdownWrapper>[巧遇龍淵](/event/simple/2-08-3-巧遇龍淵)</MarkdownWrapper>事件，此處有龍淵劇情差分及新增📜「守信用」，可得秘笈<MarkdownWrapper>[《酩酊玄劍掌》](/system/books/book_3010)</MarkdownWrapper>。但要注意第二年六月前，若<Girl2Icon>葉雲裳</Girl2Icon>好感≧30，會無法進客棧線。
+    <br>• 若龍淵好感8以上，可得秘笈<MarkdownWrapper>[《龍淵七絕》](/system/books/book_7013)</MarkdownWrapper>。
+</td>
+</tr>
+</table>
+
+
+## 結緣後改變的事件
+<table>
+<tr>
+<td>編號</td>
+<td>時間</td>
+<td>事件</td>
+<td>改變內容</td>
+<td>備註</td>
+</tr>
+<tr>
+<td>1</td>
+<td>結緣後任意時間點</td>
+<td><MarkdownWrapper>[龍湘泡溫泉](/system/training/)</MarkdownWrapper></td>
+<td>下山泡溫泉時，可以觸發在溫泉外陪伴龍湘的隨機事件。</td>
+<td>心相+50</td>
+</tr>
+<tr>
+<td>2</td>
+<td>• 第四年一月中旬(不成立西武林盟而頑抗到底)
+    <br>• 或第四年二月中旬(成立西武林盟)</td>
+<td>伴侶之約</td>
+<td>至後山可觸發與龍湘約會劇情。</td>
+<td>若不觸發此事件，則剩2行動點時自動觸發龍湘等不到你的事件。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>• 第四年一月中旬剩兩次行動(不成立西武林盟而頑抗到底)
+    <br>• 或第四年二月中旬剩兩次行動(成立西武林盟失敗而頑抗到底)</td>
+<td><MarkdownWrapper>[唐門圍攻戰](/event/detailed_description/4-01-2-唐門圍攻戰)</MarkdownWrapper></td>
+<td>• 龍湘可加入終戰。
+    <br>• 終戰獲勝後可進入汗青書<MarkdownWrapper>[《雞腿大亨》](/event/ends/end-44)</MarkdownWrapper>。</td>
+<td>若與多人結緣，滅門線結局結緣優先度(v1.0.3201.1)：
+    <br><Girl0Icon>唐默鈴</Girl0Icon>＞<Girl2Icon>葉雲裳</Girl2Icon>＞<Girl4Icon>上官螢</Girl4Icon>＞<Girl3Icon>虞小梅</Girl3Icon>＞<Girl6Icon>郁竹</Girl6Icon>＞<Girl7Icon>魏菊</Girl7Icon>＞<Girl5Icon>夏侯蘭</Girl5Icon>＞<Girl8Icon>龍湘</Girl8Icon></td>
+</tr>
+<tr>
+<td>4</td>
+<td>第四年二月中旬剩兩次行動</td>
+<td><MarkdownWrapper>[東西武林盟會戰](/event/detailed_description/4-02-2-東西武林盟會戰)</MarkdownWrapper></td>
+<td>對話差分。</td>
+<td>• 只要滿足必要條件2，<Girl8Icon>龍湘</Girl8Icon>就會參加這段劇情，不一定要結緣。
+    <br>• 建議大院對決時🎲擲骰到【≧65】「來得及時」以外的結果，在龍湘對戰對手時再🎲擲骰到【≧50】會有覺醒事件。
+    <br>• 戰後尋找龍湘時，若與龍湘結緣則無法聽到著名的<MarkdownWrapper>[〈長相思令．詠雞腿〉](https://www.facebook.com/obbstudio/posts/pfbid0WLR1HnAc1N9dph7B7ooa8ZF4S1EEfYbqAvcs4eK88t8AfsQfr8h8Hn6b5efe52pAl)</MarkdownWrapper>。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>第四年三月上旬</td>
+<td>眉山決戰</td>
+<td>• 劇情有龍湘陪同。
+    <br>• 結局畫面與龍湘相伴。
+    <br>• 戰勝可達成<MarkdownWrapper>[風雲史《忘憂俠侶》](/event/achievements/#風雲史-No.14)</MarkdownWrapper>。</td>
+<td></td>
+</tr>
+</table>

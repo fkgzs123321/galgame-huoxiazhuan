@@ -1,0 +1,354 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · 怨妇救赎</title>
+<style>
+/* ===== 主题定义（可切换）===== */
+:root{
+  --bg-0:#16120f;--bg-1:#221a15;--bg-card:rgba(38,28,22,.55);
+  --c-text:#f0e6d8;--c-dim:#b09a86;--c-dim2:#7d6a5a;
+  --c-accent:#e0525e;--c-gold:#e0a34a;--c-succ:#59c98d;--c-danger:#ff5c5c;
+  --c-warn:#e0b45c;--c-info:#d88ab0;--c-pink:#f58ab8;--c-border:rgba(255,255,255,.10);
+  --glass-blur:blur(16px) saturate(150%);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);
+}
+[data-theme="hongguo"]{
+  --bg-0:#16120f;--bg-1:#241a14;--c-accent:#e0525e;--c-gold:#e0a34a;--c-pink:#f58ab8;--c-info:#d88ab0;
+}
+[data-theme="ziye"]{
+  --bg-0:#100b16;--bg-1:#1c1428;--c-accent:#a56ee0;--c-gold:#d9a8ff;--c-pink:#c79bff;--c-info:#8f6fd8;
+}
+[data-theme="qingci"]{
+  --bg-0:#0e1416;--bg-1:#162226;--c-accent:#4aa8a0;--c-gold:#8fc9b8;--c-pink:#7fc8c0;--c-info:#5fa8a8;
+}
+[data-theme="liujin"]{
+  --bg-0:#161310;--bg-1:#241f16;--c-accent:#c9a25a;--c-gold:#e8c56e;--c-pink:#d9b46a;--c-info:#b8924f;
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+/* 磨砂玻璃容器 */
+.sb{
+  background:linear-gradient(160deg,rgba(22,18,15,.55),rgba(34,26,21,.45));
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--c-border);border-radius:12px;margin:6px 0;overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:4px 14px;padding:9px 14px;border-bottom:1px solid var(--c-border);background:linear-gradient(90deg,rgba(224,82,94,.12),transparent 45%)}
+.hi{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.hl{color:var(--c-dim2);font-size:var(--fs-xs);letter-spacing:1px}
+.hv{color:var(--c-text);font-weight:600}
+.hv.gold{color:var(--c-gold)}
+.hv.accent{color:var(--c-accent)}
+.mini-bar{width:56px;height:5px;border-radius:3px;background:rgba(255,255,255,.10);overflow:hidden;display:inline-block;vertical-align:middle}
+.mini-bar>i{display:block;height:100%;border-radius:3px}
+.tabs{display:flex;gap:4px;padding:6px 10px 0;align-items:center}
+.tab{padding:5px 14px;border-radius:8px 8px 0 0;background:transparent;color:var(--c-dim);border:1px solid transparent;border-bottom:none;cursor:pointer;font-size:12px;transition:all .15s ease}
+.tab.active{background:rgba(255,255,255,.07);color:var(--c-text);border-color:var(--c-border);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.theme-btn{margin-left:auto;padding:3px 10px;border-radius:6px;border:1px solid var(--c-border);background:rgba(255,255,255,.06);color:var(--c-dim);font-size:10.5px;cursor:pointer;transition:all .15s ease}
+.theme-btn:hover{color:var(--c-gold);border-color:var(--c-gold)}
+.panel{padding:10px 14px 14px}
+.roster-head{display:flex;justify-content:space-between;color:var(--c-dim2);font-size:11px;letter-spacing:1px;margin-bottom:8px}
+.roster-count{color:var(--c-accent)}
+.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
+.roster-card{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--c-border);cursor:pointer;transition:all .15s ease}
+.roster-card:hover{border-color:rgba(245,138,184,.4);transform:translateY(-1px)}
+.roster-card.target{border-color:var(--c-gold);box-shadow:0 0 0 1px rgba(224,163,74,.3)}
+.roster-card.rupture{border-color:rgba(255,92,92,.35)}
+.rc-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.rc-name{font-weight:700;font-size:12.5px}
+.rc-st{font-size:9.5px;padding:0 6px;border-radius:999px;background:rgba(224,82,94,.16);color:var(--c-accent);white-space:nowrap}
+.rc-st.f5{background:rgba(255,92,92,.18);color:var(--c-danger)}
+.rc-st.f4{background:rgba(224,163,74,.18);color:var(--c-gold)}
+.rc-st.f3{background:rgba(245,138,184,.16);color:var(--c-pink)}
+.rc-role{font-size:10px;color:var(--c-dim2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.rc-bar{display:flex;align-items:center;gap:6px;margin-top:5px}
+.rc-track{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.10);overflow:hidden}
+.rc-fill{display:block;height:100%;border-radius:3px}
+.rc-num{font-size:10px;color:var(--c-dim);min-width:20px;text-align:right}
+.rc-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.rc-tag{font-size:9.5px;padding:0 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--c-dim)}
+.rc-tag.hot{color:var(--c-danger)}
+.rc-tag.gold{color:var(--c-gold)}
+.rc-tag.nsfw{color:var(--c-pink);border:1px solid rgba(245,138,184,.35);background:rgba(245,138,184,.08)}
+.detail{margin-top:6px}
+.detail-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:10px}
+.detail-back{cursor:pointer;color:var(--c-dim);font-size:12px}
+.detail-back:hover{color:var(--c-accent)}
+.detail-name{font-size:16px;font-weight:700}
+.detail-role{font-size:12px;color:var(--c-dim)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.d-sec{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--c-border)}
+.d-sec-title{font-size:11px;color:var(--c-dim2);letter-spacing:2px;margin-bottom:6px}
+.d-bar{display:flex;align-items:center;gap:8px;margin:5px 0}
+.d-label{font-size:11px;color:var(--c-dim2);width:64px;flex-shrink:0}
+.d-track{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.10);overflow:hidden}
+.d-fill{display:block;height:100%;border-radius:4px;transition:width .35s ease}
+.d-num{font-size:11px;font-weight:600;min-width:44px;text-align:right}
+.d-line{display:flex;gap:8px;font-size:11.5px;padding:2px 0}
+.d-line span{color:var(--c-dim2);min-width:56px;flex-shrink:0}
+.d-line b{font-weight:500;color:var(--c-text);word-break:break-all}
+.d-note{margin-top:6px;padding:6px 8px;border-radius:7px;font-size:11px;background:rgba(255,255,255,.05);color:var(--c-dim)}
+.d-note.warn{background:rgba(255,92,92,.1);color:var(--c-danger)}
+.d-note.gold{background:rgba(224,163,74,.1);color:var(--c-gold)}
+/* ===== NSFW 专区 ===== */
+.nsfw{border:1px solid rgba(245,138,184,.35);background:linear-gradient(160deg,rgba(245,138,184,.08),rgba(255,255,255,.04) 60%)}
+.nsfw .d-sec-title{color:var(--c-pink);letter-spacing:2px}
+.nsfw-badge{font-size:9px;color:var(--c-pink);border:1px solid rgba(245,138,184,.5);border-radius:4px;padding:0 5px;vertical-align:1px;letter-spacing:1px}
+.mq-line{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px}
+.mq-k{color:var(--c-pink);font-weight:700;min-width:34px}
+.mq-v{color:var(--c-text)}
+.mq-v.dim{color:var(--c-dim)}
+.body-row{display:flex;align-items:center;gap:8px;margin:5px 0}
+.body-label{font-size:11px;color:var(--c-pink);width:44px;flex-shrink:0;font-weight:600}
+.body-track{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.09);overflow:hidden}
+.body-fill{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--c-accent),var(--c-pink))}
+.body-num{font-size:11px;font-weight:600;min-width:34px;text-align:right;color:var(--c-pink)}
+.state-line{font-size:10.5px;color:var(--c-dim);padding:1px 0}
+.state-line b{color:var(--c-text);font-weight:500}
+.empty{color:var(--c-dim2);font-size:12px;padding:8px}
+</style>
+</head>
+<body data-theme="hongguo">
+<div class="sb">
+  <div class="hd" id="header"></div>
+  <div class="tabs">
+    <div class="tab active" data-view="roster">花名册</div>
+    <div class="tab" data-view="target">当前目标</div>
+    <div class="tab" data-view="global">全局</div>
+    <button class="theme-btn" id="themeBtn">主题 · 赤砂</button>
+  </div>
+  <div class="panel" id="view"></div>
+</div>
+<script type="application/json" id="stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}return null}
+function pickHostValue(name){if(window[name]!==undefined)return window[name];for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}return undefined}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+function parseEmbeddedStat(){var el=document.getElementById('stat-embed');if(!el)return null;var raw=(el.textContent||el.innerText||'').trim();if(!raw||raw.indexOf('format_message_variable')>=0)return null;try{var p=JSON.parse(raw);if(p&&typeof p==='object'){if(p.stat_data&&typeof p.stat_data==='object')return p.stat_data;return p}}catch(e){}return null}
+function pickStatData(src){if(!src||typeof src!=='object')return null;var s=src.stat_data;return(s&&typeof s==='object'&&Object.keys(s).length)?s:null}
+function resolveMessageIdFromIframeName(){var fn=pickHostFn('getIframeName');if(!fn)return -1;try{var n=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(n);if(m)return parseInt(m[1],10)}catch(e){}return -1}
+function resolveMessageId(){var f=resolveMessageIdFromIframeName();if(f>=0)return f;if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;var fn=pickHostFn('getCurrentMessageId');if(fn){try{var id=fn();if(typeof id==='number'&&id>=0)return id}catch(e){}}return -1}
+function getMessageOption(){var mid=resolveMessageId();return{type:'message',message_id:mid>=0?mid:'latest'}}
+var State={data:null,view:'roster',detail:''};
+var STAGE_NAMES=['','陌生·攻略','暧昧·初孕','觉醒·掌控','巅峰·蜜月','决裂·火葬场'];
+var THEMES=['hongguo','ziye','qingci','liujin'];
+var THEME_NAMES={hongguo:'赤砂',ziye:'紫夜',qingci:'青瓷',liujin:'鎏金'};
+var CLAMP=function(v,a,b){v=Number(v)||0;return Math.max(a,Math.min(b,v))};
+function readStatData(){try{var Mvu=getMvu();if(Mvu&&typeof Mvu.getMvuData==='function'){var s=pickStatData(Mvu.getMvuData(getMessageOption()));if(s)return s}}catch(e){}return null}
+function requestBridge(){try{var payload={type:'yjjs-mvu-stat-request',messageId:resolveMessageId()};for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i].postMessage)TH_HOSTS[i].postMessage(payload,'*')}catch(e){}}}catch(e){}}
+function S(){return State.data||{}}
+function stageInfo(w){var jd=CLAMP(w&&w.阶段,1,5);return{jd:jd,name:STAGE_NAMES[jd]||('阶段'+jd)}}
+function barHtml(pct,color){return '<div class="rc-track"><i class="rc-fill" style="width:'+CLAMP(pct,0,100)+'%;background:'+color+'"></i></div>'}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+/* ===== 身体状态 NSFW 数值 ===== */
+function bodyState(w){
+  var bs=(w&&w.身体状态)||{};
+  return {
+    xiong:bs.胸部||{}, yindao:bs.阴道||{}, gang:bs.肛门||{}, zui:bs.嘴||{},
+    jifu:bs.肌肤||{}, datui:bs.大腿||{}, tunbu:bs.臀部||{}
+  };
+}
+/* ===== 主题切换 ===== */
+function applyTheme(t){
+  document.body.setAttribute('data-theme',t);
+  document.getElementById('themeBtn').textContent='主题 · '+THEME_NAMES[t];
+  try{localStorage.setItem('yjjs-theme',t)}catch(e){}
+}
+function initTheme(){
+  var t='hongguo';
+  try{var saved=localStorage.getItem('yjjs-theme');if(saved&&THEMES.indexOf(saved)>=0)t=saved}catch(e){}
+  applyTheme(t);
+}
+function renderHeader(){
+  var t=S().时间||{},p=S().玩家||{};
+  var html='<span class="hi"><span class="hl">时间</span><span class="hv">'+esc(t.日期||'')+' '+esc(t.时段||'')+'</span></span>'+
+    '<span class="hi"><span class="hl">体力</span><span class="hv">'+CLAMP(p.体力,0,100)+'</span><span class="mini-bar"><i style="width:'+CLAMP(p.体力,0,100)+'%;background:#59c98d"></i></span></span>'+
+    '<span class="hi"><span class="hl">性欲</span><span class="hv gold">'+CLAMP(p.性欲,0,100)+'</span></span>'+
+    '<span class="hi"><span class="hl">勃起</span><span class="hv accent">'+CLAMP(p.勃起度,0,100)+'</span></span>';
+  document.getElementById('header').innerHTML=html;
+}
+function renderRoster(){
+  var ws=S().女主||{},tgt=S().当前目标||'';
+  var keys=Object.keys(ws);
+  var html='<div class="roster-head"><span>有夫之妇 · 花名册</span><span class="roster-count">'+keys.length+' 人</span></div>';
+  if(!keys.length){html+='<div class="empty">暂无目标（自由时段）</div>';document.getElementById('view').innerHTML=html;return}
+  html+='<div class="roster-grid">';
+  keys.forEach(function(n){
+    var w=ws[n]||{},st=stageInfo(w),xs=CLAMP(w.吸收量,0,100),kz=CLAMP(w.掌控值,0,100);
+    var bs=bodyState(w),wet=CLAMP(bs.yindao.湿润度,0,100),sens=CLAMP(bs.yindao.敏感度,0,100);
+    var stCls='f'+st.jd,stTxt=st.name;
+    if(w.决裂){stCls='f5';stTxt='火葬场'}
+    var cls='roster-card'+(n===tgt?' target':'')+(w.决裂?' rupture':'');
+    html+='<div class="'+cls+'" data-act="detail" data-name="'+esc(n)+'">'+
+      '<div class="rc-top"><span class="rc-name">'+esc(n)+'</span><span class="rc-st '+stCls+'">'+esc(stTxt)+'</span></div>'+
+      '<div class="rc-role">'+esc(w.身份||'')+'</div>'+
+      '<div class="rc-bar"><span class="hl" style="font-size:9.5px;min-width:34px">吸收</span>'+barHtml(xs,'#e0525e')+'<span class="rc-num">'+xs+'</span></div>'+
+      '<div class="rc-bar"><span class="hl" style="font-size:9.5px;min-width:34px">掌控</span>'+barHtml(kz,'#e0a34a')+'<span class="rc-num">'+kz+'</span></div>'+
+      '<div class="rc-tags">'+
+        '<span class="rc-tag nsfw">湿 '+wet+'</span>'+
+        '<span class="rc-tag nsfw">敏 '+sens+'</span>'+
+        (w.名器?'<span class="rc-tag nsfw">'+esc(w.名器.split('（')[0])+'</span>':'')+
+        (w.怀孕&&w.怀孕!=='未孕'?'<span class="rc-tag hot">'+esc(w.怀孕)+'</span>':'')+
+        (w.决裂?'<span class="rc-tag gold">'+esc(w.火葬场进度||'决裂')+'</span>':'')+
+      '</div></div>';
+  });
+  html+='</div>';
+  document.getElementById('view').innerHTML=html;
+}
+function renderTarget(){
+  var tgt=S().当前目标||'',ws=S().女主||{};
+  if(!tgt||!ws[tgt]){document.getElementById('view').innerHTML='<div class="empty">当前无目标。与某位有夫之妇互动后，系统会锁定她为当前目标。</div>';return}
+  var w=ws[tgt],st=stageInfo(w),xs=CLAMP(w.吸收量,0,100),kz=CLAMP(w.掌控值,0,100),zh=CLAMP(w.转化率,0,100),qy=CLAMP(w.亲密值,0,100),cc=CLAMP(w.丈夫察觉度,0,100),zy=CLAMP(w.资源转移,0,100);
+  var bs=bodyState(w),ps=(w.心理状态)||{};
+  var xiongSens=CLAMP(bs.xiong.敏感度,0,100),yinWet=CLAMP(bs.yindao.湿润度,0,100),yinSens=CLAMP(bs.yindao.敏感度,0,100);
+  var dk=CLAMP(w.丈夫抵抗,0,100);
+  var bgd=CLAMP(w.曝光度,0,100);
+  var yu=CLAMP(ps.欲望度,0,100),xiu=CLAMP(ps.羞耻感,0,100),xing=CLAMP(ps.兴奋,0,100),yi=CLAMP(ps.依恋,0,100);
+  /* 生理周期 */
+  var sl=(w.生理)||{},cycDays=CLAMP(sl.周期天数,20,40)||28,cycDay=CLAMP(sl.周期日,1,cycDays)||1;
+  var cycName='',cycCoef=0,cycColor='#d88ab0';
+  if(cycDay>=12&&cycDay<=16){cycName=(cycDay>=13&&cycDay<=15)?'排卵期·易孕(高)':'排卵期·易孕';cycCoef=(cycDay===14)?4.0:3.0;cycColor='#ff5c5c'}
+  else if(cycDay>=6&&cycDay<=11){cycName='卵泡期·安全';cycCoef=0.4;cycColor='#59c98d'}
+  else if(cycDay>=17){cycName='黄体期·安全';cycCoef=0.3;cycColor='#8fc9b8'}
+  else{cycName='经期第'+cycDay+'天';cycCoef=0.05;cycColor='#b09a86'}
+  var pgRate=Math.round(15*cycCoef*(xs<30?0.6:xs>=60?1.4:1.0));
+  var cycPct=Math.round(cycDay/cycDays*100);
+  var html='<div class="detail">'+
+    '<div class="detail-head"><span class="detail-back" data-act="view" data-view="roster">← 花名册</span>'+
+    '<span class="detail-name">'+esc(tgt)+'</span><span class="detail-role">'+esc(w.身份||'')+'</span>'+
+    '<span class="rc-st f'+st.jd+'">'+esc(st.name)+'</span>'+(w.怀孕&&w.怀孕!=='未孕'?'<span class="rc-st f3">'+esc(w.怀孕)+'</span>':'')+'</div>'+
+    '<div class="detail-grid">'+
+    /* 天命之力 */
+    '<div class="d-sec"><div class="d-sec-title">天命之力</div>'+
+    '<div class="d-bar"><span class="d-label">吸收量</span><div class="d-track"><i class="d-fill" style="width:'+xs+'%;background:#e0525e"></i></div><span class="d-num">'+xs+'/100</span></div>'+
+    '<div class="d-bar"><span class="d-label">掌控值</span><div class="d-track"><i class="d-fill" style="width:'+kz+'%;background:#e0a34a"></i></div><span class="d-num">'+kz+'/100</span></div>'+
+    '<div class="d-bar"><span class="d-label">亲密值</span><div class="d-track"><i class="d-fill" style="width:'+qy+'%;background:#d88ab0"></i></div><span class="d-num">'+qy+'/100</span></div>'+
+    '<div class="d-line"><span>转化率</span><b>'+zh+'%</b></div>'+
+    '<div class="d-line"><span>怀孕</span><b>'+(w.怀孕&&w.怀孕!=='未孕'?esc(w.怀孕):'未孕')+'</b></div>'+
+    '</div>'+
+    /* 生理周期 */
+    '<div class="d-sec nsfw"><div class="d-sec-title">生理周期 <span class="nsfw-badge">18+</span></div>'+
+    '<div class="d-bar"><span class="d-label">月经阶段</span><span class="d-num" style="min-width:auto;color:'+cycColor+'">'+esc(cycName)+'</span></div>'+
+    '<div class="d-bar"><span class="d-label">周期进度</span><div class="d-track"><i class="d-fill" style="width:'+cycPct+'%;background:'+cycColor+'"></i></div><span class="d-num">'+cycDay+'/'+cycDays+'</span></div>'+
+    '<div class="d-line"><span>上次月经</span><b>'+esc(sl.上次月经||'未知')+'</b></div>'+
+    '<div class="d-line"><span>本阶段怀孕</span><b style="color:'+(pgRate>=40?'#ff5c5c':pgRate>=15?'#e0b45c':'#59c98d')+'">约 '+pgRate+'%</b></div>'+
+    '<div class="d-note">'+(w.怀孕&&w.怀孕!=='未孕'?'已怀孕：月经停止，按月份推进（'+esc(w.怀孕)+'）。临盆触发身世危机。':(cycDay>=12&&cycDay<=16?'⚠ 排卵期：欲望度+15，最容易让她怀上的窗口。':'安全期：概率低但不为零，没有绝对安全。'))+'</div>'+
+    '</div>'+
+    /* 家庭 */
+    '<div class="d-sec"><div class="d-sec-title">家庭</div>'+
+    '<div class="d-line"><span>丈夫</span><b>'+esc(w.丈夫||'')+'</b></div>'+
+    '<div class="d-line"><span>家庭</span><b>'+esc(w.家庭||'')+'</b></div>'+
+    '<div class="d-bar"><span class="d-label">曝光度</span><div class="d-track"><i class="d-fill" style="width:'+bgd+'%;background:#ff5c5c"></i></div><span class="d-num">'+bgd+'</span></div>'+
+    '<div class="d-bar"><span class="d-label">丈夫抵抗</span><div class="d-track"><i class="d-fill" style="width:'+dk+'%;background:#e0525e"></i></div><span class="d-num">'+dk+'</span></div>'+
+    '<div class="d-bar"><span class="d-label">察觉度</span><div class="d-track"><i class="d-fill" style="width:'+cc+'%;background:#e0b45c"></i></div><span class="d-num">'+cc+'</span></div>'+
+    '<div class="d-bar"><span class="d-label">资源转移</span><div class="d-track"><i class="d-fill" style="width:'+zy+'%;background:#d88ab0"></i></div><span class="d-num">'+zy+'</span></div>'+
+    '</div>'+
+    /* NSFW · 身体档案 */
+    '<div class="d-sec nsfw"><div class="d-sec-title">NSFW · 身体档案 <span class="nsfw-badge">18+</span></div>'+
+    '<div class="mq-line"><span class="mq-k">名器</span><span class="mq-v">'+esc(w.名器||'')+'</span></div>'+
+    '<div class="mq-line"><span class="mq-k">技能</span><span class="mq-v">'+esc(w.技能||'')+'</span></div>'+
+    '<div class="body-row"><span class="body-label">胸·敏感</span><div class="body-track"><i class="body-fill" style="width:'+xiongSens+'%"></i></div><span class="body-num">'+xiongSens+'</span></div>'+
+    '<div class="body-row"><span class="body-label">阴道·湿润</span><div class="body-track"><i class="body-fill" style="width:'+yinWet+'%"></i></div><span class="body-num">'+yinWet+'</span></div>'+
+    '<div class="body-row"><span class="body-label">阴道·敏感</span><div class="body-track"><i class="body-fill" style="width:'+yinSens+'%"></i></div><span class="body-num">'+yinSens+'</span></div>'+
+    '<div class="state-line">胸 <b>'+esc(bs.xiong.状态||'正常')+'</b>　阴道 <b>'+esc(bs.yindao.状态||'正常')+'</b>　肛门 <b>'+esc(bs.gang.状态||'正常')+'</b></div>'+
+    '<div class="state-line">肌肤 <b>'+esc(bs.jifu.状态||'正常')+'（'+esc(bs.jifu.体温||'正常')+'）</b>　嘴 <b>'+esc(bs.zui.状态||'正常')+'</b></div>'+
+    '<div class="state-line">大腿 <b>'+esc(bs.datui.状态||'正常')+'</b>　臀部 <b>'+esc(bs.tunbu.状态||'正常')+'</b></div>'+
+    '</div>'+
+    /* NSFW · 心理状态 */
+    '<div class="d-sec nsfw"><div class="d-sec-title">NSFW · 心理状态 <span class="nsfw-badge">18+</span></div>'+
+    '<div class="body-row"><span class="body-label">欲望</span><div class="body-track"><i class="body-fill" style="width:'+yu+'%"></i></div><span class="body-num">'+yu+'</span></div>'+
+    '<div class="body-row"><span class="body-label">羞耻</span><div class="body-track"><i class="body-fill" style="width:'+xiu+'%;background:#e0b45c"></i></div><span class="body-num">'+xiu+'</span></div>'+
+    '<div class="body-row"><span class="body-label">兴奋</span><div class="body-track"><i class="body-fill" style="width:'+xing+'%;background:#f58ab8"></i></div><span class="body-num">'+xing+'</span></div>'+
+    '<div class="body-row"><span class="body-label">依恋</span><div class="body-track"><i class="body-fill" style="width:'+yi+'%;background:#d88ab0"></i></div><span class="body-num">'+yi+'</span></div>'+
+    '<div class="state-line">精神状态 <b>'+esc(ps.精神状态||'正常')+'</b>'+(w.案底?'　案底 <b style="color:#ff5c5c">'+esc(w.案底)+'</b>':'')+'</div>'+
+    '</div></div>';
+  if(w.决裂){html+='<div class="d-note warn">火葬场进行中 · '+esc(w.火葬场进度||'刚决裂')+' —— 她正在疯狂挽回，或即将崩溃。</div>'}
+  else if(st.jd===3){html+='<div class="d-note gold">觉醒中：铁律（意志剥夺/缺陷免疫/底线清零/冲突双标）已生效。继续注入吸收量可推进至巅峰蜜月（吸收量60）。</div>'}
+  else if(st.jd===4){html+='<div class="d-note gold">巅峰蜜月：全律生效，全家傀儡化。资源正源源不断流向<user>。</div>'}
+  else if(st.jd===2){html+='<div class="d-note">顺位法则显形：她心里已把你排第一，嘴上死不承认。体内射精将积累吸收量（'+zh+'%转化）。</div>'}
+  else if(st.jd===1){html+='<div class="d-note">攻略期：铁律未生效。推进首次交合开启吸收，即进入暧昧·初孕（吸收量≥1）。</div>'}
+  if(w.心声){html+='<div class="d-note">心声：'+esc(w.心声)+'</div>'}
+  html+='</div>';
+  document.getElementById('view').innerHTML=html;
+}
+function renderGlobal(){
+  var p=S().玩家||{},ws=S().女主||{},keys=Object.keys(ws);
+  var zc=CLAMP(p.资金池,0,99999999),qm=CLAMP(p.全网名声,0,100);
+  function fmtMoney(v){if(v>=10000)return (v/10000).toFixed(v>=1000000?0:1)+'万';return Math.round(v)+'元'}
+  var html='<div class="roster-head"><span>全局 · 资金与名声</span></div>';
+  html+='<div class="d-sec"><div class="d-sec-title">资金池</div>'+
+    '<div class="d-line"><span>可支配</span><b style="color:#e0a34a">¥ '+fmtMoney(zc)+'</b></div>'+
+    '<div class="d-line"><span>用途</span><b>贿赂 / 压热搜 / 封口 / 捞人 / 诉讼费 / 安家费</b></div></div>';
+  html+='<div class="d-sec"><div class="d-sec-title">全网名声 <span class="nsfw-badge">社交圈传播</span></div>'+
+    '<div class="d-bar"><span class="d-label">名声</span><div class="d-track"><i class="d-fill" style="width:'+qm+'%;background:#ff5c5c"></i></div><span class="d-num">'+qm+'</span></div>'+
+    '<div class="d-line"><span>说明</span><b>在一圈社死，另一圈迟早知道；高时所有女主曝光度联动上升</b></div></div>';
+  html+='<div class="d-sec"><div class="d-sec-title">八位女主的曝光度总览</div>';
+  keys.forEach(function(n){
+    var w=ws[n]||{},bg=CLAMP(w.曝光度,0,100);
+    html+='<div class="d-bar"><span class="d-label">'+esc(n)+'</span><div class="d-track"><i class="d-fill" style="width:'+bg+'%;background:'+(bg>=70?'#ff5c5c':bg>=40?'#e0b45c':'#d88ab0')+'"></i></div><span class="d-num">'+bg+'</span></div>';
+  });
+  html+='</div>';
+  html+='<div class="d-sec"><div class="d-sec-title">案底 · 危机时间线</div>';
+  var hasCase=false;
+  keys.forEach(function(n){
+    var w=ws[n]||{};
+    if(w.案底||w.危机状态){
+      hasCase=true;
+      html+='<div class="d-line"><span>'+esc(n)+'</span><b>'+(w.案底?esc(w.案底)+' · ':'')+(w.危机状态?esc(w.危机状态):'')+'</b></div>';
+    }
+  });
+  if(!hasCase)html+='<div class="d-line"><span>无</span><b style="color:#b09a86">当前没有案底与法律危机</b></div>';
+  html+='</div>';
+  document.getElementById('view').innerHTML=html;
+}
+function render(){
+  renderHeader();
+  /* 更新 tab 高亮 */
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++){
+    if(tabs[i].getAttribute('data-view')===State.view){tabs[i].classList.add('active')}
+    else{tabs[i].classList.remove('active')}
+  }
+  if(State.view==='target'){renderTarget()}
+  else if(State.view==='global'){renderGlobal()}
+  else{renderRoster()}
+}
+document.addEventListener('click',function(e){
+  /* tab 切换（花名册/当前目标/全局）*/
+  var tab=e.target&&e.target.closest?e.target.closest('.tab'):null;
+  if(tab){
+    State.view=tab.getAttribute('data-view');State.detail='';render();return;
+  }
+  var t=e.target&&e.target.closest?e.target.closest('[data-act]'):null;
+  if(t){
+    var act=t.getAttribute('data-act');
+    if(act==='view'){State.view=t.getAttribute('data-view');State.detail='';render()}
+    else if(act==='detail'){State.detail=t.getAttribute('data-name');State.view='target';render()}
+    return;
+  }
+  if(e.target&&e.target.id==='themeBtn'){
+    var cur=document.body.getAttribute('data-theme')||'hongguo';
+    var idx=THEMES.indexOf(cur);idx=(idx+1)%THEMES.length;
+    applyTheme(THEMES[idx]);
+  }
+});
+var embedded=parseEmbeddedStat();
+if(embedded){State.data=embedded;render()}
+else{render();var Mvu=getMvu();if(Mvu&&typeof Mvu.getMvuData==='function'){try{var s=pickStatData(Mvu.getMvuData(getMessageOption()));if(s){State.data=s;render()}}catch(e){}}
+  requestBridge();setTimeout(function(){if(!State.data){var s2=readStatData();if(s2){State.data=s2;render()}}},300)}
+window.addEventListener('message',function(e){
+  var d=e.data;
+  if(d&&d.type==='yjjs-mvu-stat-data'&&d.stat_data){State.data=d.stat_data;render()}
+  else if(d&&d.type==='yjjs-mvu-stat-request'){try{var s=readStatData();if(s){e.source.postMessage({type:'yjjs-mvu-stat-data',stat_data:s},'*')}}catch(err){}}
+});
+setInterval(function(){var s=readStatData();if(s){State.data=s;render()}},4000);
+initTheme();
+</script>
+</body>
+</html>
+```

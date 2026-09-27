@@ -1,0 +1,91 @@
+@@generate_before
+<%_
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var lastRaidDay = Number(getvar('stat_data.事件计时器.上次袭击日', { scope: 'local', defaults: 0 })) || 0;
+var lastTradeDay = Number(getvar('stat_data.事件计时器.上次贸易日', { scope: 'local', defaults: 0 })) || 0;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+
+var factions = [
+  { name: '部落联盟', relation: Number(getvar('stat_data.派系.部落联盟.关系', { scope: 'local', defaults: 0 })) || 0, stance: '中立', strength: '中等 (30-50人,低科技)', sells: '草药/皮革/木材/野生动物', buys: '钢铁/武器/盐/糖', priceMod: '原料×0.8买/成品×1.3卖', special: '社交≥8可学草药(药效+20%)' },
+  { name: '城市邦联', relation: Number(getvar('stat_data.派系.城市邦联.关系', { scope: 'local', defaults: 0 })) || 0, stance: '中立', strength: '高 (50-100人,中高科)', sells: '武器/装备/组件/高级材料', buys: '食物/原料/艺术品', priceMod: '成品×1.0/原料×1.2', special: '关系≥30可雇佣(500银/3天)' },
+  { name: '海盗团', relation: Number(getvar('stat_data.派系.海盗团.关系', { scope: 'local', defaults: -40 })) || -40, stance: '敌对', strength: '中高 (流寇武装)', sells: '不贸易', buys: '不贸易', priceMod: '不适用', special: '每7-15天袭击' },
+  { name: '机械教团', relation: Number(getvar('stat_data.派系.机械教团.关系', { scope: 'local', defaults: -50 })) || -50, stance: '敌对', strength: '极高 (机械族)', sells: '不贸易', buys: '不贸易', priceMod: '不适用', special: '挖遗迹/研究机械触发敌对' },
+  { name: '商人公会', relation: Number(getvar('stat_data.派系.商人公会.关系', { scope: 'local', defaults: 15 })) || 15, stance: '友好', strength: '低 (无军事,物流型)', sells: '全品类', buys: '全品类', priceMod: '全品×1.0', special: '每7天商队到访/可订购' },
+  { name: '帝国', relation: Number(getvar('stat_data.派系.帝国.关系', { scope: 'local', defaults: -20 })) || -20, stance: '中立偏敌', strength: '极高 (皇家卫队)', sells: '高科技武器/高级组件/仿生体', buys: '白银/黄金/艺术品', priceMod: '奢侈品×1.5', special: '关系≥40可获贵族头衔' },
+  { name: '游牧部落', relation: Number(getvar('stat_data.派系.游牧部落.关系', { scope: 'local', defaults: 5 })) || 5, stance: '中立', strength: '中 (20-30人,骑射)', sells: '马/皮革/肉干', buys: '钢铁/武器/盐', priceMod: '畜牧×0.9', special: '每5天经过/可交易' },
+  { name: '流亡者组织', relation: Number(getvar('stat_data.派系.流亡者组织.关系', { scope: 'local', defaults: -10 })) || -10, stance: '中立偏敌', strength: '中高 (流亡武装)', sells: '违禁品/情报', buys: '白银/武器', priceMod: '违禁×0.7', special: '黑市/可雇佣刺客' }
+];
+
+function _relationTier(rel) {
+  var r = Number(rel) || 0;
+  if (r <= -50) { return '仇恨'; }
+  if (r <= -10) { return '敌对'; }
+  if (r < 10) { return '中立'; }
+  if (r < 50) { return '友好'; }
+  return '盟友';
+}
+
+var relationChanges = [
+  { trigger: '完成派系任务', delta: 5 },
+  { trigger: '成功贸易', delta: 3 },
+  { trigger: '援助战斗', delta: 10 },
+  { trigger: '攻击成员', delta: -10 },
+  { trigger: '杀害成员', delta: -20 },
+  { trigger: '袭击据点', delta: -30 }
+];
+
+var daysSinceRaid = gameDay - lastRaidDay;
+var daysSinceTrade = gameDay - lastTradeDay;
+var pirateRaidDue = (daysSinceRaid >= 7 && daysSinceRaid <= 15);
+var guildCaravanDue = (daysSinceTrade >= 7);
+_%>
+<派系定义就绪>
+[当前派系关系]
+游戏日: <%= gameDay %> / 阶段: <%= phase %>
+距上次袭击: <%= daysSinceRaid %>天 (海盗周期7-15天) → <%= pirateRaidDue ? '海盗可能袭击' : '暂未到周期' %>
+距上次贸易: <%= daysSinceTrade %>天 (公会周期7天) → <%= guildCaravanDue ? '公会商队可到访' : '冷却中' %>
+
+[8派系定义]
+<%_ for (var i = 0; i < factions.length; i++) { var f = factions[i]; _%>
+<%= (i+1) %>. <%= f.name %>
+   当前关系: <%= f.relation %> (<%= _relationTier(f.relation) %>)
+   实力: <%= f.strength %>
+   贸易特长: 卖<%= f.sells %> / 买<%= f.buys %>
+   价格修正: <%= f.priceMod %>
+   特殊: <%= f.special %>
+<%_ } _%>
+
+[关系规则]
+关系值范围: -100 ~ +100
+
+5档关系阈值:
+  仇恨 (-100~-50): 主动袭击
+  敌对 (-49~-10):  遇袭反击
+  中立 (-9~+9):    互不干涉
+  友好 (+10~+49):  可贸易
+  盟友 (+50~+100):  可召唤援军
+
+关系变化触发:
+<%_ for (var i = 0; i < relationChanges.length; i++) { var c = relationChanges[i]; _%>
+  <%= c.trigger %>: <%= c.delta >= 0 ? '+' : '' %><%= c.delta %>
+<%_ } _%>
+
+派系叙事定位:
+- 部落联盟: 原始但亲近自然,草药大师,初期可建立友好
+- 城市邦联: 文明秩序代表,可雇佣,中后期重要盟友
+- 海盗团: 持续威胁源,无法和解,定期袭击
+- 机械教团: 终末威胁,科技解锁即触发敌对
+- 商人公会: 物流盟友,无军事但补给可靠
+- 帝国: 高科技帝国势力,军事极强,关系≥40可获贵族头衔
+- 游牧部落: 骑射游牧民族,每5天经过可交易,畜牧特产
+- 流亡者组织: 地下势力,黑市交易违禁品,可雇佣刺客
+
+[行为校验要求]
+派系互动必须输出行为校验块:
+<派系互动校验>
+- 派系名称 / 当前关系值 / 关系层级 (_relationTier)
+- 互动类型 (贸易/任务/战斗/援助)
+- 关系变化 (触发原因/增减值/新关系值)
+- 派系特殊规则应用 (雇佣/学习/订购/袭击周期)
+</派系互动校验>
+</派系定义就绪>

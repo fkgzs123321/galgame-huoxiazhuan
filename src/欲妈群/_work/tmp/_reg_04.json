@@ -1,0 +1,17 @@
+{
+  "id": "yumq-regex-070-statbar-ui",
+  "scriptName": "9状态栏界面",
+  "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": 0,
+  "maxDepth": null,
+  "replaceString": "```html\n<body>\n<div id=\"ymq-load\">正在载入状态栏…</div>\n<script>\n(function(){\n  var U=\"https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-yumaqun@cd9fc97/index.html\";\n  var D=document.getElementById(\"ymq-load\");\n  try{ window.__YMQ_URL = U; }catch(e){}   /* ★ 面板要 fetch 自己这份原文来当模板 */\n  if(typeof $===\"undefined\"){ if(D) D.textContent=\"没载入：这个环境里没有 jQuery\"; return; }\n  $(\"body\").load(U,function(r,st,xhr){\n    if(st!==\"success\"){ if(D) D.textContent=\"没载入：\"+st+\" \"+(xhr?xhr.status:\"\")+\"　地址：\"+U; }\n    else if(D){ D.remove(); }\n  });\n})();\n</script>\n</body>\n```\n"
+}

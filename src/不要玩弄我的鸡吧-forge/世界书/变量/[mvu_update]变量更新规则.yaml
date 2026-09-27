@@ -1,0 +1,791 @@
+# 顶层根: 基础信息 / 时间 / 状态 / 技能 / 使用阶段 / 学业 / 隐藏层 / 骰子 / 症状 / 环境 / 女性角色 / 任务 / 商店商品 / 物品栏 / 仓库 / 已放置物品 / 制造配方 / 载具 / 居所 / 检定建议 / 雷达 / 规则变化 / 关系图谱 / 事件 / 结局 / 陌生模板 / 课程表 / 配置 / UID计数器 / 排班
+# 操作仅支持: replace / add / remove（RFC 6902）
+# 字段名以 _ 或 $ 开头的为只读，禁止更新
+
+基础信息:
+  ${姓名|性别|学校|班级}:
+    check:
+      - 仅在开场、入学、转学、升学、毕业或玩家明确身份变化时 replace。
+      - 姓名 初始为 {{user}}，玩家自报后 replace。
+  年龄:
+    type: number
+
+时间:
+  ${天数|小时|分钟|学期天数|距高考天数}:
+    type: number
+    check:
+      - 每轮时间推进 replace 为新值。
+      - 分钟 范围 0~59，进位时 replace 小时 为 +1 后的值。
+      - 小时 超过 23 时，replace 天数为 +1 后的值，小时归零。
+      - 学期天数 >= 120 时 replace 学期 为下一阶段；距高考天数 = 0 时 replace 学期 为"高考后"。
+      - 距高考天数 每过一天 replace 为 -1 后的值，至 0 后保持 0。
+  ${星期|日期|考试期|学期}:
+    check:
+      - 跨日或跨学期时 replace 对应值。
+      - 学期 枚举：高三上/高三下/高考后；初始为"高三下"。
+
+状态:
+  ${精力|精力上限|理智|健康|压力|金钱|怀疑值|堕落值|体力|体力上限}:
+    type: number
+    range:
+      精力: 0~精力上限
+      精力上限: 30~100
+      理智: 0~100
+      健康: 0~100
+      压力: 0~100
+      怀疑值: 0~200
+      堕落值: 0~200
+      体力: 0~体力上限
+      体力上限: 30~100
+    check:
+      - 数值变化 replace 为计算后的新值。
+      - 怀疑值/堕落值 上限 200。
+      - 精力上限/体力上限 为难度锁定值，仅在难度切换时由变量 AI 按下表 replace，此后不可再修改。
+      - ★难度初始值铁律表（必须严格按此表 replace，禁止 AI 自行编造数值）：
+        · 普通：精力上限=100, 体力上限=100, 精力=100, 体力=100, 理智=100, 健康=90, 压力=5, 金钱=800
+        · 困难：精力上限=80, 体力上限=80, 精力=80, 体力=80, 理智=80, 健康=75, 压力=10, 金钱=500
+        · 地狱：精力上限=60, 体力上限=60, 精力=60, 体力=60, 理智=60, 健康=60, 压力=20, 金钱=300
+      - 禁止设置超出上表的数值（如地狱难度下精力上限=160/体力上限=200 属于严重违规）。
+  难度:
+    type: string
+    check:
+      - 枚举：普通/困难/地狱；初始为"困难"。
+      - 仅在 隐藏层.难度已锁定 === false 时允许 replace；锁定后禁止修改。
+      - 难度切换由变量 AI 根据玩家开局选择自动执行，必须一次性输出以下全部 patch：
+        1. replace /状态/难度 = 选择的难度
+        2. replace /隐藏层/难度已锁定 = true
+        3. replace /状态/精力上限 = 对应难度的精力上限（普通100/困难80/地狱60）
+        4. replace /状态/体力上限 = 对应难度的体力上限（普通100/困难80/地狱60）
+        5. replace /状态/精力 = 对应难度的初始精力
+        6. replace /状态/体力 = 对应难度的初始体力
+        7. replace /状态/理智 = 对应难度的初始理智
+        8. replace /状态/健康 = 对应难度的初始健康
+        9. replace /状态/压力 = 对应难度的初始压力
+        10. replace /状态/金钱 = 对应难度的初始金钱
+      - 以上 10 个 patch 必须在同一轮 VARIABLE_UPDATE 中一次性输出，缺一不可。
+  今日生活费已领取:
+    type: boolean
+    check:
+      - 每日由触发器重置为 false；领取后 replace 为 true。
+  每日购买:
+    type: object
+    check:
+      - 子字段当日累计，每日重置；购买时 replace 对应子字段为新值。
+
+技能:
+  ${冥想|锻炼|洞察|伪装|恢复|意志}:
+    type: |-
+      {
+        等级: number;
+        经验: number;
+        今日已用: number;
+        今日上限: number;
+      }
+    range:
+      等级: 1~100
+      经验: 0~9900
+      今日已用: 0~今日上限
+      今日上限: 1~100
+    check:
+      - 经验增长 replace 为新值；等级提升 replace 为新值（经验每 100 提一级）。
+      - 今日已用 每次使用 replace 为 +1 后的值；今日已用 >= 今日上限 时当日不再增长经验。
+      - 今日已用 跨日由触发器重置。
+      - 今日上限 由配置决定，不同技能不同；AI 不可直接 replace。
+
+使用阶段:
+  当前阶段:
+    type: number
+    range: 1~5
+    check:
+      - 升级条件（多维度，非纯经验阈值）：
+        阶段1→2: 持有者信息.是否使用过=true
+        阶段2→3: 传播人数>=3 + 持有者执念>=30
+        阶段3→4: 传播人数>=6 + 至少1人综合阶段=C_沉沦期
+        阶段4→5: 传播人数>=10 + 至少1人综合阶段=D_疯狂期 + 怀疑值>=60
+      - 升级时 replace 为新值，replace 阶段进度 为 0。
+  ${总使用次数|今日使用|今日上限|最后使用日|最后使用时|阶段进度|经验|今日经验|今日经验上限}:
+    type: number
+    check:
+      - 总使用次数/今日使用/经验 replace 为累加后的新值；今日使用/今日经验 跨日由触发器重置。
+      - 最后使用日/最后使用时 replace 为当前 天数/小时。
+      - 今日上限/今日经验上限 由配置决定，AI 不可直接 replace。
+
+学业:
+  ${分数|今日学习次数|考试倒计时|老师关注度}:
+    type: number
+    range:
+      分数: 0~100
+      考试倒计时: 0~35
+    check:
+      - 分数 变化 replace 为新值；学习 +2/次，被使用 -3/次，压力 -1~3，老师关注 +1~3。
+      - 今日学习次数 当日累计，跨日由触发器重置。
+      - 考试倒计时 每过一天 replace 为 -1 后的值；至 0 时考试触发，次日由触发器重置为下一周期（周考=7，月考=30，季考=90）。
+      - 老师关注度 变化 replace 为新值。
+  阶段:
+    type: number
+    check:
+      - 由脚本根据 分数 自动计算（90→5, 75→4, 60→3, 40→2, 其余→1），AI 禁止手写。
+  ${当前课程|当前老师|下节课程|下节老师}:
+    type: string
+    check:
+      - 每轮根据课程表 replace 为当前/下节课程名和老师名。
+      - 课间或放学时 replace 为空字符串。
+
+隐藏层:
+  难度已锁定:
+    type: boolean
+    check:
+      - 初始 false；玩家在开局选择难度后 replace 为 true，此后不可改回 false。
+      - true 时禁止 replace /状态/难度。
+      - 难度锁定铁律：一旦设为 true，任何情况下都不得改回 false。
+  ${超自然妄想计数|违法计数|连续拒绝}:
+    type: number
+    check:
+      - 超自然妄想计数：剧情 AI 驳回超自然口胡时 replace 为 +1 后的值；累计 ≥3 触发 坏结局.精神异常。
+      - 违法计数：剧情 AI 执行违法后果时，replace 为 +对应增量后的值；累计 ≥3 触发 坏结局.法律制裁。
+      - 连续拒绝：每次 /reject 时 replace 为 +1 后的值；正常回复时 replace 归 0。
+  坏结局已触发:
+    type: boolean
+    check:
+      - 触发条件：超自然妄想计数≥3 → '精神异常'；违法计数≥3 → '法律制裁'；理智≤0 或 堕落值≥200 → '崩坏'；怀疑值≥200 且 传播≥15 → '黑市掌控'；怀疑值≥150 且 选择摧毁 且 当前阶段≥4 → '同归于尽'；第120天且未达成其他结局 → '未解之谜'。
+      - 触发后 replace 为 true，不再接受任何继续剧情的指令。
+  坏结局类型:
+    check:
+      - 触发时 replace 为对应类型字符串。
+  坏结局描述:
+    type: string
+    check:
+      - 触发坏结局时 replace 为描述文本。
+  近期事件:
+    type: |-
+      {
+        [事件id: string]: {
+          事件id: string;
+          时间: string;
+          地点: string;
+          类型: string;
+          参与者: string[];
+          摘要: string;
+          影响: string;
+          后续钩子: string;
+          重要度: string;
+          更新时间: string;
+        }
+      }
+    check:
+      - 新事件 add /隐藏层/近期事件/<事件id> 完整事件对象。
+      - 同事件推进 replace /隐藏层/近期事件/<事件id> 对应子字段。
+      - 结果失效/合并/过期 remove 对应事件。
+      - 事件id 沿用当前存档既有编号体系；新增事件用当前最大编号 +1，补足三位。
+      - 参与者 字段是字符串数组，replace 整个数组，不单独 add/remove 元素。
+      - 近期事件数量超过 20 条时执行压缩，压缩后总数不超过 10 条。
+      - 压缩保留集：最近 4 条 + 重要度最高 2 条 + 涉及关键角色 2 条 + 仍有后续钩子 1 条 = 9 条。
+      - 未进入保留集的旧事件合并为 1 条 阶段归档 事件。
+      - 生成归档后必须 remove 所有已被归档且未进入保留集的旧事件。
+  # ── 以下字段为脚本运行时暂存，AI 只读，禁止 replace/add/remove ──
+  ${真相|持有者ID|持有者获取方式|持有者获取日|持有者包裹状态|持有者首次使用日}:
+    check:
+      - 脚本运行时暂存，AI 只读。
+      - 持有者ID/持有者获取方式/持有者获取日 在持有者变更时由脚本 replace。
+  ${持有者历史|传播链|确认使用者|最后持有者|最后榨取量|射精被阻止|清醒射精}:
+    check:
+      - 脚本运行时暂存，AI 只读。
+  ${使用模式|使用节奏|当前场景|活跃使用人数|上一日|觉醒进度}:
+    check:
+      - 脚本运行时暂存，AI 只读。
+  ${过热保护|间隔保护|持有者过热保护|阶段已晋升|女性战斗力|玩家战斗力|对抗结果}:
+    check:
+      - 脚本运行时暂存，AI 只读。
+  发现进度:
+    type: object
+    check:
+      - 脚本运行时暂存，AI 只读；子字段（四阶段成功/五阶段成功/总调查次数/持有者暴露事件/孩子相似事件）由脚本自动更新。
+
+症状:
+  ${疲劳描述|敏感描述|外观描述|理智描述}:
+    check:
+      - 由 AI 根据当前状态描写，每次使用后 replace 对应字段。
+      - 疲劳描述依据 精力/精力上限 比例；敏感描述依据 使用阶段.当前阶段；外观描述依据 精力+理智 综合；理智描述依据 理智 值。
+
+骰子:
+  type: |-
+    {
+      持有者使用: number;
+      传播基值: number;
+      怀疑抵抗: number;
+      女性使用: record<string, number>;
+      阶段晋升: record<string, number>;
+    }
+  check:
+    - LCG 骰子结果暂存区，由脚本自动写入，AI 只读，禁止 replace/add/remove。
+    - 持有者使用/传播基值/怀疑抵抗 为全局骰子基值（0~100）。
+    - 女性使用 为每女性独立骰子值，key 为角色 UID。
+    - 阶段晋升 为阶段晋升骰子结果，key 为角色 UID。
+
+环境:
+  ${天气|温度|位置|湿度|季节|天气描述|环境描述}:
+    check:
+      - 天气/温度/湿度/季节 跨日或天气变化时 replace。
+      - 位置 随玩家移动 replace。
+      - 天气描述/环境描述 每轮根据当前场景 replace。
+      - 季节 依据 天数 推进（每90天换季）。
+  ${气温|当前位置|风|降水|空气质量|光线|噪音|人群密度|交通|治安|区域|描述}:
+    check:
+      - 由 AI 根据场景 replace 为对应值。
+      - 气温 为温度的补充描述；当前位置 为位置的别名字段。
+  活动:
+    type: record<string, { 编号: string; 标题: string; 名称: string; 截止: string; 时间: string; 描述: string; 简述: string; }>
+    check:
+      - 新增活动 add /环境/活动/<编号> 完整对象。
+      - 活动结束 remove 对应条目。
+  新闻:
+    type: record<string, { 编号: string; 标题: string; 头条: string; 热度: number; 重要性: number; 内容: string; 摘要: string; 来源: string; 时间: string; 位置: string; 状态: string; }>
+    check:
+      - 新增新闻 add /环境/新闻/<编号> 完整对象。
+      - 新闻过期 remove 对应条目。
+
+女性角色:
+  UID顺序:
+    type: string[]
+    check:
+      - 记录角色出场顺序，仅由脚本维护，AI 只读。
+  type: |-
+    {
+      [真名: string]: {
+        基础: object;
+        身体: object;
+        人格: object;
+        NSFW: object;
+        能力: object;
+        成长: object;
+        与玩家关系: object;
+        使用习惯: object;
+        关系网: object;
+        传播: object;
+        多维状态: object;
+        当前状态: object;
+        叙事: object;
+        生育: object;
+        持有者信息: object;
+      }
+    }
+  check:
+    - 路径用真名（如 /女性角色/林婉清/），禁止用 female_user_xxx。
+    - stat_data 中已有的女性角色，逐字段 replace 更新变化部分，禁止 add 覆盖整个角色对象。
+    - 只有 stat_data 中不存在的角色（如首次遭遇陌生 NPC）才用 add，且必须填全 基础 对象所有字段。
+    - 阶段轨迹.当前阶段 由概率判定，AI 禁止手写；多维状态.综合阶段 由脚本自动计算；能力上限 子字段由脚本根据 阶段轨迹.当前阶段 自动计算，AI 禁止更新。
+    - 持有者信息.包裹状态/获取方式/获取日 字段只读；生育 字段由生育脚本维护，AI 仅在剧情事件触发时 replace 对应字段。
+    - 关系网 是 record，新增关系 add /女性角色/<真名>/关系网/<目标UID>；现有关系 信任/亲密度 用 replace。
+    - 成长.技能经验 满 100 后由触发器自动转换；NSFW.当日统计 与 能力.今日成长已用 跨日由触发器重置。
+  基础.${姓名|角色|班级|身份|班级名|学校|住宿}:
+    check:
+      - 用 replace。
+  基础.年龄:
+    type: number
+  身体:
+    type: object
+    check:
+      - 罩杯/胸围厘米/体型/身高/阴毛/三围/体重/乳头乳房/腰臀/手足等描述字段用 replace。
+  人格:
+    type: object
+    check:
+      - 表色/间色/底色/公众面/亲密面/真实面 用 replace。
+  NSFW.敏感度:
+    type: number
+  NSFW.润滑度:
+    type: number
+    range: 0~100
+  NSFW.假阴茎经验:
+    type: object
+    check:
+      - 数值字段 replace 为新值。
+  能力:
+    type: object
+    check:
+      - 技能等级/隐蔽/持久/控制/诱惑/欲望/今日成长已用 replace 为新值。
+  成长:
+    type: object
+    check:
+      - 技能经验/隐蔽经验/持久经验/控制经验/诱惑经验/欲望经验/总次数 replace 为新值。
+  与玩家关系.${好感度|熟悉度|互动次数|信任|榨取精力}:
+    type: number
+    range:
+      好感度: 0~100
+      熟悉度: 0~100
+      信任: 0~100
+    check:
+      - 用 replace 为新值。
+  与玩家关系.已知真相:
+    type: boolean
+  与玩家关系.${最后互动|关系}:
+    check:
+      - 用 replace。
+  使用习惯:
+    type: object
+    check:
+      - 偏好时间/偏好地点/使用风格/特殊道具 用 replace。
+  传播:
+    type: object
+    check:
+      - 方式/偏好目标 用 replace；倾向 replace 为新值。
+  多维状态.${理性|执念|学业压力|逃避意识|理智|技能等级}:
+    type: number
+    range:
+      理性: 0~100
+      执念: 0~100
+      学业压力: 0~100
+      逃避意识: 0~100
+      理智: 0~100
+  当前状态.${兴奋度|润滑度}:
+    type: number
+    range: 0~100
+    check:
+      - 兴奋度变化必须同步更新 润滑度/乳头状态/阴蒂状态/体温/最后更新时。
+      - 阈值映射表：0-29 柔软/休眠/+0.0；30-49 微挺/微充血/+0.2；50-79 勃起/充血/+0.5；80-100 肿胀/勃起/+0.8（体温上限 38.0）。
+      - 高潮后下一轮兴奋度从 100 回落至 30-50。
+      - 非 NSFW 时段每轮兴奋度 -10、润滑度 -15、体温向 36.5 回归。
+  当前状态.体温:
+    type: number
+    range: 35~40
+  当前状态.${乳头状态|阴蒂状态|最后更新时}:
+    check:
+      - 由脚本按行为强度计算；非触发场景由 AI replace。
+  叙事.${在场状态|位置|外貌|简介|身份文本|过往经历|最后更新|互斥组|互斥伙伴|场景标签|最后场景|状态}:
+    check:
+      - 用 replace。
+  叙事.${心跳|嫉妒|信任}:
+    type: number
+    check:
+      - 用 replace。
+  叙事.阶段锁定:
+    type: boolean
+  持有者信息.是否使用过:
+    type: boolean
+  持有者信息.使用次数:
+    type: number
+  # ── 以下为 Zod 定义但规则中缺失的字段 ──
+  权力:
+    type: string
+    check:
+      - 枚举：无/风纪/教师/校医/管理层/家长/黑市。
+      - 角色身份变化时 replace。
+  交叉影响:
+    type: object
+    check:
+      - 子字段：学业/纪律/经济/社交/精力消耗/理智消耗。
+      - 由配置或脚本维护，AI 仅在剧情需要时 replace 对应子字段。
+  学业:
+    type: object
+    check:
+      - 子字段：分数（0~100）/阶段（1~5，脚本自动计算）/表现（0~100）。
+      - 分数 变化 replace 为新值；阶段 由脚本根据分数自动计算，AI 禁止手写。
+  生育:
+    type: object
+    check:
+      - 子字段：周期日/周期阶段/怀孕状态/怀孕阶段/受孕种子/分娩结果/产后天数/孩子数/最后受孕日/父亲UID。
+      - 生育字段由生育脚本维护，AI 仅在剧情事件触发时 replace 对应字段。
+      - 周期阶段 枚举：行经期/卵泡期/排卵期/黄体期。
+      - 怀孕阶段 枚举：未孕/无症状/孕吐期/行动受限/临产期/分娩触发。
+  阶段轨迹:
+    type: object
+    check:
+      - 脚本运行时字段，AI 只读。
+      - 子字段：模板类型/当前阶段/基础概率/性格修正/硬上限/理智。
+      - 当前阶段 由概率判定脚本自动更新，AI 禁止手写。
+  能力上限:
+    type: object
+    check:
+      - 脚本运行时字段，AI 只读。
+      - 子字段由脚本根据 阶段轨迹.当前阶段 自动计算。
+
+任务:
+  type: |-
+    record<string, {
+      编号: string;
+      类型: '主线' | '支线' | '日常' | '隐藏';
+      难度: 'D' | 'C' | 'B' | 'A' | 'S' | 'SS';
+      状态: '待接' | '进行中' | '已完成' | '失败';
+      标题: string;
+      描述: string;
+      进度: number;
+      阶段: number;
+      奖励: object;
+      截止: string | null;
+      发布者: string;
+      发布地点: string;
+      触发日: number;
+      接受日: number;
+      重复: string;
+    }>
+  check:
+    - 发布者 默认'系统'；发布地点/触发日/接受日 在任务发布/接受时 replace。
+    - 重复 标识任务是否可重复（如 '每日'/'每周'/'一次性'）。
+
+商店商品:
+  type: |-
+    record<string, {
+      编号: string;
+      名称: string;
+      价格: number;
+      品质: string;
+      库存: number;
+      库存上限: number;
+      描述: string;
+      效果: string;
+      位置: string;
+      限制: string;
+    }>
+  check:
+    - 品质 枚举：普通/优良/稀有/史诗/传说。
+    - 效果 说明商品的功能性效果，必须为非空字符串。
+
+物品栏:
+  type: |-
+    record<string, {
+      编号: string;
+      名称: string;
+      标题: string;
+      数量: number;
+      量: number;
+      类型: string;
+      品质: string;
+      状态: string;
+      位置: string;
+      所有者: string;
+      可堆叠: boolean;
+      标签: string[];
+      描述: string;
+    }>
+  check:
+    - 新增物品 add /物品栏/<编号> 时，必须填全 编号/名称/类型/描述/数量，其余字段可选。
+    - 描述 必须为非空字符串，说明物品的功能、效果或背景设定。
+    - 量 为 数量 的别名字段，两者同步更新。
+    - 类型 枚举：消耗品/装备/材料/关键道具/特殊/其他。
+    - 品质 枚举：普通/优良/稀有/史诗/传说。
+    - 可堆叠 默认 true；不可堆叠物品设为 false。
+    - 数量变化用 replace /物品栏/<编号>/数量。
+
+仓库:
+  type: |-
+    record<string, {
+      编号: string;
+      名称: string;
+      数量: number;
+      量: number;
+      描述: string;
+      类型: string;
+      品质: string;
+    }>
+  check:
+    - 仓库物品与物品栏共用 InventoryItemSchema，描述/类型 字段要求与物品栏一致。
+    - 描述 必须为非空字符串。
+    - 量 为 数量 的别名字段，两者同步更新。
+
+已放置物品:
+  type: |-
+    record<string, {
+      编号: string;
+      名称: string;
+      标题: string;
+      数量: number;
+      量: number;
+      类型: string;
+      品质: string;
+      状态: string;
+      位置: string;
+      所有者: string;
+      可堆叠: boolean;
+      标签: string[];
+      描述: string;
+    }>
+  check:
+    - 与物品栏共用 InventoryItemSchema。
+    - 放置物品时 add /已放置物品/<编号> 完整对象。
+    - 移除物品时 remove 对应条目。
+
+制造配方:
+  type: |-
+    record<string, {
+      编号: string;
+      名称: string;
+      标题: string;
+      类型: '制造' | '改造' | '升级';
+      描述: string;
+      简述: string;
+      材料: record<string, { 名称: string; 物品: string; 需要: number; 需求: number; 拥有: number; 已有: number; }>;
+      材料列表: record<string, { 名称: string; 物品: string; 需要: number; 需求: number; 拥有: number; 已有: number; }>;
+      产物: record<string, { 名称: string; 物品: string; 数量: number; 量: number; }>;
+      输出: record<string, { 名称: string; 物品: string; 数量: number; 量: number; }>;
+      解锁条件: string;
+      解锁: string;
+      成功率: number;
+    }>
+  check:
+    - 类型 枚举：制造/改造/升级。
+    - 材料/材料列表 为同义字段，存储所需材料记录。
+    - 产物/输出 为同义字段，存储产出物品记录。
+
+载具:
+  type: |-
+    record<string, {
+      编号: string;
+      类型: string;
+      载具类型: string;
+      品牌: string;
+      型号: string;
+      牌照: string;
+      车牌: string;
+      位置: string;
+      状态: '停放' | '行驶' | '维修' | '损坏' | '被盗';
+      移动状态: string;
+      能源: string;
+      燃料: string;
+      耐久: string;
+      状况: string;
+      维护: string;
+      座位: record<string, { 类型: string; 座位类型: string; 使用者: string; 占用者: string; 状态: string; 可用: string; 备注: string; }>;
+      储物: record<string, { 名称: string; 物品: string; 量: number; 数量: number; 内容: string; 容量: string; 状态: string; }>;
+      货物: record<string, { 名称: string; 物品: string; 量: number; 数量: number; 内容: string; 容量: string; 状态: string; }>;
+    }>
+  check:
+    - 状态 枚举：停放/行驶/维修/损坏/被盗。
+    - 牌照/车牌 为同义字段。
+    - 能源/燃料 为同义字段。
+    - 耐久/状况 为同义字段。
+
+居所:
+  type: |-
+    record<string, {
+      编号: string;
+      类型: string;
+      居所类型: string;
+      状态: string;
+      居住状态: string;
+      位置: string;
+      安全等级: string;
+      治安: string;
+      房间: record<string, {
+        类型: string;
+        房间类型: string;
+        居住者们: string[];
+        居住者: string;
+        人员: string;
+        清洁度: number;
+        整洁度: string;
+        隐私: string;
+        隐私等级: string;
+        舒适度: number;
+        氛围: string;
+        门锁: string;
+        状态: string;
+        房间状态: string;
+        设施们: string[];
+        设施: string;
+        储物: record<string, any>;
+        待办们: string[];
+        待办: string;
+        最后清洁日: number;
+        备注: string;
+      }>;
+      床位: record<string, any>;
+      公共设施: record<string, {
+        类型: string;
+        设施类型: string;
+        名称: string;
+        设施: string;
+        状态: string;
+        开放状态: string;
+        占用者: string;
+        当前人员: string;
+        清洁度: string;
+        隐私: string;
+        备注: string;
+      }>;
+      最后访问日: number;
+      备注: string;
+    }>
+  check:
+    - 房间.居住者们/房间.设施们/房间.待办们 是字符串数组，replace 整个数组更新，不单独 add/remove 元素。
+
+检定建议:
+  type: |-
+    record<string, { 显示文本: string; 骰子命令: string; }>
+
+雷达:
+  type: |-
+    {
+      信号: record<string, {
+        编号: string;
+        类型: string;
+        名称: string;
+        目标名称: string;
+        强度: string;
+        威胁: string;
+        描述: string;
+        简述: string;
+        方向: string;
+        方位: string;
+        单位: string;
+        单位描述: string;
+        来源: string;
+        所属: string;
+        距离: string;
+        位置: string;
+        探测日: number;
+        探测时: number;
+        备注: string;
+      }>;
+      最后扫描日: number;
+      最后扫描时: number;
+    }
+  check:
+    - 信号 key 为信号编号。
+    - 新增信号 add /雷达/信号/<编号> 完整对象。
+    - 信号消失 remove 对应条目。
+    - 最后扫描日/时 每次扫描后 replace。
+
+规则变化:
+  type: |-
+    {
+      世界变化: record<string, {
+        编号: string;
+        标题: string;
+        内容: string;
+        范围: string;
+        目标: string;
+        强度: string;
+        来源: string;
+        过期: string;
+        备注: string;
+        奖励: string;
+        奖惩: string;
+      }>;
+      学校变化: record<string, {
+        编号: string;
+        标题: string;
+        内容: string;
+        范围: string;
+        目标: string;
+        强度: string;
+        来源: string;
+        过期: string;
+        备注: string;
+        奖励: string;
+        奖惩: string;
+      }>;
+    }
+  check:
+    - 新增规则变化 add /规则变化/世界变化/<编号> 或 /规则变化/学校变化/<编号>。
+    - 规则过期 remove 对应条目。
+
+关系图谱:
+  type: |-
+    record<string, record<string, {
+      类型: '闺蜜' | '好友' | '对手' | '暗恋' | '师生' | '母女' | '买卖' | '同事' | '上下级' | '陌生人';
+      信任: number;
+      亲密度: '亲密' | '普通' | '疏远' | '敌对';
+    }>>
+  check:
+    - key 为源角色 UID → 目标角色 UID → 关系对象。
+    - 新增关系 add /关系图谱/<源UID>/<目标UID>。
+    - 关系变化 replace 对应子字段。
+
+事件:
+  type: |-
+    record<string, {
+      编号: string;
+      日: number;
+      时: number;
+      类型: '使用' | '症状' | '调查' | '社交' | '考试' | '结局' | '系统';
+      描述: string;
+      相关: string[];
+      榨取: number;
+      阶段: number;
+      人数: number;
+      模式: string;
+      节奏: string;
+      场景: string;
+      已阻挡: boolean;
+    }>
+  check:
+    - 类型 枚举：使用/症状/调查/社交/考试/结局/系统。
+    - 日/时 为事件发生时间（天数/小时），不是字符串。
+    - 相关 为字符串数组，replace 整个数组。
+    - 新增事件 add /事件/<编号> 完整对象。
+
+结局:
+  type: |-
+    {
+      健康: boolean;
+      平庸: boolean;
+      真相揭示: boolean;
+      坠落: boolean;
+      崩坏: boolean;
+      黑市掌控: boolean;
+      同归于尽: boolean;
+      未解之谜: boolean;
+      某人清醒: record<string, string>;
+      某人崩坏: record<string, string>;
+    }
+  check:
+    - 某人清醒/某人崩坏 add /结局/某人清醒/<角色名> "清醒" 或 /结局/某人崩坏/<角色名> "崩坏"（value 为 string 类型）。
+
+陌生模板:
+  type: object
+  check:
+    - 陌生女性生成模板，由系统配置，AI 只读。
+
+课程表:
+  type: |-
+    {
+      周一~周日: array<{
+        时段: string;
+        节次: number;
+        科目: string;
+        老师: string;
+        老师UID: string;
+        教室: string;
+        类型: '正课' | '早读' | '自习' | '体育' | '实验' | '活动' | '班会';
+        备注: string;
+      }>;
+    }
+  check:
+    - 周固定课程表，初始定义后 AI 只读，禁止 replace/add/remove。
+    - 特殊情况（如调课、代课）由脚本或事件触发更新。
+
+配置:
+  type: object
+  check:
+    - 只读配置层，AI 不可写。
+    - 子字段：经验阈值/学业阈值/天数阈值/难度倍率/LCG常数/持有者每日使用上限/持有者经验倍率。
+    - 难度倍率 包含玩家方向和女方方向的倍率数组（索引 0=普通/1=困难/2=地狱）。
+    - LCG常数 为骰子种子公式的参数，禁止修改。
+
+排班:
+  当前战斗目标:
+    type: string
+    check:
+      - 性爱战斗开战时 replace 为使用者真名/UID（多人时 = "多人" 并写全 隐藏层.活跃使用人数）。
+      - 漏写目标 → 战斗面板无法显示战斗（卡同步中），剧情无法推进。
+      - 战斗结束（结算块出现）后 replace 为 ''。
+  战斗状态:
+    type: '未开始'|'进行中'|'已结算'
+    check:
+      - 开战轮 replace 为"进行中"（必须同时写 当前战斗目标 + 隐藏层.当前使用者UID）。
+      - 结算块出现后 replace 为"已结算"。
+      - 本轮将战斗状态改为"进行中"（战斗开始）时，消息**正文 content 末尾**必须输出 <StatusPlaceHolderImpl/> 和 <BattleUI/>（禁止输出到思维链内）。
+  战斗.${回合|主角防守值|主角防守值上限|主角精力|她攻势值|她快感值}:
+    type: number
+    check:
+      - 由战斗面板本地结算自动写回，AI 只读，禁止手改。
+  战斗.${主角BUFF|她BUFF}:
+    type: object
+    check:
+      - 由战斗面板按道具/技能效果写回（{剩余回合, 效果值}），AI 只读。
+      - 战斗结束清空为 {}。
+
+UID计数器:
+  type: record<string, number>
+  check:
+    - 系统自增计数器，AI 只读，禁止 replace/add/remove。
+    - 包含 女性/事件 等计数器。

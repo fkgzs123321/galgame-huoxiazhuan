@@ -1,0 +1,5371 @@
+{
+  "source": "DarkestDungeon/mods + dlc 目录扫描",
+  "total": 507,
+  "mods": [
+    {
+      "name": "099 Exaelus' Arduous Edition Mod - Full Change",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 234,
+      "heroClasses": [],
+      "fileCount": 4610,
+      "nsfw": false
+    },
+    {
+      "name": "106 Exaelus' Arduous Edition Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 234,
+      "heroClasses": [],
+      "fileCount": 4649,
+      "nsfw": false
+    },
+    {
+      "name": "095 Original Boss Enhance 2.0 (Include Exaelus Buffs)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 152,
+      "heroClasses": [],
+      "fileCount": 956,
+      "nsfw": false
+    },
+    {
+      "name": "121 Town Wars",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 102,
+      "heroClasses": [],
+      "fileCount": 1505,
+      "nsfw": false
+    },
+    {
+      "name": "106 Black Reliquary 0.4 Ported Version",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 90,
+      "heroClasses": [],
+      "fileCount": 4323,
+      "nsfw": false
+    },
+    {
+      "name": "120 Hard Earned Districts - Discount Version",
+      "source": "dlc",
+      "heroCount": 63,
+      "monsterCount": 26,
+      "heroClasses": [
+        "2andb",
+        "abomination",
+        "acolyte",
+        "antiquarian",
+        "apostate_shroom",
+        "arachnid",
+        "arbalest",
+        "beastmaster",
+        "blackswordman",
+        "bounty_hunter",
+        "butcher_bird",
+        "cataphract",
+        "commissar",
+        "crusader",
+        "darkwraith",
+        "dragonslayer",
+        "duchess",
+        "exorcist",
+        "falconer",
+        "fawn",
+        "flagellant",
+        "fleshgolem",
+        "forsaken",
+        "grave_robber",
+        "grove_tender",
+        "guqin",
+        "harbinger",
+        "hellion",
+        "highwayman",
+        "hollow_knight",
+        "hood",
+        "houndmaster",
+        "iron_man",
+        "jester",
+        "keeper",
+        "lamia",
+        "leper",
+        "librarian",
+        "mambo",
+        "man_at_arms",
+        "monk",
+        "musketeer",
+        "occultist",
+        "onnabushi",
+        "phantom",
+        "plague_doctor",
+        "rogue_knight",
+        "second_daughter",
+        "seraph",
+        "shieldbreaker",
+        "sisters",
+        "slayer",
+        "snake_charmer",
+        "succubus",
+        "thorn",
+        "thrall",
+        "twilight_knight",
+        "vestal",
+        "voivode",
+        "warrior_of_sunlight",
+        "werewolf",
+        "wraith_ms",
+        "wretch"
+      ],
+      "fileCount": 344,
+      "nsfw": false
+    },
+    {
+      "name": "107 Pet Cemetery (Dungeon Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 88,
+      "heroClasses": [],
+      "fileCount": 3454,
+      "nsfw": false
+    },
+    {
+      "name": "300 036 Abigail Williams Class E",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 73,
+      "heroClasses": [
+        "AbigailWilliams"
+      ],
+      "fileCount": 2336,
+      "nsfw": false
+    },
+    {
+      "name": "The Op Tieba Quirks",
+      "source": "mods",
+      "heroCount": 60,
+      "monsterCount": 8,
+      "heroClasses": [
+        "abomination",
+        "anoint",
+        "antiquarian",
+        "apostate",
+        "apostate_shroom",
+        "arbalest",
+        "beastmaster",
+        "bogatyr",
+        "bounty_hunter",
+        "butcher_bird",
+        "cainknight",
+        "commandant",
+        "cook",
+        "crusader",
+        "darkwraith",
+        "duchess",
+        "duelist",
+        "eternal",
+        "exterminator",
+        "flagellant",
+        "Geburah",
+        "grave_robber",
+        "hellion",
+        "highwayman",
+        "hollow_knight",
+        "houndmaster",
+        "innoc",
+        "iron_man",
+        "jester",
+        "JoanofArc",
+        "judicator",
+        "keg_hunter",
+        "lamia",
+        "land_dweller",
+        "leper",
+        "man_at_arms",
+        "mikoF",
+        "monk",
+        "monkey_king",
+        "musketeer",
+        "occultist",
+        "Patriot",
+        "plague_doctor",
+        "redlotus",
+        "rescuer",
+        "ringmaster",
+        "ronin",
+        "sawhunter",
+        "Shao",
+        "shieldbreaker",
+        "sisters",
+        "skadi",
+        "slayer",
+        "snake_charmer",
+        "stars",
+        "succubus",
+        "thorn",
+        "ushiro",
+        "vestal",
+        "weiled"
+      ],
+      "fileCount": 3703,
+      "nsfw": false
+    },
+    {
+      "name": "The Tieba Quirks",
+      "source": "mods",
+      "heroCount": 60,
+      "monsterCount": 8,
+      "heroClasses": [
+        "abomination",
+        "anoint",
+        "antiquarian",
+        "apostate",
+        "apostate_shroom",
+        "arbalest",
+        "beastmaster",
+        "bogatyr",
+        "bounty_hunter",
+        "butcher_bird",
+        "cainknight",
+        "commandant",
+        "cook",
+        "crusader",
+        "darkwraith",
+        "duchess",
+        "duelist",
+        "eternal",
+        "exterminator",
+        "flagellant",
+        "Geburah",
+        "grave_robber",
+        "hellion",
+        "highwayman",
+        "hollow_knight",
+        "houndmaster",
+        "innoc",
+        "iron_man",
+        "jester",
+        "JoanofArc",
+        "judicator",
+        "keg_hunter",
+        "lamia",
+        "land_dweller",
+        "leper",
+        "man_at_arms",
+        "mikoF",
+        "monk",
+        "monkey_king",
+        "musketeer",
+        "occultist",
+        "Patriot",
+        "plague_doctor",
+        "redlotus",
+        "rescuer",
+        "ringmaster",
+        "ronin",
+        "sawhunter",
+        "Shao",
+        "shieldbreaker",
+        "sisters",
+        "skadi",
+        "slayer",
+        "snake_charmer",
+        "stars",
+        "succubus",
+        "thorn",
+        "ushiro",
+        "vestal",
+        "weiled"
+      ],
+      "fileCount": 3710,
+      "nsfw": false
+    },
+    {
+      "name": "107 Vermintide Mod",
+      "source": "dlc",
+      "heroCount": 18,
+      "monsterCount": 45,
+      "heroClasses": [
+        "abomination",
+        "antiquarian",
+        "arbalest",
+        "bounty_hunter",
+        "crusader",
+        "flagellant",
+        "grave_robber",
+        "hellion",
+        "highwayman",
+        "houndmaster",
+        "jester",
+        "leper",
+        "man_at_arms",
+        "musketeer",
+        "occultist",
+        "plague_doctor",
+        "shieldbreaker",
+        "vestal"
+      ],
+      "fileCount": 1911,
+      "nsfw": false
+    },
+    {
+      "name": "097 Compatibility Patch - MS + Exaelus",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 61,
+      "heroClasses": [],
+      "fileCount": 656,
+      "nsfw": false
+    },
+    {
+      "name": "098 Monster Strengthen",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 61,
+      "heroClasses": [],
+      "fileCount": 688,
+      "nsfw": false
+    },
+    {
+      "name": "416 (skin) Grunt's Modded Fallen Heroes",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 58,
+      "heroClasses": [],
+      "fileCount": 3755,
+      "nsfw": false
+    },
+    {
+      "name": "02",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 52,
+      "heroClasses": [],
+      "fileCount": 1424,
+      "nsfw": false
+    },
+    {
+      "name": "416 Grunt's Modded Fallen Heroes",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 50,
+      "heroClasses": [],
+      "fileCount": 3531,
+      "nsfw": false
+    },
+    {
+      "name": "01",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 49,
+      "heroClasses": [],
+      "fileCount": 1202,
+      "nsfw": false
+    },
+    {
+      "name": "399 002 Teshudeshipin2 Trinkets",
+      "source": "dlc",
+      "heroCount": 36,
+      "monsterCount": 11,
+      "heroClasses": [
+        "abomination",
+        "antiquarian",
+        "arbalest",
+        "bounty_hunter",
+        "crusader",
+        "deovolente",
+        "flagellant",
+        "Geburah",
+        "grave_robber",
+        "greyhawk",
+        "hellion",
+        "highwayman",
+        "houndmaster",
+        "jester",
+        "JoanofArc",
+        "Kaltsit",
+        "leper",
+        "man_at_arms",
+        "Mesmer",
+        "mikoF",
+        "minstrel",
+        "musketeer",
+        "occultist",
+        "orca",
+        "Patriot",
+        "plague_doctor",
+        "red_sikadi",
+        "remilia_scarlet",
+        "saria_hero",
+        "Satori",
+        "Serona",
+        "Shao",
+        "shieldbreaker",
+        "skadi",
+        "twilight_knight",
+        "vestal"
+      ],
+      "fileCount": 1381,
+      "nsfw": false
+    },
+    {
+      "name": "123 The Crystalline Light",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 42,
+      "heroClasses": [],
+      "fileCount": 1222,
+      "nsfw": false
+    },
+    {
+      "name": "315 Cursed Trophies",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 38,
+      "heroClasses": [],
+      "fileCount": 270,
+      "nsfw": false
+    },
+    {
+      "name": "122 Farmstead Plus",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 27,
+      "heroClasses": [],
+      "fileCount": 645,
+      "nsfw": false
+    },
+    {
+      "name": "108 Sunward Expansion The Night Parade",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 26,
+      "heroClasses": [],
+      "fileCount": 530,
+      "nsfw": false
+    },
+    {
+      "name": "124 Manor-new dungeon.ver",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 26,
+      "heroClasses": [],
+      "fileCount": 848,
+      "nsfw": false
+    },
+    {
+      "name": "735730_color_of_madness",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 26,
+      "heroClasses": [],
+      "fileCount": 1039,
+      "nsfw": false
+    },
+    {
+      "name": "121 (skin) Town Wars",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 25,
+      "heroClasses": [],
+      "fileCount": 697,
+      "nsfw": false
+    },
+    {
+      "name": "426 Here Be Monsters Full Release",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 25,
+      "heroClasses": [],
+      "fileCount": 1053,
+      "nsfw": false
+    },
+    {
+      "name": "109 The Sunward Isles (New Dungeon)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 24,
+      "heroClasses": [],
+      "fileCount": 1169,
+      "nsfw": false
+    },
+    {
+      "name": "112 Scarlet Ruins",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 24,
+      "heroClasses": [],
+      "fileCount": 958,
+      "nsfw": false
+    },
+    {
+      "name": "425 Koala's Creature Collection",
+      "source": "dlc",
+      "heroCount": 3,
+      "monsterCount": 21,
+      "heroClasses": [
+        "bounty_hunter",
+        "grave_robber",
+        "jester"
+      ],
+      "fileCount": 985,
+      "nsfw": false
+    },
+    {
+      "name": "409 Pets 2 (Trinket + Monster Mod)",
+      "source": "dlc",
+      "heroCount": 15,
+      "monsterCount": 6,
+      "heroClasses": [
+        "barbarian",
+        "bluesman",
+        "death_knight",
+        "enigma",
+        "harbinger",
+        "harlot",
+        "monk",
+        "nightsister",
+        "paracausalist",
+        "rescuer",
+        "shadow_walker",
+        "soothsayer",
+        "spartan",
+        "vestal",
+        "warrior_of_sunlight"
+      ],
+      "fileCount": 571,
+      "nsfw": false
+    },
+    {
+      "name": "03",
+      "source": "mods",
+      "heroCount": 19,
+      "monsterCount": 0,
+      "heroClasses": [
+        "abomination",
+        "antiquarian",
+        "arbalest",
+        "bounty_hunter",
+        "crusader",
+        "flagellant",
+        "grave_robber",
+        "hellion",
+        "highwayman",
+        "houndmaster",
+        "jester",
+        "leper",
+        "man_at_arms",
+        "musketeer",
+        "occultist",
+        "plague_doctor",
+        "rescuer",
+        "shieldbreaker",
+        "vestal"
+      ],
+      "fileCount": 2105,
+      "nsfw": false
+    },
+    {
+      "name": "114 Singleplayer Butcher's Circus LITE",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 19,
+      "heroClasses": [],
+      "fileCount": 1372,
+      "nsfw": false
+    },
+    {
+      "name": "354 Senren Banka Trinket",
+      "source": "dlc",
+      "heroCount": 19,
+      "monsterCount": 0,
+      "heroClasses": [
+        "abomination",
+        "antiquarian",
+        "arbalest",
+        "bounty_hunter",
+        "crusader",
+        "flagellant",
+        "grave_robber",
+        "hellion",
+        "highwayman",
+        "houndmaster",
+        "jester",
+        "leper",
+        "man_at_arms",
+        "musketeer",
+        "occultist",
+        "plague_doctor",
+        "shieldbreaker",
+        "stars",
+        "vestal"
+      ],
+      "fileCount": 72,
+      "nsfw": false
+    },
+    {
+      "name": "106 058 (skin) all-by Gong Gi",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 18,
+      "heroClasses": [],
+      "fileCount": 274,
+      "nsfw": false
+    },
+    {
+      "name": "417 Army of Bones - New Enemeies for the Crypts",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 18,
+      "heroClasses": [],
+      "fileCount": 559,
+      "nsfw": false
+    },
+    {
+      "name": "412 Nurgle's minions",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 17,
+      "heroClasses": [],
+      "fileCount": 533,
+      "nsfw": false
+    },
+    {
+      "name": "300 123 Unicorn Class (W)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 15,
+      "heroClasses": [
+        "unicorn"
+      ],
+      "fileCount": 312,
+      "nsfw": false
+    },
+    {
+      "name": "356 001 Kaze's StarryNight Trinkets Pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 16,
+      "heroClasses": [],
+      "fileCount": 431,
+      "nsfw": false
+    },
+    {
+      "name": "401 Courtyard Plus",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 16,
+      "heroClasses": [],
+      "fileCount": 413,
+      "nsfw": false
+    },
+    {
+      "name": "126 The Mountain - Updated Version",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 14,
+      "heroClasses": [],
+      "fileCount": 681,
+      "nsfw": false
+    },
+    {
+      "name": "426 Here Be Monsters The New Shadow",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 14,
+      "heroClasses": [],
+      "fileCount": 615,
+      "nsfw": false
+    },
+    {
+      "name": "126 (skin+) The Mountain - Updated Version",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 12,
+      "heroClasses": [],
+      "fileCount": 610,
+      "nsfw": false
+    },
+    {
+      "name": "417 (skin) Army of Bones - New Enemeies for the Crypts",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 12,
+      "heroClasses": [],
+      "fileCount": 199,
+      "nsfw": false
+    },
+    {
+      "name": "monster girl Warrens collection",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 11,
+      "heroClasses": [],
+      "fileCount": 239,
+      "nsfw": false
+    },
+    {
+      "name": "106 051 (skin) brigand-by NO.13,",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 11,
+      "heroClasses": [],
+      "fileCount": 260,
+      "nsfw": false
+    },
+    {
+      "name": "300 003 Beyond Mortality by Golden Yak",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 10,
+      "heroClasses": [
+        "paracausalist"
+      ],
+      "fileCount": 510,
+      "nsfw": false
+    },
+    {
+      "name": "300 005 Bogatyr Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 10,
+      "heroClasses": [
+        "bogatyr"
+      ],
+      "fileCount": 332,
+      "nsfw": false
+    },
+    {
+      "name": "410 (skin+) House Full of Piggies - New Enemeies for the Warren",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 11,
+      "heroClasses": [],
+      "fileCount": 306,
+      "nsfw": false
+    },
+    {
+      "name": "410 House Full of Piggies - New Enemeies for the Warren",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 11,
+      "heroClasses": [],
+      "fileCount": 373,
+      "nsfw": false
+    },
+    {
+      "name": "300 025 Team 3 Lu",
+      "source": "dlc",
+      "heroCount": 3,
+      "monsterCount": 7,
+      "heroClasses": [
+        "Altria",
+        "ectoplasm",
+        "kolleen"
+      ],
+      "fileCount": 806,
+      "nsfw": false
+    },
+    {
+      "name": "300 036 Abigail Williams Class Chinese",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 9,
+      "heroClasses": [
+        "AbigailWilliams"
+      ],
+      "fileCount": 458,
+      "nsfw": false
+    },
+    {
+      "name": "300 036 Abigail Williams Class D Base Voice & Dialogue Patch",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 9,
+      "heroClasses": [
+        "AbigailWilliams"
+      ],
+      "fileCount": 482,
+      "nsfw": false
+    },
+    {
+      "name": "356 000 StarryNight BOSS Nyx",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 10,
+      "heroClasses": [],
+      "fileCount": 228,
+      "nsfw": false
+    },
+    {
+      "name": "433 The Lost Division WWII Wehrmacht Infantry Enemy Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 10,
+      "heroClasses": [],
+      "fileCount": 296,
+      "nsfw": false
+    },
+    {
+      "name": "Crimson Court Monster Girl",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 9,
+      "heroClasses": [],
+      "fileCount": 549,
+      "nsfw": false
+    },
+    {
+      "name": "monster girl brigand collection fixed",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 8,
+      "heroClasses": [],
+      "fileCount": 170,
+      "nsfw": false
+    },
+    {
+      "name": "monster girl Ruins collection",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 8,
+      "heroClasses": [],
+      "fileCount": 185,
+      "nsfw": false
+    },
+    {
+      "name": "096 Msupgai",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 8,
+      "heroClasses": [],
+      "fileCount": 274,
+      "nsfw": false
+    },
+    {
+      "name": "300 125 wenziniang（Skin）",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 8,
+      "heroClasses": [],
+      "fileCount": 475,
+      "nsfw": false
+    },
+    {
+      "name": "408 Spider Nests 2 (Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 8,
+      "heroClasses": [],
+      "fileCount": 586,
+      "nsfw": false
+    },
+    {
+      "name": "423 Darkest Soul Variety Project",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 8,
+      "heroClasses": [],
+      "fileCount": 301,
+      "nsfw": false
+    },
+    {
+      "name": "111 Nerub",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 7,
+      "heroClasses": [],
+      "fileCount": 269,
+      "nsfw": false
+    },
+    {
+      "name": "250 Overlord Enhanced",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 6,
+      "heroClasses": [
+        "ainz"
+      ],
+      "fileCount": 482,
+      "nsfw": false
+    },
+    {
+      "name": "300 140 Aluona Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 6,
+      "heroClasses": [
+        "wc_arona"
+      ],
+      "fileCount": 288,
+      "nsfw": false
+    },
+    {
+      "name": "411 Unleashing of the Kraken - New Enemy for the Cove",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 7,
+      "heroClasses": [],
+      "fileCount": 220,
+      "nsfw": false
+    },
+    {
+      "name": "monster girl Cove collection",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 147,
+      "nsfw": false
+    },
+    {
+      "name": "monster girl Universal collection",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 149,
+      "nsfw": false
+    },
+    {
+      "name": "Skeleton Monster Girl",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 376,
+      "nsfw": false
+    },
+    {
+      "name": "106 Darkest Dungeon Final BOSS Enhance",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 31,
+      "nsfw": false
+    },
+    {
+      "name": "108 NKCC The Festival of Light and Death",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 243,
+      "nsfw": false
+    },
+    {
+      "name": "284 Divinity Enhanced",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 5,
+      "heroClasses": [
+        "theDivinity"
+      ],
+      "fileCount": 502,
+      "nsfw": false
+    },
+    {
+      "name": "404 The Banshee by Marvin Seo and Clair de Lune",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 353,
+      "nsfw": false
+    },
+    {
+      "name": "408 (skin) Spider Nests 2 (Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 242,
+      "nsfw": false
+    },
+    {
+      "name": "434 The Lost Division Expansion Pack Panzer IV",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 6,
+      "heroClasses": [],
+      "fileCount": 212,
+      "nsfw": false
+    },
+    {
+      "name": "209 (skin) Fawn -  Remastered",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 4,
+      "heroClasses": [
+        "fawn"
+      ],
+      "fileCount": 300,
+      "nsfw": false
+    },
+    {
+      "name": "209 Fawn -  Remastered",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 4,
+      "heroClasses": [
+        "fawn"
+      ],
+      "fileCount": 315,
+      "nsfw": false
+    },
+    {
+      "name": "223 Succubus",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 4,
+      "heroClasses": [
+        "succubus"
+      ],
+      "fileCount": 417,
+      "nsfw": false
+    },
+    {
+      "name": "281 Daughters of the Fours Pack",
+      "source": "dlc",
+      "heroCount": 4,
+      "monsterCount": 1,
+      "heroClasses": [
+        "first_daughter",
+        "fourth_daughter",
+        "second_daughter",
+        "third_daughter"
+      ],
+      "fileCount": 1040,
+      "nsfw": false
+    },
+    {
+      "name": "300 115 Ancient Ones Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 4,
+      "heroClasses": [
+        "Octopus"
+      ],
+      "fileCount": 166,
+      "nsfw": false
+    },
+    {
+      "name": "300 119 Scourge Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 4,
+      "heroClasses": [
+        "Scourge"
+      ],
+      "fileCount": 179,
+      "nsfw": false
+    },
+    {
+      "name": "300 126 ZIMIK xilie",
+      "source": "dlc",
+      "heroCount": 5,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bloodyhunter",
+        "heir",
+        "wc_plague_doctor",
+        "wc_shieldbreaker",
+        "wc_vestal"
+      ],
+      "fileCount": 733,
+      "nsfw": false
+    },
+    {
+      "name": "403 Moonlit Dungeon - Ruins Enemy Pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 5,
+      "heroClasses": [],
+      "fileCount": 221,
+      "nsfw": false
+    },
+    {
+      "name": "418 Cultist Incursion",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 5,
+      "heroClasses": [],
+      "fileCount": 202,
+      "nsfw": true
+    },
+    {
+      "name": "106 055 (skin) cultist-by Hestrir",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 62,
+      "nsfw": false
+    },
+    {
+      "name": "300 109 Fuujin Kitsune Class",
+      "source": "dlc",
+      "heroCount": 2,
+      "monsterCount": 2,
+      "heroClasses": [
+        "Ayamiko",
+        "mikoF"
+      ],
+      "fileCount": 131,
+      "nsfw": false
+    },
+    {
+      "name": "300 113 Warlock Class O",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 3,
+      "heroClasses": [
+        "orca"
+      ],
+      "fileCount": 257,
+      "nsfw": false
+    },
+    {
+      "name": "300 120 Baiken Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 3,
+      "heroClasses": [
+        "Baiken"
+      ],
+      "fileCount": 177,
+      "nsfw": false
+    },
+    {
+      "name": "320 Kraken Society District Mod",
+      "source": "dlc",
+      "heroCount": 4,
+      "monsterCount": 0,
+      "heroClasses": [
+        "cataphract",
+        "duchess",
+        "omenseeker",
+        "slayer"
+      ],
+      "fileCount": 27,
+      "nsfw": false
+    },
+    {
+      "name": "362 Chouka",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 51,
+      "nsfw": false
+    },
+    {
+      "name": "409 (skin) Pets 2 (Trinket + Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 78,
+      "nsfw": false
+    },
+    {
+      "name": "413 Doomsday (Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 337,
+      "nsfw": false
+    },
+    {
+      "name": "427 The Marcus Brothers",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 139,
+      "nsfw": false
+    },
+    {
+      "name": "431 (skin) Dr. Feelgood Roaming Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 95,
+      "nsfw": false
+    },
+    {
+      "name": "431 Dr. Feelgood Roaming Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 4,
+      "heroClasses": [],
+      "fileCount": 176,
+      "nsfw": false
+    },
+    {
+      "name": "702540_shieldbreaker",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 3,
+      "heroClasses": [
+        "shieldbreaker"
+      ],
+      "fileCount": 353,
+      "nsfw": false
+    },
+    {
+      "name": "monster girl Weald collection fixed",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 3,
+      "heroClasses": [],
+      "fileCount": 56,
+      "nsfw": false
+    },
+    {
+      "name": "106 056 (skin) fishmant-by Hestrir",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 3,
+      "heroClasses": [],
+      "fileCount": 53,
+      "nsfw": false
+    },
+    {
+      "name": "262 Harlot Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 2,
+      "heroClasses": [
+        "harlot"
+      ],
+      "fileCount": 248,
+      "nsfw": false
+    },
+    {
+      "name": "267 Librarian Community Project",
+      "source": "dlc",
+      "heroCount": 3,
+      "monsterCount": 0,
+      "heroClasses": [
+        "good_girl",
+        "houndmaster",
+        "librarian"
+      ],
+      "fileCount": 338,
+      "nsfw": false
+    },
+    {
+      "name": "300 020 Zenith Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 2,
+      "heroClasses": [
+        "zenith"
+      ],
+      "fileCount": 300,
+      "nsfw": false
+    },
+    {
+      "name": "300 110 Kitsune Miko Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 2,
+      "heroClasses": [
+        "mikoF"
+      ],
+      "fileCount": 205,
+      "nsfw": false
+    },
+    {
+      "name": "300 111 Skadi The Corrupting Heart Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 2,
+      "heroClasses": [
+        "red_sikadi"
+      ],
+      "fileCount": 273,
+      "nsfw": false
+    },
+    {
+      "name": "406 The Incandescent Whisperer",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 3,
+      "heroClasses": [],
+      "fileCount": 222,
+      "nsfw": false
+    },
+    {
+      "name": "CC  monster girls0.2",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 87,
+      "nsfw": false
+    },
+    {
+      "name": "COM  monster girls0.21 nsfw",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 68,
+      "nsfw": true
+    },
+    {
+      "name": "G41 skin&swimsuit fixed+nude",
+      "source": "mods",
+      "heroCount": 2,
+      "monsterCount": 0,
+      "heroClasses": [
+        "arbalest",
+        "新建文件夹"
+      ],
+      "fileCount": 82,
+      "nsfw": true
+    },
+    {
+      "name": "The Divinity High-Res Skin",
+      "source": "mods",
+      "heroCount": 2,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Divinity",
+        "theDivinity"
+      ],
+      "fileCount": 30,
+      "nsfw": false
+    },
+    {
+      "name": "106 048 (skin) spider-by anaertailin",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 45,
+      "nsfw": false
+    },
+    {
+      "name": "106 052 (skin) witch-by NO.13,",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 77,
+      "nsfw": false
+    },
+    {
+      "name": "108 The Roaming Raiju",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 167,
+      "nsfw": false
+    },
+    {
+      "name": "109 The Raiju A Sunward Addon",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 162,
+      "nsfw": false
+    },
+    {
+      "name": "125 Darkest Plus",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 92,
+      "nsfw": false
+    },
+    {
+      "name": "208 Fool -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "fool"
+      ],
+      "fileCount": 223,
+      "nsfw": false
+    },
+    {
+      "name": "216 Exaelus' Fury Class",
+      "source": "dlc",
+      "heroCount": 2,
+      "monsterCount": 0,
+      "heroClasses": [
+        "crusader",
+        "fury"
+      ],
+      "fileCount": 221,
+      "nsfw": false
+    },
+    {
+      "name": "217 Exaelus' Harbinger Class",
+      "source": "dlc",
+      "heroCount": 2,
+      "monsterCount": 0,
+      "heroClasses": [
+        "crusader",
+        "harbinger"
+      ],
+      "fileCount": 183,
+      "nsfw": false
+    },
+    {
+      "name": "218 Exaelus' Wraith Class",
+      "source": "dlc",
+      "heroCount": 2,
+      "monsterCount": 0,
+      "heroClasses": [
+        "highwayman",
+        "wraith"
+      ],
+      "fileCount": 240,
+      "nsfw": true
+    },
+    {
+      "name": "249 Acolyte of Sun - New Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "acolyte"
+      ],
+      "fileCount": 244,
+      "nsfw": false
+    },
+    {
+      "name": "250 (skin) Overlord Enhanced",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "ainz"
+      ],
+      "fileCount": 83,
+      "nsfw": false
+    },
+    {
+      "name": "298 Apostate Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "apostate"
+      ],
+      "fileCount": 264,
+      "nsfw": false
+    },
+    {
+      "name": "300 013 Eternal",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "eternal"
+      ],
+      "fileCount": 240,
+      "nsfw": false
+    },
+    {
+      "name": "300 044 Stars Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "stars"
+      ],
+      "fileCount": 159,
+      "nsfw": false
+    },
+    {
+      "name": "300 048 Magician Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "commander"
+      ],
+      "fileCount": 215,
+      "nsfw": false
+    },
+    {
+      "name": "300 104 Velvet",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "velvet"
+      ],
+      "fileCount": 137,
+      "nsfw": false
+    },
+    {
+      "name": "300 108 Assoult Kunoichi Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "nin_robber"
+      ],
+      "fileCount": 167,
+      "nsfw": false
+    },
+    {
+      "name": "300 116 Yama Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "yama"
+      ],
+      "fileCount": 144,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 003 Dchef Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "dchef"
+      ],
+      "fileCount": 132,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 008 VH oni Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "VH_oni"
+      ],
+      "fileCount": 153,
+      "nsfw": false
+    },
+    {
+      "name": "300 139 HuoHuo Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "huohuo"
+      ],
+      "fileCount": 213,
+      "nsfw": false
+    },
+    {
+      "name": "300 142 White Priestess Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 1,
+      "heroClasses": [
+        "wplily"
+      ],
+      "fileCount": 347,
+      "nsfw": false
+    },
+    {
+      "name": "399 001 Teshudeshipin1 Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 52,
+      "nsfw": false
+    },
+    {
+      "name": "399 003 Yingxionglianmeng Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 87,
+      "nsfw": false
+    },
+    {
+      "name": "402 The Order of Sunlight",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 198,
+      "nsfw": false
+    },
+    {
+      "name": "407 Abyssal Horror Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 101,
+      "nsfw": false
+    },
+    {
+      "name": "409 (skin+) Pets 2 (Trinket + Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 76,
+      "nsfw": false
+    },
+    {
+      "name": "410 (skin) House Full of Piggies - New Enemeies for the Warren",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 21,
+      "nsfw": false
+    },
+    {
+      "name": "411 (skin) Unleashing of the Kraken - New Enemy for the Cove",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 72,
+      "nsfw": false
+    },
+    {
+      "name": "421 The Musician Boss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 96,
+      "nsfw": false
+    },
+    {
+      "name": "429 Bizzare JoJoLeper Adventures",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 86,
+      "nsfw": false
+    },
+    {
+      "name": "430 The Rotting King",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 77,
+      "nsfw": false
+    },
+    {
+      "name": "432 Vvulf Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 2,
+      "heroClasses": [],
+      "fileCount": 78,
+      "nsfw": false
+    },
+    {
+      "name": "06",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "man_at_arms"
+      ],
+      "fileCount": 103,
+      "nsfw": false
+    },
+    {
+      "name": "07",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "arbalest"
+      ],
+      "fileCount": 79,
+      "nsfw": false
+    },
+    {
+      "name": "08",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "musketeer"
+      ],
+      "fileCount": 90,
+      "nsfw": false
+    },
+    {
+      "name": "09",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hellion"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "10",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "leper"
+      ],
+      "fileCount": 103,
+      "nsfw": false
+    },
+    {
+      "name": "11",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "flagellant"
+      ],
+      "fileCount": 124,
+      "nsfw": false
+    },
+    {
+      "name": "12",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bounty_hunter"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "777 hag Abi Skin",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 30,
+      "nsfw": false
+    },
+    {
+      "name": "CC  monster girls NSFW",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 20,
+      "nsfw": true
+    },
+    {
+      "name": "COM  monster girls0.1",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 69,
+      "nsfw": false
+    },
+    {
+      "name": "COM  monster girls0.11 nsfw",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 35,
+      "nsfw": true
+    },
+    {
+      "name": "conner Nude fixed",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "man_at_arms"
+      ],
+      "fileCount": 65,
+      "nsfw": true
+    },
+    {
+      "name": "ectoplasm large slimegirl skin",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 14,
+      "nsfw": false
+    },
+    {
+      "name": "ectoplasm slimegirl skin",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 14,
+      "nsfw": false
+    },
+    {
+      "name": "fcMOD1.0",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "man_at_arms"
+      ],
+      "fileCount": 103,
+      "nsfw": false
+    },
+    {
+      "name": "foxdemon",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "antiquarian"
+      ],
+      "fileCount": 120,
+      "nsfw": false
+    },
+    {
+      "name": "Gargoyles skin NSFW+",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 26,
+      "nsfw": true
+    },
+    {
+      "name": "Gele bounty hunter skin fix",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bounty_hunter"
+      ],
+      "fileCount": 106,
+      "nsfw": false
+    },
+    {
+      "name": "Grey Watcher1.1",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bounty_hunter"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "Hag skin nsfw",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 32,
+      "nsfw": true
+    },
+    {
+      "name": "Hazu_NSFW_JesterSkin",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "jester"
+      ],
+      "fileCount": 48,
+      "nsfw": true
+    },
+    {
+      "name": "Hell Priestess",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "vestal"
+      ],
+      "fileCount": 118,
+      "nsfw": false
+    },
+    {
+      "name": "Hero gudongshangren",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "antiquarian"
+      ],
+      "fileCount": 22,
+      "nsfw": false
+    },
+    {
+      "name": "Hero langren",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "abomination"
+      ],
+      "fileCount": 16,
+      "nsfw": false
+    },
+    {
+      "name": "Hero mafeng",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "leper"
+      ],
+      "fileCount": 13,
+      "nsfw": false
+    },
+    {
+      "name": "Hero nushou",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "arbalest"
+      ],
+      "fileCount": 15,
+      "nsfw": false
+    },
+    {
+      "name": "Hero qiangdao",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "highwayman"
+      ],
+      "fileCount": 15,
+      "nsfw": false
+    },
+    {
+      "name": "Hero shangjinlieren",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bounty_hunter"
+      ],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "Hero shizijun",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "crusader"
+      ],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "Hero xiunv",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "vestal"
+      ],
+      "fileCount": 15,
+      "nsfw": false
+    },
+    {
+      "name": "Jester Hatsune Miku archdemon skin",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "jester"
+      ],
+      "fileCount": 66,
+      "nsfw": false
+    },
+    {
+      "name": "Kozeki Ui (fixed3.2)",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "musketeer"
+      ],
+      "fileCount": 90,
+      "nsfw": false
+    },
+    {
+      "name": "langjiji fix",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hellion"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "maiden 1.0 fix",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "shieldbreaker"
+      ],
+      "fileCount": 130,
+      "nsfw": false
+    },
+    {
+      "name": "Midnight Hunter",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "highwayman"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "Mimic Miniboss",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 115,
+      "nsfw": false
+    },
+    {
+      "name": "minstrel nsfw(fix1)",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "minstrel"
+      ],
+      "fileCount": 177,
+      "nsfw": true
+    },
+    {
+      "name": "mp40 skin nude",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "arbalest"
+      ],
+      "fileCount": 107,
+      "nsfw": true
+    },
+    {
+      "name": "new jiangshi leper skin 1.1",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "leper"
+      ],
+      "fileCount": 103,
+      "nsfw": false
+    },
+    {
+      "name": "octotank skin",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 26,
+      "nsfw": false
+    },
+    {
+      "name": "Profaned Knight",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "crusader"
+      ],
+      "fileCount": 120,
+      "nsfw": false
+    },
+    {
+      "name": "rabid dog skin NSWF 1.0",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 1158,
+      "nsfw": false
+    },
+    {
+      "name": "Red hoodNSFW1.2",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "houndmaster"
+      ],
+      "fileCount": 118,
+      "nsfw": true
+    },
+    {
+      "name": "remiskin",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "abomination"
+      ],
+      "fileCount": 93,
+      "nsfw": false
+    },
+    {
+      "name": "taoist NSFW",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "flagellant"
+      ],
+      "fileCount": 124,
+      "nsfw": true
+    },
+    {
+      "name": "the herald of doomsday nude fx",
+      "source": "mods",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hellion"
+      ],
+      "fileCount": 112,
+      "nsfw": true
+    },
+    {
+      "name": "Xiu Xian",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 44,
+      "nsfw": false
+    },
+    {
+      "name": "106 049 (skin) piglet-by anaertailin",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "108 Sunward Isles Spider (Patch)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "112 (skin+) Scarlet Ruins",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 17,
+      "nsfw": false
+    },
+    {
+      "name": "204 Marvin Seo's Lamia Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lamia"
+      ],
+      "fileCount": 237,
+      "nsfw": false
+    },
+    {
+      "name": "206 Marvin Seo's Seraph Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "seraph"
+      ],
+      "fileCount": 214,
+      "nsfw": false
+    },
+    {
+      "name": "207 Offering 2.0 - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "offering"
+      ],
+      "fileCount": 317,
+      "nsfw": false
+    },
+    {
+      "name": "208 (skin) Fool -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "fool"
+      ],
+      "fileCount": 182,
+      "nsfw": false
+    },
+    {
+      "name": "210 (skin) Hollow -  Class Mod",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hollow"
+      ],
+      "fileCount": 155,
+      "nsfw": false
+    },
+    {
+      "name": "210 Hollow -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hollow"
+      ],
+      "fileCount": 128,
+      "nsfw": false
+    },
+    {
+      "name": "211 (skin) Tusk - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "tusk"
+      ],
+      "fileCount": 184,
+      "nsfw": false
+    },
+    {
+      "name": "211 Tusk - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "tusk"
+      ],
+      "fileCount": 123,
+      "nsfw": false
+    },
+    {
+      "name": "212 (skin) Tifa Lockhart -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "tifa"
+      ],
+      "fileCount": 134,
+      "nsfw": false
+    },
+    {
+      "name": "212 Tifa Lockhart -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "tifa"
+      ],
+      "fileCount": 141,
+      "nsfw": false
+    },
+    {
+      "name": "213 (skin) Hood -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hood"
+      ],
+      "fileCount": 155,
+      "nsfw": false
+    },
+    {
+      "name": "213 Hood -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hood"
+      ],
+      "fileCount": 132,
+      "nsfw": false
+    },
+    {
+      "name": "214 (skin) Shrapnel -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "shrapnel"
+      ],
+      "fileCount": 151,
+      "nsfw": false
+    },
+    {
+      "name": "214 Shrapnel -  Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "shrapnel"
+      ],
+      "fileCount": 136,
+      "nsfw": false
+    },
+    {
+      "name": "215 (skin) Exaelus' Enigma Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "enigma"
+      ],
+      "fileCount": 140,
+      "nsfw": false
+    },
+    {
+      "name": "215 Exaelus' Enigma Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "enigma"
+      ],
+      "fileCount": 265,
+      "nsfw": false
+    },
+    {
+      "name": "222 (skin) Exaelus' Seer Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "seer"
+      ],
+      "fileCount": 93,
+      "nsfw": false
+    },
+    {
+      "name": "222 Exaelus' Seer Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "seer"
+      ],
+      "fileCount": 211,
+      "nsfw": false
+    },
+    {
+      "name": "223 (skin) Succubus",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "succubus"
+      ],
+      "fileCount": 168,
+      "nsfw": false
+    },
+    {
+      "name": "227 (skin2) Riftwatcher - New Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "watcher"
+      ],
+      "fileCount": 288,
+      "nsfw": false
+    },
+    {
+      "name": "227 Riftwatcher - New Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "watcher"
+      ],
+      "fileCount": 266,
+      "nsfw": false
+    },
+    {
+      "name": "228 Warrior of Sunlight",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "warrior_of_sunlight"
+      ],
+      "fileCount": 255,
+      "nsfw": false
+    },
+    {
+      "name": "234 (skin) Martyr - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "martyr"
+      ],
+      "fileCount": 63,
+      "nsfw": false
+    },
+    {
+      "name": "234 Martyr - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "martyr"
+      ],
+      "fileCount": 166,
+      "nsfw": false
+    },
+    {
+      "name": "238 (skin2) Hero (LoZ - Link)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hero"
+      ],
+      "fileCount": 109,
+      "nsfw": false
+    },
+    {
+      "name": "238 Hero (LoZ - Link)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "hero"
+      ],
+      "fileCount": 245,
+      "nsfw": false
+    },
+    {
+      "name": "240 (skin) Dragonslayer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "dragonslayers"
+      ],
+      "fileCount": 214,
+      "nsfw": false
+    },
+    {
+      "name": "240 Dragonslayer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "dragonslayer"
+      ],
+      "fileCount": 201,
+      "nsfw": false
+    },
+    {
+      "name": "242 (skin2) Paladin 2.0",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "paladin"
+      ],
+      "fileCount": 369,
+      "nsfw": false
+    },
+    {
+      "name": "242 Paladin 2.0",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "paladin"
+      ],
+      "fileCount": 212,
+      "nsfw": false
+    },
+    {
+      "name": "250 (icon) Overlord Enhanced",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "ainz"
+      ],
+      "fileCount": 31,
+      "nsfw": false
+    },
+    {
+      "name": "251 (skin2) Guts the Black Swordman - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "blackswordman"
+      ],
+      "fileCount": 331,
+      "nsfw": false
+    },
+    {
+      "name": "251 Guts the Black Swordman - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "blackswordman"
+      ],
+      "fileCount": 151,
+      "nsfw": false
+    },
+    {
+      "name": "252 (skin) Arch-Devil - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "7FG"
+      ],
+      "fileCount": 17,
+      "nsfw": false
+    },
+    {
+      "name": "252 Arch-Devil - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "7FG"
+      ],
+      "fileCount": 110,
+      "nsfw": false
+    },
+    {
+      "name": "255 Exorcist Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "exorcist"
+      ],
+      "fileCount": 207,
+      "nsfw": false
+    },
+    {
+      "name": "259 (skin) Druid - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "druid"
+      ],
+      "fileCount": 23,
+      "nsfw": false
+    },
+    {
+      "name": "259 Druid - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "druid"
+      ],
+      "fileCount": 129,
+      "nsfw": false
+    },
+    {
+      "name": "262 (skin) Harlot Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "harlot"
+      ],
+      "fileCount": 314,
+      "nsfw": false
+    },
+    {
+      "name": "266 (skin) Twilight Knight",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "twilight_knight"
+      ],
+      "fileCount": 82,
+      "nsfw": false
+    },
+    {
+      "name": "266 Twilight Knight",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "twilight_knight"
+      ],
+      "fileCount": 189,
+      "nsfw": false
+    },
+    {
+      "name": "267 (skin) Librarian Community Project",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "librarian"
+      ],
+      "fileCount": 155,
+      "nsfw": false
+    },
+    {
+      "name": "268 (skin) Monk Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "monk"
+      ],
+      "fileCount": 255,
+      "nsfw": false
+    },
+    {
+      "name": "268 Monk Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "monk"
+      ],
+      "fileCount": 174,
+      "nsfw": false
+    },
+    {
+      "name": "269 (skin) Two-B Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "2andb"
+      ],
+      "fileCount": 50,
+      "nsfw": false
+    },
+    {
+      "name": "269 Two-B Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "2andb"
+      ],
+      "fileCount": 136,
+      "nsfw": false
+    },
+    {
+      "name": "270 Thorn",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "thorn"
+      ],
+      "fileCount": 262,
+      "nsfw": false
+    },
+    {
+      "name": "271 (skin) Snake Charmer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "snake_charmer"
+      ],
+      "fileCount": 113,
+      "nsfw": false
+    },
+    {
+      "name": "271 Snake Charmer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "snake_charmer"
+      ],
+      "fileCount": 211,
+      "nsfw": false
+    },
+    {
+      "name": "272 (skin) New Class - Lupine",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "helli"
+      ],
+      "fileCount": 325,
+      "nsfw": false
+    },
+    {
+      "name": "272 New Class - Lupine",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "helli"
+      ],
+      "fileCount": 191,
+      "nsfw": false
+    },
+    {
+      "name": "273 (skin) Rebalanced spirit lancer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lancer"
+      ],
+      "fileCount": 354,
+      "nsfw": false
+    },
+    {
+      "name": "273 Rebalanced spirit lancer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lancer"
+      ],
+      "fileCount": 311,
+      "nsfw": false
+    },
+    {
+      "name": "274 (skin) Drowner Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "drowner"
+      ],
+      "fileCount": 18,
+      "nsfw": false
+    },
+    {
+      "name": "274 Drowner Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "drowner"
+      ],
+      "fileCount": 157,
+      "nsfw": false
+    },
+    {
+      "name": "275 (skin) Ruler Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "JoanofArc"
+      ],
+      "fileCount": 38,
+      "nsfw": false
+    },
+    {
+      "name": "275 Ruler Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "JoanofArc"
+      ],
+      "fileCount": 133,
+      "nsfw": false
+    },
+    {
+      "name": "277 (skin) Onnabushi Class Reworked",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "onnabushi"
+      ],
+      "fileCount": 25,
+      "nsfw": false
+    },
+    {
+      "name": "277 Onnabushi Class Reworked",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "onnabushi"
+      ],
+      "fileCount": 170,
+      "nsfw": false
+    },
+    {
+      "name": "283 (skin) Condena Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "the_condena"
+      ],
+      "fileCount": 51,
+      "nsfw": false
+    },
+    {
+      "name": "283 Condena Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "the_condena"
+      ],
+      "fileCount": 318,
+      "nsfw": false
+    },
+    {
+      "name": "285 (skin) Duchess Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "duchess"
+      ],
+      "fileCount": 300,
+      "nsfw": false
+    },
+    {
+      "name": "285 Duchess Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "duchess"
+      ],
+      "fileCount": 147,
+      "nsfw": false
+    },
+    {
+      "name": "286 (skin) Omen Seeker Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "omenseeker"
+      ],
+      "fileCount": 307,
+      "nsfw": false
+    },
+    {
+      "name": "286 Omen Seeker Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "omenseeker"
+      ],
+      "fileCount": 217,
+      "nsfw": false
+    },
+    {
+      "name": "291 Iron Man",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "iron_man"
+      ],
+      "fileCount": 156,
+      "nsfw": false
+    },
+    {
+      "name": "292 (skin) Rightful Heir",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "kheir"
+      ],
+      "fileCount": 54,
+      "nsfw": false
+    },
+    {
+      "name": "292 Rightful Heir",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "kheir"
+      ],
+      "fileCount": 240,
+      "nsfw": false
+    },
+    {
+      "name": "293 Sven, The Rogue Knight - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "rogue_knight"
+      ],
+      "fileCount": 218,
+      "nsfw": false
+    },
+    {
+      "name": "296 Guqin Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "guqin"
+      ],
+      "fileCount": 175,
+      "nsfw": false
+    },
+    {
+      "name": "298 (skin) Apostate Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "apostate"
+      ],
+      "fileCount": 40,
+      "nsfw": false
+    },
+    {
+      "name": "299 (skin) Witcher Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "witcher"
+      ],
+      "fileCount": 40,
+      "nsfw": false
+    },
+    {
+      "name": "299 Witcher Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "witcher"
+      ],
+      "fileCount": 128,
+      "nsfw": false
+    },
+    {
+      "name": "300 001 Atalanta Class Rework",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Atalanta"
+      ],
+      "fileCount": 216,
+      "nsfw": false
+    },
+    {
+      "name": "300 002 Avenger Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "JoanofArcAlter"
+      ],
+      "fileCount": 130,
+      "nsfw": false
+    },
+    {
+      "name": "300 003 (skin) Beyond Mortality by Golden Yak",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "paracausalist"
+      ],
+      "fileCount": 17,
+      "nsfw": false
+    },
+    {
+      "name": "300 004 (skin) Blazing Lord Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "ushiro"
+      ],
+      "fileCount": 141,
+      "nsfw": false
+    },
+    {
+      "name": "300 004 Blazing Lord Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "ushiro"
+      ],
+      "fileCount": 236,
+      "nsfw": false
+    },
+    {
+      "name": "300 005 (skin) Bogatyr Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bogatyr"
+      ],
+      "fileCount": 115,
+      "nsfw": false
+    },
+    {
+      "name": "300 006 (skin) esper rework",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "esper"
+      ],
+      "fileCount": 139,
+      "nsfw": false
+    },
+    {
+      "name": "300 006 esper rework",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "esper"
+      ],
+      "fileCount": 193,
+      "nsfw": false
+    },
+    {
+      "name": "300 007 (skin) Lilith class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "deovolente"
+      ],
+      "fileCount": 52,
+      "nsfw": false
+    },
+    {
+      "name": "300 007 Lilith class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "deovolente"
+      ],
+      "fileCount": 158,
+      "nsfw": false
+    },
+    {
+      "name": "300 008 (skin) Minstrel Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "minstrel"
+      ],
+      "fileCount": 49,
+      "nsfw": false
+    },
+    {
+      "name": "300 008 Minstrel Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "minstrel"
+      ],
+      "fileCount": 177,
+      "nsfw": false
+    },
+    {
+      "name": "300 010 Sharpshooter Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "marksman"
+      ],
+      "fileCount": 185,
+      "nsfw": false
+    },
+    {
+      "name": "300 012 Count - Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "count"
+      ],
+      "fileCount": 201,
+      "nsfw": false
+    },
+    {
+      "name": "300 013 (skin) Eternal",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "eternal"
+      ],
+      "fileCount": 37,
+      "nsfw": false
+    },
+    {
+      "name": "300 014 (skin) Heir Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "heir"
+      ],
+      "fileCount": 50,
+      "nsfw": false
+    },
+    {
+      "name": "300 014 Heir Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "heir"
+      ],
+      "fileCount": 194,
+      "nsfw": false
+    },
+    {
+      "name": "300 015 (skin) The Itinerant Cook",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "cook"
+      ],
+      "fileCount": 18,
+      "nsfw": false
+    },
+    {
+      "name": "300 015 Itinerant Cook",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "cook"
+      ],
+      "fileCount": 291,
+      "nsfw": false
+    },
+    {
+      "name": "300 016 (skin) The Maid By The Necromancer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "maid"
+      ],
+      "fileCount": 35,
+      "nsfw": false
+    },
+    {
+      "name": "300 016 Maid By The Necromancer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "maid"
+      ],
+      "fileCount": 250,
+      "nsfw": false
+    },
+    {
+      "name": "300 018 (skin) Rightful Heiress",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "heiress"
+      ],
+      "fileCount": 21,
+      "nsfw": true
+    },
+    {
+      "name": "300 018 Rightful Heiress",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "heiress"
+      ],
+      "fileCount": 246,
+      "nsfw": true
+    },
+    {
+      "name": "300 031 Mambo Hero Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "mambo"
+      ],
+      "fileCount": 189,
+      "nsfw": false
+    },
+    {
+      "name": "300 034 (skin) Lucia Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lucia"
+      ],
+      "fileCount": 217,
+      "nsfw": false
+    },
+    {
+      "name": "300 034 Lucia Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lucia"
+      ],
+      "fileCount": 193,
+      "nsfw": false
+    },
+    {
+      "name": "300 035 Abigail Class Mod",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Abigail"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "300 036 (skin) Abigail Williams NSFW Skin Patch",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "AbigailWilliams"
+      ],
+      "fileCount": 93,
+      "nsfw": true
+    },
+    {
+      "name": "300 037 Nicorote",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "nicorote"
+      ],
+      "fileCount": 129,
+      "nsfw": false
+    },
+    {
+      "name": "300 038 Crystalline Herald",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "revenant_deadlist"
+      ],
+      "fileCount": 258,
+      "nsfw": false
+    },
+    {
+      "name": "300 040 Earth_Enchanter Beta",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Earth_Enchanter"
+      ],
+      "fileCount": 144,
+      "nsfw": false
+    },
+    {
+      "name": "300 041 Ringmaster Class Mod (LITE)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "ringmaster"
+      ],
+      "fileCount": 277,
+      "nsfw": false
+    },
+    {
+      "name": "300 042 Abysssinker Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Abysssinker"
+      ],
+      "fileCount": 140,
+      "nsfw": false
+    },
+    {
+      "name": "300 043 Skadi Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "skadi"
+      ],
+      "fileCount": 236,
+      "nsfw": false
+    },
+    {
+      "name": "300 047 Hepvier Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Hepvier-Nygat"
+      ],
+      "fileCount": 112,
+      "nsfw": false
+    },
+    {
+      "name": "300 048 (skin) Magician Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "commander"
+      ],
+      "fileCount": 176,
+      "nsfw": false
+    },
+    {
+      "name": "300 050 Goblin Huntress",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "spas"
+      ],
+      "fileCount": 143,
+      "nsfw": false
+    },
+    {
+      "name": "300 059 Qipaofox Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "qipaofox"
+      ],
+      "fileCount": 108,
+      "nsfw": false
+    },
+    {
+      "name": "300 101 (skin) MonkeyKing Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "monkey_king"
+      ],
+      "fileCount": 76,
+      "nsfw": false
+    },
+    {
+      "name": "300 101 MonkeyKing Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "monkey_king"
+      ],
+      "fileCount": 185,
+      "nsfw": false
+    },
+    {
+      "name": "300 102 seidoreiseijyo",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "seidoreiseijyo"
+      ],
+      "fileCount": 134,
+      "nsfw": false
+    },
+    {
+      "name": "300 103 Tryndamere",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Hellion_Lord"
+      ],
+      "fileCount": 118,
+      "nsfw": false
+    },
+    {
+      "name": "300 105 Gele",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "ji_er"
+      ],
+      "fileCount": 248,
+      "nsfw": false
+    },
+    {
+      "name": "300 106 Shao Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Shao"
+      ],
+      "fileCount": 210,
+      "nsfw": false
+    },
+    {
+      "name": "300 107 Red Lotus Enhance Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "redlotus"
+      ],
+      "fileCount": 125,
+      "nsfw": false
+    },
+    {
+      "name": "300 108 Assoult Kunoichi (Skin)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "nin_robber"
+      ],
+      "fileCount": 100,
+      "nsfw": false
+    },
+    {
+      "name": "300 110 Kitsune Miko (Skin)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "mikoF"
+      ],
+      "fileCount": 116,
+      "nsfw": false
+    },
+    {
+      "name": "300 111 Skadi The Corrupting Heart (Skin)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "red_sikadi"
+      ],
+      "fileCount": 122,
+      "nsfw": false
+    },
+    {
+      "name": "300 112 Draconblood Class EX",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Serona"
+      ],
+      "fileCount": 119,
+      "nsfw": false
+    },
+    {
+      "name": "300 113 Warlock class NSFW Skin",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "orca"
+      ],
+      "fileCount": 51,
+      "nsfw": true
+    },
+    {
+      "name": "300 114 Kal'tsit Class NSFW Skin",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Kaltsit"
+      ],
+      "fileCount": 21,
+      "nsfw": true
+    },
+    {
+      "name": "300 114 Kal'tsit Class O",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Kaltsit"
+      ],
+      "fileCount": 124,
+      "nsfw": false
+    },
+    {
+      "name": "300 117 Bloody Hunter",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "bloodyhunter"
+      ],
+      "fileCount": 167,
+      "nsfw": false
+    },
+    {
+      "name": "300 118 Livia Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Livia"
+      ],
+      "fileCount": 121,
+      "nsfw": true
+    },
+    {
+      "name": "300 121 lieyangzhimou",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lyzm"
+      ],
+      "fileCount": 154,
+      "nsfw": false
+    },
+    {
+      "name": "300 122 Onikenshi Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "onikenshi"
+      ],
+      "fileCount": 140,
+      "nsfw": false
+    },
+    {
+      "name": "300 123 Unicorn Class (Skin)",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "unicorn"
+      ],
+      "fileCount": 85,
+      "nsfw": false
+    },
+    {
+      "name": "300 124 Gabriel Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Gabriel"
+      ],
+      "fileCount": 246,
+      "nsfw": false
+    },
+    {
+      "name": "300 125 wenziniang",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "sycophant"
+      ],
+      "fileCount": 110,
+      "nsfw": false
+    },
+    {
+      "name": "300 127 G41 ClassEX",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "g41"
+      ],
+      "fileCount": 227,
+      "nsfw": false
+    },
+    {
+      "name": "300 127 G41 ClassFX",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "g41"
+      ],
+      "fileCount": 216,
+      "nsfw": false
+    },
+    {
+      "name": "300 128 anheiqishi Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "blackblack"
+      ],
+      "fileCount": 192,
+      "nsfw": false
+    },
+    {
+      "name": "300 129 diyunvjisi Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "shanbiannv"
+      ],
+      "fileCount": 193,
+      "nsfw": false
+    },
+    {
+      "name": "300 130 NielYJS Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "nielyjs"
+      ],
+      "fileCount": 200,
+      "nsfw": false
+    },
+    {
+      "name": "300 131 jizai Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "jizai"
+      ],
+      "fileCount": 327,
+      "nsfw": false
+    },
+    {
+      "name": "300 131 Jizai Class Skin",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "jizai"
+      ],
+      "fileCount": 22,
+      "nsfw": false
+    },
+    {
+      "name": "300 132 Jiangshi Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "jiangshi"
+      ],
+      "fileCount": 169,
+      "nsfw": false
+    },
+    {
+      "name": "300 132 Jiangshi Class Skin",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "jiangshi"
+      ],
+      "fileCount": 122,
+      "nsfw": false
+    },
+    {
+      "name": "300 133 Foreman Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "foreman"
+      ],
+      "fileCount": 169,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 001 Astronomer Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "astronomer"
+      ],
+      "fileCount": 147,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 002 Baron Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "baron"
+      ],
+      "fileCount": 110,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 004 Graveborn Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "graveborn"
+      ],
+      "fileCount": 133,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 005 Prefect Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "prefect"
+      ],
+      "fileCount": 164,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 006 Snor rasp Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "snor_rasp"
+      ],
+      "fileCount": 136,
+      "nsfw": false
+    },
+    {
+      "name": "300 134 007 Solution Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "solution"
+      ],
+      "fileCount": 110,
+      "nsfw": false
+    },
+    {
+      "name": "300 135 Chainsaw Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "chainsaw_demon"
+      ],
+      "fileCount": 168,
+      "nsfw": false
+    },
+    {
+      "name": "300 135 Chainsaw Class Skin",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "abomination"
+      ],
+      "fileCount": 127,
+      "nsfw": false
+    },
+    {
+      "name": "300 137 Flowery Poet Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "chiyofox"
+      ],
+      "fileCount": 183,
+      "nsfw": false
+    },
+    {
+      "name": "300 138 Inui's TPN Arona Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "tpn_arona"
+      ],
+      "fileCount": 181,
+      "nsfw": false
+    },
+    {
+      "name": "300 141 Eunectes Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "Eunectes"
+      ],
+      "fileCount": 176,
+      "nsfw": false
+    },
+    {
+      "name": "300 143 Rugal Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "rugal"
+      ],
+      "fileCount": 127,
+      "nsfw": false
+    },
+    {
+      "name": "300 144 Plowmare Class",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "lc_plowmare"
+      ],
+      "fileCount": 126,
+      "nsfw": false
+    },
+    {
+      "name": "300 145 Lishixuejia",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "snor_ui"
+      ],
+      "fileCount": 167,
+      "nsfw": false
+    },
+    {
+      "name": "300 146 Liefei",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "wc_man_at_arms"
+      ],
+      "fileCount": 202,
+      "nsfw": false
+    },
+    {
+      "name": "350 fawn-Trinketes",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "fawn"
+      ],
+      "fileCount": 26,
+      "nsfw": false
+    },
+    {
+      "name": "361 Mingrifangzhou NSFW",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 90,
+      "nsfw": true
+    },
+    {
+      "name": "400 Unhooded Shrew Mini-boss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 107,
+      "nsfw": false
+    },
+    {
+      "name": "412 (skin) Nurgle's minions",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 41,
+      "nsfw": false
+    },
+    {
+      "name": "420 Pelagic Hybrid",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 103,
+      "nsfw": false
+    },
+    {
+      "name": "422 Lumberjack Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 95,
+      "nsfw": false
+    },
+    {
+      "name": "424 The Spirit Of The Harvest Moon Encounter",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 72,
+      "nsfw": false
+    },
+    {
+      "name": "428 Mimics",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 1,
+      "heroClasses": [],
+      "fileCount": 119,
+      "nsfw": false
+    },
+    {
+      "name": "580002 musketeer",
+      "source": "dlc",
+      "heroCount": 1,
+      "monsterCount": 0,
+      "heroClasses": [
+        "musketeer"
+      ],
+      "fileCount": 149,
+      "nsfw": false
+    },
+    {
+      "name": "000 Compact Quest Screen",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 417,
+      "nsfw": false
+    },
+    {
+      "name": "000 V10 Modfiles Compatibility Patch",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 10,
+      "nsfw": false
+    },
+    {
+      "name": "001 M.E.P.E Mafe Extreme Provisions Extension",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 31,
+      "nsfw": false
+    },
+    {
+      "name": "01 A Compact Quest Screen",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 390,
+      "nsfw": false
+    },
+    {
+      "name": "04",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 688,
+      "nsfw": false
+    },
+    {
+      "name": "05",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 39,
+      "nsfw": false
+    },
+    {
+      "name": "All 7 Skills Usable",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "brigand_fuseman",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 30,
+      "nsfw": false
+    },
+    {
+      "name": "Charygirl nsfw",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": true
+    },
+    {
+      "name": "chuitousha0.4",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 25,
+      "nsfw": false
+    },
+    {
+      "name": "Combat Speed x2",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "Custom Footsteps",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "Da Erkka's Additional Crimson Court Backgrounds",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 33,
+      "nsfw": false
+    },
+    {
+      "name": "Da Erkka's Additional Room Backgrounds",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 18,
+      "nsfw": false
+    },
+    {
+      "name": "Da Erkka's More Hallway Variations",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 92,
+      "nsfw": false
+    },
+    {
+      "name": "Dan - Custom Sounds",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "Extra Cove Backgrounds",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "Extra Weald Backgrounds",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "Faster Scouting",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "Faster Walking +75%",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "Fully Lit Darkness V10",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 126,
+      "nsfw": false
+    },
+    {
+      "name": "Garphyield's Exchange Heirlooms and Shards for Gold",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 12,
+      "nsfw": false
+    },
+    {
+      "name": "Garphyield's Purchasable Firewood mod",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "Garphyield's Purchasable Firewood mod (Black Reliquary)",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "khais revive dead mod",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "Level Restrictions Removal",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "Loading Screen Remake",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 70,
+      "nsfw": false
+    },
+    {
+      "name": "Mafe Combat Speed enhacer and Pop-us remover",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 43,
+      "nsfw": false
+    },
+    {
+      "name": "Mudraptor family NSFW",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 43,
+      "nsfw": true
+    },
+    {
+      "name": "No Camera Zoom",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 12,
+      "nsfw": false
+    },
+    {
+      "name": "No more Game Overs",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "npc nude",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 43,
+      "nsfw": true
+    },
+    {
+      "name": "papanianghua NSFW",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 41,
+      "nsfw": true
+    },
+    {
+      "name": "SHAMBLER on the Old Road",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "Spineling",
+      "source": "mods",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "100 Global BGM Black Reliquary",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "100 Global Map",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "100 Sinicization Fix",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "101 xiaqiu",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 235,
+      "nsfw": false
+    },
+    {
+      "name": "102 xiaokai",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 32,
+      "nsfw": false
+    },
+    {
+      "name": "103 DD",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 151,
+      "nsfw": false
+    },
+    {
+      "name": "104 geren",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 41,
+      "nsfw": false
+    },
+    {
+      "name": "105 Faster Darkest Dungeon",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 32,
+      "nsfw": false
+    },
+    {
+      "name": "105 Inventory big",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "105 Sanitarium Room +3",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": false
+    },
+    {
+      "name": "106 (skin) Exaelus' Arduous Edition Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "106 050 (skin) border-by jefuty",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 29,
+      "nsfw": false
+    },
+    {
+      "name": "106 Compatibility Patch - V10",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 14,
+      "nsfw": false
+    },
+    {
+      "name": "106 Trinket Rebalance",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 18,
+      "nsfw": false
+    },
+    {
+      "name": "107 (enhance) (D.K.2nd) Pet Cemetery (Dungeon Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "107 Compatibility Patch - T.O.P. + Wagon Redone",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": false
+    },
+    {
+      "name": "107 Vermintide in the Farmstead",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 26,
+      "nsfw": false
+    },
+    {
+      "name": "109 (enhance) (D.K.2nd) The Sunward Isles (New Dungeon)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "110 Stack It Or Go Home",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 10,
+      "nsfw": false
+    },
+    {
+      "name": "111 (enhance) (D.K.2nd) Nerub",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "112 (enhance) (D.K.2nd) Scarlet Ruins",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "112 (skin) Scarlet Ruins",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 40,
+      "nsfw": false
+    },
+    {
+      "name": "113 Hero Recruit More",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "114 (enhance) (D.K.2nd) Singleplayer Circus Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "114 Max 6 + & - quirks and 4 + & - Quirks Lockable",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "114 Singleplayer Circus Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 148,
+      "nsfw": false
+    },
+    {
+      "name": "115 Pet Store (Patch)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 22,
+      "nsfw": false
+    },
+    {
+      "name": "116 Nomad Wagon Redone",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 26,
+      "nsfw": false
+    },
+    {
+      "name": "118 Expanded Stress Relief Buildings",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 39,
+      "nsfw": true
+    },
+    {
+      "name": "119 Expanded Town Events",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 40,
+      "nsfw": false
+    },
+    {
+      "name": "122 (enhance) (D.K.2nd) The Crystalline Bloodlight",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "122 The Crystalline Bloodlight",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 45,
+      "nsfw": false
+    },
+    {
+      "name": "124 (skin) Arena Bosses",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 28,
+      "nsfw": false
+    },
+    {
+      "name": "124 Arena Bosses",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 102,
+      "nsfw": false
+    },
+    {
+      "name": "126 (skin) The Mountain - Updated Version",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 74,
+      "nsfw": false
+    },
+    {
+      "name": "127 Lectern of Time Everlasting",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 129,
+      "nsfw": false
+    },
+    {
+      "name": "130 Marvin Seo Mods Shared Assets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 43,
+      "nsfw": false
+    },
+    {
+      "name": "131 Quirk Expansion Pack by Marvin Seo",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 22,
+      "nsfw": false
+    },
+    {
+      "name": "132 More Quirks Mod Crimson Court",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 15,
+      "nsfw": false
+    },
+    {
+      "name": "133 More Quirks Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "134 Snorlaxxo's Set of Surprises",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 20,
+      "nsfw": false
+    },
+    {
+      "name": "209 (enhance) (D.K.5th) Fawn -  Remastered",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "300 043 Skadi Extra Trinket",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 21,
+      "nsfw": false
+    },
+    {
+      "name": "300 123 Unicorn Clasr (Voice patch)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "300 130 NielYJS Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 17,
+      "nsfw": false
+    },
+    {
+      "name": "307 Trinket Overhaul Project - T.O.P",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 91,
+      "nsfw": false
+    },
+    {
+      "name": "308 Unique Items Mega Trinkets Pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 235,
+      "nsfw": false
+    },
+    {
+      "name": "310 Sunward Isles Marvin Seo Class Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 26,
+      "nsfw": false
+    },
+    {
+      "name": "311 The Hollow -  CC Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "311 The Hood -  CC Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "311 The Offering -  CC Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "311 The Profligates -  CoM Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 40,
+      "nsfw": false
+    },
+    {
+      "name": "311 The Shrapnel -  CC Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "311 The Tusk - CC Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "311 Tifa Lockhart - CC Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 19,
+      "nsfw": false
+    },
+    {
+      "name": "312 '48 NEW TRINKETS!' Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 106,
+      "nsfw": false
+    },
+    {
+      "name": "315 (enhance) (D.K.2nd) Cursed Trophies",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "316 Cataphract Crimson Court Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": false
+    },
+    {
+      "name": "316 SlayerCataphractOS CoM Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 13,
+      "nsfw": false
+    },
+    {
+      "name": "316 Sunward Isles S-Purple Class Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 25,
+      "nsfw": false
+    },
+    {
+      "name": "317 (enhance) (D.K.2nd) Masks Of Skyrim",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "317 Masks Of Skyrim",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 24,
+      "nsfw": false
+    },
+    {
+      "name": "319 The Infinity Stones",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 13,
+      "nsfw": false
+    },
+    {
+      "name": "320 'HADES TRINKETS!' Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 65,
+      "nsfw": false
+    },
+    {
+      "name": "320 (enhance) (D.K.3rd) 'HADES TRINKETS!' Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "320 Amphitheater District Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 24,
+      "nsfw": false
+    },
+    {
+      "name": "320 Cursed Ground District",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 22,
+      "nsfw": false
+    },
+    {
+      "name": "320 Memorial Grounds District Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 24,
+      "nsfw": false
+    },
+    {
+      "name": "320 Weirwood Tree (Warden District)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 24,
+      "nsfw": false
+    },
+    {
+      "name": "350 Abysssinker Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": false
+    },
+    {
+      "name": "350 Atalanta trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 23,
+      "nsfw": false
+    },
+    {
+      "name": "350 Grove tender CC trinket",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 8,
+      "nsfw": false
+    },
+    {
+      "name": "350 Grove tender COM trinket",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "350 Lucia Class trinkets pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "350 Lucia Class trinkets pack 2",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 18,
+      "nsfw": false
+    },
+    {
+      "name": "350 Minstrel Class trinkets pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "350 Rebalanced Spirit lancer CC trinket",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 11,
+      "nsfw": false
+    },
+    {
+      "name": "350 Ruler Class trinkets pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 21,
+      "nsfw": false
+    },
+    {
+      "name": "350 shrapnel trinkets 0.5",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 16,
+      "nsfw": false
+    },
+    {
+      "name": "352 Fate Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 20,
+      "nsfw": false
+    },
+    {
+      "name": "353 (enhance) (D.K.3rd) Zodiac Sign",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": false
+    },
+    {
+      "name": "353 Zodiac Sign",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 46,
+      "nsfw": false
+    },
+    {
+      "name": "355 Hunters Treasure Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 24,
+      "nsfw": false
+    },
+    {
+      "name": "357 Legendary Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 46,
+      "nsfw": false
+    },
+    {
+      "name": "360 XiFeng Trinkets",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 38,
+      "nsfw": false
+    },
+    {
+      "name": "399 The Lost Division Panzer IV Spawn Patch",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 34,
+      "nsfw": false
+    },
+    {
+      "name": "401 (enhance) (D.K.2nd) Courtyard Plus",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "402 (enhance) (D.K.2nd) The Order of Sunlight",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "403 (enhance) (D.K.2nd) Moonlit Dungeon - Ruins Enemy Pack",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "404 (enhance) (D.K.2nd) The Banshee by Marvin Seo and Clair de Lune",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "405 Banshee Boss Missions",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 16,
+      "nsfw": false
+    },
+    {
+      "name": "407 (enhance) (D.K.2nd) Abyssal Horror Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "408 (enhance) (D.K.2nd) Spider Nests 2 (Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "409 (enhance) (D.K.2nd) Pets 2 (Trinket + Monster Mod)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "410 (enhance) (D.K.2nd) House Full of Piggies - New Enemeies for the Warren",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "411 (enhance) (D.K.2nd) Unleashing of the Kraken - New Enemy for the Cove",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "414 Modded Fallen Heroes- Simple AI Spawn Rate Patch",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 32,
+      "nsfw": false
+    },
+    {
+      "name": "415 Modded Fallen Heroes- AI Simplicity Patch",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "417 (enhance) (D.K.2nd) Army of Bones - New Enemeies for the Crypts",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "418 (skin) Cultist Incursion",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 125,
+      "nsfw": true
+    },
+    {
+      "name": "421 (enhance) (D.K.2nd) The Musician Boss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "422 (enhance) (D.K.2nd) Lumberjack Miniboss",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "426 (enhance) (D.K.2nd) Here Be Monsters Full Release",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 6,
+      "nsfw": false
+    },
+    {
+      "name": "426 Here Be Monsters Endless Harvest Waves",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 7,
+      "nsfw": false
+    },
+    {
+      "name": "427 (enhance) (D.K.2nd) The Marcus Brothers",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "430 (enhance) (D.K.2nd) The Rotting King",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 5,
+      "nsfw": false
+    },
+    {
+      "name": "500 (enhance) (D.K.2nd) Exaelus' Arduous Edition Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 2,
+      "nsfw": false
+    },
+    {
+      "name": "500 (skin) Exaelus' Arduous Edition Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 4,
+      "nsfw": false
+    },
+    {
+      "name": "500 Exaelus' Arduous Edition Mod",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 1278,
+      "nsfw": false
+    },
+    {
+      "name": "501 001 Exaelus' Arduous Edition Mod (DLC)",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 18,
+      "nsfw": false
+    },
+    {
+      "name": "501 Clair's Journal Compatibility Fix",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 31,
+      "nsfw": false
+    },
+    {
+      "name": "502 No Butcher's Circus Icon",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "502 No More Circus Town Events",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 3,
+      "nsfw": false
+    },
+    {
+      "name": "503 Glossary Compatibility Fix",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 36,
+      "nsfw": false
+    },
+    {
+      "name": "580001 Butcher's Circus Sinicization Fix",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 48,
+      "nsfw": false
+    },
+    {
+      "name": "580100_crimson_court",
+      "source": "dlc",
+      "heroCount": 0,
+      "monsterCount": 0,
+      "heroClasses": [],
+      "fileCount": 1402,
+      "nsfw": false
+    }
+  ]
+}

@@ -1,0 +1,700 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 女角偏好系数表（20 位女角 · 三层属性权重单一来源）
+   ════════════════════════════════════════════════════════════
+   职责：定义每位女角对主角三层属性（基础属性/性格特质/技能系统）的
+         偏好权重，作为 calcPlayerPower() 加权平均的权重来源。
+
+   被引用关系：
+     - 属性技能骰子联动.txt → getHeroinePreference() 读取本表 HEROINE_PREFERENCES
+     - 属性技能骰子联动.txt → calcPlayerPower() 按本表权重加权平均求能力值
+     - 角色性格控制器.txt   → 间接通过 calcFinalResult() 受本表影响
+
+   设计原则（严谨性约束，AI 不可私自修改）：
+     1. 权重范围严格限定：
+        - 高权重：1.5-2.0（女角非常看重，2.0 为绝对上限）
+        - 中权重：0.8-1.2（一般看重）
+        - 低权重：0.3-0.7（不太看重）
+        - 极低权重：0.1-0.3（几乎不看）
+        - 禁止任何权重 > 2.0（避免单属性碾压导致能力值虚高）
+     2. 权重总和平衡（防止能力值失衡）：
+        - stat_weights 总和：5.0-7.0（6 属性 × 1.0 = 6.0 基准）
+        - personality_weights 总和：5.0-7.0（6 性格 × 1.0 = 6.0 基准）
+        - skill_weights 总和：8.0-12.0（12 技能 × 1.0 = 12.0 基准）
+     3. 难度关联（4 档修正，本表 DIFFICULTY_WEIGHT_MODIFIERS）：
+        - 轻松：weight_mult=1.2（偏好放大）+ difficulty_bonus=-5（女角难度降）
+        - 普通：weight_mult=1.0（标准）  + difficulty_bonus=0
+        - 挑战：weight_mult=0.8（偏好缩小）+ difficulty_bonus=+5（女角难度升）
+        - 地狱：weight_mult=0.6（偏好极缩）+ difficulty_bonus=+10（女角难度大升）
+        注：实际"要求值"修正由 属性技能骰子联动.txt 的 DIFFICULTY_MODIFIERS.req_mod
+            与 HEROINE_DIFFICULTY 叠加完成；本表 difficulty_bonus 为女角个人难度
+            的难度档位加成（需与 HEROINE_DIFFICULTY 叠加使用）。
+     4. 动作类型差异化（每位女角定义 4 类偏好）：
+        - default：通用偏好（所有动作的兜底）
+        - confess：告白（decisiveness/romance/speech 权重提升）
+        - first_h：初H（gentleness/romance/observation 权重提升）
+        - give_gift：送礼（observation/art/intelligence 权重提升）
+     5. 性格匹配（女角人格 → 权重倾向）：
+        - 害羞型（唯/友美/佐知子/澪奈/美穗）：高 gentleness，低 extraversion
+        - 成熟型（美佐子/美铃/久美子/美里）：高 rationality，高 academic/willpower
+        - 活泼型（可怜/美沙/澪/泉美）：高 humor+extraversion，高 social/physical
+        - 高傲型（梢江/正树/美铃）：高 charm+willpower，高 decisiveness
+        - 神秘型（美纪/仁科/樱子）：高 observation+intelligence，高 cautiousness
+        - 温柔型（洋子/爱美/久美子）：高 gentleness+cooking/medical
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、难度修正权重（4 档 · 关联偏好权重与女角个人难度）
+   ════════════════════════════════════════════════════════════ */
+const DIFFICULTY_WEIGHT_MODIFIERS = {
+  '轻松': {
+    weight_mult: 1.2,       /* 偏好权重 ×1.2（高权重更突出，能力值计算更易达标） */
+    difficulty_bonus: -5,   /* 女角个人难度系数 -5（要求值降低） */
+    description: '轻松难度：偏好权重放大 20%，女角个人难度降低 5 点'
+  },
+  '普通': {
+    weight_mult: 1.0,       /* 标准权重 */
+    difficulty_bonus: 0,
+    description: '普通难度：标准偏好权重，标准女角难度'
+  },
+  '挑战': {
+    weight_mult: 0.8,       /* 偏好权重 ×0.8（高权重削弱，能力值计算更难达标） */
+    difficulty_bonus: +5,   /* 女角个人难度系数 +5（要求值升高） */
+    description: '挑战难度：偏好权重缩小 20%，女角难度提高 5 点'
+  },
+  '地狱': {
+    weight_mult: 0.6,       /* 偏好权重 ×0.6（高权重大幅削弱，能力值很低） */
+    difficulty_bonus: +10,  /* 女角个人难度系数 +10（要求值大幅升高） */
+    description: '地狱难度：偏好权重缩小 40%，女角难度提高 10 点，成功率大幅降低'
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   二、20 位女角偏好系数表（HEROINE_PREFERENCES 全局对象）
+   键 = 女角 ID（1-20），与 属性技能骰子联动.txt HEROINE_DIFFICULTY 对齐
+   ════════════════════════════════════════════════════════════ */
+const HEROINE_PREFERENCES = {
+
+  /* ───────── 1. 鸣泽唯（害羞内向、善良纯真、容易被温柔打动） ───────── */
+  1: {
+    name: '鸣泽唯',
+    character_traits: '害羞内向、善良纯真、容易被温柔打动',
+    difficulty_coefficient: +5,
+    default: {
+      stat_weights: { charm: 1.5, academic: 0.8, physical: 0.5, social: 0.8, perception: 1.3, willpower: 0.6 },
+      personality_weights: { gentleness: 1.8, decisiveness: 1.0, humor: 0.8, cautiousness: 0.6, extraversion: 0.5, rationality: 0.4 },
+      skill_weights: { strength: 0.5, agility: 0.5, intelligence: 0.6, willpower: 0.6, stealth: 0.3, speech: 1.0, medical: 0.5, cooking: 0.8, art: 1.0, driving: 0.3, romance: 1.5, observation: 1.3 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.8, humor: 0.5, cautiousness: 0.3, extraversion: 0.8, rationality: 0.3 },
+      skill_weights: { romance: 1.8, speech: 1.3, observation: 1.0 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.8, humor: 0.3, cautiousness: 1.2, extraversion: 0.4, rationality: 0.5 },
+      skill_weights: { romance: 1.8, observation: 1.5, speech: 0.8, medical: 0.6 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.6, decisiveness: 0.8, humor: 0.8, cautiousness: 0.8, extraversion: 0.5, rationality: 0.5 },
+      skill_weights: { observation: 1.5, romance: 1.3, art: 1.2 }
+    }
+  },
+
+  /* ───────── 2. 鸣泽美佐子（成熟优雅、理性稳重、看重责任和内涵） ───────── */
+  2: {
+    name: '鸣泽美佐子',
+    character_traits: '成熟优雅、理性稳重、看重责任和内涵（义母身份）',
+    difficulty_coefficient: +10,
+    default: {
+      stat_weights: { charm: 1.0, academic: 1.5, physical: 0.8, social: 1.2, perception: 1.0, willpower: 1.5 },
+      personality_weights: { gentleness: 1.0, decisiveness: 1.3, humor: 0.7, cautiousness: 1.2, extraversion: 0.8, rationality: 1.8 },
+      skill_weights: { strength: 0.5, agility: 0.5, intelligence: 1.5, willpower: 1.2, stealth: 0.3, speech: 1.3, medical: 0.8, cooking: 1.0, art: 0.8, driving: 0.5, romance: 1.2, observation: 1.0 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.5, humor: 0.5, cautiousness: 1.0, extraversion: 0.7, rationality: 1.8 },
+      skill_weights: { speech: 1.5, intelligence: 1.5, romance: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.0, humor: 0.5, cautiousness: 1.5, extraversion: 0.5, rationality: 1.5 },
+      skill_weights: { romance: 1.5, observation: 1.2, speech: 1.0, medical: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.2, decisiveness: 1.0, humor: 0.8, cautiousness: 1.0, extraversion: 0.8, rationality: 1.5 },
+      skill_weights: { observation: 1.3, intelligence: 1.3, art: 1.0, cooking: 1.0 }
+    }
+  },
+
+  /* ───────── 3. 舞岛可怜（偶像光环、活泼开朗） ───────── */
+  3: {
+    name: '舞岛可怜',
+    character_traits: '偶像光环、活泼开朗、喜欢有趣的人',
+    difficulty_coefficient: +8,
+    default: {
+      stat_weights: { charm: 1.8, academic: 0.5, physical: 1.0, social: 1.5, perception: 1.0, willpower: 1.2 },
+      personality_weights: { gentleness: 1.0, decisiveness: 1.0, humor: 1.5, cautiousness: 0.5, extraversion: 1.8, rationality: 0.5 },
+      skill_weights: { strength: 0.5, agility: 0.8, intelligence: 0.8, willpower: 0.8, stealth: 0.3, speech: 1.5, medical: 0.3, cooking: 0.5, art: 1.5, driving: 0.5, romance: 1.3, observation: 1.0 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.3, humor: 1.3, cautiousness: 0.5, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { speech: 1.8, romance: 1.5, art: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.0, humor: 1.0, cautiousness: 0.8, extraversion: 1.2, rationality: 0.5 },
+      skill_weights: { romance: 1.8, observation: 1.3, speech: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 0.8, humor: 1.5, cautiousness: 0.5, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { observation: 1.3, art: 1.8, romance: 1.2 }
+    }
+  },
+
+  /* ───────── 4. 加藤美纪（双身份神秘、聪慧） ───────── */
+  4: {
+    name: '加藤美纪',
+    character_traits: '双身份神秘、聪慧冷静、看重洞察力',
+    difficulty_coefficient: +12,
+    default: {
+      stat_weights: { charm: 1.2, academic: 1.5, physical: 0.8, social: 1.0, perception: 1.3, willpower: 0.8 },
+      personality_weights: { gentleness: 0.8, decisiveness: 1.2, humor: 0.7, cautiousness: 1.5, extraversion: 0.5, rationality: 1.8 },
+      skill_weights: { strength: 0.5, agility: 0.8, intelligence: 1.8, willpower: 1.2, stealth: 1.5, speech: 1.0, medical: 0.5, cooking: 0.5, art: 0.8, driving: 0.5, romance: 1.0, observation: 1.8 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.5, humor: 0.5, cautiousness: 1.3, extraversion: 0.5, rationality: 1.8 },
+      skill_weights: { speech: 1.3, intelligence: 1.5, observation: 1.5 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.0, humor: 0.5, cautiousness: 1.5, extraversion: 0.5, rationality: 1.5 },
+      skill_weights: { romance: 1.5, observation: 1.5, medical: 1.0, stealth: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.0, humor: 0.7, cautiousness: 1.3, extraversion: 0.5, rationality: 1.5 },
+      skill_weights: { observation: 1.8, intelligence: 1.5, art: 1.0 }
+    }
+  },
+
+  /* ───────── 5. 筱原泉美（直率开朗、运动型） ───────── */
+  5: {
+    name: '筱原泉美',
+    character_traits: '直率开朗、运动型、讨厌拐弯抹角',
+    difficulty_coefficient: +3,
+    default: {
+      stat_weights: { charm: 1.0, academic: 0.7, physical: 1.8, social: 1.3, perception: 0.8, willpower: 1.0 },
+      personality_weights: { gentleness: 0.8, decisiveness: 1.5, humor: 1.3, cautiousness: 0.5, extraversion: 1.5, rationality: 0.7 },
+      skill_weights: { strength: 1.5, agility: 1.8, intelligence: 0.7, willpower: 1.0, stealth: 0.3, speech: 1.0, medical: 0.5, cooking: 0.7, art: 0.5, driving: 0.8, romance: 1.0, observation: 0.8 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.8, humor: 1.2, cautiousness: 0.5, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { speech: 1.5, romance: 1.3, agility: 1.5 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 1.0, cautiousness: 0.8, extraversion: 1.2, rationality: 0.5 },
+      skill_weights: { romance: 1.5, strength: 1.5, agility: 1.3 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.0, humor: 1.5, cautiousness: 0.5, extraversion: 1.3, rationality: 0.5 },
+      skill_weights: { observation: 1.0, agility: 1.5, romance: 1.2 }
+    }
+  },
+
+  /* ───────── 6. 南川洋子（温柔体贴、邻家姐姐） ───────── */
+  6: {
+    name: '南川洋子',
+    character_traits: '温柔体贴、邻家姐姐型、喜欢细心的人',
+    difficulty_coefficient: +5,
+    default: {
+      stat_weights: { charm: 1.2, academic: 1.0, physical: 0.8, social: 1.3, perception: 1.5, willpower: 1.0 },
+      personality_weights: { gentleness: 1.8, decisiveness: 0.8, humor: 1.0, cautiousness: 1.0, extraversion: 1.0, rationality: 1.0 },
+      skill_weights: { strength: 0.5, agility: 0.5, intelligence: 1.0, willpower: 0.8, stealth: 0.3, speech: 1.2, medical: 1.0, cooking: 1.5, art: 0.8, driving: 0.5, romance: 1.3, observation: 1.3 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 1.0, cautiousness: 0.8, extraversion: 1.0, rationality: 0.8 },
+      skill_weights: { speech: 1.5, romance: 1.5, observation: 1.2 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.8, humor: 0.8, cautiousness: 1.2, extraversion: 0.7, rationality: 0.8 },
+      skill_weights: { romance: 1.8, observation: 1.5, cooking: 1.0, medical: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 0.8, humor: 1.0, cautiousness: 1.0, extraversion: 1.0, rationality: 0.8 },
+      skill_weights: { observation: 1.5, cooking: 1.3, art: 1.2, romance: 1.0 }
+    }
+  },
+
+  /* ───────── 7. 都筑梢江（大小姐气质、高傲） ───────── */
+  7: {
+    name: '都筑梢江',
+    character_traits: '大小姐气质、高傲、看重身份与品味',
+    difficulty_coefficient: +10,
+    default: {
+      stat_weights: { charm: 1.5, academic: 0.9, physical: 0.6, social: 1.2, perception: 0.8, willpower: 1.6 },
+      personality_weights: { gentleness: 0.5, decisiveness: 1.5, humor: 0.7, cautiousness: 0.8, extraversion: 1.3, rationality: 1.5 },
+      skill_weights: { strength: 0.5, agility: 0.8, intelligence: 1.2, willpower: 1.0, stealth: 0.3, speech: 1.5, medical: 0.3, cooking: 0.5, art: 1.5, driving: 0.8, romance: 1.0, observation: 1.0 }
+    },
+    confess: {
+      personality_weights: { gentleness: 0.5, decisiveness: 1.8, humor: 0.5, cautiousness: 0.7, extraversion: 1.5, rationality: 1.5 },
+      skill_weights: { speech: 1.8, intelligence: 1.3, romance: 1.0 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.3, decisiveness: 1.0, humor: 0.5, cautiousness: 1.0, extraversion: 1.0, rationality: 1.2 },
+      skill_weights: { romance: 1.5, speech: 1.2, observation: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 0.8, decisiveness: 1.2, humor: 0.7, cautiousness: 0.8, extraversion: 1.3, rationality: 1.2 },
+      skill_weights: { observation: 1.5, art: 1.8, speech: 1.2 }
+    }
+  },
+
+  /* ───────── 8. 水野友美（内向害羞、文学少女） ───────── */
+  8: {
+    name: '水野友美',
+    character_traits: '内向害羞、文学少女、喜欢艺术与温柔',
+    difficulty_coefficient: +6,
+    default: {
+      stat_weights: { charm: 1.2, academic: 1.5, physical: 0.7, social: 0.8, perception: 1.5, willpower: 0.8 },
+      personality_weights: { gentleness: 1.8, decisiveness: 0.7, humor: 0.8, cautiousness: 1.2, extraversion: 0.4, rationality: 1.0 },
+      skill_weights: { strength: 0.3, agility: 0.5, intelligence: 1.3, willpower: 0.8, stealth: 0.5, speech: 0.8, medical: 0.5, cooking: 0.8, art: 1.8, driving: 0.3, romance: 1.3, observation: 1.5 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.5, humor: 0.5, cautiousness: 1.0, extraversion: 0.5, rationality: 1.0 },
+      skill_weights: { speech: 1.3, art: 1.8, romance: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.7, humor: 0.4, cautiousness: 1.5, extraversion: 0.3, rationality: 0.8 },
+      skill_weights: { romance: 1.8, observation: 1.5, art: 1.3, medical: 0.8 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 0.7, humor: 0.8, cautiousness: 1.0, extraversion: 0.4, rationality: 0.8 },
+      skill_weights: { observation: 1.8, art: 1.8, intelligence: 1.3 }
+    }
+  },
+
+  /* ───────── 9. 安田爱美（保育园老师、温柔） ───────── */
+  9: {
+    name: '安田爱美',
+    character_traits: '保育园老师、温柔有爱心、喜欢体贴的人',
+    difficulty_coefficient: +7,
+    default: {
+      stat_weights: { charm: 1.0, academic: 0.9, physical: 1.0, social: 1.2, perception: 1.5, willpower: 1.2 },
+      personality_weights: { gentleness: 1.8, decisiveness: 1.0, humor: 1.2, cautiousness: 1.0, extraversion: 1.0, rationality: 0.8 },
+      skill_weights: { strength: 0.5, agility: 0.7, intelligence: 1.0, willpower: 0.8, stealth: 0.3, speech: 1.2, medical: 1.5, cooking: 1.5, art: 1.0, driving: 0.5, romance: 1.2, observation: 1.3 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.5, humor: 1.0, cautiousness: 0.8, extraversion: 1.0, rationality: 0.8 },
+      skill_weights: { speech: 1.5, romance: 1.5, medical: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.8, humor: 0.8, cautiousness: 1.3, extraversion: 0.7, rationality: 0.8 },
+      skill_weights: { romance: 1.8, medical: 1.5, observation: 1.3, cooking: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 0.8, humor: 1.2, cautiousness: 0.8, extraversion: 1.0, rationality: 0.8 },
+      skill_weights: { observation: 1.5, cooking: 1.3, medical: 1.2, art: 1.0 }
+    }
+  },
+
+  /* ───────── 10. 田中美沙（运动型、直率） ───────── */
+  10: {
+    name: '田中美沙',
+    character_traits: '运动型、直率爽朗、喜欢有活力的人',
+    difficulty_coefficient: +4,
+    default: {
+      stat_weights: { charm: 1.0, academic: 0.7, physical: 1.8, social: 1.3, perception: 0.8, willpower: 1.0 },
+      personality_weights: { gentleness: 0.8, decisiveness: 1.5, humor: 1.5, cautiousness: 0.4, extraversion: 1.8, rationality: 0.5 },
+      skill_weights: { strength: 1.8, agility: 1.8, intelligence: 0.7, willpower: 1.2, stealth: 0.3, speech: 1.2, medical: 0.5, cooking: 0.5, art: 0.5, driving: 0.7, romance: 1.0, observation: 0.8 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.8, humor: 1.3, cautiousness: 0.4, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { speech: 1.5, romance: 1.3, agility: 1.5 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 1.0, cautiousness: 0.8, extraversion: 1.2, rationality: 0.5 },
+      skill_weights: { romance: 1.5, strength: 1.5, agility: 1.3 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.0, humor: 1.5, cautiousness: 0.4, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { observation: 1.0, agility: 1.3, romance: 1.0 }
+    }
+  },
+
+  /* ───────── 11. 片桐美铃（严格教师、认真） ───────── */
+  11: {
+    name: '片桐美铃',
+    character_traits: '严格教师、认真负责、看重学业与原则',
+    difficulty_coefficient: +15,
+    default: {
+      stat_weights: { charm: 0.8, academic: 1.8, physical: 0.8, social: 1.0, perception: 0.7, willpower: 1.8 },
+      personality_weights: { gentleness: 0.7, decisiveness: 1.8, humor: 0.3, cautiousness: 1.5, extraversion: 0.5, rationality: 2.0 },
+      skill_weights: { strength: 0.5, agility: 0.5, intelligence: 1.8, willpower: 1.8, stealth: 0.3, speech: 1.3, medical: 0.8, cooking: 1.0, art: 0.5, driving: 0.5, romance: 0.8, observation: 1.5 }
+    },
+    confess: {
+      personality_weights: { gentleness: 0.8, decisiveness: 1.8, humor: 0.3, cautiousness: 1.3, extraversion: 0.5, rationality: 2.0 },
+      skill_weights: { speech: 1.5, intelligence: 1.8, romance: 1.0 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 0.5, cautiousness: 1.5, extraversion: 0.5, rationality: 1.5 },
+      skill_weights: { romance: 1.5, observation: 1.5, medical: 1.0, intelligence: 1.3 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.3, humor: 0.5, cautiousness: 1.2, extraversion: 0.5, rationality: 1.8 },
+      skill_weights: { observation: 1.8, intelligence: 1.5, art: 1.0, cooking: 1.0 }
+    }
+  },
+
+  /* ───────── 12. 野野村美里（工作狂、独立） ───────── */
+  12: {
+    name: '野野村美里',
+    character_traits: '工作狂、独立自信、看重能力与决断',
+    difficulty_coefficient: +8,
+    default: {
+      stat_weights: { charm: 1.0, academic: 1.3, physical: 1.0, social: 1.2, perception: 0.8, willpower: 1.5 },
+      personality_weights: { gentleness: 0.8, decisiveness: 1.8, humor: 0.7, cautiousness: 1.0, extraversion: 1.0, rationality: 1.5 },
+      skill_weights: { strength: 0.5, agility: 0.7, intelligence: 1.5, willpower: 1.5, stealth: 0.3, speech: 1.3, medical: 0.5, cooking: 0.8, art: 0.5, driving: 1.0, romance: 1.0, observation: 1.2 }
+    },
+    confess: {
+      personality_weights: { gentleness: 0.8, decisiveness: 2.0, humor: 0.5, cautiousness: 1.0, extraversion: 1.0, rationality: 1.5 },
+      skill_weights: { speech: 1.5, intelligence: 1.5, romance: 1.2 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 0.5, cautiousness: 1.3, extraversion: 0.8, rationality: 1.3 },
+      skill_weights: { romance: 1.5, observation: 1.3, medical: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.5, humor: 0.7, cautiousness: 1.0, extraversion: 1.0, rationality: 1.3 },
+      skill_weights: { observation: 1.5, intelligence: 1.3, art: 1.0 }
+    }
+  },
+
+  /* ───────── 13. 永岛久美子（母亲、温柔） ───────── */
+  13: {
+    name: '永岛久美子',
+    character_traits: '母亲身份、温柔包容、看重家庭与责任（伦理难度）',
+    difficulty_coefficient: +10,
+    default: {
+      stat_weights: { charm: 1.0, academic: 1.0, physical: 0.8, social: 1.2, perception: 1.5, willpower: 1.5 },
+      personality_weights: { gentleness: 1.8, decisiveness: 1.0, humor: 1.0, cautiousness: 1.0, extraversion: 0.7, rationality: 1.2 },
+      skill_weights: { strength: 0.5, agility: 0.5, intelligence: 1.0, willpower: 1.0, stealth: 0.3, speech: 1.2, medical: 1.5, cooking: 1.8, art: 0.8, driving: 0.5, romance: 1.2, observation: 1.3 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 1.0, cautiousness: 1.0, extraversion: 0.7, rationality: 1.3 },
+      skill_weights: { speech: 1.5, romance: 1.5, cooking: 1.5 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.8, humor: 0.8, cautiousness: 1.5, extraversion: 0.5, rationality: 1.0 },
+      skill_weights: { romance: 1.8, medical: 1.5, observation: 1.3, cooking: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.0, humor: 1.0, cautiousness: 1.0, extraversion: 0.7, rationality: 1.0 },
+      skill_weights: { observation: 1.5, cooking: 1.5, art: 1.2 }
+    }
+  },
+
+  /* ───────── 14. 永岛佐知子（女儿、内向） ───────── */
+  14: {
+    name: '永岛佐知子',
+    character_traits: '女儿身份、内向害羞、喜欢温柔细腻的人',
+    difficulty_coefficient: +6,
+    default: {
+      stat_weights: { charm: 1.3, academic: 1.2, physical: 0.7, social: 0.8, perception: 1.5, willpower: 0.8 },
+      personality_weights: { gentleness: 1.8, decisiveness: 0.8, humor: 0.8, cautiousness: 1.2, extraversion: 0.4, rationality: 0.8 },
+      skill_weights: { strength: 0.3, agility: 0.5, intelligence: 1.2, willpower: 0.7, stealth: 0.5, speech: 0.8, medical: 0.5, cooking: 0.8, art: 1.5, driving: 0.3, romance: 1.3, observation: 1.5 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.5, humor: 0.7, cautiousness: 1.0, extraversion: 0.5, rationality: 0.8 },
+      skill_weights: { speech: 1.3, art: 1.5, romance: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.7, humor: 0.5, cautiousness: 1.5, extraversion: 0.3, rationality: 0.7 },
+      skill_weights: { romance: 1.8, observation: 1.5, art: 1.3, medical: 0.8 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 0.7, humor: 0.8, cautiousness: 1.0, extraversion: 0.4, rationality: 0.8 },
+      skill_weights: { observation: 1.8, art: 1.5, intelligence: 1.2 }
+    }
+  },
+
+  /* ───────── 15. 齐藤澪（双胞胎姐姐、活泼） ───────── */
+  15: {
+    name: '齐藤澪',
+    character_traits: '双胞胎姐姐、活泼好动、喜欢有趣的人',
+    difficulty_coefficient: +7,
+    default: {
+      stat_weights: { charm: 1.3, academic: 0.8, physical: 1.3, social: 1.5, perception: 1.0, willpower: 1.0 },
+      personality_weights: { gentleness: 1.0, decisiveness: 1.3, humor: 1.8, cautiousness: 0.5, extraversion: 1.8, rationality: 0.5 },
+      skill_weights: { strength: 0.7, agility: 1.3, intelligence: 0.8, willpower: 0.8, stealth: 0.5, speech: 1.5, medical: 0.5, cooking: 0.8, art: 1.2, driving: 0.5, romance: 1.2, observation: 1.0 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.5, humor: 1.5, cautiousness: 0.5, extraversion: 1.8, rationality: 0.5 },
+      skill_weights: { speech: 1.8, romance: 1.5, art: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.0, humor: 1.3, cautiousness: 0.8, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { romance: 1.5, observation: 1.2, speech: 1.2 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.0, humor: 1.8, cautiousness: 0.5, extraversion: 1.5, rationality: 0.5 },
+      skill_weights: { observation: 1.3, art: 1.5, romance: 1.0 }
+    }
+  },
+
+  /* ───────── 16. 齐藤澪奈（双胞胎妹妹、文静） ───────── */
+  16: {
+    name: '齐藤澪奈',
+    character_traits: '双胞胎妹妹、文静内敛、喜欢细腻温柔的人',
+    difficulty_coefficient: +7,
+    default: {
+      stat_weights: { charm: 1.3, academic: 1.3, physical: 0.8, social: 0.8, perception: 1.5, willpower: 1.0 },
+      personality_weights: { gentleness: 1.8, decisiveness: 0.7, humor: 0.8, cautiousness: 1.3, extraversion: 0.4, rationality: 1.0 },
+      skill_weights: { strength: 0.3, agility: 0.5, intelligence: 1.3, willpower: 0.8, stealth: 0.5, speech: 0.8, medical: 0.5, cooking: 1.0, art: 1.5, driving: 0.3, romance: 1.3, observation: 1.5 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.5, humor: 0.7, cautiousness: 1.0, extraversion: 0.5, rationality: 1.0 },
+      skill_weights: { speech: 1.3, art: 1.5, romance: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 2.0, decisiveness: 0.7, humor: 0.5, cautiousness: 1.5, extraversion: 0.3, rationality: 0.8 },
+      skill_weights: { romance: 1.8, observation: 1.5, art: 1.3, medical: 0.8 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 0.7, humor: 0.8, cautiousness: 1.2, extraversion: 0.4, rationality: 0.8 },
+      skill_weights: { observation: 1.8, art: 1.5, intelligence: 1.2 }
+    }
+  },
+
+  /* ───────── 17. 铃木美穗（田中美沙闺蜜、纠结） ───────── */
+  17: {
+    name: '铃木美穗',
+    character_traits: '田中美沙闺蜜、内心纠结、看重真诚与陪伴',
+    difficulty_coefficient: +6,
+    default: {
+      stat_weights: { charm: 1.2, academic: 1.2, physical: 1.0, social: 1.3, perception: 1.3, willpower: 1.0 },
+      personality_weights: { gentleness: 1.3, decisiveness: 0.5, humor: 1.0, cautiousness: 1.5, extraversion: 1.0, rationality: 1.0 },
+      skill_weights: { strength: 0.5, agility: 0.8, intelligence: 1.2, willpower: 0.8, stealth: 0.5, speech: 1.2, medical: 0.5, cooking: 1.0, art: 1.3, driving: 0.5, romance: 1.2, observation: 1.5 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 0.8, cautiousness: 1.3, extraversion: 1.0, rationality: 1.0 },
+      skill_weights: { speech: 1.5, romance: 1.5, observation: 1.3 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.8, decisiveness: 0.8, humor: 0.7, cautiousness: 1.5, extraversion: 0.7, rationality: 0.8 },
+      skill_weights: { romance: 1.8, observation: 1.5, medical: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.5, decisiveness: 0.7, humor: 1.0, cautiousness: 1.3, extraversion: 1.0, rationality: 0.8 },
+      skill_weights: { observation: 1.8, art: 1.3, intelligence: 1.2 }
+    }
+  },
+
+  /* ───────── 18. 仁科（神秘、独立） ───────── */
+  18: {
+    name: '仁科',
+    character_traits: '神秘、独立、看重洞察力与智慧',
+    difficulty_coefficient: +10,
+    default: {
+      stat_weights: { charm: 1.2, academic: 1.5, physical: 1.0, social: 0.8, perception: 1.3, willpower: 0.8 },
+      personality_weights: { gentleness: 0.8, decisiveness: 1.5, humor: 0.5, cautiousness: 1.5, extraversion: 0.3, rationality: 1.8 },
+      skill_weights: { strength: 0.7, agility: 0.8, intelligence: 1.8, willpower: 1.5, stealth: 1.3, speech: 1.0, medical: 0.5, cooking: 0.3, art: 0.7, driving: 0.5, romance: 1.0, observation: 1.8 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.8, humor: 0.5, cautiousness: 1.3, extraversion: 0.3, rationality: 1.8 },
+      skill_weights: { speech: 1.3, intelligence: 1.8, observation: 1.5 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.2, humor: 0.5, cautiousness: 1.5, extraversion: 0.3, rationality: 1.5 },
+      skill_weights: { romance: 1.5, observation: 1.5, intelligence: 1.3 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.3, humor: 0.5, cautiousness: 1.3, extraversion: 0.3, rationality: 1.5 },
+      skill_weights: { observation: 1.8, intelligence: 1.5, art: 1.0 }
+    }
+  },
+
+  /* ───────── 19. 正树夏子（男装丽人、独特） ───────── */
+  19: {
+    name: '正树夏子',
+    character_traits: '男装丽人、独特气质、看重气度与决断',
+    difficulty_coefficient: +12,
+    default: {
+      stat_weights: { charm: 1.3, academic: 1.0, physical: 1.2, social: 1.2, perception: 0.5, willpower: 1.5 },
+      personality_weights: { gentleness: 0.5, decisiveness: 1.8, humor: 1.2, cautiousness: 0.7, extraversion: 1.5, rationality: 1.2 },
+      skill_weights: { strength: 1.3, agility: 1.5, intelligence: 1.2, willpower: 1.3, stealth: 0.8, speech: 1.5, medical: 0.3, cooking: 0.3, art: 0.7, driving: 1.0, romance: 0.8, observation: 1.3 }
+    },
+    confess: {
+      personality_weights: { gentleness: 0.5, decisiveness: 2.0, humor: 1.2, cautiousness: 0.7, extraversion: 1.5, rationality: 1.2 },
+      skill_weights: { speech: 1.8, intelligence: 1.5, romance: 1.0 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.3, decisiveness: 1.5, humor: 1.0, cautiousness: 1.0, extraversion: 1.2, rationality: 1.0 },
+      skill_weights: { romance: 1.5, strength: 1.3, agility: 1.3, observation: 1.2 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 0.8, decisiveness: 1.5, humor: 1.3, cautiousness: 0.7, extraversion: 1.5, rationality: 1.0 },
+      skill_weights: { observation: 1.5, speech: 1.3, intelligence: 1.0 }
+    }
+  },
+
+  /* ───────── 20. 杉本樱子（隐藏女角、神秘） ───────── */
+  20: {
+    name: '杉本樱子',
+    character_traits: '隐藏女角、神秘莫测、看重洞察与智慧（最高难度）',
+    difficulty_coefficient: +15,
+    default: {
+      stat_weights: { charm: 1.3, academic: 1.5, physical: 0.8, social: 0.7, perception: 1.5, willpower: 0.8 },
+      personality_weights: { gentleness: 1.0, decisiveness: 1.5, humor: 0.5, cautiousness: 1.8, extraversion: 0.3, rationality: 1.8 },
+      skill_weights: { strength: 0.5, agility: 0.7, intelligence: 1.8, willpower: 1.5, stealth: 1.5, speech: 1.0, medical: 0.5, cooking: 0.3, art: 0.7, driving: 0.5, romance: 1.2, observation: 1.8 }
+    },
+    confess: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.8, humor: 0.5, cautiousness: 1.5, extraversion: 0.3, rationality: 1.8 },
+      skill_weights: { speech: 1.3, intelligence: 1.8, observation: 1.5 }
+    },
+    first_h: {
+      personality_weights: { gentleness: 1.5, decisiveness: 1.3, humor: 0.5, cautiousness: 1.8, extraversion: 0.3, rationality: 1.5 },
+      skill_weights: { romance: 1.5, observation: 1.8, intelligence: 1.3, medical: 1.0 }
+    },
+    give_gift: {
+      personality_weights: { gentleness: 1.0, decisiveness: 1.3, humor: 0.5, cautiousness: 1.5, extraversion: 0.3, rationality: 1.5 },
+      skill_weights: { observation: 1.8, intelligence: 1.5, art: 1.2 }
+    }
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   三、辅助函数（供 属性技能骰子联动.txt 与其他控制器调用）
+   ════════════════════════════════════════════════════════════ */
+
+/* getHeroinePreferenceRaw(heroine_id, action_type)
+   读取女角原始偏好（不应用难度修正）。
+   与 属性技能骰子联动.txt 的 getHeroinePreference() 兼容，作为兜底入口。
+   返回 { stat_weights, personality_weights, skill_weights }。 */
+function getHeroinePreferenceRaw(heroine_id, action_type) {
+  var _id = Number(heroine_id) || 0;
+  var _action = action_type || 'default';
+  if (typeof HEROINE_PREFERENCES === 'undefined') {
+    return {
+      stat_weights: { charm: 1, academic: 1, physical: 1, social: 1, perception: 1, willpower: 1 },
+      personality_weights: { gentleness: 1, decisiveness: 1, humor: 1, cautiousness: 1, extraversion: 1, rationality: 1 },
+      skill_weights: { strength: 1, agility: 1, intelligence: 1, willpower: 1, stealth: 1, speech: 1, medical: 1, cooking: 1, art: 1, driving: 1, romance: 1, observation: 1 }
+    };
+  }
+  var _prefs = HEROINE_PREFERENCES[_id];
+  if (!_prefs) {
+    return {
+      stat_weights: { charm: 1, academic: 1, physical: 1, social: 1, perception: 1, willpower: 1 },
+      personality_weights: { gentleness: 1, decisiveness: 1, humor: 1, cautiousness: 1, extraversion: 1, rationality: 1 },
+      skill_weights: { strength: 1, agility: 1, intelligence: 1, willpower: 1, stealth: 1, speech: 1, medical: 1, cooking: 1, art: 1, driving: 1, romance: 1, observation: 1 }
+    };
+  }
+  /* 优先按动作类型读取，回退到 default */
+  var _entry = _prefs[_action] || _prefs.default || _prefs;
+  /* 合并 default 与动作覆盖（动作覆盖仅替换已定义字段，其余继承 default） */
+  var _defaultEntry = _prefs.default || {};
+  return {
+    stat_weights: Object.assign({}, _defaultEntry.stat_weights || {}, _entry.stat_weights || {}),
+    personality_weights: Object.assign({}, _defaultEntry.personality_weights || {}, _entry.personality_weights || {}),
+    skill_weights: Object.assign({}, _defaultEntry.skill_weights || {}, _entry.skill_weights || {})
+  };
+}
+
+/* getHeroinePreferenceByDifficulty(heroine_id, action_type, difficulty)
+   读取女角偏好并应用难度修正（weight_mult 缩放所有权重）。
+   难度越高 → 权重越小 → 高权重优势削弱 → 能力值计算更难达标。
+   同时返回 difficulty_bonus（女角个人难度的难度档位加成，需叠加到 HEROINE_DIFFICULTY）。
+   返回 { stat_weights, personality_weights, skill_weights, difficulty_bonus }。 */
+function getHeroinePreferenceByDifficulty(heroine_id, action_type, difficulty) {
+  var _raw = getHeroinePreferenceRaw(heroine_id, action_type);
+  var _diff = difficulty;
+  var _mod = (DIFFICULTY_WEIGHT_MODIFIERS[_diff] || DIFFICULTY_WEIGHT_MODIFIERS['普通']);
+  var _mult = Number(_mod.weight_mult) || 1.0;
+  var _bonus = Number(_mod.difficulty_bonus) || 0;
+
+  /* 对所有权重应用 weight_mult（保留 2 位小数） */
+  var _scaleWeight = function(weights) {
+    var _result = {};
+    for (var _k in weights) {
+      _result[_k] = Math.round((Number(weights[_k]) || 0) * _mult * 100) / 100;
+    }
+    return _result;
+  };
+
+  return {
+    stat_weights: _scaleWeight(_raw.stat_weights),
+    personality_weights: _scaleWeight(_raw.personality_weights),
+    skill_weights: _scaleWeight(_raw.skill_weights),
+    difficulty_bonus: _bonus,
+    weight_mult: _mult,
+    difficulty: _diff
+  };
+}
+
+/* getHeroineEffectiveDifficulty(heroine_id, difficulty)
+   计算女角有效难度系数 = 基础个人难度 + 难度档位加成。
+   返回数值（加到要求值上）。
+   注：与 属性技能骰子联动.txt HEROINE_DIFFICULTY 叠加使用，
+       最终要求值修正 = HEROINE_DIFFICULTY[id] + difficulty_bonus + DIFFICULTY_MODIFIERS.req_mod */
+function getHeroineEffectiveDifficulty(heroine_id, difficulty) {
+  var _id = Number(heroine_id) || 0;
+  var _prefs = (typeof HEROINE_PREFERENCES !== 'undefined') ? HEROINE_PREFERENCES[_id] : null;
+  var _baseDiff = _prefs ? (Number(_prefs.difficulty_coefficient) || 0) : 0;
+  var _mod = (DIFFICULTY_WEIGHT_MODIFIERS[difficulty] || DIFFICULTY_WEIGHT_MODIFIERS['普通']);
+  var _bonus = Number(_mod.difficulty_bonus) || 0;
+  return _baseDiff + _bonus;
+}
+
+/* verifyWeightBalance()
+   校验所有女角权重总和是否符合平衡约束（开发期调试用）。
+   返回 { passed, violations, summary }。 */
+function verifyWeightBalance() {
+  var _violations = [];
+  var _summary = [];
+  for (var _id in HEROINE_PREFERENCES) {
+    var _h = HEROINE_PREFERENCES[_id];
+    var _statSum = 0, _persSum = 0, _sklSum = 0;
+    for (var _k in _h.default.stat_weights) _statSum += Number(_h.default.stat_weights[_k]) || 0;
+    for (var _k in _h.default.personality_weights) _persSum += Number(_h.default.personality_weights[_k]) || 0;
+    for (var _k in _h.default.skill_weights) _sklSum += Number(_h.default.skill_weights[_k]) || 0;
+    var _maxWeight = 0;
+    var _checkMax = function(w) { for (var _k in w) { var _v = Number(w[_k]) || 0; if (_v > _maxWeight) _maxWeight = _v; } };
+    _checkMax(_h.default.stat_weights);
+    _checkMax(_h.default.personality_weights);
+    _checkMax(_h.default.skill_weights);
+    var _entry = { id: Number(_id), name: _h.name, stat_sum: Math.round(_statSum * 100) / 100, pers_sum: Math.round(_persSum * 100) / 100, skl_sum: Math.round(_sklSum * 100) / 100, max_weight: _maxWeight };
+    _summary.push(_entry);
+    if (_statSum < 5.0 || _statSum > 7.0) _violations.push({ id: Number(_id), name: _h.name, field: 'stat_weights', sum: _statSum, range: '5.0-7.0' });
+    if (_persSum < 5.0 || _persSum > 7.0) _violations.push({ id: Number(_id), name: _h.name, field: 'personality_weights', sum: _persSum, range: '5.0-7.0' });
+    if (_sklSum < 8.0 || _sklSum > 12.0) _violations.push({ id: Number(_id), name: _h.name, field: 'skill_weights', sum: _sklSum, range: '8.0-12.0' });
+    if (_maxWeight > 2.0) _violations.push({ id: Number(_id), name: _h.name, field: 'max_weight', value: _maxWeight, limit: 2.0 });
+  }
+  return { passed: _violations.length === 0, violations: _violations, summary: _summary };
+}
+%>
+
+[女角偏好系数表已加载。本表定义 20 位女角对主角三层属性（基础属性/性格特质/技能系统）的偏好权重，作为 calcPlayerPower() 加权平均的权重来源。包含 4 档难度修正（轻松/普通/挑战/地狱），难度越高偏好权重越小、女角个人难度越高，成功率越低。所有权重遵循严谨约束：单项 ≤2.0，stat_weights 总和 5-7，personality_weights 总和 5-7，skill_weights 总和 8-12。每位女角定义 default + confess + first_h + give_gift 4 类偏好。AI 必须严格遵守上述权重数值，不可私自修改。]
+
+<%= JSON.stringify({
+  table_name: '女角偏好系数表',
+  heroine_count: Object.keys(HEROINE_PREFERENCES).length,
+  heroines: Object.keys(HEROINE_PREFERENCES).map(function(id) {
+    var _h = HEROINE_PREFERENCES[id];
+    return {
+      id: Number(id),
+      name: _h.name,
+      traits: _h.character_traits,
+      difficulty: _h.difficulty_coefficient,
+      action_types: Object.keys(_h).filter(function(k) { return ['default','confess','first_h','give_gift'].indexOf(k) >= 0; })
+    };
+  }),
+  difficulty_modifiers: Object.keys(DIFFICULTY_WEIGHT_MODIFIERS).map(function(d) {
+    var _m = DIFFICULTY_WEIGHT_MODIFIERS[d];
+    return { difficulty: d, weight_mult: _m.weight_mult, difficulty_bonus: _m.difficulty_bonus, desc: _m.description };
+  }),
+  weight_constraints: {
+    stat_weights_sum_range: '5.0-7.0',
+    personality_weights_sum_range: '5.0-7.0',
+    skill_weights_sum_range: '8.0-12.0',
+    max_single_weight: 2.0,
+    note: '权重总和平衡约束，防止能力值虚高或虚低'
+  },
+  balance_check: verifyWeightBalance(),
+  consumed_by: '属性技能骰子联动.txt → getHeroinePreference() / calcPlayerPower()',
+  helper_functions: ['getHeroinePreferenceRaw', 'getHeroinePreferenceByDifficulty', 'getHeroineEffectiveDifficulty', 'verifyWeightBalance'],
+  note: '女角偏好系数表：20 位女角 × 4 类偏好 × 三层属性权重。难度关联（轻松/普通/挑战/地狱）通过 weight_mult 与 difficulty_bonus 双重修正，确保地狱难度下成功率大幅降低。'
+}, null, 2) %>

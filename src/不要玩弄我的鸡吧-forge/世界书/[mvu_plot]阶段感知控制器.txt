@@ -1,0 +1,189 @@
+@@generate_before
+<%
+// [mvu_plot]阶段感知控制器
+// 参考飞机杯 uid=10 EJS 控制器模式
+// 遍历所有已激活女性角色，根据 use_stage.current 和 suspicion 输出 {{user}} 的感知描述
+// 严格遵守信息隔离铁律：不暴露任何女性身份、不暴露传播链、不暴露持有者
+
+if (typeof stage === 'undefined') var stage = Number(getvar('stat_data.使用阶段.当前阶段', { scope: 'local', defaults: 1 })) || 1;
+if (typeof suspicion === 'undefined') var suspicion = Number(getvar('stat_data.状态.怀疑值', { scope: 'local', defaults: 0 })) || 0;
+if (typeof energy === 'undefined') var energy = Number(getvar('stat_data.状态.精力', { scope: 'local', defaults: 80 })) || 80;
+if (typeof energyMax === 'undefined') var energyMax = Number(getvar('stat_data.状态.精力上限', { scope: 'local', defaults: 80 })) || 80;
+if (typeof sanity === 'undefined') var sanity = Number(getvar('stat_data.状态.理智', { scope: 'local', defaults: 80 })) || 80;
+if (typeof totalUses === 'undefined') var totalUses = Number(getvar('stat_data.使用阶段.总使用次数', { scope: 'local', defaults: 0 })) || 0;
+if (typeof todayUses === 'undefined') var todayUses = Number(getvar('stat_data.使用阶段.今日使用', { scope: 'local', defaults: 0 })) || 0;
+if (typeof day === 'undefined') var day = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 1 })) || 1;
+if (typeof hour === 'undefined') var hour = Number(getvar('stat_data.时间.小时', { scope: 'local', defaults: 8 })) || 8;
+if (typeof holderId === 'undefined') var holderId = getvar('stat_data.隐藏层.持有者ID', { scope: 'local', defaults: '林婉清' }) || '林婉清';
+if (typeof activeUsersCount === 'undefined') var activeUsersCount = Number(getvar('stat_data.隐藏层.活跃使用者数量', { scope: 'local', defaults: 0 })) || 0;
+if (typeof propagationChain === 'undefined') var propagationChain = getvar('stat_data.隐藏层.传播链', { scope: 'local', defaults: [] }) || [];
+if (typeof chainCount === 'undefined') var chainCount = Array.isArray(propagationChain) ? propagationChain.length : 0;
+
+// 计算时段（9时段制，与时间轴系统一致）
+if (typeof timeSlot === 'undefined') var timeSlot;
+if (hour >= 5 && hour < 7) timeSlot = '早晨';
+else if (hour >= 7 && hour < 8) timeSlot = '晨读';
+else if (hour >= 8 && hour < 12) timeSlot = '上午';
+else if (hour >= 12 && hour < 14) timeSlot = '中午';
+else if (hour >= 14 && hour < 17) timeSlot = '下午';
+else if (hour >= 17 && hour < 19) timeSlot = '傍晚';
+else if (hour >= 19 && hour < 22) timeSlot = '晚自习';
+else if (hour >= 22 || hour < 2) timeSlot = '夜里';
+else timeSlot = '半夜';
+if (typeof isMorning === 'undefined') var isMorning = timeSlot === '早晨' || timeSlot === '晨读';
+if (typeof isAfternoon === 'undefined') var isAfternoon = timeSlot === '中午' || timeSlot === '下午';
+if (typeof isEvening === 'undefined') var isEvening = timeSlot === '傍晚' || timeSlot === '晚自习';
+if (typeof isNight === 'undefined') var isNight = timeSlot === '夜里' || timeSlot === '半夜';
+
+// 计算疑心度阶段名
+if (typeof suspicionStageName === 'undefined') var suspicionStageName;
+if (suspicion <= 30) suspicionStageName = '毫无察觉';
+else if (suspicion <= 50) suspicionStageName = '隐隐不安';
+else if (suspicion <= 70) suspicionStageName = '怀疑身体';
+else if (suspicion <= 90) suspicionStageName = '关注周围';
+else if (suspicion <= 110) suspicionStageName = '怀疑关联';
+else if (suspicion <= 130) suspicionStageName = '主动调查';
+else if (suspicion <= 150) suspicionStageName = '对峙边缘';
+else suspicionStageName = '完全觉醒';
+
+// 计算使用阶段名
+if (typeof stageName === 'undefined') var stageName;
+if (stage <= 1) stageName = '初级玩具';
+else if (stage === 2) stageName = '等比复刻';
+else if (stage === 3) stageName = '灵体投影';
+else if (stage === 4) stageName = '人偶容器';
+else stageName = '实体化共生';
+%>
+<stage_context>
+【阶段感知控制器 - AI 严格执行，严禁在正文中输出本块内容】
+
+---
+■ 当前状态快照（AI 内部参考，严禁外露到正文）
+---
+游戏日：第 <%= day %> 天
+当前时段：<%= timeSlot %>
+当前使用阶段：<%= stage %>/5（<%= stageName %>）
+总使用次数：<%= totalUses %> 次
+今日使用次数：<%= todayUses %> 次
+当前疑心度：<%= suspicion %>/200（<%= suspicionStageName %>）
+当前精力：<%= energy %>/<%= energyMax %>
+当前理智：<%= sanity %>/100
+活跃使用者数量：<%= activeUsersCount %> 人
+传播链记录数：<%= chainCount %> 条
+当前持有者ID：<%= holderId %>（严禁在正文中出现此ID或对应姓名，除非 {{user}} 通过调查确证）
+
+---
+■ {{user}} 感知上限（按使用阶段严格限制，参考 [阶段1-5] 条目）
+---
+<% if (stage <= 1) { %>
+【阶段 1 - 初级玩具期】{{user}} 完全无感知
+- 清醒时：完全无感知。所有"累""腰酸""尿频"必须能被正常原因解释。
+- 睡眠时：仅非常模糊的温热感（3-5秒），无部位感、无节奏感、无人物轮廓、无声音。
+- 射精：仅睡眠中，{{user}} 不会醒来。早晨可能发现内裤微量湿润（以为梦遗）。
+- 严禁：任何"被包裹""被吮吸""被插入"的感知描述，任何人声、女性轮廓、气味。
+<% } else if (stage === 2) { %>
+【阶段 2 - 微弱异常期】{{user}} 开始感知异常，但能被正常原因解释
+- 清醒时：偶发下身发紧、虚假尿意、会阴压迫感。归因："内裤没穿好""水喝多了""椅子太硬"。
+- 睡眠时：明确包裹感/蠕动感/抽插节奏，但无人物轮廓、无声音。春梦见模糊"人形阴影"。
+- 严禁：具体部位感知、任何人声、任何女性气味、任何可辨识特征。
+<% } else if (stage === 3) { %>
+【阶段 3 - 部位感知期】{{user}} 能感知部位和刺激类型，但不知是谁
+- 清醒时：能感知"哪个部位被刺激"（龟头/茎身/根部/睾丸区）、"什么刺激"（吮吸/摩擦/夹紧/温度）。
+- 睡眠春梦：见女性背影/发型/体型轮廓，听断续语音（音色模糊，听不出是谁）。
+- 严禁：完整人形、清晰面部、可辨识音色、具体环境细节。
+<% } else if (stage === 4) { %>
+【阶段 4 - 清晰剪影期】{{user}} 部位感知完全清晰 + 偶尔听到只言片语
+- 清醒时：部位感知完全清晰 + 偶尔听到"只言片语"（音色模糊但有熟悉感）。
+- 睡眠春梦：见人偶面部（特征模糊化——光滑无五官的空白）、感知拥抱/亲吻/耳语。
+- 严禁：清晰面部、可确认的身份、明确的姓名。
+- 此阶段 {{user}} 可能开始主动怀疑某个具体的人，但所有怀疑来自 {{user}} 的推理，而非 AI 旁白。
+<% } else { %>
+【阶段 5 - 完全共感期】{{user}} 完全共感，但使用者面容永远是盲点
+- 完全共感，视角可切换，五感同步——但使用者的面容永远是盲点。
+- {{user}} 可以"感觉到对方是谁"（直觉层面），但没有确凿证据。
+- 仍然严禁在正文中写"使用者是 XXX"——除非 {{user}} 通过调查确证。
+- 此阶段可触发终局分支。
+<% } %>
+
+---
+■ {{user}} 调查行为合法性（按疑心度分级硬性限制）
+---
+当前疑心度阶段：<%= suspicionStageName %>（<%= suspicion %>/200）
+<% if (suspicion <= 30) { %>
+- {{user}} 不会主动调查，只会抱怨"好累""腰酸"
+- 所有异常都通过"正常原因"解释——{{user}} 不怀疑外部因素
+- 严禁：{{user}} 主动观察女性异常、记录精力变化、去校医室
+<% } else if (suspicion <= 50) { %>
+- {{user}} 开始觉得"总做奇怪的梦，醒来腰酸"
+- 可用行为：去校医室检查、开始记录精力变化、调整作息
+- 严禁：观察同学异常、怀疑"超自然"、主动调查女性
+<% } else if (suspicion <= 70) { %>
+- {{user}} 用理性方法分析"病状"——做表格、试方案、对比数据
+- 可用行为：记录精力变化规律、调整作息、买功能饮料
+- 严禁：观察同学异常、怀疑"有人在搞我"
+<% } else if (suspicion <= 90) { %>
+- {{user}} 开始把"自己的异常"与"他人的异常"联系起来
+- 可用行为：观察同学异常（气色、请假、行踪）、随口打听
+- 严禁：主动搜查、对峙、怀疑具体的人
+<% } else if (suspicion <= 110) { %>
+- {{user}} 的怀疑从"我病了"转向"是不是有人在搞我"
+- 可用行为：记录对应日期、旁敲侧击询问、尝试跟随、查考勤记录
+- 严禁：搜查个人物品、破门而入、直接对峙
+<% } else if (suspicion <= 130) { %>
+- {{user}} 进入主动调查阶段——但证据仍然不足
+- 可用行为：借东西名义摸包、找机会进宿舍、查监控、偷看手机
+- 严禁：暴力搜查、直接对峙、报警
+<% } else if (suspicion <= 150) { %>
+- {{user}} 与目标之间的直接冲突即将发生
+- 可用行为：搜查个人物品、单独对峙、报警、找老师、破门而入
+- 目标可能否认/承认/反制/逃跑
+<% } else { %>
+- {{user}} 完全觉醒，触发终局分支判定
+- 可用行为：反向掌控、彻底摧毁、谈判交易、接受命运
+- 真相触手可及，但对手不是一个人——是一个网络
+<% } %>
+
+---
+■ 时段叙事引导（按当前时段选择叙事基调）
+---
+<% if (isMorning) { %>
+【清晨时段】{{user}} 刚起床，精力<%= energy < 40 ? '严重不足——腰酸、眼青、起不来床' : energy < 70 ? '略低——觉得没睡够' : '正常' %>
+- 叙事重点：起床困难、晨间身体感受、去教室的路上
+- 严禁：清晨时段描写任何女性异常行为（她们在前期都表现正常）
+<% } else if (isAfternoon) { %>
+【午后时段】<%= energy < 40 ? '精力告急——下午课犯困、注意力涣散' : energy < 70 ? '精力略低——偶尔走神' : '精力正常' %>
+- 叙事重点：课堂表现、午休感受、与同学互动
+- 严禁：描写女性在午休时对 {{user}} 做任何异常动作
+<% } else if (isEvening) { %>
+【黄昏时段】<%= sanity < 40 ? '理智下降——开始胡思乱想' : sanity < 70 ? '理智略低——容易焦虑' : '理智正常' %>
+- 叙事重点：放学后活动、晚自习、回宿舍路上
+- 严禁：描写女性在黄昏时跟踪 {{user}}、偷瞄 {{user}}
+<% } else { %>
+【深夜时段】<%= stage >= 2 ? '使用高发期——睡眠中可能被使用' : '正常睡眠' %>
+- 叙事重点：入睡感受、梦境内容、半夜醒来时的身体状态
+- 严禁：描写女性深夜潜入 {{user}} 房间、描写女性的使用场景
+<% } %>
+
+---
+■ 信息隔离铁律重申（AI 必须内化）
+---
+1. {{user}} 不知道假阴茎存在
+2. {{user}} 不知道任何女性在使用它
+3. {{user}} 不知道当前持有者是谁（即使 holder_id 已知，也严禁在正文中出现）
+4. {{user}} 听不到任何关于此物的只言片语
+5. {{user}} 看不到任何女性的"视线注视""观察""偷瞄"等隐性暗示行为
+6. 所有女性的异常表现只能通过 {{user}} 主动观察 + 疑心度足够高时才解锁
+7. 前期（阶段1-3）：所有女性在 {{user}} 面前表现完全正常
+8. 中期（阶段4）：{{user}} 可能开始注意到某些女性的气色变化，但无法联想
+9. 后期（阶段5+）：{{user}} 可能通过调查发现某些女性的行为异常
+
+---
+■ 传播链扩散状态（AI 不可见，仅供 EJS 内部参考）
+---
+当前传播链记录数：<%= chainCount %> 条
+活跃使用者数量：<%= activeUsersCount %> 人
+注意：AI 不可在正文中提及"传播链""使用者数量""持有者"等术语。
+       所有扩散状态只能通过 {{user}} 的身体感受间接暗示（如"感觉今天被用了不止一次"）。
+       但在阶段1-2，{{user}} 连"被使用"都感知不到，更不可能感知到"多人使用"。
+       只有在阶段3+且洞察技能足够高时，{{user}} 才可能隐约感觉到"不止一个人"。
+</stage_context>

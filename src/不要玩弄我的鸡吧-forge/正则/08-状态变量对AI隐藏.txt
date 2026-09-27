@@ -1,0 +1,15 @@
+{
+  "id": "a1b2c3d4-0208-4000-8000-000000000208",
+  "scriptName": "08-状态变量对AI隐藏",
+  "findRegex": "/<status_current_variables>[\\s\\S]*?<\\/status_current_variables>/gi",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [1, 2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

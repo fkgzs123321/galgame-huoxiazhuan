@@ -1,0 +1,186 @@
+@@generate_before
+<%
+// [mvu_plot]多维状态每日演化
+// 每日游戏日开始时执行：应用每日判定、周期事件，重新计算 综合阶段
+// 输出 <multi_stage_update> 块给 AI（仅行为侧写，不输出数值）
+// 参考飞机杯 uid=10 EJS 控制器模式 + [mvu_plot]每日重置.txt 的 isNewDay 判定
+
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var prevDayKey = '多维状态上一日';
+var prevDay = Number(getvar('stat_data.隐藏层.' + prevDayKey, {scope:'local', defaults:0})) || 0;
+// 首次加载时初始化 prevDay，防止误触发
+if (prevDay === 0) { setvar('stat_data.隐藏层.' + prevDayKey, day); }
+var isNewDay = hour === 0 && day !== prevDay && prevDay !== 0;
+
+// 周期判定（day 从 1 开始）
+// day % 7 == 1 → 周一（学业压力 += 10）
+// day % 7 == 0 || day % 7 == 6 → 周末（学业压力 -= 15）
+// day % 30 == 0 → 考试周（学业压力 += 30）
+var dow = day % 7;
+var cycleEvent = '无';
+if (day % 30 === 0) {
+  cycleEvent = '考试周（学业压力 +30）';
+} else if (dow === 1) {
+  cycleEvent = '周一（学业压力 +10）';
+} else if (dow === 0 || dow === 6) {
+  cycleEvent = '周末（学业压力 -15）';
+}
+
+// ============================================================
+// 综合阶段 判定函数（返回组合值字符串，用于显示）
+// ============================================================
+// A_理性期: 理性>=70 且 执念<30
+// B_动摇期: 理性 50-70 或 执念 30-50
+// C_沉沦期: 理性 30-50 或 执念 50-70
+// D_疯狂期: 理性<30 且 执念>70
+// E_清醒反扑期: 逃避意识>60（临时，可叠加在A-D上）
+function _computeStage(ms) {
+  var r = Number(ms.理性) || 0;
+  var o = Number(ms.执念) || 0;
+  var e = Number(ms.逃避意识) || 0;
+  if (e > 60) {
+    // 清醒反扑期可叠加
+    if (r < 30 && o > 70) return 'D_疯狂期+E_清醒反扑期';
+    if (r >= 70 && o < 30) return 'A_理性期+E_清醒反扑期';
+    return 'E_清醒反扑期';
+  }
+  if (r >= 70 && o < 30) return 'A_理性期';
+  if (r < 30 && o > 70) return 'D_疯狂期';
+  if (r < 10 || o >= 90) return 'E_崩坏期';
+  if (r < 50 || o > 50) return 'C_沉沦期';
+  return 'B_动摇期';
+}
+
+// 把组合值映射到 schema enum 允许的值（综合阶段 字段类型为 enum）
+// enum: ['A_理性期','B_动摇期','C_沉沦期','D_疯狂期','E_清醒反扑期']
+function _mapToEnumStage(compositeStr) {
+  if (compositeStr === 'D_疯狂期+E_清醒反扑期') return 'D_疯狂期';
+  if (compositeStr === 'A_理性期+E_清醒反扑期') return 'E_清醒反扑期';
+  return compositeStr; // A_理性期 / B_动摇期 / C_沉沦期 / D_疯狂期 / E_清醒反扑期
+}
+
+// 行为侧写映射（AI 叙事转化，不输出数值）
+function _behaviorProfile(stage) {
+  if (stage === 'D_疯狂期+E_清醒反扑期') return '疯狂使用后崩溃大哭；反复藏起又取出；精神状态极不稳定';
+  if (stage === 'A_理性期+E_清醒反扑期') return '表面正常但内心挣扎；把假阴茎藏起来；独自哭泣；写日记自责';
+  if (stage === 'E_清醒反扑期') return '把假阴茎藏起来；试图还给持有者；独自哭泣；写日记自责';
+  if (stage === 'A_理性期') return '表现得和往常一样，上课、社交、微笑，看不出任何异常';
+  if (stage === 'B_动摇期') return '偶尔走神，眼神会有几秒的空洞，但很快恢复；独处时会不自觉握紧手心';
+  if (stage === 'C_沉沦期') return '开始找理由独处；书包里多了换洗内裤；午休时间消失；眼神涣散频率增加';
+  if (stage === 'D_疯狂期') return '不顾风险在课间使用；眼神痴迷；对任何人的靠近反应过度（恐惧或讨好），对{{user}}只是表层伪装';
+  return '状态不明';
+}
+
+// 读取所有女性
+var femaleUsers = getvar('stat_data.女性角色', {scope:'local', defaults:{}}) || {};
+var uidOrder = femaleUsers.UID顺序 || [];
+var updates = [];
+
+if (isNewDay) {
+  setvar('stat_data.隐藏层.' + prevDayKey, day);
+
+  // 遍历所有女性，应用每日判定和周期事件
+  uidOrder.forEach(function(uid) {
+    var fu = femaleUsers[uid];
+    if (!fu || !fu.多维状态) return;
+
+    var ms = Object.assign({}, fu.多维状态 || {});
+    var changed = false;
+
+    // 1. 周期事件：学业压力 调整
+    if (day % 30 === 0) {
+      ms.学业压力 = Math.min(100, Math.max(0, (ms.学业压力 || 0) + 30));
+      changed = true;
+    } else if (dow === 1) {
+      ms.学业压力 = Math.min(100, Math.max(0, (ms.学业压力 || 0) + 10));
+      changed = true;
+    } else if (dow === 0 || dow === 6) {
+      ms.学业压力 = Math.min(100, Math.max(0, (ms.学业压力 || 0) - 15));
+      changed = true;
+    }
+
+    // 2. 每日判定
+    // if 学业压力 > 80: 逃避意识 += 5（清醒的压力压制了痴迷）
+    if ((ms.学业压力 || 0) > 80) {
+      ms.逃避意识 = Math.min(100, Math.max(0, (ms.逃避意识 || 0) + 5));
+      changed = true;
+    }
+    // if 逃避意识 > 60: 理性 += 3, 执念 -= 2（清醒反扑期持续 3-7 天）
+    if ((ms.逃避意识 || 0) > 60) {
+      ms.理性 = Math.min(100, Math.max(0, (ms.理性 || 80) + 3));
+      ms.执念 = Math.min(100, Math.max(0, (ms.执念 || 0) - 2));
+      changed = true;
+    }
+    // if 理性 < 30 && 执念 > 70: 暴露风险 +10%（由 AI 在叙事中体现，不在此处加变量）
+
+    // 3. 重新计算 综合阶段
+    var compositeStr = _computeStage(ms);
+    var enumStage = _mapToEnumStage(compositeStr);
+    if (ms.综合阶段 !== enumStage) {
+      ms.综合阶段 = enumStage;
+      changed = true;
+    }
+
+    // 4. 写回变量（仅当有变化时）
+    if (changed) {
+      setvar('stat_data.女性角色.' + uid + '.多维状态', ms, {scope:'local'});
+    }
+
+    // 5. 收集更新信息（用于输出块）
+    var name = (fu.基础 && fu.基础.姓名) ? fu.基础.姓名 : uid;
+    updates.push({
+      uid: uid,
+      name: name,
+      stage: compositeStr,
+      profile: _behaviorProfile(compositeStr),
+    });
+  });
+} else {
+  // 非新一天，仍然收集当前状态用于输出（不修改变量）
+  uidOrder.forEach(function(uid) {
+    var fu = femaleUsers[uid];
+    if (!fu || !fu.多维状态) return;
+    var ms = fu.多维状态;
+    var compositeStr = _computeStage(ms);
+    var name = (fu.基础 && fu.基础.姓名) ? fu.基础.姓名 : uid;
+    updates.push({
+      uid: uid,
+      name: name,
+      stage: compositeStr,
+      profile: _behaviorProfile(compositeStr),
+    });
+  });
+}
+%>
+<multi_stage_update>
+[多维状态每日演化 - AI内部参考，严禁输出数值]
+
+<% if (isNewDay) { %>
+=== 跨天触发：进入新的一天（第<%= day %>天），已应用每日判定和周期事件 ===
+今日周期事件：<%= cycleEvent %>
+<% } else { %>
+=== 等待跨天触发（当前 hour=<%= hour %>，跨天需 hour 从 23→0） ===
+今日周期事件（待触发）：<%= cycleEvent %>
+<% } %>
+
+各活跃女性行为侧写（共 <%= updates.length %> 人）：
+<% updates.forEach(function(u) { %>- <%= u.name %>(<%= u.uid %>): <%= u.stage %> → <%= u.profile %>
+<% }); %>
+
+[行为侧写参考]
+A_理性期: 表现正常
+B_动摇期: 偶尔走神
+C_沉沦期: 主动找机会使用
+D_疯狂期: 不顾风险
+E_清醒反扑期: 想戒掉、藏起来
+D+E: 疯狂使用后崩溃
+A+E: 表面正常但内心挣扎
+
+[信息隔离铁律重申]
+- {{user}} 永远看不到这些数值和阶段标签
+- AI 只能通过"行为侧写"感知女性状态，不得直接读取数值到正文
+- 严禁在正文中出现 理性/执念/痴迷度/理性值 等元数值术语
+- 严禁在正文中出现 A_理性期/B_动摇期 等阶段标签，只能用行为侧写表达
+- 女性之间的多维状态互相隔离（A 不知道 B 的痴迷程度）
+</multi_stage_update>

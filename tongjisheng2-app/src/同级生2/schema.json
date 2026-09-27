@@ -1,0 +1,932 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "时间": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前日期": {
+          "default": "12-22",
+          "type": "string"
+        },
+        "星期": {
+          "default": "周五",
+          "type": "string",
+          "enum": [
+            "周一",
+            "周二",
+            "周三",
+            "周四",
+            "周五",
+            "周六",
+            "周日"
+          ]
+        },
+        "时段": {
+          "default": "早",
+          "type": "string",
+          "enum": [
+            "早",
+            "上午",
+            "下午",
+            "晚",
+            "深夜"
+          ]
+        },
+        "当前时间": {
+          "default": "08:00",
+          "type": "string"
+        },
+        "天数": {
+          "default": 1,
+          "type": "number"
+        },
+        "季节": {
+          "default": "冬",
+          "type": "string",
+          "enum": [
+            "冬"
+          ]
+        },
+        "章节": {
+          "default": "寒假前奏",
+          "type": "string",
+          "enum": [
+            "寒假前奏",
+            "寒假核心",
+            "寒假尾声",
+            "结局"
+          ]
+        },
+        "天气": {
+          "default": "晴",
+          "type": "string",
+          "enum": [
+            "晴",
+            "阴",
+            "雨",
+            "雪",
+            "风",
+            "雾"
+          ]
+        }
+      }
+    },
+    "场景": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前地点": {
+          "default": "未选择",
+          "type": "string"
+        },
+        "当前女角名": {
+          "default": "无",
+          "type": "string"
+        },
+        "场景模式": {
+          "default": "休息",
+          "type": "string",
+          "enum": [
+            "约会",
+            "上学",
+            "打工",
+            "事件",
+            "休息"
+          ]
+        }
+      }
+    },
+    "主角": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "玩家身份": {
+          "default": "未选择",
+          "type": "string",
+          "enum": [
+            "未选择",
+            "原作主角",
+            "川尻信良",
+            "长冈芳树",
+            "西御寺有友",
+            "天道新干线",
+            "自定义"
+          ]
+        },
+        "玩家姓名": {
+          "type": "string"
+        },
+        "年龄": {
+          "type": "number"
+        },
+        "住所": {
+          "default": "未选择",
+          "type": "string"
+        },
+        "魅力": {
+          "type": "number"
+        },
+        "学业": {
+          "type": "number"
+        },
+        "体力": {
+          "type": "number"
+        },
+        "社交": {
+          "type": "number"
+        },
+        "敏感": {
+          "type": "number"
+        },
+        "声誉": {
+          "type": "number"
+        },
+        "饥饿": {
+          "default": 30,
+          "type": "number"
+        },
+        "口渴": {
+          "default": 20,
+          "type": "number"
+        },
+        "清洁": {
+          "default": 80,
+          "type": "number"
+        },
+        "疲劳": {
+          "type": "number"
+        },
+        "心情": {
+          "default": 70,
+          "type": "number"
+        },
+        "睡眠质量": {
+          "default": 70,
+          "type": "number"
+        },
+        "现金": {
+          "type": "number"
+        },
+        "储蓄": {
+          "type": "number"
+        },
+        "违法计数": {
+          "type": "number"
+        },
+        "法律警告": {
+          "type": "number"
+        },
+        "今日餐费": {
+          "type": "number"
+        },
+        "今日礼费": {
+          "type": "number"
+        },
+        "今日交通费": {
+          "type": "number"
+        },
+        "今日总消费": {
+          "type": "number"
+        },
+        "储蓄目标": {
+          "default": 50000,
+          "type": "number"
+        }
+      }
+    },
+    "当前女角": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "无",
+          "type": "string"
+        },
+        "好感度": {
+          "type": "number"
+        },
+        "心动值": {
+          "type": "number"
+        },
+        "嫉妒值": {
+          "type": "number"
+        },
+        "信任度": {
+          "type": "number"
+        },
+        "关系阶段": {
+          "default": "初识",
+          "type": "string",
+          "enum": [
+            "决裂",
+            "仇视",
+            "厌恶",
+            "冷漠",
+            "疏离",
+            "初识",
+            "熟悉",
+            "暧昧",
+            "心动",
+            "亲密",
+            "攻略完成",
+            "失恋"
+          ]
+        },
+        "阶段锁定": {
+          "type": "number"
+        },
+        "是否在攻略中": {
+          "type": "number"
+        },
+        "攻略路线锁定": {
+          "type": "number"
+        },
+        "互斥组名": {
+          "type": "string"
+        },
+        "互斥伙伴姓名": {
+          "default": "无",
+          "type": "string"
+        },
+        "H经验次数": {
+          "type": "number"
+        },
+        "初吻": {
+          "type": "number"
+        },
+        "初H": {
+          "type": "number"
+        },
+        "进阶H": {
+          "type": "number"
+        },
+        "魅力": {
+          "type": "number"
+        },
+        "学业": {
+          "type": "number"
+        },
+        "体力": {
+          "type": "number"
+        },
+        "社交": {
+          "type": "number"
+        },
+        "敏感": {
+          "type": "number"
+        },
+        "声誉": {
+          "type": "number"
+        },
+        "力量": {
+          "type": "number"
+        },
+        "敏捷": {
+          "type": "number"
+        },
+        "智力": {
+          "type": "number"
+        },
+        "意志技能": {
+          "type": "number"
+        },
+        "潜行": {
+          "type": "number"
+        },
+        "口才": {
+          "type": "number"
+        },
+        "医学": {
+          "type": "number"
+        },
+        "烹饪": {
+          "type": "number"
+        },
+        "艺术": {
+          "type": "number"
+        },
+        "驾驶": {
+          "type": "number"
+        },
+        "格斗": {
+          "type": "number"
+        },
+        "观察": {
+          "type": "number"
+        },
+        "恋爱技能": {
+          "type": "number"
+        },
+        "罩杯": {
+          "default": "无",
+          "type": "string",
+          "enum": [
+            "无",
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H"
+          ]
+        },
+        "胸围": {
+          "type": "number"
+        },
+        "腰围": {
+          "type": "number"
+        },
+        "臀围": {
+          "type": "number"
+        },
+        "身高": {
+          "type": "number"
+        },
+        "体重": {
+          "type": "number"
+        },
+        "乳头大小": {
+          "type": "string"
+        },
+        "乳头颜色": {
+          "type": "string"
+        },
+        "乳晕大小": {
+          "type": "string"
+        },
+        "胸型": {
+          "type": "string"
+        },
+        "胸部敏感度": {
+          "type": "number"
+        },
+        "泌乳": {
+          "type": "string"
+        },
+        "腰型": {
+          "type": "string"
+        },
+        "腰部敏感度": {
+          "type": "number"
+        },
+        "手部描述": {
+          "type": "string"
+        },
+        "美甲风格": {
+          "type": "string"
+        },
+        "臀型": {
+          "type": "string"
+        },
+        "臀部敏感度": {
+          "type": "number"
+        },
+        "后庭描述": {
+          "default": "N/A",
+          "type": "string",
+          "enum": [
+            "紧致",
+            "松弛",
+            "未开发",
+            "半开发",
+            "已开发",
+            "发达",
+            "N/A"
+          ]
+        },
+        "阴毛": {
+          "type": "string"
+        },
+        "阴唇大小": {
+          "type": "string"
+        },
+        "阴唇颜色": {
+          "type": "string"
+        },
+        "阴道紧度": {
+          "type": "string"
+        },
+        "特殊体质": {
+          "type": "string"
+        },
+        "润滑程度": {
+          "type": "string"
+        },
+        "处女膜状态": {
+          "type": "string"
+        },
+        "生育能力": {
+          "type": "string"
+        },
+        "全身敏感度": {
+          "type": "number"
+        },
+        "敏感带": {
+          "type": "string"
+        },
+        "兴奋触发点": {
+          "type": "string"
+        },
+        "当前衣着": {
+          "default": "N/A",
+          "type": "string"
+        },
+        "暴露程度": {
+          "default": "N/A",
+          "type": "string",
+          "enum": [
+            "保守",
+            "日常",
+            "微露",
+            "暴露",
+            "半裸",
+            "全裸",
+            "N/A"
+          ]
+        },
+        "湿润度": {
+          "type": "number"
+        },
+        "兴奋度": {
+          "type": "number"
+        },
+        "精液残留": {
+          "default": "N/A",
+          "type": "string"
+        },
+        "最后更新": {
+          "default": "12-22 08:00",
+          "type": "string"
+        }
+      }
+    },
+    "技能": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "力量": {
+          "default": 30,
+          "type": "number"
+        },
+        "敏捷": {
+          "default": 40,
+          "type": "number"
+        },
+        "智力": {
+          "default": 50,
+          "type": "number"
+        },
+        "意志": {
+          "default": 40,
+          "type": "number"
+        },
+        "潜行": {
+          "default": 20,
+          "type": "number"
+        },
+        "口才": {
+          "default": 40,
+          "type": "number"
+        },
+        "医学": {
+          "default": 10,
+          "type": "number"
+        },
+        "烹饪": {
+          "default": 20,
+          "type": "number"
+        },
+        "艺术": {
+          "default": 20,
+          "type": "number"
+        },
+        "驾驶": {
+          "type": "number"
+        },
+        "格斗": {
+          "default": 25,
+          "type": "number"
+        },
+        "恋爱": {
+          "default": 25,
+          "type": "number"
+        },
+        "观察": {
+          "default": 40,
+          "type": "number"
+        }
+      }
+    },
+    "临时": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "上次事件ID": {
+          "type": "string"
+        },
+        "上次选择结果": {
+          "type": "string"
+        },
+        "本时段楼层数": {
+          "type": "number"
+        },
+        "当前难度": {
+          "default": "普通",
+          "type": "string",
+          "enum": [
+            "轻松",
+            "普通",
+            "挑战",
+            "地狱"
+          ]
+        },
+        "预期下时段序号": {
+          "default": 1,
+          "type": "number"
+        },
+        "连续无收入天数": {
+          "type": "number"
+        },
+        "超自然妄想计数": {
+          "type": "number"
+        },
+        "死结局标识": {
+          "type": "string"
+        }
+      }
+    },
+    "经济": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当日收入": {
+          "type": "number"
+        },
+        "当日支出": {
+          "type": "number"
+        },
+        "累计储蓄": {
+          "type": "number"
+        }
+      }
+    },
+    "性格": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "温柔": {
+          "default": 50,
+          "type": "number"
+        },
+        "果断": {
+          "default": 50,
+          "type": "number"
+        },
+        "幽默": {
+          "default": 50,
+          "type": "number"
+        },
+        "谨慎": {
+          "default": 50,
+          "type": "number"
+        },
+        "外向": {
+          "default": 50,
+          "type": "number"
+        },
+        "理性": {
+          "default": 50,
+          "type": "number"
+        }
+      }
+    },
+    "隐藏": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "日记1": {
+          "type": "boolean"
+        },
+        "日记2": {
+          "type": "boolean"
+        },
+        "日记3": {
+          "type": "boolean"
+        },
+        "日记4": {
+          "type": "boolean"
+        },
+        "日记5": {
+          "type": "boolean"
+        },
+        "日记全收集": {
+          "type": "boolean"
+        },
+        "樱子死讯": {
+          "type": "boolean"
+        },
+        "樱子线解锁": {
+          "type": "boolean"
+        },
+        "医院访问次数": {
+          "type": "number"
+        },
+        "芳树偷拍美纪": {
+          "type": "number"
+        },
+        "美纪双身份揭示": {
+          "type": "number"
+        },
+        "美纪秘密保守": {
+          "type": "number"
+        },
+        "美纪秘密揭穿": {
+          "type": "number"
+        },
+        "美纪威胁事件": {
+          "type": "number"
+        },
+        "美纪完整揭示": {
+          "type": "number"
+        },
+        "变数屋访问次数": {
+          "type": "number"
+        },
+        "变数屋全解锁": {
+          "type": "boolean"
+        },
+        "阴谋偷听": {
+          "type": "boolean"
+        },
+        "西寺解决进度": {
+          "type": "number"
+        },
+        "西寺债务陷阱": {
+          "type": "number"
+        },
+        "齐藤互斥触发": {
+          "type": "number"
+        },
+        "田中铃木互斥触发": {
+          "type": "number"
+        },
+        "仁科正树互斥触发": {
+          "type": "number"
+        },
+        "永岛久美子分支": {
+          "type": "number"
+        },
+        "永岛佐知子分支": {
+          "type": "number"
+        },
+        "泉美H完成": {
+          "type": "number"
+        },
+        "友美误会解决": {
+          "type": "number"
+        },
+        "洋子短发完成": {
+          "type": "number"
+        },
+        "毕业生外传完成": {
+          "type": "number"
+        }
+      }
+    },
+    "女角": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "姓名": {
+            "type": "string"
+          },
+          "好感度": {
+            "type": "number"
+          },
+          "心动值": {
+            "type": "number"
+          },
+          "嫉妒值": {
+            "type": "number"
+          },
+          "信任度": {
+            "type": "number"
+          },
+          "关系阶段": {
+            "default": "初识",
+            "type": "string"
+          },
+          "阶段锁定": {
+            "type": "number"
+          },
+          "是否在攻略中": {
+            "type": "number"
+          },
+          "攻略路线锁定": {
+            "type": "number"
+          },
+          "互斥组名": {
+            "type": "string"
+          },
+          "互斥伙伴姓名": {
+            "default": "无",
+            "type": "string"
+          },
+          "H经验次数": {
+            "type": "number"
+          },
+          "初吻": {
+            "type": "number"
+          },
+          "初H": {
+            "type": "number"
+          },
+          "进阶H": {
+            "type": "number"
+          },
+          "魅力": {
+            "type": "number"
+          },
+          "学业": {
+            "type": "number"
+          },
+          "体力": {
+            "type": "number"
+          },
+          "社交": {
+            "type": "number"
+          },
+          "敏感": {
+            "type": "number"
+          },
+          "声誉": {
+            "type": "number"
+          },
+          "力量": {
+            "type": "number"
+          },
+          "敏捷": {
+            "type": "number"
+          },
+          "智力": {
+            "type": "number"
+          },
+          "意志技能": {
+            "type": "number"
+          },
+          "潜行": {
+            "type": "number"
+          },
+          "口才": {
+            "type": "number"
+          },
+          "医学": {
+            "type": "number"
+          },
+          "烹饪": {
+            "type": "number"
+          },
+          "艺术": {
+            "type": "number"
+          },
+          "驾驶": {
+            "type": "number"
+          },
+          "格斗": {
+            "type": "number"
+          },
+          "观察": {
+            "type": "number"
+          },
+          "恋爱技能": {
+            "type": "number"
+          },
+          "罩杯": {
+            "default": "无",
+            "type": "string"
+          },
+          "胸围": {
+            "type": "number"
+          },
+          "腰围": {
+            "type": "number"
+          },
+          "臀围": {
+            "type": "number"
+          },
+          "身高": {
+            "type": "number"
+          },
+          "体重": {
+            "type": "number"
+          },
+          "乳头大小": {
+            "type": "string"
+          },
+          "乳头颜色": {
+            "type": "string"
+          },
+          "乳晕大小": {
+            "type": "string"
+          },
+          "胸型": {
+            "type": "string"
+          },
+          "胸部敏感度": {
+            "type": "number"
+          },
+          "泌乳": {
+            "type": "string"
+          },
+          "腰型": {
+            "type": "string"
+          },
+          "腰部敏感度": {
+            "type": "number"
+          },
+          "手部描述": {
+            "type": "string"
+          },
+          "美甲风格": {
+            "type": "string"
+          },
+          "臀型": {
+            "type": "string"
+          },
+          "臀部敏感度": {
+            "type": "number"
+          },
+          "后庭描述": {
+            "default": "N/A",
+            "type": "string"
+          },
+          "阴毛": {
+            "type": "string"
+          },
+          "阴唇大小": {
+            "type": "string"
+          },
+          "阴唇颜色": {
+            "type": "string"
+          },
+          "阴道紧度": {
+            "type": "string"
+          },
+          "特殊体质": {
+            "type": "string"
+          },
+          "润滑程度": {
+            "type": "string"
+          },
+          "处女膜状态": {
+            "type": "string"
+          },
+          "生育能力": {
+            "type": "string"
+          },
+          "全身敏感度": {
+            "type": "number"
+          },
+          "敏感带": {
+            "type": "string"
+          },
+          "兴奋触发点": {
+            "type": "string"
+          },
+          "当前衣着": {
+            "default": "N/A",
+            "type": "string"
+          },
+          "暴露程度": {
+            "default": "N/A",
+            "type": "string"
+          },
+          "湿润度": {
+            "type": "number"
+          },
+          "兴奋度": {
+            "type": "number"
+          },
+          "精液残留": {
+            "default": "N/A",
+            "type": "string"
+          },
+          "最后更新": {
+            "default": "12-22 08:00",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

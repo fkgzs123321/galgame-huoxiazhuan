@@ -1,0 +1,15 @@
+{
+  "id": "fjb-yds-hidden-statusbar",
+  "scriptName": "隐藏AI状态栏",
+  "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": -100,
+  "maxDepth": 100
+}

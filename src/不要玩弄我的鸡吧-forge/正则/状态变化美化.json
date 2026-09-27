@@ -1,0 +1,15 @@
+{
+  "id": "fjb-stat-change-beautify",
+  "scriptName": "状态变化梅花美化",
+  "findRegex": "/<StatChange\\s+type=\"([^\"]+)\"\\s+delta=\"([+-]?\\d+)\"\\s+reason=\"([^\"]+)\"\\s*(?:icon=\"([^\"]+)\"\\s*)?\\/>/g",
+  "replaceString": "<div class=\"fjb-statchange\" data-delta=\"$2\"><span class=\"fjb-statchange-icon\">$4</span><span class=\"fjb-statchange-type\">$1</span><span class=\"fjb-statchange-delta\">$2</span><span class=\"fjb-statchange-reason\">$3</span></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

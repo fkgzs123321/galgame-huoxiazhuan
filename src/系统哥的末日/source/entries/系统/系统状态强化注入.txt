@@ -1,0 +1,56 @@
+@@generate_before
+<%
+var rating = Number(getvar('stat_data.反派状态.评价值', { scope: 'local', defaults: 100 }));
+if (isNaN(rating)) { rating = 100; }
+var status = getvar('stat_data.反派状态.系统状态', { scope: 'local', defaults: '活跃' }) || '活跃';
+var nego = getvar('stat_data.交涉状态.交涉进行中', { scope: 'local', defaults: false });
+var uAttr = Number(getvar('stat_data.角色属性.user.气势', { scope: 'local', defaults: 30 })) || 30;
+var lAttr = Number(getvar('stat_data.角色属性.林天.气势', { scope: 'local', defaults: 100 })) || 100;
+var saveLeft = Number(getvar('stat_data.反派状态.系统救场剩余', { scope: 'local', defaults: 1 })) || 0;
+var stopLeft = Number(getvar('stat_data.反派状态.时停剩余', { scope: 'local', defaults: 1 })) || 0;
+var predictLeft = Number(getvar('stat_data.反派状态.预判剩余', { scope: 'local', defaults: 3 })) || 0;
+var controlLeft = Number(getvar('stat_data.反派状态.绝对掌控剩余', { scope: 'local', defaults: 3 })) || 0;
+var berserkCount = Number(getvar('stat_data.反派状态.系统暴走次数', { scope: 'local', defaults: 0 })) || 0;
+var wallLeft = Number(getvar('stat_data.反派状态.四墙剩余', { scope: 'local', defaults: 3 })) || 0;
+var credits = Number(getvar('stat_data.反派状态.系统积分', { scope: 'local', defaults: 500 })) || 0;
+var items = getvar('stat_data.反派状态.道具库存', { scope: 'local', defaults: '' }) || '';
+var washable = getvar('stat_data.反派状态.强制洗白可用', { scope: 'local', defaults: true });
+%>
+<system_guard>
+[系统守卫·本轮强制生效的机制]
+<% if (rating === 0) { %>
+- 档位7 系统暴走（第<%= berserkCount + 1 %>次）：全4维属性临时+50%，短剧套路成功率+30%，系统干预权限升级；user 本轮所有行动成功率大幅下降。暴走结束评价值回升至25。整局上限2次，第3次归零才真解绑。
+<% } else if (rating === 100) { %>
+- 档位1 满分巅峰：金色特权生效（本周可强制推进1次绑定进度）；穿越第四面墙可用（剩余<%= wallLeft %>次）；系统商店全开。
+<% } else if (rating < 20) { %>
+- 档位6 暴走边缘：评价值<%= rating %>，系统救场每章强制生效（本章剩余<%= saveLeft %>次）；强制洗白可用（整局1次）；user 若取得关键胜利必须以"巧合"化解。
+<% } else if (rating < 40) { %>
+- 档位5 崩坏期：评价值<%= rating %>，系统暴走预备——林天不计代价反扑，技能全开（含时停一瞬<%= stopLeft > 0 ? '，本轮可用' : '，已用尽' %>），无心理负担。
+<% } else if (rating < 60) { %>
+- 档位4 危险期：评价值<%= rating %>，系统功能受限（绑定冷却延长/名额暂停/商店限购），但预判与救场正常。
+<% } else if (rating < 80) { %>
+- 档位3 警告期：评价值<%= rating %>，系统警告剧情偏离；商店正常，本回合维持收敛算计姿态。
+<% } else if (rating < 100) { %>
+- 档位2 稳定期：评价值<%= rating %>，系统正常运作<%= rating >= 90 && wallLeft > 0 ? '，穿越第四面墙可用（剩余' + wallLeft + '次）' : '' %>；本回合维持玩世不恭姿态。
+<% } %>
+<% if (nego) { %>
+<% var attrGap = lAttr - uAttr; %>
+<% if (attrGap >= 40) { %>
+- ⚠️ 压制状态生效：属性差 <%= attrGap %>（≥40），user 本轮骰子额外-3，"揭露/反击"类策略效果减半。
+<% } %>
+- 系统预判待机（本章剩余<%= predictLeft %>次）：本轮有40%概率预判 user 策略并使其效果减半，判定时机由 AI 决定但不可连续两轮不触发。
+<% } %>
+<% if (rating >= 10 && stopLeft > 0) { %>
+- 【时停一瞬】可用（本章剩余<%= stopLeft %>次）：可跳过 user 本轮1个行动回合。
+<% } %>
+<% if (controlLeft > 0 && rating >= 10) { %>
+- 【绝对掌控】可用（本章剩余<%= controlLeft %>次）：绑定女性出现清醒瞬间时强制压制。
+<% } %>
+<% if (items) { %>
+- 系统道具库存：<%= items %>（可随时使用，使用后从库存扣除并同步变量）。
+<% } %>
+- 系统积分：<%= credits %>（可购买商店道具；每轮自动恢复=财富值÷800）。
+<% if (washable && rating < 20) { %>
+- 【强制洗白】可用（整局1次）：评价值<20时可触发，评价值强制回升至60。
+<% } %>
+</system_guard>

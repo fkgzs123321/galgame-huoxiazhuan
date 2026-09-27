@@ -1,0 +1,1 @@
+function e(e,t){let n=URL.createObjectURL(e),r=document.createElement(`a`);r.href=n,r.download=t,r.click(),URL.revokeObjectURL(n)}function t(t,n){e(new Blob([t],{type:`application/json;charset=utf-8`}),n)}export{t as n,e as t};

@@ -1,0 +1,38 @@
+﻿---
+aside: false
+borderless: true
+title: 後山推人
+description: 簡易事件表詳細說明
+outline: [2, 3]
+tags:
+    - detailed
+    - event
+---
+
+# {{ $frontmatter.title }}
+
+<Table class="timeline-table">
+    <tr class="timeline-header">
+        <th>觸發條件</th>
+        <th>事件內容</th>
+        <th>備註</th>
+    </tr>
+	<tr>
+		<td>
+		<MarkdownWrapper>[養成指令](/system/training/)</MarkdownWrapper>後山挑柴的隨機結果「登崖眺望」 <br>
+		限第一年五月下旬前，僅一次 <br>
+		</td>
+		<td>
+			放下柴擔在棧道半途歇息<br>
+			👉「還是早點回去」：事件結束<br>
+			👉「慢慢走，欣賞風景」：站在崖邊時，不速之客以輕功悄然逼近<br>
+			<span title="輕功正向補正">🎲天運：不速之客向你逼近</span><br>
+			【≧70】迴避：順手救了對方。對方是無名的唐門女弟子，一邊罵「不要臉」一邊對趙活種下情根<br>
+			【<70】被推：跌落谷底 → <MarkdownWrapper>[生死簿2:《摔死》](/event/badends/#生死簿-No.2)</MarkdownWrapper><br>
+		</td>
+		<td>
+			推人的女弟子動機是旁人說她和趙活「兩個醜人正好一對」<br>
+			迴避後種下的情根有無後續效果未確認<br>
+		</td>
+	</tr>
+</table>

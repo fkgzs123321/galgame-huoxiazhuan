@@ -1,0 +1,130 @@
+@@generate_before
+# 世界书条目：变量隔离显示规则
+# 激活策略：蓝灯
+
+<%
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var energy = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) || 80;
+var energy_max = Number(getvar('stat_data.状态.精力上限', {scope:'local', defaults:80})) || 80;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var health = Number(getvar('stat_data.状态.健康', {scope:'local', defaults:75})) || 75;
+var stress = Number(getvar('stat_data.状态.压力', {scope:'local', defaults:10})) || 10;
+var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+var meditation = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+var willpower = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+var recovery = Number(getvar('stat_data.技能.恢复.等级', {scope:'local', defaults:1})) || 1;
+var exercise = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var insight = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var disguise = Number(getvar('stat_data.技能.伪装.等级', {scope:'local', defaults:1})) || 1;
+var total_uses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+var today_uses = Number(getvar('stat_data.使用阶段.今日使用', {scope:'local', defaults:0})) || 0;
+var score = Number(getvar('stat_data.学业.分数', {scope:'local', defaults:75})) || 75;
+var exam = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) || 103;
+var fatigue = getvar('stat_data.症状.疲劳描述', {scope:'local', defaults:'正常'}) || '正常';
+var sensitivity = getvar('stat_data.症状.敏感描述', {scope:'local', defaults:'正常'}) || '正常';
+var appearance = getvar('stat_data.症状.外在表现', {scope:'local', defaults:'正常'}) || '正常';
+var sanity_desc = getvar('stat_data.症状.理智描述', {scope:'local', defaults:'正常'}) || '正常';
+%>
+
+<variable_isolation_display_rules>
+【状态栏/变量显示绝对隔离规则 - 前端渲染与 AI 读取双重生效】
+
+=== 用户可见变量（所有疑心度阶段均可见，使用 forge 路径）===
+/状态/精力    /状态/精力上限    /状态/健康    /状态/压力
+/状态/金钱     /状态/难度
+/技能/冥想.等级    /技能/锻炼.等级
+/技能/洞察.等级       /技能/伪装.等级
+/技能/恢复.等级      /技能/意志.等级
+/学业/分数    /学业/阶段    /学业/考试倒计时
+/使用阶段/当前阶段    /使用阶段/总使用次数    /使用阶段/阶段进度
+/症状/疲劳描述    /症状/敏感描述
+/症状/外在表现    /症状/理智描述
+/时间/天数    /时间/小时    /时间/星期    /时间/日期
+
+=== 严格隐藏变量（_ 前缀，任何疑心度<151均不可见）===
+/状态/怀疑值        （疑心度——用状态标签间接显示）
+/状态/堕落值       （沉沦度——永不直接显示）
+/隐藏层/持有者ID        （当前持有者）
+/隐藏层/传播链 （传播链记录）
+/隐藏层/确认使用者   （已确认的使用者名单）
+/隐藏层/觉醒进度（觉醒进度——终局前置判定用）
+/隐藏层/真相            （真相记录——结局后解锁）
+
+---
+疑心度分阶段显示规则（当前估测：<%= suspicion %>）
+---
+
+<% if (suspicion <= 30) { %>
+阶段 0-30（毫无察觉）：
+- 精力显示："良好" / "正常"
+- 状态标签："精力充沛" / "略有疲惫"
+- 无任何异常提示
+- 身体感受显示：<%= fatigue %>
+- 外在表现：<%= appearance %>
+<% } else if (suspicion <= 50) { %>
+阶段 31-50（隐隐不安）：
+- 精力显示："略显疲惫" / "建议早睡"
+- 状态标签：<%= fatigue %>
+- 解锁行为：去校医室检查
+- 异常提示：无直接提示，但精力标签变黄
+- 身体感受：<%= fatigue %> · <%= sensitivity %>
+<% } else if (suspicion <= 70) { %>
+阶段 51-70（怀疑身体）：
+- 疑心度标签："发现精力周期性下降"
+- 显示："精力下降呈现周期性（<%= total_uses > 30 ? '周二四六更严重' : '无明显规律' %>）"
+- 解锁行为：记录精力变化、调整作息
+- 身体感受：<%= fatigue %> · <%= sensitivity %>
+- 外在表现：<%= appearance %>
+<% } else if (suspicion <= 90) { %>
+阶段 71-90（关注周围）：
+- 疑心度标签："注意到周围异常"
+- 显示异常女性线索（不点名）：
+  * "某女性最近气色异常红润"
+  * "某女性频繁请假/早退"
+  * "某女性行踪神秘，午休不见人影"
+  * "某女性包鼓鼓囊囊，不知装何物"
+- 解锁行为：观察同学异常、随口打听
+- 今日被使用次数：<%= today_uses %>次
+<% } else if (suspicion <= 110) { %>
+阶段 91-110（怀疑关联）：
+- 疑心度标签："怀疑有人在害我"（橙色）
+- 显示时间关联："高度重合的异常日期"
+- 显示："本周异常消耗：<%= today_uses %>次"
+- 解锁行为：记录对应日期、旁敲侧击询问、尝试跟随
+- 身体感受：<%= fatigue %> · <%= sensitivity %>
+<% } else if (suspicion <= 130) { %>
+阶段 111-130（主动调查）：
+- 疑心度标签："确信被盯上了"（危险色·红）
+- 显示疑似使用者名单："疑似使用者：X人"
+- 显示："今日异常消耗：<%= today_uses %>次 / 本周累计：X次"
+- 解锁行为：借东西摸包、进宿舍、查监控
+- 心理状态：<%= sanity_desc %>
+<% } else if (suspicion <= 150) { %>
+阶段 131-150（对峙边缘）：
+- 疑心度标签："真相在眼前"（危险色·深红）
+- 显示完整使用者档案（含获取方式、使用频率、偏好模式）——若已确认
+- 显示："今日异常消耗：<%= today_uses %>次 / 本周累计：X次"
+- 解锁行为：搜查个人物品、单独对峙、报警/找老师
+- 心理状态：<%= sanity_desc %>
+<% } else { %>
+阶段 151-200（完全觉醒）：
+- 完全解锁显示所有隐藏变量
+- /隐藏层/传播链 /隐藏层/确认使用者 /隐藏层/持有者ID 全部可见
+- 显示女性使用者关系网、分享链、黑市流向
+- 触发终局分支选择
+- 当前终局进度：觉醒判定中……
+<% } %>
+
+=== 春梦/感知描写规则（AI 生成正文时遵守）===
+疑心度 < 50：完全不确定是不是梦，只写"一阵莫名酥麻""醒来腰酸"
+疑心度 50-90：隐约觉得"有人在用我"，但不敢往超自然想
+疑心度 90-110：春梦可见模糊背影/体型，听断续碎语（无声线特征）
+疑心度 110-130：春梦具象化，能捕捉熟悉感片段，清醒感知部位/刺激类型
+疑心度 130-150：清醒听到只言片语，春梦见人偶面部模糊
+疑心度 150+：完全共感，视角可切换，五感同步
+
+=== 射精描写规则 ===
+清醒射精：只写生理反应（腰酸/腿软/内裤湿润/精力骤降），禁写"射精"二字
+睡眠射精：写"强烈快感惊醒，下身一片湿热"
+女性控制模式差异：仅通过事后精力消耗幅度、是否湿润、是否有胀痛感体现
+</variable_isolation_display_rules>

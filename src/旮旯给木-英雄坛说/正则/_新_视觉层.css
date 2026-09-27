@@ -1,0 +1,173 @@
+/* ══════════════════════════════════════════════════════════════
+   E2 视觉层 v2 —— 把「能用」修成「精致」
+   ★ 参考：主神空间 / 姬侠传 / 忍者手记 三个项目的视觉做法
+     ① 多层阴影与渐变描边（卡片不是一块平板）
+     ② 标题带左侧色条 + 小字注
+     ③ 表格斑马纹 + 悬停提亮
+     ④ 按钮悬停/按下/禁用三态
+     ⑤ 页签切换与弹层出现有过渡
+     ⑥ 细节：分隔纹、印章角、卷轴边
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 卡片：渐变描边 + 双层阴影 + 顶部高光 ── */
+.yx-c {
+  position: relative;
+  background: linear-gradient(168deg, rgba(255,255,255,.018), rgba(255,255,255,0) 42%), var(--b2, #161c2b);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 6px 18px -12px rgba(0,0,0,.6);
+  transition: box-shadow .22s, transform .22s;
+}
+.yx-c::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+  background: linear-gradient(155deg, rgba(229,180,74,.16), rgba(229,180,74,0) 38%, rgba(255,255,255,.04) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+.yx-c:hover { box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 10px 26px -14px rgba(0,0,0,.7); }
+
+/* ── 标题：左侧色条 + 小字注 ── */
+.yx-ttl { position: relative; padding-left: 11px; }
+.yx-ttl::before {
+  content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--gold, #e5b44a), rgba(229,180,74,.15));
+}
+.yx-ttl em { font-style: normal; font-size: 11px; color: var(--t4, #49536b); margin-left: 6px; font-weight: 400; }
+
+/* ── 小标题（段落分组）：加下划线纹理 ── */
+.yx-k2 {
+  position: relative; margin: 13px 0 7px; font-size: 11px; letter-spacing: .6px;
+  color: var(--t3, #6d7893); text-transform: none;
+}
+.yx-k2::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px;
+  background: linear-gradient(90deg, var(--ln2, #323c52), rgba(50,60,82,0) 70%);
+}
+
+/* ── 表格：斑马纹 + 悬停 + 表头细线 ── */
+.yx-tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
+.yx-tbl thead th {
+  text-align: left; font-weight: 500; font-size: 10.5px; letter-spacing: .5px;
+  color: var(--t4, #49536b); padding: 6px 9px; border-bottom: 1px solid var(--ln2, #323c52);
+  background: rgba(255,255,255,.012);
+}
+.yx-tbl tbody td { padding: 7px 9px; border-bottom: 1px solid rgba(36,44,61,.55); color: var(--t2, #aab5cc); }
+.yx-tbl tbody tr:nth-child(even) td { background: rgba(255,255,255,.014); }
+.yx-tbl tbody tr { transition: background .15s; }
+.yx-tbl tbody tr:hover td { background: rgba(229,180,74,.045); color: var(--t1, #e2e8f5); }
+
+/* ── 按钮：三态 + 微光 ── */
+.yx-btn {
+  position: relative; overflow: hidden; transition: border-color .18s, color .18s, background .18s, transform .1s;
+}
+.yx-btn:hover:not(:disabled) { border-color: rgba(229,180,74,.42); color: var(--gold, #e5b44a); background: rgba(229,180,74,.05); }
+.yx-btn:active:not(:disabled) { transform: translateY(1px) scale(.985); }
+.yx-btn:disabled { opacity: .34; cursor: not-allowed; filter: grayscale(.5); }
+.yx-btn.pri { background: linear-gradient(180deg, rgba(229,180,74,.20), rgba(229,180,74,.10)); border-color: rgba(229,180,74,.5); color: #f2d79a; }
+.yx-btn.pri:hover:not(:disabled) { background: linear-gradient(180deg, rgba(229,180,74,.30), rgba(229,180,74,.16)); box-shadow: 0 0 12px -4px rgba(229,180,74,.5); }
+.yx-btn.dn:hover:not(:disabled) { border-color: rgba(229,118,154,.45); color: var(--rose, #e5769a); background: rgba(229,118,154,.05); }
+
+/* ── 药丸/筹码 ── */
+.yx-ch {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; border: 1px solid var(--ln2, #323c52); color: var(--t3, #6d7893);
+  background: rgba(255,255,255,.012); transition: .16s;
+}
+.yx-ch.clk { cursor: pointer; }
+.yx-ch.clk:hover { border-color: rgba(229,180,74,.4); color: var(--gold, #e5b44a); }
+.yx-ch.on { border-color: rgba(229,180,74,.55); color: var(--gold, #e5b44a); background: rgba(229,180,74,.08); }
+.yx-ch.rd { border-color: rgba(224,90,74,.5); color: #e05a4a; background: rgba(224,90,74,.07); }
+.yx-ch.gr { border-color: rgba(95,201,141,.5); color: #5fc98d; background: rgba(95,201,141,.07); }
+
+/* ── 页签：滑动指示 ── */
+.yx-tab { position: relative; transition: color .18s, background .18s; }
+.yx-tab::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: 3px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(229,180,74,0), var(--gold, #e5b44a), rgba(229,180,74,0));
+  opacity: 0; transform: scaleX(.4); transition: opacity .2s, transform .24s;
+}
+.yx-tab:hover { color: var(--t1, #e2e8f5); }
+.yx-tab:hover::after, .yx-tab.on::after { opacity: 1; transform: scaleX(1); }
+.yx-tab.on { color: var(--gold, #e5b44a); font-weight: 600; }
+
+/* ── 折叠项：箭头 + 左侧色条 ── */
+.yx-fl { transition: background .16s, border-color .16s; }
+.yx-fl:hover { background: rgba(255,255,255,.025); }
+.yx-fl .i2 { transition: transform .2s; }
+.yx-fl.on .i2 { transform: rotate(90deg); }
+
+/* ── 技能格：品级描边 + 悬停浮起 ── */
+.yx-sk { transition: transform .18s, box-shadow .18s, border-color .18s; }
+.yx-sk:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -12px rgba(0,0,0,.8); }
+.yx-sk.sel { box-shadow: 0 0 0 1px rgba(229,180,74,.35), 0 8px 20px -12px rgba(0,0,0,.8); }
+
+/* ── 物品格：同上 ── */
+.yx-cell { transition: transform .16s, box-shadow .16s, border-color .16s; }
+.yx-cell:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -12px rgba(0,0,0,.8); }
+
+/* ── 列表项（榜单 / 随身） ── */
+.yx-it {
+  display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 7px;
+  border: 1px solid transparent; transition: .15s;
+}
+.yx-it:hover { background: rgba(255,255,255,.022); border-color: var(--ln, #242c3d); }
+
+/* ── 条（血/气/进度） ── */
+.yx-bar { position: relative; overflow: hidden; }
+.yx-bar > i { display: block; height: 100%; border-radius: inherit; transition: width .5s cubic-bezier(.22,.9,.24,1); }
+.yx-bar > i.hp { background: linear-gradient(90deg, #2f7a52, #5fc98d); box-shadow: 0 0 8px -2px rgba(95,201,141,.7); }
+.yx-bar > i.ar { background: linear-gradient(90deg, #7a5c1e, #e5b44a); }
+.yx-bar > i.tk { background: linear-gradient(90deg, #1f4f7a, #5ca3d8); }
+.yx-bar > i::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 60%);
+}
+
+/* ── 弹层：出现动画 ── */
+.yx-layer { animation: yxIn .18s cubic-bezier(.22,.9,.24,1); }
+@keyframes yxIn { from { opacity: 0; transform: translateY(6px) scale(.985); } to { opacity: 1; transform: none; } }
+
+/* ── 卡片出现：轻淡入 ── */
+.yx-r { animation: yxFade .24s ease; }
+@keyframes yxFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ── 分隔纹（卷轴感的横线） ── */
+.yx-hr {
+  height: 1px; margin: 12px 0;
+  background: linear-gradient(90deg, rgba(229,180,74,0), rgba(229,180,74,.22) 15%, rgba(36,44,61,.8) 50%, rgba(229,180,74,.22) 85%, rgba(229,180,74,0));
+}
+
+/* ── 印章角（小组件：右上角的方章） ── */
+.yx-seal {
+  position: absolute; top: 10px; right: 12px; width: 26px; height: 26px; border-radius: 4px;
+  border: 1.5px solid rgba(201,23,30,.55); color: rgba(201,23,30,.85);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+  transform: rotate(-6deg); opacity: .75; pointer-events: none;
+}
+
+/* ── 音效般的微光：关键数值 ── */
+.yx-glow { text-shadow: 0 0 12px currentColor; }
+
+/* ── 详细行（左标签右值） ── */
+.rowx { display: flex; align-items: baseline; gap: 10px; padding: 3px 0; border-bottom: 1px dashed rgba(36,44,61,.5); }
+.rowx:last-child { border-bottom: none; }
+.rowx .k2 { flex: 0 0 78px; color: var(--t4, #49536b); font-size: 11.5px; margin: 0; }
+.rowx .k2::after { display: none; }
+.rowx .v2 { flex: 1; color: var(--t2, #aab5cc); font-size: 12px; word-break: break-all; }
+
+/* ── 说明文字 ── */
+.yx-nt { font-size: 11.5px; color: var(--t4, #49536b); line-height: 1.75; }
+.yx-nt.w { color: var(--rose, #e5769a); }
+.yx-nt .gr, .gr { color: var(--grn, #5fc98d); }
+.yx-nt .w, .w { color: var(--rose, #e5769a); }
+
+/* ── 战报条目 ── */
+.yx-log { font-size: 11.5px; color: var(--t3, #6d7893); padding: 3px 0; border-left: 2px solid var(--ln2, #323c52); padding-left: 8px; margin-bottom: 3px; }
+
+/* ── 空态 ── */
+.yx-e { padding: 18px 12px; text-align: center; font-size: 12px; color: var(--t4, #49536b); border: 1px dashed var(--ln2, #323c52); border-radius: 8px; }
+
+/* ── 主题：素白（浅色底）下保证可读 ── */
+.yx[data-theme="plain"] .yx-c { background: linear-gradient(168deg, rgba(0,0,0,.012), rgba(0,0,0,0) 42%), #f7f7f5; }
+.yx[data-theme="plain"] .yx-tbl tbody tr:nth-child(even) td { background: rgba(0,0,0,.018); }
+.yx[data-theme="plain"] .yx-e { border-color: rgba(0,0,0,.14); }

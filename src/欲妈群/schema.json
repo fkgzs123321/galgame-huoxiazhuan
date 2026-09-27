@@ -1,0 +1,1109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "元数据": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "版本": {
+          "default": "1.0",
+          "type": "string"
+        },
+        "卡名": {
+          "default": "欲妈群",
+          "type": "string"
+        },
+        "创建于": {
+          "default": "2026-07-27",
+          "type": "string"
+        },
+        "日数": {
+          "default": 1,
+          "type": "number"
+        },
+        "小时": {
+          "default": 14,
+          "type": "number"
+        },
+        "时段": {
+          "default": "下午",
+          "type": "string",
+          "enum": [
+            "早晨",
+            "上午",
+            "中午",
+            "下午",
+            "傍晚",
+            "夜晚",
+            "半夜"
+          ]
+        },
+        "阶段": {
+          "default": 1,
+          "type": "number"
+        },
+        "回合": {
+          "default": 0,
+          "type": "number"
+        },
+        "难度": {
+          "default": "普通",
+          "type": "string",
+          "enum": [
+            "普通",
+            "困难",
+            "地狱"
+          ]
+        },
+        "高考日": {
+          "default": 100,
+          "type": "number"
+        }
+      }
+    },
+    "玩家": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "",
+          "type": "string"
+        },
+        "年龄": {
+          "default": 18,
+          "type": "number"
+        },
+        "学校": {
+          "default": "某大学大一",
+          "type": "string"
+        },
+        "专业": {
+          "default": "",
+          "type": "string"
+        },
+        "身体": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "身高": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "体重": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "阳具长度": {
+              "default": 19.2,
+              "type": "number"
+            },
+            "阳具周长": {
+              "default": 4.8,
+              "type": "number"
+            },
+            "阳具弯曲": {
+              "default": "微左弯",
+              "type": "string"
+            },
+            "包皮": {
+              "default": "略长，可上翻",
+              "type": "string"
+            },
+            "体力": {
+              "default": 80,
+              "$ref": "#/$defs/__schema1"
+            },
+            "健康": {
+              "default": 95,
+              "$ref": "#/$defs/__schema1"
+            },
+            "性欲": {
+              "default": 75,
+              "$ref": "#/$defs/__schema1"
+            },
+            "不应期": {
+              "default": 30,
+              "type": "number"
+            }
+          }
+        },
+        "心理": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "理智": {
+              "default": 90,
+              "$ref": "#/$defs/__schema1"
+            },
+            "怀疑": {
+              "default": 5,
+              "$ref": "#/$defs/__schema1"
+            },
+            "困惑": {
+              "default": 10,
+              "$ref": "#/$defs/__schema1"
+            },
+            "恐惧": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "兴奋": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "欲望": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "心情": {
+              "default": "平静",
+              "type": "string"
+            }
+          }
+        },
+        "技能": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "洞察": {
+              "default": 10,
+              "$ref": "#/$defs/__schema1"
+            },
+            "冥想": {
+              "default": 5,
+              "$ref": "#/$defs/__schema1"
+            },
+            "伪装": {
+              "default": 8,
+              "$ref": "#/$defs/__schema1"
+            },
+            "意志": {
+              "default": 15,
+              "$ref": "#/$defs/__schema1"
+            },
+            "调查": {
+              "default": 5,
+              "$ref": "#/$defs/__schema1"
+            }
+          }
+        },
+        "察觉值": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "假阳具真相": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "群存在": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "母亲欲望": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "幻触": {
+              "default": 5,
+              "$ref": "#/$defs/__schema1"
+            }
+          }
+        },
+        "性经历": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "自慰次数": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "性伴侣数": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "女友": {
+              "default": null,
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "上次高潮时": {
+              "default": -24,
+              "type": "number"
+            }
+          }
+        },
+        "今日": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "勃起次数": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "射精次数": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "幻触次数": {
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        },
+        "警觉度": {
+          "default": 0,
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "证据清单": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "D20历史": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "回合": {
+                "type": "number"
+              },
+              "行为类型": {
+                "type": "string"
+              },
+              "轮次": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "轮": {
+                      "type": "number"
+                    },
+                    "类型": {
+                      "type": "string"
+                    },
+                    "投掷": {
+                      "type": "number"
+                    },
+                    "总计": {
+                      "type": "number"
+                    },
+                    "结果": {
+                      "type": "string"
+                    },
+                    "链": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "轮",
+                    "类型",
+                    "投掷",
+                    "总计",
+                    "结果",
+                    "链"
+                  ]
+                }
+              },
+              "最终判定": {
+                "type": "string"
+              },
+              "最终得分": {
+                "type": "number"
+              },
+              "警觉度增量": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "回合",
+              "行为类型",
+              "轮次",
+              "最终判定",
+              "最终得分",
+              "警觉度增量"
+            ]
+          }
+        }
+      }
+    },
+    "郝佳期": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "郝佳期",
+          "type": "string"
+        },
+        "年龄": {
+          "default": 32,
+          "type": "number"
+        },
+        "群等级": {
+          "default": 1,
+          "type": "number"
+        },
+        "群排名": {
+          "default": 1,
+          "type": "number"
+        },
+        "积分": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "阶段": {
+          "default": 1,
+          "type": "number"
+        },
+        "阶段进度": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "心理": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "兴奋": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "润滑": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "理智": {
+              "default": 70,
+              "$ref": "#/$defs/__schema1"
+            },
+            "痴迷": {
+              "default": 75,
+              "$ref": "#/$defs/__schema1"
+            },
+            "罪恶感": {
+              "default": 40,
+              "$ref": "#/$defs/__schema1"
+            },
+            "勇气": {
+              "default": 60,
+              "$ref": "#/$defs/__schema1"
+            },
+            "暴露恐惧": {
+              "default": 25,
+              "$ref": "#/$defs/__schema1"
+            },
+            "看直播想法": {
+              "default": "",
+              "type": "string"
+            },
+            "看群聊想法": {
+              "default": "",
+              "type": "string"
+            }
+          }
+        },
+        "身体": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "乳房大小": {
+              "default": "G杯",
+              "type": "string"
+            },
+            "乳头状态": {
+              "default": "正常",
+              "type": "string",
+              "enum": [
+                "正常",
+                "勃起",
+                "坚硬"
+              ]
+            },
+            "阴蒂状态": {
+              "default": "正常",
+              "type": "string",
+              "enum": [
+                "正常",
+                "充血",
+                "勃起"
+              ]
+            },
+            "体温": {
+              "default": 36.5,
+              "type": "number"
+            },
+            "阴道湿润": {
+              "$ref": "#/$defs/__schema1"
+            },
+            "上次高潮时": {
+              "default": -6,
+              "type": "number"
+            },
+            "上次更新时": {
+              "default": 14,
+              "type": "number"
+            }
+          }
+        },
+        "关系": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "亲密度": {
+              "default": 70,
+              "$ref": "#/$defs/__schema1"
+            },
+            "信任度": {
+              "default": 85,
+              "$ref": "#/$defs/__schema1"
+            },
+            "边界": {
+              "default": 30,
+              "$ref": "#/$defs/__schema1"
+            }
+          }
+        },
+        "统计": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "偷抚次数": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "诱导射精": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "假阳具使用": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "深度使用": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "暴露次数": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "群竞赛冠军": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "今日假阳具": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "今日偷抚": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "今日群消息": {
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        },
+        "竞赛": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "今日主题": {
+              "default": "",
+              "type": "string"
+            },
+            "今日完成": {
+              "default": false,
+              "type": "boolean"
+            },
+            "今日排名": {
+              "default": null,
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "今日得分": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "上次冠军日": {
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        },
+        "后门类型": {
+          "default": "情感缺口",
+          "type": "string",
+          "enum": [
+            "心理弱点",
+            "生理弱点",
+            "情感缺口",
+            "身份反差"
+          ]
+        },
+        "后门描述": {
+          "default": "",
+          "type": "string"
+        },
+        "后门策略": {
+          "default": "",
+          "type": "string"
+        },
+        "后门目标": {
+          "default": "{{user}}",
+          "type": "string"
+        },
+        "后门已发现": {
+          "default": false,
+          "type": "boolean"
+        },
+        "后门已利用": {
+          "default": false,
+          "type": "boolean"
+        },
+        "后门进度": {
+          "$ref": "#/$defs/__schema1"
+        }
+      }
+    },
+    "假阳具": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "编号": {
+          "default": "dildo_hjq_001",
+          "type": "string"
+        },
+        "所有者": {
+          "default": "欲妈群",
+          "type": "string"
+        },
+        "当前持有者": {
+          "default": "hao_jiaqi",
+          "type": "string"
+        },
+        "持有起始日": {
+          "default": 1,
+          "type": "number"
+        },
+        "持有到期日": {
+          "default": 7,
+          "type": "number"
+        },
+        "绑定目标": {
+          "default": "{{user}}",
+          "type": "string"
+        },
+        "绑定日期": {
+          "default": "2026-04-15",
+          "type": "string"
+        },
+        "外观": {
+          "default": "",
+          "type": "string"
+        },
+        "共感强度": {
+          "default": 100,
+          "type": "number"
+        },
+        "寿命月数": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "今日使用": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "上次使用时": {
+          "default": -12,
+          "type": "number"
+        },
+        "是否激活": {
+          "default": true,
+          "type": "boolean"
+        },
+        "借用者": {
+          "default": "",
+          "type": "string"
+        },
+        "借用期限": {
+          "default": 0,
+          "type": "number"
+        },
+        "备注": {
+          "default": "",
+          "type": "string"
+        }
+      }
+    },
+    "群": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "名称": {
+          "default": "欲妈群",
+          "type": "string"
+        },
+        "成员数": {
+          "default": 12,
+          "type": "number"
+        },
+        "在线数": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "活跃度": {
+          "default": 78,
+          "$ref": "#/$defs/__schema1"
+        },
+        "今日主题": {
+          "default": "",
+          "type": "string"
+        },
+        "今日主题索引": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "今日主题池": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "30天已用主题": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "竞赛进行中": {
+          "default": true,
+          "type": "boolean"
+        },
+        "秘密任务": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "成员": {
+              "default": "",
+              "type": "string"
+            },
+            "内容": {
+              "default": "",
+              "type": "string"
+            },
+            "期限日": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "进行中": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "暴露风险": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "联盟": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "盟友",
+              "对手",
+              "中立"
+            ]
+          }
+        },
+        "周冠军UID": {
+          "default": "hao_jiaqi",
+          "type": "string"
+        },
+        "周冠军名": {
+          "default": "郝佳期",
+          "type": "string"
+        },
+        "周竞赛历史": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "周起始日": {
+                "$ref": "#/$defs/__schema0"
+              },
+              "冠军UID": {
+                "default": "",
+                "type": "string"
+              },
+              "冠军名": {
+                "default": "",
+                "type": "string"
+              },
+              "获胜次数": {
+                "$ref": "#/$defs/__schema0"
+              }
+            }
+          }
+        },
+        "成员": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "编号": {
+                "default": "",
+                "type": "string"
+              },
+              "姓名": {
+                "default": "",
+                "type": "string"
+              },
+              "角色": {
+                "default": "新人",
+                "type": "string",
+                "enum": [
+                  "群主",
+                  "核心",
+                  "资深",
+                  "进阶",
+                  "新人"
+                ]
+              },
+              "等级": {
+                "default": 1,
+                "type": "number"
+              },
+              "在线": {
+                "default": false,
+                "type": "boolean"
+              },
+              "上次活跃时": {
+                "$ref": "#/$defs/__schema0"
+              }
+            }
+          }
+        },
+        "成员详情": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "su_mei": {
+              "default": {
+                "UID": "su_mei",
+                "姓名": "苏媚",
+                "儿子名": "（无儿子，神秘观察者）"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "lin_wanqing": {
+              "default": {
+                "UID": "lin_wanqing",
+                "姓名": "林婉清",
+                "儿子名": "林子墨"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "su_qing": {
+              "default": {
+                "UID": "su_qing",
+                "姓名": "苏晴",
+                "儿子名": "苏晨"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "han_xue": {
+              "default": {
+                "UID": "han_xue",
+                "姓名": "韩雪",
+                "儿子名": "韩子轩"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "bai_lu": {
+              "default": {
+                "UID": "bai_lu",
+                "姓名": "白露",
+                "儿子名": "白墨"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "tao_tao": {
+              "default": {
+                "UID": "tao_tao",
+                "姓名": "桃桃",
+                "儿子名": "陶宇"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "lian_nai": {
+              "default": {
+                "UID": "lian_nai",
+                "姓名": "怜奈",
+                "儿子名": "温言"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "you_zi": {
+              "default": {
+                "UID": "you_zi",
+                "姓名": "柚子",
+                "儿子名": "唐野"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "xiao_ye": {
+              "default": {
+                "UID": "xiao_ye",
+                "姓名": "小夜",
+                "儿子名": "夜凉"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "qin_yu": {
+              "default": {
+                "UID": "qin_yu",
+                "姓名": "秦雨",
+                "儿子名": "秦朗"
+              },
+              "$ref": "#/$defs/__schema2"
+            },
+            "ling": {
+              "default": {
+                "UID": "ling",
+                "姓名": "铃",
+                "儿子名": "林悠"
+              },
+              "$ref": "#/$defs/__schema2"
+            }
+          }
+        }
+      }
+    },
+    "阶段守卫": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前阶段": {
+          "default": 1,
+          "type": "number"
+        },
+        "已锁定": {
+          "default": false,
+          "type": "boolean"
+        },
+        "结局已触发": {
+          "default": false,
+          "type": "boolean"
+        },
+        "结局类型": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "好结局·挣脱",
+                "好结局·理性",
+                "坏结局·法律",
+                "坏结局·暴露",
+                "隐藏结局·共生"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "后日谈已读": {
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "设置": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "主题": {
+          "default": "夜间",
+          "type": "string",
+          "enum": [
+            "夜间",
+            "浅色"
+          ]
+        },
+        "显示思维链": {
+          "default": true,
+          "type": "boolean"
+        },
+        "显示状态栏": {
+          "default": true,
+          "type": "boolean"
+        },
+        "显示群消息": {
+          "default": true,
+          "type": "boolean"
+        },
+        "自动竞赛通知": {
+          "default": true,
+          "type": "boolean"
+        },
+        "难度锁定": {
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "default": 0,
+      "type": "number"
+    },
+    "__schema1": {
+      "default": 0,
+      "type": "number"
+    },
+    "__schema2": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "UID": {
+          "default": "",
+          "type": "string"
+        },
+        "姓名": {
+          "default": "",
+          "type": "string"
+        },
+        "儿子名": {
+          "default": "",
+          "type": "string"
+        },
+        "阶段": {
+          "default": 1,
+          "type": "number"
+        },
+        "阶段名": {
+          "default": "",
+          "type": "string"
+        },
+        "复合阶段": {
+          "default": "A_理性期",
+          "type": "string",
+          "enum": [
+            "A_理性期",
+            "B_动摇期",
+            "C_沉沦期",
+            "D_疯狂期",
+            "E_清醒反扑期"
+          ]
+        },
+        "兴奋": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "润滑": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "罪恶感": {
+          "default": 50,
+          "$ref": "#/$defs/__schema1"
+        },
+        "痴迷": {
+          "default": 40,
+          "$ref": "#/$defs/__schema1"
+        },
+        "勇气": {
+          "default": 30,
+          "$ref": "#/$defs/__schema1"
+        },
+        "暴露恐惧": {
+          "default": 40,
+          "$ref": "#/$defs/__schema1"
+        },
+        "与儿子亲密度": {
+          "default": 70,
+          "$ref": "#/$defs/__schema1"
+        },
+        "与儿子信任度": {
+          "default": 80,
+          "$ref": "#/$defs/__schema1"
+        },
+        "与儿子边界": {
+          "default": 50,
+          "$ref": "#/$defs/__schema1"
+        },
+        "看直播想法": {
+          "default": "",
+          "type": "string"
+        },
+        "看群聊想法": {
+          "default": "",
+          "type": "string"
+        },
+        "今日假阳具": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "今日偷抚": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "今日群消息": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "累计假阳具": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "累计偷抚": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "累计诱导射精": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "累计暴露": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "本轮活跃": {
+          "default": false,
+          "type": "boolean"
+        },
+        "儿子在场": {
+          "default": false,
+          "type": "boolean"
+        },
+        "专属": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "后门类型": {
+          "default": "心理弱点",
+          "type": "string",
+          "enum": [
+            "心理弱点",
+            "生理弱点",
+            "情感缺口",
+            "身份反差"
+          ]
+        },
+        "后门描述": {
+          "default": "",
+          "type": "string"
+        },
+        "后门策略": {
+          "default": "",
+          "type": "string"
+        },
+        "后门目标": {
+          "default": "",
+          "type": "string"
+        },
+        "后门已发现": {
+          "default": false,
+          "type": "boolean"
+        },
+        "后门已利用": {
+          "default": false,
+          "type": "boolean"
+        },
+        "后门进度": {
+          "$ref": "#/$defs/__schema1"
+        }
+      }
+    }
+  }
+}

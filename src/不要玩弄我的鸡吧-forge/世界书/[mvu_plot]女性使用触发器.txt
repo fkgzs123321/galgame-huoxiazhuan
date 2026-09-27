@@ -1,0 +1,115 @@
+@@generate_before
+# [mvu_plot] 女性使用触发器 — 使用场景叙事
+# 变量更新逻辑在 [mvu_plot]女性使用触发器脚本.txt
+# 此条目提供当前使用场景的精细叙事控制
+
+<%
+var cur_stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var total_uses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+var energy = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) || 80;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var suspicion = Number(getvar('stat_data.状态.疑心度', {scope:'local', defaults:0})) || 0;
+var corruption = Number(getvar('stat_data.状态.沉沦度', {scope:'local', defaults:0})) || 0;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var wd = getvar('stat_data.时间.星期', {scope:'local', defaults:'周一'}) || '周一';
+var meditation = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+var disguise = Number(getvar('stat_data.技能.伪装.等级', {scope:'local', defaults:1})) || 1;
+// 获取触发关键词判断是哪类女性在使用
+var triggerText = (typeof currentUserText === 'string') ? currentUserText.toLowerCase() : '';
+var isClassroom = /教室|上课|课堂|课|老师|讲台/.test(triggerText);
+var isDorm = /宿舍|寝室|床|午休|晚/.test(triggerText);
+var isOutdoor = /天台|操场|体育馆|花园|校门口/.test(triggerText);
+var isPrivate = /保健室|医务室|空教室|图书|档案室|音乐/.test(triggerText);
+var isCrowded = /食堂|走廊|大厅|集会|厕所/.test(triggerText);
+%>
+<usage_narrative>
+<% if (cur_stage === 1) { %>
+[初级玩具阶段 — 使用叙事]
+使用者经验尚浅（阶段1），操作笨拙但充满好奇。
+<% if (disguise <= 20) { %>
+【玩家感知】你能清晰感受到假阴茎被放入、抽出——每一次都伴随尿道被撑开的酸胀感。
+<% } else if (disguise <= 60) { %>
+【玩家感知】你试图装作无事发生，但她每动一下你的小腹就绷紧一分。
+<% } else { %>
+【玩家感知】你面不改色，但后槽牙已经咬紧——熟练的伪装下是无法掩饰的生理反应。
+<% } %>
+
+<% if (isPrivate && hour >= 12 && hour <= 14) { %>
+场景午休：她在空教室里摆弄着你——窗帘拉了一半，走廊偶尔传来脚步声。
+<% } else if (isPrivate && hour >= 21) { %>
+场景深夜：宿舍熄灯后，她钻进被窝——黑暗放大了每一个感官细节。
+<% } else if (isClassroom) { %>
+场景课堂：她一边记笔记一边用你——笔尖沙沙声和她大腿的细微颤抖交织。
+<% } else if (isCrowded) { %>
+场景人多的公共场合：她紧张得手心出汗——快速套弄几下就赶紧停下，心跳声穿过制服传到你耳中。
+<% } else { %>
+场景日常：她像玩一个新玩具一样试探你——手法生疏但充满好奇。
+<% } %>
+
+<% } else if (cur_stage === 2) { %>
+[等比复刻阶段 — 使用叙事]
+使用者经验增长（阶段2），能模拟真实勃起形态。
+
+感知层级：假阴茎不再是简单的硅胶棒——它比以前更粗、更长、更接近真实阴茎的触感。
+<% if (suspicion >= 50 && sanity < 60) { %>
+玩家心理：你已经注意到它的变化——"怎么感觉比以前大了？这不正常……"
+<% } else { %>
+玩家心理：身体似乎适应了被使用的节奏——但你知道每次结束后那种空落感越来越重。
+<% } %>
+
+<% if (total_uses > 30) { %>
+使用习惯固化：她找到了一套高效流程——从取出、使用到清理不超过15分钟。
+<% } else { %>
+使用方式探索：她还在摸索最适合自己的角度和速度——每次使用都略有不同。
+<% } %>
+
+<% } else if (cur_stage === 3) { %>
+[灵体投影阶段 — 使用叙事]
+使用者可操控灵体投影（阶段3），具现度已达到实质化门槛。
+
+本质变化：假阴茎开始挣脱物理形态——它可以在一定范围内伸缩、弯曲、甚至在她不直接接触时仍能"使用你"。
+<% if (meditation >= 41) { %>
+你的定力足以感知到灵体存在：每当她集中精神，你会感到一股无形的压力包裹你的下身。
+<% } else { %>
+你只感到被使用时变得更难抵抗——甚至她只是看着你，你都觉得"自己在被用"。
+<% } %>
+
+<% if (corruption > 60) { %>
+沉沦加成：你发现自己在被使用时甚至会有期待——这让你感到恐惧。
+<% } %>
+<% if (hour >= 22) { %>
+深夜使用：她唤出灵体在被窝里操纵你——室友的呼吸声让气氛更加禁忌。
+<% } %>
+
+<% } else if (cur_stage === 4) { %>
+[人偶容器阶段 — 使用叙事]
+使用者拥有人偶容器（阶段4），假阴茎可寄宿于仿真人偶中。
+
+形态转变：假阴茎不再是你身体的附属物——它有了独立的人偶载体。
+<% if (energy < 30) { %>
+使用感受：你精力严重不足，每一次被用都像是在从你骨髓里抽走什么——结束后视线模糊，耳鸣持续数分钟。
+<% } else { %>
+使用感受：她让人偶坐在你身上，你被动承受着——身体已学会在被用时不反抗，甚至微微迎合。
+<% } %>
+
+人偶特征：这不再是"偷着用"，而是有了一个容器来承载使用频率。
+
+<% } else if (cur_stage >= 5) { %>
+[实体化共生阶段 — 使用叙事]
+假阴茎已与使用者深度绑定（阶段5+），具备部分自主行为。
+
+自主意识：假阴茎可以在不被直接操纵的情况下活动——它识别使用者的情绪并主动调整方式。
+<% if (corruption > 100) { %>
+深度绑定：你和假阴茎之间的边界模糊了——它像是你的一部分，但又完全不受你控制。
+<% } %>
+
+<% if (suspicion >= 150) { %>
+真相曝光：事已至此，你清楚知道每次"被使用"的每一刻——不再是朦胧的感知，而是清醒地承受。
+<% } %>
+<% } %>
+
+<% if (cur_stage >= 2 && total_uses % 50 === 0 && total_uses > 0) { %>
+里程碑提示：你已经累积被使用了<%= total_uses %>次——这个数字还在增长。
+<% } %>
+</usage_narrative>

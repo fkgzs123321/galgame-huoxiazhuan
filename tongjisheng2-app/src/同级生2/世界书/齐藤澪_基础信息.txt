@@ -1,0 +1,149 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 齐藤澪 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=15 / 跨界客串自《同级生1 Remake》(2022) · 齐藤姐妹（姐姐）
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，于 2022 年同级生1 Remake 中重现
+   本次项目作为「跨界客串」福利配置，与同级生2 原作设定无直接关联
+   互斥关系：齐藤姐妹（攻略姐姐后妹妹澪奈锁定仇视）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 齐藤澪_INFO = {
+  heroine_id: 15,
+  name: '齐藤澪',
+  romanization: 'Saito Mio',
+  age: 18,
+  blood_type: 'A',
+  identity: '八十八学园三年生，学生会副会长',
+  relationship: '主角学姐，初识为客气疏离的副会长',
+  home: '八十八町住宅区（与妹妹澪奈同住）',
+  birthday: '10-23',
+  height: 165,
+  weight: 49,
+  three_size: 'B86-W58-H84',
+  cv_implied: '冷静系学姐声线，低沉稳重',
+
+  appearance: {
+    hair: '深栗色及肩长发，束低马尾，发尾整齐，鬓角留两缕修饰脸型',
+    eyes: '狭长丹凤眼，眼色深棕，眼神锐利但不出锋',
+    body: '高挑挺拔，肩背笔直，腰线明显，骨架匀称偏纤细',
+    feature: '左耳后有一颗小痣，皱眉时眉间会浮出一道浅纹',
+    clothing_default: '校服穿着一丝不苟：纽扣全系、领带端正、裙摆及膝；课外常配米色长款风衣与皮质托特包'
+  },
+
+  personality: {
+    mbti: 'INTJ',
+    tags: ['成熟冷静', '文武双全', '表面温柔实则强势'],
+    public_face: '完美副会长，温和有礼但不可亲',
+    social_face: '聪慧可靠的学姐，谈吐得体',
+    intimate_face: '脆弱依赖的姐姐，渴望被理解而非仰望'
+  },
+
+  preferences: {
+    like_food: ['黑咖啡', '柠檬塔', '日式煮物'],
+    hate_food: ['甜腻奶昔', '速食泡面'],
+    hobby: ['剑道（二段）', '古典文学', '茶道', '钢琴'],
+    gift_pref: ['文学书（特别是经典文学）', '钢笔墨水', '茶具', '剑道相关'],
+    topic_pref: ['学园治理', '古典文学', '剑道修行', '茶道哲学']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '齐藤澪奈（妹妹，row_id=16）—— 攻略姐姐后妹妹锁定仇视',
+    family: '父母（常驻海外工作，姐妹二人独居）；妹妹齐藤澪奈（一年生）',
+    friends: ['学生会成员', '剑道部主将', '片桐美铃（老师，工作关系）']
+  },
+
+  /* 9.B.10: 互斥触发条件细化 */
+  mutex_trigger: {
+    group_name: '齐藤姐妹',
+    partner_id: 16,
+    partner_name: '齐藤澪奈',
+    affection_threshold: 50,
+    stage_threshold: '暧昧',
+    flag_auto_set: '齐藤互斥触发',
+    description: '与齐藤澪 affection ≥ 50（达暧昧临界）即触发互斥；妹妹澪奈锁定仇视（affection -50 / jealousy +30 / route_locked=1）',
+    narrative_hint: '触发后妹妹澪奈会主动冷落主角，姐妹独居家庭氛围紧张；姐姐澪并不知情，仍按原节奏推进，但偶尔会察觉妹妹的异常'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '通过学生会工作接触，展现责任心与可靠性；以文学/剑道为话题切入；逐步突破她的"完美副会长"外壳',
+    warning: '与妹妹澪奈同时推进会触发互斥锁；姐姐表面温柔实则控制欲强，强行亲密会反感；需要先建立对等关系才能突破她的防线'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁学生会副会长/INTJ：冷静学姐 + 剑道二段，秩序崩塌的反差
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'D',
+    bust_size: 86,
+    waist_size: 58,
+    hip_size: 84,
+    height: 165,
+    weight: 49,
+    // 胸部详细（6 列）— 剑道训练的紧实胸型
+    nipple_size: '小',
+    nipple_color: '粉嫩',
+    areola_size: '小',
+    breast_shape: '挺拔',
+    breast_sensitivity: 90,
+    lactation: '无',
+    // 腰部（2 列）— 剑道训练的明显腰线
+    waist_shape: '纤细紧绷',
+    waist_sensitivity: 90,
+    // 手部（2 列）— 剑道茧 + 钢笔
+    hand_desc: '纤细白皙，右手虎口有剑道茧，常握钢笔',
+    nail_style: '透明护甲',
+    // 臀部（3 列）— 剑道步法训练的紧实
+    hip_shape: '紧实翘挺',
+    hip_sensitivity: 90,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，完美副会长的克制
+    pubic_hair: '修剪整齐',
+    labia_size: '偏小',
+    labia_color: '粉嫩',
+    vaginal_tightness: '紧致',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 冷静学姐的反差：秩序崩塌即沉沦
+    body_sensitivity: 90,
+    sensitive_zones: '颈侧,锁骨,腰窝,右手虎口剑道茧,左耳后小痣,眉间浅纹处',
+    arousal_triggers: '剑道发力时,被当女性而非学姐,秩序被打破,学生会袖章处,完美外壳崩塌,违禁感'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 75,           // 魅力（外貌吸引力）
+    academic: 55,        // 学业（学习成绩）
+    physical: 60,        // 体力（体能/运动）
+    social: 70,          // 社交（交际能力）
+    perception: 55,      // 敏感（察言观色/直觉）
+    reputation: 55,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 35,        // 力量（物理对抗/搬运）
+    agility: 55,         // 敏捷（反应/逃跑）
+    intelligence: 55,    // 智力（解谜/计划）
+    will_skill: 45,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 60,          // 口才（说服/调情）
+    medical: 10,         // 医学（诊疗/急救）
+    cooking: 30,         // 烹饪（料理）
+    art: 40,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 30,        // 格斗（防身）
+    observation: 50,     // 观察（情报收集）
+    romance_skill: 40    // 恋爱（约会/亲密推进）
+  }
+};
+%>
+
+齐藤澪 · 基础信息已加载。当前女角 row_id=15，互斥关系：齐藤姐妹（攻略后妹妹齐藤澪奈锁定仇视，row_id=16）。

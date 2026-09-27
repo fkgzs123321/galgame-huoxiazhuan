@@ -1,0 +1,173 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 齐藤澪奈 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=16 / 跨界客串自《同级生1 Remake》(2022) · 齐藤姐妹（妹妹）
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，于 2022 年同级生1 Remake 中重现
+   本次项目作为「跨界客串」福利配置，与同级生2 原作设定无直接关联
+   互斥关系：齐藤姐妹（攻略妹妹后姐姐澪锁定仇视）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 齐藤澪奈_INFO = {
+  heroine_id: 16,
+  name: '齐藤澪奈',
+  romanization: 'Saito Mizuna',
+  age: 16,
+  blood_type: 'O',
+  identity: '八十八学园一年生，田径部短距离组',
+  relationship: '主角学妹，初识为自来熟的元气少女',
+  home: '八十八町住宅区（与姐姐澪同住）',
+  birthday: '04-15',
+  height: 158,
+  weight: 46,
+  three_size: 'B80-W56-H82',
+  cv_implied: '明亮元气系少女声线，语速偏快',
+
+  appearance: {
+    hair: '深栗色短发及肩，扎高马尾，前额碎发凌乱，运动时常用红色发圈束起',
+    eyes: '圆杏眼，眼色深棕，眼神明亮带笑意',
+    body: '娇小苗条，肌肉线条紧实，皮肤偏麦色（户外晒出来的）',
+    feature: '右膝有一道浅疤（小学田径摔倒留下），笑起来左颊有一个酒窝',
+    clothing_default: '校服配运动元素：袖子卷起、配田径部外套、运动鞋；冬天加红色围巾'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁田径部短距离组：运动型紧实体型，皮肤偏麦色，怕被比较的脆弱女孩
+  body_measurements: {
+    // 身体基础测量（6 列）— 短跑选手的紧实体型，腰细臀紧腿长
+    cup_size: 'B',
+    bust_size: 80,
+    waist_size: 56,
+    hip_size: 82,
+    height: 158,
+    weight: 46,
+    // 胸部详细（6 列）— 运动型偏小胸，户外晒出的浅褐色
+    nipple_size: '小',
+    nipple_color: '浅褐',
+    areola_size: '小',
+    breast_shape: '紧实',
+    breast_sensitivity: 120,
+    lactation: '无',
+    // 腰部（2 列）— 短跑训练练出的马甲线
+    waist_shape: '马甲线',
+    waist_sensitivity: 120,
+    // 手部（2 列）— 起跑器与握棒磨出的薄茧
+    hand_desc: '指节分明，掌心有薄茧（起跑器与握棒磨出），指甲剪短',
+    nail_style: '剪短素净',
+    // 臀部（3 列）— 短跑训练的紧实翘挺
+    hip_shape: '紧实翘挺',
+    hip_sensitivity: 120,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，收缩型体质
+    pubic_hair: '稀疏',
+    labia_size: '偏小',
+    labia_color: '浅褐',
+    vaginal_tightness: '紧致',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 运动神经发达，身体反应敏锐；运动相关敏感带
+    body_sensitivity: 120,
+    sensitive_zones: '腿根,腰窝,小腹,耳后,膝窝,小腿肚',
+    arousal_triggers: '被夸赞跑步姿态,肌肉按摩,运动后拉伸,汗味,起跑姿势,肩胛骨抚摸'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 72,           // 魅力（外貌吸引力）
+    academic: 60,        // 学业（学习成绩）
+    physical: 50,        // 体力（体能/运动）
+    social: 45,          // 社交（交际能力）
+    perception: 60,      // 敏感（察言观色/直觉）
+    reputation: 65,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 25,        // 力量（物理对抗/搬运）
+    agility: 45,         // 敏捷（反应/逃跑）
+    intelligence: 60,    // 智力（解谜/计划）
+    will_skill: 50,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 45,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 35,         // 烹饪（料理）
+    art: 55,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 15,        // 格斗（防身）
+    observation: 55,     // 观察（情报收集）
+    romance_skill: 25    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'ESFP',
+    tags: ['活泼天真', '运动系元气', '崇拜姐姐暗自较劲'],
+    public_face: '元气满满的田径部新生，校园人气王',
+    social_face: '自来熟的妹妹，黏人爱撒娇',
+    intimate_face: '怕被比较的脆弱女孩，渴望被偏爱而非被选择'
+  },
+
+  preferences: {
+    like_food: ['亲子丼', '草莓牛奶', '章鱼烧', '运动饮料'],
+    hate_food: ['苦瓜', '黑咖啡', '纳豆'],
+    hobby: ['短跑（100米/200米）', '棒球观赛', '偶像杂志', '收集发圈'],
+    gift_pref: ['运动护具', '草莓相关甜品', '偶像周边', '可爱发圈'],
+    topic_pref: ['田径比赛', '校园八卦', '偶像明星', '美食', '姐姐的事']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '齐藤澪（姐姐，row_id=15）—— 攻略妹妹后姐姐锁定仇视',
+    family: '父母（常驻海外工作，姐妹二人独居）；姐姐齐藤澪（三年生，学生会副会长）',
+    friends: ['田径部成员', '一年级同班同学', '都筑梢江（同为低年级）']
+  },
+
+  /* 9.B.10: 互斥触发条件细化 */
+  mutex_trigger: {
+    group_name: '齐藤姐妹',
+    partner_id: 15,
+    partner_name: '齐藤澪',
+    affection_threshold: 50,
+    stage_threshold: '暧昧',
+    flag_auto_set: '齐藤互斥触发',
+    description: '与齐藤澪奈 affection ≥ 50（达暧昧临界）即触发互斥；姐姐澪锁定仇视（affection -50 / jealousy +30 / route_locked=1）',
+    narrative_hint: '触发后姐姐澪会以"完美副会长"姿态公事公办地冷待主角，私下却激烈质问妹妹；妹妹崇拜姐姐却又怕被比较，触发后内心矛盾剧烈'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '通过运动话题/田径部活动接触，展现对她的关心与陪伴；以食物/偶像/八卦为日常话题切入；陪伴她参加比赛并给予肯定',
+    warning: '与姐姐澪同时推进会触发互斥锁；妹妹表面崇拜姐姐实则暗自较劲，提姐姐优点会引发她的不安；她需要的是"被偏爱"而非"被选择"，要求主角独占性地选择她'
+  }
+};
+%>
+
+齐藤澪奈 · 基础信息已加载。当前女角 row_id=16，互斥关系：齐藤姐妹（攻略后姐姐齐藤澪锁定仇视，row_id=15）。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 齐藤澪奈_INFO.name %>（<%- 齐藤澪奈_INFO.age %>岁）
+- 身份: <%- 齐藤澪奈_INFO.identity %>
+- 关系: <%- 齐藤澪奈_INFO.relationship %>
+- 住所: <%- 齐藤澪奈_INFO.home %>
+<%_ if (齐藤澪奈_INFO.appearance) { _%>
+- 外貌: <%- [齐藤澪奈_INFO.appearance.hair, 齐藤澪奈_INFO.appearance.eyes, 齐藤澪奈_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (齐藤澪奈_INFO.personality) { _%>
+- 性格: <%- 齐藤澪奈_INFO.personality.tags ? 齐藤澪奈_INFO.personality.tags.join('、') : 齐藤澪奈_INFO.personality.public_face %>
+<%_ if (齐藤澪奈_INFO.personality.public_face) { _%>- 表面: <%- 齐藤澪奈_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (齐藤澪奈_INFO.personality.intimate_face) { _%>- 亲密面: <%- 齐藤澪奈_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (齐藤澪奈_INFO.preferences) { _%>- 喜好: <%- [(齐藤澪奈_INFO.preferences.like_food || []).join('/'), '爱好：' + (齐藤澪奈_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (齐藤澪奈_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(齐藤澪奈_INFO.relations) %>
+<%_ } _%>
+<%_ if (齐藤澪奈_INFO.strategy) { _%>- 攻略要点: <%- 齐藤澪奈_INFO.strategy.best_approach %>
+<%_ if (齐藤澪奈_INFO.strategy.warning) { _%>- 警告: <%- 齐藤澪奈_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

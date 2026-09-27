@@ -1,0 +1,159 @@
+{
+  "projects": {
+    "欲望都市": {
+      "state_file": "src/欲望都市/tavern-cards-state.json",
+      "artifact": "src/欲望都市/欲望都市.json"
+    },
+    "怨妇救赎": {
+      "state_file": "src/怨妇救赎/tavern-cards-state.json",
+      "artifact": "src/怨妇救赎/怨妇救赎.json"
+    },
+    "霍格沃茨": {
+      "state_file": "src/霍格沃茨/tavern-cards-state.json",
+      "artifact": "src/霍格沃茨/霍格沃茨.json"
+    },
+    "旮旯给木-euphoria": {
+      "state_file": "src/旮旯给木-euphoria/tavern-cards-state.json",
+      "artifact": "src/旮旯给木-euphoria/旮旯给木.png"
+    },
+    "旮旯给木-同级生2": {
+      "state_file": "src/旮旯给木-同级生2/tavern-cards-state.json",
+      "artifact": "src/旮旯给木-同级生2/旮旯给木-同级生2.png"
+    },
+    "旮旯给木-英雄坛说": {
+      "state_file": "src/旮旯给木-英雄坛说/tavern-cards-state.json",
+      "artifact": "src/旮旯给木-英雄坛说/旮旯给木-英雄坛说.json"
+    },
+    "乱马二分之一": {
+      "state_file": "src/乱马二分之一/tavern-cards-state.json",
+      "artifact": "src/乱马二分之一/乱马二分之一.png"
+    },
+    "系统哥的末日": {
+      "state_file": "src/系统哥的末日/tavern-cards-state.json",
+      "artifact": "src/系统哥的末日/系统哥的末日.png"
+    },
+    "秦璐": {
+      "state_file": "src/秦璐/tavern-cards-state.json",
+      "artifact": "src/秦璐/秦璐：双重沦陷的禁忌交响.png"
+    },
+    "血月七夜": {
+      "state_file": "src/狼人杀/tavern-cards-state.json",
+      "artifact": "src/狼人杀/血月七夜.png"
+    },
+    "活侠传": {
+      "state_file": "src/活侠传/tavern-cards-state.json",
+      "artifact": "src/活侠传/活侠传.png"
+    }
+  },
+  "default_part_order": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "default_strategy_thresholds": {
+    "角色": {
+      "basic": {
+        "required": true,
+        "threshold": 5
+      },
+      "other": {
+        "required": false,
+        "threshold": 2
+      },
+      "personality": {
+        "required": true,
+        "threshold": 2
+      },
+      "tri_faceted": {
+        "required": false,
+        "threshold": 2
+      }
+    },
+    "事件": 0,
+    "地理": {
+      "faction": {
+        "required": false,
+        "threshold": 4
+      },
+      "region": {
+        "required": false,
+        "threshold": 4
+      },
+      "scene": {
+        "required": false,
+        "threshold": 4
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "required": false,
+        "threshold": null
+      },
+      "output_format": {
+        "required": false,
+        "threshold": "Infinity"
+      },
+      "update_rules": {
+        "required": false,
+        "threshold": "Infinity"
+      },
+      "variable_list": {
+        "required": false,
+        "threshold": "Infinity"
+      }
+    },
+    "NPC": 0,
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "required": false,
+        "threshold": "Infinity"
+      },
+      "plot": {
+        "required": false,
+        "threshold": "Infinity"
+      }
+    },
+    "世界观": "Infinity",
+    "阶段指导": "Infinity"
+  },
+  "default_type_lists": {
+    "before_char": [
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "depth_defaults": {
+    "depth": 0,
+    "role": "system"
+  }
+}

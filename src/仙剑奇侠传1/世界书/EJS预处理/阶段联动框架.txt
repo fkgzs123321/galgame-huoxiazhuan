@@ -1,0 +1,268 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 阶段联动框架（章节进度联动系统）
+   ════════════════════════════════════════════════════════════
+   职责：6大章节进度表 / 章节切换触发 / 关联事件链 / 章节专属机制
+   加载策略：由主调度控制器按 stat_data.章节进度 条件加载
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明
+   define() 模式：注册 STAGE_FRAMEWORK 全局常量，供章节触发器/世界观场景控制器/角色条目调用
+   变量路径（与 schema.ts 对齐）：
+     stat_data.章节进度        当前章节进度（1-60）
+     stat_data.当前章节       当前所在章节（1-6）
+     stat_data.章节事件完成表  已完成的关键事件名集合
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取 MVU 当前章节进度（供摘要动态输出） ─── */
+if (typeof _chapterProgress === 'undefined') var _chapterProgress = Number(getvar('stat_data.章节进度', { scope: 'local', defaults: 1 })) || 1;
+if (typeof _currentChapter === 'undefined') var _currentChapter = Number(getvar('stat_data.当前章节', { scope: 'local', defaults: 1 })) || 1;
+if (typeof _completedEvents === 'undefined') var _completedEvents = getvar('stat_data.章节事件完成表', { scope: 'local', defaults: [] }) || [];
+
+/* ════════════════════════════════════════════════════════════
+   一、6大章节进度表（章节进度 1-60）
+   ════════════════════════════════════════════════════════════ */
+const STAGE_FRAMEWORK = {
+  chapters: {
+    1: {
+      name: '第1章·仙灵岛结缘',
+      range: [1, 10],
+      region: '余杭镇/仙灵岛',
+      desc: '李逍遥婶婶中毒，前往仙灵岛求药，与赵灵儿结缘。姥姥托孤后灵儿被拜月教徒掳走，逍遥踏上寻人之旅。',
+      key_events: ['婶婶中毒', '酒剑仙指点', '渡海仙灵岛', '姥姥托孤', '灵儿被掳'],
+      next_chapter_trigger: '灵儿被掳'
+    },
+    2: {
+      name: '第2章·苏州比武招亲',
+      range: [11, 20],
+      region: '苏州/隐龙窟',
+      desc: '逍遥至苏州遇林家堡比武招亲，结识林月如。二人查探隐龙窟蛇妖事件，结交刘晋元。',
+      key_events: ['苏州比武', '月如入队', '隐龙窟蛇妖', '刘晋元结交'],
+      next_chapter_trigger: '刘晋元结交'
+    },
+    3: {
+      name: '第3章·京城彩依事件',
+      range: [21, 30],
+      region: '京城/长安',
+      desc: '一行人入京城，遇彩依化形为人。刘晋元中毒，牵出毒娘子事件，牵涉妖与人情。',
+      key_events: ['京城见彩依', '刘晋元中毒', '毒娘子事件'],
+      next_chapter_trigger: '毒娘子事件'
+    },
+    4: {
+      name: '第4章·蜀山锁妖塔',
+      range: [31, 40],
+      region: '蜀山/锁妖塔',
+      desc: '逍遥求蜀山派借神器，剑圣拒借。众人闯锁妖塔救灵儿，对战镇狱明王。',
+      key_events: ['蜀山求神器', '剑圣拒借', '锁妖塔囚禁', '镇狱明王'],
+      next_chapter_trigger: '镇狱明王'
+    },
+    5: {
+      name: '第5章·苗疆决战',
+      range: [41, 50],
+      region: '苗疆',
+      desc: '苗疆重逢灵儿，拜月教主现身。水魔兽觉醒，灵儿女娲血脉之力觉醒。',
+      key_events: ['苗疆重逢', '拜月教主现身', '水魔兽觉醒', '女娲血脉'],
+      next_chapter_trigger: '女娲血脉'
+    },
+    6: {
+      name: '第6章·结局分支',
+      range: [51, 60],
+      region: '苗疆/女娲祭坛',
+      desc: '灵儿补天牺牲，月如为护逍遥而牺牲。结局依月如好感与女娲血脉阶段分歧：月如复活（条件分支）或永别。',
+      key_events: ['灵儿补天', '月如牺牲', '月如复活(条件分支)', '结局'],
+      next_chapter_trigger: '结局'
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     二、章节切换触发条件（完成章节关键事件）
+     ════════════════════════════════════════════════════════════ */
+  switch_rules: {
+    trigger_type: '完成章节关键事件',
+    desc: '当当前章节的 next_chapter_trigger 指定的关键事件被标记为完成时，章节进度推进至下一章节范围起点，当前章节 +1。',
+    steps: [
+      '1. AI 判定剧情中 next_chapter_trigger 关键事件已完成',
+      '2. 在 <UpdateVariable> 中将事件名追加至 stat_data.章节事件完成表',
+      '3. 将 stat_data.当前章节 +1（钳制范围 [1, 6]）',
+      '4. 将 stat_data.章节进度 设为下一章节 range[0]（如 1→2 时设为 11）',
+      '5. 第6章为终章，结局触发后不再切换'
+    ],
+    clamp: '当前章节钳制范围 [1, 6]；章节进度钳制范围 [1, 60]'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     三、章节关联事件链
+     ════════════════════════════════════════════════════════════ */
+  event_chains: {
+    1: {
+      chapter: '第1章·仙灵岛结缘',
+      events: [
+        { name: '婶婶中毒',   desc: '李逍遥婶婶突中奇毒，逍遥外出求药',       effect: '主线启动' },
+        { name: '酒剑仙指点', desc: '酒剑仙指点逍遥渡海仙灵岛求药之法',       effect: '解锁仙灵岛路线' },
+        { name: '渡海仙灵岛', desc: '逍遥渡海登仙灵岛，遇赵灵儿',             effect: '灵儿登场' },
+        { name: '姥姥托孤',   desc: '姥姥将灵儿托付逍遥，赠女娲遗物',         effect: '灵儿入队' },
+        { name: '灵儿被掳',   desc: '拜月教徒突袭掳走灵儿',                   effect: '触发章节切换→第2章' }
+      ]
+    },
+    2: {
+      chapter: '第2章·苏州比武招亲',
+      events: [
+        { name: '苏州比武',     desc: '林家堡比武招亲，逍遥登台胜出',     effect: '月如登场' },
+        { name: '月如入队',     desc: '林月如以"输者随行"为由加入队伍',  effect: '月如入队' },
+        { name: '隐龙窟蛇妖',   desc: '查探隐龙窟蛇妖作祟之事',           effect: '解锁隐龙窟场景' },
+        { name: '刘晋元结交',   desc: '与书生刘晋元结为挚友',             effect: '触发章节切换→第3章' }
+      ]
+    },
+    3: {
+      chapter: '第3章·京城彩依事件',
+      events: [
+        { name: '京城见彩依',   desc: '京城邂逅化为入形的彩依',           effect: '彩依登场' },
+        { name: '刘晋元中毒',   desc: '刘晋元身中奇毒，命悬一线',         effect: '主线推进' },
+        { name: '毒娘子事件',   desc: '揭毒娘子真身与彩依恩怨',           effect: '触发章节切换→第4章' }
+      ]
+    },
+    4: {
+      chapter: '第4章·蜀山锁妖塔',
+      events: [
+        { name: '蜀山求神器',   desc: '逍遥上蜀山求借神器救灵儿',         effect: '解锁蜀山场景' },
+        { name: '剑圣拒借',     desc: '剑圣以天规为由拒绝借神器',         effect: '主线转折' },
+        { name: '锁妖塔囚禁',   desc: '众人闯锁妖塔，灵儿曾被囚于此',     effect: '解锁锁妖塔场景' },
+        { name: '镇狱明王',     desc: '对战锁妖塔镇狱明王',               effect: '触发章节切换→第5章' }
+      ]
+    },
+    5: {
+      chapter: '第5章·苗疆决战',
+      events: [
+        { name: '苗疆重逢',     desc: '苗疆与灵儿重逢，牵出女娲一脉身世',  effect: '解锁苗疆场景' },
+        { name: '拜月教主现身', desc: '拜月教主正式现身，图谋水魔兽',      effect: '主线反派登场' },
+        { name: '水魔兽觉醒',   desc: '拜月唤醒水魔兽，祸乱苗疆',         effect: '危机升级' },
+        { name: '女娲血脉',     desc: '灵儿女娲血脉之力觉醒',             effect: '触发章节切换→第6章' }
+      ]
+    },
+    6: {
+      chapter: '第6章·结局分支',
+      events: [
+        { name: '灵儿补天',             desc: '灵儿以女娲血脉补天，牺牲己身',       effect: '主线高潮' },
+        { name: '月如牺牲',             desc: '月如为护逍遥而牺牲',                 effect: '主线高潮' },
+        { name: '月如复活(条件分支)',   desc: '条件：月如好感 ≥ 80 且 女娲血脉觉醒阶段 ≥ 3', effect: '分支判定' },
+        { name: '结局',                 desc: '依月如复活条件分歧，进入对应结局',     effect: '终章收束' }
+      ]
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     四、章节专属机制
+     ════════════════════════════════════════════════════════════ */
+  chapter_mechanics: {
+    '第1-2章': {
+      chapters: [1, 2],
+      focus: '探索为主，战斗为辅',
+      desc: '前期以场景探索、人物结识、关系建立为核心。战斗难度低，以教学与小规模遭遇为主。',
+      unlocks: ['基础探索机制', '人物入队', '对话选择影响好感'],
+      locked: ['炼丹系统', '女娲血脉觉醒', '禁咒']
+    },
+    '第3-4章': {
+      chapters: [3, 4],
+      focus: '解锁炼丹系统',
+      desc: '中期炼丹系统开放，可合成丹药辅助战斗。战斗难度提升，BOSS战增多。',
+      unlocks: ['炼丹系统', '炼器系统', '中级法术', '锁妖塔挑战'],
+      locked: ['女娲血脉觉醒', '禁咒']
+    },
+    '第5-6章': {
+      chapters: [5, 6],
+      focus: '解锁女娲血脉觉醒与禁咒',
+      desc: '后期女娲血脉觉醒系统开放，灵儿可习禁咒。终章结局分支依月如好感与血脉阶段判定。',
+      unlocks: ['女娲血脉觉醒', '禁咒', '结局分支判定', '终章BOSS战'],
+      locked: []
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     五、工具函数（供章节触发器/主调度控制器调用）
+     ════════════════════════════════════════════════════════════ */
+  getChapterByProgress: function (progress) {
+    var p = Number(progress) || 0;
+    var ch = STAGE_FRAMEWORK.chapters;
+    for (var k = 1; k <= 6; k++) {
+      var r = ch[k].range;
+      if (p >= r[0] && p <= r[1]) return ch[k];
+    }
+    if (p < 1)  return ch[1];
+    return ch[6];
+  },
+  getChapterIndexByProgress: function (progress) {
+    var p = Number(progress) || 0;
+    var ch = STAGE_FRAMEWORK.chapters;
+    for (var k = 1; k <= 6; k++) {
+      var r = ch[k].range;
+      if (p >= r[0] && p <= r[1]) return k;
+    }
+    if (p < 1)  return 1;
+    return 6;
+  },
+  isEventCompleted: function (eventName) {
+    if (!Array.isArray(_completedEvents)) return false;
+    return _completedEvents.indexOf(eventName) !== -1;
+  },
+  canSwitchChapter: function (chapterIndex) {
+    var ch = STAGE_FRAMEWORK.chapters[chapterIndex];
+    if (!ch) return false;
+    if (chapterIndex >= 6) return false;
+    return STAGE_FRAMEWORK.isEventCompleted(ch.next_chapter_trigger);
+  },
+  nextChapterStartProgress: function (chapterIndex) {
+    var next = chapterIndex + 1;
+    var ch = STAGE_FRAMEWORK.chapters[next];
+    if (!ch) return null;
+    return ch.range[0];
+  }
+};
+
+define('STAGE_FRAMEWORK', STAGE_FRAMEWORK);
+%>
+
+<%_ // ───────── 参考摘要（输出给AI使用）───────── _%>
+<%_ var _curCh = STAGE_FRAMEWORK.chapters[_currentChapter] || STAGE_FRAMEWORK.chapters[1]; _%>
+<%_ var _curMechKey = (_currentChapter <= 2) ? '第1-2章' : (_currentChapter <= 4 ? '第3-4章' : '第5-6章'); _%>
+<%_ var _curMech = STAGE_FRAMEWORK.chapter_mechanics[_curMechKey]; _%>
+【阶段联动框架 · 参考摘要】
+
+■ 6大章节进度表
+- 第1章·仙灵岛结缘（进度 1-10）：余杭镇/仙灵岛，婶婶中毒→灵儿被掳
+- 第2章·苏州比武招亲（11-20）：苏州/隐龙窟，比武→月如入队→刘晋元结交
+- 第3章·京城彩依事件（21-30）：京城/长安，彩依→刘晋元中毒→毒娘子事件
+- 第4章·蜀山锁妖塔（31-40）：蜀山/锁妖塔，求神器→剑圣拒借→镇狱明王
+- 第5章·苗疆决战（41-50）：苗疆，重逢→拜月现身→水魔兽→女娲血脉
+- 第6章·结局分支（51-60）：苗疆/女娲祭坛，补天→月如牺牲→复活分支→结局
+
+■ 章节切换触发
+- 触发条件：完成当前章节 next_chapter_trigger 指定的关键事件
+- 推进步骤：事件完成 → 追加至完成表 → 当前章节+1 → 章节进度设为下一章 range[0]
+- 钳制：当前章节 [1, 6]；章节进度 [1, 60]；第6章为终章不切换
+
+■ 章节关联事件链
+- 第1章：婶婶中毒/酒剑仙指点/渡海仙灵岛/姥姥托孤/灵儿被掳
+- 第2章：苏州比武/月如入队/隐龙窟蛇妖/刘晋元结交
+- 第3章：京城见彩依/刘晋元中毒/毒娘子事件
+- 第4章：蜀山求神器/剑圣拒借/锁妖塔囚禁/镇狱明王
+- 第5章：苗疆重逢/拜月教主现身/水魔兽觉醒/女娲血脉
+- 第6章：灵儿补天/月如牺牲/月如复活(条件分支)/结局
+
+■ 章节专属机制
+- 第1-2章：探索为主，战斗为辅（解锁：基础探索/人物入队/好感影响）
+- 第3-4章：解锁炼丹系统（解锁：炼丹/炼器/中级法术/锁妖塔挑战）
+- 第5-6章：解锁女娲血脉觉醒与禁咒（解锁：血脉觉醒/禁咒/结局分支/终章BOSS）
+
+■ 工具函数（挂在全局对象 STAGE_FRAMEWORK 上）
+- getChapterByProgress(progress)               返回当前进度对应的章节对象
+- getChapterIndexByProgress(progress)         返回当前进度对应的章节序号(1-6)
+- isEventCompleted(eventName)                 判定关键事件是否已完成
+- canSwitchChapter(chapterIndex)              判定当前章节是否满足切换条件
+- nextChapterStartProgress(chapterIndex)      返回下一章节起始进度值
+
+■ 当前运行时状态（MVU读取）
+- 章节进度：<%= _chapterProgress %> / 60
+- 当前章节：<%= _currentChapter %>（<%= _curCh.name %>，区域：<%= _curCh.region %>）
+- 已完成关键事件数：<%= Array.isArray(_completedEvents) ? _completedEvents.length : 0 %>
+- 当前章节机制档位：<%= _curMechKey %>（<%= _curMech.focus %>）
+
+[阶段联动框架摘要结束。AI 须按当前章节推进剧情：章节切换须在关键事件完成后于 <UpdateVariable> 中执行；第6章结局分支须依月如好感与女娲血脉觉醒阶段判定；禁止跳章推进。]

@@ -1,0 +1,24 @@
+schemaVersion: 5
+id: project_mrelijzg_7336ef8c
+slug: 环世界
+name: 环世界
+kind:
+  output: both
+  source: derivative
+  assets:
+    mvu: planned
+    html: planned
+    regex: planned
+    ejs: planned
+    tavernHelper: planned
+paths:
+  plan: plan.md
+  draft:
+    card: draft/card.yaml
+    worldbook: draft/worldbook.yaml
+    assets: draft/assets.yaml
+  sourceRoot: source
+  reports: reports
+  exports: exports
+createdAt: '2026-07-10T07:09:57.291Z'
+updatedAt: '2026-07-10T07:09:57.300Z'

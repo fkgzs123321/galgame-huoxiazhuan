@@ -1,0 +1,190 @@
+{
+  "source": "Darkest Dungeon 官方设定（手写整理，供原著指导页与世界书使用）",
+  "version": "1.0.0",
+  "regions": [
+    {
+      "id": "crypts",
+      "name": "遗迹",
+      "alias": "Crypts",
+      "tone": "圣洁的废墟",
+      "description": "先祖的旧教堂与陵墓，白石与烛台之下埋着被亵渎的圣骸。骷髅与亡灵在破碎的祭坛间徘徊，亡灵法师在此召唤亡者大军。",
+      "enemies": [
+        "skeleton",
+        "bone_courtier",
+        "necromancer"
+      ],
+      "bosses": [
+        "亡灵法师",
+        "预言者",
+        "血色僧侣（DLC）"
+      ],
+      "lootTheme": "先祖遗物、宗教圣物"
+    },
+    {
+      "id": "warrens",
+      "name": "兽窟",
+      "alias": "Warrens",
+      "tone": "腐烂的巢穴",
+      "description": "地下的血肉迷宫，猪人（兽人）的巢穴。腐肉、秽物与疯狂的宗教仪式——这里的住民信奉一个以肉为圣典的神。",
+      "enemies": [
+        "swine",
+        "swine_skiver",
+        "swine_wretch"
+      ],
+      "bosses": [
+        "猪王威尔伯",
+        "猪人屠夫"
+      ],
+      "lootTheme": "腌肉、骨头、兽皮"
+    },
+    {
+      "id": "weald",
+      "name": "旷野",
+      "alias": "Weald",
+      "tone": "疯长的密林",
+      "description": "被诅咒的林地，藤蔓与树根吞噬道路。匪徒、狼人、以及盘踞其中的巨型生物。林中老者（Hag）用大锅煮着不可名状之物。",
+      "enemies": [
+        "brigand",
+        "giant",
+        "wolf"
+      ],
+      "bosses": [
+        "女巫",
+        "林中巨人",
+        "匪徒头目"
+      ],
+      "lootTheme": "草药、毛皮、匪徒赃物"
+    },
+    {
+      "id": "cove",
+      "name": "海湾",
+      "alias": "Cove",
+      "description": "被遗忘的海岸洞穴，鱼人（Pelagic）的领地。潮汐之下供奉着深海古神的雕像，水手们的遗骸被鱼人当作祭品。",
+      "enemies": [
+        "pelagic",
+        "fishman",
+        "crab"
+      ],
+      "bosses": [
+        "海妖",
+        "深海巨人",
+        "先驱者（DLC）"
+      ],
+      "lootTheme": "珍珠、海藻、船骸财宝"
+    },
+    {
+      "id": "darkestdungeon",
+      "name": "暗黑地牢",
+      "alias": "Darkest Dungeon",
+      "tone": "一切的终点",
+      "description": "庄园地下的最后迷宫，先祖罪孽的具现。古神在这里等待——击败它，或与它一同沉沦。",
+      "enemies": [
+        "ancestor",
+        "heart"
+      ],
+      "bosses": [
+        "先祖",
+        "古神之心"
+      ],
+      "lootTheme": "无（终局）"
+    },
+    {
+      "id": "crimson_court",
+      "name": "猩红庭院",
+      "alias": "Crimson Court (DLC)",
+      "description": "被血色瘟疫吞噬的贵族庭院。伯爵与他的血裔在此举行永恒的宴会，猩红诅咒将把英雄变成嗜血的怪物。",
+      "enemies": [
+        "bloodsucker",
+        "crocodilian"
+      ],
+      "bosses": [
+        "伯爵",
+        "子爵",
+        "男爵",
+        "维斯库斯"
+      ],
+      "lootTheme": "血酒、猩红水晶"
+    },
+    {
+      "id": "farmstead",
+      "name": "磨坊农场",
+      "alias": "Farmstead (CoM DLC)",
+      "description": "疯狂之色的降临之地。彗星碎片让农场陷入无尽的时间循环，敌人在波次中不断重生——这是耐力与心智的试炼。",
+      "enemies": [
+        "thing_from_the_stars",
+        "fungal"
+      ],
+      "bosses": [
+        "彗星使者",
+        "疯狂之色"
+      ],
+      "lootTheme": "碎片、奇物"
+    }
+  ],
+  "factions": [
+    {
+      "id": "undead",
+      "name": "亡灵",
+      "description": "被亡灵法师复活的死者军团，惧怕圣光与神圣伤害。"
+    },
+    {
+      "id": "swine",
+      "name": "猪人",
+      "description": "兽窟的腐肉信徒，以蛮力与疾病为武器。"
+    },
+    {
+      "id": "brigand",
+      "name": "匪徒",
+      "description": "旷野中的掠夺者，火枪与陷阱是他们的手段。"
+    },
+    {
+      "id": "pelagic",
+      "name": "鱼人",
+      "description": "海湾深处崇拜古神的异形生物。"
+    },
+    {
+      "id": "cultist",
+      "name": "邪教徒",
+      "description": "崇拜古神的疯狂信徒，遍布各区域，主持亵渎仪式。"
+    },
+    {
+      "id": "bloodsucker",
+      "name": "吸血鬼",
+      "description": "猩红庭院的血裔，传播猩红诅咒。"
+    },
+    {
+      "id": "cosmic",
+      "name": "星外之物",
+      "description": "来自星辰之外的恐怖，非人所能理解。"
+    }
+  ],
+  "eldritch": {
+    "name": "古神",
+    "description": "地牢深处的存在，不可名状、不可直视。它通过恐惧、疯狂与疾病侵蚀人心。先祖的财富与荣耀，正是以它为代价换来的。",
+    "worshipers": [
+      "邪教徒",
+      "鱼人",
+      "疯狂的信徒"
+    ],
+    "artifacts": [
+      "先祖神龛",
+      "猩红水晶",
+      "疯狂之色彗星"
+    ]
+  },
+  "ancestor": {
+    "name": "先祖",
+    "description": "庄园的建立者，一位学识渊博但道德堕落的贵族。他挖掘地牢、召唤古神、犯下不可饶恕的罪行，最终将自己也献给了黑暗。玩家继承的不仅是庄园，还有他的罪。",
+    "quotes": [
+      "财富、权力——我全都想要，也全都得到了。代价？不过是些不值一提的良心。",
+      "地牢深处的东西在等我。或者说——它在等所有人。"
+    ]
+  },
+  "gameplayCore": {
+    "压力系统": "压力系统：英雄承受压力（0-200）。100 时可能崩溃（被折磨）或觉醒（美德）；200 时心脏病发。",
+    "死亡之门": "死亡之门：生命降到 0 时进入死亡之门，下一次受伤即死亡（有抗性判定）。",
+    "火把系统": "火把系统：亮度影响暴击、探索与遭遇概率。光明 vs 黑暗各有增益。",
+    "怪癖系统": "怪癖系统：正面/负面怪癖塑造英雄性格，可在疗养院治疗或锁定。",
+    "抗压等级": "抗压等级：英雄通过冒险晋升（新兵→老兵→冠军→队长→大师→传说），解锁更强能力与更高难度任务。"
+  }
+}

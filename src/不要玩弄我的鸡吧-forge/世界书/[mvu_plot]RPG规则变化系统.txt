@@ -1,0 +1,340 @@
+@@generate_before
+# [mvu_plot]RPG规则变化系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.规则变化 / stat_data.近期事件 / stat_data.时间
+
+<%
+// ===== 读取时间 =====
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+
+// ===== 世界规则变化列表 =====
+// 影响整个游戏世界的规则（如新法律/社会现象/超自然现象）
+var _rawWorldRules = getvar('stat_data.规则变化.世界变化', {scope:'local', defaults:[
+  {
+    id:'world_rule001',
+    content:'高考冲刺期，全国高三学生进入最后冲刺阶段',
+    scope:'全国',
+    target:'所有高三学生',
+    intensity:'中',
+    source:'政府公告',
+    effective_from:1,
+    effective_to:103,
+    impact:'学业压力提升，校园管理趋严'
+  },
+  {
+    id:'world_rule002',
+    content:'本市启动高考护航行动，加强校园周边治安',
+    scope:'本市',
+    target:'所有学校',
+    intensity:'中',
+    source:'市政府公告',
+    effective_from:1,
+    effective_to:103,
+    impact:'校外活动受限，校园周边巡查加强'
+  }
+]}) || [];
+var worldRules = Array.isArray(_rawWorldRules) ? _rawWorldRules : (function(){ var a=[]; if(_rawWorldRules && typeof _rawWorldRules==='object'){ for(var k in _rawWorldRules){ if(Object.prototype.hasOwnProperty.call(_rawWorldRules,k)) a.push(_rawWorldRules[k]); } } return a; })();
+
+// ===== 校规变化列表 =====
+// 学校内部的规则变化
+var _rawSchoolRules = getvar('stat_data.规则变化.学校变化', {scope:'local', defaults:[
+  {
+    id:'school_rule001',
+    content:'高三下学期作息时间调整：晚自习延长至22:00',
+    target:'高三全体学生',
+    scope:'高三',
+    intensity:'高',
+    reward_punishment:'遵守+综合分，违反-综合分/记过',
+    source:'教务处通知',
+    effective_from:1,
+    effective_to:103,
+    impact:'精力消耗增加，夜间睡眠时间缩短'
+  },
+  {
+    id:'school_rule002',
+    content:'封闭管理：学生非节假日不得离校',
+    target:'全体学生',
+    scope:'全校',
+    intensity:'极高',
+    reward_punishment:'违反记大过，三次劝退',
+    source:'校长室颁布',
+    effective_from:1,
+    effective_to:103,
+    impact:'校外活动禁止，载具使用受限'
+  },
+  {
+    id:'school_rule003',
+    content:'男女同宿特例管理：{{user}}与苏晴/秦雨/张雨萱同住A栋三楼高三2班4人宿舍（校董沈芷兰特批），林婉清住隔壁单人间（班长监督权），宿管白露每日查寝2次',
+    target:'{{user}}及3位女舍友',
+    scope:'个人（4人宿舍）',
+    intensity:'极高',
+    reward_punishment:'遵守正常，违反按校规处理（含男女越界行为处分）',
+    source:'宿舍管理处（校董沈芷兰特批）',
+    effective_from:1,
+    effective_to:null,
+    impact:'{{user}}与3位女舍友朝夕相处，所有性别边界都被打破；宿管白露重点监控，舍友任何越界行为都会被处分'
+  },
+  {
+    id:'school_rule004',
+    content:'校医室购药需校医在场，部分药品需处方',
+    target:'全体学生',
+    scope:'全校',
+    intensity:'高',
+    reward_punishment:'违规购药记过',
+    source:'校医室规定',
+    effective_from:1,
+    effective_to:null,
+    impact:'安眠药/高级补剂/特制药膳购买需沈雨桐在场'
+  }
+]}) || [];
+var schoolRules = Array.isArray(_rawSchoolRules) ? _rawSchoolRules : (function(){ var a=[]; if(_rawSchoolRules && typeof _rawSchoolRules==='object'){ for(var k in _rawSchoolRules){ if(Object.prototype.hasOwnProperty.call(_rawSchoolRules,k)) a.push(_rawSchoolRules[k]); } } return a; })();
+
+// ===== 规则变化来源 =====
+// 校长颁布 / 教务处通知 / 政府公告 / 超自然力量 / 玩家行为后果
+%>
+
+<rules_system>
+【RPG规则变化系统 - AI内部参考，严禁外露元数据】
+
+---
+■ 当前生效规则概览
+---
+世界规则数：<%= worldRules.length %>
+校规数：<%= schoolRules.length %>
+当前日期：第 <%= day %> 天
+使用阶段：<%= stage %>/5
+
+---
+■ 世界规则变化
+---
+<% worldRules.forEach(function(r) { %>
+【<%= r.编号 || r.id || '' %>】<%= r.内容 || r.content || '' %>
+- 生效范围：<%= r.范围 || r.scope || '' %>
+- 影响对象：<%= r.目标 || r.target || '' %>
+- 执行强度：<%= r.强度 || r.intensity || '' %>
+- 来源：<%= r.来源 || r.source || '' %>
+- 生效期：第 <%= r.生效日 || r.effective_from || '' %> 天<% if (r.失效日 || r.effective_to) { %> ~ 第 <%= r.失效日 || r.effective_to %> 天<% } else { %> ~ 永久<% } %>
+- 影响：<%= r.影响 || r.impact || '' %>
+<% }); %>
+
+---
+■ 校规变化
+---
+<% schoolRules.forEach(function(r) { %>
+【<%= r.编号 || r.id || '' %>】<%= r.内容 || r.content || '' %>
+- 适用对象：<%= r.目标 || r.target || '' %>
+- 生效范围：<%= r.范围 || r.scope || '' %>
+- 执行强度：<%= r.强度 || r.intensity || '' %>
+- 奖励处分：<%= r.奖惩 || r.reward_punishment || '' %>
+- 来源：<%= r.来源 || r.source || '' %>
+- 生效期：第 <%= r.生效日 || r.effective_from || '' %> 天<% if (r.失效日 || r.effective_to) { %> ~ 第 <%= r.失效日 || r.effective_to %> 天<% } else { %> ~ 永久<% } %>
+- 影响：<%= r.影响 || r.impact || '' %>
+<% }); %>
+
+---
+■ 规则变化类型
+---
+1. 世界变化（world）：
+   - 影响整个游戏世界的规则
+   - 来源：新法律/社会现象/超自然现象/政府公告
+   - 例子：
+     · "本市启动高考护航行动"（社会现象）
+     · "教育部发布新规：高三学生作息调整"（法律）
+     · "校园周边出现不明失踪事件"（超自然现象，stage>=3）
+     · "高考延期通知"（政府公告，重大剧情节点）
+2. 校规变化（school）：
+   - 学校内部的规则变化
+   - 来源：校长颁布/教务处通知/学生处规定/校医室规定
+   - 例子：
+     · "晚自习延长至22:00"（教务处）
+     · "封闭管理，禁止外出"（校长室）
+     · "男女同宿特例管理"（宿舍管理处，校董特批）
+     · "校医室购药需校医在场"（校医室）
+     · "高三女生宿舍加强夜间巡查"（教务处，剧情触发）
+
+---
+■ 规则属性详解
+---
+1. 规则内容：规则的文字描述
+2. 生效范围：
+   - 全国：影响所有角色和事件
+   - 本市：影响本市内所有学校
+   - 全校：影响圣德女子学院所有学生
+   - 年级：仅影响高三/高二/高一
+   - 班级：仅影响某班级
+   - 个人：仅影响特定角色（如{{user}})
+3. 影响对象：所有学生/高三学生/男生/女生/特定NPC
+4. 执行强度：
+   - 低：建议性，违反影响小
+   - 中：常规管理，违反有处分
+   - 高：严格执行，违反记过
+   - 极高：铁律，违反劝退/开除
+5. 来源：
+   - 校长颁布：最高权威，不可违抗
+   - 教务处通知：常规校规来源
+   - 政府公告：影响世界的规则
+   - 超自然力量：stage>=3 可能出现
+   - 玩家行为后果：{{user}}行为触发的规则调整
+6. 生效期限：
+   - 永久：无截止
+   - 临时：第N天~第M天
+   - 触发型：满足条件生效，不满足失效
+
+---
+■ 规则变化的来源
+---
+1. 校长颁布（最高权威）：
+   - 例：封闭管理、作息调整、特例管理
+   - 不可违抗，违反直接开除
+   - 通常在开学典礼/全校大会宣布
+2. 教务处通知（常规管理）：
+   - 例：考试安排、社团活动规定、晚自习纪律
+   - 违反记过/记大过
+   - 通过广播/班会/通知栏发布
+3. 政府公告（世界规则）：
+   - 例：高考时间、教育政策、社会事件
+   - 影响所有角色
+   - 通过新闻/广播发布
+4. 超自然力量（stage>=3）：
+   - 例：假阴茎相关异常现象、神秘失踪、灵异事件
+   - 影响{{user}}感知和NPC行为
+   - 通过剧情事件触发
+5. 玩家行为后果：
+   - 例：{{user}}被发现异常行为 → 加强巡查
+   - 例：{{user}}举报某事件 → 调查期间规定调整
+   - 通过 recent_events 联动触发
+
+---
+■ 规则变化生成机制
+---
+1. 定时规则变化：
+   - 第1天：开学典礼宣布基础校规
+   - 第30/60/90天：季考期间临时规定（如考场纪律强化）
+   - 第103天：高考日特殊规定
+   - 第120天：成绩公布相关规定
+2. 剧情触发规则变化：
+   - 某女学生请假多日 → 校规新增"女生宿舍夜间巡查"
+   - {{user}}被怀疑 → 校规新增"4人宿舍重点监控"（白露加强查寝频率，安装 hallway 监控）
+   - 假阴茎使用扩散 → 校园流言四起 → 加强管理
+3. 阶段触发规则变化：
+   - stage>=3：可能出现超自然现象相关规则
+   - stage>=4：校方可能注意到异常，加强管控
+   - stage=5：终局前规则剧变
+4. 玩家行为触发：
+   - {{user}}举报/暴露 → 校方调查 → 临时规定
+   - {{user}}被怀疑 → 加强对{{user}}的监控
+   - {{user}}高疑心度 → NPC 行为更谨慎
+
+---
+■ 重大规则变化必须联动 recent_events
+---
+1. 重大规则变化判定标准：
+   - 执行强度为"高"或"极高"
+   - 影响范围为"全校"或"全国"
+   - 直接影响{{user}}日常行为
+   - 由超自然力量或玩家行为触发
+2. 联动 recent_events 记录格式：
+   - {type:'rule_change', day, hour, rule_id, rule_type, content, source, impact}
+3. 重大规则变化必须在叙事中体现：
+   - 校长颁布：开学典礼/全校大会宣布
+   - 教务处通知：广播/班会/通知栏张贴
+   - 政府公告：新闻联播/校园广播转播
+   - 超自然力量：异常事件直接呈现
+   - 玩家行为后果：被叫到教务处/收到书面通知
+
+---
+■ 规则变化存储字段
+---
+1. 世界规则：
+   - stat_data.规则变化.世界变化 = [{id, content, scope, target, intensity, source, effective_from, effective_to, impact}]
+2. 校规：
+   - stat_data.规则变化.学校变化 = [{id, content, target, scope, intensity, reward_punishment, source, effective_from, effective_to, impact}]
+3. ID命名规则：
+   - 世界规则：world_rule001 起递增
+   - 校规：school_rule001 起递增
+   - 编号稳定不重用
+4. 已失效规则处理：
+   - 超过 effective_to 的规则保留在数组中但标记 status='expired'
+   - 不删除（便于历史查询）
+5. 规则更新由变量 AI 自动同步：
+   - 新增规则：append 到对应数组
+   - 修改规则：更新对应字段
+   - 失效规则：标记 status='expired'
+
+---
+■ 规则与玩家行为交互
+---
+1. 玩家违反规则：
+   - AI 必须按 reward_punishment 字段执行处分
+   - 处分等级：警告/记过/记大过/劝退/开除
+   - 处分记录写入 stat_data.学业.处分记录（影响结局）
+2. 玩家利用规则：
+   - 玩家可引用规则保护自己（如"封闭管理，不能外出"）
+   - 玩家可举报他人违规（需证据）
+3. 玩家影响规则：
+   - 高疑心度+证据 → 可向校方反映 → 触发规则变化
+   - 终局分支可能改变规则走向
+4. 规则冲突处理：
+   - 高权威规则覆盖低权威（校长>教务处>校医室）
+   - 个人规则不覆盖全校规则
+   - 临时规则到期后恢复原规则
+
+---
+■ 校园背景适配规则
+---
+1. 严禁出现脱离校园背景的规则：
+   - 严禁：科幻规则（如"外星人入侵")
+   - 严禁：魔幻规则（如"魔法学校成立"）
+   - 严禁：政治规则（如"学校被接管"）
+2. 超自然规则仅在 stage>=3 出现：
+   - 与假阴茎相关的异常现象
+   - 校园灵异传闻（如"深夜女生宿舍有异响"）
+   - 不明失踪事件
+3. 规则与高考时间轴联动：
+   - 越接近高考，管理越严格
+   - 高考日（第103天）有特殊规定
+   - 成绩公布日（第120天）触发终局规则
+4. 规则与NPC行为联动：
+   - 校规变化影响NPC日常行为（如女生宿舍巡查加强 → 女生使用假阴茎更隐蔽）
+   - 超自然规则影响NPC心理状态
+
+---
+■ AI 执行铁律
+---
+1. 重大规则变化必须联动 recent_events：
+   - stat_data.近期事件 新增 {type:'rule_change', ...} 记录
+2. 规则变化由变量 AI 自动同步：
+   - stat_data.规则变化.世界变化/学校变化 新增/修改/失效
+3. 规则生效后必须在叙事中体现：
+   - {{user}} 听到广播/看到通知/被告知
+   - NPC 行为按新规则调整
+4. 玩家违反规则必须按 reward_punishment 处分：
+   - 处分记录写入 stat_data.学业.处分记录
+   - 处分等级影响结局分支
+5. 严禁凭空创造规则：
+   - 规则必须有明确来源
+   - 严禁"突然出现一条新规定"
+6. 严禁在正文中输出"world_rule001""intensity""effective_from"等元术语
+7. 规则叙事转化：
+   - "广播里传来教务处的通知：今晚晚自习延长到22点"
+   - "班主任在班会上宣布：从下周开始，周末不得离校"
+   - "校门口贴出了新告示，加强门禁管理"
+8. 规则变化与剧情节奏匹配：
+   - 初期（1-30天）：基础校规，管理适中
+   - 发展期（31-60天）：管理趋严，新规增加
+   - 中期（61-95天）：可能出现超自然规则
+   - 冲刺期（96-110天）：高考冲刺，管理极严
+   - 高考前夕（111-120天）：特殊规定
+   - 终局（103-120天）：终局规则，可能剧变
+9. 超自然规则在 stage<3 严禁出现：
+   - 仅在 stage>=3 时可能触发与假阴茎相关的异常规则
+   - 超自然规则通常表现为"传闻""未证实现象"
+   - 严禁直接出现"超自然力量"字样
+10. 规则变化的撤销机制：
+    - 临时规则到期自动失效
+    - 永久规则不可撤销（除非终局分支）
+    - 玩家可通过特定行为影响规则调整（如举报成功 → 加强管控）
+</rules_system>

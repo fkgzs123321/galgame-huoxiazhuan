@@ -1,0 +1,1438 @@
+{
+  "generatedAt": "2026-08-04T09:55:36.287Z",
+  "basePath": "/dd-assets",
+  "heroes": {
+    "abomination": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/abomination/abomination.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/abomination/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/abomination/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "antiquarian": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/antiquarian/antiquarian.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/antiquarian/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "arbalest": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/arbalest/arbalest.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/arbalest/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "bounty_hunter": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/bounty_hunter/bounty_hunter.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/bounty_hunter/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "crusader": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/crusader/crusader.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/crusader/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/crusader/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "grave_robber": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/grave_robber/grave_robber.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/grave_robber/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "hellion": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/hellion/hellion.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/hellion/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/hellion/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "highwayman": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/highwayman/highwayman.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/highwayman/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "houndmaster": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/houndmaster/houndmaster.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/houndmaster/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "jester": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/jester/jester.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/jester/jester.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/jester/jester.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/jester/jester.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/jester/jester.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/jester/jester.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/jester/jester.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/jester/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/jester/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "leper": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/leper/leper.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/leper/leper.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/leper/leper.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/leper/leper.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/leper/leper.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/leper/leper.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/leper/leper.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/leper/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/leper/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "man_at_arms": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/man_at_arms/man_at_arms.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/man_at_arms/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "occultist": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/occultist/occultist.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/occultist/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/occultist/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "plague_doctor": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/plague_doctor/plague_doctor.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/plague_doctor/icons_equip/eqp_weapon_4.png"
+      ]
+    },
+    "vestal": {
+      "abilities": [
+        {
+          "name": "five",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.five.png"
+        },
+        {
+          "name": "four",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.four.png"
+        },
+        {
+          "name": "one",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.one.png"
+        },
+        {
+          "name": "seven",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.seven.png"
+        },
+        {
+          "name": "six",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.six.png"
+        },
+        {
+          "name": "three",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.three.png"
+        },
+        {
+          "name": "two",
+          "path": "/dd-assets/heroes/vestal/vestal.ability.two.png"
+        }
+      ],
+      "portraits": [],
+      "equipIcons": [
+        "/dd-assets/heroes/vestal/icons_equip/eqp_armour_0.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_armour_1.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_armour_2.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_armour_3.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_armour_4.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_weapon_0.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_weapon_1.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_weapon_2.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_weapon_3.png",
+        "/dd-assets/heroes/vestal/icons_equip/eqp_weapon_4.png"
+      ]
+    }
+  },
+  "monsters": {
+    "ancestor_big_D": [
+      "/dd-assets/monsters/ancestor_big/ancestor_big_D/tint.png"
+    ],
+    "anim": [
+      "/dd-assets/monsters/virago_shroom/anim/virago_shroom.sprite.combat.png",
+      "/dd-assets/monsters/virago_shroom/anim/virago_shroom.sprite.defend.png"
+    ],
+    "fx": [
+      "/dd-assets/monsters/virago_hateful/fx/virago_hateful.sprite.from_death_comes_life.png",
+      "/dd-assets/monsters/virago_hateful/fx/virago_hateful.sprite.putrefying_breath.png",
+      "/dd-assets/monsters/virago_hateful/fx/virago_hateful.sprite.ruinous_hex.png",
+      "/dd-assets/monsters/virago_hateful/fx/virago_hateful.sprite.ruinous_hex_target.png"
+    ],
+    "ancestor_flawed_D": [
+      "/dd-assets/monsters/ancestor_flawed/ancestor_flawed_D/tint.png"
+    ],
+    "ancestor_heart_D": [
+      "/dd-assets/monsters/ancestor_heart/ancestor_heart_D/tint.png"
+    ],
+    "ancestor_nebula_D": [
+      "/dd-assets/monsters/ancestor_nebula/ancestor_nebula_D/tint.png"
+    ],
+    "ancestor_perfect_D": [
+      "/dd-assets/monsters/ancestor_perfect/ancestor_perfect_D/tint.png"
+    ],
+    "ancestor_pod_D": [
+      "/dd-assets/monsters/ancestor_pod/ancestor_pod_D/tint.png"
+    ],
+    "ancestor_small_D": [
+      "/dd-assets/monsters/ancestor_small/ancestor_small_D/tint.png"
+    ],
+    "bloated_corpse_A": [
+      "/dd-assets/monsters/bloated_corpse/bloated_corpse_A/tint.png"
+    ],
+    "bloated_corpse_B": [
+      "/dd-assets/monsters/bloated_corpse/bloated_corpse_B/tint.png"
+    ],
+    "bloated_corpse_C": [
+      "/dd-assets/monsters/bloated_corpse/bloated_corpse_C/tint.png"
+    ],
+    "brigand_barrel_D": [
+      "/dd-assets/monsters/brigand_barrel/brigand_barrel_D/tint.png"
+    ],
+    "brigand_blood_A": [
+      "/dd-assets/monsters/brigand_blood/brigand_blood_A/tint.png"
+    ],
+    "brigand_blood_B": [
+      "/dd-assets/monsters/brigand_blood/brigand_blood_B/tint.png"
+    ],
+    "brigand_blood_C": [
+      "/dd-assets/monsters/brigand_blood/brigand_blood_C/tint.png"
+    ],
+    "brigand_cannon_A": [
+      "/dd-assets/monsters/brigand_cannon/brigand_cannon_A/tint.png"
+    ],
+    "brigand_cannon_B": [
+      "/dd-assets/monsters/brigand_cannon/brigand_cannon_B/tint.png"
+    ],
+    "brigand_cannon_C": [
+      "/dd-assets/monsters/brigand_cannon/brigand_cannon_C/tint.png"
+    ],
+    "brigand_cutthroat_A": [
+      "/dd-assets/monsters/brigand_cutthroat/brigand_cutthroat_A/tint.png"
+    ],
+    "brigand_cutthroat_B": [
+      "/dd-assets/monsters/brigand_cutthroat/brigand_cutthroat_B/tint.png"
+    ],
+    "brigand_cutthroat_C": [
+      "/dd-assets/monsters/brigand_cutthroat/brigand_cutthroat_C/tint.png"
+    ],
+    "brigand_fuseman_A": [
+      "/dd-assets/monsters/brigand_fuseman/brigand_fuseman_A/tint.png"
+    ],
+    "brigand_fuseman_B": [
+      "/dd-assets/monsters/brigand_fuseman/brigand_fuseman_B/tint.png"
+    ],
+    "brigand_fuseman_C": [
+      "/dd-assets/monsters/brigand_fuseman/brigand_fuseman_C/tint.png"
+    ],
+    "brigand_fusilier_A": [
+      "/dd-assets/monsters/brigand_fusilier/brigand_fusilier_A/tint.png"
+    ],
+    "brigand_fusilier_B": [
+      "/dd-assets/monsters/brigand_fusilier/brigand_fusilier_B/tint.png"
+    ],
+    "brigand_fusilier_C": [
+      "/dd-assets/monsters/brigand_fusilier/brigand_fusilier_C/tint.png"
+    ],
+    "brigand_hunter_D": [
+      "/dd-assets/monsters/brigand_hunter/brigand_hunter_D/tint.png"
+    ],
+    "brigand_raider_D": [
+      "/dd-assets/monsters/brigand_raider/brigand_raider_D/tint.png"
+    ],
+    "brigand_sapper_D": [
+      "/dd-assets/monsters/brigand_sapper/brigand_sapper_D/tint.png"
+    ],
+    "carrion_eater_A": [
+      "/dd-assets/monsters/carrion_eater/carrion_eater_A/tint.png"
+    ],
+    "carrion_eater_B": [
+      "/dd-assets/monsters/carrion_eater/carrion_eater_B/tint.png"
+    ],
+    "carrion_eater_C": [
+      "/dd-assets/monsters/carrion_eater/carrion_eater_C/tint.png"
+    ],
+    "carrion_eater_big_A": [
+      "/dd-assets/monsters/carrion_eater_big/carrion_eater_big_A/tint.png"
+    ],
+    "carrion_eater_big_B": [
+      "/dd-assets/monsters/carrion_eater_big/carrion_eater_big_B/tint.png"
+    ],
+    "carrion_eater_big_C": [
+      "/dd-assets/monsters/carrion_eater_big/carrion_eater_big_C/tint.png"
+    ],
+    "cauldron_empty_A": [
+      "/dd-assets/monsters/cauldron_empty/cauldron_empty_A/tint.png"
+    ],
+    "cauldron_empty_B": [
+      "/dd-assets/monsters/cauldron_empty/cauldron_empty_B/tint.png"
+    ],
+    "cauldron_empty_C": [
+      "/dd-assets/monsters/cauldron_empty/cauldron_empty_C/tint.png"
+    ],
+    "cauldron_full_A": [
+      "/dd-assets/monsters/cauldron_full/cauldron_full_A/tint.png"
+    ],
+    "cauldron_full_B": [
+      "/dd-assets/monsters/cauldron_full/cauldron_full_B/tint.png"
+    ],
+    "cauldron_full_C": [
+      "/dd-assets/monsters/cauldron_full/cauldron_full_C/tint.png"
+    ],
+    "cell_battle_D": [
+      "/dd-assets/monsters/cell_battle/cell_battle_D/tint.png"
+    ],
+    "cell_white_D": [
+      "/dd-assets/monsters/cell_white/cell_white_D/tint.png"
+    ],
+    "collector_A": [
+      "/dd-assets/monsters/collector/collector_A/tint.png"
+    ],
+    "collector_B": [
+      "/dd-assets/monsters/collector/collector_B/tint.png"
+    ],
+    "collector_C": [
+      "/dd-assets/monsters/collector/collector_C/tint.png"
+    ],
+    "collector_battle_A": [
+      "/dd-assets/monsters/collector_battle/collector_battle_A/tint.png"
+    ],
+    "collector_battle_B": [
+      "/dd-assets/monsters/collector_battle/collector_battle_B/tint.png"
+    ],
+    "collector_battle_C": [
+      "/dd-assets/monsters/collector_battle/collector_battle_C/tint.png"
+    ],
+    "collector_protect_A": [
+      "/dd-assets/monsters/collector_protect/collector_protect_A/tint.png"
+    ],
+    "collector_protect_B": [
+      "/dd-assets/monsters/collector_protect/collector_protect_B/tint.png"
+    ],
+    "collector_protect_C": [
+      "/dd-assets/monsters/collector_protect/collector_protect_C/tint.png"
+    ],
+    "collector_shaman_A": [
+      "/dd-assets/monsters/collector_shaman/collector_shaman_A/tint.png"
+    ],
+    "collector_shaman_B": [
+      "/dd-assets/monsters/collector_shaman/collector_shaman_B/tint.png"
+    ],
+    "collector_shaman_C": [
+      "/dd-assets/monsters/collector_shaman/collector_shaman_C/tint.png"
+    ],
+    "crone_A": [
+      "/dd-assets/monsters/crone/crone_A/tint.png"
+    ],
+    "crone_B": [
+      "/dd-assets/monsters/crone/crone_B/tint.png"
+    ],
+    "crone_C": [
+      "/dd-assets/monsters/crone/crone_C/tint.png"
+    ],
+    "crow_A": [
+      "/dd-assets/monsters/crow/crow_A/tint.png"
+    ],
+    "crow_B": [
+      "/dd-assets/monsters/crow/crow_B/tint.png"
+    ],
+    "crow_C": [
+      "/dd-assets/monsters/crow/crow_C/tint.png"
+    ],
+    "crow_D": [
+      "/dd-assets/monsters/crow/crow_D/tint.png"
+    ],
+    "cultist_brawler_A": [
+      "/dd-assets/monsters/cultist_brawler/cultist_brawler_A/tint.png"
+    ],
+    "cultist_brawler_B": [
+      "/dd-assets/monsters/cultist_brawler/cultist_brawler_B/tint.png"
+    ],
+    "cultist_brawler_C": [
+      "/dd-assets/monsters/cultist_brawler/cultist_brawler_C/tint.png"
+    ],
+    "cultist_harpy_D": [
+      "/dd-assets/monsters/cultist_harpy/cultist_harpy_D/tint.png"
+    ],
+    "cultist_orgiastic_D": [
+      "/dd-assets/monsters/cultist_orgiastic/cultist_orgiastic_D/tint.png"
+    ],
+    "cultist_shrouded_D": [
+      "/dd-assets/monsters/cultist_shrouded/cultist_shrouded_D/tint.png"
+    ],
+    "cultist_warlord_D": [
+      "/dd-assets/monsters/cultist_warlord/cultist_warlord_D/tint.png"
+    ],
+    "cultist_witch_A": [
+      "/dd-assets/monsters/cultist_witch/cultist_witch_A/tint.png"
+    ],
+    "cultist_witch_B": [
+      "/dd-assets/monsters/cultist_witch/cultist_witch_B/tint.png"
+    ],
+    "cultist_witch_C": [
+      "/dd-assets/monsters/cultist_witch/cultist_witch_C/tint.png"
+    ],
+    "cyst_D": [
+      "/dd-assets/monsters/cyst/cyst_D/tint.png"
+    ],
+    "drowned_anchor_A": [
+      "/dd-assets/monsters/drowned_anchor/drowned_anchor_A/tint.png"
+    ],
+    "drowned_anchor_B": [
+      "/dd-assets/monsters/drowned_anchor/drowned_anchor_B/tint.png"
+    ],
+    "drowned_anchor_C": [
+      "/dd-assets/monsters/drowned_anchor/drowned_anchor_C/tint.png"
+    ],
+    "drowned_anchored_A": [
+      "/dd-assets/monsters/drowned_anchored/drowned_anchored_A/tint.png"
+    ],
+    "drowned_anchored_B": [
+      "/dd-assets/monsters/drowned_anchored/drowned_anchored_B/tint.png"
+    ],
+    "drowned_anchored_C": [
+      "/dd-assets/monsters/drowned_anchored/drowned_anchored_C/tint.png"
+    ],
+    "drowned_captain_A": [
+      "/dd-assets/monsters/drowned_captain/drowned_captain_A/tint.png"
+    ],
+    "drowned_captain_B": [
+      "/dd-assets/monsters/drowned_captain/drowned_captain_B/tint.png"
+    ],
+    "drowned_captain_C": [
+      "/dd-assets/monsters/drowned_captain/drowned_captain_C/tint.png"
+    ],
+    "drowned_pirate_A": [
+      "/dd-assets/monsters/drowned_pirate/drowned_pirate_A/tint.png"
+    ],
+    "drowned_pirate_B": [
+      "/dd-assets/monsters/drowned_pirate/drowned_pirate_B/tint.png"
+    ],
+    "drowned_pirate_C": [
+      "/dd-assets/monsters/drowned_pirate/drowned_pirate_C/tint.png"
+    ],
+    "ectoplasm_A": [
+      "/dd-assets/monsters/ectoplasm/ectoplasm_A/tint.png"
+    ],
+    "ectoplasm_B": [
+      "/dd-assets/monsters/ectoplasm/ectoplasm_B/tint.png"
+    ],
+    "ectoplasm_C": [
+      "/dd-assets/monsters/ectoplasm/ectoplasm_C/tint.png"
+    ],
+    "ectoplasm_large_A": [
+      "/dd-assets/monsters/ectoplasm_large/ectoplasm_large_A/tint.png"
+    ],
+    "ectoplasm_large_B": [
+      "/dd-assets/monsters/ectoplasm_large/ectoplasm_large_B/tint.png"
+    ],
+    "ectoplasm_large_C": [
+      "/dd-assets/monsters/ectoplasm_large/ectoplasm_large_C/tint.png"
+    ],
+    "errant_flesh_bat_D": [
+      "/dd-assets/monsters/errant_flesh_bat/errant_flesh_bat_D/tint.png"
+    ],
+    "errant_flesh_dog_D": [
+      "/dd-assets/monsters/errant_flesh_dog/errant_flesh_dog_D/tint.png"
+    ],
+    "fishman_crabby_A": [
+      "/dd-assets/monsters/fishman_crabby/fishman_crabby_A/tint.png"
+    ],
+    "fishman_crabby_B": [
+      "/dd-assets/monsters/fishman_crabby/fishman_crabby_B/tint.png"
+    ],
+    "fishman_crabby_C": [
+      "/dd-assets/monsters/fishman_crabby/fishman_crabby_C/tint.png"
+    ],
+    "fishman_harpoon_A": [
+      "/dd-assets/monsters/fishman_harpoon/fishman_harpoon_A/tint.png"
+    ],
+    "fishman_harpoon_B": [
+      "/dd-assets/monsters/fishman_harpoon/fishman_harpoon_B/tint.png"
+    ],
+    "fishman_harpoon_C": [
+      "/dd-assets/monsters/fishman_harpoon/fishman_harpoon_C/tint.png"
+    ],
+    "fishman_shaman_A": [
+      "/dd-assets/monsters/fishman_shaman/fishman_shaman_A/tint.png"
+    ],
+    "fishman_shaman_B": [
+      "/dd-assets/monsters/fishman_shaman/fishman_shaman_B/tint.png"
+    ],
+    "fishman_shaman_C": [
+      "/dd-assets/monsters/fishman_shaman/fishman_shaman_C/tint.png"
+    ],
+    "formless_guard_A": [
+      "/dd-assets/monsters/formless_guard/formless_guard_A/tint.png"
+    ],
+    "formless_guard_B": [
+      "/dd-assets/monsters/formless_guard/formless_guard_B/tint.png"
+    ],
+    "formless_guard_C": [
+      "/dd-assets/monsters/formless_guard/formless_guard_C/tint.png"
+    ],
+    "formless_melee_A": [
+      "/dd-assets/monsters/formless_melee/formless_melee_A/tint.png"
+    ],
+    "formless_melee_B": [
+      "/dd-assets/monsters/formless_melee/formless_melee_B/tint.png"
+    ],
+    "formless_melee_C": [
+      "/dd-assets/monsters/formless_melee/formless_melee_C/tint.png"
+    ],
+    "formless_ranged_A": [
+      "/dd-assets/monsters/formless_ranged/formless_ranged_A/tint.png"
+    ],
+    "formless_ranged_B": [
+      "/dd-assets/monsters/formless_ranged/formless_ranged_B/tint.png"
+    ],
+    "formless_ranged_C": [
+      "/dd-assets/monsters/formless_ranged/formless_ranged_C/tint.png"
+    ],
+    "formless_weak_A": [
+      "/dd-assets/monsters/formless_weak/formless_weak_A/tint.png"
+    ],
+    "formless_weak_B": [
+      "/dd-assets/monsters/formless_weak/formless_weak_B/tint.png"
+    ],
+    "formless_weak_C": [
+      "/dd-assets/monsters/formless_weak/formless_weak_C/tint.png"
+    ],
+    "fungal_artillery_A": [
+      "/dd-assets/monsters/fungal_artillery/fungal_artillery_A/tint.png"
+    ],
+    "fungal_artillery_B": [
+      "/dd-assets/monsters/fungal_artillery/fungal_artillery_B/tint.png"
+    ],
+    "fungal_artillery_C": [
+      "/dd-assets/monsters/fungal_artillery/fungal_artillery_C/tint.png"
+    ],
+    "fungal_bloat_A": [
+      "/dd-assets/monsters/fungal_bloat/fungal_bloat_A/tint.png"
+    ],
+    "fungal_bloat_B": [
+      "/dd-assets/monsters/fungal_bloat/fungal_bloat_B/tint.png"
+    ],
+    "fungal_bloat_C": [
+      "/dd-assets/monsters/fungal_bloat/fungal_bloat_C/tint.png"
+    ],
+    "gargoyle_A": [
+      "/dd-assets/monsters/gargoyle/gargoyle_A/tint.png"
+    ],
+    "gargoyle_B": [
+      "/dd-assets/monsters/gargoyle/gargoyle_B/tint.png"
+    ],
+    "gargoyle_C": [
+      "/dd-assets/monsters/gargoyle/gargoyle_C/tint.png"
+    ],
+    "ghoul_A": [
+      "/dd-assets/monsters/ghoul/ghoul_A/tint.png"
+    ],
+    "ghoul_B": [
+      "/dd-assets/monsters/ghoul/ghoul_B/tint.png"
+    ],
+    "ghoul_C": [
+      "/dd-assets/monsters/ghoul/ghoul_C/tint.png"
+    ],
+    "hag_A": [
+      "/dd-assets/monsters/hag/hag_A/tint.png"
+    ],
+    "hag_B": [
+      "/dd-assets/monsters/hag/hag_B/tint.png"
+    ],
+    "hag_C": [
+      "/dd-assets/monsters/hag/hag_C/tint.png"
+    ],
+    "jellyfish_A": [
+      "/dd-assets/monsters/jellyfish/jellyfish_A/tint.png"
+    ],
+    "jellyfish_B": [
+      "/dd-assets/monsters/jellyfish/jellyfish_B/tint.png"
+    ],
+    "jellyfish_C": [
+      "/dd-assets/monsters/jellyfish/jellyfish_C/tint.png"
+    ],
+    "madman_A": [
+      "/dd-assets/monsters/madman/madman_A/tint.png"
+    ],
+    "madman_B": [
+      "/dd-assets/monsters/madman/madman_B/tint.png"
+    ],
+    "madman_C": [
+      "/dd-assets/monsters/madman/madman_C/tint.png"
+    ],
+    "maggot_A": [
+      "/dd-assets/monsters/maggot/maggot_A/tint.png"
+    ],
+    "maggot_B": [
+      "/dd-assets/monsters/maggot/maggot_B/tint.png"
+    ],
+    "maggot_C": [
+      "/dd-assets/monsters/maggot/maggot_C/tint.png"
+    ],
+    "necromancer_A": [
+      "/dd-assets/monsters/necromancer/necromancer_A/tint.png"
+    ],
+    "necromancer_B": [
+      "/dd-assets/monsters/necromancer/necromancer_B/tint.png"
+    ],
+    "necromancer_C": [
+      "/dd-assets/monsters/necromancer/necromancer_C/tint.png"
+    ],
+    "nest_A": [
+      "/dd-assets/monsters/nest/nest_A/tint.png"
+    ],
+    "nest_B": [
+      "/dd-assets/monsters/nest/nest_B/tint.png"
+    ],
+    "nest_C": [
+      "/dd-assets/monsters/nest/nest_C/tint.png"
+    ],
+    "octotank_A": [
+      "/dd-assets/monsters/octotank/octotank_A/tint.png"
+    ],
+    "octotank_B": [
+      "/dd-assets/monsters/octotank/octotank_B/tint.png"
+    ],
+    "octotank_C": [
+      "/dd-assets/monsters/octotank/octotank_C/tint.png"
+    ],
+    "pew_large_A": [
+      "/dd-assets/monsters/pew_large/pew_large_A/tint.png"
+    ],
+    "pew_large_B": [
+      "/dd-assets/monsters/pew_large/pew_large_B/tint.png"
+    ],
+    "pew_large_C": [
+      "/dd-assets/monsters/pew_large/pew_large_C/tint.png"
+    ],
+    "pew_medium_A": [
+      "/dd-assets/monsters/pew_medium/pew_medium_A/tint.png"
+    ],
+    "pew_medium_B": [
+      "/dd-assets/monsters/pew_medium/pew_medium_B/tint.png"
+    ],
+    "pew_medium_C": [
+      "/dd-assets/monsters/pew_medium/pew_medium_C/tint.png"
+    ],
+    "pew_small_A": [
+      "/dd-assets/monsters/pew_small/pew_small_A/tint.png"
+    ],
+    "pew_small_B": [
+      "/dd-assets/monsters/pew_small/pew_small_B/tint.png"
+    ],
+    "pew_small_C": [
+      "/dd-assets/monsters/pew_small/pew_small_C/tint.png"
+    ],
+    "prophet_A": [
+      "/dd-assets/monsters/prophet/prophet_A/tint.png"
+    ],
+    "prophet_B": [
+      "/dd-assets/monsters/prophet/prophet_B/tint.png"
+    ],
+    "prophet_C": [
+      "/dd-assets/monsters/prophet/prophet_C/tint.png"
+    ],
+    "rabid_dog_A": [
+      "/dd-assets/monsters/rabid_dog/rabid_dog_A/tint.png"
+    ],
+    "rabid_dog_B": [
+      "/dd-assets/monsters/rabid_dog/rabid_dog_B/tint.png"
+    ],
+    "rabid_dog_C": [
+      "/dd-assets/monsters/rabid_dog/rabid_dog_C/tint.png"
+    ],
+    "shambler_A": [
+      "/dd-assets/monsters/shambler/shambler_A/tint.png"
+    ],
+    "shambler_B": [
+      "/dd-assets/monsters/shambler/shambler_B/tint.png"
+    ],
+    "shambler_C": [
+      "/dd-assets/monsters/shambler/shambler_C/tint.png"
+    ],
+    "shambler_E": [
+      "/dd-assets/monsters/shambler/shambler_E/tint.png"
+    ],
+    "shambler_tentacle_A": [
+      "/dd-assets/monsters/shambler_tentacle/shambler_tentacle_A/tint.png"
+    ],
+    "shambler_tentacle_B": [
+      "/dd-assets/monsters/shambler_tentacle/shambler_tentacle_B/tint.png"
+    ],
+    "shambler_tentacle_C": [
+      "/dd-assets/monsters/shambler_tentacle/shambler_tentacle_C/tint.png"
+    ],
+    "shambler_tentacle_E": [
+      "/dd-assets/monsters/shambler_tentacle/shambler_tentacle_E/tint.png"
+    ],
+    "shuffler_D": [
+      "/dd-assets/monsters/shuffler/shuffler_D/tint.png"
+    ],
+    "siren_A": [
+      "/dd-assets/monsters/siren/siren_A/tint.png"
+    ],
+    "siren_B": [
+      "/dd-assets/monsters/siren/siren_B/tint.png"
+    ],
+    "siren_C": [
+      "/dd-assets/monsters/siren/siren_C/tint.png"
+    ],
+    "skeleton_arbalist_A": [
+      "/dd-assets/monsters/skeleton_arbalist/skeleton_arbalist_A/tint.png"
+    ],
+    "skeleton_arbalist_B": [
+      "/dd-assets/monsters/skeleton_arbalist/skeleton_arbalist_B/tint.png"
+    ],
+    "skeleton_arbalist_C": [
+      "/dd-assets/monsters/skeleton_arbalist/skeleton_arbalist_C/tint.png"
+    ],
+    "skeleton_bearer_A": [
+      "/dd-assets/monsters/skeleton_bearer/skeleton_bearer_A/tint.png"
+    ],
+    "skeleton_bearer_B": [
+      "/dd-assets/monsters/skeleton_bearer/skeleton_bearer_B/tint.png"
+    ],
+    "skeleton_bearer_C": [
+      "/dd-assets/monsters/skeleton_bearer/skeleton_bearer_C/tint.png"
+    ],
+    "ui": [
+      "/dd-assets/monsters/virago_shroom/ui/virago_shroom.skill_overlay_battle_modifier.png",
+      "/dd-assets/monsters/virago_shroom/ui/virago_shroom.tray_battle_modifier_debuff.png"
+    ],
+    "skeleton_captain_A": [
+      "/dd-assets/monsters/skeleton_captain/skeleton_captain_A/tint.png"
+    ],
+    "skeleton_captain_B": [
+      "/dd-assets/monsters/skeleton_captain/skeleton_captain_B/tint.png"
+    ],
+    "skeleton_captain_C": [
+      "/dd-assets/monsters/skeleton_captain/skeleton_captain_C/tint.png"
+    ],
+    "skeleton_common_A": [
+      "/dd-assets/monsters/skeleton_common/skeleton_common_A/tint.png"
+    ],
+    "skeleton_common_B": [
+      "/dd-assets/monsters/skeleton_common/skeleton_common_B/tint.png"
+    ],
+    "skeleton_common_C": [
+      "/dd-assets/monsters/skeleton_common/skeleton_common_C/tint.png"
+    ],
+    "skeleton_courtier_A": [
+      "/dd-assets/monsters/skeleton_courtier/skeleton_courtier_A/tint.png"
+    ],
+    "skeleton_courtier_B": [
+      "/dd-assets/monsters/skeleton_courtier/skeleton_courtier_B/tint.png"
+    ],
+    "skeleton_courtier_C": [
+      "/dd-assets/monsters/skeleton_courtier/skeleton_courtier_C/tint.png"
+    ],
+    "skeleton_defender_A": [
+      "/dd-assets/monsters/skeleton_defender/skeleton_defender_A/tint.png"
+    ],
+    "skeleton_defender_B": [
+      "/dd-assets/monsters/skeleton_defender/skeleton_defender_B/tint.png"
+    ],
+    "skeleton_defender_C": [
+      "/dd-assets/monsters/skeleton_defender/skeleton_defender_C/tint.png"
+    ],
+    "skeleton_militia_A": [
+      "/dd-assets/monsters/skeleton_militia/skeleton_militia_A/tint.png"
+    ],
+    "skeleton_militia_B": [
+      "/dd-assets/monsters/skeleton_militia/skeleton_militia_B/tint.png"
+    ],
+    "skeleton_militia_C": [
+      "/dd-assets/monsters/skeleton_militia/skeleton_militia_C/tint.png"
+    ],
+    "skeleton_spear_A": [
+      "/dd-assets/monsters/skeleton_spear/skeleton_spear_A/tint.png"
+    ],
+    "skeleton_spear_B": [
+      "/dd-assets/monsters/skeleton_spear/skeleton_spear_B/tint.png"
+    ],
+    "skeleton_spear_C": [
+      "/dd-assets/monsters/skeleton_spear/skeleton_spear_C/tint.png"
+    ],
+    "snail_urchin_A": [
+      "/dd-assets/monsters/snail_urchin/snail_urchin_A/tint.png"
+    ],
+    "snail_urchin_B": [
+      "/dd-assets/monsters/snail_urchin/snail_urchin_B/tint.png"
+    ],
+    "snail_urchin_C": [
+      "/dd-assets/monsters/snail_urchin/snail_urchin_C/tint.png"
+    ],
+    "spider_spitter_A": [
+      "/dd-assets/monsters/spider_spitter/spider_spitter_A/tint.png"
+    ],
+    "spider_spitter_B": [
+      "/dd-assets/monsters/spider_spitter/spider_spitter_B/tint.png"
+    ],
+    "spider_spitter_C": [
+      "/dd-assets/monsters/spider_spitter/spider_spitter_C/tint.png"
+    ],
+    "spider_webber_A": [
+      "/dd-assets/monsters/spider_webber/spider_webber_A/tint.png"
+    ],
+    "spider_webber_B": [
+      "/dd-assets/monsters/spider_webber/spider_webber_B/tint.png"
+    ],
+    "spider_webber_C": [
+      "/dd-assets/monsters/spider_webber/spider_webber_C/tint.png"
+    ],
+    "swinetaur_A": [
+      "/dd-assets/monsters/swinetaur/swinetaur_A/tint.png"
+    ],
+    "swinetaur_B": [
+      "/dd-assets/monsters/swinetaur/swinetaur_B/tint.png"
+    ],
+    "swinetaur_C": [
+      "/dd-assets/monsters/swinetaur/swinetaur_C/tint.png"
+    ],
+    "swine_drummer_A": [
+      "/dd-assets/monsters/swine_drummer/swine_drummer_A/tint.png"
+    ],
+    "swine_drummer_B": [
+      "/dd-assets/monsters/swine_drummer/swine_drummer_B/tint.png"
+    ],
+    "swine_drummer_C": [
+      "/dd-assets/monsters/swine_drummer/swine_drummer_C/tint.png"
+    ],
+    "swine_piglet_A": [
+      "/dd-assets/monsters/swine_piglet/swine_piglet_A/tint.png"
+    ],
+    "swine_piglet_B": [
+      "/dd-assets/monsters/swine_piglet/swine_piglet_B/tint.png"
+    ],
+    "swine_piglet_C": [
+      "/dd-assets/monsters/swine_piglet/swine_piglet_C/tint.png"
+    ],
+    "swine_prince_A": [
+      "/dd-assets/monsters/swine_prince/swine_prince_A/tint.png"
+    ],
+    "swine_prince_B": [
+      "/dd-assets/monsters/swine_prince/swine_prince_B/tint.png"
+    ],
+    "swine_prince_C": [
+      "/dd-assets/monsters/swine_prince/swine_prince_C/tint.png"
+    ],
+    "swine_reaver_A": [
+      "/dd-assets/monsters/swine_reaver/swine_reaver_A/tint.png"
+    ],
+    "swine_reaver_B": [
+      "/dd-assets/monsters/swine_reaver/swine_reaver_B/tint.png"
+    ],
+    "swine_reaver_C": [
+      "/dd-assets/monsters/swine_reaver/swine_reaver_C/tint.png"
+    ],
+    "swine_skiver_A": [
+      "/dd-assets/monsters/swine_skiver/swine_skiver_A/tint.png"
+    ],
+    "swine_skiver_B": [
+      "/dd-assets/monsters/swine_skiver/swine_skiver_B/tint.png"
+    ],
+    "swine_skiver_C": [
+      "/dd-assets/monsters/swine_skiver/swine_skiver_C/tint.png"
+    ],
+    "swine_slasher_A": [
+      "/dd-assets/monsters/swine_slasher/swine_slasher_A/tint.png"
+    ],
+    "swine_slasher_B": [
+      "/dd-assets/monsters/swine_slasher/swine_slasher_B/tint.png"
+    ],
+    "swine_slasher_C": [
+      "/dd-assets/monsters/swine_slasher/swine_slasher_C/tint.png"
+    ],
+    "swine_wretch_A": [
+      "/dd-assets/monsters/swine_wretch/swine_wretch_A/tint.png"
+    ],
+    "swine_wretch_B": [
+      "/dd-assets/monsters/swine_wretch/swine_wretch_B/tint.png"
+    ],
+    "swine_wretch_C": [
+      "/dd-assets/monsters/swine_wretch/swine_wretch_C/tint.png"
+    ],
+    "templar_melee_D": [
+      "/dd-assets/monsters/templar_melee/templar_melee_D/tint.png"
+    ],
+    "templar_melee_mb_D": [
+      "/dd-assets/monsters/templar_melee_mb/templar_melee_mb_D/tint.png"
+    ],
+    "templar_ranged_D": [
+      "/dd-assets/monsters/templar_ranged/templar_ranged_D/tint.png"
+    ],
+    "templar_ranged_mb_D": [
+      "/dd-assets/monsters/templar_ranged_mb/templar_ranged_mb_D/tint.png"
+    ],
+    "totem_attack_D": [
+      "/dd-assets/monsters/totem_attack/totem_attack_D/tint.png"
+    ],
+    "totem_guard_D": [
+      "/dd-assets/monsters/totem_guard/totem_guard_D/tint.png"
+    ],
+    "unclean_giant_A": [
+      "/dd-assets/monsters/unclean_giant/unclean_giant_A/tint.png"
+    ],
+    "unclean_giant_B": [
+      "/dd-assets/monsters/unclean_giant/unclean_giant_B/tint.png"
+    ],
+    "unclean_giant_C": [
+      "/dd-assets/monsters/unclean_giant/unclean_giant_C/tint.png"
+    ],
+    "virago_hateful_A": [
+      "/dd-assets/monsters/virago_hateful/virago_hateful_A/tint.png"
+    ],
+    "virago_hateful_B": [
+      "/dd-assets/monsters/virago_hateful/virago_hateful_B/tint.png"
+    ],
+    "virago_hateful_C": [
+      "/dd-assets/monsters/virago_hateful/virago_hateful_C/tint.png"
+    ],
+    "virago_shroom_A": [
+      "/dd-assets/monsters/virago_shroom/virago_shroom_A/tint.png"
+    ],
+    "virago_shroom_B": [
+      "/dd-assets/monsters/virago_shroom/virago_shroom_B/tint.png"
+    ],
+    "virago_shroom_C": [
+      "/dd-assets/monsters/virago_shroom/virago_shroom_C/tint.png"
+    ]
+  },
+  "trinkets": [],
+  "provisions": [],
+  "buildings": []
+}

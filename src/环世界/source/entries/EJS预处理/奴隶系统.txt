@@ -1,0 +1,177 @@
+@@generate_before
+<%_
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Social = Number(getvar('stat_data.殖民者_主角.社交', { scope: 'local', defaults: 5 })) || 5;
+
+var s1Name = getvar('stat_data.奴隶_1.姓名', { scope: 'local', defaults: '' }) || '';
+var s1Gender = getvar('stat_data.奴隶_1.性别', { scope: 'local', defaults: '男' }) || '男';
+var s1Age = Number(getvar('stat_data.奴隶_1.年龄', { scope: 'local', defaults: 25 })) || 25;
+var s1Type = getvar('stat_data.奴隶_1.类型', { scope: 'local', defaults: '战俘' }) || '战俘';
+var s1Mood = Number(getvar('stat_data.奴隶_1.心情', { scope: 'local', defaults: 30 })) || 30;
+var s1Food = Number(getvar('stat_data.奴隶_1.饱腹', { scope: 'local', defaults: 60 })) || 60;
+var s1Fatigue = Number(getvar('stat_data.奴隶_1.疲劳', { scope: 'local', defaults: 50 })) || 50;
+var s1Health = Number(getvar('stat_data.奴隶_1.健康', { scope: 'local', defaults: 80 })) || 80;
+var s1Treatment = getvar('stat_data.奴隶_1.待遇', { scope: 'local', defaults: '普通' }) || '普通';
+var s1Recruit = Number(getvar('stat_data.奴隶_1.招募进度', { scope: 'local', defaults: 0 })) || 0;
+var s1Work = getvar('stat_data.奴隶_1.工作分配', { scope: 'local', defaults: '搬运' }) || '搬运';
+var s1Location = getvar('stat_data.奴隶_1.位置', { scope: 'local', defaults: '营地' }) || '营地';
+
+var TREATMENT_DB = {
+  '良好': { 心情修正: 20, 效率修正: 0.8 },
+  '普通': { 心情修正: 0, 效率修正: 0.6 },
+  '恶劣': { 心情修正: -20, 效率修正: 0.4 },
+  '虐待': { 心情修正: -40, 效率修正: 0.2 }
+};
+
+function _captureCheck(socialSkill, seed) {
+  var val = (Number(socialSkill) || 0) * 3;
+  var r = _check(val, seed, '普通');
+  return { 检定值: val, 骰值: r.roll, 阈值: r.threshold, 结果: r.result };
+}
+
+function _ageMod(age) {
+  var a = Number(age) || 25;
+  if (a < 14) { return 0.3; }
+  if (a <= 17) { return 0.7; }
+  if (a <= 35) { return 1.0; }
+  if (a <= 50) { return 0.6; }
+  return 0.3;
+}
+
+function _healthMod(health) {
+  var h = Number(health) || 100;
+  if (h >= 80) { return 1.0; }
+  if (h >= 40) { return 0.8; }
+  return 0.5;
+}
+
+function _slavePrice(age, skillSum, health) {
+  var base = 500;
+  var aMod = _ageMod(age);
+  var sBonus = (Number(skillSum) || 0) * 5;
+  var hMod = _healthMod(health);
+  return Math.round((base + sBonus) * aMod * hMod);
+}
+
+function _slaveMood(treatment) {
+  var t = TREATMENT_DB[treatment] != null ? TREATMENT_DB[treatment] : TREATMENT_DB['普通'];
+  var base = 30;
+  return base + t.心情修正;
+}
+
+function _slaveRisk(mood) {
+  var m = Number(mood) || 30;
+  if (m < 10) { return { 逃跑: 5, 反抗: 10, 自杀: 1 }; }
+  return { 逃跑: 0, 反抗: 0, 自杀: 0 };
+}
+
+function _slaveVolunteer(mood) {
+  var m = Number(mood) || 30;
+  return m > 50 ? 1 : 0;
+}
+
+function _recruitProgress(socialSkill, mood, currentProgress) {
+  var s = Number(socialSkill) || 0;
+  var m = Number(mood) || 30;
+  var cur = Number(currentProgress) || 0;
+  var daily = s * 1.5 + m * 0.5;
+  return Math.min(100, Math.round((cur + daily) * 100) / 100);
+}
+
+function _recruitStage(progress) {
+  var p = Number(progress) || 0;
+  if (p <= 30) { return '敌对'; }
+  if (p <= 60) { return '中立'; }
+  if (p <= 90) { return '友好'; }
+  if (p <= 99) { return '信任'; }
+  return '可招募';
+}
+
+function _slaveEfficiency(treatment) {
+  var t = TREATMENT_DB[treatment] != null ? TREATMENT_DB[treatment] : TREATMENT_DB['普通'];
+  return 0.6 * t.效率修正;
+}
+
+var captureSample = _captureCheck(p1Social, 'capture_demo');
+var priceSample = _slavePrice(s1Age, 10, s1Health);
+var moodSample = _slaveMood(s1Treatment);
+var riskSample = _slaveRisk(s1Mood);
+var recruitSample = _recruitProgress(p1Social, s1Mood, s1Recruit);
+var stageSample = _recruitStage(s1Recruit);
+var effSample = _slaveEfficiency(s1Treatment);
+_%>
+<奴隶系统就绪>
+[当前奴隶状态]
+读取奴隶_1完整状态:
+  姓名:<%= s1Name %> 性别:<%= s1Gender %> 年龄:<%= s1Age %>
+  类型:<%= s1Type %> 心情:<%= s1Mood %> 饱腹:<%= s1Food %> 疲劳:<%= s1Fatigue %>
+  健康:<%= s1Health %> 待遇:<%= s1Treatment %> 招募进度:<%= s1Recruit %> 阶段:<%= stageSample %>
+  工作分配:<%= s1Work %> 位置:<%= s1Location %>
+
+[获取途径]
+1. 袭击俘虏:
+   公式: _check(社交×3, seed, '普通')
+   示例: <%= p1Name %>社交<%= p1Social %> → 检定值<%= captureSample.检定值 %>, 结果:<%= captureSample.结果 %>
+
+2. 购买:
+   价格公式: (500银 + Σ技能等级×5银) × 年龄修正 × 健康修正
+   年龄修正: 18-35=×1.0, 14-17=×0.7, 36-50=×0.6, >50=×0.3
+   健康修正: 全健康(≥80)=×1.0, 轻伤(40-79)=×0.8, 重伤(<40)=×0.5
+   示例: 年龄<%= s1Age %>, 技能和10, 健康<%= s1Health %> → 价格<%= priceSample %>银
+
+3. 派系交换: 通过外交谈判与其他派系交换
+
+[奴隶状态]
+心情公式: 30 + 待遇修正(良好+20/普通0/恶劣-20/虐待-40)
+  示例: 待遇<%= s1Treatment %> → 心情<%= moodSample %>
+
+风险判定(心情<10时):
+  逃跑: 5%/天
+  反抗: 10%/天
+  自杀: 1%/天
+  示例: 心情<%= s1Mood %> → 逃跑<%= riskSample.逃跑 %>%, 反抗<%= riskSample.反抗 %>%
+
+自愿转化(心情>50):
+  可触发"自愿"事件 → 提升为自由民
+  示例: 心情<%= s1Mood %> → 可自愿:<%= _slaveVolunteer(s1Mood) ? '是' : '否' %>
+
+[招募转化]
+进度公式: 社交×1.5 + 心情×0.5 / 天
+  示例: 社交<%= p1Social %>, 心情<%= s1Mood %> → 日增<%= Math.round((p1Social * 1.5 + s1Mood * 0.5) * 100) / 100 %>, 进度<%= s1Recruit %>→<%= recruitSample %>
+
+5档阈值:
+  0-30: 敌对
+  31-60: 中立
+  61-90: 友好
+  91-99: 信任
+  100: 可招募
+
+招募后处理:
+  写入殖民者列表
+  心情+20
+  与招募者关系+10
+
+[劳动规则]
+效率公式: 殖民者效率 × 0.6 × 待遇修正
+  待遇修正: 良好0.8/普通0.6/恶劣0.4/虐待0.2
+  示例: 待遇<%= s1Treatment %> → 效率×<%= effSample %>
+
+可分配工作:
+  搬运/清洁/采矿/种植(基础)/照顾动物
+
+不可分配工作:
+  研究/医疗/高级手工/社交
+
+[行为校验要求]
+奴隶相关行为必须输出行为校验块:
+  行为类型: 俘获/购买/交换/劳动/逃跑/反抗/招募/自愿转化
+  执行者: 殖民者姓名
+  目标: 奴隶姓名
+  俘获检定: _captureCheck()结果(俘获类)
+  价格计算: _slavePrice()结果(购买类)
+  心情判定: _slaveMood()结果(状态类)
+  风险判定: _slaveRisk()结果(心情<10时)
+  招募进度: _recruitProgress()结果(招募类)
+  招募阶段: _recruitStage()结果(状态查询)
+  劳动效率: _slaveEfficiency()结果(劳动类)
+</奴隶系统就绪>

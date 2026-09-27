@@ -1,0 +1,332 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 恋爱互动系统（恋爱卡核心机制，替代战斗机制）
+   ════════════════════════════════════════════════════════════
+   三层属性架构对齐说明：
+     第1层 基础个人属性（属性系统.txt）= 天赋层，影响上限
+     第2层 个人反应属性（个人反应属性.txt）= 性格特质层，影响AI叙事
+     第3层 技能系统（MVU stat_data.技能.* 命名空间）= 可训练层，恋爱技能romance归此层
+     骰子联动（属性技能骰子联动.txt）= 三层+LCG骰子的统一判定入口
+   本表定义 4 大模块（业务规则层）：
+     1. 告白机制（1/7 告白日判定 + 20 位女角告白选项）
+        - 具体数值判定委托给 属性技能骰子联动.txt 的 calcSuccess('confess', heroine_id)
+        - 本表保留 affection_bonus / flag_bonus / 难度修正 业务规则
+     2. 约会机制（8 约会地点 + 6 对话选项 + 时段/心情限制）
+     3. 送礼机制（10 礼物类别 + 20 位女角偏好 + 每日限制）
+     4. 情感深化机制（10 阶段关系系统 + 升降级 + NSFW 门槛）
+   任何数值、阈值、成功率公式都在此处写死，AI 不可私自修改。
+   修改规则必须先改本表，再传播到各控制器。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   模块一、告白机制（1/7 告白日判定）
+   - 数值判定公式详见 属性技能骰子联动.txt 的 ROMANCE_ACTION_MAPPING.confess
+   - 本表保留业务规则：affection加成、flag加成、难度修正、结果分档
+   ════════════════════════════════════════════════════════════ */
+const CONFESSION_SYSTEM = {
+  // ─── 告白日基础设定 ───
+  confession_day: 17,                  // 1/7 = day_count=17
+  confession_time: 'PM8:00~11:00',     // 晚时段
+  confession_location: '屋上',          // 学校屋上（八十八学园）
+
+  // ─── 告白成功率公式（三层架构版）───
+  // 详见 属性技能骰子联动.txt 的 calcSuccess('confess', heroine_id)
+  // 公式：base 30 + charm×0.3 + social×0.1 + decisiveness×0.15 + gentleness×0.1 + romance×0.3 + speech×0.1
+  // + affection_bonus（本表下方）+ flag_bonus（本表下方）+ difficulty_mod
+  success_rate_formula: '详见 属性技能骰子联动.txt 的 ROMANCE_ACTION_MAPPING.confess',
+
+  // ─── affection 加成（按关系阶段，业务规则保留） ───
+  affection_bonus: {
+    'affection_80_100':  +40,           // 亲密阶段
+    'affection_60_79':   +20,           // 心动阶段
+    'affection_40_59':   +10,           // 暧昧阶段
+    'affection_20_39':   -10,           // 熟悉阶段
+    'affection_0_19':    -30            // 初识阶段
+  },
+
+  // ─── 关键 flag 加成（True End 必要条件） ───
+  flag_bonus: {
+    'all_true_end_flags_correct': +20,  // 所有 True End flag 正确
+    'missing_one_flag':           -10,  // 缺失 1 个关键 flag
+    'missing_two_or_more':        -30   // 缺失 2 个以上关键 flag
+  },
+
+  // ─── 难度修正（与 DIFFICULTY_MODIFIERS 对齐） ───
+  difficulty_modifier: {
+    '轻松': +10,
+    '普通':   0,
+    '挑战': -10,
+    '地狱': -20
+  },
+
+  // ─── 告白结果判定阈值 ───
+  result_thresholds: {
+    'success_rate_90_plus':   { result: 'True End',  condition: 'affection≥80 AND all_flags_correct' },
+    'success_rate_70_89':     { result: 'Good End',  condition: 'affection≥60' },
+    'success_rate_40_69':     { result: 'Normal End', condition: 'affection≥30' },
+    'success_rate_below_40':  { result: 'Bad End',    condition: 'affection<30' }
+  },
+
+  // ─── 20 位女角告白选项 ───
+  confession_options: [
+    { option_id: 'confess_yui',        target_heroine: 1,  dialogue: '唯，我喜欢你。从搬到这里的第1天起，我就...',                                       requires: { affection_min: 60, flags_required: ['唯获救', '西寺对峙'] } },
+    { option_id: 'confess_misako',     target_heroine: 2,  dialogue: '美佐子さん，这份感情我一直藏在心里...我不想再以义子的身份看着你。',                requires: { affection_min: 60, flags_required: ['美佐子浴室事件', '樱子访问5次以上'] } },
+    { option_id: 'confess_karen',     target_heroine: 3,  dialogue: '可怜，舞台下的你比聚光灯下更耀眼。我想成为你退场后能依靠的人。',                     requires: { affection_min: 60, flags_required: ['karen_idol_debut', 'karen_stalker_resolved'] } },
+    { option_id: 'confess_miki',      target_heroine: 4,  dialogue: '美纪，你那双总是凝视远方的眼睛...我想成为你视线尽头的那个人。',                       requires: { affection_min: 60, flags_required: ['miki_grade_top', 'nagaoka_threat_resolved'] } },
+    { option_id: 'confess_izumi',     target_heroine: 5,  dialogue: '泉美，篮球场上的你充满活力，但我想守护的是场下那个会脸红的你。',                       requires: { affection_min: 60, flags_required: ['izumi_club_support', 'izumi_injury_resolved'] } },
+    { option_id: 'confess_yoko',      target_heroine: 6,  dialogue: '洋子，你总用那层辣妹外壳伪装自己，但我看见了真实的你。我喜欢你。',                     requires: { affection_min: 60, flags_required: ['yoko_facade_broken', 'yoko_past_revealed'] } },
+    { option_id: 'confess_kozue',     target_heroine: 7,  dialogue: '梢江先辈，你的温柔像春风，让我不知不觉沦陷了。请让我照顾你。',                          requires: { affection_min: 60, flags_required: ['kozue_secret_shared', 'kozue_dream_supported'] } },
+    { option_id: 'confess_tomomi',    target_heroine: 8,  dialogue: '友美，从小到大你一直在我身边。现在我想告诉你，这份感情早已超越了青梅竹马。',             requires: { affection_min: 60, flags_required: ['tomomi_childhood_trust', 'tomomi_nagaoka_resolved'] } },
+    { option_id: 'confess_manami',    target_heroine: 9,  dialogue: '爱美，保育园里孩子们都看出来了——我喜欢你，比任何人都多。',                            requires: { affection_min: 60, flags_required: ['manami_kids_bond', 'manami_shindo_resisted'] } },
+    { option_id: 'confess_misa',      target_heroine: 10, dialogue: '美沙，88公园的喷泉前我想说...你比那年的烟花还要耀眼。我喜欢你。',                        requires: { affection_min: 60, flags_required: ['misa_park_fountain', 'misa_old_flame_closed'] } },
+    { option_id: 'confess_mirei',     target_heroine: 11, dialogue: '片桐先生...不，美铃。我知道这是禁忌，但我无法停止对你的感情。',                          requires: { affection_min: 60, flags_required: ['mirei_secret_trust', 'mirei_nishioji_resolved'] } },
+    { option_id: 'confess_misato',    target_heroine: 12, dialogue: '美里さん，医院的走廊上你总是匆忙，但我想成为你停下脚步的理由。',                        requires: { affection_min: 60, flags_required: ['misato_patient_rescue', 'misato_overwork_resolved'] } },
+    { option_id: 'confess_kumiko',    target_heroine: 13, dialogue: '久美子さん，作为永岛家的母亲你承受了太多。我想分担你的未来。',                          requires: { affection_min: 60, flags_required: ['kumiko_sachiko_bonded', 'kumiko_burden_lifted'] } },
+    { option_id: 'confess_sachiko',   target_heroine: 14, dialogue: '佐知子，你的笑容比88海岸的阳光还要明亮。我想一直守护它。',                              requires: { affection_min: 60, flags_required: ['sachiko_mother_approved', 'sachiko_beach_memory'] } },
+    { option_id: 'confess_mio',       target_heroine: 15, dialogue: '澪，齐藤家的长姐总是要强，但在我面前你可以软弱。我喜欢你。',                              requires: { affection_min: 60, flags_required: ['mio_sister_reconciled', 'mio_burden_shared'] } },
+    { option_id: 'confess_mina',      target_heroine: 16, dialogue: '澪奈，你总躲在姐姐身后，但在我心里你是唯一的主角。我喜欢你。',                            requires: { affection_min: 60, flags_required: ['mina_independence_proven', 'mina_sister_blessed'] } },
+    { option_id: 'confess_miho',      target_heroine: 17, dialogue: '美穗，转学来的那天起我就被你吸引。我想和你一起走接下来的路。',                          requires: { affection_min: 60, flags_required: ['miho_transfer_secret', 'miho_old_ties_closed'] } },
+    { option_id: 'confess_nina',      target_heroine: 18, dialogue: '仁科，你那倔强又脆弱的样子让我放不下。我想成为你真正能依靠的人。',                        requires: { affection_min: 60, flags_required: ['nina_facade_broken', 'nina_secret_revealed'] } },
+    { option_id: 'confess_natsuko',   target_heroine: 19, dialogue: '夏子，你的高傲下藏着孤独。我想成为能走进你心里的人。',                                  requires: { affection_min: 60, flags_required: ['natsuko_pride_revealed', 'natsuko_family_issue_resolved'] } },
+    { option_id: 'confess_sakurako',  target_heroine: 20, dialogue: '樱子，窗外的樱花会开，我想带你一起看春天的花海。请...给我这个机会。',                     requires: { affection_min: 60, flags_required: ['樱子访问5次以上', 'sakurako_will_to_live'] } }
+  ]
+};
+
+/* ════════════════════════════════════════════════════════════
+   模块二、约会机制
+   ════════════════════════════════════════════════════════════ */
+const DATING_SYSTEM = {
+  // ─── 约会地点（8 个，含氛围/加成/费用/限定时段） ───
+  dating_locations: [
+    {
+      location_id: 'rooftop',
+      name: '学校屋上',
+      atmosphere: '浪漫',
+      affection_bonus: +8,
+      heartbeat_bonus: +5,
+      best_time: '夕方',
+      available_heroines: [1, 3, 4, 8],
+      cost: 0,
+      note: '黄昏时分屋上看夕阳，浪漫氛围加成'
+    },
+    {
+      location_id: 'amusement_park',
+      name: '游乐园',
+      atmosphere: '欢乐',
+      affection_bonus: +10,
+      heartbeat_bonus: +8,
+      best_time: '白天',
+      available_heroines: 'all',
+      cost: 3000,
+      note: '摩天轮/过山车等设施，心跳加速'
+    },
+    {
+      location_id: 'hot_spring',
+      name: '温泉乡',
+      atmosphere: '放松',
+      affection_bonus: +6,
+      heartbeat_bonus: +3,
+      trust_bonus: +5,
+      best_time: '晚',
+      available_heroines: 'all',
+      cost: 5000,
+      note: '温泉约会，NSFW 前奏可能'
+    },
+    {
+      location_id: 'cafe',
+      name: '咖啡店',
+      atmosphere: '温馨',
+      affection_bonus: +5,
+      heartbeat_bonus: +3,
+      best_time: '下午',
+      available_heroines: 'all',
+      cost: 800,
+      note: '安静聊天，适合深入了解'
+    },
+    {
+      location_id: 'park',
+      name: '88公园',
+      atmosphere: '日常',
+      affection_bonus: +4,
+      heartbeat_bonus: +2,
+      best_time: '任意',
+      available_heroines: 'all',
+      cost: 0,
+      note: '普通约会地点，无特殊加成'
+    },
+    {
+      location_id: 'cinema',
+      name: '电影院',
+      atmosphere: '紧张',
+      affection_bonus: +7,
+      heartbeat_bonus: +6,
+      best_time: '晚',
+      available_heroines: 'all',
+      cost: 2000,
+      note: '黑暗环境，适合牵手/靠近'
+    },
+    {
+      location_id: 'beach',
+      name: '八十八海岸',
+      atmosphere: '壮阔',
+      affection_bonus: +9,
+      heartbeat_bonus: +7,
+      best_time: '白天',
+      available_heroines: 'all',
+      cost: 1500,
+      note: '海边散步，季节限定浪漫'
+    },
+    {
+      location_id: 'shrine',
+      name: '神社',
+      atmosphere: '神圣',
+      affection_bonus: +6,
+      heartbeat_bonus: +4,
+      trust_bonus: +3,
+      best_time: '白天',
+      available_heroines: 'all',
+      cost: 500,
+      note: '参拜祈愿，信任加成'
+    }
+  ],
+
+  // ─── 约会对话选项（6 类，影响氛围与数值） ───
+  dialogue_options: {
+    '温柔关心型': { affection: +3, heartbeat: +2,                  requires: { sensitivity_min: 40 } },
+    '幽默逗趣型': { affection: +2, heartbeat: +3, mood: +5,        requires: { social_min: 40 } },
+    '认真倾听型': { affection: +4, trust: +3,                      requires: { sensitivity_min: 50 } },
+    '知识展示型': { affection: +1, academic: +1,                  requires: { academic_min: 50 } },
+    '大胆直球型': { heartbeat: +5,        jealousy_risk: +2,        requires: { charm_min: 50 } },
+    '体贴照顾型': { affection: +3, trust: +4,                     requires: { sensitivity_min: 30 } }
+  },
+
+  // ─── 约会每日限制 ───
+  daily_limits: {
+    max_dates_per_day: 1,                  // 每日最多 1 次约会
+    cost_money: true,                      // 约会需花钱
+    time_slots_required: ['下午', '晚'],    // 约会占用 2 个时段
+    mood_required_min: 30                  // 心情<30 时无法约会
+  },
+
+  // ─── 约会成功率修正 ───
+  success_modifiers: {
+    'atmosphere_match':     +5,    // 地点氛围与女角性格匹配
+    'gift_before_date':     +3,    // 约会前送礼
+    'good_dialogue_choice': +2,    // 对话选项契合女角喜好
+    'low_stamina':          -5,    // 体力不足
+    'low_mood':             -3,    // 心情低落
+    'rival_appearance':    -10     // 情敌出现（如西御寺干扰）
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   模块三、送礼机制
+   ════════════════════════════════════════════════════════════ */
+const GIFT_SYSTEM = {
+  // ─── 礼物类别（10 类，含基础好感加成与分类） ───
+  gift_categories: {
+    '花束':         { base_affection: +5,  category: '浪漫' },
+    '首饰':         { base_affection: +8,  category: '贵重' },
+    '巧克力':       { base_affection: +4,  category: '甜品' },
+    '手帕':         { base_affection: +3,  category: '日常' },
+    '书':           { base_affection: +4,  category: '知性' },
+    'CD':           { base_affection: +3,  category: '音乐' },
+    '绒毛玩具':     { base_affection: +4,  category: '可爱' },
+    '化妆品':       { base_affection: +6,  category: '美容' },
+    '手工制品':     { base_affection: +6,  category: '心意', sensitivity_bonus: +2 },
+    '首饰·高档':    { base_affection: +12, category: '奢华', cost_min: 10000 }
+  },
+
+  /* 女角礼物偏好：参 女角偏好系数表.txt.HEROINE_PREFERENCES（避免重复，本表不再独立维护简化版）
+     运行时获取：typeof HEROINE_PREFERENCES !== 'undefined' ? HEROINE_PREFERENCES : {} */
+
+  // ─── 送礼效果（按女角偏好档位） ───
+  gift_effects: {
+    'loves_gift':    { affection: +8, heartbeat: +5, mood_heroine: +5, dialogue: '好喜欢！谢谢你！' },
+    'likes_gift':    { affection: +5, heartbeat: +3, mood_heroine: +3, dialogue: '谢谢，我很喜欢。' },
+    'neutral_gift':  { affection: +2, heartbeat: +1, mood_heroine: +1, dialogue: '谢谢。' },
+    'dislikes_gift': { affection: -2, heartbeat: -1, mood_heroine: -3, dialogue: '...谢谢。' }
+  },
+
+  // ─── 送礼限制 ───
+  gift_limits: {
+    max_gifts_per_day: 1,                              // 每位女角每天最多收 1 件礼物
+    max_gifts_per_week: 3,                             // 每周最多 3 件
+    cost_money: true,                                  // 需要花钱购买
+    handmade_requires_skill: { cooking_min: 30 }       // 手工制品需要 cooking≥30
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   模块四、情感深化机制（关系阶段升级）
+   ════════════════════════════════════════════════════════════ */
+const RELATIONSHIP_PROGRESSION = {
+  // ─── 10 阶段关系系统（5 负 + 5 正） ───
+  // 单一来源：阶段联动框架.txt.STAGE_FRAMEWORK（名称/范围/阈值以此为准）
+  stages: [
+    { stage_id: -5, name: '决裂', range: [-100, -81], affection_threshold: -81 },
+    { stage_id: -4, name: '仇视', range: [-80, -61],  affection_threshold: -61 },
+    { stage_id: -3, name: '厌恶', range: [-60, -41],  affection_threshold: -41 },
+    { stage_id: -2, name: '冷漠', range: [-40, -21],  affection_threshold: -21 },
+    { stage_id: -1, name: '疏离', range: [-20, -1],   affection_threshold: -1 },
+    { stage_id: 1,  name: '初识', range: [0, 19],     affection_threshold: 0 },
+    { stage_id: 2,  name: '熟悉', range: [20, 39],    affection_threshold: 20 },
+    { stage_id: 3,  name: '暧昧', range: [40, 59],    affection_threshold: 40 },
+    { stage_id: 4,  name: '心动', range: [60, 79],    affection_threshold: 60 },
+    { stage_id: 5,  name: '亲密', range: [80, 100],   affection_threshold: 80, sub_thresholds: { advanced_h: 90 } }
+  ],
+
+  // ─── 阶段升级条件 ───
+  stage_up_conditions: {
+    'to_初识': { affection_min: 0,  requires: '首次对话' },
+    'to_熟悉': { affection_min: 20, requires: '共同事件≥1 OR 送礼≥1' },
+    'to_暧昧': { affection_min: 40, requires: '约会≥1 OR 关键事件触发' },
+    'to_心动': { affection_min: 60, requires: '信任≥40 OR 关键 flag 触发' },
+    'to_亲密': { affection_min: 80, requires: '关键 flag 全部正确 OR H 事件触发' }
+  },
+
+  // ─── 阶段降级条件 ───
+  stage_down_conditions: {
+    'jealousy_high':    { jealousy_gte: 70,                          effect: 'stage_down_1',     reason: '嫉妒值过高' },
+    'trust_low':        { trust_lte: 20,                            effect: 'stage_down_1',     reason: '信任过低' },
+    'negative_event':   { event: 'rival_appearance OR betrayal',     effect: 'stage_down_2',     reason: '负面事件' },
+    'bad_choice':       { event: 'wrong_dialogue_choice',           effect: 'affection_5_down', reason: '错误对话选择' }
+  },
+
+  // ─── NSFW 硬门槛 ───
+  // 唯一真相源：NSFW_BODY_RULES.nsfw_hard_gates（全局规则-NSFW身体规则.txt）
+  // 此处仅做引用别名，禁止自行定义阈值，避免双源不一致
+  nsfw_thresholds: NSFW_BODY_RULES.nsfw_hard_gates
+};
+%>
+
+[恋爱互动系统已加载。4 大模块（告白/约会/送礼/情感深化）均为恋爱卡核心机制，AI 必须严格遵守上述所有数值与阈值。本表与 全局规则总表.txt 互补：全局规则总表管生存/经济/法律，本表管恋爱互动。]
+
+<%= JSON.stringify({
+  modules: {
+    confession: {
+      name: '告白机制',
+      confession_day: CONFESSION_SYSTEM.confession_day,
+      confession_options_count: CONFESSION_SYSTEM.confession_options.length,
+      result_types: Object.keys(CONFESSION_SYSTEM.result_thresholds).map(k => CONFESSION_SYSTEM.result_thresholds[k].result)
+    },
+    dating: {
+      name: '约会机制',
+      locations_count: DATING_SYSTEM.dating_locations.length,
+      dialogue_options_count: Object.keys(DATING_SYSTEM.dialogue_options).length
+    },
+    gift: {
+      name: '送礼机制',
+      categories_count: Object.keys(GIFT_SYSTEM.gift_categories).length,
+      heroines_count: typeof HEROINE_PREFERENCES !== 'undefined' ? Object.keys(HEROINE_PREFERENCES).length : 20
+    },
+    relationship: {
+      name: '情感深化机制',
+      stages_count: RELATIONSHIP_PROGRESSION.stages.length,
+      nsfw_thresholds_count: Object.keys(RELATIONSHIP_PROGRESSION.nsfw_thresholds).length
+    }
+  },
+  total_heroines: 20,
+  total_modules: 4
+}, null, 2) %>

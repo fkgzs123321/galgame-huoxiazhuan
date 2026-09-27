@@ -1,0 +1,82 @@
+@@generate_before
+<%_
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var wealth = Number(getvar('stat_data.殖民地.财富总值', { scope: 'local', defaults: 800 })) || 800;
+
+var phaseTable = [
+  { name: '拓荒期', dayRange: '0-15天', wealthRange: '<2000', raidIntensity: '仅小动物发疯', focus: '生存/建造/种植', features: '基础建造/种植/采集/简单烹饪', narrative: '艰难开局,强调求生与资源匮乏' },
+  { name: '发展期', dayRange: '15-40天', wealthRange: '2000-8000', raidIntensity: '小规模人袭', focus: '扩张/研究/防御', features: '研究台/防御工事/贸易/畜牧', narrative: '殖民地上轨道,派系开始接触' },
+  { name: '繁荣期', dayRange: '40-80天', wealthRange: '8000-20000', raidIntensity: '中等+围攻', focus: '繁荣/派系/高科技', features: '高科技/机械加工/飞船前期/奴役', narrative: '殖民地鼎盛,内忧外患并存' },
+  { name: '终局期', dayRange: '80天+', wealthRange: '20000+', raidIntensity: '大规模+机械族', focus: '飞船组件/飞天结局', features: '飞船建造/终末防御/AI核心/星际通讯', narrative: '终局冲刺,机械族终末威胁' }
+];
+
+function _phaseByName(name) {
+  for (var i = 0; i < phaseTable.length; i++) {
+    if (phaseTable[i].name === name) { return phaseTable[i]; }
+  }
+  return phaseTable[0];
+}
+
+function _phaseTransition(gameDay, wealth) {
+  if (gameDay >= 80 && wealth >= 20000) { return { to: '终局期', reason: '游戏日≥80且财富≥20000' }; }
+  if (gameDay >= 40 && wealth >= 8000) { return { to: '繁荣期', reason: '游戏日≥40且财富≥8000' }; }
+  if (gameDay >= 15 && wealth >= 2000) { return { to: '发展期', reason: '游戏日≥15且财富≥2000' }; }
+  return { to: '拓荒期', reason: '初始阶段条件' };
+}
+
+var currentPhase = _phaseByName(phase);
+var transition = _phaseTransition(gameDay, wealth);
+var transitionTriggered = (transition.to !== phase);
+_%>
+<阶段指导就绪>
+[当前阶段]
+殖民地阶段: <%= phase %>
+游戏日: <%= gameDay %>
+财富总值: <%= wealth %>
+当前阶段定位: <%= currentPhase.dayRange %> / 财富<%= currentPhase.wealthRange %>
+
+[四阶段表]
+<%_ for (var i = 0; i < phaseTable.length; i++) { var p = phaseTable[i]; _%>
+<%= (i+1) %>. <%= p.name %> (<%= p.dayRange %>)
+   财富范围: <%= p.wealthRange %>
+   袭击强度: <%= p.raidIntensity %>
+   重点目标: <%= p.focus %>
+   可用功能: <%= p.features %>
+   叙事指导: <%= p.narrative %>
+<%_ } _%>
+
+[阶段转换规则]
+转换条件 (满足其一即推进,取最高匹配档):
+  拓荒→发展: 游戏日≥15 且 财富≥2000
+  发展→繁荣: 游戏日≥40 且 财富≥8000
+  繁荣→终局: 游戏日≥80 且 财富≥20000
+
+转换效果:
+- 阶段变量立即更新: stat_data.殖民地.阶段 = 新阶段
+- 袭击强度档位提升一档
+- 解锁对应阶段的新功能模块
+- 警戒等级+10 (新阶段威胁升级)
+
+叙事过渡:
+- 拓荒→发展: 殖民地从勉强生存转向有计划扩张,派系首次接触
+- 发展→繁荣: 殖民地进入鼎盛,内部矛盾与外部威胁并存
+- 繁荣→终局: 飞船建造启动,机械族开始关注殖民地
+
+当前转换判定:
+- 建议阶段: <%= transition.to %> (原因: <%= transition.reason %>)
+<%_ if (transitionTriggered) { _%>
+- 状态: 阶段转换触发,建议立即推进至<%= transition.to %>
+<%_ } else { _%>
+- 状态: 当前阶段<%= phase %>符合条件,保持不变
+<%_ } _%>
+
+[行为校验要求]
+阶段相关行为必须输出行为校验块:
+<阶段行为校验>
+- 当前阶段 / 游戏日 / 财富总值
+- 阶段档位定位 (时间/财富/袭击/目标/功能)
+- 阶段转换判定 (是否触发/目标阶段/原因)
+- 阶段效果应用 (解锁功能/袭击档位/警戒调整)
+</阶段行为校验>
+</阶段指导就绪>

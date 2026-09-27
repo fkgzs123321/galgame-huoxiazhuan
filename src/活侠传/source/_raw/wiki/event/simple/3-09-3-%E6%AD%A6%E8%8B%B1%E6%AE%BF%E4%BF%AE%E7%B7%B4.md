@@ -1,0 +1,120 @@
+﻿---
+title: 武英殿修練
+description: 簡易事件表詳細說明
+aside: false
+outline: [2, 3]
+sidebar: false
+borderless: true
+tags:
+    - detailed
+    - event
+---
+
+# {{ $frontmatter.title }}
+::: warning
+目前本條目僅列出腳本運行流程，對應劇情節點尚待補充。
+:::
+
+## 事件集
+- 本事件是[錦香宮事件集](/event/simple/3-09-3-錦香宮事件集)的一部分。<br>
+
+## 事件時間
+• 最早第三年九月下旬，最晚第三年十月上旬。
+
+## 事件過程
+<Table class="timeline-table">
+  <tr class="timeline-header">
+    <th>階段名稱</th>
+    <th>觸發條件</th>
+    <th>事件內容</th>
+    <th>備註</th>
+  </tr>
+
+  <tr>
+    <td>練武切磋</td>
+    <td>
+      <li>🚩錦香宮作客<br></li>
+      <li>已<MarkdownWrapper>[「參觀錦香宮」](/event/simple/3-09-3-參觀錦香宮)</MarkdownWrapper></li>
+      <li>點選 ☯「修練: 武英殿」<br></li>
+    </td>
+    <td> 
+      若初次修練，觸發介紹劇情:<br>
+      • 性情≤40: 對話差分。<br>
+      <br>
+      對決對象，觸發🎲天命(上限99):<br>
+      【🎲＜60 前途無量錦香宮弟子】: 接「年輕弟子切磋」階段。<br>
+      【🎲≥60 老成持重錦香宮弟子】: 接「老成弟子切磋」階段。<br>
+    </td>
+    <td></td>
+  </tr>
+
+  <tr>
+    <td>年輕弟子切磋</td>
+    <td>
+      接續「練武切磋」階段<br>
+      且【🎲＜60 前途無量錦香宮弟子】<br>
+    </td>
+    <td> 
+      觸發對決 🆚戰錦香弟子，結果檢定:<br>
+      <br>
+      敗:<br>
+      • 武學+2、心相-10、名聲+1、錦香宮好感+1。<br>
+      • 獲得稱號<MarkdownWrapper>[風度翩翩醜郎君](/people/title-list)</MarkdownWrapper>。<br>
+      • 若🚩和<Girl3Icon>虞小梅</Girl3Icon>結緣: 虞小梅好感-1。<br>
+      <br>
+      勝:<br>
+      • 武學+4、心相-20。<br>
+      • 設置🚩指導錦香弟子次數+1。<br>
+      <br>
+      無論勝敗，開啟修練介面，關閉後接續以下。<br>
+      <br>
+      檢定「🚩指導錦香弟子次數≥3，且未🚩觸發妒忌」:<br>
+      <br>
+      不符合: 事件結束，回錦香宮養成指令選單。<br>
+      <br>
+      符合: 觸發複合檢定(不符才會檢定下一項):<br>
+      • 🚩<Girl6Icon>郁竹</Girl6Icon><MarkdownWrapper>[同行武林大會](/event/simple/3-08-2-邀請郁竹)</MarkdownWrapper>: 接<MarkdownWrapper>[「郁竹妒忌」](/event/simple/3-09-3-郁竹妒忌)</MarkdownWrapper>事件。<br>
+      • 🚩<MarkdownWrapper>[虞小梅同行武林大會](/event/simple/3-08-2-邀請虞小梅)</MarkdownWrapper>: 接<MarkdownWrapper>[「虞小梅妒忌」](/event/simple/3-09-3-虞小梅妒忌)</MarkdownWrapper>事件。<br>
+      • 其他: 事件結束，回錦香宮養成指令選單。<br>
+    </td>
+    <td>
+      🚩指導錦香弟子次數: 初始值0<br>
+    </td>
+  </tr>
+
+  <tr>
+    <td>老成弟子切磋</td>
+    <td>
+      接續「練武切磋」階段<br>
+      且【🎲≥60 老成持重錦香宮弟子】<br>
+    </td>
+    <td> 
+      觸發對決 🆚戰錦香弟子，結果檢定:<br>
+      <br>
+      敗:<br>
+      • 武學+2。<br>
+      <br>
+      勝:<br>
+      • 武學+4、心相-20。<br>
+      • 武學+4、名聲+1，設置🚩指導錦香弟子次數+1。<br>
+      <br>
+      無論勝敗，開啟修練介面，關閉後接續以下。<br>
+      <br>
+      檢定「🚩指導錦香弟子次數≥3，且未🚩觸發妒忌」:<br>
+      <br>
+      不符合: 事件結束，回錦香宮養成指令選單。<br>
+      <br>
+      符合: 再檢定🚩<Girl6Icon>郁竹</Girl6Icon><MarkdownWrapper>[同行武林大會](/event/simple/3-08-2-邀請郁竹)</MarkdownWrapper>:<br>
+      • 有同行: 接<MarkdownWrapper>[「郁竹妒忌」](/event/simple/3-09-3-郁竹妒忌)</MarkdownWrapper>事件。<br>
+      • 未同行: 事件結束，回錦香宮養成指令選單。<br>
+    </td>
+    <td>
+      • 🚩指導錦香弟子次數: 初始值0<br>
+      • <Girl3Icon>虞小梅</Girl3Icon>不會妒忌老成弟子。<br>
+    </td>
+  </tr>
+
+</table>
+
+## 備註
+• 本條目參考[活俠傳事件及分歧整理](https://docs.google.com/spreadsheets/d/1YZRvCuf7ar5eqHCEJoVRdD1uxhTtkKBBCuF_0O0OdNg)撰寫。<br>

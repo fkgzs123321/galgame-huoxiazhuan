@@ -1,0 +1,2 @@
+function e(e){return!Number.isFinite(e)||e<=0?`0s`:`${Math.round(e/1e3)}s`}var t=/\\r\\n|\\n|\\r/g,n=/(^|[^A-Za-z0-9_:.])\/n(?=$|[^A-Za-z0-9_/-])/g;function r(e){return e.replace(t,`
+`).replace(n,(e,t)=>`${t}\n`)}export{e as n,r as t};

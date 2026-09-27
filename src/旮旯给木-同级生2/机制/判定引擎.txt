@@ -1,0 +1,160 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   判定引擎（E3）· 机制层 · 不含任何具体内容
+
+   ┌─ 红线 ────────────────────────────────────────────────┐
+   │ 本文件不出现任何世界观 / 角色 / 地点 / 道具名。          │
+   │ 出现了就说明「要素」漏进了引擎层。                       │
+   └──────────────────────────────────────────────────────┘
+
+   规范: 机制层规范.md §E3
+   替代: 原卡 属性技能骰子联动.txt 的 calcPlayerPower / calcHeroineRequirement /
+         classifyDiffResult / calcFinalResult（四个函数合并为三个，并修掉两个 bug）
+
+   标准判定链:
+     差值 D  = 能力值 P - 要求值 R + 环境修正 E
+     成功率 S = clamp(50 + D, 5, 95)
+     掷值   V = LCG(seed) × 100          ← 确定性伪随机，同一回合重渲染结果一致
+     成败:  V < S → 成功
+     档位:  由 D 与成败【联合】决定
+
+   ── 修掉的两个 bug ──────────────────────────────────────
+   bug①  原实现分档与成败不同源（_tier 只看差值、_success 只看骰子）
+         → diff=30 时 successRate=80，若骰值 85 →「大成功」与「失败」同时成立
+         修法: judgeTier(diff, success) 两个参数一起收
+   bug②  原实现关系阶段修正恒为 0（_stageMod = 0）
+         → 核心状态不参与判定，关系再亲密也不会更容易成功
+         修法: judgeRequire 的 stageMod 是被真实使用的参数
+
+   ── 保留的三个好设计 ────────────────────────────────────
+   ① LCG 确定性伪随机（禁 Math.random，保证可复现）
+   ② 权重归一化（除以权重总和）→ 尺度无关，属性多少不影响量级
+   ③ 难度用乘法不用加法 → 无论基准值多高，难度感受一致
+
+   用法（底座侧）:
+     var res = judge({
+       action:    'confess',                     // 动作名，只用于日志
+       values:    { 说话: 60, 做事: 40, 懂东西: 70 },   // 执行者状态值
+       weights:   { 说话: 1.5, 懂东西: 1.0 },           // 强度权重（来自 T2.判定动作）
+       base:      60,                            // 动作基准值
+       diffMult:  1.0,                           // 场景难度乘数
+       targetMod: 5,                             // 目标个体难度修正
+       stageMod:  -10,                           // 阶段修正（不再是 0）
+       envMod:    0                              // 环境修正（在场人数 / 天气等）
+     });
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、LCG 伪随机（E3 的骰子源）
+   播种在变量里，AI 不可见、不更新；同一回合重新渲染得到同一结果
+   ════════════════════════════════════════════════════════════ */
+this._LCG_A = 1664525;
+this._LCG_C = 1013904223;
+this._LCG_M = 4294967296;
+
+this._lcgState = Number(getvar('stat_data.主角.$骰子种子', { scope: 'local', defaults: 20260915 })) || 20260915;
+
+/* 推进一步，返回新种子（调用方负责写回变量） */
+this._lcgNext = function () {
+  this._lcgState = (this._LCG_A * this._lcgState + this._LCG_C) % this._LCG_M;
+  return this._lcgState;
+};
+
+/* 0 ~ 1 */
+this._r = function () {
+  return this._lcgNext() / this._LCG_M;
+};
+
+/* 0 ~ 99.99（判定用） */
+this._roll = function () {
+  return this._r() * 100;
+};
+
+/* ════════════════════════════════════════════════════════════
+   二、能力值（加权平均 · 权重归一化）
+   values  = { 状态名: 数值 }
+   weights = { 状态名: 权重 }
+   权重为 0 或缺省的状态不参与；总权重为 0 时返回 0（由调用方兜底）
+   ════════════════════════════════════════════════════════════ */
+this.judgePower = function (values, weights) {
+  var _v = values || {};
+  var _w = weights || {};
+  var _sum = 0;
+  var _total = 0;
+  for (var _k in _w) {
+    var _wv = Number(_w[_k]) || 0;
+    if (_wv === 0) continue;
+    _sum += (Number(_v[_k]) || 0) * _wv;
+    _total += _wv;
+  }
+  if (_total <= 0) return 0;
+  return _sum / _total;
+};
+
+/* ════════════════════════════════════════════════════════════
+   三、要求值（乘法难度 + 目标修正 + 阶段修正）
+   —— bug② 的修复点：stageMod 是真实参与计算的参数，不再是占位 0
+   ════════════════════════════════════════════════════════════ */
+this.judgeRequire = function (base, diffMult, targetMod, stageMod) {
+  var _r = Number(base) || 50;
+  var _m = Number(diffMult);
+  if (isNaN(_m) || _m <= 0) _m = 1;          /* 难度乘数用乘法 */
+  _r = _r * _m;
+  _r = _r + (Number(targetMod) || 0);        /* 目标个体难度 */
+  _r = _r + (Number(stageMod) || 0);         /* 阶段修正 —— bug② 修复 */
+  return Math.max(0, Math.min(100, Math.round(_r)));
+};
+
+/* ════════════════════════════════════════════════════════════
+   四、档位（由差值【与】成败联合决定）
+   —— bug① 的修复点：不再只看差值
+   ════════════════════════════════════════════════════════════ */
+this.judgeTier = function (diff, success) {
+  var _d = Number(diff) || 0;
+  if (success) {
+    if (_d >= 30) return { key: 'critical_success', label: '大成功', effect_mult: 1.5 };
+    if (_d >= 10) return { key: 'success',          label: '成功',   effect_mult: 1.0 };
+    return           { key: 'barely_success',      label: '勉强成功', effect_mult: 0.6 };
+  }
+  if (_d <= -30) return { key: 'critical_failure', label: '大失败', effect_mult: 2.0 };
+  return            { key: 'failure',          label: '失败',   effect_mult: 1.0 };
+};
+
+/* ════════════════════════════════════════════════════════════
+   五、统一入口
+   返回完整结果对象；AI 只读结论，不参与计算
+   ════════════════════════════════════════════════════════════ */
+this.judge = function (opts) {
+  var _o = opts || {};
+  var _power = this.judgePower(_o.values, _o.weights);
+  var _req   = this.judgeRequire(_o.base, _o.diffMult, _o.targetMod, _o.stageMod);
+  var _env   = Number(_o.envMod) || 0;
+  var _diff  = _power - _req + _env;
+  var _rate  = Math.max(5, Math.min(95, 50 + _diff));
+  var _roll  = this._roll();
+  var _ok    = _roll < _rate;
+  var _tier  = this.judgeTier(_diff, _ok);
+
+  return {
+    action:      String(_o.action || ''),
+    power:       Math.round(_power * 100) / 100,
+    requirement: _req,
+    env_mod:     _env,
+    diff:        Math.round(_diff * 100) / 100,
+    success_rate: Math.round(_rate * 100) / 100,
+    roll:        Math.round(_roll * 100) / 100,
+    success:     _ok,
+    tier:        _tier.key,
+    tier_label:  _tier.label,
+    effect_mult: _tier.effect_mult
+  };
+};
+
+/* 供调用方把推进后的种子写回变量（保持可复现） */
+this.judgeSeedOut = function () {
+  return this._lcgState;
+};
+%>
+
+[判定引擎已加载。judge() / judgePower() / judgeRequire() / judgeTier() / _r() / _roll() 可用。]

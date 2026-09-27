@@ -1,0 +1,15 @@
+{
+  "id": "fjb-yds-hidden-updatevar",
+  "scriptName": "隐藏AI更新变量",
+  "findRegex": "/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [1, 2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "minDepth": -100,
+  "maxDepth": 100
+}

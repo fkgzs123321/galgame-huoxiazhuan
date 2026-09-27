@@ -1,0 +1,626 @@
+﻿============================================================================
+### Mortal.Core.MissionManagerData :: get_Main   RVA=21429
+  IL_53B6  ldarg.0       
+  IL_53B7  ldfld         FIELD _main
+  IL_53BC  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_MainMissionStart   RVA=21437
+  IL_53BE  ldarg.0       
+  IL_53BF  ldfld         FIELD <MainMissionStart>k__BackingField
+  IL_53C4  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: set_MainMissionStart   RVA=21445
+  IL_53C6  ldarg.0       
+  IL_53C7  ldarg.1       
+  IL_53C8  stfld         FIELD <MainMissionStart>k__BackingField
+  IL_53CD  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_MainMissionPosition   RVA=21454
+  IL_53CF  ldarg.0       
+  IL_53D0  ldfld         FIELD <MainMissionPosition>k__BackingField
+  IL_53D5  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: set_MainMissionPosition   RVA=21462
+  IL_53D7  ldarg.0       
+  IL_53D8  ldarg.1       
+  IL_53D9  stfld         FIELD <MainMissionPosition>k__BackingField
+  IL_53DE  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_MainMissionKey   RVA=21471
+  IL_53E0  ldarg.0       
+  IL_53E1  ldfld         FIELD <MainMissionKey>k__BackingField
+  IL_53E6  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: set_MainMissionKey   RVA=21479
+  IL_53E8  ldarg.0       
+  IL_53E9  ldarg.1       
+  IL_53EA  stfld         FIELD <MainMissionKey>k__BackingField
+  IL_53EF  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_MainCheckData   RVA=21488
+  IL_53F1  ldarg.0       
+  IL_53F2  ldfld         FIELD <MainCheckData>k__BackingField
+  IL_53F7  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: set_MainCheckData   RVA=21496
+  IL_53F9  ldarg.0       
+  IL_53FA  ldarg.1       
+  IL_53FB  stfld         FIELD <MainCheckData>k__BackingField
+  IL_5400  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_ActiveSubMissions   RVA=21505
+  IL_5402  ldarg.0       
+  IL_5403  ldfld         FIELD <ActiveSubMissions>k__BackingField
+  IL_5408  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: set_ActiveSubMissions   RVA=21513
+  IL_540A  ldarg.0       
+  IL_540B  ldarg.1       
+  IL_540C  stfld         FIELD <ActiveSubMissions>k__BackingField
+  IL_5411  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_FlagsCollection   RVA=21522
+  IL_5413  ldarg.0       
+  IL_5414  ldfld         FIELD _flagsCollection
+  IL_5419  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: get_Instance   RVA=21530
+  IL_541B  ldsfld        FIELD _instance
+  IL_5420  call          Object::op_Implicit
+  IL_5425  brtrue.s      21558
+  IL_5427  call          METHODSPEC#28
+  IL_542C  call          METHODSPEC#29
+  IL_5431  stsfld        FIELD _instance
+  IL_5436  ldsfld        FIELD _instance
+  IL_543B  call          Object::op_Implicit
+  IL_5440  brtrue.s      21580
+  IL_5442  ldstr         "MissionManagerData instance not exist."
+  IL_5447  call          Debug::LogError
+  IL_544C  ldsfld        FIELD _instance
+  IL_5451  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: ResetData   RVA=21588
+  IL_5460  ldarg.0       
+  IL_5461  ldfld         FIELD _main
+  IL_5466  callvirt      Mortal.Core.MissionData::Reset
+  IL_546B  ldarg.0       
+  IL_546C  ldfld         FIELD _subMissions
+  IL_5471  callvirt      Mortal.Core.SubMissionsData::Reset
+  IL_5476  ldarg.0       
+  IL_5477  ldc.i4.0      
+  IL_5478  stfld         FIELD _isTriggerSubMission
+  IL_547D  ldarg.0       
+  IL_547E  ldstr         ""
+  IL_5483  stfld         FIELD _triggerSubMissionKey
+  IL_5488  ldarg.0       
+  IL_5489  ldfld         FIELD _flagsCollection
+  IL_548E  stloc.0       
+  IL_548F  ldc.i4.0      
+  IL_5490  stloc.1       
+  IL_5491  br.s          21663
+  IL_5493  ldloc.0       
+  IL_5494  ldloc.1       
+  IL_5495  ldelem.ref    
+  IL_5496  callvirt      Mortal.Core.FlagCollectionData::ResetData
+  IL_549B  ldloc.1       
+  IL_549C  ldc.i4.1      
+  IL_549D  add           
+  IL_549E  stloc.1       
+  IL_549F  ldloc.1       
+  IL_54A0  ldloc.0       
+  IL_54A1  ldlen         
+  IL_54A2  conv.i4       
+  IL_54A3  blt.s         21651
+  IL_54A5  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: Save   RVA=21672
+  IL_54B4  ldarg.1       
+  IL_54B5  ldfld         FIELD MainMission
+  IL_54BA  ldarg.0       
+  IL_54BB  ldfld         FIELD _main
+  IL_54C0  callvirt      Mortal.Core.MissionData::get_Name
+  IL_54C5  stfld         FIELD Name
+  IL_54CA  ldarg.1       
+  IL_54CB  ldfld         FIELD MainMission
+  IL_54D0  ldarg.0       
+  IL_54D1  ldfld         FIELD _main
+  IL_54D6  callvirt      Mortal.Core.MissionData::get_CurrentKey
+  IL_54DB  stfld         FIELD Key
+  IL_54E0  ldarg.1       
+  IL_54E1  ldarg.0       
+  IL_54E2  ldfld         FIELD _isTriggerSubMission
+  IL_54E7  stfld         FIELD IsTriggerSubMission
+  IL_54EC  ldarg.1       
+  IL_54ED  ldarg.0       
+  IL_54EE  ldfld         FIELD _triggerSubMissionKey
+  IL_54F3  stfld         FIELD TriggerSubMissionKey
+  IL_54F8  ldarg.0       
+  IL_54F9  call          Mortal.Core.MissionManagerData::UpdateFlag_Alpha
+  IL_54FE  ldarg.0       
+  IL_54FF  ldfld         FIELD _subMissions
+  IL_5504  callvirt      ?::get_List
+  IL_5509  callvirt      ?::GetEnumerator
+  IL_550E  stloc.0       
+  IL_550F  br.s          21825
+  IL_5511  ldloca.s      local(0x0000)
+  IL_5513  call          ?::get_Current
+  IL_5518  stloc.1       
+  IL_5519  ldarg.1       
+  IL_551A  ldfld         FIELD SubMissions
+  IL_551F  newobj        Mortal.Core.MiscSave::.ctor
+  IL_5524  dup           
+  IL_5525  ldloc.1       
+  IL_5526  callvirt      Mortal.Core.MissionData::get_Name
+  IL_552B  stfld         FIELD Name
+  IL_5530  dup           
+  IL_5531  ldloc.1       
+  IL_5532  callvirt      Mortal.Core.MissionData::get_CurrentKey
+  IL_5537  stfld         FIELD Key
+  IL_553C  callvirt      ?::Add
+  IL_5541  ldloca.s      local(0x0000)
+  IL_5543  call          ?::MoveNext
+  IL_5548  brtrue.s      21777
+  IL_554A  leave.s       21850
+  IL_554C  ldloca.s      local(0x0000)
+  IL_554E  constrained.  token(0x1B00006E)
+  IL_5554  callvirt      IDisposable::Dispose
+  IL_5559  endfinally    
+  IL_555A  ldarg.0       
+  IL_555B  ldfld         FIELD _flagsCollection
+  IL_5560  stloc.2       
+  IL_5561  ldc.i4.0      
+  IL_5562  stloc.3       
+  IL_5563  br.s          21958
+  IL_5565  ldloc.2       
+  IL_5566  ldloc.3       
+  IL_5567  ldelem.ref    
+  IL_5568  callvirt      ?::get_List
+  IL_556D  callvirt      ?::GetEnumerator
+  IL_5572  stloc.s       local(0x0004)
+  IL_5574  br.s          21929
+  IL_5576  ldloca.s      local(0x0004)
+  IL_5578  call          ?::get_Current
+  IL_557D  stloc.s       local(0x0005)
+  IL_557F  ldarg.1       
+  IL_5580  ldfld         FIELD EventFlags
+  IL_5585  newobj        Mortal.Core.EnemyTeamSave::.ctor
+  IL_558A  dup           
+  IL_558B  ldloc.s       local(0x0005)
+  IL_558D  callvirt      Object::get_name
+  IL_5592  stfld         FIELD Name
+  IL_5597  dup           
+  IL_5598  ldloc.s       local(0x0005)
+  IL_559A  ldfld         FIELD State
+  IL_559F  stfld         FIELD State
+  IL_55A4  callvirt      ?::Add
+  IL_55A9  ldloca.s      local(0x0004)
+  IL_55AB  call          ?::MoveNext
+  IL_55B0  brtrue.s      21878
+  IL_55B2  leave.s       21954
+  IL_55B4  ldloca.s      local(0x0004)
+  IL_55B6  constrained.  token(0x1B000041)
+  IL_55BC  callvirt      IDisposable::Dispose
+  IL_55C1  endfinally    
+  IL_55C2  ldloc.3       
+  IL_55C3  ldc.i4.1      
+  IL_55C4  add           
+  IL_55C5  stloc.3       
+  IL_55C6  ldloc.3       
+  IL_55C7  ldloc.2       
+  IL_55C8  ldlen         
+  IL_55C9  conv.i4       
+  IL_55CA  blt.s         21861
+  IL_55CC  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: Load   RVA=21996
+  IL_55F8  ldarg.0       
+  IL_55F9  call          Mortal.Core.MissionManagerData::ResetData
+  IL_55FE  ldarg.0       
+  IL_55FF  ldfld         FIELD _main
+  IL_5604  ldarg.1       
+  IL_5605  ldfld         FIELD MainMission
+  IL_560A  ldfld         FIELD Key
+  IL_560F  callvirt      Mortal.Core.MissionData::SetCurrentKey
+  IL_5614  ldarg.0       
+  IL_5615  ldarg.1       
+  IL_5616  ldfld         FIELD IsTriggerSubMission
+  IL_561B  stfld         FIELD _isTriggerSubMission
+  IL_5620  ldarg.0       
+  IL_5621  ldarg.1       
+  IL_5622  ldfld         FIELD TriggerSubMissionKey
+  IL_5627  stfld         FIELD _triggerSubMissionKey
+  IL_562C  ldarg.1       
+  IL_562D  ldfld         FIELD SubMissions
+  IL_5632  callvirt      ?::GetEnumerator
+  IL_5637  stloc.0       
+  IL_5638  br.s          22105
+  IL_563A  ldloca.s      local(0x0000)
+  IL_563C  call          ?::get_Current
+  IL_5641  stloc.1       
+  IL_5642  ldarg.0       
+  IL_5643  ldfld         FIELD _subMissions
+  IL_5648  ldloc.1       
+  IL_5649  ldfld         FIELD Name
+  IL_564E  ldloc.1       
+  IL_564F  ldfld         FIELD Key
+  IL_5654  callvirt      Mortal.Core.SubMissionsData::SetKey
+  IL_5659  ldloca.s      local(0x0000)
+  IL_565B  call          ?::MoveNext
+  IL_5660  brtrue.s      22074
+  IL_5662  leave.s       22130
+  IL_5664  ldloca.s      local(0x0000)
+  IL_5666  constrained.  token(0x1B000071)
+  IL_566C  callvirt      IDisposable::Dispose
+  IL_5671  endfinally    
+  IL_5672  ldarg.1       
+  IL_5673  ldfld         FIELD EventFlags
+  IL_5678  callvirt      ?::GetEnumerator
+  IL_567D  stloc.2       
+  IL_567E  br.s          22170
+  IL_5680  ldloca.s      local(0x0002)
+  IL_5682  call          ?::get_Current
+  IL_5687  stloc.3       
+  IL_5688  ldarg.0       
+  IL_5689  ldloc.3       
+  IL_568A  ldfld         FIELD Name
+  IL_568F  ldloc.3       
+  IL_5690  ldfld         FIELD State
+  IL_5695  call          Mortal.Core.MissionManagerData::SetFlag
+  IL_569A  ldloca.s      local(0x0002)
+  IL_569C  call          ?::MoveNext
+  IL_56A1  brtrue.s      22144
+  IL_56A3  leave.s       22195
+  IL_56A5  ldloca.s      local(0x0002)
+  IL_56A7  constrained.  token(0x1B000072)
+  IL_56AD  callvirt      IDisposable::Dispose
+  IL_56B2  endfinally    
+  IL_56B3  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: SetKey   RVA=22224
+  IL_56D1  ldarg.1       
+  IL_56D2  callvirt      String::ToLower
+  IL_56D7  ldstr         "main"
+  IL_56DC  call          String::op_Equality
+  IL_56E1  brfalse.s     22256
+  IL_56E3  ldarg.0       
+  IL_56E4  ldfld         FIELD _main
+  IL_56E9  ldarg.2       
+  IL_56EA  callvirt      Mortal.Core.MissionData::SetCurrentKey
+  IL_56EF  ret           
+  IL_56F0  ldarg.0       
+  IL_56F1  ldfld         FIELD _subMissions
+  IL_56F6  ldarg.1       
+  IL_56F7  ldarg.2       
+  IL_56F8  callvirt      Mortal.Core.SubMissionsData::SetKey
+  IL_56FD  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: UpdateCheckMissions   RVA=22272
+  IL_570C  ldarg.0       
+  IL_570D  call          Mortal.Core.MissionManagerData::UpdateFlagWhenNewRound
+  IL_5712  ldarg.0       
+  IL_5713  ldfld         FIELD _playerStat
+  IL_5718  callvirt      Mortal.Core.PlayerStatManagerData::UpdateGameTime
+  IL_571D  ldarg.0       
+  IL_571E  newobj        ?::.ctor
+  IL_5723  call          Mortal.Core.MissionManagerData::set_ActiveSubMissions
+  IL_5728  ldarg.0       
+  IL_5729  ldarg.0       
+  IL_572A  call          Mortal.Core.MissionManagerData::GetMainCheckData
+  IL_572F  call          Mortal.Core.MissionManagerData::set_MainCheckData
+  IL_5734  ldarg.0       
+  IL_5735  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_573A  ldnull        
+  IL_573B  call          Object::op_Inequality
+  IL_5740  brfalse.s     22397
+  IL_5742  ldarg.0       
+  IL_5743  ldarg.0       
+  IL_5744  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_5749  ldarg.0       
+  IL_574A  ldfld         FIELD _playerStat
+  IL_574F  callvirt      Mortal.Core.MissionCheckData::Check
+  IL_5754  call          Mortal.Core.MissionManagerData::set_MainMissionStart
+  IL_5759  ldarg.0       
+  IL_575A  ldarg.0       
+  IL_575B  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_5760  callvirt      Mortal.Core.MissionCheckData::get_Position
+  IL_5765  call          Mortal.Core.MissionManagerData::set_MainMissionPosition
+  IL_576A  ldarg.0       
+  IL_576B  ldarg.0       
+  IL_576C  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_5771  callvirt      Mortal.Core.MissionCheckData::get_Key
+  IL_5776  call          Mortal.Core.MissionManagerData::set_MainMissionKey
+  IL_577B  br.s          22422
+  IL_577D  ldarg.0       
+  IL_577E  ldc.i4.0      
+  IL_577F  call          Mortal.Core.MissionManagerData::set_MainMissionStart
+  IL_5784  ldarg.0       
+  IL_5785  ldc.i4.0      
+  IL_5786  call          Mortal.Core.MissionManagerData::set_MainMissionPosition
+  IL_578B  ldarg.0       
+  IL_578C  ldstr         ""
+  IL_5791  call          Mortal.Core.MissionManagerData::set_MainMissionKey
+  IL_5796  ldarg.0       
+  IL_5797  call          Mortal.Core.MissionManagerData::UpdateActiveSubMissions
+  IL_579C  ldarg.0       
+  IL_579D  call          Mortal.Core.MissionManagerData::get_MainMissionStart
+  IL_57A2  brfalse.s     22500
+  IL_57A4  ldarg.0       
+  IL_57A5  ldfld         FIELD _isTriggerSubMission
+  IL_57AA  brtrue.s      22500
+  IL_57AC  call          Mortal.Core.PlayerStatManagerData::get_Instance
+  IL_57B1  ldarg.0       
+  IL_57B2  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_57B7  callvirt      Mortal.Core.MissionCheckData::get_StartScript
+  IL_57BC  callvirt      Mortal.Core.PlayerStatManagerData::SetStoryScript
+  IL_57C1  ldarg.0       
+  IL_57C2  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_57C7  callvirt      Mortal.Core.MissionCheckData::get_HasNextState
+  IL_57CC  brfalse.s     22500
+  IL_57CE  ldarg.0       
+  IL_57CF  ldstr         "main"
+  IL_57D4  ldarg.0       
+  IL_57D5  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_57DA  callvirt      Mortal.Core.MissionCheckData::get_NextState
+  IL_57DF  call          Mortal.Core.MissionManagerData::SetKey
+  IL_57E4  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: UpdateActiveSubMissions   RVA=22501
+  IL_57E6  ldarg.0       
+  IL_57E7  ldarg.0       
+  IL_57E8  ldfld         FIELD _subMissions
+  IL_57ED  ldarg.0       
+  IL_57EE  ldfld         FIELD _playerStat
+  IL_57F3  callvirt      Mortal.Core.SubMissionsData::GetActiveMissions
+  IL_57F8  call          Mortal.Core.MissionManagerData::set_ActiveSubMissions
+  IL_57FD  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: SetIsTriggerSubMission   RVA=22526
+  IL_57FF  ldarg.0       
+  IL_5800  ldarg.1       
+  IL_5801  stfld         FIELD _triggerSubMissionKey
+  IL_5806  ldarg.0       
+  IL_5807  ldarg.2       
+  IL_5808  stfld         FIELD _isTriggerSubMission
+  IL_580D  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: HasAnyMissionTrigger   RVA=22544
+  IL_581C  ldarg.0       
+  IL_581D  ldc.i4.1      
+  IL_581E  call          Mortal.Core.MissionManagerData::HasSubMissionTrigger
+  IL_5823  brfalse.s     22567
+  IL_5825  ldc.i4.1      
+  IL_5826  ret           
+  IL_5827  ldarg.0       
+  IL_5828  call          Mortal.Core.MissionManagerData::get_MainMissionStart
+  IL_582D  brfalse.s     22659
+  IL_582F  ldarg.0       
+  IL_5830  call          Mortal.Core.MissionManagerData::get_MainMissionPosition
+  IL_5835  brtrue.s      22659
+  IL_5837  ldarg.0       
+  IL_5838  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_583D  callvirt      Mortal.Core.MissionCheckData::get_StartScript
+  IL_5842  call          String::IsNullOrEmpty
+  IL_5847  brtrue.s      22659
+  IL_5849  call          Mortal.Core.PlayerStatManagerData::get_Instance
+  IL_584E  ldarg.0       
+  IL_584F  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_5854  callvirt      Mortal.Core.MissionCheckData::get_StartScript
+  IL_5859  callvirt      Mortal.Core.PlayerStatManagerData::SetStoryScript
+  IL_585E  ldarg.0       
+  IL_585F  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_5864  callvirt      Mortal.Core.MissionCheckData::get_HasNextState
+  IL_5869  brfalse.s     22657
+  IL_586B  ldarg.0       
+  IL_586C  ldstr         "main"
+  IL_5871  ldarg.0       
+  IL_5872  call          Mortal.Core.MissionManagerData::get_MainCheckData
+  IL_5877  callvirt      Mortal.Core.MissionCheckData::get_NextState
+  IL_587C  call          Mortal.Core.MissionManagerData::SetKey
+  IL_5881  ldc.i4.1      
+  IL_5882  ret           
+  IL_5883  ldarg.0       
+  IL_5884  ldc.i4.0      
+  IL_5885  call          Mortal.Core.MissionManagerData::HasSubMissionTrigger
+  IL_588A  brfalse.s     22670
+  IL_588C  ldc.i4.1      
+  IL_588D  ret           
+  IL_588E  ldc.i4.0      
+  IL_588F  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: HasSubMissionTrigger   RVA=22672
+  IL_589C  ldarg.0       
+  IL_589D  call          Mortal.Core.MissionManagerData::get_ActiveSubMissions
+  IL_58A2  brfalse       22827
+  IL_58A7  ldarg.0       
+  IL_58A8  call          Mortal.Core.MissionManagerData::get_ActiveSubMissions
+  IL_58AD  callvirt      ?::GetEnumerator
+  IL_58B2  stloc.0       
+  IL_58B3  br.s          22802
+  IL_58B5  ldloca.s      local(0x0000)
+  IL_58B7  call          ?::get_Current
+  IL_58BC  stloc.1       
+  IL_58BD  ldloca.s      local(0x0001)
+  IL_58BF  call          ?::get_Value
+  IL_58C4  stloc.2       
+  IL_58C5  ldloc.2       
+  IL_58C6  callvirt      Mortal.Core.MissionCheckData::get_BeforeMainMission
+  IL_58CB  ldarg.1       
+  IL_58CC  bne.un.s      22802
+  IL_58CE  ldloc.2       
+  IL_58CF  callvirt      Mortal.Core.MissionCheckData::get_Position
+  IL_58D4  brtrue.s      22802
+  IL_58D6  ldloc.2       
+  IL_58D7  callvirt      Mortal.Core.MissionCheckData::get_StartScript
+  IL_58DC  call          String::IsNullOrEmpty
+  IL_58E1  brtrue.s      22802
+  IL_58E3  call          Mortal.Core.PlayerStatManagerData::get_Instance
+  IL_58E8  ldloc.2       
+  IL_58E9  callvirt      Mortal.Core.MissionCheckData::get_StartScript
+  IL_58EE  callvirt      Mortal.Core.PlayerStatManagerData::SetStoryScript
+  IL_58F3  ldloc.2       
+  IL_58F4  callvirt      Mortal.Core.MissionCheckData::get_HasNextState
+  IL_58F9  brfalse.s     22798
+  IL_58FB  ldarg.0       
+  IL_58FC  ldloca.s      local(0x0001)
+  IL_58FE  call          ?::get_Key
+  IL_5903  ldloc.2       
+  IL_5904  callvirt      Mortal.Core.MissionCheckData::get_NextState
+  IL_5909  call          Mortal.Core.MissionManagerData::SetKey
+  IL_590E  ldc.i4.1      
+  IL_590F  stloc.3       
+  IL_5910  leave.s       22829
+  IL_5912  ldloca.s      local(0x0000)
+  IL_5914  call          ?::MoveNext
+  IL_5919  brtrue.s      22709
+  IL_591B  leave.s       22827
+  IL_591D  ldloca.s      local(0x0000)
+  IL_591F  constrained.  token(0x1B000074)
+  IL_5925  callvirt      IDisposable::Dispose
+  IL_592A  endfinally    
+  IL_592B  ldc.i4.0      
+  IL_592C  ret           
+  IL_592D  ldloc.3       
+  IL_592E  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: GetFlag   RVA=22848
+  IL_594C  newobj        .<>c::.ctor
+  IL_5951  stloc.0       
+  IL_5952  ldloc.0       
+  IL_5953  ldarg.1       
+  IL_5954  stfld         FIELD name
+  IL_5959  ldarg.0       
+  IL_595A  ldfld         FIELD _flagsCollection
+  IL_595F  stloc.1       
+  IL_5960  ldc.i4.0      
+  IL_5961  stloc.2       
+  IL_5962  br.s          22946
+  IL_5964  ldloc.1       
+  IL_5965  ldloc.2       
+  IL_5966  ldelem.ref    
+  IL_5967  callvirt      ?::get_List
+  IL_596C  ldloc.0       
+  IL_596D  ldfld         FIELD <>9__0
+  IL_5972  dup           
+  IL_5973  brtrue.s      22925
+  IL_5975  pop           
+  IL_5976  ldloc.0       
+  IL_5977  ldloc.0       
+  IL_5978  ldftn         .<>c__DisplayClass42_0::<GetFlag>b__0
+  IL_597E  newobj        ?::.ctor
+  IL_5983  dup           
+  IL_5984  stloc.s       local(0x0004)
+  IL_5986  stfld         FIELD <>9__0
+  IL_598B  ldloc.s       local(0x0004)
+  IL_598D  call          METHODSPEC#25
+  IL_5992  stloc.3       
+  IL_5993  ldloc.3       
+  IL_5994  ldnull        
+  IL_5995  call          Object::op_Inequality
+  IL_599A  brfalse.s     22942
+  IL_599C  ldloc.3       
+  IL_599D  ret           
+  IL_599E  ldloc.2       
+  IL_599F  ldc.i4.1      
+  IL_59A0  add           
+  IL_59A1  stloc.2       
+  IL_59A2  ldloc.2       
+  IL_59A3  ldloc.1       
+  IL_59A4  ldlen         
+  IL_59A5  conv.i4       
+  IL_59A6  blt.s         22884
+  IL_59A8  ldstr         "Flag ["
+  IL_59AD  ldloc.0       
+  IL_59AE  ldfld         FIELD name
+  IL_59B3  ldstr         "] 未定義"
+  IL_59B8  call          String::Concat
+  IL_59BD  call          Debug::LogWarning
+  IL_59C2  ldnull        
+  IL_59C3  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: SetFlag   RVA=22980
+  IL_59D0  ldarg.0       
+  IL_59D1  ldarg.1       
+  IL_59D2  call          Mortal.Core.MissionManagerData::GetFlag
+  IL_59D7  stloc.0       
+  IL_59D8  ldloc.0       
+  IL_59D9  ldnull        
+  IL_59DA  call          Object::op_Inequality
+  IL_59DF  brfalse.s     23016
+  IL_59E1  ldloc.0       
+  IL_59E2  ldarg.2       
+  IL_59E3  stfld         FIELD State
+  IL_59E8  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: AddFlag   RVA=23020
+  IL_59F8  ldarg.0       
+  IL_59F9  ldarg.1       
+  IL_59FA  call          Mortal.Core.MissionManagerData::GetFlag
+  IL_59FF  stloc.0       
+  IL_5A00  ldloc.0       
+  IL_5A01  ldnull        
+  IL_5A02  call          Object::op_Inequality
+  IL_5A07  brfalse.s     23063
+  IL_5A09  ldloc.0       
+  IL_5A0A  dup           
+  IL_5A0B  ldfld         FIELD State
+  IL_5A10  ldarg.2       
+  IL_5A11  add           
+  IL_5A12  stfld         FIELD State
+  IL_5A17  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: UpdateFlagWhenNewRound   RVA=23064
+  IL_5A19  ldarg.0       
+  IL_5A1A  ldfld         FIELD _playerStat
+  IL_5A1F  callvirt      Mortal.Core.PlayerStatManagerData::get_CurrentActionCount
+  IL_5A24  brtrue.s      23084
+  IL_5A26  ldarg.0       
+  IL_5A27  call          Mortal.Core.MissionManagerData::UpdateFlag_S9001
+  IL_5A2C  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: UpdateFlag_S9001   RVA=23088
+  IL_5A3C  ldarg.0       
+  IL_5A3D  ldstr         "S9001"
+  IL_5A42  call          Mortal.Core.MissionManagerData::GetFlag
+  IL_5A47  stloc.0       
+  IL_5A48  ldloc.0       
+  IL_5A49  ldfld         FIELD State
+  IL_5A4E  ldc.i4.0      
+  IL_5A4F  ble.s         23135
+  IL_5A51  ldloc.0       
+  IL_5A52  dup           
+  IL_5A53  ldfld         FIELD State
+  IL_5A58  ldc.i4.1      
+  IL_5A59  sub           
+  IL_5A5A  stfld         FIELD State
+  IL_5A5F  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: UpdateFlag_Alpha   RVA=23136
+  IL_5A61  ldarg.0       
+  IL_5A62  ldstr         "Alpha_001"
+  IL_5A67  call          Mortal.Core.MissionManagerData::GetFlag
+  IL_5A6C  ldarg.0       
+  IL_5A6D  ldfld         FIELD _playerStat
+  IL_5A72  callvirt      Mortal.Core.PlayerStatManagerData::get_AlphaTest
+  IL_5A77  brtrue.s      23164
+  IL_5A79  ldc.i4.0      
+  IL_5A7A  br.s          23165
+  IL_5A7C  ldc.i4.1      
+  IL_5A7D  stfld         FIELD State
+  IL_5A82  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: GetMainCheckData   RVA=23171
+  IL_5A84  ldarg.0       
+  IL_5A85  call          Mortal.Core.MissionData::get_Main
+  IL_5A8A  ldarg.0       
+  IL_5A8B  call          Mortal.Core.MissionData::get_Main
+  IL_5A90  callvirt      Mortal.Core.MissionData::get_CurrentKey
+  IL_5A95  callvirt      Mortal.Core.MissionData::GetByKey
+  IL_5A9A  ret           
+============================================================================
+### Mortal.Core.MissionManagerData :: .ctor   RVA=23195
+  IL_5A9C  ldarg.0       
+  IL_5A9D  ldstr         ""
+  IL_5AA2  stfld         FIELD _triggerSubMissionKey
+  IL_5AA7  ldarg.0       
+  IL_5AA8  call          ScriptableObject::.ctor
+  IL_5AAD  ret           

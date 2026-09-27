@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · KK园区 · 受害者视角</title>
+<style>
+:root{
+  --bg-0:#0a0a0a;--bg-1:#1a0a0a;--bg-card:rgba(40,12,12,.88);
+  --c-text:#e8d0d0;--c-dim:#8a6a6a;--c-border:rgba(180,40,40,.25);
+  --c-danger:#dc2626;--c-warn:#d97706;--c-orange:#c2410c;--c-safe:#16a34a;--c-accent:#b91c1c;--c-blue:#60a5fa;--c-pink:#f472b6;--c-purple:#a78bfa;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin:6px 0;box-shadow:0 4px 16px rgba(0,0,0,.6)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:700;letter-spacing:.5px;color:#ef4444}
+.hd-sub{font-size:var(--fs-xs);color:var(--c-dim);width:100%;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(185,28,28,.12);border:1px solid rgba(185,28,28,.3);color:#fca5a5;white-space:nowrap}
+.pill.warn{background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.35);color:var(--c-warn)}
+.pill.danger{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.5);color:#fca5a5;font-weight:700}
+.pill.safe{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.35);color:var(--c-safe)}
+.pill.dark{background:rgba(80,20,20,.2);border-color:rgba(180,40,40,.4);color:#c06060}
+.pill.light{background:rgba(250,240,220,.1);border-color:rgba(250,240,220,.25);color:#fde68a}
+.pill.purple{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35);color:var(--c-purple)}
+.pill.pink{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.35);color:var(--c-pink)}
+.rfr{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0;transition:color .2s}
+.rfr:hover{color:var(--c-text)}
+.rfr.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+details.block{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:0;margin-bottom:8px;overflow:hidden}
+details.block>summary{font-size:var(--fs-sm);font-weight:700;padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none}
+details.block>summary::-webkit-details-marker{display:none}
+details.block[open]>summary{border-bottom:1px solid var(--c-border)}
+details.block[open]>summary .caret{transform:rotate(90deg)}
+details.block>summary .caret{margin-left:auto;transition:transform .2s}
+.card-t.stage{color:#ef4444}
+.card-t.time{color:#f59e0b}
+.card-t.survival{color:#c2410c}
+.card-t.nsfw{color:#f472b6}
+.card-t.rpg{color:#a78bfa}
+.card-t.victim{color:#fb923c}
+.card-t.addiction{color:#dc2626}
+.card-t.fjb{color:#60a5fa}
+.card-t.park{color:#fbbf24}
+.card-t.faction{color:#818cf8}
+.card-t.darknet{color:#dc2626}
+.card-t.morality{color:#c084fc}
+.card-t.quest{color:#34d399}
+.card-t.female{color:#f472b6}
+.block-body{padding:6px 10px 8px;display:block}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:6px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}
+.kv{display:flex;flex-direction:column;gap:1px}
+.kv .k{font-size:var(--fs-xs);color:var(--c-dim)}
+.kv .v{font-size:var(--fs-sm);font-weight:600}
+.v.danger{color:var(--c-danger)}.v.warn{color:var(--c-warn)}.v.safe{color:var(--c-safe)}.v.neutral{color:var(--c-dim)}.v.accent{color:var(--c-accent)}.v.blue{color:var(--c-blue)}.v.pink{color:var(--c-pink)}.v.purple{color:var(--c-purple)}
+.bar{margin:5px 0}
+.bar-h{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}
+.bar-h .bv{color:var(--c-text);font-weight:600}
+.bar-t{height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar-f{height:100%;border-radius:4px;transition:width .5s ease;width:0}
+.bar-f.r{background:linear-gradient(90deg,#7f1d1d,var(--c-danger))}
+.bar-f.o{background:linear-gradient(90deg,#78350f,var(--c-orange))}
+.bar-f.y{background:linear-gradient(90deg,#78350f,var(--c-warn))}
+.bar-f.g{background:linear-gradient(90deg,#064e3b,var(--c-safe))}
+.bar-f.b{background:linear-gradient(90deg,#1e3a8a,var(--c-blue))}
+.bar-f.p{background:linear-gradient(90deg,#831843,var(--c-pink))}
+.bar-f.purple{background:linear-gradient(90deg,#581c87,var(--c-purple))}
+.bar-f.blood{background:linear-gradient(90deg,#450a0a,#dc2626)}
+.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.sect-title{font-size:var(--fs-xs);color:var(--c-dim);margin:8px 0 4px;font-weight:600;border-bottom:1px solid rgba(180,40,40,.12);padding-bottom:2px}
+.morality-bar{height:12px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden;position:relative;margin:5px 0}
+.morality-fill{height:100%;border-radius:6px;transition:width .5s ease}
+.morality-label{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.female-card{background:rgba(60,20,30,.4);border:1px solid rgba(180,40,40,.3);border-radius:6px;padding:6px 8px;margin-top:6px}
+.female-name{font-size:var(--fs-sm);font-weight:700;color:var(--c-pink);margin-bottom:4px;border-bottom:1px solid rgba(244,114,182,.2);padding-bottom:3px}
+@media(max-width:480px){
+  .g{grid-template-columns:repeat(2,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr}
+  .hd-t{font-size:var(--fs-sm)}
+  .hd{flex-wrap:wrap}
+  .hd-l{width:100%}
+  .rfr{padding:4px 10px}
+  .pill{font-size:9px;padding:1px 6px}
+  .hd-sub{font-size:9px}
+}
+@media(max-width:360px){
+  .g{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr}
+  .hd-t{font-size:var(--fs-xs)}
+}
+</style>
+</head>
+<body>
+<div id="sb-root">
+  <div class="loading" id="sb-loading">正在载入状态栏...</div>
+  <div class="sb" id="sb-body" style="display:none"></div>
+</div>
+<script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* ===== 状态栏 · KK园区 · 受害者视角·飞机杯·精液成瘾 ===== */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+
+function parseEmbeddedStat(){
+  var el=document.getElementById('mvu-stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'){
+      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+
+function resolveMessageIdFromDom(){
+  try{
+    var frame=window.frameElement;
+    if(frame&&frame.closest){var mes=frame.closest('.mes');if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(id>=0)return id}}
+    var el=frame;
+    while(el){if(el.classList&&el.classList.contains('mes')){var id2=parseInt(el.getAttribute('mesid'),10);if(id2>=0)return id2}el=el.parentElement}
+    for(var i=0;i<TH_HOSTS.length;i++){try{var host=TH_HOSTS[i];var host$=host.$||host.jQuery;if(!host$||!frame)continue;var $mes=host$(frame).closest('.mes');if($mes&&$mes.length){var id3=parseInt($mes.attr('mesid'),10);if(id3>=0)return id3}}catch(e){}}
+  }catch(e){}
+  return -1;
+}
+function resolveMessageIdFromIframeName(){
+  var fn=pickHostFn('getIframeName');if(!fn)return -1;
+  try{var name=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}
+  return -1;
+}
+function resolveMessageId(){
+  var fromDom=resolveMessageIdFromDom();if(fromDom>=0)return fromDom;
+  var fromName=resolveMessageIdFromIframeName();if(fromName>=0)return fromName;
+  if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;
+  var fn=pickHostFn('getCurrentMessageId');
+  if(fn){try{var id=fn();if(typeof id==='number'&&id>=0)return id}catch(e){}}
+  return -1;
+}
+function getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}
+function hasMeaningfulStatData(stat){return stat&&typeof stat==='object'&&!Array.isArray(stat)&&Object.keys(stat).length>0}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;return hasMeaningfulStatData(stat)?stat:null}
+
+var cachedStatFromBridge=null;
+var cachedBridgeMessageId=-1;
+
+function readStatData(){
+  var mesId=resolveMessageId();
+  var Mvu=getMvu();var opt=getMessageOption();
+  try{var stat=null;if(Mvu&&typeof Mvu.getMvuData==='function'){stat=pickStatData(Mvu.getMvuData(opt))}if(stat)return deepMergeStat(DEFAULT_STAT,stat)}catch(e){}
+  try{var gv=pickHostFn('getVariables');if(gv){var s2=pickStatData(gv(opt));if(s2)return deepMergeStat(DEFAULT_STAT,s2)}}catch(e){}
+  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)&&(cachedBridgeMessageId<0||mesId<0||cachedBridgeMessageId===mesId)){
+    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);
+  }
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  try{var gav=pickHostFn('getAllVariables');if(gav){var s3=pickStatData(gav());if(s3)return deepMergeStat(DEFAULT_STAT,s3)}}catch(e){}
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+
+function requestStatFromBridge(){
+  var mesId=resolveMessageId();var payload={type:'kk-mvu-stat-request',messageId:mesId};
+  for(var i=0;i<TH_HOSTS.length;i++){try{TH_HOSTS[i].postMessage(payload,'*')}catch(e){}}
+}
+
+/* ===== DEFAULT_STAT (与 schema.ts 对齐) ===== */
+var DEFAULT_STAT={
+  "日期":"2024.11.15",
+  "星期":"周五",
+  "时间":"19:00",
+  "玩家":{
+    "当前位置":"KK园区·猪仔宿舍",
+    "飞机杯当前绑定":"无",
+    "飞机杯定位":"玩家藏在贴身衣物内",
+    "体力":70,"精神":60,"饥饿":50,"脱水":30,"疲劳":40,
+    "性欲":30,"勃起度":0,"累计射精次数":0,
+    "金钱":0,"持有物品":[],
+    "容貌值":65,"性别稀缺度":100,"被觊觎度":40,"生育价值":70,
+    "伪装度":10,"逃跑准备":0,"情报网":0,"信任值":0,
+    "伤势":10,"恐惧值":60,"希望值":50,"被迫度":30,
+    "权力接触":false,"外部援助":false,"警方线索":0,
+    "精液成瘾能力":{
+      "已觉醒":true,"觉醒进度":100,
+      "已触发口服次数":0,"已触发内射次数":0,
+      "园区知晓程度":60,"园区知晓途径":"网恋聊天记录+受害者体检",
+      "成瘾女性总数":0
+    }
+  },
+  "女性角色":{},
+  "男性角色":{},
+  "园区":{
+    "当前阶段":"入园恐惧","剧情进度":1,"结局分支":"",
+    "拍卖状态":"未上架","拍卖价格":0,"直播次数":0,
+    "暗网知名度":0,"买家关注":[],
+    "园区董事会":0,"管理层":0,"打手团":0,"受害者群":10,"暗网网络":0,
+    "善恶值":0,
+    "当前主线任务":"活下去，了解园区规则",
+    "已接取支线":[],"已完成任务":[],
+    "已获取情报":[],"待验证情报":[],
+    "已达成":[],"生存天数":0,"结识NPC数":0,"救助人数":0,
+    "已招募":[],"待招募候选":[],
+    "已收集":[],"已传递":0,
+    "LCG种子":0,
+    "利用计划":"观察user能力真实性，待确认后用于诈骗大陆女性",
+    "利用进度":5,"已诈骗金额":0
+  },
+  "RPG":{
+    "力量":5,"敏捷":5,"体质":5,"智力":5,"感知":5,"魅力":5,
+    "未分配点数":30,
+    "诈骗术":0,"格斗术":0,"潜行术":0,"社交术":0,"技术术":0,
+    "求生术":0,"伪装术":0,"情报收集":0,"逃脱术":0,"交际手腕":0,
+    "暗网操作":0,"拷问抗性":0,
+    "成长":{
+      "力量使用计数":0,"敏捷使用计数":0,"体质使用计数":0,
+      "智力使用计数":0,"感知使用计数":0,"魅力使用计数":0,
+      "技能使用计数":{}
+    }
+  },
+  "人际":{"NPC关系":{},"当前在场角色":[],"互动计数":{}},
+  "角色库":{"已生成列表":[],"当前交互角色":"","角色生成计数器":0}
+};
+
+function deepMergeStat(dst,src){
+  if(!src||typeof src!=='object')return dst;
+  var out={};try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}
+  for(var k in src){
+    if(!Object.prototype.hasOwnProperty.call(src,k))continue;
+    var sv=src[k],dv=out[k];
+    if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){out[k]=deepMergeStat(dv,sv)}
+    else{out[k]=sv}
+  }
+  return out;
+}
+
+/* 工具 */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function barClass4(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'y';if(v>=30)return'o';return'r'}
+function kv(k,v,cls){return '<div class="kv"><span class="k">'+k+'</span><span class="v'+(cls?' '+cls:'')+'">'+esc(v)+'</span></div>'}
+function bar(label,val,max){
+  max=max||100;var v=num(val,0);
+  return '<div class="bar"><div class="bar-h"><span>'+label+'</span><span class="bv">'+v+'/'+max+'</span></div><div class="bar-t"><div class="bar-f '+barClass4(v)+'" style="width:'+pct(v,max)+'%"></div></div></div>';
+}
+function flagStr(v){return v?'<span class="v safe">&#10003;</span>':'<span class="v danger">&#10007;</span>'}
+
+var State={loading:true,refreshing:false,mvu:{},_refreshing:false,expanded:{}};
+
+function mvuObj(key){return(State.mvu&&State.mvu[key])||{}}
+function mvuVal(path){
+  var parts=path.split('.');
+  var obj=State.mvu;
+  for(var i=0;i<parts.length;i++){
+    if(!obj||typeof obj!=='object')return undefined;
+    obj=obj[parts[i]];
+  }
+  return obj;
+}
+
+function cardTitle(cls,icon,text,key){
+  var open=State.expanded[key]?' open':'';
+  return '<details class="block"'+open+' data-key="'+key+'"><summary class="card-t '+cls+'">'+icon+' '+text+'<span class="caret">&#9654;</span></summary><div class="block-body">';
+}
+
+/* ===== 渲染：顶部 ===== */
+function renderHeader(){
+  var p=mvuObj('玩家');
+  var park=mvuObj('园区');
+  var stage=park.当前阶段||'入园恐惧';
+  var progress=park.剧情进度||1;
+  var ending=park.结局分支||'未确定';
+  var dateStr=mvuVal('日期')||'2024.11.15';
+  var timeStr=mvuVal('时间')||'19:00';
+  var pos=p.当前位置||'KK园区·猪仔宿舍';
+  var stageCls=stage==='入园恐惧'?'danger':(stage==='适应求生'?'warn':(stage==='暗中谋划'?'':(stage==='逃脱行动'?'dark':(stage==='结局'?'light':'safe'))));
+  return '<div class="hd"><div class="hd-l">'
+    +'<span class="hd-t">KK园区·受害者</span>'
+    +'<span class="pill '+stageCls+'">'+esc(stage)+'</span>'
+    +'<span class="pill">进度 '+esc(progress)+'%</span>'
+    +'<span class="pill">'+esc(dateStr)+' '+esc(timeStr)+'</span>'
+    +'<span class="pill">'+esc(ending)+'</span>'
+    +'<div class="hd-sub">'+esc(pos)+'</div>'
+    +'</div>'
+    +'<button class="rfr'+(State.refreshing?' spinning':'')+'" data-act="refresh">&#8635;</button>'
+    +'</div>';
+}
+
+/* ===== 园区阶段系统 ===== */
+function renderStage(){
+  var park=mvuObj('园区');
+  var body='<div class="g2">'
+    +kv('当前阶段',park.当前阶段||'入园恐惧')
+    +kv('剧情进度',(park.剧情进度||1)+'%')
+    +kv('结局分支',park.结局分支||'未确定')
+    +kv('LCG种子',park.LCG种子||0)
+    +'</div>'
+    +'<div class="sect-title">园区利用计划</div>'
+    +'<div class="g2">'
+    +kv('利用计划',park.利用计划||'无','warn')
+    +kv('利用进度',(park.利用进度||0)+'%','warn')
+    +kv('已诈骗金额',num(park.已诈骗金额||0,0),'danger')
+    +'</div>';
+  return cardTitle('stage','&#9760;','园区阶段','stage')+body+'</div></details>';
+}
+
+/* ===== 时间位置区 ===== */
+function renderTimeLocation(){
+  var body='<div class="g2">'
+    +kv('日期',mvuVal('日期')||'2024.11.15')
+    +kv('星期',mvuVal('星期')||'周五')
+    +kv('时间',mvuVal('时间')||'19:00')
+    +kv('当前位置',mvuVal('玩家.当前位置')||'KK园区·猪仔宿舍')
+    +'</div>';
+  return cardTitle('time','&#9200;','时间与位置','time')+body+'</div></details>';
+}
+
+/* ===== 生存属性区 ===== */
+function renderSurvival(){
+  var p=mvuObj('玩家');
+  var body=bar('体力',p.体力||0,100)
+    +bar('精神',p.精神||0,100)
+    +bar('饥饿',p.饥饿||0,100)
+    +bar('脱水',p.脱水||0,100)
+    +bar('疲劳',p.疲劳||0,100)
+    +'<div class="g2">'
+    +kv('金钱',num(p.金钱||0,0),'warn')
+    +kv('伤势',p.伤势||0,(p.伤势||0)>30?'danger':'')
+    +'</div>'
+    +'<div class="sect-title">持有物品</div>';
+  var items=p.持有物品||[];
+  if(Array.isArray(items)&&items.length>0){
+    body+='<div class="g2">';
+    for(var i=0;i<items.length;i++){body+=kv('物品'+(i+1),items[i])}
+    body+='</div>';
+  }else{body+='<div class="kv"><span class="k">无物品</span></div>'}
+  return cardTitle('survival','&#9764;','生存属性','survival')+body+'</div></details>';
+}
+
+/* ===== NSFW属性区 ===== */
+function renderNSFW(){
+  var p=mvuObj('玩家');
+  var body=bar('性欲',p.性欲||0,100)
+    +bar('勃起度',p.勃起度||0,100)
+    +'<div class="g2">'
+    +kv('累计射精次数',p.累计射精次数||0,'pink')
+    +'</div>';
+  return cardTitle('nsfw','&#9888;','NSFW属性','nsfw')+body+'</div></details>';
+}
+
+/* ===== RPG属性区 ===== */
+function renderRPG(){
+  var r=mvuObj('RPG');
+  var body='<div class="sect-title">六维属性</div><div class="g">'
+    +kv('力量',r.力量||0)+kv('敏捷',r.敏捷||0)+kv('体质',r.体质||0)
+    +kv('智力',r.智力||0)+kv('感知',r.感知||0)+kv('魅力',r.魅力||0)
+    +kv('未分配',r.未分配点数||0,'safe')
+    +'</div>'
+    +'<div class="sect-title">关键技能</div><div class="g">'
+    +kv('诈骗',r.诈骗术||0)+kv('格斗',r.格斗术||0)+kv('潜行',r.潜行术||0)
+    +kv('社交',r.社交术||0)+kv('技术',r.技术术||0)+kv('求生',r.求生术||0)
+    +kv('伪装',r.伪装术||0)+kv('情报',r.情报收集||0)+kv('逃脱',r.逃脱术||0)
+    +kv('交际',r.交际手腕||0)+kv('暗网',r.暗网操作||0)+kv('拷问抗性',r.拷问抗性||0)
+    +'</div>';
+  return cardTitle('rpg','&#9876;','RPG属性','rpg')+body+'</div></details>';
+}
+
+/* ===== user专属区 ===== */
+function renderUser(){
+  var p=mvuObj('玩家');
+  var body=bar('容貌值',p.容貌值||0,100)
+    +bar('性别稀缺度',p.性别稀缺度||0,100)
+    +bar('被觊觎度',p.被觊觎度||0,100)
+    +'<div class="g2">'
+    +kv('生育价值',p.生育价值||0,'pink')
+    +'</div>';
+  return cardTitle('victim','&#9792;','user属性','user')+body+'</div></details>';
+}
+
+/* ===== 受害者状态区 ===== */
+function renderVictim(){
+  var p=mvuObj('玩家');
+  var body=bar('希望值',p.希望值||0,100)
+    +bar('恐惧值',p.恐惧值||0,100)
+    +bar('伪装度',p.伪装度||0,100)
+    +bar('逃跑准备',p.逃跑准备||0,100)
+    +'<div class="g2">'
+    +kv('情报网',p.情报网||0)
+    +kv('信任值',p.信任值||0)
+    +kv('被迫度',p.被迫度||0,(p.被迫度||0)>50?'danger':'')
+    +kv('警方线索',p.警方线索||0)
+    +kv('权力接触',flagStr(p.权力接触))
+    +kv('外部援助',flagStr(p.外部援助))
+    +'</div>';
+  return cardTitle('victim','&#9888;','受害者状态','victim')+body+'</div></details>';
+}
+
+/* ===== 精液成瘾能力区（本次创意核心） ===== */
+function renderAddiction(){
+  var a=mvuVal('玩家.精液成瘾能力')||{};
+  var total=a.成瘾女性总数||0;
+  var oral=a.已触发口服次数||0;
+  var internal=a.已触发内射次数||0;
+  var parkKnown=a.园区知晓程度||0;
+
+  var stageName,stageCls;
+  if(!a.已觉醒){stageName='未觉醒';stageCls='neutral'}
+  else if(total===0){stageName='觉醒态';stageCls='warn'}
+  else if(total===1){stageName='首次触发';stageCls='danger'}
+  else if(total>=2&&total<=4){stageName='后宫雏形';stageCls='danger'}
+  else if(total>=5&&total<=9){stageName='后宫规模';stageCls='danger'}
+  else{stageName='后宫王';stageCls='purple'}
+
+  var parkName,parkCls;
+  if(parkKnown<30){parkName='一无所知';parkCls='safe'}
+  else if(parkKnown<60){parkName='起疑';parkCls='warn'}
+  else if(parkKnown<90){parkName='知晓(仅内射)';parkCls='danger'}
+  else{parkName='完全掌握';parkCls='danger'}
+
+  var body='<div class="g2">'
+    +kv('已觉醒',a.已觉醒?'是':'否',a.已觉醒?'safe':'danger')
+    +kv('觉醒进度',(a.觉醒进度||0)+'%')
+    +kv('当前阶段','<span class="v '+stageCls+'">'+stageName+'</span>')
+    +kv('园区态度','<span class="v '+parkCls+'">'+parkName+'</span>')
+    +'</div>'
+    +'<div class="sect-title">触发统计</div>'
+    +'<div class="g2">'
+    +kv('口服触发次数',oral,'blue')
+    +kv('内射触发次数',internal,'pink')
+    +kv('成瘾女性总数',total,'purple')
+    +'</div>'
+    +'<div class="bar"><div class="bar-h"><span>园区知晓程度（仅内射）</span><span class="bv">'+parkKnown+'%</span></div><div class="bar-t"><div class="bar-f r" style="width:'+parkKnown+'%"></div></div></div>'
+    +'<div class="g2">'
+    +kv('园区知晓途径',a.园区知晓途径||'网恋聊天记录+受害者体检','dim')
+    +'</div>';
+
+  return cardTitle('addiction','&#9760;','精液成瘾能力','addiction')+body+'</div></details>';
+}
+
+/* ===== 飞机杯系统区 ===== */
+function renderFJB(){
+  var p=mvuObj('玩家');
+  var binding=p.飞机杯当前绑定||'无';
+  var location=p.飞机杯定位||'';
+  var isUnbound=(binding==='无'||binding==='');
+
+  var body='<div class="g2">'
+    +kv('当前绑定',binding||'无',isUnbound?'neutral':'blue')
+    +kv('飞机杯定位',location,'dim')
+    +'</div>';
+
+  if(!isUnbound){
+    var female=mvuVal('女性角色.'+binding)||{};
+    var awareness=female.察觉度||0;
+    var passion=female.倾心度||0;
+    var manifest=female.具现度||0;
+
+    var fjbStage;
+    if(manifest<=0){fjbStage='休眠'}
+    else if(manifest<=30){fjbStage='初探期'}
+    else if(manifest<=60){fjbStage='渐深期'}
+    else if(manifest<=90){fjbStage='具现期'}
+    else if(manifest<=120){fjbStage='投影期'}
+    else if(manifest<=150){fjbStage='实体化期'}
+    else{fjbStage='降临期'}
+
+    body+='<div class="sect-title">绑定目标：'+esc(binding)+'</div>'
+      +'<div class="g2">'
+      +kv('飞机杯阶段',fjbStage,'blue')
+      +'</div>'
+      +'<div class="bar"><div class="bar-h"><span>察觉度</span><span class="bv">'+awareness+'/200</span></div><div class="bar-t"><div class="bar-f b" style="width:'+pct(awareness,200)+'%"></div></div></div>'
+      +'<div class="bar"><div class="bar-h"><span>倾心度</span><span class="bv">'+passion+'/200</span></div><div class="bar-t"><div class="bar-f p" style="width:'+pct(passion,200)+'%"></div></div></div>'
+      +'<div class="bar"><div class="bar-h"><span>具现度</span><span class="bv">'+manifest+'/200</span></div><div class="bar-t"><div class="bar-f purple" style="width:'+pct(manifest,200)+'%"></div></div></div>';
+
+    if(female.成瘾度!==undefined||female.爱意值!==undefined){
+      body+='<div class="sect-title">精液成瘾状态</div><div class="g2">'
+        +kv('成瘾度',female.成瘾度||0,'pink')
+        +kv('爱意值',female.爱意值||0,'pink')
+        +kv('触发方式',female.成瘾触发方式||'未触发','dim')
+        +kv('口服次数',female.已口服次数||0,'blue')
+        +kv('内射次数',female.已内射次数||0,'pink')
+        +'</div>';
+    }
+
+    body+='<div class="sect-title">实时状态</div><div class="g2">'
+      +kv('心情',female.心情||'—','pink')
+      +kv('当前状态',female.当前状态||'','dim')
+      +kv('心情文本',female.心声||'','dim')
+      +'</div>';
+  }else{
+    body+='<div class="sect-title">激活条件</div>'
+      +'<div class="kv"><span class="k">需获取目标女性的毛发/指甲/血液/皮屑等身体关联物，放入飞机杯内壁静置1分钟激活</span></div>';
+  }
+
+  return cardTitle('fjb','&#9881;','飞机杯系统','fjb')+body+'</div></details>';
+}
+
+/* ===== 已激活女性角色列表 ===== */
+function renderFemales(){
+  var females=mvuObj('女性角色')||{};
+  var keys=Object.keys(females).filter(function(k){return k&&k!=='_schema'});
+  var body='';
+  if(keys.length===0){
+    body='<div class="kv"><span class="k">尚未激活任何女性角色</span></div>';
+  }else{
+    body='<div class="g2">'+kv('已激活数量',keys.length,'pink')+'</div>';
+    for(var i=0;i<keys.length;i++){
+      var name=keys[i];
+      var f=females[name]||{};
+      var status=f.已激活?'已激活':'未激活';
+      var bound=f.被绑定状态;
+      body+='<div class="female-card">'
+        +'<div class="female-name">'+esc(name)+(bound?' [当前绑定]':'')+'</div>'
+        +'<div class="g2">'
+        +kv('身份',f.身份||'','dim')
+        +kv('状态',status,bound?'blue':'')
+        +kv('察觉度',f.察觉度||0,'blue')
+        +kv('倾心度',f.倾心度||0,'pink')
+        +kv('具现度',f.具现度||0,'purple')
+        +kv('成瘾度',f.成瘾度||0,'pink')
+        +kv('爱意值',f.爱意值||0,'pink')
+        +'</div>'
+        +'<div class="g2">'
+        +kv('心情',f.心情||'—','pink')
+        +kv('当前状态',f.当前状态||'','dim')
+        +'</div>'
+        +'</div>';
+    }
+  }
+  return cardTitle('female','&#9792;','女性角色('+keys.length+')','females')+body+'</div></details>';
+}
+
+/* ===== 派系关系区 ===== */
+function renderFactions(){
+  var park=mvuObj('园区');
+  var body=bar('园区董事会',park.园区董事会||0,100)
+    +bar('管理层',park.管理层||0,100)
+    +bar('打手团',park.打手团||0,100)
+    +bar('受害者群',park.受害者群||0,100)
+    +bar('暗网网络',park.暗网网络||0,100);
+  return cardTitle('faction','&#9775;','派系关系','factions')+body+'</div></details>';
+}
+
+/* ===== 暗网状态区 ===== */
+function renderDarknet(){
+  var park=mvuObj('园区');
+  var body='<div class="g2">'
+    +kv('拍卖状态',park.拍卖状态||'未上架')
+    +kv('拍卖价格',park.拍卖价格||0)
+    +kv('暗网知名度',park.暗网知名度||0)
+    +kv('直播次数',(park.直播次数||0)+'次')
+    +'</div>';
+  return cardTitle('darknet','&#9760;','暗网状态','darknet')+body+'</div></details>';
+}
+
+/* ===== 道德值区 ===== */
+function renderMorality(){
+  var park=mvuObj('园区');
+  var val=num(park.善恶值||0,0);
+  var pctVal=Math.max(0,Math.min(100,(val+100)/2));
+  var fillCls,routeName,routeColor;
+  if(val>=30){fillCls='g';routeName='光明路线';routeColor='var(--c-safe)'}
+  else if(val<=-30){fillCls='r';routeName='黑暗路线';routeColor='var(--c-danger)'}
+  else{fillCls='y';routeName='中立路线';routeColor='var(--c-warn)'}
+  var body='<div class="g2">'
+    +kv('善恶值',val)
+    +kv('当前路线','<span style="color:'+routeColor+'">'+esc(routeName)+'</span>')
+    +'</div>'
+    +'<div class="morality-bar">'
+    +'<div class="morality-fill bar-f '+fillCls+'" style="width:'+pctVal+'%"></div>'
+    +'<div class="morality-label">'+esc(val)+' / -100 ~ +100</div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim)">'
+    +'<span>黑暗 -100</span><span>中立 0</span><span>光明 +100</span>'
+    +'</div>';
+  return cardTitle('morality','&#9878;','道德值','morality')+body+'</div></details>';
+}
+
+/* ===== 任务区 ===== */
+function renderQuest(){
+  var park=mvuObj('园区');
+  var body='<div class="g2">'
+    +kv('当前主线任务',park.当前主线任务||'无')
+    +'</div>';
+  var side=park.已接取支线;
+  if(Array.isArray(side)&&side.length>0){
+    body+='<div class="sect-title">已接取支线</div><div class="g2">';
+    for(var i=0;i<side.length;i++){body+=kv('支线'+(i+1),side[i])}
+    body+='</div>';
+  }
+  var done=park.已完成任务;
+  if(Array.isArray(done)&&done.length>0){
+    body+='<div class="sect-title">已完成任务</div><div class="g2">';
+    for(var i=0;i<done.length;i++){body+=kv('已完成'+(i+1),done[i])}
+    body+='</div>';
+  }
+  /* 情报 */
+  var intel=park.已获取情报||[];
+  if(Array.isArray(intel)&&intel.length>0){
+    body+='<div class="sect-title">已获取情报</div><div class="g2">';
+    for(var i=0;i<intel.length;i++){body+=kv('情报'+(i+1),intel[i])}
+    body+='</div>';
+  }
+  /* 成就 */
+  body+='<div class="sect-title">成就统计</div><div class="g2">'
+    +kv('生存天数',park.生存天数||0)
+    +kv('结识NPC数',park.结识NPC数||0)
+    +kv('救助人数',park.救助人数||0,'safe')
+    +'</div>';
+  return cardTitle('quest','&#9733;','任务与情报','quest')+body+'</div></details>';
+}
+
+/* ===== 主渲染 ===== */
+function render(){
+  var loadingEl=document.getElementById('sb-loading');
+  var bodyEl=document.getElementById('sb-body');
+  if(!bodyEl)return;
+  if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}
+  loadingEl.style.display='none';bodyEl.style.display='';
+  bodyEl.innerHTML=renderHeader()
+    +renderStage()
+    +renderTimeLocation()
+    +renderSurvival()
+    +renderNSFW()
+    +renderRPG()
+    +renderUser()
+    +renderVictim()
+    +renderAddiction()
+    +renderFJB()
+    +renderFemales()
+    +renderFactions()
+    +renderDarknet()
+    +renderMorality()
+    +renderQuest();
+}
+
+/* refresh */
+function refresh(){
+  if(State._refreshing)return;
+  State._refreshing=true;State.refreshing=true;
+  var stat=readStatData();
+  if(hasData(stat)){State.mvu=stat;State.loading=false}
+  render();
+  waitForReadableStat(8000,function(realStat){
+    if(hasData(realStat)){State.mvu=realStat;State.loading=false}
+    State._refreshing=false;State.refreshing=false;
+    render();requestStatFromBridge();
+  });
+}
+
+function waitForReadableStat(timeoutMs,cb){
+  timeoutMs=timeoutMs||8000;var started=Date.now();
+  (function poll(){
+    var stat=readStatData();
+    if(hasMeaningfulStatData(stat)){cb(stat);return}
+    requestStatFromBridge();
+    if(Date.now()-started<timeoutMs){setTimeout(poll,180)}else{cb(readStatData())}
+  })();
+}
+
+/* 事件绑定 */
+function bindEvents(){
+  var root=document.getElementById('sb-root');
+  root.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.tagName==='DETAILS'){var key=t.getAttribute('data-key');if(key){State.expanded[key]=t.hasAttribute('open')}}
+  },true);
+  root.addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(!t)return;
+    var act=t.getAttribute('data-act');
+    if(act==='refresh'){refresh()}
+  });
+}
+
+/* ===== 初始化 ===== */
+function init(){
+  bindEvents();
+  var autoRefresh=function(){setTimeout(refresh,800)};
+  try{if(typeof eventOn==='function'){eventOn('GENERATION_ENDED',autoRefresh);eventOn('MESSAGE_EDITED',autoRefresh);eventOn('mag_variable_update_ended',autoRefresh)}}catch(e){}
+  try{var Mvu=getMvu();if(Mvu&&Mvu.events&&Mvu.events.VARIABLE_UPDATE_ENDED&&typeof eventOn==='function'){eventOn(Mvu.events.VARIABLE_UPDATE_ENDED,autoRefresh)}}catch(e){}
+  window.addEventListener('message',function(e){
+    try{
+      var data=e.data;
+      if(data&&data.type==='kk-mvu-stat-data'&&data.stat_data){
+        var mesId=resolveMessageId();
+        if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;
+        if(hasMeaningfulStatData(data.stat_data)){
+          cachedStatFromBridge=data.stat_data;
+          cachedBridgeMessageId=typeof data.messageId==='number'?data.messageId:mesId;
+          State.mvu=deepMergeStat(DEFAULT_STAT,data.stat_data);
+          State.loading=false;render();
+        }
+        return;
+      }
+      var t=(data&&data.type)||data||'';
+      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0))autoRefresh();
+    }catch(x){}
+  });
+  var embedded=parseEmbeddedStat();
+  if(embedded){cachedStatFromBridge=embedded;cachedBridgeMessageId=resolveMessageId()}
+  requestStatFromBridge();refresh();
+}
+
+init();
+</script>
+</body>
+</html>

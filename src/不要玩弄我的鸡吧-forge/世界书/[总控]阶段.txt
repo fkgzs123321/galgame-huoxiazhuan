@@ -1,0 +1,140 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · 阶段总控（分控层）
+   ════════════════════════════════════════════════════════════
+   关灯加载：enabled:false，由 D0 通过 getwi('[总控]阶段') 调用
+   职责：
+   1. 按当前阶段加载阶段专属规则（阶段1-5）
+   2. 加载阶段晋升系统（进度显示）
+   3. 加载阶段感知控制器
+   4. 加载多维状态演化规则
+   5. 加载阶段守卫与症状控制
+   6. token优化：只加载当前阶段的规则，非当前阶段跳过
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+// ===== 读取阶段状态 =====
+var _useStage = getvar('stat_data.使用阶段', { scope: 'local', defaults: {} }) || {};
+var _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+var _hidden = getvar('stat_data.隐藏层', { scope: 'local', defaults: {} }) || {};
+
+var _stage = Number(_useStage.当前阶段) || 1;
+var _exp = Number(_useStage.经验) || 0;
+var _dailyExp = Number(_useStage.今日经验) || 0;
+var _totalUses = Number(_useStage.总使用次数) || 0;
+var _todayUses = Number(_useStage.今日使用) || 0;
+var _day = Number(_time.天数) || 1;
+var _holderId = _hidden.持有者ID || '林婉清';
+var _confirmedUsers = Array.isArray(_hidden.确认使用者) ? _hidden.确认使用者 : [];
+var _confirmedCount = _confirmedUsers.length;
+var _stats = getvar('stat_data.状态', { scope: 'local', defaults: {} }) || {};
+var _suspicion = Number(_stats.怀疑值) || 0;
+var _femaleUsers = getvar('stat_data.女性角色', { scope: 'local', defaults: {} }) || {};
+
+// 阶段名称映射
+var _stageNames = ['', '初级玩具', '等比复刻', '灵体投影', '人偶容器', '实体化共生'];
+var _stageName = _stageNames[_stage] || '未知';
+
+// 阶段经验阈值
+var _expThresholds = [0, 30, 100, 200, 350];
+var _dayThresholds = [0, 30, 60, 95, 102];
+var _curExpMin = _expThresholds[_stage - 1] || 0;
+var _nextExpMin = _expThresholds[_stage] || 350;
+var _nextDayMin = _dayThresholds[_stage] || 102;
+var _stageProgress = Math.min(100, Math.max(0, Math.round((_exp - _curExpMin) / Math.max(1, (_nextExpMin - _curExpMin)) * 100)));
+
+// 晋升条件检查
+var _canAdvance = false;
+var _advanceReason = '';
+if (_stage < 5) {
+  var expOk = (_exp >= _nextExpMin);
+  var dayOk = (_day >= _nextDayMin);
+
+  // 读取持有者执念及综合阶段标记（与 [mvu_plot]女性使用触发器脚本.txt 保持一致）
+  var _holderObsession = 0;
+  var _hasCStage = false; // 至少1人达C沉沦期或更深
+  var _hasDStage = false; // 至少1人达D疯狂期或更深
+  var _holderUsed = false; // 持有者是否已使用过
+  try {
+    var _stageRank = {'A_理性期':1, 'B_动摇期':2, 'C_沉沦期':3, 'D_疯狂期':4, 'E_清醒反扑期':5};
+    var _allUids = Object.keys(_femaleUsers);
+    for (var i = 0; i < _allUids.length; i++) {
+      var _fem = _femaleUsers[_allUids[i]];
+      if (!_fem) continue;
+      if (_fem.基础 && _fem.基础.姓名 === _holderId) {
+        if (_fem.多维状态) {
+          _holderObsession = Number(_fem.多维状态.执念) || 0;
+        }
+        if (_fem.持有者信息 && _fem.持有者信息.是否使用过) {
+          _holderUsed = true;
+        }
+      }
+      if (_fem.多维状态 && _fem.多维状态.综合阶段) {
+        var _rank = _stageRank[_fem.多维状态.综合阶段] || 0;
+        if (_rank >= 3) _hasCStage = true;
+        if (_rank >= 4) _hasDStage = true;
+      }
+    }
+  } catch(e) {}
+
+  if (_stage === 1) {
+    var holderUsed = _holderUsed;
+    _canAdvance = (expOk && dayOk && holderUsed);
+    _advanceReason = 'exp>=' + _nextExpMin + '(' + (expOk ? '✅' : '❌') + ') day>=' + _nextDayMin + '(' + (dayOk ? '✅' : '❌') + ') holder_used(' + (holderUsed ? '✅' : '❌') + ')';
+  } else if (_stage === 2) {
+    var propOk = (_confirmedCount >= 3);
+    var obsOk = (_holderObsession >= 30);
+    _canAdvance = (expOk && dayOk && propOk && obsOk);
+    _advanceReason = 'exp>=' + _nextExpMin + '(' + (expOk ? '✅' : '❌') + ') day>=' + _nextDayMin + '(' + (dayOk ? '✅' : '❌') + ') prop>=3(' + (propOk ? '✅' : '❌') + ') holderObsession>=30(' + (obsOk ? '✅' : '❌') + ')';
+  } else if (_stage === 3) {
+    var propOk = (_confirmedCount >= 6);
+    _canAdvance = (expOk && dayOk && propOk && _hasCStage);
+    _advanceReason = 'exp>=' + _nextExpMin + '(' + (expOk ? '✅' : '❌') + ') day>=' + _nextDayMin + '(' + (dayOk ? '✅' : '❌') + ') prop>=6(' + (propOk ? '✅' : '❌') + ') 1人C_沉沦期(' + (_hasCStage ? '✅' : '❌') + ')';
+  } else if (_stage === 4) {
+    var propOk = (_confirmedCount >= 10);
+    var suspOk = (_suspicion >= 60);
+    _canAdvance = (expOk && dayOk && propOk && suspOk && _hasDStage);
+    _advanceReason = 'exp>=' + _nextExpMin + '(' + (expOk ? '✅' : '❌') + ') day>=' + _nextDayMin + '(' + (dayOk ? '✅' : '❌') + ') prop>=10(' + (propOk ? '✅' : '❌') + ') suspicion>=60(' + (suspOk ? '✅' : '❌') + ') 1人D_疯狂期(' + (_hasDStage ? '✅' : '❌') + ')';
+  }
+}
+%>
+
+[stage_total_control]
+【阶段总控 · 阶段精准控制】
+══════════════════════════════════════════════
+当前阶段：<%= _stage %>/5（<%= _stageName %>）
+经验进度：<%= _exp %>/<%= _nextExpMin %>（<%= _stageProgress %>%）| 今日经验：<%= _dailyExp %>/30
+天数：第<%= _day %>天/<%= _nextDayMin %>天（<%= _day >= _nextDayMin ? '✅' : '❌' %>）
+累计使用：<%= _totalUses %>次 | 今日使用：<%= _todayUses %>/5次
+传播人数：<%= _confirmedCount %>人
+<% if (_stage < 5) { %>
+晋升条件：<%= _canAdvance ? '✅ 可晋升' : '❌ 未满足' %>
+  → <%= _advanceReason %>
+<% } else { %>
+晋升条件：终局阶段，无下一阶段
+<% } %>
+══════════════════════════════════════════════
+[/stage_total_control]
+
+<%/* ─── 阶段感知控制器（已由 D0 步骤7 每轮加载，此处不重复） ─── */%>
+
+<%/* ─── 阶段晋升系统（已由 D0 步骤5 每轮加载，此处不重复） ─── */%>
+
+<%/* ─── 阶段守卫与症状控制（每轮必加载） ─── */%>
+<%- await getwi('阶段守卫·症状控制') %>
+
+<%/* ─── 多维状态演化规则（每轮必加载） ─── */%>
+<%- await getwi('[mvu_plot]多维状态演化规则') %>
+
+<%/* ─── 按当前阶段加载阶段专属规则（只加载1个，节省token） ─── */%>
+<% if (_stage === 1) { %>
+  <%- await getwi('[mvu_plot]阶段1_初级玩具') %>
+<% } else if (_stage === 2) { %>
+  <%- await getwi('[mvu_plot]阶段2_等比复刻') %>
+<% } else if (_stage === 3) { %>
+  <%- await getwi('[mvu_plot]阶段3_灵体投影') %>
+<% } else if (_stage === 4) { %>
+  <%- await getwi('[mvu_plot]阶段4_人偶容器') %>
+<% } else if (_stage === 5) { %>
+  <%- await getwi('[mvu_plot]阶段5_实体化共生') %>
+<% } %>

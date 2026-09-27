@@ -1,0 +1,173 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 田中美沙 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=10 / 原作女主 · 八十八学园三年生 · 邻家姐姐型
+   互斥关系：田中铃木互斥（与铃木美穗 row_id=17 互斥，原作女主 vs 重制版新女主）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 田中美沙_INFO = {
+  heroine_id: 10,
+  name: '田中美沙',
+  romanization: 'Tanaka Misa',
+  age: 18,
+  blood_type: 'O',
+  identity: '八十八学园三年生，主角同班同学，邻家姐姐型',
+  relationship: '主角同级生邻座，初识为开朗邻家姐姐；归乡青年路线中是同期好友',
+  home: '八十八町住宅区（与父母和妹妹同住，主角家斜对面）',
+  birthday: '7-14',
+  height: 160,
+  weight: 51,
+  three_size: 'B88-W60-H90',
+  cup_size: 'E',
+  cv_implied: '温暖明亮邻家声线，尾音带笑意',
+
+  appearance: {
+    hair: '浅茶色中长发，自然微卷，蓬松柔软，常随手别到耳后或扎成低马尾',
+    eyes: '明亮圆眼，眼色浅棕带金，笑起来弯成月牙，眼神温润有光',
+    body: '身材丰满丰腴，骨架小巧但肉感饱满，腰肢柔软有肉感，臀部圆润丰满，肤色健康有光泽',
+    feature: '左颊笑起来有一颗浅浅的梨涡，下颌线条柔和，胸前曲线明显，被汗水浸过的后颈会泛浅粉',
+    clothing_default: '校服穿得稍随意：领口第一颗扣子常解开，领带略松，裙摆到膝盖上方两指；课外常穿碎花连衣裙、针织开衫与帆布托特包'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁邻家姐姐：照顾者外壳 + 暗藏压力，渴望被照顾而非照顾
+  body_measurements: {
+    // 身体基础测量（6 列）
+    cup_size: 'E',
+    bust_size: 88,
+    waist_size: 60,
+    hip_size: 90,
+    height: 160,
+    weight: 51,
+    // 胸部详细（6 列）— 邻家姐姐的丰满丰腴
+    nipple_size: '中',
+    nipple_color: '粉嫩',
+    areola_size: '中',
+    breast_shape: '聚拢',
+    breast_sensitivity: 110,
+    lactation: '性欲起来后出奶',
+    // 腰部（2 列）— 柔软有肉感
+    waist_shape: '柔软有肉感',
+    waist_sensitivity: 120,
+    // 手部（2 列）— 常做家务的温暖手
+    hand_desc: '柔软温暖，常做家务',
+    nail_style: '素色',
+    // 臀部（3 列）— 圆润丰满
+    hip_shape: '圆润丰满',
+    hip_sensitivity: 100,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，渴望被宠爱而非照顾人
+    pubic_hair: '修剪过',
+    labia_size: '正常',
+    labia_color: '粉嫩',
+    vaginal_tightness: '紧致',
+    vaginal_special: '蠕动',
+    lubrication_level: '易湿',
+    hymen_status: '完整',
+    fertility: '易孕',
+    // 敏感度综合（3 列）— 邻家姐姐的反差：被照顾即崩塌
+    body_sensitivity: 120,
+    sensitive_zones: '颈侧,锁骨,腰窝,后颈(被汗水浸过),左颊梨涡,手腕内侧',
+    arousal_triggers: '烘焙面粉香,被照顾而非照顾,妹妹在场时的禁忌感,家常气息,午后阳光味,被看见疲惫'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 68,           // 魅力（外貌吸引力）
+    academic: 50,        // 学业（学习成绩）
+    physical: 70,        // 体力（体能/运动）
+    social: 70,          // 社交（交际能力）
+    perception: 50,      // 敏感（察言观色/直觉）
+    reputation: 60,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 40,        // 力量（物理对抗/搬运）
+    agility: 65,         // 敏捷（反应/逃跑）
+    intelligence: 50,    // 智力（解谜/计划）
+    will_skill: 45,      // 意志（抗压/抵抗诱惑）
+    stealth: 25,         // 潜行（暗中行动）
+    speech: 55,          // 口才（说服/调情）
+    medical: 10,         // 医学（诊疗/急救）
+    cooking: 25,         // 烹饪（料理）
+    art: 30,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 35,        // 格斗（防身）
+    observation: 45,     // 观察（情报收集）
+    romance_skill: 30    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'ESFJ',
+    tags: ['邻家姐姐', '暗藏压力', '照顾者'],
+    public_face: '开朗的美沙姐姐，对谁都照顾，笑脸迎人',
+    social_face: '偶尔流露疲惫，对主角的关注感到温暖',
+    intimate_face: '渴望被照顾被宠爱，姐姐壳崩塌，露出小女孩气'
+  },
+
+  preferences: {
+    like_food: ['家常料理', '草莓', '奶茶', '和果子'],
+    hate_food: ['黑咖啡', '辛辣'],
+    hobby: ['烘焙', '看家庭剧', '照顾妹妹', '园艺'],
+    gift_pref: ['手工巧克力', '小束鲜花', '家庭料理', '保育绘本', '设计师手袋'],
+    topic_pref: ['家庭', '妹妹', '烘焙', '校园生活', '未来打算']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '铃木美穗（row_id=17）—— 田中铃木互斥：原作女主 vs 重制版新女主，两条路线在剧情节点上互斥，进入其中一条会锁定另一条',
+    family: '父母（住同宅，但工作繁忙常不在家，对美沙期望高，希望她考名校）；妹妹田中铃（小学，黏美沙）',
+    friends: ['主角（同级邻座）', '同班几位女生', '商业区店家（采购常客）', '隔壁邻居阿姨']
+  },
+
+  /* 9.B.10: 互斥触发条件细化 */
+  mutex_trigger: {
+    group_name: '田中铃木',
+    partner_id: 17,
+    partner_name: '铃木美穗',
+    affection_threshold: 30,
+    stage_threshold: '熟悉',
+    flag_auto_set: '田中铃木互斥触发',
+    description: '与田中美沙 affection ≥ 30（达熟悉临界）即触发互斥；铃木美穗锁定失恋（affection -30 / jealousy +20 / route_locked=1）',
+    narrative_hint: '触发后美穗会以"东京男人都这样"的都市戒备反射疏远主角，但偶尔在咖啡店独坐时流露失落；她不会主动敌对，但每次偶遇都格外客气'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    returnee_route_initial: { affection: 20, trust: 30 },
+    best_approach: '通过日常相处建立信任，证明你能"看见"她的压力而非只享受她的照顾；帮她分担家务、记下她不经意的疲惫、在她说"没事"时多问一句；以家常气息切入，烘焙/园艺/妹妹都是好话题',
+    warning: '强行亲密会让她彻底失望——照顾 vs 被占用的反差创伤：她会把这次越界记成"原来你也只是来取的"，邻家关系破裂；强迫初H触发 BAD_END_1_报警 + 邻家关系破裂事件；与铃木美穗路线互斥，进入铃木线会失去美沙'
+  }
+};
+%>
+
+田中美沙 · 基础信息已加载。当前女角 row_id=10，互斥关系：田中铃木互斥（与铃木美穗 row_id=17 互斥，原作女主 vs 重制版新女主）。初始关系：affection=0/heartbeat=0/jealousy=0/trust=0（普通同学）；归乡青年路线 affection=20/trust=30。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 田中美沙_INFO.name %>（<%- 田中美沙_INFO.age %>岁）
+- 身份: <%- 田中美沙_INFO.identity %>
+- 关系: <%- 田中美沙_INFO.relationship %>
+- 住所: <%- 田中美沙_INFO.home %>
+<%_ if (田中美沙_INFO.appearance) { _%>
+- 外貌: <%- [田中美沙_INFO.appearance.hair, 田中美沙_INFO.appearance.eyes, 田中美沙_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (田中美沙_INFO.personality) { _%>
+- 性格: <%- 田中美沙_INFO.personality.tags ? 田中美沙_INFO.personality.tags.join('、') : 田中美沙_INFO.personality.public_face %>
+<%_ if (田中美沙_INFO.personality.public_face) { _%>- 表面: <%- 田中美沙_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (田中美沙_INFO.personality.intimate_face) { _%>- 亲密面: <%- 田中美沙_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (田中美沙_INFO.preferences) { _%>- 喜好: <%- [(田中美沙_INFO.preferences.like_food || []).join('/'), '爱好：' + (田中美沙_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (田中美沙_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(田中美沙_INFO.relations) %>
+<%_ } _%>
+<%_ if (田中美沙_INFO.strategy) { _%>- 攻略要点: <%- 田中美沙_INFO.strategy.best_approach %>
+<%_ if (田中美沙_INFO.strategy.warning) { _%>- 警告: <%- 田中美沙_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

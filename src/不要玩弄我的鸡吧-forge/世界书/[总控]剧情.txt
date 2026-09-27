@@ -1,0 +1,108 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · 剧情总控（分控层）
+   ════════════════════════════════════════════════════════════
+   关灯加载：enabled:false，由 D0 通过 getwi('[总控]剧情') 调用
+   职责：
+   1. 按天数区间加载当前阶段的剧情指导
+   2. 按场景模式加载剧情触发器
+   3. 按疑心度加载调查剧情线
+   4. 按传播进度加载扩散剧情线
+   5. 按结局条件加载终局剧情线
+   6. token优化：只加载当前进度相关的剧情模块
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+// ===== 读取剧情进度状态 =====
+var _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+var _stats = getvar('stat_data.状态', { scope: 'local', defaults: {} }) || {};
+var _useStage = getvar('stat_data.使用阶段', { scope: 'local', defaults: {} }) || {};
+var _hidden = getvar('stat_data.隐藏层', { scope: 'local', defaults: {} }) || {};
+var _academic = getvar('stat_data.学业', { scope: 'local', defaults: {} }) || {};
+
+var _day = Number(_time.天数) || 1;
+var _stage = Number(_useStage.当前阶段) || 1;
+var _totalUses = Number(_useStage.总使用次数) || 0;
+var _suspicion = Number(_stats.怀疑值) || 0;
+var _corruption = Number(_stats.堕落值) || 0;
+var _sanity = Number(_stats.理智) || 80;
+var _score = Number(_academic.分数) || 75;
+var _confirmedUsers = Array.isArray(_hidden.确认使用者) ? _hidden.确认使用者 : [];
+var _confirmedCount = _confirmedUsers.length;
+var _holderId = _hidden.持有者ID || '林婉清';
+
+// 剧情阶段划分（与时间轴对齐）
+var _plotChapter = 1;
+if (_day <= 30) _plotChapter = 1;        // 第一章：开学初期（阶段1）
+else if (_day <= 60) _plotChapter = 2;   // 第二章：扩散期（阶段2）
+else if (_day <= 95) _plotChapter = 3;   // 第三章：深化期（阶段3）
+else if (_day <= 125) _plotChapter = 4;  // 第四章：危机期（阶段4）
+else _plotChapter = 5;                    // 第五章：终局（阶段5）
+
+// 调查剧情线进度
+var _investigationPhase = 0;
+if (_suspicion >= 30) _investigationPhase = 1;   // 初起疑心
+if (_suspicion >= 60) _investigationPhase = 2;   // 深入调查
+if (_suspicion >= 100) _investigationPhase = 3;  // 接近真相
+if (_suspicion >= 150) _investigationPhase = 4;  // 真相大白
+
+// 传播剧情线进度
+var _propagationPhase = 0;
+if (_confirmedCount >= 1) _propagationPhase = 1;  // 首次传播
+if (_confirmedCount >= 3) _propagationPhase = 2;  // 小范围扩散
+if (_confirmedCount >= 6) _propagationPhase = 3;  // 中等扩散
+if (_confirmedCount >= 10) _propagationPhase = 4; // 大规模扩散
+
+// 结局剧情线进度
+var _endingPhase = 0;
+if (_day >= 103) _endingPhase = 1;  // 高考窗口
+if (_day >= 120) _endingPhase = 2;  // 成绩出炉，终局判定
+if (_suspicion >= 150 || _totalUses >= 100 || _corruption >= 150) _endingPhase = 3; // 强制终局
+%>
+
+[plot_total_control]
+【剧情总控 · 剧情线调度】
+══════════════════════════════════════════════
+剧情章节：第<%= _plotChapter %>章 | 天数：第<%= _day %>天
+调查线进度：<%= _investigationPhase %>/4（疑心<%= _suspicion %>）
+传播线进度：<%= _propagationPhase %>/4（已确认<%= _confirmedCount %>人）
+结局线进度：<%= _endingPhase %>/3
+══════════════════════════════════════════════
+[/plot_total_control]
+
+<%/* ─── 按进度加载剧情线规则（进度驱动，一旦进入该阶段每轮必加载） ───
+   注：[总控]NSFW 按当前场景加载，本控制器按累积进度加载，两者维度不同
+   进度驱动的加载更可靠：即使当前场景不是调查/使用/终局，相关规则仍需在场
+   去重：多维状态演化规则已由 [总控]阶段 每轮加载，此处不重复 */%>
+
+<%/* ─── 调查剧情线（按疑心度进度加载） ─── */%>
+<%/* 注：[mvu_plot]疑心度阶段与解锁表 已由 D0 步骤8 每轮加载，此处不重复 */%>
+<% if (_investigationPhase >= 2) { %>
+  <%- await getwi('[mvu_plot]玩家调查行为') %>
+  <%- await getwi('[mvu_plot]RPG雷达系统') %>
+<% } %>
+<% if (_investigationPhase >= 3) { %>
+  <%- await getwi('[mvu_plot]疑心度系统') %>
+<% } %>
+
+<%/* ─── 传播剧情线（按传播进度加载） ─── */%>
+<% if (_propagationPhase >= 1) { %>
+  <%- await getwi('[mvu_plot]传播链扩散规则') %>
+<% } %>
+<%/* 注：传播≥2 的多维状态演化规则已由 [总控]阶段 每轮必加载，此处不重复 */%>
+
+<%/* ─── 结局剧情线（按结局进度加载） ─── */%>
+<%/* 注：[mvu_plot]终局分支与守卫规则 已由 D0 步骤6 每轮加载，此处不重复 */%>
+<% if (_endingPhase >= 2) { %>
+  <%- await getwi('[mvu_plot]终局分支触发') %>
+  <%- await getwi('[mvu_plot]终局分支触发器') %>
+<% } %>
+<% if (_endingPhase >= 3) { %>
+  <%- await getwi('[mvu_plot]反向掌控') %>
+  <%- await getwi('[mvu_plot]谈判交易') %>
+  <%- await getwi('[mvu_plot]彻底摧毁') %>
+  <%- await getwi('[mvu_plot]接受命运') %>
+<% } %>
+
+<%/* ─── 独立剧情线架构模板（供AI参考，每轮加载，轻量） ─── */%>
+<%- await getwi('[mvu_plot]独立剧情线架构模板') %>

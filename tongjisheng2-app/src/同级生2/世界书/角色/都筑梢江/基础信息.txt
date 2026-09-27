@@ -1,0 +1,126 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 都筑梢江 · 基础信息
+   ════════════════════════════════════════════════════════════
+   heroine_id=7 / 同级生2 原版女角 · 酒吧老板娘
+   互斥关系：无（可与其他女角并行攻略，但触发 BAD_END 风险独立计算）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 都筑梢江_INFO = {
+  heroine_id: 7,
+  name: '都筑梢江',
+  romanization: 'Tsuzuki Kozue',
+  age: 21,
+  blood_type: 'A',
+  identity: '八十八町居民，酒吧"夜色"老板娘，前八十八学园毕业生',
+  relationship: '主角学姊（已毕业），初识为商业区夜晚偶遇的成熟女性；与主角相差3岁',
+  home: '八十八町商业区附近酒吧楼上公寓（独居）',
+  birthday: '11-15',
+  height: 168,
+  weight: 53,
+  three_size: 'B88-W58-H88',
+  cv_implied: '成熟系女低音，略带沙哑的慵懒声线',
+
+  appearance: {
+    hair: '黑色长直发及腰，营业时常盘低发髻，鬓边留两缕垂落修饰脸型',
+    eyes: '狭长凤眼，眼色深黑，眼神凌厉但带着一丝不易察觉的疲惫',
+    body: '身材丰满丰腴，腰肢柔软有力，骨架匀称，肩背挺直，腰线明显',
+    feature: '锁骨线条明显，颈侧有一颗小痣，左耳后有一道浅疤（少女时摔的）',
+    clothing_default: '营业时穿黑色丝质衬衫配高腰包臀裙、黑色丝袜、细高跟；私下降真丝睡袍或宽松针织衫配短裤'
+  },
+
+  body_measurements: {
+    cup_size: 'E',
+    bust_size: 88,
+    waist_size: 58,
+    hip_size: 88,
+    height: 168,
+    weight: 53,
+    nipple_size: '中',
+    nipple_color: '深粉',
+    areola_size: '中',
+    breast_shape: '聚拢',
+    breast_sensitivity: 100,
+    lactation: '无',
+    waist_shape: '紧实有力',
+    waist_sensitivity: 90,
+    hand_desc: '纤细有力，常年调酒',
+    nail_style: '裸色法式美甲',
+    hip_shape: '圆润',
+    hip_sensitivity: 90,
+    anal_desc: '半开发',
+    pubic_hair: '修剪过',
+    labia_size: '正常',
+    labia_color: '深粉',
+    vaginal_tightness: '紧致',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    body_sensitivity: 90,
+    sensitive_zones: '颈侧,锁骨,腰窝,手腕内侧,后颈',
+    arousal_triggers: '言语命令,支配语气,镜中自己,丝绒触感,酒精微醺'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 85,           // 魅力（外貌吸引力）
+    academic: 65,        // 学业（学习成绩）
+    physical: 60,        // 体力（体能/运动）
+    social: 60,          // 社交（交际能力）
+    perception: 55,      // 敏感（察言观色/直觉）
+    reputation: 55,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 35,        // 力量（物理对抗/搬运）
+    agility: 50,         // 敏捷（反应/逃跑）
+    intelligence: 60,    // 智力（解谜/计划）
+    will_skill: 55,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 60,          // 口才（说服/调情）
+    medical: 10,         // 医学（诊疗/急救）
+    cooking: 25,         // 烹饪（料理）
+    art: 50,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 30,        // 格斗（防身）
+    observation: 50,     // 观察（情报收集）
+    romance_skill: 40    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'ENTJ',
+    tags: ['强势女强人', '私下臣服', '渴望被占有'],
+    public_face: '强势干练的酒吧老板娘，掌控全场，无人能压',
+    social_face: '偶尔流露疲惫，对主角的"不畏惧"感到好奇',
+    intimate_face: '完全臣服，渴望被支配被粗暴对待，臣服是她的救赎'
+  },
+
+  preferences: {
+    like_food: ['红酒', '奶酪', '意面', '黑巧克力'],
+    hate_food: ['甜腻奶昔', '速食'],
+    hobby: ['经营酒吧', '品酒', '看悬疑小说', '独自看电影'],
+    gift_pref: ['丝绸睡衣', '性感内衣', '品牌化妆品', '按摩油', '特调咖啡'],
+    topic_pref: ['酒吧经营', '品酒', '悬疑小说', '独立电影']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '无（可与其他女角并行攻略）',
+    family: '父母（关系疏远，她十八岁后独自经营酒吧，不再联络）；无兄弟姐妹',
+    friends: ['酒吧熟客圈', '商业区几位店主', '前八十八学园同学（仅余两三位有往来）']
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '必须在白天非营业时间接触她（采购/咖啡馆/商业区偶遇），证明你看见的是"人"而非"老板娘"；以酒吧经营/品酒/悬疑小说为话题切入；逐步突破她的"女强人"外壳——她的强势是盔甲，不是性格',
+    warning: '强行亲密会触发她隐藏的M倾向反应（颤抖、顺从），但系统判定为 BAD_END_1_报警 + 酒吧封门事件——M倾向需要"自愿臣服"而非"被强迫"，强迫只会让她事后报警反扑'
+  }
+};
+%>
+
+都筑梢江 · 基础信息已加载。当前女角 heroine_id=7，互斥关系：无（可与其他女角并行攻略）。酒吧"夜色"营业时间 19:00-02:00，白天 09:00 前为补觉时段，最佳接触窗口为 13:00-17:00 的商业区/咖啡馆。注意：她的强势是盔甲，不是性格；她渴望被驯服，但只接受自愿的臣服。

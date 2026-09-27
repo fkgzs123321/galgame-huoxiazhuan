@@ -1,0 +1,38 @@
+[
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/李青照_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/公孙大娘_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/聂隐娘_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/红拂女_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/柳如是_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/李师师_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/绿珠_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/何铁手_三面性"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/角色/马春花_三面性"
+ }
+]

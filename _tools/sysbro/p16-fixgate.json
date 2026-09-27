@@ -1,0 +1,1 @@
+[{"op":"add","path":"/entryManifest/事件/事件_强制洗白/contents/0","value":{"content":"getvar('stat_data.反派状态.强制洗白可用', { defaults: false }) === true && getvar('stat_data.反派状态.评价值', { defaults: 100 }) >= 1 && getvar('stat_data.反派状态.评价值', { defaults: 100 }) < 20"}}]

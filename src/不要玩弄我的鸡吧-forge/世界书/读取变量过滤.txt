@@ -1,0 +1,228 @@
+@@generate_before
+<%
+// ===== 读取变量过滤 · salience三层结构（§3规范） =====
+// 职责：按salience三层裁剪stat_data发给AI——_rvHot热事务 + <status_current_variables>全量区 + _rvBrief压缩区
+// 关灯加载：enabled:false，由 D0 通过 getwi('读取变量过滤') 调用
+
+// ===== 读取全局状态（带守卫，跨文件共享变量）=====
+if (typeof e === 'undefined') var e = Number(getvar('stat_data.状态.精力', { scope: 'local', defaults: 80 })) || 80;
+if (typeof em === 'undefined') var em = Number(getvar('stat_data.状态.精力上限', { scope: 'local', defaults: 80 })) || 80;
+if (typeof s === 'undefined') var s = Number(getvar('stat_data.状态.理智', { scope: 'local', defaults: 80 })) || 80;
+if (typeof h === 'undefined') var h = Number(getvar('stat_data.状态.健康', { scope: 'local', defaults: 75 })) || 75;
+if (typeof st === 'undefined') var st = Number(getvar('stat_data.状态.压力', { scope: 'local', defaults: 10 })) || 10;
+if (typeof sta === 'undefined') var sta = Number(getvar('stat_data.状态.体力', { scope: 'local', defaults: 80 })) || 80;
+if (typeof stam === 'undefined') var stam = Number(getvar('stat_data.状态.体力上限', { scope: 'local', defaults: 80 })) || 80;
+if (typeof sus === 'undefined') var sus = Number(getvar('stat_data.状态.怀疑值', { scope: 'local', defaults: 0 })) || 0;
+if (typeof cor === 'undefined') var cor = Number(getvar('stat_data.状态.堕落值', { scope: 'local', defaults: 0 })) || 0;
+if (typeof money === 'undefined') var money = Number(getvar('stat_data.状态.金钱', { scope: 'local', defaults: 500 })) || 500;
+var us = Number(getvar('stat_data.使用阶段.当前阶段', { scope: 'local', defaults: 1 })) || 1;
+if (typeof totalUses === 'undefined') var totalUses = Number(getvar('stat_data.使用阶段.总使用次数', { scope: 'local', defaults: 0 })) || 0;
+if (typeof todayUses === 'undefined') var todayUses = Number(getvar('stat_data.使用阶段.今日使用', { scope: 'local', defaults: 0 })) || 0;
+if (typeof todayMax === 'undefined') var todayMax = Number(getvar('stat_data.使用阶段.今日上限', { scope: 'local', defaults: 5 })) || 5;
+if (typeof exp === 'undefined') var exp = Number(getvar('stat_data.使用阶段.经验', { scope: 'local', defaults: 0 })) || 0;
+// dailyExp加守卫避免与阶段晋升系统冲突
+if (typeof dailyExp === 'undefined') var dailyExp = Number(getvar('stat_data.使用阶段.今日经验', { scope: 'local', defaults: 0 })) || 0;
+var lastUseHour = Number(getvar('stat_data.使用阶段.最后使用时', { scope: 'local', defaults: -99 })) || -99;
+var sc = Number(getvar('stat_data.学业.分数', { scope: 'local', defaults: 75 })) || 75;
+var ac_st = Number(getvar('stat_data.学业.阶段', { scope: 'local', defaults: 3 })) || 3;
+var cd = Number(getvar('stat_data.学业.考试倒计时', { scope: 'local', defaults: 7 })) || 7;
+var gkcd = Number(getvar('stat_data.时间.距高考天数', { scope: 'local', defaults: 103 })) || 103;
+var d = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 1 })) || 1;
+var hr = Number(getvar('stat_data.时间.小时', { scope: 'local', defaults: 8 })) || 8;
+var mn = Number(getvar('stat_data.时间.分钟', { scope: 'local', defaults: 0 })) || 0;
+var wd = getvar('stat_data.时间.星期', { scope: 'local', defaults: '周一' }) || '周一';
+var ds = getvar('stat_data.时间.日期', { scope: 'local', defaults: '02-24' }) || '02-24';
+var diff = getvar('stat_data.状态.难度', { scope: 'local', defaults: '困难' }) || '困难';
+// 加守卫避免与LCG骰子系统冲突（LCG骰子先加载，已基于difficulty计算diffIdx）
+if (typeof diffIdx === 'undefined') var diffIdx = { '普通': 0, '困难': 1, '地狱': 2 }[diff];
+if (typeof diffIdx === 'undefined') diffIdx = 1;
+var fd = getvar('stat_data.症状.疲劳描述', { scope: 'local', defaults: '暂无明显异常' }) || '暂无明显异常';
+var sd = getvar('stat_data.症状.敏感描述', { scope: 'local', defaults: '暂无明显异常' }) || '暂无明显异常';
+var ad = getvar('stat_data.症状.外观描述', { scope: 'local', defaults: '面色正常' }) || '面色正常';
+var snd = getvar('stat_data.症状.理智描述', { scope: 'local', defaults: '情绪稳定' }) || '情绪稳定';
+var e_pct = Math.round(e / Math.max(em, 1) * 100);
+
+// ===== 9时段计算 =====
+if (typeof timeSlot === 'undefined') var timeSlot;
+if (hr >= 5 && hr < 7) timeSlot = '早晨';
+else if (hr >= 7 && hr < 8) timeSlot = '晨读';
+else if (hr >= 8 && hr < 12) timeSlot = '上午';
+else if (hr >= 12 && hr < 14) timeSlot = '中午';
+else if (hr >= 14 && hr < 17) timeSlot = '下午';
+else if (hr >= 17 && hr < 19) timeSlot = '傍晚';
+else if (hr >= 19 && hr < 22) timeSlot = '晚自习';
+else if (hr >= 22 || hr < 2) timeSlot = '夜里';
+else timeSlot = '半夜';
+if (typeof isNight === 'undefined') var isNight = timeSlot === '夜里' || timeSlot === '半夜';
+
+// ===== 场景模式识别（7种场景模式） =====
+var sceneMode = '日常';
+var allFemales = getvar('stat_data.女性角色', { scope: 'local', defaults: {} }) || {};
+// 加守卫避免与阶段晋升系统/终局分支冲突（这两个条目先加载，已声明confirmedUsers）
+if (typeof confirmedUsers === 'undefined') var confirmedUsers = getvar('stat_data.隐藏层.确认使用者', { scope: 'local', defaults: [] }) || [];
+if (typeof confirmedCount === 'undefined') var confirmedCount = Array.isArray(confirmedUsers) ? confirmedUsers.length : 0;
+if (typeof holderId === 'undefined') var holderId = getvar('stat_data.隐藏层.持有者ID', { scope: 'local', defaults: '林婉清' }) || '林婉清';
+if (typeof activeUsersCount === 'undefined') var activeUsersCount = Number(getvar('stat_data.隐藏层.活跃使用人数', { scope: 'local', defaults: 0 })) || 0;
+
+if (sus >= 150 || totalUses >= 100 || cor >= 150) {
+  sceneMode = '终局';
+} else if (isNight && us >= 1) {
+  if (todayUses > 0 || activeUsersCount > 0) sceneMode = '使用';
+} else if (sus >= 70) {
+  sceneMode = '调查';
+} else if ((timeSlot === '上午' || timeSlot === '下午') && cd <= 30 && wd !== '周六' && wd !== '周日') {
+  sceneMode = '学业';
+} else if (wd === '周六' || wd === '周日' || timeSlot === '傍晚' || timeSlot === '晚自习') {
+  sceneMode = '社交';
+} else if (d === 1 && totalUses === 0) {
+  sceneMode = '开局';
+}
+
+// ===== 女性排序：持有者→已确认→其他 =====
+// 注意：holderId存的是中文姓名，需通过 allFemales[k].基础.姓名 反查持有者UID
+var femaleKeys = Object.keys(allFemales).filter(function(k) {
+  return allFemales[k] && allFemales[k].基础 && allFemales[k].基础.姓名;
+});
+// 用slice().sort()避免修改原数组
+var sortedKeys = femaleKeys.slice().sort(function(a, b) {
+  var aIsHolder = (allFemales[a] && allFemales[a].基础 && allFemales[a].基础.姓名 === holderId) ? 0 : 1;
+  var bIsHolder = (allFemales[b] && allFemales[b].基础 && allFemales[b].基础.姓名 === holderId) ? 0 : 1;
+  if (aIsHolder !== bIsHolder) return aIsHolder - bIsHolder;
+  var aConfirmed = confirmedUsers.indexOf(a) >= 0 ? 0 : 1;
+  var bConfirmed = confirmedUsers.indexOf(b) >= 0 ? 0 : 1;
+  return aConfirmed - bConfirmed;
+});
+
+// ===== 活跃女性（前5名）：全量变量区，可生成JSONPatch =====
+var activeKeys = sortedKeys.slice(0, 5);
+// ===== 不活跃女性（6+名）：压缩摘要区，禁止生成JSONPatch =====
+var inactiveKeys = sortedKeys.slice(5);
+
+// ===== 阶段进度计算 =====
+if (typeof expThresholds === 'undefined') var expThresholds = [0, 30, 100, 200, 350];
+if (typeof dayThresholds === 'undefined') var dayThresholds = [0, 30, 60, 95, 102];
+// 加守卫避免与阶段晋升系统冲突（阶段晋升先加载，已用stage计算curExpMin/nextExpMin/nextDayMin）
+if (typeof curExpMin === 'undefined') var curExpMin = expThresholds[us - 1] || 0;
+if (typeof nextExpMin === 'undefined') var nextExpMin = expThresholds[us] || 350;
+if (typeof nextDayMin === 'undefined') var nextDayMin = dayThresholds[us] || 102;
+// stageProgress加守卫：阶段晋升系统从变量读取存储值，此处复用；若未定义则实时计算
+if (typeof stageProgress === 'undefined') var stageProgress = Math.min(100, Math.max(0, Math.round((exp - curExpMin) / Math.max(1, (nextExpMin - curExpMin)) * 100)));
+
+var nextStageCond = '';
+if (us === 1) nextStageCond = '持有者已使用(持有者信息.是否使用过=true)';
+else if (us === 2) nextStageCond = '传播人数>=3 + 持有者执念>=30';
+else if (us === 3) nextStageCond = '传播人数>=6 + 至少1人综合阶段达到C_沉沦期';
+else if (us === 4) nextStageCond = '传播人数>=10 + 至少1人达到D_疯狂期 + 怀疑值>=60';
+else nextStageCond = '终局阶段，无下一阶段';
+
+// ===== 技能摘要 =====
+var skillKeys = ['冥想', '锻炼', '洞察', '伪装', '恢复', '意志'];
+var skills = getvar('stat_data.技能', { scope: 'local', defaults: {} }) || {};
+var skillSummary = skillKeys.map(function(k) {
+  var sk = skills[k] || {};
+  var lv = Number(sk.等级) || 1;
+  var tier = lv <= 20 ? '入门' : lv <= 40 ? '初级' : lv <= 60 ? '中级' : lv <= 80 ? '高级' : '大师';
+  var tierNum = lv <= 20 ? 1 : lv <= 40 ? 2 : lv <= 60 ? 3 : lv <= 80 ? 4 : 5;
+  return k + ' Lv' + lv + '(档' + tierNum + ':' + tier + ') 今日' + (sk.今日已用 || 0) + '/' + (sk.今日上限 || 30);
+});
+
+var holderUseDice = Number(getvar('stat_data.骰子.持有者使用', { scope: 'local', defaults: 50 })) || 50;
+var propDice = Number(getvar('stat_data.骰子.传播基值', { scope: 'local', defaults: 50 })) || 50;
+var suspDice = Number(getvar('stat_data.骰子.怀疑抵抗', { scope: 'local', defaults: 50 })) || 50;
+
+// ===== ① _rvHot 热事务上桌区（扫描非常态事务） =====
+var hotItems = [];
+if (todayUses > 0 || activeUsersCount > 0) {
+  hotItems.push('假阴茎使用事务：今日已使用 ' + todayUses + '/' + todayMax + ' 次，活跃使用者 ' + activeUsersCount + ' 人');
+}
+if (todayUses >= todayMax) {
+  hotItems.push('⚠️ 过热保护：今日使用已达上限，假阴茎无法再次使用');
+}
+if (lastUseHour >= 0 && hr - lastUseHour < 2) {
+  hotItems.push('⚠️ 充能中：距上次使用不足2小时（上次=' + lastUseHour + ':00），假阴茎无法使用');
+}
+if (cd <= 30 && cd > 0) {
+  hotItems.push('考试预警：距高考仅剩 ' + cd + ' 天，学业阶段=' + ac_st + '，需加强学习');
+}
+if (stageProgress >= 80) {
+  hotItems.push('阶段晋升预警：当前进度 ' + stageProgress + '%，即将晋升至阶段' + (us + 1) + '（条件：' + nextStageCond + '）');
+}
+if (sus >= 110) {
+  hotItems.push('⚠️ 疑心度危险：' + sus + '/200，玩家进入主动调查阶段，信息泄露风险极高');
+}
+if (sus >= 150 || totalUses >= 100 || cor >= 150) {
+  hotItems.push('🔴 终局触发：疑心=' + sus + ' 累计使用=' + totalUses + ' 沉沦=' + cor + '，终局分支已激活');
+}
+if (cor >= 100) {
+  hotItems.push('沉沦度警告：' + cor + '/200，玩家心理已严重侵蚀，可能主动配合');
+}
+if (e < 20) {
+  hotItems.push('⚠️ 精力崩溃：精力=' + e + '/' + em + '，玩家几乎无法行动');
+}
+if (s < 30) {
+  hotItems.push('⚠️ 理智不稳：理智=' + s + '/100，调查行为可能产生幻觉/误判');
+}
+
+// ===== ② 活跃女性全量数据（filtered对象，供AI生成JSONPatch） =====
+var filtered = {
+  场景: sceneMode,
+  时间: { 天数: d, 小时: hr, 分钟: mn, 星期: wd, 日期: ds, 时段: timeSlot, 距高考天数: gkcd },
+  学业: { 分数: sc, 阶段: ac_st, 考试倒计时: cd },
+  状态: { 精力: e, 精力上限: em, 精力百分比: e_pct, 理智: s, 健康: h, 压力: st, 体力: sta, 体力上限: stam, 怀疑值: sus, 堕落值: cor, 金钱: money, 难度: diff },
+  使用阶段: { 当前阶段: us, 总使用次数: totalUses, 今日使用: todayUses, 今日上限: todayMax, 经验: exp, 下一阶段经验下限: nextExpMin, 阶段进度: stageProgress, 下一阶段条件: nextStageCond },
+  技能: skillSummary,
+  骰子: { 持有者使用: holderUseDice, 传播: propDice, 怀疑抵抗: suspDice },
+  症状: { 疲劳: fd, 敏感: sd, 外观: ad, 理智: snd },
+  传播: { 确认人数: confirmedCount, 活跃使用人数: activeUsersCount, 持有者ID: holderId },
+  女性角色: {}
+};
+activeKeys.forEach(function(k) {
+  filtered.女性角色[k] = allFemales[k];
+});
+
+// ===== ③ 不活跃女性压缩摘要（_rvBrief，禁止JSONPatch） =====
+var briefLines = inactiveKeys.map(function(k) {
+  var f = allFemales[k];
+  var ms = f.多维状态 || {};
+  var wl = f.与玩家关系 || {};
+  var nsfw = f.NSFW || {};
+  var dildoExp = nsfw.假阴茎经验 || {};
+  return f.基础.姓名 + '(' + k + '): ' + (ms.综合阶段 || 'A_理性期') + ' 好感' + (wl.好感度 || 0) + ' 使用' + (dildoExp.总次数 || 0) + '次' + (f.基础.姓名 === holderId ? ' [持有者]' : '');
+});
+%>
+<status_current_variables>
+⚡ 当前进行中/非常态事务（优先据此演出，勿当作未发生）:
+<% if (hotItems.length > 0) { %><% hotItems.forEach(function(item) { %>- <%= item %>
+<% }); %><% } else { %>- 无非常态事务，当前为平稳状态
+<% } %>
+
+【场景模式】<%= sceneMode %>（第<%= d %>天 <%= timeSlot %> 疑心<%= sus %> 阶段<%= us %>）
+【全局状态】<%= ds %> <%= wd %> <%= timeSlot %> <%= hr %>:00（距高考<%= cd %>天，第<%= d %>天/120）
+精力：<%= e %>/<%= em %>（<%= e_pct %>%） | 理智：<%= s %>/100 | 健康：<%= h %>/100 | 体力：<%= sta %>/<%= stam %> | 压力：<%= st %>/100
+疑心：<%= sus %>/200 | 沉沦：<%= cor %>/200 | 金钱：<%= money %>元 | 难度：<%= diff %>
+使用阶段：<%= us %>/5 | 经验：<%= exp %>/<%= nextExpMin %>（进度<%= stageProgress %>%） | 今日使用：<%= todayUses %>/<%= todayMax %> | 累计：<%= totalUses %>次
+学业：<%= sc %>（阶段<%= ac_st %>/5） | 传播确认：<%= confirmedCount %>人 | 活跃使用者：<%= activeUsersCount %>人 | 持有者：<%= holderId %>
+身体：<%= fd %> | 异常：<%= sd %> | 外观：<%= ad %> | 心理：<%= snd %>
+技能：<%= skillSummary.join(' | ') %>
+骰子：持有者使用=<%= holderUseDice %> | 传播=<%= propDice %> | 疑心抵抗=<%= suspDice %>
+下一阶段条件：<%= nextStageCond %>
+
+==== 活跃女性全量变量（可生成JSONPatch，路径 /女性角色/${UID}/...）====
+<%- JSON.stringify(filtered, null, 2) %>
+</status_current_variables>
+
+==== 已知但不活跃女性（仅供参考·非变量结构）====
+⚠️ 严禁对下列文本中的名字/UID生成JSONPatch，更新须用真实路径 /女性角色/${UID}/...
+<% if (briefLines.length > 0) { %><% briefLines.forEach(function(line) { %>- <%= line %>
+<% }); %><% } else { %>- 无不活跃女性
+<% } %>
+
+<status_sync_check>
+【变量同步自检提醒】AI输出前逐项核对：
+- 正文出现的女性 → 对应 女性角色.${UID} 是否需JSONPatch更新？
+- NSFW场景 → 当前状态字段（兴奋度/润滑度等）是否更新？
+- 时间推进 → stat_data.时间.小时/天数 是否更新？
+- 使用发生 → 使用阶段.今日使用/总使用次数/经验 是否更新？
+- 技能使用 → 技能.${技能名}.今日已用 是否更新？
+- 好感/信任变化 → 与玩家关系.好感度/信任 是否更新？
+</status_sync_check>

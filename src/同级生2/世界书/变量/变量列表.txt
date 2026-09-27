@@ -1,0 +1,140 @@
+
+## 时间（8 个）
+- stat_data.时间.当前日期 | string（正则 ^\d{2}-\d{2}$） | 12-22 ~ 01-07（MM-DD 格式） | 默认:12-22
+- stat_data.时间.星期 | enum | 周一/周二/周三/周四/周五/周六/周日 | 默认:周五（12-22 是周五）
+- stat_data.时间.时段 | enum | 早/上午/下午/晚/深夜 | 默认:早
+- stat_data.时间.当前时间 | string（正则 ^\d{2}:\d{2}$） | HH:MM 格式 | 默认:08:00
+- stat_data.时间.天数 | number（int） | 1~17 | 默认:1
+- stat_data.时间.季节 | enum | 冬 | 默认:冬
+- stat_data.时间.章节 | enum | 寒假前奏/寒假核心/寒假尾声/结局 | 默认:寒假前奏
+- stat_data.时间.天气 | enum | 晴/阴/雨/雪/风/雾 | 默认:晴
+
+## 场景（81 个）
+- stat_data.场景.当前地点 | string | 默认:主角自宅客厅
+- stat_data.场景.当前女角名 | string | 默认:无
+- stat_data.场景.场景模式 | enum | 约会/上学/打工/事件/休息 | 默认:休息
+- stat_data.主角.玩家身份 | enum | 未选择/原作主角/川尻信良/长冈芳树/西御寺有友/天道新干线/自定义 | 默认:未选择 | 注:玩家身份（开场白占位为 '未选择'，玩家选择 P1~P6 后由 AI 通过 JSONPatch 重写为对应身份键名；'未
+- stat_data.主角.玩家姓名 | string | 默认:{{user}}
+- stat_data.主角.年龄 | number（int） | 0~30
+- stat_data.主角.住所 | string | 默认:未选择
+- stat_data.主角.魅力 | number（int） | 0~100
+- stat_data.主角.学业 | number（int） | 0~100
+- stat_data.主角.体力 | number（int） | 0~100 | 注:体力（身份感知：未选择状态为 0；≤20 强制休息）
+- stat_data.主角.社交 | number（int） | 0~100
+- stat_data.主角.敏感 | number（int） | 0~100
+- stat_data.主角.声誉 | number（int） | 0~100
+- stat_data.主角.饥饿 | number（int） | 0~100 | 默认:30
+- stat_data.主角.口渴 | number（int） | 0~100 | 默认:20
+- stat_data.主角.清洁 | number（int） | 0~100 | 默认:80
+- stat_data.主角.疲劳 | number（int） | 0~100 | 注:疲劳值（≥80 强制休息）
+- stat_data.主角.心情 | number（int） | 0~100 | 默认:70 | 注:心情（≤10 触发防绝望机制，≤0 触发 BAD_END_4_崩溃）
+- stat_data.主角.睡眠质量 | number（int） | 0~100 | 默认:70
+- stat_data.主角.现金 | number（int） | 0~
+- stat_data.主角.储蓄 | number（int） | 0~
+- stat_data.主角.违法计数 | number（int） | 0~3 | 注:违法计数（偷窥/尾随/暴力威胁/强制猥亵 累积）
+- stat_data.主角.法律警告 | number（int） | 0~2
+- stat_data.主角.今日餐费 | number（int） | 0~
+- stat_data.主角.今日礼费 | number（int） | 0~
+- stat_data.主角.今日交通费 | number（int） | 0~
+- stat_data.主角.今日总消费 | number（int） | 0~
+- stat_data.主角.储蓄目标 | number（int） | 0~ | 默认:50000
+- stat_data.当前女角.魅力 | number（int） | 0~100
+- stat_data.当前女角.学业 | number（int） | 0~100
+- stat_data.当前女角.体力 | number（int） | 0~100
+- stat_data.当前女角.社交 | number（int） | 0~100
+- stat_data.当前女角.敏感 | number（int） | 0~100
+- stat_data.当前女角.声誉 | number（int） | 0~100
+- stat_data.当前女角.力量 | number（int） | 0~100
+- stat_data.当前女角.敏捷 | number（int） | 0~100
+- stat_data.当前女角.智力 | number（int） | 0~100
+- stat_data.当前女角.意志技能 | number（int） | 0~100
+- stat_data.当前女角.潜行 | number（int） | 0~100
+- stat_data.当前女角.口才 | number（int） | 0~100
+- stat_data.当前女角.医学 | number（int） | 0~100
+- stat_data.当前女角.烹饪 | number（int） | 0~100
+- stat_data.当前女角.艺术 | number（int） | 0~100
+- stat_data.当前女角.驾驶 | number（int） | 0~100
+- stat_data.当前女角.格斗 | number（int） | 0~100
+- stat_data.当前女角.观察 | number（int） | 0~100
+- stat_data.当前女角.恋爱技能 | number（int） | 0~100
+- stat_data.当前女角.姓名 | string | 默认:无
+- stat_data.当前女角.好感度 | number（int） | -100~+100
+- stat_data.当前女角.心动值 | number（int） | -100~+100
+- stat_data.当前女角.嫉妒值 | number（int） | -100~+100
+- stat_data.当前女角.信任度 | number（int） | -100~+100
+- stat_data.当前女角.关系阶段 | enum | 决裂/仇视/厌恶/冷漠/疏离/初识/熟悉/暧昧/心动/亲密/攻略完成/失恋（共 12 档） | 默认:初识
+- stat_data.当前女角.H经验次数 | number（int） | 0~100
+- stat_data.当前女角.当前衣着 | string
+- stat_data.当前女角.暴露程度 | enum | 保守/日常/微露/暴露/半裸/全裸/N/A
+- stat_data.当前女角.湿润度 | number（int） | 0~100
+- stat_data.当前女角.兴奋度 | number（int） | 0~100
+- stat_data.当前女角.精液残留 | string
+- stat_data.当前女角.全身敏感度 | number（int） | 0~300
+- stat_data.技能.力量 | number（int） | 0~100 | 默认:30
+- stat_data.技能.敏捷 | number（int） | 0~100 | 默认:40
+- stat_data.技能.智力 | number（int） | 0~100 | 默认:50
+- stat_data.技能.意志 | number（int） | 0~100 | 默认:40
+- stat_data.技能.潜行 | number（int） | 0~100 | 默认:20
+- stat_data.技能.口才 | number（int） | 0~100 | 默认:40
+- stat_data.技能.医学 | number（int） | 0~100 | 默认:10
+- stat_data.技能.烹饪 | number（int） | 0~100 | 默认:20
+- stat_data.技能.艺术 | number（int） | 0~100 | 默认:20
+- stat_data.技能.驾驶 | number（int） | 0~100
+- stat_data.技能.格斗 | number（int） | 0~100 | 默认:25
+- stat_data.技能.恋爱 | number（int） | 0~100 | 默认:25
+- stat_data.技能.观察 | number（int） | 0~100 | 默认:40
+- stat_data.临时.上次事件ID | string
+- stat_data.临时.上次选择结果 | string
+- stat_data.临时.最近判定 | string（JSON） | calcFinalResult 结果对象（动作/成功率/骰值/分档），由 LCG 引擎每次判定后写入，战斗面板读取 | 默认:空
+- stat_data.临时.判定历史 | string（JSON 数组） | 最近 5 次判定记录（新在前），由 LCG 引擎每次判定后追加，战斗面板历史列表读取 | 默认:[]
+- stat_data.临时.本时段楼层数 | number（int） | 0~96 | 注:本时段累计楼层数（每楼层 30 分钟，24 小时=48 楼层，上限 96=2 天余量）
+- stat_data.临时.当前难度 | enum | 轻松/普通/挑战/地狱 | 默认:普通
+- stat_data.临时.预期下时段序号 | number（int） | 1~5 | 默认:1
+- stat_data.临时.连续无收入天数 | number（int） | 0~ | 注:连续无收入天数（≥3 且 现金≤0 触发 BAD_END_3_破产）
+- stat_data.临时.超自然妄想计数 | number（int） | 0~3 | 注:超自然妄想计数（≥3 触发 BAD_END_精神异常）
+- stat_data.临时.死结局标识 | string | BAD_END_1_报警 / BAD_END_2_学园开除 / BAD_END_3_破产 / BAD_END_4_崩溃 / BAD_END_5_嫉妒杀戮 / BAD_END_6_西御寺阴谋 / BAD_END_7_法律制裁 / BAD_END_8_时间终焉
+
+## 经济（38 个）
+- stat_data.经济.当日收入 | number（int） | 0~
+- stat_data.经济.当日支出 | number（int） | 0~
+- stat_data.经济.累计储蓄 | number（int） | 0~
+- stat_data.性格.温柔 | number（int） | 0~100 | 默认:50
+- stat_data.性格.果断 | number（int） | 0~100 | 默认:50
+- stat_data.性格.幽默 | number（int） | 0~100 | 默认:50
+- stat_data.性格.谨慎 | number（int） | 0~100 | 默认:50
+- stat_data.性格.外向 | number（int） | 0~100 | 默认:50
+- stat_data.性格.理性 | number（int） | 0~100 | 默认:50
+- stat_data.隐藏.日记1 | boolean
+- stat_data.隐藏.日记2 | boolean
+- stat_data.隐藏.日记3 | boolean
+- stat_data.隐藏.日记4 | boolean
+- stat_data.隐藏.日记5 | boolean
+- stat_data.隐藏.日记全收集 | boolean
+- stat_data.隐藏.樱子死讯 | boolean
+- stat_data.隐藏.樱子线解锁 | boolean
+- stat_data.隐藏.医院访问次数 | number（int） | 0~
+- stat_data.隐藏.芳树偷拍美纪 | number（int） | 0~1
+- stat_data.隐藏.美纪双身份揭示 | number（int） | 0~1
+- stat_data.隐藏.美纪秘密保守 | number（int） | 0~1
+- stat_data.隐藏.美纪秘密揭穿 | number（int） | 0~1
+- stat_data.隐藏.美纪威胁事件 | number（int） | 0~1
+- stat_data.隐藏.美纪完整揭示 | number（int） | 0~1
+- stat_data.隐藏.变数屋访问次数 | number（int） | 0~
+- stat_data.隐藏.变数屋全解锁 | boolean
+- stat_data.隐藏.阴谋偷听 | boolean
+- stat_data.隐藏.西寺解决进度 | number（int） | 0~2
+- stat_data.隐藏.西寺债务陷阱 | number（int） | 0~1
+- stat_data.隐藏.齐藤互斥触发 | number（int） | 0~1
+- stat_data.隐藏.田中铃木互斥触发 | number（int） | 0~1
+- stat_data.隐藏.仁科正树互斥触发 | number（int） | 0~1
+- stat_data.隐藏.永岛久美子分支 | number（int） | 0~1
+- stat_data.隐藏.永岛佐知子分支 | number（int） | 0~1
+- stat_data.隐藏.泉美H完成 | number（int） | 0~1
+- stat_data.隐藏.友美误会解决 | number（int） | 0~1
+- stat_data.隐藏.毕业生外传完成 | number（int） | 0~1
+- stat_data.隐藏.洋子短发完成 | number（int） | 0~1
+
+## 特殊结构
+- stat_data.当前女角.* ：当前对话女角完整字段（关系核心6+互斥锁定5+H经验4+6维6+13技能13+NSFW身体/实时状态等），与 initvar 同构
+- stat_data.女角.<姓名>.* ：全部 20 位女角同构镜像，场景切换时迁入迁出 当前女角
+- stat_data.隐藏.* ：剧情 flag/计数器，触发条件由 D0系统控制器/隐藏剧情触发器管理

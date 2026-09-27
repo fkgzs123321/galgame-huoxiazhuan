@@ -1,0 +1,271 @@
+@@generate_before
+<%_
+/* _hashSeed/_lcgRoll 定义在DDL确定性骰子引擎.txt，此处通过EJS执行顺序保证可用 */
+
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var season = getvar('stat_data.殖民地.季节', { scope: 'local', defaults: '春' }) || '春';
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+var curTemp = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var powerGen = Number(getvar('stat_data.殖民地.电力总发电', { scope: 'local', defaults: 0 })) || 0;
+var powerDemand = Number(getvar('stat_data.殖民地.电力总需求', { scope: 'local', defaults: 0 })) || 0;
+var batteryCap = Number(getvar('stat_data.殖民地.蓄电池容量', { scope: 'local', defaults: 0 })) || 0;
+var batteryCharge = Number(getvar('stat_data.殖民地.蓄电池电量', { scope: 'local', defaults: 0 })) || 0;
+var satiety = Number(getvar('stat_data.殖民者_主角.饱腹', { scope: 'local', defaults: 80 })) || 80;
+var fatigue = Number(getvar('stat_data.殖民者_主角.疲劳', { scope: 'local', defaults: 20 })) || 20;
+var mood = Number(getvar('stat_data.殖民者_主角.心情', { scope: 'local', defaults: 50 })) || 50;
+var joy = Number(getvar('stat_data.殖民者_主角.娱乐', { scope: 'local', defaults: 50 })) || 50;
+var comfort = Number(getvar('stat_data.殖民者_主角.舒适度', { scope: 'local', defaults: 50 })) || 50;
+var beauty = Number(getvar('stat_data.殖民者_主角.美观度', { scope: 'local', defaults: 50 })) || 50;
+
+var slotMap = {
+  '清晨': { next: '上午', hours: 3 },
+  '上午': { next: '中午', hours: 3 },
+  '中午': { next: '下午', hours: 2 },
+  '下午': { next: '傍晚', hours: 3 },
+  '傍晚': { next: '夜晚', hours: 3 },
+  '夜晚': { next: '深夜', hours: 3 },
+  '深夜': { next: '清晨', hours: 7 }
+};
+var slot = slotMap[timeSlot] || slotMap['清晨'];
+var nextSlot = slot.next;
+var hoursElapsed = slot.hours;
+var seasonMap = { '春': '夏', '夏': '秋', '秋': '冬', '冬': '春' };
+var newGameDay = gameDay;
+if (timeSlot === '深夜') { newGameDay = gameDay + 1; }
+var curSeason = season;
+if (newGameDay > gameDay) { curSeason = seasonMap[season] || season; }
+
+var biomeTemps = {
+  '温带森林': { summer: 25, winter: -5 },
+  '热带雨林': { summer: 32, winter: 25 },
+  '沙漠': { summer: 38, winter: 8 },
+  '冻原': { summer: 12, winter: -22 },
+  '极地': { summer: 8, winter: -30 },
+  '灌木丛': { summer: 28, winter: 0 },
+  '干草原': { summer: 27, winter: -8 },
+  '海洋': { summer: 18, winter: 5 }
+};
+var bt = biomeTemps[biome] || biomeTemps['温带森林'];
+var baseTemp;
+if (curSeason === '夏') { baseTemp = bt.summer; }
+else if (curSeason === '冬') { baseTemp = bt.winter; }
+else if (curSeason === '春') { baseTemp = (bt.summer + bt.winter) / 2 + 3; }
+else { baseTemp = (bt.summer + bt.winter) / 2 - 3; }
+var fluctuation = ((newGameDay * 37 + 17) % 100) % 11 - 5;
+var newTemp = Math.round((baseTemp + fluctuation) * 10) / 10;
+
+var powerNet = powerGen - powerDemand;
+var batteryDelta = powerNet * hoursElapsed / 24;
+var newBattery;
+if (powerNet >= 0) { newBattery = Math.min(batteryCap, batteryCharge + batteryDelta); }
+else { newBattery = Math.max(0, batteryCharge + batteryDelta); }
+newBattery = Math.round(newBattery * 10) / 10;
+var blackout = (powerNet < 0 && newBattery === 0);
+
+var newSatiety = Math.max(0, Math.min(100, satiety - 3));
+var newFatigue = Math.max(0, Math.min(100, fatigue + 5));
+var newJoy = Math.max(0, Math.min(100, joy - 3));
+
+function _satietyMod(s) {
+  if (s <= 0) { return { mood: -25, work: 0, health: -10 }; }
+  if (s < 10) { return { mood: -20, work: 0.7, health: -5 }; }
+  if (s < 30) { return { mood: -12, work: 0.85, health: 0 }; }
+  if (s < 50) { return { mood: -5, work: 0.95, health: 0 }; }
+  if (s <= 80) { return { mood: 3, work: 1.0, health: 0 }; }
+  return { mood: 8, work: 1.0, health: 0 };
+}
+
+function _fatigueMod(f) {
+  if (f >= 100) { return { mood: -25, work: 0, note: '强制休息' }; }
+  if (f > 80) { return { mood: -15, work: 0.7, note: '-' }; }
+  if (f > 60) { return { mood: -8, work: 0.9, note: '-' }; }
+  if (f >= 41) { return { mood: -3, work: 1.0, note: '-' }; }
+  return { mood: 5, work: 1.0, note: '可全效工作' };
+}
+
+/* 公式以DDL骰子引擎为准，禁止本地修改 */
+function _moodMod(m) {
+  if (m > 85) { return { work: 1.15, effect: '灵感触发5%/轮' }; }
+  if (m >= 60) { return { work: 1.0, effect: '偶发灵感1%/轮' }; }
+  if (m >= 30) { return { work: 0.7, effect: '无灵感' }; }
+  if (m >= 20) { return { work: 0.8, effect: '消极怠工10%/轮' }; }
+  if (m >= 15) { return { work: 0.7, effect: '30%轻度崩溃' }; }
+  if (m >= 10) { return { work: 0.5, effect: '70%中度崩溃' }; }
+  return { work: 0, effect: '必然重度崩溃' };
+}
+
+function _tempMod(t) {
+  if (t < 0) { return { mood: -10, health: -3 }; }
+  if (t < 10) { return { mood: -6, health: -1 }; }
+  if (t < 16) { return { mood: -2, health: 0 }; }
+  if (t <= 26) { return { mood: 2, health: 0 }; }
+  if (t <= 35) { return { mood: -3, health: 0 }; }
+  if (t <= 50) { return { mood: -6, health: -1 }; }
+  return { mood: -10, health: -3 };
+}
+
+function _joyMod(j) {
+  if (j > 80) { return { mood: 5, work: 1.0 }; }
+  if (j > 50) { return { mood: 2, work: 1.0 }; }
+  if (j >= 30) { return { mood: -3, work: 0.95 }; }
+  return { mood: -8, work: 0.95 };
+}
+
+function _beautyMod(b) {
+  if (b >= 90) { return 8; }
+  if (b >= 70) { return 5; }
+  if (b >= 50) { return 2; }
+  if (b >= 30) { return 0; }
+  if (b >= 15) { return -3; }
+  if (b >= 5) { return -8; }
+  return -15;
+}
+
+function _comfortMod(c) {
+  if (c >= 90) { return 10; }
+  if (c >= 70) { return 5; }
+  if (c >= 40) { return 3; }
+  if (c >= 10) { return -5; }
+  return -12;
+}
+
+function _spaceMod(crowd) {
+  if (crowd === '宽敞') { return 5; }
+  if (crowd === '普通') { return 0; }
+  if (crowd === '拥挤') { return -5; }
+  return -10;
+}
+
+function _socialMod(status) {
+  if (status === '有伴侣') { return 10; }
+  if (status === '有密友') { return 5; }
+  if (status === '独居>3天') { return -5; }
+  if (status === '长期孤立>7天') { return -15; }
+  return 0;
+}
+
+function _checkBreakdown(m, seed) {
+  if (m < 10) {
+    return { severity: '重度', behavior: ['攻击同伴','自伤','纵火','暴食'], duration: 12 };
+  }
+  if (m < 15) {
+    var roll = _lcgRoll(seed, 1, 100)[0];
+    if (roll <= 70) {
+      return { severity: '中度', behavior: ['破坏物品','骂人','拒绝工作'], duration: 8 };
+    }
+    return { severity: '重度', behavior: ['攻击同伴','自伤','纵火','暴食'], duration: 12 };
+  }
+  if (m < 20) {
+    var roll2 = _lcgRoll(seed, 1, 100)[0];
+    if (roll2 <= 30) {
+      return { severity: '轻度', behavior: ['游荡','发呆','哭立'], duration: 4 };
+    }
+    return { severity: '无', behavior: [], duration: 0 };
+  }
+  return { severity: '无', behavior: [], duration: 0 };
+}
+
+var satMod = _satietyMod(newSatiety);
+var fatMod = _fatigueMod(newFatigue);
+var joyMod = _joyMod(newJoy);
+var tempMod = _tempMod(newTemp);
+var beautyModVal = _beautyMod(beauty);
+var comfortModVal = _comfortMod(comfort);
+var spaceModVal = _spaceMod('普通');
+var socialModVal = _socialMod('有密友');
+
+var moodBase = 50;
+var moodTotal = moodBase + satMod.mood + fatMod.mood + joyMod.mood + tempMod.mood + beautyModVal + comfortModVal + spaceModVal + socialModVal;
+var finalMood = Math.max(0, Math.min(100, moodTotal));
+
+if (blackout) { finalMood = Math.max(0, finalMood - 5); }
+
+var moodInfo = _moodMod(finalMood);
+var breakdown = _checkBreakdown(finalMood, 'breakdown_' + newGameDay + '_' + nextSlot);
+
+var workEfficiency = satMod.work * fatMod.work * joyMod.work * moodInfo.work;
+var healthDelta = satMod.health + tempMod.health;
+var totalMoodChange = mood - finalMood;
+_%>
+<时间推进结果>
+[时间]
+当前: 游戏日<%= gameDay %> <%= timeSlot %> / 推进后: 游戏日<%= newGameDay %> <%= nextSlot %>
+流逝: <%= hoursElapsed %>小时
+<%_ if (newGameDay > gameDay) { _%>
+日期变更: <%= gameDay %> → <%= newGameDay %>
+季节更新: <%= season %> → <%= curSeason %>
+<%_ } _%>
+
+[温度]
+基础温度: <%= Math.round(baseTemp * 10) / 10 %>°C (生态:<%= biome %> 季节:<%= curSeason %>)
+波动: <%= fluctuation >= 0 ? '+' : '' %><%= fluctuation %>°C
+新温度: <%= newTemp %>°C (原:<%= curTemp %>°C)
+温度修正: 心情<%= tempMod.mood >= 0 ? '+' : '' %><%= tempMod.mood %> 健康<%= tempMod.health %>/小时
+
+[电力]
+发电: <%= powerGen %>W / 需求: <%= powerDemand %>W / 净额: <%= powerNet %>W
+蓄电池: <%= batteryCharge %>Wd → <%= newBattery %>Wd (容量:<%= batteryCap %>Wd)
+<%_ if (blackout) { _%>
+停电警告: 蓄电池耗尽，电力中断！
+<%_ } else if (powerNet < 0) { _%>
+放电中: 净消耗<%= Math.abs(powerNet) %>W
+<%_ } else { _%>
+充电中: 净余<%= powerNet %>W
+<%_ } _%>
+
+[生存消耗]
+饱腹: <%= satiety %> → <%= newSatiety %> (消耗3) | 心情<%= satMod.mood >= 0 ? '+' : '' %><%= satMod.mood %> 工作×<%= satMod.work %> 健康<%= satMod.health %>
+疲劳: <%= fatigue %> → <%= newFatigue %> (增加5) | 心情<%= fatMod.mood >= 0 ? '+' : '' %><%= fatMod.mood %> 工作×<%= fatMod.work %> <%= fatMod.note %>
+娱乐: <%= joy %> → <%= newJoy %> (消耗3) | 心情<%= joyMod.mood >= 0 ? '+' : '' %><%= joyMod.mood %> 工作×<%= joyMod.work %>
+美观度: <%= beauty %> → 修正<%= beautyModVal >= 0 ? '+' : '' %><%= beautyModVal %>
+舒适度: <%= comfort %> → 修正<%= comfortModVal >= 0 ? '+' : '' %><%= comfortModVal %>
+空间修正: <%= spaceModVal >= 0 ? '+' : '' %><%= spaceModVal %>
+社交修正: <%= socialModVal >= 0 ? '+' : '' %><%= socialModVal %>
+
+[心情计算]
+基础: <%= moodBase %>
+饱腹修正: <%= satMod.mood >= 0 ? '+' : '' %><%= satMod.mood %>
+疲劳修正: <%= fatMod.mood >= 0 ? '+' : '' %><%= fatMod.mood %>
+娱乐修正: <%= joyMod.mood >= 0 ? '+' : '' %><%= joyMod.mood %>
+温度修正: <%= tempMod.mood >= 0 ? '+' : '' %><%= tempMod.mood %>
+美观修正: <%= beautyModVal >= 0 ? '+' : '' %><%= beautyModVal %>
+舒适修正: <%= comfortModVal >= 0 ? '+' : '' %><%= comfortModVal %>
+空间修正: <%= spaceModVal >= 0 ? '+' : '' %><%= spaceModVal %>
+社交修正: <%= socialModVal >= 0 ? '+' : '' %><%= socialModVal %>
+<%_ if (blackout) { _%>
+停电惩罚: -5
+<%_ } _%>
+心情总值: <%= moodTotal %> → 最终: <%= finalMood %> (原:<%= mood %>, 变化<%= totalMoodChange >= 0 ? '+' : '' %><%= totalMoodChange %>)
+
+[心情效果]
+工作效率: ×<%= Math.round(workEfficiency * 100) / 100 %>
+特殊效果: <%= moodInfo.effect %>
+
+[精神状态]
+<%_ if (breakdown.severity === '无') { _%>
+精神稳定，无崩溃风险
+<%_ } else { _%>
+精神崩溃预警: <%= breakdown.severity %>
+可能行为: <%= breakdown.behavior.join(' / ') %>
+预计持续: <%= breakdown.duration %>小时
+<%_ } _%>
+
+[健康影响]
+本轮健康变化: <%= healthDelta > 0 ? '+' : '' %><%= healthDelta %> HP/小时
+<%_ if (healthDelta < 0) { _%>
+健康警告: <%= healthDelta < -2 ? '严重伤害' : '轻度伤害' %>
+<%_ } _%>
+
+[变更指令]
+stat_data.殖民地.游戏日 = <%= newGameDay %>
+stat_data.殖民地.时段 = <%= nextSlot %>
+stat_data.殖民地.季节 = <%= curSeason %>
+stat_data.殖民地.温度 = <%= newTemp %>
+stat_data.殖民地.电力净额 = <%= powerNet %>
+stat_data.殖民地.蓄电池电量 = <%= newBattery %>
+stat_data.殖民者_主角.饱腹 = <%= newSatiety %>
+stat_data.殖民者_主角.疲劳 = <%= newFatigue %>
+stat_data.殖民者_主角.心情 = <%= finalMood %>
+stat_data.殖民者_主角.娱乐 = <%= newJoy %>
+</时间推进结果>

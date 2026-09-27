@@ -1,0 +1,1064 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "日期": {
+      "default": "2024.11.15",
+      "type": "string"
+    },
+    "星期": {
+      "default": "周五",
+      "type": "string"
+    },
+    "时间": {
+      "default": "19:00",
+      "type": "string"
+    },
+    "玩家": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前位置": {
+          "default": "KK园区大门",
+          "type": "string"
+        },
+        "飞机杯当前绑定": {
+          "default": "无",
+          "type": "string"
+        },
+        "飞机杯定位": {
+          "default": "玩家身上",
+          "type": "string"
+        },
+        "体力": {
+          "default": 80,
+          "type": "number"
+        },
+        "精神": {
+          "default": 80,
+          "type": "number"
+        },
+        "饥饿": {
+          "default": 30,
+          "type": "number"
+        },
+        "脱水": {
+          "default": 20,
+          "type": "number"
+        },
+        "疲劳": {
+          "default": 20,
+          "type": "number"
+        },
+        "性欲": {
+          "default": 30,
+          "type": "number"
+        },
+        "勃起度": {
+          "default": 0,
+          "type": "number"
+        },
+        "累计射精次数": {
+          "default": 0,
+          "type": "number"
+        },
+        "金钱": {
+          "default": 0,
+          "type": "number"
+        },
+        "持有物品": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "容貌值": {
+          "default": 50,
+          "type": "number"
+        },
+        "性别稀缺度": {
+          "default": 100,
+          "type": "number"
+        },
+        "被觊觎度": {
+          "default": 0,
+          "type": "number"
+        },
+        "生育价值": {
+          "default": 0,
+          "type": "number"
+        },
+        "伪装度": {
+          "default": 0,
+          "type": "number"
+        },
+        "逃跑准备": {
+          "default": 0,
+          "type": "number"
+        },
+        "情报网": {
+          "default": 0,
+          "type": "number"
+        },
+        "信任值": {
+          "default": 0,
+          "type": "number"
+        },
+        "伤势": {
+          "default": 0,
+          "type": "number"
+        },
+        "恐惧值": {
+          "default": 0,
+          "type": "number"
+        },
+        "希望值": {
+          "default": 80,
+          "type": "number"
+        },
+        "被迫度": {
+          "default": 0,
+          "type": "number"
+        },
+        "权力接触": {
+          "default": false,
+          "type": "boolean"
+        },
+        "外部援助": {
+          "default": false,
+          "type": "boolean"
+        },
+        "警方线索": {
+          "default": 0,
+          "type": "number"
+        },
+        "精液成瘾能力": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "已觉醒": {
+              "default": true,
+              "type": "boolean"
+            },
+            "觉醒进度": {
+              "default": 100,
+              "type": "number"
+            },
+            "已触发口服次数": {
+              "default": 0,
+              "type": "number"
+            },
+            "已触发内射次数": {
+              "default": 0,
+              "type": "number"
+            },
+            "园区知晓程度": {
+              "default": 60,
+              "type": "number"
+            },
+            "园区知晓途径": {
+              "default": "网恋聊天记录+受害者体检",
+              "type": "string"
+            },
+            "成瘾女性总数": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "女性角色": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "身份": {
+            "default": "",
+            "type": "string"
+          },
+          "已激活": {
+            "default": false,
+            "type": "boolean"
+          },
+          "被绑定状态": {
+            "default": false,
+            "type": "boolean"
+          },
+          "终局": {
+            "default": false,
+            "type": "boolean"
+          },
+          "察觉度": {
+            "default": 0,
+            "type": "number"
+          },
+          "倾心度": {
+            "default": 0,
+            "type": "number"
+          },
+          "具现度": {
+            "default": 0,
+            "type": "number"
+          },
+          "成瘾度": {
+            "default": 0,
+            "type": "number"
+          },
+          "爱意值": {
+            "default": 0,
+            "type": "number"
+          },
+          "成瘾触发方式": {
+            "default": "未触发",
+            "type": "string",
+            "enum": [
+              "未触发",
+              "口服",
+              "内射",
+              "双重"
+            ]
+          },
+          "已口服次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "已内射次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "成瘾觉醒日期": {
+            "default": "",
+            "type": "string"
+          },
+          "服装": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "整体着装状态": {
+                "default": "未知",
+                "type": "string",
+                "enum": [
+                  "全裸",
+                  "半裸",
+                  "着装",
+                  "未知"
+                ]
+              },
+              "上身": {
+                "default": "未知",
+                "type": "string"
+              },
+              "裤子": {
+                "default": "未知",
+                "type": "string"
+              },
+              "胸罩": {
+                "default": "未知",
+                "type": "string"
+              },
+              "内裤": {
+                "default": "未知",
+                "type": "string"
+              },
+              "配饰": {
+                "default": "未知",
+                "type": "string"
+              }
+            }
+          },
+          "身体部位": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "胸部": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "乳头": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "敏感度": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                }
+              },
+              "阴道": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "湿润度": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "敏感度": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                }
+              },
+              "肛门": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "嘴部": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "肌肤": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  },
+                  "体温": {
+                    "default": 36.5,
+                    "type": "number"
+                  }
+                }
+              },
+              "大腿": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              },
+              "臀部": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "default": "正常",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "生理状态": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "是否已怀孕": {
+                "default": false,
+                "type": "boolean"
+              },
+              "周期日": {
+                "default": 0,
+                "type": "number"
+              },
+              "生理周期阶段": {
+                "default": "",
+                "type": "string"
+              },
+              "怀孕周数": {
+                "default": 0,
+                "type": "number"
+              },
+              "怀孕天数": {
+                "default": 0,
+                "type": "number"
+              },
+              "受孕日期": {
+                "default": "",
+                "type": "string"
+              },
+              "末次月经日期": {
+                "default": "",
+                "type": "string"
+              },
+              "受孕风险": {
+                "default": 0,
+                "type": "number"
+              },
+              "累计受孕率锁定": {
+                "default": false,
+                "type": "boolean"
+              },
+              "阶段基础率": {
+                "default": 0,
+                "type": "number"
+              },
+              "体内精液量": {
+                "default": 0,
+                "type": "number"
+              },
+              "子宫状态": {
+                "default": "正常",
+                "type": "string"
+              },
+              "上次结算日期": {
+                "default": "",
+                "type": "string"
+              },
+              "最近暗骰结果": {
+                "default": 0,
+                "type": "number"
+              },
+              "当前防护措施": {
+                "default": "无",
+                "type": "string"
+              },
+              "最近性行为时间戳": {
+                "default": "",
+                "type": "string"
+              },
+              "最近结算结果": {
+                "default": "",
+                "type": "string"
+              },
+              "生理状态描述": {
+                "default": "",
+                "type": "string"
+              },
+              "身体状况描述": {
+                "default": "",
+                "type": "string"
+              },
+              "近期性行为记录": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "default": {},
+                  "type": "object",
+                  "properties": {
+                    "时间戳": {
+                      "default": "",
+                      "type": "string"
+                    },
+                    "人物": {
+                      "default": "",
+                      "type": "string"
+                    },
+                    "事件": {
+                      "default": "",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "结算历史": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "default": {},
+                  "type": "object",
+                  "properties": {
+                    "日期": {
+                      "default": "",
+                      "type": "string"
+                    },
+                    "触发条件": {
+                      "default": "",
+                      "type": "string"
+                    },
+                    "累计率": {
+                      "default": 0,
+                      "type": "number"
+                    },
+                    "暗骰结果": {
+                      "default": 0,
+                      "type": "number"
+                    },
+                    "结果": {
+                      "default": "",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "心理状态": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "主导情绪": {
+                "default": "",
+                "type": "string"
+              },
+              "情绪强度": {
+                "default": 0,
+                "type": "number"
+              },
+              "羞耻感": {
+                "default": 0,
+                "type": "number"
+              },
+              "恐惧感": {
+                "default": 0,
+                "type": "number"
+              },
+              "欲望度": {
+                "default": 0,
+                "type": "number"
+              },
+              "期待感": {
+                "default": 0,
+                "type": "number"
+              },
+              "心理防线": {
+                "default": 100,
+                "type": "number"
+              },
+              "精神状态": {
+                "default": "清醒",
+                "type": "string"
+              }
+            }
+          },
+          "实时状态": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "当前姿势": {
+                "default": "",
+                "type": "string"
+              },
+              "当前动作": {
+                "default": "",
+                "type": "string"
+              },
+              "当前场景": {
+                "default": "",
+                "type": "string"
+              },
+              "互动进度": {
+                "default": "",
+                "type": "string"
+              },
+              "当前刺激部位": {
+                "default": "无",
+                "type": "string"
+              }
+            }
+          },
+          "互动过程": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "本轮高潮次数": {
+                "default": 0,
+                "type": "number"
+              },
+              "本轮互动时长": {
+                "default": "0分钟",
+                "type": "string"
+              },
+              "本轮刺激强度": {
+                "default": 0,
+                "type": "number"
+              },
+              "本轮快感累积": {
+                "default": 0,
+                "type": "number"
+              },
+              "本轮心理冲击": {
+                "default": 0,
+                "type": "number"
+              },
+              "高潮强度": {
+                "default": 0,
+                "type": "number"
+              },
+              "射精量": {
+                "default": 0,
+                "type": "number"
+              },
+              "敏感点反应": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          },
+          "总互动次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "高潮次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "总内射次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "总潮吹次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "关系阶段": {
+            "default": "未接触",
+            "type": "string"
+          },
+          "首次互动日期": {
+            "default": "",
+            "type": "string"
+          },
+          "总结": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "总体发展趋势": {
+                "default": "",
+                "type": "string"
+              },
+              "近期变化方向": {
+                "default": "",
+                "type": "string"
+              },
+              "今日互动统计": {
+                "default": "",
+                "type": "string"
+              },
+              "最近变化": {
+                "default": "",
+                "type": "string"
+              },
+              "重要事件标记": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "心情": {
+            "default": "—",
+            "type": "string"
+          },
+          "心声": {
+            "default": "",
+            "type": "string"
+          },
+          "当前状态": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "男性角色": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "是否在场": {
+            "default": false,
+            "type": "boolean"
+          },
+          "当前位置": {
+            "default": "",
+            "type": "string"
+          },
+          "服装": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "整体着装状态": {
+                "default": "未知",
+                "type": "string"
+              },
+              "上身": {
+                "default": "未知",
+                "type": "string"
+              },
+              "裤子": {
+                "default": "未知",
+                "type": "string"
+              }
+            }
+          },
+          "心情": {
+            "default": "—",
+            "type": "string"
+          },
+          "当前状态": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "园区": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前阶段": {
+          "default": "入园恐惧",
+          "type": "string"
+        },
+        "剧情进度": {
+          "default": 1,
+          "type": "number"
+        },
+        "结局分支": {
+          "default": "",
+          "type": "string"
+        },
+        "拍卖状态": {
+          "default": "未上架",
+          "type": "string",
+          "enum": [
+            "未上架",
+            "拍卖中",
+            "已成交",
+            "已流拍"
+          ]
+        },
+        "拍卖价格": {
+          "default": 0,
+          "type": "number"
+        },
+        "直播次数": {
+          "default": 0,
+          "type": "number"
+        },
+        "暗网知名度": {
+          "default": 0,
+          "type": "number"
+        },
+        "买家关注": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "园区董事会": {
+          "default": 0,
+          "type": "number"
+        },
+        "管理层": {
+          "default": 0,
+          "type": "number"
+        },
+        "打手团": {
+          "default": 0,
+          "type": "number"
+        },
+        "受害者群": {
+          "default": 0,
+          "type": "number"
+        },
+        "暗网网络": {
+          "default": 0,
+          "type": "number"
+        },
+        "善恶值": {
+          "default": 0,
+          "type": "number"
+        },
+        "当前主线任务": {
+          "default": "",
+          "type": "string"
+        },
+        "已接取支线": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已完成任务": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已获取情报": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "待验证情报": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已达成": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "生存天数": {
+          "default": 0,
+          "type": "number"
+        },
+        "结识NPC数": {
+          "default": 0,
+          "type": "number"
+        },
+        "救助人数": {
+          "default": 0,
+          "type": "number"
+        },
+        "已招募": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "待招募候选": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已收集": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "已传递": {
+          "default": 0,
+          "type": "number"
+        },
+        "LCG种子": {
+          "default": 0,
+          "type": "number"
+        },
+        "利用计划": {
+          "default": "",
+          "type": "string"
+        },
+        "利用进度": {
+          "default": 0,
+          "type": "number"
+        },
+        "已诈骗金额": {
+          "default": 0,
+          "type": "number"
+        }
+      }
+    },
+    "RPG": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "力量": {
+          "default": 5,
+          "type": "number"
+        },
+        "敏捷": {
+          "default": 5,
+          "type": "number"
+        },
+        "体质": {
+          "default": 5,
+          "type": "number"
+        },
+        "智力": {
+          "default": 5,
+          "type": "number"
+        },
+        "感知": {
+          "default": 5,
+          "type": "number"
+        },
+        "魅力": {
+          "default": 5,
+          "type": "number"
+        },
+        "未分配点数": {
+          "default": 30,
+          "type": "number"
+        },
+        "诈骗术": {
+          "default": 0,
+          "type": "number"
+        },
+        "格斗术": {
+          "default": 0,
+          "type": "number"
+        },
+        "潜行术": {
+          "default": 0,
+          "type": "number"
+        },
+        "社交术": {
+          "default": 0,
+          "type": "number"
+        },
+        "技术术": {
+          "default": 0,
+          "type": "number"
+        },
+        "求生术": {
+          "default": 0,
+          "type": "number"
+        },
+        "伪装术": {
+          "default": 0,
+          "type": "number"
+        },
+        "情报收集": {
+          "default": 0,
+          "type": "number"
+        },
+        "逃脱术": {
+          "default": 0,
+          "type": "number"
+        },
+        "交际手腕": {
+          "default": 0,
+          "type": "number"
+        },
+        "暗网操作": {
+          "default": 0,
+          "type": "number"
+        },
+        "拷问抗性": {
+          "default": 0,
+          "type": "number"
+        },
+        "成长": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "力量使用计数": {
+              "default": 0,
+              "type": "number"
+            },
+            "敏捷使用计数": {
+              "default": 0,
+              "type": "number"
+            },
+            "体质使用计数": {
+              "default": 0,
+              "type": "number"
+            },
+            "智力使用计数": {
+              "default": 0,
+              "type": "number"
+            },
+            "感知使用计数": {
+              "default": 0,
+              "type": "number"
+            },
+            "魅力使用计数": {
+              "default": 0,
+              "type": "number"
+            },
+            "技能使用计数": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "人际": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "NPC关系": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "当前在场角色": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "互动计数": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "角色库": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "已生成列表": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "当前交互角色": {
+          "default": "",
+          "type": "string"
+        },
+        "角色生成计数器": {
+          "default": 0,
+          "type": "number"
+        }
+      }
+    }
+  }
+}

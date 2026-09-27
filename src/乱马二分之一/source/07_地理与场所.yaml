@@ -1,0 +1,188 @@
+# 07 · 地理与场所总表
+# conf: ★ 多源一致 ｜ ☆ 单一来源 ｜ ? 存疑 ｜ anime = 动画原创 ｜ movie = 剧场版原创
+
+places:
+
+  - name: 风林馆高中
+    type: 学校
+    location: 东京都练马区
+    key: 乱马、天道茜、九能带刀、天道靡就读；九能校长高压统治；剑道部、格斗新体操部、啦啦队部
+    source: 原作／两版动画
+    conf: ★
+
+  - name: 风林馆高中校长室
+    type: 建筑
+    location: 校内
+    key: 九能校长发令、处分学生、剑道部据点
+    conf: ★
+
+  - name: 天道道场
+    type: 道场
+    location: 风林馆
+    key: 无差别格斗天道流本家；早乙女父子与八宝斋寄居于此
+    conf: ★
+
+  - name: 天道家宅
+    type: 住宅
+    location: 道场紧邻
+    key: 天道早云与三姐妹；饭桌修罗场
+    conf: ★
+
+  - name: 澡堂
+    type: 设施
+    location: 天道家及镇内
+    key: 变身戏核心场景；2024 新版做令和合规处理
+    conf: ★
+
+  - name: 猫饭店
+    type: 中餐馆
+    location: 风林馆（天道道场附近）
+    key: 珊璞与可伦经营，沐丝在此打工；第 4 卷起成为常驻据点
+    conf: ★
+
+  - name: 右京轩
+    type: 御好烧店
+    location: 风林馆
+    key: 久远寺右京经营并居住；正式店名未详（英文资料仅记 Ucchan's）
+    conf: '?'
+
+  - name: 小乃接骨院
+    type: 接骨院
+    location: 天道家邻
+    key: 小乃东风；天道茜的倾诉对象
+    conf: ★
+
+  - name: 九能家宅邸
+    type: 豪宅
+    location: 风林馆
+    key: 九能兄妹与忍者猿隐佐助（佐助为 1989 版动画原创）
+    conf: ★
+
+  - name: 青春学园
+    type: 高中
+    location: 未详
+    key: 今条真理子（格斗啦啦队队长）所属
+    conf: ★
+
+  - name: 圣赫贝雷凯女子学园
+    type: 女校
+    location: 未详
+    key: 九能小太刀所属（格斗新体操·黑玫瑰）
+    conf: ★
+
+  - name: 科尔霍兹学园高中
+    type: 高中
+    location: 未详
+    key: 格斗双人滑冰「黄金组合」三千院帝与白鸟梓；校名由 2024 官方资料明示
+    conf: ★
+
+  - name: 咒泉乡
+    type: 修行地
+    location: 中国青海省巴颜喀拉山脉拳精山南麓
+    key: 百余眼诅咒泉；咒泉乡导游管辖；泉中立长竹竿、附木牌
+    conf: ★
+
+  - name: 咒泉洞
+    type: 洞窟
+    location: 咒泉乡水源地
+    key: 四千年历史；入口多而只有一个是真入口；内部陷阱与迷宫；心脏地带有龙形与凤凰形喷水口
+    conf: ★
+
+  - name: 拳精山
+    type: 山
+    location: 巴颜喀拉山脉
+    key: 咒泉乡位于其南麓
+    conf: ★
+
+  - name: 凤凰山
+    type: 山
+    location: 中国青海省，拳精山以南
+    key: 凤凰族与萨夫郎宫殿；山顶有第二处咒泉乡（仅鸟类溺死，山麓居民有鸟翼鸟爪）；本地溺泉已干涸
+    source: 原作终章（未动画化）
+    conf: ★
+
+  - name: 女杰族村
+    type: 母系村落
+    location: 中国山中，近咒泉乡
+    key: 珊璞、沐丝、可伦故乡；奉《女杰族经》；村内有《女杰族月报》
+    conf: ★
+
+  - name: 麝香王朝据点
+    type: 王家城
+    location: 中国深山
+    key: 哈浦一族；止水桶与开水壶的归属方
+    source: 原作第 24-25 卷
+    conf: ★
+
+  - name: 宝来山
+    alias: 蓬莱山
+    location: 日本
+    key: 开水壶流落于此；哈浦与乱马的决战导致山体崩塌
+    source: 原作第 24-25 卷
+    conf: ★
+
+  - name: 破恋洞
+    type: 洞窟
+    location: 未详
+    key: 情侣同行必分手；久远寺右京设计反让良牙与自己被折腾
+    source: 原作第 27 卷 ＋ OVA
+    conf: ★
+
+  - name: 流幻泽 · 飞御森林
+    type: 森林与沼泽
+    location: 未详
+    key: 真之介与祖父看守巨型化动物；八歧大蛇与「生命之水」
+    source: 原作第 26 卷 ＋ OVA《苏醒的记忆》
+    conf: ★
+
+  - name: 岁月菇森林
+    alias: 年月茸之森
+    type: 森林
+    location: 未详
+    key: 乱马与良牙变小，需等岁月菇长成方能复原
+    conf: '?'
+
+  - name: 海月滨
+    type: 海滨
+    location: 未详
+    key: 第 36 卷第 378 话《海月浜の阴谋》；关键存在为「水母大王」；天道茜获赠海月泳装
+    conf: ★
+
+  - name: 西瓜岛
+    type: 无人岛
+    location: 海岸外
+    key: 九能修炼切西瓜致失忆
+    conf: ★
+
+  - name: 寝昆仑
+    type: 中国山区
+    location: 中国
+    key: 剧场版 1 舞台；七福神之地、七福山间歇泉
+    source: movie
+    conf: ★
+
+  - name: 桃幻乡
+    type: 浮空岛
+    location: 南海漂流
+    key: 桃树树液使人变成男人；托马王子与新娘选拔赛
+    source: movie
+    conf: ★
+
+  - name: 雪之山
+    type: 滑雪场
+    location: 未详
+    key: 乱马与可伦争夺凤凰丸
+    source: anime（原作发生在海边）
+    conf: ☆
+
+  - name: 古河温泉
+    type: 温泉度假地
+    location: 未详
+    key: 玄马与佳香的蜜月地；早乙女家三人首次团聚
+    conf: ★
+
+  - name: 猿猴山寺
+    type: 山中寺庙
+    location: 未详
+    key: 传说铠甲
+    conf: ☆

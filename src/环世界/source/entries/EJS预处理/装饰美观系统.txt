@@ -1,0 +1,122 @@
+@@generate_before
+<%_
+/* 装饰/美观系统 - 建筑美观度与殖民者审美需求 */
+var AESTHETIC_BUILDING_DB = {
+  '简陋木墙': {美观: -2, 描述: '粗糙的拼接，缝隙可见'},
+  '木墙': {美观: 0, 描述: '规整的木墙'},
+  '石墙': {美观: 1, 描述: '坚固的石墙'},
+  '精良石墙': {美观: 3, 描述: '打磨光滑的石墙'},
+  '砖墙': {美观: 2, 描述: '整齐的砖砌'},
+  '金属墙': {美观: 2, 描述: '冰冷的金属板'},
+  '高级金属墙': {美观: 5, 描述: '抛光的合金墙面'},
+  '雕塑(普通)': {美观: 5, 描述: '简单的人像雕塑'},
+  '雕塑(精美)': {美观: 10, 描述: '栩栩如生的艺术杰作'},
+  '雕塑(大师)': {美观: 15, 描述: '震撼灵魂的传世之作'},
+  '花坛': {美观: 3, 描述: '盛开的花朵'},
+  '盆栽': {美观: 2, 描述: '翠绿的绿植'},
+  '旗帜': {美观: 1, 描述: '飘扬的旗帜'},
+  '地毯': {美观: 2, 描述: '柔软的地毯'},
+  '吊灯': {美观: 3, 描述: '温暖的光源'}
+};
+
+var ENVIRONMENT_FACTOR_DB = {
+  '花卉': {美观: 3, 范围: 2},
+  '雕塑': {美观: 5, 范围: 3},
+  '垃圾堆': {美观: -5, 范围: 3},
+  '血迹': {美观: -8, 范围: 2},
+  '尸体': {美观: -15, 范围: 4},
+  '矿渣': {美观: -3, 范围: 2},
+  '污水': {美观: -4, 范围: 2},
+  '篝火': {美观: 1, 范围: 2},
+  '整洁地面': {美观: 1, 范围: 3}
+};
+
+var AESTHETIC_MOOD_DB = {
+  '极丑': {范围: [0, 15], 心情: -10, 描述: '令人作呕的环境'},
+  '丑陋': {范围: [16, 30], 心情: -5, 描述: '破败不堪'},
+  '普通': {范围: [31, 50], 心情: 0, 描述: '勉强能接受'},
+  '舒适': {范围: [51, 70], 心情: 3, 描述: '令人舒心'},
+  '精美': {范围: [71, 85], 心情: 5, 描述: '赏心悦目'},
+  '华丽': {范围: [86, 100], 心情: 8, 描述: '如沐艺术殿堂'}
+};
+
+function _aestheticScore(buildings, environmentFactors){
+  var total = 50;
+  for(var i = 0; i < buildings.length; i++){
+    var db = AESTHETIC_BUILDING_DB[buildings[i].type] || AESTHETIC_BUILDING_DB['木墙'];
+    total += db.美观 * (buildings[i].count || 1);
+  }
+  for(var j = 0; j < environmentFactors.length; j++){
+    var ef = ENVIRONMENT_FACTOR_DB[environmentFactors[j].type] || ENVIRONMENT_FACTOR_DB['整洁地面'];
+    total += ef.美观;
+  }
+  return Math.max(0, Math.min(100, total));
+}
+
+function _aestheticMood(score){
+  for(var k in AESTHETIC_MOOD_DB){
+    var range = AESTHETIC_MOOD_DB[k].范围;
+    if(score >= range[0] && score <= range[1]) return AESTHETIC_MOOD_DB[k];
+  }
+  return AESTHETIC_MOOD_DB['普通'];
+}
+
+function _cleanEffect(dirtyItems){
+  var bonus = 0;
+  for(var i = 0; i < dirtyItems.length; i++){
+    var ef = ENVIRONMENT_FACTOR_DB[dirtyItems[i]];
+    if(ef && ef.美观 < 0) bonus += Math.abs(ef.美观);
+  }
+  return bonus;
+}
+
+function _decorateEffect(decorations){
+  var total = 0;
+  for(var i = 0; i < decorations.length; i++){
+    var db = AESTHETIC_BUILDING_DB[decorations[i].type] || AESTHETIC_BUILDING_DB['盆栽'];
+    total += db.美观 * (decorations[i].count || 1);
+  }
+  return total;
+}
+
+function _colonistAestheticNeed(colonist){
+  var art = Number(getvar('stat_data.' + colonist + '.艺术品', {scope:'local',defaults:5}))||5;
+  if(art >= 15) return {需求: 80, 描述: '对美有极高要求'};
+  if(art >= 10) return {需求: 65, 描述: '追求精致环境'};
+  if(art >= 7) return {需求: 50, 描述: '有一定审美要求'};
+  return {需求: 30, 描述: '不太在意环境美观'};
+}
+_%>
+
+<美观度校验>
+[美观度校验]
+当前美观度: <%= Number(getvar('stat_data.殖民者_主角.美观度', {scope:'local',defaults:50}))||50 %>
+美观等级: <%= _aestheticMood(Number(getvar('stat_data.殖民者_主角.美观度', {scope:'local',defaults:50}))||50).描述 || '普通' %>
+心情修正: <%= _aestheticMood(Number(getvar('stat_data.殖民者_主角.美观度', {scope:'local',defaults:50}))||50).心情 || 0 %>
+殖民者审美需求: <%= _colonistAestheticNeed('殖民者_主角').需求 %>
+</美观度校验>
+
+[装饰/美观系统 · 系统控制器]
+## 建筑美观度表（查AESTHETIC_BUILDING_DB）
+简陋木墙(-2) | 木墙(0) | 石墙(+1) | 精良石墙(+3) | 砖墙(+2) | 金属墙(+2) | 高级金属墙(+5) | 雕塑普通(+5) | 雕塑精美(+10) | 雕塑大师(+15) | 花坛(+3) | 盆栽(+2) | 旗帜(+1) | 地毯(+2) | 吊灯(+3)
+
+## 环境因素表（查ENVIRONMENT_FACTOR_DB）
+花卉(+3) | 雕塑(+5) | 垃圾堆(-5) | 血迹(-8) | 尸体(-15) | 矿渣(-3) | 污水(-4) | 篝火(+1) | 整洁地面(+1)
+
+## 美观度心情影响（查AESTHETIC_MOOD_DB）
+极丑(0-15/心情-10) | 丑陋(16-30/心情-5) | 普通(31-50/心情0) | 舒适(51-70/心情+3) | 精美(71-85/心情+5) | 华丽(86-100/心情+8)
+
+## 美观度计算规则
+- **基础美观度**：50（中立）
+- **建筑加成**：各建筑美观度×数量之和
+- **环境修正**：环境因素的美观度之和
+- **最终美观度**：clamp(0, 100, 基础+建筑+环境)
+- **殖民者审美需求**：由艺术品技能决定，技能越高对美观要求越高
+- **心情影响**：美观度低于殖民者需求时产生负心情
+
+## 叙事要求
+- 美观度<30时须描写环境的破败和脏乱
+- 美观度>70时须描写环境的精致和美感
+- 放置雕塑/花坛等装饰时须描写殖民者的审美反应
+- 尸体/血迹等负面因素须描写殖民者的不适反应
+- 艺术品技能高的殖民者对环境评价更敏感

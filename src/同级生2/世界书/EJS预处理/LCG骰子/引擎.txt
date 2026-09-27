@@ -1,0 +1,524 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 LCG 确定性骰子引擎
+   ════════════════════════════════════════════════════════════
+   种子公式：_s = day_count * 5 + time_slot_序号 + heroine_id * 7919 + chapter_序号 * 13
+   - day_count: 1-17（寒假天数）
+   - time_slot_序号: 早=0, 上午=1, 下午=2, 晚=3, 深夜=4
+   - heroine_id: 0-19（0=无对话女角）
+   - chapter_序号: 寒假前奏=0, 寒假核心=1, 寒假尾声=2, 结局=3
+   LCG 常数：(1664525, 1013904223)
+   同种子 + 同锚点 = 同结果（确定性保证）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 读取 MVU 变量作为锚点 ─── */
+/* 移除所有兜底值，变量未初始化时返回 undefined/NaN，由调用方处理
+   原因：兜底值（如 _charm=50）会掩盖变量未更新的问题，导致骰子判定使用错误数值 */
+if (typeof _day === 'undefined') var _day = Number(getvar('stat_data.时间.天数', { scope: 'local' }));
+if (typeof _tslot === 'undefined') var _tslot = getvar('stat_data.时间.时段', { scope: 'local' });
+/* 修复 C2：_hid 应为数字 ID（0=无对话女角），由角色性格控制器(顺序13)通过反查
+   _heroineNameMap 设置。此处仅做兜底，不读取字符串 */
+if (typeof _hid === 'undefined') var _hid = 0;
+if (typeof _chapter === 'undefined') var _chapter = getvar('stat_data.时间.章节', { scope: 'local' });
+if (typeof _difficulty === 'undefined') var _difficulty = getvar('stat_data.临时.当前难度', { scope: 'local' });
+if (typeof _location === 'undefined') var _location = getvar('stat_data.场景.当前地点', { scope: 'local' });
+if (typeof _charm === 'undefined') var _charm = Number(getvar('stat_data.主角.魅力', { scope: 'local' }));
+if (typeof _academic === 'undefined') var _academic = Number(getvar('stat_data.主角.学业', { scope: 'local' }));
+if (typeof _social === 'undefined') var _social = Number(getvar('stat_data.主角.社交', { scope: 'local' }));
+if (typeof _fatigue === 'undefined') var _fatigue = Number(getvar('stat_data.主角.疲劳', { scope: 'local' }));
+if (typeof _physical === 'undefined') var _physical = Number(getvar('stat_data.主角.体力', { scope: 'local' }));
+if (typeof _mood === 'undefined') var _mood = Number(getvar('stat_data.主角.心情', { scope: 'local' }));
+if (typeof _perception === 'undefined') var _perception = Number(getvar('stat_data.主角.敏感', { scope: 'local' }));
+if (typeof _willpower === 'undefined') var _willpower = Number(getvar('stat_data.主角.声誉', { scope: 'local' }));
+if (typeof _hunger === 'undefined') var _hunger = Number(getvar('stat_data.主角.饥饿', { scope: 'local' }));
+if (typeof _thirst === 'undefined') var _thirst = Number(getvar('stat_data.主角.口渴', { scope: 'local' }));
+if (typeof _hygiene === 'undefined') var _hygiene = Number(getvar('stat_data.主角.清洁', { scope: 'local' }));
+
+/* ─── 锚点整数化 ─── */
+var _piMap = {'早':0, '上午':1, '下午':2, '晚':3, '深夜':4};
+var _pi = _piMap[_tslot] !== undefined ? _piMap[_tslot] : 0;
+var _chMap = {'寒假前奏':0, '寒假核心':1, '寒假尾声':2, '结局':3};
+var _chi = _chMap[_chapter] !== undefined ? _chMap[_chapter] : 0;
+
+/* ─── LCG 种子初始化 ─── */
+var _s = _day * 5 + _pi + _hid * 7919 + _chi * 13;
+this._r = function _r() {
+  _s = (_s * 1664525 + 1013904223) | 0;
+  return (_s >>> 0) / 4294967296;
+}
+
+/* ─── 难度修正系数（引用全局规则总表.txt.DIFFICULTY_MODIFIERS，单一来源） ─── */
+/* 修复：删除私有 _diffMod，改用全局表
+   - _dm.up → 拆分为 money_mult（金钱）和 increase_mult（数值上升）
+   - _dm.down → decrease_mult（数值下降）
+   - 新增 dice_threshold_mult 用于工作成功率修正
+*/
+var _dm = (typeof DIFFICULTY_MODIFIERS !== 'undefined')
+  ? (DIFFICULTY_MODIFIERS[_difficulty] || DIFFICULTY_MODIFIERS['普通'])
+  : { money_mult: 1.0, increase_mult: 1.0, decrease_mult: 1.0, dice_threshold_mult: 1.0 };
+
+/* ─── 工作判定（决定打工收入，统一使用全局表 BASE_SALARY + calcSalary） ─── */
+this._rollWork = function _rollWork() {
+  /* 工作成功率：受难度 dice_threshold_mult 修正（轻松更易成功，地狱更难） */
+  var _baseSuccessRate = 0.80;
+  var _successThreshold = _baseSuccessRate / (Number(_dm.dice_threshold_mult) || 1.0);
+  _successThreshold = Math.max(0.05, Math.min(0.95, _successThreshold));
+  var _success = _r() < _successThreshold;
+  if (!_success) {
+    return { result: '失败', income: 0, fatigue: Math.round(15 * _dm.decrease_mult), desc: '工作失误，无收入' };
+  }
+  /* 稀有度分档：常见60/精良25/稀有10/传说4/神话1（命名对齐全局表 LCG_TIER_MODIFIER） */
+  var _dr = _r() * 100;
+  var _tier = _dr < 60 ? 'gray'
+            : _dr < 85 ? 'green'
+            : _dr < 95 ? 'blue'
+            : _dr < 99 ? 'purple'
+            : 'gold';
+  /* 从当前 scene_mode 或上下文推断工种（默认便利店打工） */
+  var _jobName = (typeof _workJob !== 'undefined' && _workJob) ? _workJob : '便利店打工';
+  /* 收入计算：优先使用全局表 calcSalary，兜底用 BASE_SALARY */
+  var _baseIncome = 800;
+  if (typeof calcSalary === 'function') {
+    _baseIncome = calcSalary(_jobName, _difficulty, _tier);
+  } else if (typeof BASE_SALARY !== 'undefined' && BASE_SALARY[_jobName]) {
+    var _tierMult = (typeof LCG_TIER_MODIFIER !== 'undefined' && LCG_TIER_MODIFIER[_tier]) ? LCG_TIER_MODIFIER[_tier].mult : 1.0;
+    _baseIncome = Math.round(BASE_SALARY[_jobName] * (_dm.money_mult || 1.0) * _tierMult);
+  }
+  /* 体力修正：体力 ≥80 收入 ×1.2，体力 ≤20 收入 ×0.6 */
+  var _stamMod = _physical >= 80 ? 1.2 : _physical <= 20 ? 0.6 : 1.0;
+  /* 疲劳修正：疲劳 ≥50 收入 ×0.8 */
+  var _fatMod = _fatigue >= 50 ? 0.8 : 1.0;
+  var _finalIncome = Math.round(_baseIncome * _stamMod * _fatMod);
+  /* 疲劳消耗：按全局表 BEHAVIOR_TABLE[jobName].changes.fatigue + 档位附加 */
+  var _baseFatigue = (typeof BEHAVIOR_TABLE !== 'undefined' && BEHAVIOR_TABLE[_jobName] && BEHAVIOR_TABLE[_jobName].changes && BEHAVIOR_TABLE[_jobName].changes.fatigue)
+    ? Number(BEHAVIOR_TABLE[_jobName].changes.fatigue) : 15;
+  var _tierFatigueAdd = (_tier === 'gold') ? 20 : (_tier === 'purple') ? 15 : (_tier === 'blue') ? 10 : 5;
+  var _fatigueCost = Math.round((_baseFatigue + _tierFatigueAdd) * _dm.decrease_mult);
+  /* 档位名称：引用全局表 LCG_TIER_MODIFIER.name */
+  var _tierName = (typeof LCG_TIER_MODIFIER !== 'undefined' && LCG_TIER_MODIFIER[_tier]) ? LCG_TIER_MODIFIER[_tier].name : _tier;
+  return {
+    result: '成功',
+    tier: _tierName,
+    income: _finalIncome,
+    fatigue: _fatigueCost,
+    job: _jobName,
+    desc: _tierName + ' +' + _finalIncome + ' 日元'
+  };
+}
+
+/* ─── 约会判定（决定约会质量与好感加成） ─── */
+this._rollDate = function _rollDate() {
+  /* 主角魅力修正 */
+  var _charmMod = _charm >= 80 ? 0.2 : _charm >= 60 ? 0.1 : _charm >= 30 ? 0 : -0.1;
+  /* 5 档约会质量 */
+  var _dr = _r() * 100 + _charmMod * 100;
+  _dr = Math.max(0, Math.min(99.99, _dr));
+  var _quality = _dr < 20 ? '失败'
+              : _dr < 50 ? '平淡'
+              : _dr < 80 ? '良好'
+              : _dr < 95 ? '优秀'
+              : '完美';
+  /* 好感加成表 */
+  var _affBonus = {
+    '失败': { aff: -3, heart: -2, mood: -5, desc: '约会冷场，对方兴致缺缺' },
+    '平淡': { aff: 1, heart: 0, mood: 2, desc: '约会一般，聊胜于无' },
+    '良好': { aff: 3, heart: 2, mood: 5, desc: '约会顺利，气氛融洽' },
+    '优秀': { aff: 5, heart: 4, mood: 8, desc: '约会精彩，心动值提升' },
+    '完美': { aff: 8, heart: 6, mood: 15, desc: '约会完美，关系大幅推进' }
+  };
+  var _r2 = _affBonus[_quality];
+  /* 难度修正：数值上升使用 increase_mult */
+  var _affFinal = Math.round(_r2.aff * (_dm.increase_mult || 1.0));
+  var _heartFinal = Math.round(_r2.heart * (_dm.increase_mult || 1.0));
+  var _moodFinal = Math.round(_r2.mood * (_dm.increase_mult || 1.0));
+  return {
+    quality: _quality,
+    affection_bonus: _affFinal,
+    heartbeat_bonus: _heartFinal,
+    mood_bonus: _moodFinal,
+    desc: _r2.desc + '（好感+' + _affFinal + '，心动+' + _heartFinal + '，心情+' + _moodFinal + '）'
+  };
+}
+
+/* ─── 学业判定（决定学业提升幅度） ─── */
+this._rollStudy = function _rollStudy() {
+  /* 主角学业修正 */
+  var _acMod = _academic >= 80 ? 0.1 : _academic >= 60 ? 0.05 : 0;
+  var _dr = _r() * 100 + _acMod * 100;
+  _dr = Math.max(0, Math.min(99.99, _dr));
+  var _result = _dr < 30 ? '分心'
+             : _dr < 70 ? '专注'
+             : _dr < 95 ? '高效'
+             : '顿悟';
+  var _studyBonus = {
+    '分心': { ac: -1, fat: 8, desc: '学习分心，效率低下' },
+    '专注': { ac: 2, fat: 5, desc: '学习专注，稳步提升' },
+    '高效': { ac: 4, fat: 4, desc: '学习高效，进步明显' },
+    '顿悟': { ac: 6, fat: 3, desc: '学习顿悟，大幅提升' }
+  };
+  var _r2 = _studyBonus[_result];
+  var _acFinal = Math.round(_r2.ac * (_dm.increase_mult || 1.0));
+  var _fatFinal = Math.round(_r2.fat * (_dm.decrease_mult || 1.0));
+  return {
+    quality: _result,
+    academic_bonus: _acFinal,
+    fatigue_cost: _fatFinal,
+    desc: _r2.desc + '（学业' + (_acFinal >= 0 ? '+' : '') + _acFinal + '，疲劳+' + _fatFinal + '）'
+  };
+}
+
+/* ─── 事件判定（决定随机事件触发） ─── */
+this._rollEvent = function _rollEvent() {
+  /* 事件触发率：章节修正 */
+  var _chRate = {'寒假前奏': 0.40, '寒假核心': 0.60, '寒假尾声': 0.50, '结局': 0.30};
+  var _baseRate = _chRate[_chapter] || 0.40;
+  /* 地点修正 */
+  var _locMod = 0;
+  if (_location.includes('学园') || _location.includes('咖啡店')) _locMod = 0.1;
+  else if (_location.includes('自宅') || _location.includes('家')) _locMod = -0.1;
+  /* 心情修正：心情 ≥80 触发率 +0.1 */
+  var _moodMod = _mood >= 80 ? 0.1 : 0;
+  var _finalRate = Math.max(0.1, Math.min(0.9, _baseRate + _locMod + _moodMod));
+  var _hasEvent = _r() < _finalRate;
+
+  if (!_hasEvent) {
+    return { result: '无事件', desc: '本时段无随机事件触发' };
+  }
+
+  /* 大类判定：偶遇女角40/季节性20/随机15/危机10/特殊10/NSFW5 */
+  var _roll = _r() * 100;
+  var _cat = _roll < 40 ? 'encounter'
+           : _roll < 60 ? 'seasonal'
+           : _roll < 75 ? 'random'
+           : _roll < 85 ? 'crisis'
+           : _roll < 95 ? 'special'
+           : 'nsfw';
+
+  var _catPool = {
+    encounter: ['偶遇鸣泽唯', '偶遇水野友美', '偶遇筱原泉美', '偶遇南川洋子', '偶遇都筑梢江'],
+    seasonal: ['飘雪', '圣诞装饰', '跨年倒计时', '冬季烟花', '滑雪'],
+    random: ['捡到钱包', '被长辈夸奖', '邻居求助', '路上堵车', '迷路小孩'],
+    crisis: ['体力透支', '钱包遗失', '误会风波', '丑闻传闻', '女角生气'],
+    special: ['CG 解锁机会', '剧情推进', '隐藏剧情触发', '好感跳跃', '关系阶段跳跃'],
+    nsfw: ['深夜醉酒', '浴室偶遇', '卧室偷情', '郊外野战', '特殊H场景']
+  };
+
+  var _pool = _catPool[_cat];
+  var _event = _pool[Math.floor(_r() * _pool.length)];
+  var _catName = {encounter:'偶遇', seasonal:'季节性', random:'随机', crisis:'危机', special:'特殊', nsfw:'NSFW'}[_cat];
+  return {
+    result: '有事件',
+    category: _catName,
+    event: _event,
+    desc: _catName + '事件：' + _event
+  };
+}
+
+/* ─── 经济判定（决定消费折扣与意外支出） ─── */
+this._rollEconomy = function _rollEconomy() {
+  /* 消费折扣判定 */
+  var _dr = _r() * 100;
+  var _discount = _dr < 70 ? 0
+               : _dr < 90 ? 0.1
+               : _dr < 99 ? 0.2
+               : 0.5;
+  /* 意外支出判定：5% 概率 */
+  var _hasExpense = _r() < 0.05;
+  var _expenseType = '';
+  var _expenseAmount = 0;
+  if (_hasExpense) {
+    var _expPool = [
+      { type: '罚款', amount: -1000 },
+      { type: '丢失物品', amount: -500 },
+      { type: '意外赔偿', amount: -2000 },
+      { type: '紧急医疗', amount: -1500 }
+    ];
+    var _exp = _expPool[Math.floor(_r() * _expPool.length)];
+    _expenseType = _exp.type;
+    _expenseAmount = Math.round(_exp.amount * (_dm.decrease_mult || 1.0));
+  }
+  /* 难度修正：地狱难度减少意外收入 */
+  var _discountFinal = Math.round(_discount * 100) / 100;
+  return {
+    discount_rate: _discountFinal,
+    has_unexpected_expense: _hasExpense,
+    expense_type: _expenseType,
+    expense_amount: _expenseAmount,
+    desc: _discountFinal > 0 ? '消费折扣 ' + (_discountFinal * 100) + '%' : '无折扣' +
+          (_hasExpense ? '，意外支出：' + _expenseType + ' ' + _expenseAmount + ' 日元' : '')
+  };
+}
+
+/* ─── 通用行动判定（新增：补全 11 种缺失的动作骰子判定） ─── */
+/* 统一入口：调用 calcFinalResult（属性技能骰子联动.txt）进行"能力值 vs 要求值"判定
+   覆盖动作：confess/ask_date/give_gift/hold_hand/kiss/first_h/advanced_h/stealth_action/train_skill/crisis_response/comfort_heroine
+   work/study 已由 _rollWork/_rollStudy 覆盖，此处不重复 */
+this._rollAction = function _rollAction(action_type, heroine_id) {
+  var _actType = action_type || 'comfort_heroine';
+  var _hid_act = Number(heroine_id) || _hid || 0;
+
+  /* 优先调用 calcFinalResult（统一判定入口，消耗 1 次骰子序列） */
+  if (typeof calcFinalResult === 'function') {
+    var _result = calcFinalResult(_actType, _hid_act);
+    if (_result && _result.success !== undefined) {
+      /* 写入最近判定 + 追加判定历史（战斗面板读取） */
+      if (typeof setvar === 'function' && typeof getvar === 'function') {
+        try {
+          setvar('stat_data.临时.最近判定', JSON.stringify(_result), { scope: 'local' });
+          var _hist = [];
+          try { _hist = JSON.parse(getvar('stat_data.临时.判定历史', { scope: 'local', defaults: '[]' }) || '[]'); } catch (_he) { _hist = []; }
+          if (!Array.isArray(_hist)) _hist = [];
+          _hist.unshift({ t: _dayCount, s: _timeSlot, a: _result.action_name, tier: _result.tier, rate: _result.success_rate, roll: _result.roll, ok: _result.success });
+          _hist = _hist.slice(0, 5);
+          setvar('stat_data.临时.判定历史', JSON.stringify(_hist), { scope: 'local' });
+        } catch (_se) { /* 变量写入失败不阻断判定 */ }
+      }
+      return _result;
+    }
+  }
+
+  /* 兜底：当 calcFinalResult 不可用时，使用简化判定（能力值 vs 要求值） */
+  var _ACTION_BASE_REQ = {
+    confess: 60, ask_date: 40, give_gift: 30, hold_hand: 50, kiss: 55,
+    first_h: 70, advanced_h: 75, stealth_action: 50, train_skill: 30,
+    crisis_response: 55, comfort_heroine: 45
+  };
+  var _baseReq = _ACTION_BASE_REQ[_actType] || 50;
+
+  /* 读取主角能力值（简化版：取 6 维属性均值，修复：补全 _perception/_willpower） */
+  var _power = (_charm + _academic + _physical + _social + _perception + _willpower) / 6;
+  _power = Math.max(0, Math.min(100, _power));
+
+  /* 难度修正：要求值 × dice_threshold_mult */
+  var _diffMult = Number(_dm.dice_threshold_mult) || 1.0;
+  var _req = Math.round(_baseReq * _diffMult);
+
+  /* 差值与成功率 */
+  var _diff = _power - _req;
+  var _successRate = Math.max(5, Math.min(95, 50 + _diff));
+
+  /* 骰子判定（消耗 LCG 序列） */
+  var _dice = _r() * 100;
+  var _success = _dice < _successRate;
+
+  /* 5 档分档 */
+  var _tier, _effectMult;
+  if (_diff >= 30) { _tier = '大成功'; _effectMult = 1.5; }
+  else if (_diff >= 10) { _tier = '成功'; _effectMult = 1.0; }
+  else if (_diff >= -10) { _tier = '普通'; _effectMult = 0.5; }
+  else if (_diff >= -30) { _tier = '失败'; _effectMult = 0; }
+  else { _tier = '大失败'; _effectMult = -0.5; }
+
+  /* 骰子成功/失败覆盖分档（骰子结果优先于差值分档） */
+  if (!_success && _tier === '成功') _tier = '失败';
+  if (_success && _tier === '失败' && _diff >= -20) _tier = '普通';
+
+  return {
+    action: _actType,
+    heroine_id: _hid_act,
+    player_power: Math.round(_power),
+    requirement: _req,
+    diff: _diff,
+    success_rate: _successRate,
+    dice_value: Math.round(_dice * 100) / 100,
+    success: _success,
+    tier: _tier,
+    effect_mult: _effectMult,
+    desc: _tier + '（差值' + _diff + '，骰子' + Math.round(_dice) + '/成功率' + _successRate + '%）'
+  };
+}
+
+/* ─── 从上下文推断当前动作类型（供 EJS 自动判定，修复：休息模式不再误判为安慰女角） ─── */
+this._inferActionType = function _inferActionType() {
+  var _sm = (typeof _sceneMode !== 'undefined') ? _sceneMode : '';
+  var _map = {
+    '打工': 'work', '上学': 'study', '约会': 'ask_date',
+    '事件': 'crisis_response'
+  };
+  /* 休息模式不映射到任何动作类型，由玩家具体行为决定 */
+  return _map[_sm] || '';
+}
+
+/* ─── 日常动作判定（新增：补全日常行为骰子覆盖，满足"每次行动都需要骰子判定"要求）
+   覆盖动作：meal（用餐）/ drink（喝水）/ bath（洗澡）/ rest（休息睡眠）/ shop（购物）/ commute（通勤移动）/ save_money（存钱）
+   判定逻辑：基于生存属性状态 + 骰子值，决定动作质量与副作用 ─── */
+this._rollDailyAction = function _rollDailyAction(action_type) {
+  var _act = action_type || 'meal';
+  var _dice = _r() * 100;
+  var _tier, _effectMult, _desc, _changes = {};
+
+  if (_act === 'meal') {
+    /* 用餐判定：饥饿值越高效果越好（饿了吃饭更香），疲劳修正 */
+    var _mealMod = _hunger >= 70 ? 20 : _hunger >= 40 ? 10 : 0;
+    _mealMod += _fatigue >= 50 ? -10 : 0;
+    var _mealScore = _dice + _mealMod;
+    if (_mealScore >= 90) { _tier = '大成功'; _effectMult = 1.5; _changes.hunger = -40; _changes.mood = 8; _changes.fatigue = -3; _desc = '美味的一餐，身心满足'; }
+    else if (_mealScore >= 60) { _tier = '成功'; _effectMult = 1.0; _changes.hunger = -30; _changes.mood = 4; _desc = '正常用餐，恢复体力'; }
+    else if (_mealScore >= 30) { _tier = '普通'; _effectMult = 0.5; _changes.hunger = -20; _changes.mood = 1; _desc = '草草果腹，勉强充饥'; }
+    else if (_mealScore >= 10) { _tier = '失败'; _effectMult = 0; _changes.hunger = -10; _changes.mood = -2; _desc = '食物难吃/吃坏肚子'; }
+    else { _tier = '大失败'; _effectMult = -0.5; _changes.hunger = -5; _changes.mood = -8; _changes.fatigue = 5; _desc = '吃坏肚子，腹泻不适'; }
+  }
+  else if (_act === 'drink') {
+    /* 喝水判定：口渴值越高效果越好 */
+    var _drinkMod = _thirst >= 70 ? 20 : _thirst >= 40 ? 10 : 0;
+    var _drinkScore = _dice + _drinkMod;
+    if (_drinkScore >= 80) { _tier = '大成功'; _effectMult = 1.5; _changes.thirst = -35; _changes.mood = 3; _desc = '清凉解渴，神清气爽'; }
+    else if (_drinkScore >= 50) { _tier = '成功'; _effectMult = 1.0; _changes.thirst = -25; _desc = '解渴'; }
+    else { _tier = '普通'; _effectMult = 0.5; _changes.thirst = -15; _desc = '稍微润喉'; }
+  }
+  else if (_act === 'bath') {
+    /* 洗澡判定：清洁度越低效果越好 */
+    var _bathMod = _hygiene <= 20 ? 20 : _hygiene <= 40 ? 10 : 0;
+    var _bathScore = _dice + _bathMod;
+    if (_bathScore >= 80) { _tier = '大成功'; _effectMult = 1.5; _changes.hygiene = 50; _changes.mood = 10; _changes.fatigue = -5; _desc = '舒爽的沐浴，焕然一新'; }
+    else if (_bathScore >= 50) { _tier = '成功'; _effectMult = 1.0; _changes.hygiene = 35; _changes.mood = 5; _desc = '洗干净了'; }
+    else { _tier = '普通'; _effectMult = 0.5; _changes.hygiene = 20; _desc = '简单冲洗'; }
+  }
+  else if (_act === 'rest') {
+    /* 休息/睡眠判定：疲劳越高效果越好，但心情过低影响睡眠质量 */
+    var _restMod = _fatigue >= 60 ? 20 : _fatigue >= 30 ? 10 : 0;
+    _restMod += _mood <= 20 ? -15 : 0;
+    var _restScore = _dice + _restMod;
+    if (_restScore >= 80) { _tier = '大成功'; _effectMult = 1.5; _changes.fatigue = -40; _changes.physical = 30; _changes.mood = 5; _desc = '深度睡眠，精力充沛'; }
+    else if (_restScore >= 50) { _tier = '成功'; _effectMult = 1.0; _changes.fatigue = -25; _changes.physical = 20; _desc = '休息良好，恢复体力'; }
+    else if (_restScore >= 25) { _tier = '普通'; _effectMult = 0.5; _changes.fatigue = -15; _changes.physical = 10; _desc = '浅眠，略微恢复'; }
+    else { _tier = '失败'; _effectMult = 0; _changes.fatigue = -5; _changes.mood = -3; _desc = '失眠/噩梦，越睡越累'; }
+  }
+  else if (_act === 'shop') {
+    /* 购物判定：声誉修正购物体验 */
+    var _shopMod = _willpower >= 60 ? 10 : _willpower <= 20 ? -10 : 0;
+    var _shopScore = _dice + _shopMod;
+    if (_shopScore >= 80) { _tier = '大成功'; _effectMult = 1.5; _changes.mood = 6; _desc = '买到心仪好物，心情大好'; }
+    else if (_shopScore >= 50) { _tier = '成功'; _effectMult = 1.0; _changes.mood = 3; _desc = '顺利购物'; }
+    else if (_shopScore >= 25) { _tier = '普通'; _effectMult = 0.5; _changes.mood = 1; _desc = '普通购物'; }
+    else { _tier = '失败'; _effectMult = 0; _changes.mood = -3; _desc = '没买到想要的东西/被坑'; }
+  }
+  else if (_act === 'commute') {
+    /* 通勤/移动判定：体力影响 */
+    var _commuteMod = _physical >= 60 ? 10 : _physical <= 20 ? -15 : 0;
+    var _commuteScore = _dice + _commuteMod;
+    if (_commuteScore >= 70) { _tier = '大成功'; _effectMult = 1.5; _changes.fatigue = 1; _desc = '一路畅通，心情愉快'; }
+    else if (_commuteScore >= 40) { _tier = '成功'; _effectMult = 1.0; _changes.fatigue = 2; _desc = '顺利到达'; }
+    else { _tier = '普通'; _effectMult = 0.5; _changes.fatigue = 4; _changes.mood = -1; _desc = '路上有些波折'; }
+  }
+  else if (_act === 'save_money') {
+    /* 存钱判定：无骰子风险，固定成功（仅记录） */
+    _tier = '成功'; _effectMult = 1.0; _desc = '储蓄存入银行';
+  }
+  else {
+    /* 未知日常动作：兜底普通 */
+    _tier = '普通'; _effectMult = 0.5; _desc = '日常行为';
+  }
+
+  return {
+    action: _act,
+    tier: _tier,
+    effect_mult: _effectMult,
+    dice_value: Math.round(_dice * 100) / 100,
+    changes: _changes,
+    desc: _desc
+  };
+}
+
+/* ─── 输出本轮骰子判定结果给 AI ─── */%>
+
+<%/* ─── 调用全部判定函数（全动作覆盖 + 日常动作覆盖，每轮为所有动作生成判定结果） ─── */%>
+<% var _workResult = _rollWork(); %>
+<% var _dateResult = _rollDate(); %>
+<% var _studyResult = _rollStudy(); %>
+<% var _eventResult = _rollEvent(); %>
+<% var _economyResult = _rollEconomy(); %>
+<%/* 为所有 11 种动作类型生成判定结果，AI 根据玩家实际行为选择对应结果
+     解决"每轮只推断一个动作"的覆盖不足问题：玩家一轮多动作时每个动作都有独立判定 */%>
+<% var _allActionTypes = ['confess','ask_date','give_gift','hold_hand','kiss','first_h','advanced_h','stealth_action','train_skill','crisis_response','comfort_heroine']; %>
+<% var _allActionResults = {}; %>
+<% for (var _ai = 0; _ai < _allActionTypes.length; _ai++) { %>
+<%   _allActionResults[_allActionTypes[_ai]] = _rollAction(_allActionTypes[_ai], _hid); %>
+<% } %>
+<%/* 新增：日常动作判定（7 种），确保"每次行动都需要骰子判定"全覆盖 */%>
+<% var _allDailyActions = ['meal','drink','bath','rest','shop','commute','save_money']; %>
+<% var _allDailyResults = {}; %>
+<% for (var _di = 0; _di < _allDailyActions.length; _di++) { %>
+<%   _allDailyResults[_allDailyActions[_di]] = _rollDailyAction(_allDailyActions[_di]); %>
+<% } %>
+<% var _inferredAction = _inferActionType(); %>
+<% var _actionResult = _inferredAction ? _allActionResults[_inferredAction] : null; %>
+
+<LCG骰子判定结果>
+[本轮锚点] 天数=<%= _day %>, 时段=<%= _tslot %>(<%= _pi %>), 当前女角=<%= _hid %>, 章节=<%= _chapter %>(<%= _chi %>), 难度=<%= _difficulty %>
+[种子值] <%= _s %>
+
+[工作判定]
+<%= JSON.stringify(_workResult) %>
+
+[约会判定]
+<%= JSON.stringify(_dateResult) %>
+
+[学业判定]
+<%= JSON.stringify(_studyResult) %>
+
+[事件判定]
+<%= JSON.stringify(_eventResult) %>
+
+[经济判定]
+<%= JSON.stringify(_economyResult) %>
+
+[全动作判定] AI 必须根据玩家本轮实际行为选择对应判定结果，每个动作独立判定禁止合并：
+<% for (var _bi = 0; _bi < _allActionTypes.length; _bi++) { %>
+<%   var _at = _allActionTypes[_bi]; %>
+<%   var _ar = _allActionResults[_at]; %>
+<%   if (_ar) { %>
+<%= _at %>: tier=<%= _ar.tier %>, success=<%= _ar.success %>, effect_mult=<%= _ar.effect_mult %>, diff=<%= _ar.diff %>, dice=<%= _ar.dice_value %>/100, success_rate=<%= _ar.success_rate %>%
+<%   } %>
+<% } %>
+
+[日常动作判定] AI 必须根据玩家本轮日常行为选择对应判定结果：
+<% for (var _dj = 0; _dj < _allDailyActions.length; _dj++) { %>
+<%   var _da = _allDailyActions[_dj]; %>
+<%   var _dr = _allDailyResults[_da]; %>
+<%   if (_dr) { %>
+<%= _da %>: tier=<%= _dr.tier %>, effect_mult=<%= _dr.effect_mult %>, dice=<%= _dr.dice_value %>/100, desc=<%= _dr.desc %>
+<%   } %>
+<% } %>
+</LCG骰子判定结果>
+
+<%/* ─── AI 指令：全动作覆盖骰子判定 ─── */%>
+[本轮骰子判定已生成（全动作覆盖模式 + 日常动作覆盖）。AI 必须按以下规则使用判定结果：
+
+★ 场景模式判定（根据 scene_mode 选择）：
+- scene_mode='打工' → 使用 _workResult
+- scene_mode='约会' → 使用 _dateResult
+- scene_mode='上学' → 使用 _studyResult
+- 任何模式 → 使用 _eventResult 与 _economyResult
+
+★ 玩家行为判定（根据玩家本轮实际行为选择对应动作，每个动作独立判定）：
+- 玩家告白 → 使用 confess 判定
+- 玩家约会 → 使用 ask_date 判定
+- 玩家送礼 → 使用 give_gift 判定
+- 玩家牵手 → 使用 hold_hand 判定
+- 玩家亲吻 → 使用 kiss 判定
+- 玩家初H → 使用 first_h 判定
+- 玩家进阶H → 使用 advanced_h 判定
+- 玩家潜行 → 使用 stealth_action 判定
+- 玩家训练 → 使用 train_skill 判定
+- 玩家危机应对 → 使用 crisis_response 判定
+- 玩家安慰女角 → 使用 comfort_heroine 判定
+
+★ 日常行为判定（新增，玩家日常行为也必须使用骰子判定）：
+- 玩家用餐 → 使用 meal 判定（changes.hunger/mood/fatigue 生效）
+- 玩家喝水 → 使用 drink 判定（changes.thirst 生效）
+- 玩家洗澡 → 使用 bath 判定（changes.hygiene/mood/fatigue 生效）
+- 玩家休息/睡眠 → 使用 rest 判定（changes.fatigue/physical/mood 生效）
+- 玩家购物 → 使用 shop 判定（changes.mood 生效）
+- 玩家通勤/移动 → 使用 commute 判定（changes.fatigue/mood 生效）
+- 玩家存钱 → 使用 save_money 判定（固定成功）
+
+★ 铁律：
+1. 玩家每个行动都必须有对应骰子判定结果，无判定结果的行为禁止执行
+2. 若玩家一轮有多个行动（如用餐+通勤+告白），每个行动独立判定，禁止合并
+3. 判定结果为"失败/大失败"时，叙事必须体现失败后果，禁止"强行成功"
+4. 判定结果为"大成功"时，可适度增强正面描写，但禁止超出 effect_mult 倍率
+5. tier=大成功(effect_mult=1.5) / 成功(1.0) / 普通(0.5) / 失败(0) / 大失败(-0.5)
+6. 日常动作的 changes 字段必须应用到 <UpdateVariable> 的变量更新中
+7. 禁止在叙事中直接展示 JSON 数据、概率、档位、种子值等元数据]

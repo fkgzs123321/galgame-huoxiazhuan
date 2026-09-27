@@ -1,0 +1,294 @@
+@@generate_before
+<%_
+/* 工作优先级系统控制器
+   定义殖民者工作分配优先级(4级),时段调度,行为校验入口 */
+
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var alertLevel = Number(getvar('stat_data.殖民地.警戒等级', { scope: 'local', defaults: 20 })) || 20;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Craft = Number(getvar('stat_data.殖民者_主角.手工', { scope: 'local', defaults: 5 })) || 5;
+var p1Build = Number(getvar('stat_data.殖民者_主角.建设', { scope: 'local', defaults: 5 })) || 5;
+var p1Cook = Number(getvar('stat_data.殖民者_主角.厨艺', { scope: 'local', defaults: 5 })) || 5;
+var p1Mine = Number(getvar('stat_data.殖民者_主角.采矿', { scope: 'local', defaults: 5 })) || 5;
+var p1Crop = Number(getvar('stat_data.殖民者_主角.种植', { scope: 'local', defaults: 5 })) || 5;
+var p1Med = Number(getvar('stat_data.殖民者_主角.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p1Research = Number(getvar('stat_data.殖民者_主角.研究', { scope: 'local', defaults: 5 })) || 5;
+var p1Art = Number(getvar('stat_data.殖民者_主角.艺术品', { scope: 'local', defaults: 5 })) || 5;
+var p1Shoot = Number(getvar('stat_data.殖民者_主角.射击', { scope: 'local', defaults: 5 })) || 5;
+var p1Melee = Number(getvar('stat_data.殖民者_主角.格斗', { scope: 'local', defaults: 5 })) || 5;
+var p1Social = Number(getvar('stat_data.殖民者_主角.社交', { scope: 'local', defaults: 5 })) || 5;
+var p1Animals = Number(getvar('stat_data.殖民者_主角.畜牧', { scope: 'local', defaults: 5 })) || 5;
+var p1Mood = Number(getvar('stat_data.殖民者_主角.心情', { scope: 'local', defaults: 50 })) || 50;
+var p1Fatigue = Number(getvar('stat_data.殖民者_主角.疲劳', { scope: 'local', defaults: 20 })) || 20;
+
+var p2Name = getvar('stat_data.殖民者_2.姓名', { scope: 'local', defaults: '' }) || '';
+var p2Craft = Number(getvar('stat_data.殖民者_2.手工', { scope: 'local', defaults: 5 })) || 5;
+var p2Build = Number(getvar('stat_data.殖民者_2.建设', { scope: 'local', defaults: 5 })) || 5;
+var p2Cook = Number(getvar('stat_data.殖民者_2.厨艺', { scope: 'local', defaults: 5 })) || 5;
+var p2Mood = Number(getvar('stat_data.殖民者_2.心情', { scope: 'local', defaults: 50 })) || 50;
+
+var p3Name = getvar('stat_data.殖民者_3.姓名', { scope: 'local', defaults: '' }) || '';
+var p3Craft = Number(getvar('stat_data.殖民者_3.手工', { scope: 'local', defaults: 5 })) || 5;
+var p3Research = Number(getvar('stat_data.殖民者_3.研究', { scope: 'local', defaults: 5 })) || 5;
+var p3Mood = Number(getvar('stat_data.殖民者_3.心情', { scope: 'local', defaults: 50 })) || 50;
+
+/* 工作类型表 WORK_TYPE_DB
+   字段: 优先级(1最高/4最低/0禁用), 技能(读取的技能名), 类别(工作分类) */
+var WORK_TYPE_DB = {
+  '消防':     { 优先级: 1, 技能: '无',   类别: '紧急', 备注: '扑灭火灾,最高优先' },
+  '病人急救': { 优先级: 1, 技能: '医疗', 类别: '紧急', 备注: '救治倒下殖民者' },
+  '医生':     { 优先级: 1, 技能: '医疗', 类别: '紧急', 备注: '治疗伤员' },
+  '治疗':     { 优先级: 1, 技能: '医疗', 类别: '紧急', 备注: '处理伤口/疾病' },
+  '喂食':     { 优先级: 1, 技能: '无',   类别: '紧急', 备注: '给卧床者喂食' },
+  '抬担架':   { 优先级: 1, 技能: '无',   类别: '紧急', 备注: '运送伤员到病床' },
+  '砍树':     { 优先级: 2, 技能: '无',   类别: '生产', 备注: '获取木材' },
+  '采矿':     { 优先级: 2, 技能: '采矿', 类别: '生产', 备注: '获取矿物/石料' },
+  '建造':     { 优先级: 2, 技能: '建设', 类别: '生产', 备注: '建造建筑/设施' },
+  '种植':     { 优先级: 2, 技能: '种植', 类别: '生产', 备注: '播种作物' },
+  '收割':     { 优先级: 2, 技能: '种植', 类别: '生产', 备注: '收获作物' },
+  '狩猎':     { 优先级: 2, 技能: '射击', 类别: '生产', 备注: '猎杀动物获取肉皮' },
+  '烹饪':     { 优先级: 3, 技能: '厨艺', 类别: '加工', 备注: '制作食物' },
+  '缝纫':     { 优先级: 3, 技能: '手工', 类别: '加工', 备注: '制作衣物/皮甲' },
+  '锻造':     { 优先级: 3, 技能: '手工', 类别: '加工', 备注: '制作武器/护甲/子弹' },
+  '制作':     { 优先级: 3, 技能: '手工', 类别: '加工', 备注: '制作工具/材料转换' },
+  '研究':     { 优先级: 3, 技能: '研究', 类别: '加工', 备注: '研发科技' },
+  '清洁':     { 优先级: 4, 技能: '无',   类别: '杂务', 备注: '清理地面污物' },
+  '搬运':     { 优先级: 4, 技能: '无',   类别: '杂务', 备注: '运输物资到存储区' },
+  '整理':     { 优先级: 4, 技能: '无',   类别: '杂务', 备注: '整理库存物品' },
+  '休闲':     { 优先级: 4, 技能: '无',   类别: '杂务', 备注: '娱乐恢复心情' }
+};
+
+/* 时段工作调度表 SCHEDULE_DB
+   字段: 推荐工作(该时段推荐分配的工作类型列表), 备注(时段说明) */
+var SCHEDULE_DB = {
+  '清晨': {
+    推荐工作: ['消防', '病人急救', '喂食', '抬担架', '种植', '收割', '烹饪', '搬运'],
+    备注: '起床时段,优先生存需求和食物准备'
+  },
+  '上午': {
+    推荐工作: ['消防', '病人急救', '医生', '治疗', '砍树', '采矿', '建造', '种植', '研究', '制作'],
+    备注: '主要工作时段,全效率生产'
+  },
+  '中午': {
+    推荐工作: ['消防', '病人急救', '烹饪', '喂食', '收割', '狩猎', '清洁', '整理'],
+    备注: '午间简餐和轻工作,避免高温作业'
+  },
+  '下午': {
+    推荐工作: ['消防', '病人急救', '砍树', '采矿', '建造', '收割', '缝纫', '锻造', '制作'],
+    备注: '第二工作时段,适合加工类工作'
+  },
+  '傍晚': {
+    推荐工作: ['消防', '病人急救', '医生', '治疗', '烹饪', '搬运', '整理', '种植'],
+    备注: '日落前收尾,准备晚餐和整理物资'
+  },
+  '夜晚': {
+    推荐工作: ['消防', '病人急救', '医生', '治疗', '喂食', '抬担架', '烹饪', '研究', '缝纫', '制作'],
+    备注: '室内工作为主,研究/加工/医疗优先'
+  },
+  '深夜': {
+    推荐工作: ['消防', '病人急救', '抬担架', '休闲'],
+    备注: '休息时段,仅保留紧急工作,其余殖民者睡眠'
+  }
+};
+
+/* 获取殖民者工作优先级
+   colonist=殖民者对象, workType=工作类型(查WORK_TYPE_DB)
+   返回: 0-4 优先级数字,0表示禁用 */
+function _workPriority(colonist, workType) {
+  var wt = String(workType) || '休闲';
+  var workDef = WORK_TYPE_DB[wt];
+  if (!workDef) { return 0; }
+  var basePriority = Number(workDef.优先级) || 4;
+  var mood = Number(colonist.心情) || 50;
+  var fatigue = Number(colonist.疲劳) || 0;
+  /* 心情<20紧急工作优先级降低(消极怠工) */
+  if (mood < 20 && workDef.类别 !== '紧急') { return 0; }
+  /* 疲劳>=80仅保留紧急工作 */
+  if (fatigue >= 80 && workDef.类别 !== '紧急') { return 0; }
+  /* 警戒等级>=2时紧急工作强制为1 */
+  var alertLvl = Number(getvar('stat_data.殖民地.警戒等级', { scope: 'local', defaults: 20 })) || 20;
+  if (alertLvl >= 2 && workDef.类别 === '紧急') { return 1; }
+  return basePriority;
+}
+
+/* 分配工作给殖民者
+   colonist=殖民者对象, workType=工作类型, priority=1-4优先级
+   返回: 分配结果对象 */
+function _workAssign(colonist, workType, priority) {
+  var wt = String(workType) || '休闲';
+  var workDef = WORK_TYPE_DB[wt];
+  if (!workDef) {
+    return { 成功: false, 原因: '未知工作类型: ' + wt, 殖民者: colonist.姓名, 工作: wt, 优先级: 0 };
+  }
+  var p = Number(priority);
+  if (p < 0 || p > 4) { p = workDef.优先级; }
+  if (p === 0) {
+    return { 成功: true, 原因: '已禁用该工作', 殖民者: colonist.姓名, 工作: wt, 优先级: 0 };
+  }
+  var mood = Number(colonist.心情) || 50;
+  var fatigue = Number(colonist.疲劳) || 0;
+  /* 技能匹配检查 */
+  var requiredSkill = workDef.技能;
+  var skillVal = 0;
+  if (requiredSkill !== '无') {
+    skillVal = Number(colonist[requiredSkill]) || 0;
+  }
+  /* 效率修正 */
+  var moodMod = 1.0;
+  if (mood < 30) { moodMod = 0.8; }
+  else if (mood > 70) { moodMod = 1.1; }
+  var fatigueMod = 1.0;
+  if (fatigue > 80) { fatigueMod = 0.5; }
+  else if (fatigue > 60) { fatigueMod = 0.7; }
+  var efficiency = Math.round(moodMod * fatigueMod * 100) / 100;
+  return {
+    成功: true,
+    原因: '分配成功',
+    殖民者: colonist.姓名,
+    工作: wt,
+    类别: workDef.类别,
+    优先级: p,
+    所需技能: requiredSkill,
+    技能值: skillVal,
+    心情修正: moodMod,
+    疲劳修正: fatigueMod,
+    综合效率: efficiency
+  };
+}
+
+/* 时段工作调度
+   time=时段(清晨/上午/中午/下午/傍晚/夜晚/深夜), priorities=优先级映射
+   返回: 该时段推荐工作分配表 */
+function _workSchedule(time, priorities) {
+  var t = String(time) || '清晨';
+  var sched = SCHEDULE_DB[t];
+  if (!sched) { sched = SCHEDULE_DB['清晨']; }
+  var recommended = sched.推荐工作;
+  var result = [];
+  for (var i = 0; i < recommended.length; i++) {
+    var wt = recommended[i];
+    var workDef = WORK_TYPE_DB[wt];
+    if (!workDef) { continue; }
+    var prio = workDef.优先级;
+    /* 如果传入了自定义优先级映射,覆盖默认优先级 */
+    if (priorities && priorities[wt] != null) {
+      prio = Number(priorities[wt]) || workDef.优先级;
+    }
+    result.push({
+      工作: wt,
+      类别: workDef.类别,
+      优先级: prio,
+      所需技能: workDef.技能,
+      备注: workDef.备注
+    });
+  }
+  /* 按优先级排序(1最高) */
+  result.sort(function(a, b) { return a.优先级 - b.优先级; });
+  return { 时段: t, 说明: sched.备注, 推荐工作: result };
+}
+
+/* 主角状态对象 */
+var p1Colonist = {
+  姓名: p1Name, 心情: p1Mood, 疲劳: p1Fatigue,
+  手工: p1Craft, 建设: p1Build, 厨艺: p1Cook, 采矿: p1Mine,
+  种植: p1Crop, 医疗: p1Med, 研究: p1Research, 艺术品: p1Art,
+  射击: p1Shoot, 格斗: p1Melee, 社交: p1Social, 畜牧: p1Animals
+};
+
+var p2Colonist = {
+  姓名: p2Name, 心情: p2Mood, 疲劳: 0,
+  手工: p2Craft, 建设: p2Build, 厨艺: p2Cook
+};
+
+var p3Colonist = {
+  姓名: p3Name, 心情: p3Mood, 疲劳: 0,
+  手工: p3Craft, 研究: p3Research
+};
+
+/* 调度演示 */
+var currentSchedule = _workSchedule(timeSlot, null);
+var p1PriorityDemo = _workPriority(p1Colonist, '建造');
+var p1AssignDemo = _workAssign(p1Colonist, '建造', p1PriorityDemo);
+var p1MiningDemo = _workAssign(p1Colonist, '采矿', _workPriority(p1Colonist, '采矿'));
+var p1CookingDemo = _workAssign(p1Colonist, '烹饪', _workPriority(p1Colonist, '烹饪'));
+_%>
+<工作优先级系统就绪>
+[当前工作状态]
+游戏日: <%= gameDay %> / 时段: <%= timeSlot %> / 阶段: <%= phase %> / 警戒等级: <%= alertLevel %>
+殖民者状态:
+- <%= p1Name %>: 心情<%= p1Mood %> 疲劳<%= p1Fatigue %> (手工<%= p1Craft %>/建设<%= p1Build %>/厨艺<%= p1Cook %>/采矿<%= p1Mine %>/医疗<%= p1Med %>/研究<%= p1Research %>)
+- <%= p2Name %>: 心情<%= p2Mood %> (手工<%= p2Craft %>/建设<%= p2Build %>/厨艺<%= p2Cook %>)
+- <%= p3Name %>: 心情<%= p3Mood %> (手工<%= p3Craft %>/研究<%= p3Research %>)
+
+[工作类型表 WORK_TYPE_DB]
+优先级1(紧急): 消防/病人急救/医生/治疗/喂食/抬担架
+  → 火灾/倒下/伤员必须第一时间处理,无视疲劳
+优先级2(生产): 砍树/采矿/建造/种植/收割/狩猎
+  → 主要生产工作,白天优先分配
+优先级3(加工): 烹饪/缝纫/锻造/制作/研究
+  → 加工与研究工作,室内或特定台位
+优先级4(杂务): 清洁/搬运/整理/休闲
+  → 低优先级杂务与娱乐,空闲时分配
+优先级0(禁用): 不分配该工作
+
+[时段工作调度 SCHEDULE_DB]
+当前时段: <%= timeSlot %> → <%= currentSchedule.说明 %>
+<%_ for (var i = 0; i < currentSchedule.推荐工作.length; i++) { var w = currentSchedule.推荐工作[i]; _%>
+  <%= (i+1) %>. <%= w.工作 %> (优先级<%= w.优先级 %>, 类别<%= w.类别 %>, 技能<%= w.所需技能 %>) - <%= w.备注 %>
+<%_ } _%>
+
+[时段推荐分配表]
+清晨: 消防/急救/喂食/抬担架 → 种植/收割 → 烹饪 → 搬运 (起床,生存优先)
+上午: 消防/急救/医生/治疗 → 砍树/采矿/建造/种植 → 研究/制作 (全效率生产)
+中午: 消防/急救 → 烹饪/喂食 → 收割/狩猎 → 清洁/整理 (午间简餐,避免高温)
+下午: 消防/急救 → 砍树/采矿/建造/收割 → 缝纫/锻造/制作 (第二工作时段)
+傍晚: 消防/急救/医生/治疗 → 烹饪/搬运/整理 → 种植 (日落收尾)
+夜晚: 消防/急救/医生/治疗/喂食/抬担架 → 烹饪/研究/缝纫/制作 (室内工作)
+深夜: 消防/急救/抬担架 → 休闲 (休息时段,仅紧急)
+
+[工作分配规则]
+1. 优先级判定: _workPriority(colonist, workType) → 返回0-4
+   紧急工作(类别=紧急): 心情/疲劳不影响,强制可分配
+   非紧急工作: 心情<20 → 禁用 / 疲劳>=80 → 禁用
+   警戒等级>=2: 紧急工作强制优先级1
+
+2. 工作分配: _workAssign(colonist, workType, priority)
+   效率修正 = 心情修正(×0.8~1.1) × 疲劳修正(×0.5~1.0)
+   心情<30: ×0.8 / 心情>70: ×1.1
+   疲劳>80: ×0.5 / 疲劳>60: ×0.7
+
+3. 时段调度: _workSchedule(timeSlot, priorities)
+   按时段推荐工作列表分配,可自定义优先级覆盖默认值
+   排序: 优先级1 > 2 > 3 > 4
+
+[分配演示]
+<%= p1Name %>建造: 优先级<%= p1PriorityDemo %> → 综合效率×<%= p1AssignDemo.综合效率 %> (心情修正×<%= p1AssignDemo.心情修正 %>,疲劳修正×<%= p1AssignDemo.疲劳修正 %>)
+<%= p1Name %>采矿: 优先级<%= p1MiningDemo.优先级 %> → 综合效率×<%= p1MiningDemo.综合效率 %>
+<%= p1Name %>烹饪: 优先级<%= p1CookingDemo.优先级 %> → 综合效率×<%= p1CookingDemo.综合效率 %>
+
+[行为校验要求]
+工作分配行为必须输出行为校验块:
+<工作分配校验>
+- 殖民者: [姓名]
+- 工作类型: [查WORK_TYPE_DB]
+- 优先级: [1-4,或0禁用]
+- 工作类别: [紧急/生产/加工/杂务]
+- 所需技能: [技能名] [技能值]
+- 心情修正: [×0.8~1.1]
+- 疲劳修正: [×0.5~1.0]
+- 综合效率: [心情×疲劳]
+- 时段: [当前时段] [是否推荐该工作]
+- 分配结果: [成功/禁用/拒绝]
+</工作分配校验>
+
+[工作优先级系统说明]
+本控制器为工作分配统一入口,所有殖民者工作行为必须经此判定优先级与效率。
+优先级系统为4级(1最高/4最低/0禁用),紧急工作(消防/医疗/喂食)始终优先。
+时段调度表(SCHEDULE_DB)定义7个时段的推荐工作分配,确保殖民者按时间高效工作。
+技能判定依赖DDL确定性骰子引擎的技能公式(_buildSkill/_mineSkill/_cookSkill等),
+本控制器仅提供优先级判定/效率修正/时段调度,不重复定义技能公式。
+工作效率最终值 = 技能效率 × 心情修正 × 疲劳修正,需与时间推进调度器联动更新。
+</工作优先级系统就绪>

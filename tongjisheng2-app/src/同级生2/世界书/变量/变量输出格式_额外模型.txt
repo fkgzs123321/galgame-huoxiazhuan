@@ -1,0 +1,757 @@
+# 变量+数据库输出·额外模型模式
+
+本条目在「使用额外模型解析」时启用。本回复 **ONLY** 输出变量更新块 + 数据库更新块，禁止输出任何剧情正文。
+
+## 双写职责
+
+1. MVU 变量更新（`<UpdateVariable>` + `<JSONPatch>`）→ 更新 stat_data
+2. SPV 数据库更新（`<UpdateTable>` + SQL 语句）→ 更新 chatSheets 表格
+
+两套更新必须**每轮同步输出**。
+
+## 输出格式
+
+rule:
+  - you must output the update analysis and the actual update commands at once in the end of the next reply
+  - 'the update commands must strictly follow the **JSON Patch (RFC 6902)** standard; output must be a valid JSON array containing operation objects; only use: `replace` (replace value), `insert` (add new item), `remove` (delete path)'
+  - '⚠ 本卡禁止使用 `delta` 操作，所有数值更新必须用 `replace` 输出计算后的完整当前值'
+  - 'don'\''t update field names starts with `_` as they are readonly'
+
+format: |-
+  <UpdateVariable>
+  <Analysis>
+  0身份初始化：stat_data.主角.玩家身份 是否为 '未选择'？是→必须执行下方"身份初始化"章节，输出全部12条JSONPatch（玩家身份/玩家姓名/年龄/住所/现金/6维属性/当前难度）；否→跳过此步
+  1时间：本轮时间流逝（每轮固定+30分钟）
+  2变化：列出本轮实际发生变化的变量及计算过程（old(X) + delta(Y) = new(Z)）
+  3女性角色登场：本轮是否有女性角色首次登场？无→增量；有→全量70字段（含NSFW身体测量）。判定依据=性别女，不论身份
+  4身体状态：女性角色身体状态是否有变化？（乳头/阴部/敏感度/体重/伤痕/美甲等，参动态变化场景表）有→输出对应JSONPatch
+  5镜像同步：当前女角变化字段同步到 /女角/${当前女角名}/*
+  </Analysis>
+  <JSONPatch>
+  [
+    { "op": "replace", "path": "/时间/当前时间", "value": "08:30" },
+    { "op": "replace", "path": "/主角/饥饿", "value": 25 },
+    ...
+  ]
+  </JSONPatch>
+  </UpdateVariable>
+  <UpdateTable>
+  UPDATE global_state SET cur_time = '08:30' WHERE row_id = 1;
+  ...
+  </UpdateTable>
+
+## 最小合法输出（绝对底线）
+
+```
+<UpdateVariable>
+<JSONPatch>
+[
+  { "op": "replace", "path": "/时间/当前时间", "value": "08:30" }
+]
+</JSONPatch>
+</UpdateVariable>
+<UpdateTable>
+UPDATE global_state SET cur_time = '08:30' WHERE row_id = 1;
+</UpdateTable>
+```
+
+**3 对标签缺一不可**：`<UpdateVariable>`/`<JSONPatch>`/`<UpdateTable>`。漏 `<JSONPatch>` = 变量不更新；漏 `<UpdateTable>` = 数据库不同步。
+
+## ★ 身份初始化（最高优先级·检测到 玩家身份='未选择' 时必须执行）
+
+当 `stat_data.主角.玩家身份 = '未选择'` 时（开场白默认占位），本轮 JSONPatch **必须优先**输出身份初始化更新，在常规增量更新之前：
+
+### 初始化步骤
+
+1. **读取玩家选择**：从玩家最近回复中提取身份编号（P1/P2/P3/P4/P5/P6）和难度编号（D1/D2/D3/D4）
+2. **身份映射**（严格按此表）：
+   | 玩家选择 | 身份键名 | 住所 | 年龄 | 现金 | 魅力 | 学业 | 体力 | 社交 | 敏感 | 声誉 |
+   |---------|---------|------|------|------|------|------|------|------|------|------|
+   | P1 | 原作主角 | 鸣泽家 | 18 | 5000 | 50 | 50 | 80 | 50 | 30 | 50 |
+   | P2 | 川尻信良 | 川尻家 | 18 | 4000 | 45 | 40 | 70 | 60 | 40 | 55 |
+   | P3 | 长冈芳树 | 长冈家 | 18 | 3000 | 35 | 45 | 60 | 30 | 50 | 20 |
+   | P4 | 西御寺有友 | 西御寺家豪宅 | 19 | 50000 | 60 | 30 | 50 | 70 | 20 | 40 |
+   | P5 | 天道新干线 | 天道家 | 18 | 20000 | 55 | 70 | 60 | 65 | 15 | 60 |
+   | P6 | 自定义 | 玩家提供 | 玩家提供 | 玩家提供 | 玩家提供 | 玩家提供 | 玩家提供 | 玩家提供 | 玩家提供 | 玩家提供 |
+3. **难度映射**（严格按此表）：
+   | 玩家选择 | 难度名 |
+   |---------|--------|
+   | D1 | 轻松 |
+   | D2 | 普通 |
+   | D3 | 挑战 |
+   | D4 | 地狱 |
+4. **技能加成**（仅 P2-P5 有）：
+   - P2 川尻信良：口才 +50（40→90）
+   - P3 长冈芳树：潜行 +40（20→60）+ 观察 +50（40→90）
+   - P4 西御寺有友：无额外加成
+   - P5 天道新干线：学业 +20（50→70）+ 社交 +15（50→65）
+
+### 必须输出的 JSONPatch（身份初始化）
+
+```
+{ "op": "replace", "path": "/主角/玩家身份", "value": "长冈芳树" },
+{ "op": "replace", "path": "/主角/玩家姓名", "value": "{{user}}" },
+{ "op": "replace", "path": "/主角/年龄", "value": 18 },
+{ "op": "replace", "path": "/主角/住所", "value": "长冈家" },
+{ "op": "replace", "path": "/主角/现金", "value": 3000 },
+{ "op": "replace", "path": "/主角/魅力", "value": 35 },
+{ "op": "replace", "path": "/主角/学业", "value": 45 },
+{ "op": "replace", "path": "/主角/体力", "value": 60 },
+{ "op": "replace", "path": "/主角/社交", "value": 30 },
+{ "op": "replace", "path": "/主角/敏感", "value": 50 },
+{ "op": "replace", "path": "/主角/声誉", "value": 20 },
+{ "op": "replace", "path": "/临时/当前难度", "value": "地狱" }
+```
+（以上为 P3+D4 示例，实际按玩家选择输出）
+
+### 必须同步的数据库更新
+
+```sql
+UPDATE protagonist_info SET identity_text='长冈芳树', name='{{user}}', age=18, charm=35, academic=45, physical=60, social=30, perception=50, willpower=20, money=3000 WHERE row_id=1;
+```
+（P2-P6 时额外 INSERT 相沢诚 NPC 数据，参 主角设定.txt.PROTAGONIST_NPC_INFO）
+
+### 严禁事项
+
+- ★ 严禁默认 P1：玩家选 P3，身份必须为 "长冈芳树"，不是 "原作主角"
+- ★ 严禁使用 P1 兜底值：未选择状态下属性均为 NaN/0，不得在叙事中以 P1 数值臆造主角属性
+- ★ 严禁遗漏任何字段：以上所有 JSONPatch 必须全部输出，不得省略
+
+## 统一增量逻辑
+
+**核心规则：新出现=全量初始化，之后=增量（有变化才输出），时间=每轮必须。**
+
+### "新出现"触发条件（→ 全量70字段输出）
+
+**★ 铁律：只要是女性角色，就按 70 字段处理（含 NSFW 身体测量）**
+- 判定依据：角色性别为女（`gender = '女'`），不论她在原作中是义妹/义母/青梅竹马/老师/同学/路人/店主/护士/任何人
+- 不仅限于 `initvar.yaml` 中 `女角:` 字典下的 20 位预设女角——任何新出现的女性角色（包括 AI 即兴创造的 Female NPC）都必须按 70 字段输出
+- **禁止以"她是义母/老师/NPC/路人/已婚/年长/年幼"为由跳过 NSFW 字段输出**
+- 男性角色（如相沢诚/川尻信良/长冈芳树等）不适用 70 字段，按 important_npc 表 13 业务列处理
+
+1. 当前女角名从"无"变为实际姓名 → 首个女角登场
+2. 当前女角名从一个姓名变为另一个姓名 → 切换女角
+3. 首楼身份初始化 → 全量输出所有变量
+4. **任何女性角色首次登场**（包括美佐子/片桐美铃/永岛佐知子等预设女角，以及 AI 新增的女性 NPC）→ 全量输出该角色 70 字段（含 NSFW 身体测量）
+5. **相沢诚 NPC 首次登场**（玩家选 P2-P6 身份时）→ INSERT 相沢诚到 important_npc 表（数据参 `主角设定.txt.PROTAGONIST_NPC_INFO`）；玩家选 P1 时相沢诚 = {{user}}，不作为 NPC 出现，跳过此 INSERT
+
+### 每轮输出策略表
+
+| 变量类型 | 新出现（ID变化/首次登场） | 同一角色后续楼层 |
+|---------|----------------------|---------|
+| 时间（8字段） | 全量输出 | **每轮必须全量输出** |
+| 场景（3字段） | 全量输出 | 增量（有变化才输出） |
+| 主角（25字段） | 全量输出 | 增量 |
+| 当前女角（70字段） | **全量输出70字段（含NSFW）** | 增量（含身体状态变化，参动态变化场景表） |
+| 非当前女性角色镜像（70字段） | **全量输出70字段（含NSFW）** | 增量（关系值或NSFW状态变化时） |
+| 技能/临时/经济/性格/隐藏 | 全量输出 | 增量 |
+
+> ★ **当前女角镜像已废弃**：状态栏前端已改为直接从 `/当前女角/*` 读取当前女角完整数据（参 状态栏.html 的 `renderHeroineList()`/`showHeroineDetail()`），**AI 不再需要输出 `/女角/${当前女角名}/*` 镜像**。只需输出 `/当前女角/*` 全量70字段即可，前端会自动复用。
+>
+> ★ **新女角切换时**：旧女角全量70字段迁移到 `/女角/${旧姓名}/*`（作为非当前女角镜像）；新女角从 `/女角/${新姓名}/*` 迁入 `/当前女角/*`（如新女角在镜像中已有数据）或直接全量初始化 `/当前女角/*`。**新女角不需要同时输出 `/当前女角/*` 和 `/女角/${新姓名}/*` 两套**。
+
+### 数据库表同步策略
+
+| 数据库表 | 新出现 | 同一角色后续楼层 |
+|---------|------|---------|
+| global_state | 全量 INSERT | **每轮必须全量 UPDATE** |
+| protagonist_info | 全量 INSERT（玩家自身，P2-P5 时 name 字段为对应男性真名而非 {{user}}） | 增量 UPDATE |
+| important_npc（当前女角） | **全量 INSERT 70字段** | 增量 UPDATE |
+| important_npc（非当前女性角色） | **全量 INSERT 70字段** | 增量 UPDATE（仅关系值变化时） |
+| important_npc（男性NPC，如相沢诚） | **玩家选 P2-P6 时 INSERT**（13 业务列，参 `主角设定.txt.PROTAGONIST_NPC_INFO`） | 增量 UPDATE（NPC 按原作剧情推进时） |
+| chronicle | — | 有重要事件时 INSERT |
+
+## ★★★ NSFW 字段更新保障（核心铁律）★★★
+
+### 为什么 NSFW 字段必须全量输出
+
+NSFW 身体测量字段（罩杯/胸围/腰围/臀围/身高/体重/乳头大小/...等）是女角的**固有属性**，不是"NSFW行为"。当女角"新出现"时，必须全量输出这些字段设定她的身体数据。**不能以"没有NSFW剧情"为由跳过。**
+
+更重要的是：这些字段**并非静态**。乳头会因兴奋肿胀变色、阴部会因频繁H变化、敏感度会因开发提升、身体会因伤痕/孕期/体重变化——**所有 70 个字段都可能动态变化，哪里有变化就更新哪里**（参"动态变化场景表"）。
+
+### 70 字段清单（分组）
+
+新女角登场时，`/当前女角/*` 必须输出 **70 条 JSONPatch**（不再需要输出 `/女角/${姓名}/*` 镜像，状态栏前端已改为直接读 `/当前女角/*`）：
+
+| 分组 | 字段数 | 字段列表 |
+|------|-------|---------|
+| 关系核心 | 6 | 姓名, 好感度, 心动值, 嫉妒值, 信任度, 关系阶段 |
+| 互斥与锁定 | 5 | 阶段锁定, 是否在攻略中, 攻略路线锁定, 互斥组名, 互斥伙伴姓名 |
+| H经验进度 | 4 | H经验次数, 初吻, 初H, 进阶H |
+| 6维属性 | 6 | 魅力, 学业, 体力, 社交, 敏感, 声誉 |
+| 13项技能 | 13 | 力量, 敏捷, 智力, 意志技能, 潜行, 口才, 医学, 烹饪, 艺术, 驾驶, 格斗, 观察, 恋爱技能 |
+| NSFW胸部测量 | 12 | 罩杯, 胸围, 腰围, 臀围, 身高, 体重, 乳头大小, 乳头颜色, 乳晕大小, 胸型, 胸部敏感度, 泌乳 |
+| NSFW腰手臀测量 | 7 | 腰型, 腰部敏感度, 手部描述, 美甲风格, 臀型, 臀部敏感度, 后庭描述 |
+| NSFW下体测量 | 8 | 阴毛, 阴唇大小, 阴唇颜色, 阴道紧度, 特殊体质, 润滑程度, 处女膜状态, 生育能力 |
+| 敏感度综合 | 3 | 全身敏感度, 敏感带, 兴奋触发点 |
+| NSFW实时状态 | 5 | 当前衣着, 暴露程度, 湿润度, 兴奋度, 精液残留 |
+| 元数据 | 1 | 最后更新 |
+| **合计** | **70** | |
+
+### 自检规则（输出 JSONPatch 前必须数一下）
+
+- 新角色登场：`/当前女角/*` 必须正好 **70 条**（无需再输出 `/女角/${姓名}/*` 镜像）
+- 同一角色增量：只输出变化字段（通常 1-10 条）
+- 禁止用 `...` 省略任何字段
+- **非当前女角**首次登场或关系值/NSFW状态变化时，才输出 `/女角/${非当前姓名}/*` 的 70 字段或增量字段
+
+### ★ 所有 70 字段都可能动态变化（无"静态/动态"之分）
+
+**核心原则：哪里有变化就更新哪里。不要因为字段名听起来像"身体测量"就认为它不会变。**
+
+以下是各字段的动态变化触发场景（非穷举，AI 应根据剧情自行判断）：
+
+| 字段 | 动态变化触发场景 |
+|------|----------------|
+| 乳头大小 | 兴奋时肿胀变大；孕期/哺乳期变化；药物影响 |
+| 乳头颜色 | 兴奋时色泽变深；孕期变深；频繁H后逐步变深 |
+| 乳晕大小 | 兴奋时扩大；孕期变化 |
+| 胸部敏感度 | 开发后提升；药物/特殊体质影响；妊娠期变化 |
+| 泌乳 | 孕期/产后触发；特殊体质；药物影响 |
+| 胸围/腰围/臀围/体重 | 饮食/运动/孕期变化；剧情时间推移 |
+| 阴唇大小 | 兴奋时肿胀；频繁H后变化 |
+| 阴唇颜色 | 兴奋时变深；频繁H后逐步变深；孕期变化 |
+| 阴道紧度 | 初H后变松；频繁H后进一步变化；产后变化 |
+| 处女膜状态 | 初H后从"完整"变为"已破"（不可逆） |
+| 后庭描述 | 开发程度变化（未开发→半开发→已开发→发达） |
+| 阴毛 | 修剪/生长/剃除（时间推移自然变化） |
+| 润滑程度 | 与湿润度联动；兴奋时变化；体质影响 |
+| 腰部/臀部敏感度 | 开发后提升；药物影响 |
+| 美甲风格 | 更换美甲时变化 |
+| 手部描述 | 劳动/训练后茧变化；伤痕/伤痕愈合 |
+| 全身敏感度 | 开发后提升（0→100→150→200→300）；药物/诅咒影响 |
+| 敏感带/兴奋触发点 | 开发后扩展（从少到多）；新部位被开发后新增 |
+| 互斥组名/互斥伙伴姓名/阶段锁定 | 互斥触发时变化；攻略路线锁定时变化 |
+| H经验次数/初吻/初H/进阶H | H行为后变化（不可逆） |
+| 罩杯 | 孕期/哺乳期可能变化；体重显著变化时可能变化 |
+| 胸型 | 年龄/孕期/体重变化可能导致变化 |
+| 身高 | 通常不变，但长期剧情（如跨越数年）可能变化 |
+| 特殊体质 | 剧情触发（药物/诅咒/疾病）时变化 |
+| 生育能力 | 疾病/手术/年龄因素变化 |
+| 当前衣着/暴露程度/湿润度/兴奋度/精液残留 | 每轮可能变化（参衰减规则） |
+| 最后更新 | **每次任何字段变化时必须同步刷新为 "MM-DD HH:MM"** |
+
+> **自检**：如果本轮叙事中女角的身体状态发生了任何变化（哪怕是乳头因兴奋变硬、阴唇因兴奋肿胀这种"临时"变化），都必须输出对应的 JSONPatch。
+
+### 女性角色镜像同步规则
+
+1. **当前女角**（`/当前女角/*`）：状态栏前端直接读取此命名空间，AI 只需输出 `/当前女角/*` 全量或增量，**不再需要输出 `/女角/${当前女角名}/*` 镜像**
+2. **新女角切换**：旧女角全量70字段迁回 `/女角/${旧姓名}/*`（保存为非当前女角镜像）；新女角从 `/女角/${新姓名}/*` 迁入 `/当前女角/*`（如已有镜像数据），或直接全量初始化 `/当前女角/*`（新登场角色）
+3. **非当前女性角色镜像**（`/女角/${非当前姓名}/*`）：仅在该女性角色关系值或NSFW状态变化时输出变化字段（每个女角首次登场时也需全量70字段 INSERT 到此命名空间作为历史档案）
+
+### NSFW 实时状态衰减规则
+
+- `湿润度`：无刺激时每轮 -5（floor=0）
+- `兴奋度`：无刺激时按难度衰减（轻松-5/普通-10/挑战-12/地狱-15，floor=0）
+- `暴露程度`：穿衣后自动重置为"日常"
+- `精液残留`：无清洗时按时间干燥（液态→半干→精斑→无）
+- `最后更新`：每次NSFW状态变化时同步刷新为 "MM-DD HH:MM"
+
+## 数据库双写规则
+
+### SQL 语法要点
+
+- UPDATE 必须带 WHERE（`WHERE row_id = 1` 或 `WHERE name = '女角名'`）
+- 多条 SQL 用分号 `;` 分隔
+- 字符串值用单引号 `'...'` 包裹
+- NSFW 字段不允许 NULL，填默认值（`''` 或 `'N/A'`）
+- `relationship_stage` 必须在 12 档枚举内（10 正常阶段 + 2 特殊态）：决裂/仇视/厌恶/冷漠/疏离/初识/熟悉/暧昧/心动/亲密/攻略完成/失恋
+- **禁止臆造列名**：SQL 中出现的列名必须严格对应 DDL 定义（参 `表格模板.txt`）。常见臆造错误：
+  - ❌ `聚焦镜头`（DDL 无此列，CG 描述中的"焦点"不是数据库字段）
+  - ❌ `视角` / `镜头` / `特写` / `焦点`（同上，叙事描述不是数据库字段）
+  - ❌ `心情值` / `好感值`（应为 `mood` / `affection`，参 DDL 列名映射表）
+  - ❌ 任何在 DDL 列名映射表中找不到的列名
+- **DDL 列名映射**（global_state 表仅 13 列）：`row_id`/`current_location`/`current_minor_region`/`current_major_region`/`prev_scene_time`/`elapsed_time`/`cur_time`/`day_count`/`time_slot`/`difficulty`/`current_heroine`/`scene_summary`/`flags_text`。**禁止向 global_state 写入这 13 列以外的任何字段。**
+
+### important_npc 表完整映射（70字段，参 DDL `表格模板.txt`）
+
+> 当前列名严格对齐 `表格模板.txt` 中 important_npc 表的 DDL（row_id + 13 业务列 + 69 女角字段 = 83 列）。下表为 70 个女角字段的 MVU↔DB 完整映射，业务列（gender/age/brief_intro/appearance/identity_text/base_attributes/special_attributes/location_name/presence_status/relations_text/interaction_options/past_experience）按需更新。
+
+#### 关系核心（6字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/姓名 | name | TEXT NOT NULL UNIQUE | WHERE 定位键，全表唯一 |
+| /当前女角/好感度 | affection | INTEGER NOT NULL DEFAULT 0 | CHECK BETWEEN -100 AND 100 |
+| /当前女角/心动值 | heartbeat | INTEGER NOT NULL DEFAULT 0 | CHECK BETWEEN -100 AND 100 |
+| /当前女角/嫉妒值 | jealousy | INTEGER NOT NULL DEFAULT 0 | CHECK BETWEEN -100 AND 100 |
+| /当前女角/信任度 | trust | INTEGER NOT NULL DEFAULT 0 | CHECK BETWEEN -100 AND 100 |
+| /当前女角/关系阶段 | relationship_stage | TEXT NOT NULL DEFAULT '初识' | 12档枚举（10正常+2特殊态）：决裂/仇视/厌恶/冷漠/疏离/初识/熟悉/暧昧/心动/亲密/攻略完成/失恋 |
+
+#### 互斥与锁定（5字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/阶段锁定 | stage_locked | INTEGER NOT NULL DEFAULT 0 | CHECK IN (0,1) |
+| /当前女角/是否在攻略中 | is_pursued | INTEGER NOT NULL DEFAULT 0 | CHECK IN (0,1) |
+| /当前女角/攻略路线锁定 | route_locked | INTEGER NOT NULL DEFAULT 0 | CHECK IN (0,1) |
+| /当前女角/互斥组名 | mutex_group | TEXT | 可 NULL |
+| /当前女角/互斥伙伴姓名 | mutex_partner_name | TEXT | '无'=无互斥 |
+
+#### H经验进度（4字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/H经验次数 | h_exp | INTEGER NOT NULL DEFAULT 0 | CHECK >= 0 |
+| /当前女角/初吻 | first_kiss_done | INTEGER NOT NULL DEFAULT 0 | CHECK IN (0,1)，不可逆 |
+| /当前女角/初H | first_h_done | INTEGER NOT NULL DEFAULT 0 | CHECK IN (0,1)，不可逆 |
+| /当前女角/进阶H | advanced_h_done | INTEGER NOT NULL DEFAULT 0 | CHECK IN (0,1)，不可逆 |
+
+#### 6维属性（6字段·新增）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/魅力 | charm | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL（男性 NPC 留 NULL） |
+| /当前女角/学业 | academic | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/体力 | physical | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/社交 | social | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/敏感 | perception | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/声誉 | reputation | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+
+#### 13项技能（13字段·新增）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/力量 | strength | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/敏捷 | agility | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/智力 | intelligence | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/意志技能 | will_skill | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL（避撞主角表 willpower） |
+| /当前女角/潜行 | stealth | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/口才 | speech | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/医学 | medical | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/烹饪 | cooking | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/艺术 | art | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/驾驶 | driving | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL（未成年通常 0） |
+| /当前女角/格斗 | fighting | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/观察 | observation | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL |
+| /当前女角/恋爱技能 | romance_skill | INTEGER | CHECK BETWEEN 0 AND 100，可 NULL（避撞主角表 romance） |
+
+#### NSFW胸部测量（12字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/罩杯 | cup_size | TEXT NOT NULL DEFAULT '无' | CHECK IN ('无','A','B','C','D','E','F','G','H') |
+| /当前女角/胸围 | bust_size | INTEGER | cm，可 NULL |
+| /当前女角/腰围 | waist_size | INTEGER | cm，可 NULL |
+| /当前女角/臀围 | hip_size | INTEGER | cm，可 NULL |
+| /当前女角/身高 | height | INTEGER NOT NULL | cm |
+| /当前女角/体重 | weight | INTEGER | kg，可 NULL |
+| /当前女角/乳头大小 | nipple_size | TEXT | 可 NULL，动态变化（兴奋肿胀） |
+| /当前女角/乳头颜色 | nipple_color | TEXT | 可 NULL，动态变化（兴奋/孕期变深） |
+| /当前女角/乳晕大小 | areola_size | TEXT | 可 NULL，动态变化 |
+| /当前女角/胸型 | breast_shape | TEXT | 可 NULL |
+| /当前女角/胸部敏感度 | breast_sensitivity | INTEGER | CHECK BETWEEN 0 AND 300，开发后提升 |
+| /当前女角/泌乳 | lactation | TEXT | 可 NULL，孕期/产后触发 |
+
+#### NSFW腰手臀测量（7字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/腰型 | waist_shape | TEXT | 可 NULL |
+| /当前女角/腰部敏感度 | waist_sensitivity | INTEGER | CHECK BETWEEN 0 AND 300 |
+| /当前女角/手部描述 | hand_desc | TEXT | 可 NULL，伤痕/茧变化 |
+| /当前女角/美甲风格 | nail_style | TEXT | 可 NULL，更换美甲时变化 |
+| /当前女角/臀型 | hip_shape | TEXT | 可 NULL |
+| /当前女角/臀部敏感度 | hip_sensitivity | INTEGER | CHECK BETWEEN 0 AND 300 |
+| /当前女角/后庭描述 | anal_desc | TEXT | CHECK IN ('紧致','松弛','未开发','半开发','已开发','发达','N/A') 或 NULL |
+
+#### NSFW下体测量（8字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/阴毛 | pubic_hair | TEXT | 可 NULL，修剪/生长变化 |
+| /当前女角/阴唇大小 | labia_size | TEXT | 可 NULL，兴奋肿胀变化 |
+| /当前女角/阴唇颜色 | labia_color | TEXT | 可 NULL，兴奋/频繁H后变深 |
+| /当前女角/阴道紧度 | vaginal_tightness | TEXT | 可 NULL，初H后变松 |
+| /当前女角/特殊体质 | vaginal_special | TEXT | 可 NULL，药物/诅咒变化 |
+| /当前女角/润滑程度 | lubrication_level | TEXT | 可 NULL，与湿润度联动 |
+| /当前女角/处女膜状态 | hymen_status | TEXT | 可 NULL，初H后不可逆变化 |
+| /当前女角/生育能力 | fertility | TEXT | 可 NULL，疾病/手术变化 |
+
+#### 敏感度综合（3字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/全身敏感度 | body_sensitivity | INTEGER | CHECK BETWEEN 0 AND 300，开发后提升（0→100→150→200→300） |
+| /当前女角/敏感带 | sensitive_zones | TEXT | 可 NULL，开发后扩展 |
+| /当前女角/兴奋触发点 | arousal_triggers | TEXT | 可 NULL，新部位被开发后新增 |
+
+#### NSFW实时状态（5字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/当前衣着 | clothing_state | TEXT | 可 NULL，每轮可能变化 |
+| /当前女角/暴露程度 | exposure_level | TEXT | CHECK IN ('保守','日常','微露','暴露','半裸','全裸','N/A') 或 NULL，穿衣后重置为'日常' |
+| /当前女角/湿润度 | wetness | INTEGER | CHECK BETWEEN 0 AND 100，无刺激每轮-5（floor=0） |
+| /当前女角/兴奋度 | arousal_level | INTEGER | CHECK BETWEEN 0 AND 100，无刺激按难度衰减 |
+| /当前女角/精液残留 | semen_residue | TEXT | 可 NULL，按时间干燥（液态→半干→精斑→无） |
+
+#### 元数据（1字段）
+
+| MVU 路径 | DB 列名 | 类型 | 约束/说明 |
+|---------|--------|------|---------|
+| /当前女角/最后更新 | last_updated | TEXT NOT NULL | 格式 "MM-DD HH:MM"，任何字段变化时同步刷新 |
+
+> **规则**：当前女角名 = "无" 时，跳过 important_npc 表的 UPDATE。新女角登场时按上表全量 INSERT 70 字段；同一角色后续按增量 UPDATE 变化字段。CHECK 约束违规会导致 INSERT/UPDATE 失败，输出前必须核对枚举值与数值范围。
+
+**★ NSFW 字段数据库同步铁律**：
+- MVU JSONPatch 中输出的每一个女性角色字段变化，**必须**在 `<UpdateTable>` 中有对应的 SQL UPDATE 语句
+- 例如：JSONPatch 输出 `{ "op": "replace", "path": "/当前女角/乳头大小", "value": "肿胀" }` → 必须同时输出 `UPDATE important_npc SET nipple_size = '肿胀', last_updated = '01-03 14:30' WHERE name = '当前女角名';`
+- **禁止**：MVU 输出 NSFW 字段变化但 SQL 漏掉对应列（常见错误：只 UPDATE affection/trust，漏掉 nipple_size/wetness/arousal_level 等）
+- **新女角登场 INSERT**：必须包含全部 70 字段（不能只 INSERT 关系值列），NSFW 列填默认值（`'无'`/`0`/`'N/A'`/`''`）
+- **自检**：输出 `<UpdateTable>` 前，数一下 JSONPatch 中女性角色字段变化条数，SQL UPDATE 中对应的 SET 子句数量必须 ≥ JSONPatch 条数
+
+### ★★★ 新女角登场完整示例（必须照抄字段顺序与列名）★★★
+
+以下为"鸣泽唯"新登场时的完整输出示例。**任何女角新登场时，必须按此模板输出全量 70 字段 JSONPatch + 全量 83 列 SQL INSERT**，只是把值换成该女角的数据。**禁止省略任何字段，禁止用 `...` 代替。**
+
+#### A. MVU JSONPatch（必须 70 条，路径 `/当前女角/*`；无需再输出 `/女角/鸣泽唯/*` 镜像，状态栏前端直接读 `/当前女角/*`）
+
+```json
+[
+  { "op": "replace", "path": "/当前女角/姓名", "value": "鸣泽唯" },
+  { "op": "replace", "path": "/当前女角/好感度", "value": 5 },
+  { "op": "replace", "path": "/当前女角/心动值", "value": 0 },
+  { "op": "replace", "path": "/当前女角/嫉妒值", "value": 0 },
+  { "op": "replace", "path": "/当前女角/信任度", "value": 30 },
+  { "op": "replace", "path": "/当前女角/关系阶段", "value": "初识" },
+  { "op": "replace", "path": "/当前女角/阶段锁定", "value": 0 },
+  { "op": "replace", "path": "/当前女角/是否在攻略中", "value": 0 },
+  { "op": "replace", "path": "/当前女角/攻略路线锁定", "value": 0 },
+  { "op": "replace", "path": "/当前女角/互斥组名", "value": "" },
+  { "op": "replace", "path": "/当前女角/互斥伙伴姓名", "value": "无" },
+  { "op": "replace", "path": "/当前女角/H经验次数", "value": 0 },
+  { "op": "replace", "path": "/当前女角/初吻", "value": 0 },
+  { "op": "replace", "path": "/当前女角/初H", "value": 0 },
+  { "op": "replace", "path": "/当前女角/进阶H", "value": 0 },
+  { "op": "replace", "path": "/当前女角/魅力", "value": 75 },
+  { "op": "replace", "path": "/当前女角/学业", "value": 65 },
+  { "op": "replace", "path": "/当前女角/体力", "value": 50 },
+  { "op": "replace", "path": "/当前女角/社交", "value": 55 },
+  { "op": "replace", "path": "/当前女角/敏感", "value": 60 },
+  { "op": "replace", "path": "/当前女角/声誉", "value": 70 },
+  { "op": "replace", "path": "/当前女角/力量", "value": 30 },
+  { "op": "replace", "path": "/当前女角/敏捷", "value": 45 },
+  { "op": "replace", "path": "/当前女角/智力", "value": 65 },
+  { "op": "replace", "path": "/当前女角/意志技能", "value": 55 },
+  { "op": "replace", "path": "/当前女角/潜行", "value": 25 },
+  { "op": "replace", "path": "/当前女角/口才", "value": 50 },
+  { "op": "replace", "path": "/当前女角/医学", "value": 10 },
+  { "op": "replace", "path": "/当前女角/烹饪", "value": 60 },
+  { "op": "replace", "path": "/当前女角/艺术", "value": 40 },
+  { "op": "replace", "path": "/当前女角/驾驶", "value": 0 },
+  { "op": "replace", "path": "/当前女角/格斗", "value": 20 },
+  { "op": "replace", "path": "/当前女角/观察", "value": 55 },
+  { "op": "replace", "path": "/当前女角/恋爱技能", "value": 35 },
+  { "op": "replace", "path": "/当前女角/罩杯", "value": "C" },
+  { "op": "replace", "path": "/当前女角/胸围", "value": 80 },
+  { "op": "replace", "path": "/当前女角/腰围", "value": 58 },
+  { "op": "replace", "path": "/当前女角/臀围", "value": 82 },
+  { "op": "replace", "path": "/当前女角/身高", "value": 158 },
+  { "op": "replace", "path": "/当前女角/体重", "value": 45 },
+  { "op": "replace", "path": "/当前女角/乳头大小", "value": "樱桃" },
+  { "op": "replace", "path": "/当前女角/乳头颜色", "value": "浅粉" },
+  { "op": "replace", "path": "/当前女角/乳晕大小", "value": "小" },
+  { "op": "replace", "path": "/当前女角/胸型", "value": "碗型" },
+  { "op": "replace", "path": "/当前女角/胸部敏感度", "value": 30 },
+  { "op": "replace", "path": "/当前女角/泌乳", "value": "无" },
+  { "op": "replace", "path": "/当前女角/腰型", "value": "纤细" },
+  { "op": "replace", "path": "/当前女角/腰部敏感度", "value": 20 },
+  { "op": "replace", "path": "/当前女角/手部描述", "value": "纤细白皙" },
+  { "op": "replace", "path": "/当前女角/美甲风格", "value": "透明护甲" },
+  { "op": "replace", "path": "/当前女角/臀型", "value": "蜜桃" },
+  { "op": "replace", "path": "/当前女角/臀部敏感度", "value": 25 },
+  { "op": "replace", "path": "/当前女角/后庭描述", "value": "未开发" },
+  { "op": "replace", "path": "/当前女角/阴毛", "value": "稀疏" },
+  { "op": "replace", "path": "/当前女角/阴唇大小", "value": "小" },
+  { "op": "replace", "path": "/当前女角/阴唇颜色", "value": "浅粉" },
+  { "op": "replace", "path": "/当前女角/阴道紧度", "value": "紧致" },
+  { "op": "replace", "path": "/当前女角/特殊体质", "value": "无" },
+  { "op": "replace", "path": "/当前女角/润滑程度", "value": "普通" },
+  { "op": "replace", "path": "/当前女角/处女膜状态", "value": "完整" },
+  { "op": "replace", "path": "/当前女角/生育能力", "value": "正常" },
+  { "op": "replace", "path": "/当前女角/全身敏感度", "value": 40 },
+  { "op": "replace", "path": "/当前女角/敏感带", "value": "耳后/颈侧" },
+  { "op": "replace", "path": "/当前女角/兴奋触发点", "value": "耳语/轻抚" },
+  { "op": "replace", "path": "/当前女角/当前衣着", "value": "居家休闲服" },
+  { "op": "replace", "path": "/当前女角/暴露程度", "value": "日常" },
+  { "op": "replace", "path": "/当前女角/湿润度", "value": 0 },
+  { "op": "replace", "path": "/当前女角/兴奋度", "value": 0 },
+  { "op": "replace", "path": "/当前女角/精液残留", "value": "无" },
+  { "op": "replace", "path": "/当前女角/最后更新", "value": "12-22 08:30" }
+]
+```
+
+> **自检**：上述数组必须正好 70 条（`/当前女角/*` 70 条，无需镜像）。输出前数一下条数。
+
+#### B. SQL INSERT（必须 83 列，列名严格对齐 DDL）
+
+```sql
+INSERT INTO important_npc (
+  row_id, name, gender, age, brief_intro, appearance, identity_text,
+  base_attributes, special_attributes, location_name, presence_status,
+  relations_text, interaction_options, past_experience,
+  affection, heartbeat, jealousy, trust, relationship_stage,
+  stage_locked, is_pursued, route_locked, mutex_group, mutex_partner_name,
+  h_exp, first_kiss_done, first_h_done, advanced_h_done,
+  charm, academic, physical, social, perception, reputation,
+  strength, agility, intelligence, will_skill, stealth, speech,
+  medical, cooking, art, driving, fighting, observation, romance_skill,
+  cup_size, bust_size, waist_size, hip_size, height, weight,
+  nipple_size, nipple_color, areola_size, breast_shape, breast_sensitivity, lactation,
+  waist_shape, waist_sensitivity,
+  hand_desc, nail_style,
+  hip_shape, hip_sensitivity, anal_desc,
+  pubic_hair, labia_size, labia_color, vaginal_tightness, vaginal_special,
+  lubrication_level, hymen_status, fertility,
+  body_sensitivity, sensitive_zones, arousal_triggers,
+  clothing_state, exposure_level, wetness, arousal_level, semen_residue,
+  last_updated
+) VALUES (
+  1, '鸣泽唯', '女', 18, '义妹，已同居10年', '银色短发，清澈蓝眼', '八十八学园三年生',
+  '{"魅力":75,"学业":65,"体力":50,"社交":55,"敏感":60,"声誉":70}', '{"特殊":"义妹属性"}', '鸣泽家', '在场',
+  '与{{user}}是义兄妹，与美佐子是母女', '对话/送礼/约会', '10年前父亲再婚，搬入鸣泽家',
+  5, 0, 0, 30, '初识',
+  0, 0, 0, '', '无',
+  0, 0, 0, 0,
+  75, 65, 50, 55, 60, 70,
+  30, 45, 65, 55, 25, 50,
+  10, 60, 40, 0, 20, 55, 35,
+  'C', 80, 58, 82, 158, 45,
+  '樱桃', '浅粉', '小', '碗型', 30, '无',
+  '纤细', 20,
+  '纤细白皙', '透明护甲',
+  '蜜桃', 25, '未开发',
+  '稀疏', '小', '浅粉', '紧致', '无',
+  '普通', '完整', '正常',
+  40, '耳后/颈侧', '耳语/轻抚',
+  '居家休闲服', '日常', 0, 0, '无',
+  '12-22 08:30'
+);
+```
+
+> **自检**：INSERT 的列数必须与 VALUES 数量一致（83 列）。`row_id` 从 1 递增。NSFW 列必须有值，禁止 NULL（DDL 中只有部分列允许 NULL，但 NSFW 列建议都填默认值避免前端显示异常）。
+
+#### C. 后续增量 UPDATE 示例（同一角色，只更新变化字段；无需镜像）
+
+例如：本轮唯因对话好感 +2，兴奋度上升至 15：
+
+```json
+[
+  { "op": "replace", "path": "/当前女角/好感度", "value": 7 },
+  { "op": "replace", "path": "/当前女角/兴奋度", "value": 15 },
+  { "op": "replace", "path": "/当前女角/湿润度", "value": 10 },
+  { "op": "replace", "path": "/当前女角/最后更新", "value": "12-22 09:00" }
+]
+```
+
+```sql
+UPDATE important_npc SET affection = 7, arousal_level = 15, wetness = 10, last_updated = '12-22 09:00' WHERE name = '鸣泽唯';
+```
+
+> **规则**：增量 UPDATE 时只需输出 `/当前女角/*` 变化字段，SQL UPDATE 的 SET 子句数必须 ≥ JSONPatch 中女性角色字段变化条数。
+>
+> ★ **非当前女角变化**时（例如鸣泽唯已切换为非当前女角，但本轮她对你提升了好感），需输出 `/女角/鸣泽唯/好感度` 等变化字段，并对应 `UPDATE important_npc SET affection = X WHERE name = '鸣泽唯';`。
+
+## 骰子判定结果传递（详细版）
+
+**核心铁律：每一个行为都必须骰子判定，依据不同的公式。** 额外模型必须参考本轮 `<LCG骰子判定结果>` 块，将骰子结果应用到变量更新。禁止"无骰子判定就更新变量"。
+
+### 一、5档效果倍率（effect_mult）
+
+所有动作判定统一采用 5 档分档，基于"能力值 - 要求值"的差值（diff）：
+
+| 档位 | diff 范围 | effect_mult | 说明 |
+|------|---------|------------|------|
+| 大成功 critical_success | diff ≥ 30 | ×1.5 | 属性碾压，效果放大 1.5 倍 |
+| 成功 success | 10 ≤ diff < 30 | ×1.0 | 明显达标，标准效果 |
+| 普通 normal | -10 ≤ diff < 10 | ×0.5 | 势均力敌，效果减半 |
+| 失败 failure | -30 ≤ diff < -10 | ×0 | 略逊一筹，无效果 |
+| 大失败 critical_failure | diff < -30 | ×-0.5 | 差距悬殊，触发负面效果 |
+
+**判定公式**（参 `属性技能骰子联动.txt`）：
+- 能力值 `power = weighted_avg(基础属性6维, 性格特质6维, 技能系统13维, 女角偏好权重)`
+- 要求值 `requirement = base_req × dice_threshold_mult(难度) + 女角个人难度系数`
+- 差值 `diff = power - requirement`
+- 成功率 `success_rate = clamp(50 + diff, 5, 95)`
+- 骰子 `roll = _r() × 100`，成功条件 `roll < success_rate`
+
+### 二、13种恋爱动作判定→变量更新映射
+
+每种动作有独立的变量更新规则，effect_mult 应用到基础变化量：
+
+| 动作类型 | 基础要求值 | 变量更新公式（按 effect_mult 倍率） |
+|---------|---------|--------------------------------|
+| **confess** 告白 | 60 | 大成功：affection+10 / 成功：affection+5 / 普通：affection+2 / 失败：affection-2 / 大失败：affection-10, jealousy+5 |
+| **ask_date** 约会邀请 | 40 | 成功→触发 `_rollDate()` 约会判定，参第三节 |
+| **give_gift** 送礼 | 30 | 大成功：affection+8, heartbeat+5 / 成功：affection+5, heartbeat+3 / 普通：affection+2 / 失败：affection+0 / 大失败：affection-5 |
+| **hold_hand** 牵手 | 50 | 成功：affection+3, heartbeat+2 / 失败：affection-3 / 大失败：触发 BAD_END 预警 |
+| **kiss** 亲吻 | 55 | 成功：affection+5, heartbeat+3, first_kiss_done=1（若初吻）/ 失败：affection-5 / 大失败：触发 BAD_END_1 预警 |
+| **first_h** 初H | 70 | 大成功：affection+15, trust+10 / 成功：affection+10, trust+5 / 普通：affection+5 / 失败：affection-3 / 大失败：affection-15, trust-10。强制：first_h_done=1, hymen_status 变化, vaginal_tightness 变化 |
+| **advanced_h** 进阶H | 75 | 成功：affection+8, h_exp+1 / 失败：affection-3。强制：h_exp+1, 暴露程度/湿润度/兴奋度/精液残留 实时更新 |
+| **stealth_action** 潜行行动 | 50 | 成功：隐蔽推进 / 失败：illegal_count+1, 关系暴跌 / 大失败：触发危机事件 |
+| **work** 打工 | 35 | 调用 `_rollWork()`，参第四节 |
+| **study** 学习 | 40 | 调用 `_rollStudy()`，参第五节 |
+| **train_skill** 训练技能 | 30 | 大成功：技能熟练度+5 / 成功：+3 / 普通：+1 / 失败：+0 / 大失败：疲劳+10。每日训练次数上限5 |
+| **crisis_response** 危机应对 | 55 | 成功：化解危机, mood+5 / 失败：危机恶化, mood-10 / 大失败：触发 BAD_END 链 |
+| **comfort_heroine** 安慰女角 | 45 | 成功：mood+5, affection+3 / 普通：mood+2 / 失败：mood-2 / 大失败：mood-5, affection-3 |
+
+**前置条件强制检查**（违反则动作自动失败）：
+- 告白：affection≥60 AND relationship_stage≥心动
+- 约会邀请：relationship_stage≥熟悉
+- 牵手：relationship_stage≥暧昧（强行牵手触发 fail_changes）
+- 亲吻：relationship_stage≥心动（强行亲吻触发 BAD_END_1 预警）
+- 初H：relationship_stage≥亲密 AND affection≥80 AND trust≥70（强行触发 BAD_END_1）
+- 进阶H：relationship_stage≥亲密 AND h_exp≥20
+- 打工（家教）：academic≥50；体力≤20 强制休息无法打工
+
+### 三、_rollDate() 约会判定→变量更新
+
+约会质量分5档，好感加成受 `increase_mult` 难度修正：
+
+| 约会质量 | affection加成 | heartbeat加成 | mood加成 | 说明 |
+|---------|------------|------------|---------|------|
+| 失败 | -3 | -2 | -5 | 约会冷场，对方兴致缺缺 |
+| 平淡 | +1 | 0 | +2 | 约会一般 |
+| 良好 | +3 | +2 | +5 | 约会顺利，气氛融洽 |
+| 优秀 | +5 | +4 | +8 | 约会精彩，心动值提升 |
+| 完美 | +8 | +6 | +15 | 约会完美，关系大幅推进 |
+
+**魅力修正**：charm≥80 时 +20% 完美概率；charm≥60 时 +10%；charm≥30 时 +0；charm<30 时 -10%。
+
+### 四、_rollWork() 打工判定→变量更新
+
+打工判定含成功率+稀有度分档+收入计算：
+
+**成功率**：基础 80%，受难度 `dice_threshold_mult` 修正（轻松更高/地狱更低）。
+**失败**：无收入，疲劳+15（受 `decrease_mult` 修正）。
+
+**成功时的稀有度分档**（决定收入倍率，参 `全局规则总表.txt.LCG_TIER_MODIFIER`）：
+
+| 稀有度 | 概率 | 收入倍率 mult | 疲劳附加 | 说明 |
+|-------|------|------------|---------|------|
+| gray 常见(灰) | 60% | ×0.8 | +5 | 出错/迟到，扣薪 |
+| green 精良(绿) | 25% | ×1.0 | +5 | 正常完成 |
+| blue 稀有(蓝) | 10% | ×1.2 | +10 | 受表扬，加班费 |
+| purple 传说(紫) | 4% | ×1.5 | +15 | 特殊贡献，奖金 |
+| gold 神话(金) | 1% | ×2.0 | +20 | 稀有事件触发 |
+
+**收入公式**：`final_income = round(BASE_SALARY[工种] × money_mult(难度) × tier_mult × stamMod × fatMod)`
+- 体力修正 stamMod：physical≥80 时 ×1.2；physical≤20 时 ×0.6
+- 疲劳修正 fatMod：fatigue≥50 时 ×0.8
+- 优先调用 `calcSalary(工种, 难度, tier)`（参 `全局规则总表.txt`）
+
+**变量更新**：
+- `/主角/现金` += final_income（replace 为新完整值）
+- `/主角/疲劳` += fatigue_cost（replace 为新完整值）
+- `/主角/今日总收入` += final_income（若有此字段）
+
+### 五、_rollStudy() 学业判定→变量更新
+
+| 学业结果 | 学业加成 | 疲劳消耗 | 说明 |
+|---------|---------|---------|------|
+| 分心 | -1 | +8 | 学习分心，效率低下 |
+| 专注 | +2 | +5 | 学习专注，稳步提升 |
+| 高效 | +4 | +4 | 学习高效，进步明显 |
+| 顿悟 | +6 | +3 | 学习顿悟，大幅提升 |
+
+**学业修正**：academic≥80 时 +10% 顿悟概率；academic≥60 时 +5%；其他 +0。
+**疲劳≥70 时效率下降**（学业加成减半）。
+
+### 六、7种日常动作判定→变量更新
+
+日常动作基于生存属性状态+骰子值决定质量，`changes` 字段直接应用到变量：
+
+| 动作 | 触发条件 | changes 字段（按5档应用） |
+|-----|---------|----------------------|
+| **meal** 用餐 | hunger越高效果越好；fatigue≥50 时-10 | hunger: -40~-5 / mood: +8~-8 / fatigue: -3~+5 |
+| **drink** 喝水 | thirst越高效果越好 | thirst: -35~-15 / mood: +3~0 |
+| **bath** 洗澡 | hygiene越低效果越好 | hygiene: +20~+50 / mood: +5~+10 / fatigue: -5~0 |
+| **rest** 休息 | fatigue越高效果越好；mood≤20 时-15 | fatigue: -40~-5 / physical: +10~+30 / mood: +5~-3 |
+| **shop** 购物 | willpower≥60 时+10；≤20 时-10 | mood: +6~-3（涉及金钱变动须遵守经济铁律） |
+| **commute** 通勤 | physical≥60 时+10；≤20 时-15 | fatigue: +1~+4 / mood: 0~-1 |
+| **save_money** 存钱 | 无骰子风险，固定成功 | `/主角/储蓄` += amount，`/主角/现金` -= amount |
+
+**changes 应用规则**：
+- 大成功（×1.5）：changes 数值 ×1.5（负值绝对值×1.5，即恢复更多）
+- 成功（×1.0）：changes 数值原样应用
+- 普通（×0.5）：changes 数值 ×0.5
+- 失败（×0）：changes 数值 ×0（无效果），但负面副作用仍生效
+- 大失败（×-0.5）：changes 数值反转（恢复变消耗）
+
+### 七、强制规则（违反即判定无效）
+
+1. **每个行动必须骰子判定**：禁止"无骰子判定就更新变量"。玩家本轮有几个行动，就应用几个独立判定结果。
+2. **多动作独立判定**：一轮中多个行动禁止合并判定。如"约会+送礼+牵手"=3次独立判定，3个 effect_mult。
+3. **effect_mult 必须应用**：变量变化量 = 基础变化 × effect_mult。禁止无视倍率直接输出固定值。
+4. **失败后果强制输出**：判定为失败/大失败时，必须输出 fail_changes（好感下降/信任下降/mood下降等负面变化）。禁止"失败但无惩罚"。
+5. **前置条件强制检查**：违反前置条件的动作自动判为失败（如未达关系阶段强行亲吻→自动失败+BAD_END预警）。
+6. **经济铁律**：涉及金钱变动时（work/shop/save_money/give_gift），必须同时输出：
+   - `/主角/现金`（扣减后的完整当前值）
+   - `/主角/今日总消费`（累计值）
+   - `/主角/今日总收入`（累计值，work 时）
+7. **生存属性每时段自动递增**（参 `全局规则总表.txt.SURVIVAL_RULES`）：hunger 每时段 +10、thirst 每时段 +15、hygiene 每日 -20，均受难度修正系数（`survival_hunger_mult`/`survival_thirst_mult`/`survival_hygiene_mult`）影响。跳餐惩罚参 `固定物品效果表.txt.meal_miss_penalty`（1餐跳过 hunger+20/mood-5/fatigue+5；3餐跳过触发 BAD_END_risk）。
+8. **不可逆变化强制**：first_kiss_done/first_h_done/advanced_h_done/hymen_status 等不可逆字段一旦触发必须更新，不能"忘记"。
+9. **难度修正全局应用**：`increase_mult`（数值上升）/`decrease_mult`（数值下降）/`money_mult`（金钱）/`dice_threshold_mult`（成功率）四个难度修正系数必须应用到对应场景。
+10. **叙事禁止展示元数据**：主模型叙事中禁止出现 effect_mult/diff/success_rate/roll/tier 等骰子元数据，仅通过结果描述体现（如"告白完美成功，她感动落泪"而非"effect_mult=1.5"）。
+
+### 八、详细公式来源（单一真相源）
+
+- **13种恋爱动作定义**：参 `属性技能骰子联动.txt.ACTION_TYPES`（base_req + 前置条件）
+- **5档效果定义与示例**：参 `属性技能骰子联动.txt.TIER_EFFECTS`
+- **能力值计算公式**：参 `属性技能骰子联动.txt.calcPlayerPower`（三层属性加权平均）
+- **要求值计算公式**：参 `属性技能骰子联动.txt.calcHeroineRequirement`（基础+阶段+难度+女角特质）
+- **统一判定入口**：参 `属性技能骰子联动.txt.calcFinalResult`
+- **LCG确定性骰子**：参 `LCG骰子/引擎.txt._r()`（种子公式 + LCG常数）
+- **打工判定**：参 `LCG骰子/引擎.txt._rollWork`
+- **约会判定**：参 `LCG骰子/引擎.txt._rollDate`
+- **学业判定**：参 `LCG骰子/引擎.txt._rollStudy`
+- **事件判定**：参 `LCG骰子/引擎.txt._rollEvent`
+- **经济判定**：参 `LCG骰子/引擎.txt._rollEconomy`
+- **日常动作判定**：参 `LCG骰子/引擎.txt._rollDailyAction`（7种日常动作的 changes 字段）
+- **难度修正系数**：参 `全局规则总表.txt.DIFFICULTY_MODIFIERS`（4档完整字段）
+  - `dice_threshold_mult`：轻松0.8/普通1.0/挑战1.2/地狱2.0（骰子判定阈值修正）
+  - `money_mult`：轻松1.2/普通1.0/挑战0.9/地狱0.3（金钱获得修正）
+  - `decrease_mult`：轻松0.5/普通1.0/挑战1.2/地狱2.0（数值下降幅度修正）
+  - `increase_mult`：轻松1.5/普通1.0/挑战0.9/地狱0.3（数值上升幅度修正）
+  - `survival_hunger_mult`/`survival_thirst_mult`/`survival_hygiene_mult`：生存属性递增速率修正
+- **女角偏好权重**：参 `女角偏好系数表.txt.HEROINE_PREFERENCES`（差异化判定核心）
+- **女角个人难度**：参 `女角偏好系数表.txt.difficulty_coefficient`（-5 到 +15）
+
+## 错误防范要点（违反即变量更新失败）
+
+1. **漏 `<JSONPatch>` 标签** → MVU 找不到 "JSONPatch" 字符串，所有变量不更新
+2. **用裸 JSON 数组替代 `<JSONPatch>`** → 同上
+3. **路径用点号而非斜杠**（`主角.饥饿` → 应为 `/主角/饥饿`）
+4. **路径带 stat_data 前缀**（`/stat_data/主角` → 应为 `/主角`）
+5. **使用 delta 操作**（已废弃，必须用 replace 输出完整值）
+6. **`</UpdateVariable>` 后有多余内容**（thinking/旁白/正文）
+7. **女角镜像与当前女角不同步**（当前女角输出信任度，镜像漏了）
+8. **漏 `<UpdateTable>` 块** → 数据库不更新，表格数据与变量不同步
+9. **SQL 语法错误**（CHECK 约束违规/缺 WHERE/NSFW 字段写 NULL）
+10. **数据库与 MVU 变量不同步**（MVU 输出信任度，SQL UPDATE 漏了）
+11. **新女角登场只输出关系值字段**（必须全量70字段，含NSFW身体测量）
+12. **用 `...` 省略字段**（禁止省略任何字段）
+13. **臆造数值**（主角属性/技能/储蓄必须基于数据库快照，禁止凭空设值）
+14. **忽视身体状态变化**（乳头肿胀/色泽变化/阴部变化/伤痕/敏感度提升等身体状态变化必须输出对应JSONPatch，不能因"字段名听起来像静态"就跳过）
+15. **臆造数据库列名**（如 `聚焦镜头`/`视角`/`镜头`/`特写`/`焦点` 等叙事描述词不是数据库字段，SQL 列名必须严格对应 DDL 定义，参 `表格模板.txt`）
+16. **误判女性角色身份**（只要是女性角色就必须按 70 字段处理，包括美佐子/片桐美铃/永岛佐知子等预设女角，以及 AI 新增的女性 NPC。禁止以"她是义母/老师/NPC/路人/已婚/年长/年幼"为由跳过 NSFW 字段输出）
+17. **MVU 与数据库 NSFW 字段不同步**（MVU JSONPatch 输出了女性角色 NSFW 字段变化，但 `<UpdateTable>` SQL 漏掉对应列的 UPDATE——每条 JSONPatch 必须有对应 SQL SET 子句）
+18. **新女角 INSERT 只写关系值列**（INSERT INTO important_npc 必须包含全部 70 字段，NSFW 列填默认值，不能只 INSERT affection/trust/relationship_stage）
+19. **无骰子判定就更新变量**（每个行动必须有对应骰子判定结果，effect_mult 必须应用到变化量）
+20. **合并多动作判定**（一轮多动作必须独立判定，禁止合并为一个 effect_mult）
+21. **失败无惩罚**（失败/大失败时必须输出 fail_changes 负面变化，禁止"失败但无后果"）
+22. **违反前置条件**（强行触发未达关系阶段的动作→自动失败+BAD_END预警，必须体现）
+23. **CHECK 约束违规**（relationship_stage 不在12档枚举/exposure_level 不在7档枚举/数值超范围等导致 INSERT/UPDATE 失败）
+24. **不可逆字段遗忘**（first_kiss_done/first_h_done/hymen_status 触发后必须更新，不能"忘记"）
+25. **新增字段遗漏**（新女角登场时必须输出 6 维属性 charm/academic/physical/social/perception/reputation + 13 项技能 strength/agility/intelligence/will_skill/stealth/speech/medical/cooking/art/driving/fighting/observation/romance_skill，共 19 字段。数值参该女角 `基础信息.txt.attributes_skills` 块。INSERT INTO important_npc 也必须包含这 19 列。禁止以"她是女角不需要属性技能"为由跳过——所有女角均持有属性技能，参与骰子反制判定）
+
+## 引用单一真相源
+
+- **NSFW 硬门槛**（5档）：参 `防口胡.txt` 第三节 + `全局规则-NSFW身体规则.txt`
+- **身份初始化**（P1-P6）：参 `全局规则总表.txt.PLAYER_IDENTITIES`
+- **相沢诚 NPC 数据**（玩家选 P2-P6 时）：参 `主角设定.txt.PROTAGONIST_NPC_INFO`
+- **变量路径完整列表**：参 `变量列表.txt`
+- **变量更新触发条件**：参 `变量更新规则.yaml`
+- **关系阶段12档阈值**：参 `变量列表.txt` 当前女角.关系阶段
+- **死结局触发条件**：参 `全局规则总表.txt.BAD_ENDINGS`

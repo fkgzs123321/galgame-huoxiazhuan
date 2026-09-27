@@ -1,0 +1,297 @@
+@@generate_before
+<%_
+/* 轨道贸易系统控制器
+   定义轨道贸易商船/触发/价格/成功率,行为校验入口 */
+
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+var p1Social = Number(getvar('stat_data.殖民者_主角.社交', { scope: 'local', defaults: 5 })) || 5;
+var hasSignal = Number(getvar('stat_data.殖民地.贸易信号器', { scope: 'local', defaults: 0 })) || 0;
+var lastOrbitalDay = Number(getvar('stat_data.事件计时器.上次轨道贸易日', { scope: 'local', defaults: 0 })) || 0;
+var lastTraderType = getvar('stat_data.事件计时器.上次商船类型', { scope: 'local', defaults: '无' }) || '无';
+
+/* 贸易信号器建筑定义
+   需组件×5 + 钢铁×10建造,提供轨道贸易触发能力 */
+var SIGNAL_BUILDING = {
+  名称: '贸易信号器',
+  建造成本: { 组件: 5, 钢铁: 10 },
+  建造技能: '建设',
+  建造耗时: 8,
+  耗电: 200,
+  备注: '建造后可触发轨道贸易,商船定期来访'
+};
+
+/* 贸易商船类型表 TRADER_DB
+   字段: 类型(商船大类), 商品(可交易商品类别), 间隔(来访间隔天数),
+        买入修正(买入价修正), 卖出修正(卖出价修正), 备注(商船说明) */
+var TRADER_DB = {
+  '补给船': {
+    类型: '补给船', 商品: '日用品/食物/药品', 间隔: 7,
+    买入修正: 1.1, 卖出修正: 1.15, 备注: '基础物资补给,最常见'
+  },
+  '武器商': {
+    类型: '武器商', 商品: '武器/弹药/护甲', 间隔: 14,
+    买入修正: 1.1, 卖出修正: 1.15, 备注: '军火商船,武器装备交易'
+  },
+  '资源商': {
+    类型: '资源商', 商品: '材料/组件/高级组件', 间隔: 10,
+    买入修正: 1.1, 卖出修正: 1.15, 备注: '原材料与组件供应'
+  },
+  '奢侈品商': {
+    类型: '奢侈品商', 商品: '艺术品/稀有物品', 间隔: 21,
+    买入修正: 1.1, 卖出修正: 1.15, 备注: '高端商品,高价值交易'
+  },
+  '黑市商': {
+    类型: '黑市商', 商品: '违禁品/奴隶/特殊物品', 间隔: 30,
+    买入修正: 1.1, 卖出修正: 1.15, 备注: '非法交易,高风险高回报'
+  }
+};
+
+/* 轨道贸易商品表 ORBITAL_GOODS_DB
+   每个商船类型的可交易商品列表(基础估值参考各数值表) */
+var ORBITAL_GOODS_DB = {
+  '补给船': {
+    出售: ['简餐', '精制餐', '草药', '草药包', '布', '皮革', '木材', '石块'],
+    收购: ['钢铁', '白银', '黄金', '皮革', '草药', '多余食物']
+  },
+  '武器商': {
+    出售: ['短弓', '长弓', '左轮', '步枪', '霰弹枪', '狙击枪', '子弹', '皮甲', '防弹衣', '战术甲'],
+    收购: ['白银', '黄金', '武器', '护甲', '钢铁', '组件']
+  },
+  '资源商': {
+    出售: ['钢铁', '布', '皮革', '玻璃', '黄金', '铀', '组件', '高级组件', '化学燃料'],
+    收购: ['白银', '多余材料', '食物', '草药', '皮革', '木材']
+  },
+  '奢侈品商': {
+    出售: ['黑曜石', '翡翠', '玉石', '黄金', '灵魂草', '高级药', '高级组件'],
+    收购: ['艺术品', '稀有物品', '黄金', '白银', '珠宝', '高级组件']
+  },
+  '黑市商': {
+    出售: ['路西弗', '奴隶', '黑市武器', '能量电池', '稀有材料', '特殊信物'],
+    收购: ['白银', '黄金', '艺术品', '违禁品', '奴隶', '稀有物品']
+  }
+};
+
+/* 轨道贸易触发判定
+   signal=是否有贸易信号器(0/1), day=当前游戏日
+   返回: 触发判定结果 */
+function _orbitalTradeTrigger(signal, day) {
+  var sig = Number(signal) || 0;
+  var d = Number(day) || 1;
+  if (sig !== 1) {
+    return { 触发: false, 原因: '未建造贸易信号器,无法呼叫轨道贸易', 需建造: '贸易信号器(组件×5+钢铁×10)' };
+  }
+  var daysSince = d - lastOrbitalDay;
+  /* 检查各商船类型是否到达来访间隔 */
+  var availableTraders = [];
+  var traderNames = Object.keys(TRADER_DB);
+  for (var i = 0; i < traderNames.length; i++) {
+    var tName = traderNames[i];
+    var trader = TRADER_DB[tName];
+    var interval = Number(trader.间隔) || 7;
+    if (daysSince >= interval) {
+      availableTraders.push({
+        类型: tName,
+        间隔: interval,
+        商品: trader.商品,
+        距上次: daysSince + '天'
+      });
+    }
+  }
+  if (availableTraders.length === 0) {
+    var nextMinInterval = 7;
+    var nextTrader = '补给船';
+    for (var j = 0; j < traderNames.length; j++) {
+      var tn = traderNames[j];
+      var intv = Number(TRADER_DB[tn].间隔) || 7;
+      var remain = intv - daysSince;
+      if (remain > 0 && remain < nextMinInterval) {
+        nextMinInterval = remain;
+        nextTrader = tn;
+      }
+    }
+    return {
+      触发: false,
+      原因: '无商船到达,距下次最近商船(' + nextTrader + ')还有' + nextMinInterval + '天',
+      距上次贸易: daysSince + '天',
+      下次商船: nextTrader,
+      剩余天数: nextMinInterval
+    };
+  }
+  /* LCG骰子选择来访商船(从可用商船中随机选一个) */
+  var selectRoll = _lcgRoll('orbital_select_' + d, 1, availableTraders.length)[0];
+  var selected = availableTraders[selectRoll - 1];
+  return {
+    触发: true,
+    原因: '商船到达,可进行轨道贸易',
+    商船类型: selected.类型,
+    商品范围: selected.商品,
+    距上次贸易: selected.距上次,
+    可用商船: availableTraders,
+    选中商船: selected.类型,
+    骰值: selectRoll
+  };
+}
+
+/* 轨道贸易买入价(比地面贸易贵10%)
+   item=商品基础估值, traderType=商船类型(查TRADER_DB)
+   返回: 买入价 */
+function _orbitalBuyPrice(item, traderType) {
+  var baseValue = Number(item) || 1;
+  var tt = String(traderType) || '补给船';
+  var trader = TRADER_DB[tt] || TRADER_DB['补给船'];
+  var buyMod = Number(trader.买入修正) || 1.1;
+  /* 社交技能修正: 每点社交-1%买入价 */
+  var socialMod = Math.max(0.5, 1 - p1Social * 0.01);
+  var raw = baseValue * buyMod * socialMod;
+  return Math.round(raw * 100) / 100;
+}
+
+/* 轨道贸易卖出价(比地面贸易高15%)
+   item=商品基础估值, traderType=商船类型(查TRADER_DB)
+   返回: 卖出价 */
+function _orbitalSellPrice(item, traderType) {
+  var baseValue = Number(item) || 1;
+  var tt = String(traderType) || '补给船';
+  var trader = TRADER_DB[tt] || TRADER_DB['补给船'];
+  var sellMod = Number(trader.卖出修正) || 1.15;
+  /* 社交技能修正: 每点社交+1%卖出价 */
+  var socialMod = 1 + p1Social * 0.01;
+  var raw = baseValue * sellMod * socialMod;
+  return Math.round(raw * 100) / 100;
+}
+
+/* 轨道贸易成功率
+   skill=社交技能, amount=交易银两总额
+   返回: 贸易检定结果 */
+function _orbitalTradeSuccess(skill, amount) {
+  var skl = Number(skill) || 0;
+  var amt = Number(amount) || 0;
+  var threshold = skl * 5;
+  /* 大额交易难度提升: 每100银两阈值-5 */
+  var amountPenalty = Math.floor(amt / 100) * 5;
+  var adjustedThreshold = Math.max(5, threshold - amountPenalty);
+  var checkResult = _check(adjustedThreshold, 'orbital_trade_' + gameDay, '普通');
+  return {
+    阈值: adjustedThreshold,
+    基础阈值: threshold,
+    大额惩罚: amountPenalty,
+    交易额: amt,
+    骰值: checkResult.roll,
+    结果: checkResult.result,
+    成功: (checkResult.result !== '失败' && checkResult.result !== '大失败')
+  };
+}
+
+/* 触发演示 */
+var triggerDemo = _orbitalTradeTrigger(hasSignal, gameDay);
+var buyDemo = _orbitalBuyPrice(3, '补给船');
+var sellDemo = _orbitalSellPrice(3, '补给船');
+var buyDemoWeapon = _orbitalBuyPrice(30, '武器商');
+var sellDemoWeapon = _orbitalSellPrice(30, '武器商');
+var successDemo = _orbitalTradeSuccess(p1Social, 100);
+_%>
+<轨道贸易系统就绪>
+[当前轨道贸易状态]
+游戏日: <%= gameDay %> / 阶段: <%= phase %> / 殖民地银两: <%= silver %>
+贸易信号器: <%= hasSignal ? '已建造' : '未建造' %> / 社交技能: <%= p1Social %>
+距上次轨道贸易: <%= gameDay - lastOrbitalDay %>天 / 上次商船: <%= lastTraderType %>
+
+[贸易信号器建筑 SIGNAL_BUILDING]
+名称: 贸易信号器
+建造成本: 组件×5 + 钢铁×10
+建造技能: 建设 / 建造耗时: 8小时 / 耗电: 200W
+说明: 建造后可触发轨道贸易,商船定期来访
+当前状态: <%= hasSignal ? '已建成,可呼叫轨道贸易' : '未建造,需先建造贸易信号器' %>
+
+[贸易商船类型表 TRADER_DB]
+1. 补给船: 日用品/食物/药品 (每7天来一次) 买入×1.1 卖出×1.15
+   → 基础物资补给,最常见
+2. 武器商: 武器/弹药/护甲 (每14天来一次) 买入×1.1 卖出×1.15
+   → 军火商船,武器装备交易
+3. 资源商: 材料/组件/高级组件 (每10天来一次) 买入×1.1 卖出×1.15
+   → 原材料与组件供应
+4. 奢侈品商: 艺术品/稀有物品 (每21天来一次) 买入×1.1 卖出×1.15
+   → 高端商品,高价值交易
+5. 黑市商: 违禁品/奴隶/特殊物品 (每30天来一次) 买入×1.1 卖出×1.15
+   → 非法交易,高风险高回报
+
+[轨道贸易商品表 ORBITAL_GOODS_DB]
+补给船:
+  出售: 简餐/精制餐/草药/草药包/布/皮革/木材/石块
+  收购: 钢铁/白银/黄金/皮革/草药/多余食物
+武器商:
+  出售: 短弓/长弓/左轮/步枪/霰弹枪/狙击枪/子弹/皮甲/防弹衣/战术甲
+  收购: 白银/黄金/武器/护甲/钢铁/组件
+资源商:
+  出售: 钢铁/布/皮革/玻璃/黄金/铀/组件/高级组件/化学燃料
+  收购: 白银/多余材料/食物/草药/皮革/木材
+奢侈品商:
+  出售: 黑曜石/翡翠/玉石/黄金/灵魂草/高级药/高级组件
+  收购: 艺术品/稀有物品/黄金/白银/珠宝/高级组件
+黑市商:
+  出售: 路西弗/奴隶/黑市武器/能量电池/稀有材料/特殊信物
+  收购: 白银/黄金/艺术品/违禁品/奴隶/稀有物品
+
+[轨道贸易规则]
+1. 触发判定: _orbitalTradeTrigger(signal, day)
+   前置: 必须建造贸易信号器(组件×5+钢铁×10)
+   间隔: 各商船按固定间隔来访(补给船7天/资源商10天/武器商14天/奢侈品商21天/黑市商30天)
+   选择: LCG骰子从可用商船中随机选一个
+   演示: 信号器<%= hasSignal ? '已建造' : '未建造' %> → <%= triggerDemo.触发 ? '触发(' + triggerDemo.商船类型 + ')' : '未触发' %> (<%= triggerDemo.原因 %>)
+<%_ if (triggerDemo.触发) { _%>
+   选中商船: <%= triggerDemo.选中商船 %> (骰值<%= triggerDemo.骰值 %>)
+   可用商船: <%_ for (var i = 0; i < triggerDemo.可用商船.length; i++) { var t = triggerDemo.可用商船[i]; _%><%= t.类型 %>(间隔<%= t.间隔 %>天) <%_ } _%>
+<%_ } else if (triggerDemo.下次商船) { _%>
+   下次商船: <%= triggerDemo.下次商船 %> (剩余<%= triggerDemo.剩余天数 %>天)
+<%_ } _%>
+
+2. 买入价: _orbitalBuyPrice(item, traderType)
+   公式: 基础估值 × 买入修正(1.1) × 社交修正(1 - 社交×0.01)
+   比地面贸易贵10%(买入修正×1.1)
+   演示(钢铁基础3 + 补给船): 买入<%= buyDemo %> (含社交修正)
+   演示(左轮基础30 + 武器商): 买入<%= buyDemoWeapon %>
+
+3. 卖出价: _orbitalSellPrice(item, traderType)
+   公式: 基础估值 × 卖出修正(1.15) × 社交修正(1 + 社交×0.01)
+   比地面贸易高15%(卖出修正×1.15)
+   演示(钢铁基础3 + 补给船): 卖出<%= sellDemo %> (含社交修正)
+   演示(左轮基础30 + 武器商): 卖出<%= sellDemoWeapon %>
+
+4. 贸易成功率: _orbitalTradeSuccess(skill, amount)
+   阈值: 社交×5 - 大额惩罚(每100银两-5)
+   检定: _check(调整后阈值, seed, '普通')
+   成功: 可进行交易 / 失败: 交易取消
+   演示(社交<%= p1Social %> + 交易100银两): 阈值<%= successDemo.调整后阈值 || successDemo.阈值 %> 骰值<%= successDemo.骰值 %> → <%= successDemo.结果 %>
+
+[行为校验要求]
+轨道贸易行为必须输出行为校验块:
+<轨道贸易校验>
+- 贸易信号器: [已建造/未建造]
+- 商船类型: [补给船/武器商/资源商/奢侈品商/黑市商]
+- 商品范围: [商船可交易商品类别]
+- 交易方向: [买入/卖出]
+- 商品名称: [商品名] (查对应数值表获取基础估值)
+- 基础估值: [银两数]
+- 买入修正: [×1.1]
+- 卖出修正: [×1.15]
+- 社交修正: [买入: 1-社交×0.01 / 卖出: 1+社交×0.01]
+- 最终单价: [买入价/卖出价]
+- 交易数量: [数量]
+- 交易总额: [银两数]
+- 贸易检定: [_orbitalTradeSuccess结果]
+- 大额惩罚: [每100银两-5阈值]
+- 银两变动: [扣除/增加/余额]
+</轨道贸易校验>
+
+[轨道贸易系统说明]
+本控制器为轨道贸易统一入口,所有轨道贸易触发/价格/成功率必须经此判定。
+贸易信号器(SIGNAL_BUILDING)为前置建筑,需组件×5+钢铁×10建造,提供轨道贸易能力。
+贸易商船类型表(TRADER_DB)定义5类商船,各有固定来访间隔与商品范围。
+轨道贸易商品表(ORBITAL_GOODS_DB)定义每类商船的出售/收购商品列表,基础估值参考各数值表。
+价格修正: 买入比地面贵10%(×1.1),卖出比地面高15%(×1.15),另受社交技能修正。
+贸易成功率依赖DDL确定性骰子引擎(_check),大额交易有阈值惩罚(每100银两-5)。
+与派系贸易系统联动: 轨道贸易为独立系统,不受派系关系影响,但价格修正叠加于地面贸易规则之上。
+与时间推进调度器联动: 商船来访间隔需按游戏日累计检测。
+</轨道贸易系统就绪>

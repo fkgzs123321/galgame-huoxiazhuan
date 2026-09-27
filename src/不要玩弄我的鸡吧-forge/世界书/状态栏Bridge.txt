@@ -1,0 +1,116 @@
+# [MVU]状态栏Bridge
+# 条目名：[MVU]状态栏Bridge
+# 激活策略：关灯（内容由 pack_card 注入助手脚本，不进 prompt）
+
+<mvu_status_bar_bridge>
+// 状态栏Bridge脚本 - 监听iframe请求，从MVU读取stat_data推送回iframe
+// 此脚本需在角色卡tavern_helper脚本中加载，或作为全局脚本注入
+
+(function() {
+  if (window.__fjb_bridge_installed) return;
+  window.__fjb_bridge_installed = true;
+
+  // ===== 双轨读取 =====
+  // Sync：快速读取缓存/embed（同步，保证有值）
+  function getStatDataSync(messageId) {
+    try {
+      var gv = pickHostFn('getVariables');
+      if (gv) {
+        var vars = gv({type:'message', message_id: messageId >= 0 ? messageId : 'latest'});
+        if (vars && vars.stat_data) return vars.stat_data;
+      }
+    } catch(e) {}
+    try {
+      var gv2 = pickHostFn('getVariables');
+      if (gv2) {
+        var vars2 = gv2({type:'chat'});
+        if (vars2 && vars2.stat_data) return vars2.stat_data;
+      }
+    } catch(e) {}
+    return null;
+  }
+  // Async：await Mvu.getMvuData（真实数据）
+  async function getStatDataAsync(messageId) {
+    try {
+      var Mvu = pickHostValue('Mvu');
+      if (Mvu && typeof Mvu.getMvuData === 'function') {
+        var data = await Mvu.getMvuData({type:'message', message_id: messageId >= 0 ? messageId : 'latest'});
+        if (data && data.stat_data) return data.stat_data;
+        if (data) return data;
+      }
+    } catch(e) {}
+    // fallback to sync
+    return getStatDataSync(messageId);
+  }
+  // 宿主函数/变量访问
+  function pickHostFn(name) {
+    try { if (typeof window[name] === 'function') return window[name]; } catch(e) {}
+    try { if (window.parent && typeof window.parent[name] === 'function') return window.parent[name]; } catch(e) {}
+    try { if (window.top && typeof window.top[name] === 'function') return window.top[name]; } catch(e) {}
+    return null;
+  }
+  function pickHostValue(name) {
+    try { if (typeof window[name] !== 'undefined') return window[name]; } catch(e) {}
+    try { if (window.parent && typeof window.parent[name] !== 'undefined') return window.parent[name]; } catch(e) {}
+    try { if (window.top && typeof window.top[name] !== 'undefined') return window.top[name]; } catch(e) {}
+    return null;
+  }
+
+  // 监听 iframe 请求（异步响应）
+  window.addEventListener('message', async function(e) {
+    try {
+      if (e.origin && e.origin !== window.location.origin) return;
+      var data = e.data;
+      if (!data || data.type !== 'fjb-mvu-stat-request') return;
+      var messageId = typeof data.messageId === 'number' ? data.messageId : -1;
+      var stat = await getStatDataAsync(messageId);
+      if (stat) {
+        e.source.postMessage({
+          type: 'fjb-mvu-stat-data',
+          messageId: messageId,
+          stat_data: stat
+        }, e.origin || window.location.origin);
+      }
+    } catch(err) {}
+  });
+
+  // MVU变量更新完成后，主动向所有iframe推送最新数据（先sync快速,再async刷新）
+  try {
+    if (typeof eventOn === 'function') {
+      eventOn('mag_variable_update_ended', async function() {
+        try {
+          var iframes = document.querySelectorAll('iframe');
+          // sync 快速推送
+          var syncStat = getStatDataSync(-1);
+          for (var i = 0; i < iframes.length; i++) {
+            try {
+              if (syncStat) {
+                iframes[i].contentWindow.postMessage({
+                  type: 'fjb-mvu-stat-data',
+                  messageId: -1,
+                  stat_data: syncStat
+                }, window.location.origin);
+              }
+            } catch(_) {}
+          }
+          // async 二次刷新
+          var asyncStat = await getStatDataAsync(-1);
+          if (asyncStat && asyncStat !== syncStat) {
+            for (var j = 0; j < iframes.length; j++) {
+              try {
+                iframes[j].contentWindow.postMessage({
+                  type: 'fjb-mvu-stat-data',
+                  messageId: -1,
+                  stat_data: asyncStat
+                }, window.location.origin);
+              } catch(_) {}
+            }
+          }
+        } catch(_) {}
+      });
+    }
+  } catch(_) {}
+
+  console.log('[假阴茎反向镜像卡] MVU状态栏Bridge已安装');
+})();
+</mvu_status_bar_bridge>

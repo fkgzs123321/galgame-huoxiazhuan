@@ -1,0 +1,843 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "世界": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前时间": {
+          "default": "2026/01/01 07:00",
+          "type": "string"
+        },
+        "当前班次": {
+          "default": "早班",
+          "type": "string",
+          "enum": [
+            "早班",
+            "中班",
+            "夜班"
+          ]
+        },
+        "天气": {
+          "default": "晴",
+          "type": "string"
+        },
+        "日序号": {
+          "default": 1,
+          "type": "number"
+        }
+      }
+    },
+    "主角": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "姓名": {
+          "default": "未命名",
+          "type": "string"
+        },
+        "所在地": {
+          "default": "入口大厅",
+          "type": "string"
+        },
+        "力量": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "敏捷": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "体质": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "智力": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "感知": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "魅力": {
+          "$ref": "#/$defs/__schema0"
+        },
+        "体力值": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "精神值": {
+          "$ref": "#/$defs/__schema1"
+        },
+        "资金": {
+          "default": 500,
+          "type": "number"
+        },
+        "声望": {
+          "default": 10,
+          "type": "number"
+        },
+        "等级": {
+          "default": 1,
+          "type": "number"
+        },
+        "经验值": {
+          "default": 0,
+          "type": "number"
+        },
+        "技能点": {
+          "default": 0,
+          "type": "number"
+        },
+        "任务日志": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "可接任务数量": {
+              "default": 0,
+              "type": "number"
+            },
+            "进行中任务数量": {
+              "default": 0,
+              "type": "number"
+            },
+            "已完成任务数量": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        },
+        "NSFW状态": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "开关": {
+              "default": "关",
+              "type": "string",
+              "enum": [
+                "关",
+                "开"
+              ]
+            },
+            "当前阶段": {
+              "default": "未开启",
+              "type": "string"
+            },
+            "敏感度": {
+              "default": 0,
+              "type": "number"
+            },
+            "耐受度": {
+              "default": 0,
+              "type": "number"
+            },
+            "欲望张力": {
+              "default": 0,
+              "type": "number"
+            },
+            "风险标记": {
+              "default": "低",
+              "type": "string",
+              "enum": [
+                "低",
+                "中",
+                "高"
+              ]
+            },
+            "冷却到分钟戳": {
+              "default": 0,
+              "type": "number"
+            },
+            "冷却剩余分钟": {
+              "default": 0,
+              "type": "number"
+            },
+            "最近事件": {
+              "default": "",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "任务日志": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "可接任务": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "任务ID": {
+                "default": "TASK-UNKNOWN",
+                "type": "string"
+              },
+              "名称": {
+                "default": "未命名任务",
+                "type": "string"
+              },
+              "类型": {
+                "default": "支线",
+                "type": "string",
+                "enum": [
+                  "主线",
+                  "阶段",
+                  "支线",
+                  "应急"
+                ]
+              },
+              "阶段标签": {
+                "default": "通用",
+                "type": "string"
+              },
+              "难度": {
+                "default": "中",
+                "type": "string",
+                "enum": [
+                  "低",
+                  "中",
+                  "高"
+                ]
+              },
+              "预计耗时分钟": {
+                "default": 30,
+                "type": "number"
+              },
+              "奖励": {
+                "default": "无",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "进行中": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "任务ID": {
+                "default": "TASK-UNKNOWN",
+                "type": "string"
+              },
+              "名称": {
+                "default": "未命名任务",
+                "type": "string"
+              },
+              "类型": {
+                "default": "支线",
+                "type": "string",
+                "enum": [
+                  "主线",
+                  "阶段",
+                  "支线",
+                  "应急"
+                ]
+              },
+              "阶段标签": {
+                "default": "通用",
+                "type": "string"
+              },
+              "当前目标": {
+                "default": "待分配",
+                "type": "string"
+              },
+              "进度": {
+                "default": "0/1",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "已完成": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "default": {},
+            "type": "object",
+            "properties": {
+              "任务ID": {
+                "default": "TASK-UNKNOWN",
+                "type": "string"
+              },
+              "名称": {
+                "default": "未命名任务",
+                "type": "string"
+              },
+              "类型": {
+                "default": "支线",
+                "type": "string",
+                "enum": [
+                  "主线",
+                  "阶段",
+                  "支线",
+                  "应急"
+                ]
+              },
+              "阶段标签": {
+                "default": "通用",
+                "type": "string"
+              },
+              "评价": {
+                "default": "已完成",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "事件标记": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "主线阶段": {
+          "default": "序章",
+          "type": "string"
+        },
+        "任务派发备注": {
+          "default": "",
+          "type": "string"
+        },
+        "轮次心跳": {
+          "default": "",
+          "type": "string"
+        },
+        "最近动作": {
+          "default": "",
+          "type": "string"
+        },
+        "动作序列号": {
+          "default": 0,
+          "type": "number"
+        },
+        "最近动作日志": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "最近动作键": {
+          "default": "",
+          "type": "string"
+        },
+        "最近动作分钟戳": {
+          "default": 0,
+          "type": "number"
+        }
+      }
+    },
+    "判定状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "骰点模式": {
+          "default": "strict_d20",
+          "type": "string",
+          "enum": [
+            "strict_d20",
+            "advantage",
+            "disadvantage"
+          ]
+        },
+        "最近骰点": {
+          "default": 0,
+          "type": "number"
+        },
+        "最近判定总值": {
+          "default": 0,
+          "type": "number"
+        },
+        "最近DC": {
+          "default": 10,
+          "type": "number"
+        },
+        "最近判定结果": {
+          "default": "未判定",
+          "type": "string"
+        },
+        "优势状态": {
+          "default": "无",
+          "type": "string",
+          "enum": [
+            "无",
+            "优势",
+            "劣势"
+          ]
+        },
+        "风险评分": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "R1病情波动强度": {
+              "default": 0,
+              "type": "number"
+            },
+            "R2操作负荷强度": {
+              "default": 0,
+              "type": "number"
+            },
+            "R3协作复杂度": {
+              "default": 0,
+              "type": "number"
+            },
+            "R4证据完整度风险": {
+              "default": 0,
+              "type": "number"
+            },
+            "R5时间窗口压力": {
+              "default": 0,
+              "type": "number"
+            },
+            "R6环境资源约束": {
+              "default": 0,
+              "type": "number"
+            },
+            "RiskScore": {
+              "default": 0,
+              "type": "number"
+            },
+            "风险分级": {
+              "default": "G0",
+              "type": "string",
+              "enum": [
+                "G0",
+                "G1",
+                "G2",
+                "G3",
+                "G4"
+              ]
+            },
+            "分级DC修正": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        },
+        "有效属性": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "力量": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "敏捷": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "体质": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "智力": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "感知": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "魅力": {
+              "$ref": "#/$defs/__schema0"
+            }
+          }
+        }
+      }
+    },
+    "系统设置": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "模型能力档位": {
+          "default": "standard",
+          "type": "string",
+          "enum": [
+            "lite",
+            "standard",
+            "pro"
+          ]
+        },
+        "NSFW内容档位": {
+          "default": "suggestive",
+          "type": "string",
+          "enum": [
+            "safe",
+            "suggestive",
+            "explicit"
+          ]
+        },
+        "NSFW自动降级": {
+          "default": "开",
+          "type": "string",
+          "enum": [
+            "开",
+            "关"
+          ]
+        },
+        "难度档位": {
+          "default": "标准",
+          "type": "string",
+          "enum": [
+            "新手",
+            "标准",
+            "困难",
+            "专家"
+          ]
+        },
+        "任务视图筛选": {
+          "default": "全部",
+          "type": "string",
+          "enum": [
+            "全部",
+            "阶段",
+            "通用",
+            "应急"
+          ]
+        },
+        "输出模式": {
+          "default": "发布",
+          "type": "string",
+          "enum": [
+            "发布",
+            "开发"
+          ]
+        }
+      }
+    },
+    "经济账本": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "累计收入": {
+          "default": 0,
+          "type": "number"
+        },
+        "累计支出": {
+          "default": 0,
+          "type": "number"
+        },
+        "当班净额": {
+          "default": 0,
+          "type": "number"
+        },
+        "罚款合计": {
+          "default": 0,
+          "type": "number"
+        },
+        "补贴合计": {
+          "default": 0,
+          "type": "number"
+        }
+      }
+    },
+    "关系网络": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "护理组关系": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema2"
+          }
+        }
+      }
+    },
+    "技能成长": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "护理基础": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "沟通安抚": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "风险识别": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "行政协同": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "法律应对": {
+          "$ref": "#/$defs/__schema3"
+        },
+        "后勤管理": {
+          "$ref": "#/$defs/__schema3"
+        }
+      }
+    },
+    "合规状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "复核完成": {
+          "default": false,
+          "type": "boolean"
+        },
+        "证据质量": {
+          "default": "传闻",
+          "type": "string",
+          "enum": [
+            "传闻",
+            "初核",
+            "证实"
+          ]
+        },
+        "最近违规次数": {
+          "default": 0,
+          "type": "number"
+        },
+        "程序合法性": {
+          "default": "低",
+          "type": "string",
+          "enum": [
+            "低",
+            "中",
+            "高"
+          ]
+        },
+        "授权状态": {
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "主线状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "当前阶段": {
+          "default": 0,
+          "type": "number"
+        },
+        "阶段描述": {
+          "default": "序章",
+          "type": "string"
+        }
+      }
+    },
+    "叙事控制": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "MVU模式": {
+          "default": "严格",
+          "type": "string",
+          "enum": [
+            "严格",
+            "兼容",
+            "调试"
+          ]
+        },
+        "地图模式": {
+          "default": "简版",
+          "type": "string",
+          "enum": [
+            "简版",
+            "详细",
+            "剧情"
+          ]
+        }
+      }
+    },
+    "模板引擎": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "生成状态": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "入库状态": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "外部系统": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "舆情监管": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "舆情热度": {
+              "default": 0,
+              "type": "number"
+            },
+            "媒体关注": {
+              "default": "低",
+              "type": "string",
+              "enum": [
+                "低",
+                "中",
+                "高"
+              ]
+            },
+            "复盘完成": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "治理生态": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "监管关注度": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        },
+        "法律风险": {
+          "default": {},
+          "type": "object",
+          "properties": {
+            "当前案件数": {
+              "default": 0,
+              "type": "number"
+            },
+            "累计罚款": {
+              "default": 0,
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "DLC状态": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "可用": {
+          "default": false,
+          "type": "boolean"
+        },
+        "当前章节": {
+          "default": "",
+          "type": "string"
+        },
+        "当前小节": {
+          "default": "",
+          "type": "string"
+        },
+        "最近存档点": {
+          "default": "",
+          "type": "string"
+        },
+        "失败回退次数": {
+          "default": 0,
+          "type": "number"
+        }
+      }
+    },
+    "老人关系列表": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/__schema2"
+      }
+    },
+    "病症映射": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "关联老人": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "default": 10,
+      "type": "number"
+    },
+    "__schema1": {
+      "default": {
+        "当前值": 90,
+        "最大值": 100
+      },
+      "type": "object",
+      "properties": {
+        "当前值": {
+          "default": 90,
+          "type": "number"
+        },
+        "最大值": {
+          "default": 100,
+          "type": "number"
+        }
+      }
+    },
+    "__schema2": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "好感": {
+          "default": 50,
+          "type": "number"
+        },
+        "信任": {
+          "default": 50,
+          "type": "number"
+        },
+        "配合度": {
+          "default": 50,
+          "type": "number"
+        },
+        "核心病症": {
+          "default": "",
+          "type": "string"
+        },
+        "熟练度等级": {
+          "default": 0,
+          "type": "number"
+        }
+      }
+    },
+    "__schema3": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "经验": {
+          "default": 0,
+          "type": "number"
+        },
+        "等级": {
+          "default": 1,
+          "type": "number"
+        }
+      }
+    }
+  }
+}

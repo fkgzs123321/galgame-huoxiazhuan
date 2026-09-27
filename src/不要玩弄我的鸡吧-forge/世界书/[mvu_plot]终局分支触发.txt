@@ -1,0 +1,202 @@
+@@generate_before
+# 世界书条目：终局分支触发
+# 激活策略：变量条件（疑心度 ≥ 151 或 total_uses ≥ 100）
+
+<%
+var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+var total_uses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var meditation = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+var exercise = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var insight = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var energy = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) || 80;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var corruption = Number(getvar('stat_data.状态.堕落值', {scope:'local', defaults:0})) || 0;
+var ac_stage = Number(getvar('stat_data.学业.阶段', {scope:'local', defaults:3})) || 3;
+var score = Number(getvar('stat_data.学业.分数', {scope:'local', defaults:75})) || 75;
+var exam = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) || 103;
+var awakening = Math.min(100, Math.max(0,
+  Math.min(40, suspicion * 0.2) + Math.min(30, meditation * 0.3) +
+  Math.min(20, exercise * 0.2) + Math.min(15, insight * 0.15) - Math.min(30, corruption * 0.3)
+));
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var threshold_met = suspicion >= 151 || total_uses >= 100;
+%>
+<% if (!threshold_met) { %>
+<ending_threshold_not_met>
+【终局分支 — 条件未满足】（疑心度<%=suspicion%>/200 · 总使用<%=total_uses%>/100）
+
+当前状态推断——距终局最近的走向：
+<% if (suspicion >= 130 || total_uses >= 90) { %>
+⚠️ 临界状态——下一刻随时可能触发终局判定。当终局降临，你有七种可能的走向，取决于你一直以来的选择：
+<% } else if (suspicion >= 100 || total_uses >= 70) { %>
+距离终局已不遥远。你隐约感觉到——真相正在逼近。
+<% } else { %>
+你还在迷雾中前行。终局尚远，但每一步都在塑造它的方向。
+<% } %>
+
+ 当前觉醒倾向评估：
+<% if (awakening >= 60 && meditation >= 61 && energy > 40) { %>
+ 觉醒度<%=awakening %>%——你有潜力走向「反向掌控」结局。继续维持高定力（当前Lv.<%=meditation%>，第<%=Math.ceil(meditation/20)%>档）和高体力（当前<%=energy%>），这是最高难度但也是唯一能将命运握在手中的路。
+<% } else if (energy > 20) { %>
+觉醒度<%=awakening %>%——如果未来觉醒度超过60，你很有可能走向「谈判交易」结局。特别注意保持精力>20（当前<%=energy%>），这决定了你是否拥有谈判的资本。
+<% } else { %>
+觉醒度<%=awakening %>%——注意，你的精力（<%=energy%>）严重偏低。若在终局触发前无法恢复，将被迫走向「接受命运」结局——那不是你想要的终点。
+<% } %>
+</ending_threshold_not_met>
+<% } else { %>
+<ending_branches>
+【终局分支 — 已触发】疑心度=<%=suspicion%>/200 · 总使用=<%=total_uses%>次 · 觉醒进度=<%=awakening%>/100
+
+---
+【终局分支——七种走向】
+---
+
+<% if (energy > 30 && sanity > 50 && stage >= 5 && meditation >= 61 && awakening >= 60) { %>
+ ① 「反向掌控」—— ✅ 条件满足！
+    判定条件：精力>30（当前<%=energy%>✓） 理智>50（当前<%=sanity%>✓） 使用阶段≥5档（当前第<%=stage%>/5档✓） 定力第4档+（当前Lv.<%=meditation%>，第<%=Math.ceil(meditation/20)%>档✓） 觉醒进度≥60（当前<%=awakening%>✓）
+   难度：★★★★★（最高难度）
+   {{user}} 通过极致定力反向夺取假阴茎控制权，成为使用者
+   可反向控制女性使用者的快感——真正的"椅子翻过来了"结局
+   对应条目：<终局>反向掌控.txt
+<% } else { %>
+ ① 「反向掌控」—— ❌ 还差：
+    <% if (energy <= 30) { %>精力须>30（当前<%=energy%>）<% } %>
+    <% if (sanity <= 50) { %>理智须>50（当前<%=sanity%>）<% } %>
+    <% if (stage < 5) { %>使用阶段须≥5档（当前第<%=stage%>/5档）<% } %>
+    <% if (meditation < 61) { %>定力须第4档+（当前Lv.<%=meditation%>，第<%=Math.ceil(Math.min(meditation,100)/20)%>档）<% } %>
+    <% if (awakening < 60) { %>觉醒进度须≥60（当前<%=awakening%>）<% } %>
+   通过极致定力反向夺取假阴茎控制权，从受害者变掌控者
+   对应条目：<终局>反向掌控.txt · 难度：★★★★★
+<% } %>
+
+<% if (awakening >= 60 && energy > 20) { %>
+② 「谈判交易」—— ✅ 条件满足！
+   判定条件：觉醒进度≥60（当前<%=awakening%>✓） 精力>20（当前<%=energy%>✓）
+   难度：★★★☆☆（中等）
+   与女性使用者达成协议——限制使用频率/模式，换取生存
+   进入脆弱平衡，需持续管理精力与关系
+   多结局分支：共存/背叛/彻底决裂
+   对应条目：<终局>谈判交易.txt
+<% } else { %>
+② 「谈判交易」—— ❌ 还差：
+   <% if (awakening < 60) { %>觉醒进度须≥60（当前<%=awakening%>）<% } %>
+   <% if (energy <= 20) { %>精力须>20（当前<%=energy%>）<% } %>
+   与女性使用者达成脆弱平衡协议，需持续管理精力与关系
+   对应条目：<终局>谈判交易.txt · 难度：★★★☆☆
+<% } %>
+
+<% if (energy > 0 && sanity > 20 && awakening >= 30 && awakening < 60) { %>
+③ 「彻底摧毁」—— ✅ 条件满足！
+   判定条件：精力>0（当前<%=energy%>✓） 理智>20（当前<%=sanity%>✓） 觉醒进度≥30且<60（当前<%=awakening%>✓）
+   难度：★★☆☆☆（较容易——但代价沉重）
+   找到并物理销毁假阴茎/人偶/灵体——消耗大量精力/体力，可能留下后遗症
+   女性使用者失去工具，但怨恨转向 {{user}}
+   对应条目：<终局>彻底摧毁.txt
+<% } else { %>
+③ 「彻底摧毁」—— ❌ 还差：
+   <% if (energy <= 0) { %>精力须>0（当前精力已归零！）<% } %>
+   <% if (sanity <= 20) { %>理智须>20（当前<%=sanity%>）<% } %>
+   <% if (awakening < 30) { %>觉醒进度须≥30（当前<%=awakening%>）<% } %>
+   <% if (awakening >= 60) { %>觉醒进度须<60（当前<%=awakening%>——已超上限，请走「反向掌控」）<% } %>
+   物理销毁假阴茎/人偶/灵体，代价沉重但可终结噩梦
+   对应条目：<终局>彻底摧毁.txt · 难度：★★☆☆☆
+<% } %>
+
+<% if (energy <= 30 || sanity <= 30) { %>
+④ 「接受命运」—— ✅ 条件满足！ · 难度：★☆☆☆☆
+   判定条件：精力≤30 或 理智≤30（当前精力<%=energy%>，理智<%=sanity%>✓）
+   无力反抗，继续被榨干至精力归零
+   结局变体：猝死/植物人/永久能量源/融合共生
+   女性使用者寻找下一个"复制品"
+   对应条目：<终局>接受命运.txt
+<% } else { %>
+④ 「接受命运」—— ❌ 还差：
+   精力≤30 或 理智≤30（当前精力<%=energy%>，理智<%=sanity%>）
+   无力反抗，继续被榨干至精力归零
+   对应条目：<终局>接受命运.txt · 难度：★☆☆☆☆
+<% } %>
+
+<%
+var ending_reverse = energy > 30 && sanity > 50 && stage >= 5 && meditation >= 61 && awakening >= 60;
+var ending_negotiate = awakening >= 60 && energy > 20;
+var ending_destroy = energy > 0 && sanity > 20 && awakening >= 30 && awakening < 60;
+var ending_accept = energy <= 30 || sanity <= 30;
+var ending_healthy = day >= 120 && score >= 90 && suspicion < 60 && sanity > 50;
+var ending_mutual = awakening >= 100 && corruption >= 150;
+var ending_mystery = day >= 120 && suspicion < 100 && total_uses < 50 && !ending_reverse && !ending_negotiate && !ending_destroy && !ending_accept && !ending_healthy && !ending_mutual;
+%>
+
+<% if (ending_healthy) { %>
+⑤ 「健康结局」—— ✅ 条件满足！ · 难度：★★★★☆
+   判定条件：第120天+（当前第<%=day%>天✓） 学业分≥90（当前<%=score%>✓） 疑心度<60（当前<%=suspicion%>✓） 理智>50（当前<%=sanity%>✓）
+   成功守住自我，学业未受侵蚀，秘密随你离开
+   对应条目：<终局>healthy.txt
+<% } else { %>
+⑤ 「健康结局」—— ❌ 还差：
+   <% if (day < 120) { %>须至第120天（当前第<%=day%>天）<% } %>
+   <% if (score < 90) { %>学业分须≥90（当前<%=score%>）<% } %>
+   <% if (suspicion >= 60) { %>疑心度须<60（当前<%=suspicion%>）<% } %>
+   <% if (sanity <= 50) { %>理智须>50（当前<%=sanity%>）<% } %>
+   对应条目：<终局>healthy.txt · 难度：★★★★☆
+<% } %>
+
+<% if (ending_mutual) { %>
+⑥ 「同归于尽」—— ✅ 条件满足！ · 难度：★★★★☆
+   判定条件：觉醒进度≥100（当前<%=awakening%>✓） 腐化度≥150（当前<%=corruption%>✓）
+   觉醒与腐化同时达到顶峰，假阴茎与宿主同归于尽
+   对应条目：<终局>同归于尽.txt
+<% } else { %>
+⑥ 「同归于尽」—— ❌ 还差：
+   <% if (awakening < 100) { %>觉醒进度须≥100（当前<%=awakening%>）<% } %>
+   <% if (corruption < 150) { %>腐化度须≥150（当前<%=corruption%>）<% } %>
+   对应条目：<终局>同归于尽.txt · 难度：★★★★☆
+<% } %>
+
+<% if (ending_mystery) { %>
+⑦ 「未解之谜」—— ✅ 默认兜底结局触发 · 难度：★☆☆☆☆
+   判定条件：第120天+（当前第<%=day%>天✓） 疑心度<100（当前<%=suspicion%>✓） 总使用<50（当前<%=total_uses%>✓） 且无其他终局触发
+   真相湮没于日常，没有人再提起那个夏天的怪事
+   对应条目：<终局>未解之谜.txt
+<% } else { %>
+⑦ 「未解之谜」—— ❌ 还差：
+   <% if (day < 120) { %>须至第120天（当前第<%=day%>天）<% } %>
+   <% if (suspicion >= 100) { %>疑心度须<100（当前<%=suspicion%>）<% } %>
+   <% if (total_uses >= 50) { %>总使用须<50（当前<%=total_uses%>）<% } %>
+   <% if (ending_reverse || ending_negotiate || ending_destroy || ending_accept || ending_healthy || ending_mutual) { %>已有其他终局触发，未解之谜不作为兜底<% } %>
+   对应条目：<终局>未解之谜.txt · 难度：★☆☆☆☆
+<% } %>
+
+---
+【学业结局独立判定】
+---
+<% if (exam <= 0) { %>
+（高考已过，学业结局可触发）
+<% if (ac_stage >= 4 && stage <= 2) { %>
+→ 健康结局可触发：学业优秀（Lv.<%=ac_stage%>）+ 使用阶段低（第<%=stage%>/5档）
+    高考顺利，未被过度侵蚀。你带着秘密离开。
+<% } else if (ac_stage >= 3 && stage <= 4) { %>
+→ 平庸结局可触发：学业尚可（Lv.<%=ac_stage%>）+ 使用阶段中（第<%=stage%>/5档）
+    高考还行，但那段记忆会跟你一辈子。
+<% } else if (stage >= 3 && ac_stage <= 2) { %>
+→ 坠落结局可触发：学业荒废（Lv.<%=ac_stage%>）+ 使用阶段高（第<%=stage%>/5档）
+    高考落榜，人生偏离轨道。你留级了。
+<% } else { %>
+→ 当前条件不足以下任何结局：
+    健康需学业Lv.4+阶段≤2（Lv.<%=ac_stage%>/第<%=stage%>/5档）
+    平庸需学业Lv.3+阶段≤4
+    坠落需阶段≥3学业≤2
+<% } %>
+（主线终局优先于学业结局）
+<% } else { %>
+（距高考尚有<%=exam%>天，学业结局锁定中）
+<% } %>
+
+---
+【终局触发后游戏机制】
+---
+- AI输出对应结局叙事（从玩家受限视角）
+- 多结局条件同时满足时优先级：崩坏 > 同归于尽 > 真相 > 坠落 > 黑市 > 某人崩坏 > 某人清醒 > 未解之谜 > 健康 > 平庸
+- 结局触发后游戏结束（除非选择"继续自由模式"）
+</ending_branches>
+<% } %>

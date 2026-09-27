@@ -1,0 +1,144 @@
+@@generate_before
+<%_
+/* 科技树控制器 P1-14
+   读取研究技能与飞船组件，输出科技规则与行为校验要求 */
+
+/* 科技树10级定义 */
+function _techTree() {
+  return [
+    { level: 1, name: '基础研究', cost: 400, req: 0, note: '基础生存科技' },
+    { level: 2, name: '电力', cost: 600, req: 0, note: '解锁发电与储能' },
+    { level: 3, name: '居住', cost: 500, req: 0, note: '改善居住条件' },
+    { level: 4, name: '防御', cost: 800, req: 0, note: '防御工事与炮台' },
+    { level: 5, name: '高科技', cost: 1200, req: 8, note: '需研究>=8' },
+    { level: 6, name: '医疗', cost: 1000, req: 0, note: '高级医疗技术' },
+    { level: 7, name: '武器', cost: 1500, req: 0, note: '高级武器制造' },
+    { level: 8, name: '机械族', cost: 2000, req: 0, note: '机械族科技' },
+    { level: 9, name: '飞船组件', cost: 3000, req: 14, note: '需研究>=14' },
+    { level: 10, name: '飞船建造', cost: 0, req: 14, note: '需物资齐全' }
+  ];
+}
+
+/* 研究速度公式: 研究点产出 = 研究技能 x 0.5 x 设备修正 x 专注修正 / 小时 */
+function _researchSpeed(skill, deviceMod, focusMod) {
+  var skl = Number(skill) || 0;
+  var dm = Number(deviceMod) || 0;
+  var fm = Number(focusMod) || 1;
+  var output = skl * 0.5 * dm * fm;
+  return Math.round(output * 100) / 100;
+}
+
+/* 设备修正: 无台0 / 简单研究台1.0 / 高科技研究台1.5(需高科技) / 多维研究台3.0 */
+function _deviceMod(deviceType) {
+  if (deviceType === 'none') { return { mod: 0, note: '无研究台(无法研究)' }; }
+  if (deviceType === 'simple') { return { mod: 1.0, note: '简单研究台 x1.0' }; }
+  if (deviceType === 'advanced') { return { mod: 1.5, note: '高科技研究台 x1.5(需高科技)' }; }
+  if (deviceType === 'multi') { return { mod: 3.0, note: '多维研究台 x3.0' }; }
+  return { mod: 0, note: '无研究台' };
+}
+
+/* 专注修正: 单人1.0 / 多人协助 = 1.0 + 协助者数 x 0.3 (最多2协助) */
+function _focusMod(helperCount) {
+  var hc = Number(helperCount) || 0;
+  if (hc <= 0) { return { mod: 1.0, note: '单人研究 x1.0' }; }
+  var cappedHelpers = Math.min(hc, 2);
+  var bonus = cappedHelpers * 0.3;
+  return { mod: Math.round((1.0 + bonus) * 100) / 100, note: '多人协助 x' + (1.0 + bonus) };
+}
+
+/* 飞船进度: 反应堆x3 + AI核心x1 + 结构x1 = 发射飞天结局 */
+function _shipProgress(reactor, aiCore, structure) {
+  var r = Number(reactor) || 0;
+  var a = Number(aiCore) || 0;
+  var s = Number(structure) || 0;
+  var complete = (r >= 3 && a >= 1 && s >= 1);
+  return {
+    reactor: r + '/3',
+    aiCore: a + '/1',
+    structure: s + '/1',
+    complete: complete,
+    note: complete ? '飞船组件齐全，可发射飞天结局' : '组件不足，无法发射'
+  };
+}
+
+var researchMain = Number(getvar('stat_data.殖民者_主角.研究', { scope: 'local', defaults: 5 })) || 5;
+var research2 = Number(getvar('stat_data.殖民者_2.研究', { scope: 'local', defaults: 5 })) || 5;
+var research3 = Number(getvar('stat_data.殖民者_3.研究', { scope: 'local', defaults: 5 })) || 5;
+var research4 = Number(getvar('stat_data.殖民者_4.研究', { scope: 'local', defaults: 5 })) || 5;
+var research5 = Number(getvar('stat_data.殖民者_5.研究', { scope: 'local', defaults: 5 })) || 5;
+
+var shipReactor = Number(getvar('stat_data.殖民地.飞船反应堆', { scope: 'local', defaults: 0 })) || 0;
+var shipAICore = Number(getvar('stat_data.殖民地.飞船AI核心', { scope: 'local', defaults: 0 })) || 0;
+var shipStructure = Number(getvar('stat_data.殖民地.飞船结构', { scope: 'local', defaults: 0 })) || 0;
+
+var techTree = _techTree();
+var shipStatus = _shipProgress(shipReactor, shipAICore, shipStructure);
+var mainSpeed = _researchSpeed(researchMain, 1.0, 1.0);
+var focusInfo = _focusMod(2);
+var highTechUnlocked = researchMain >= 8;
+var shipTechUnlocked = researchMain >= 14;
+_%>
+<科技系统就绪>
+[当前研究状态]
+殖民者研究技能:
+- 主角: <%= researchMain %>级 (产出<%= mainSpeed %>点/小时)
+- 殖民者2: <%= research2 %>级
+- 殖民者3: <%= research3 %>级
+- 殖民者4: <%= research4 %>级
+- 殖民者5: <%= research5 %>级
+
+[飞船组件进度]
+飞船反应堆: <%= shipStatus.reactor %>
+飞船AI核心: <%= shipStatus.aiCore %>
+飞船结构: <%= shipStatus.structure %>
+状态: <%= shipStatus.note %>
+<%_ if (shipStatus.complete) { _%>
+飞天结局: 条件满足! 可启动飞船发射序列
+<%_ } _%>
+
+[科技树10级]
+<%_ for (var i = 0; i < techTree.length; i++) { _%>
+T<%= techTree[i].level %> <%= techTree[i].name %>: <%= techTree[i].cost %>点<%_ if (techTree[i].req > 0) { _%> (需研究>=<%= techTree[i].req %>)<%_ } _%> - <%= techTree[i].note %>
+<%_ } _%>
+
+[研究速度公式]
+研究点产出 = 研究技能 x 0.5 x 设备修正 x 专注修正 / 小时
+主角当前产出: <%= researchMain %> x 0.5 x 设备修正 x 专注修正 = <%= mainSpeed %>点/小时(基础)
+
+[设备修正]
+- 无研究台: x0 (无法研究)
+- 简单研究台: x1.0
+- 高科技研究台: x1.5 (需高科技研究解锁)
+- 多维研究台: x3.0 (查BUILDING_DB)
+
+[专注修正]
+- 单人研究: x1.0
+- 多人协助: x(1.0 + 协助者数 x 0.3)，最多2协助
+当前(2协助): <%= focusInfo.note %>
+
+[科技解锁状态]
+高科技研究: <%= highTechUnlocked ? '已解锁(研究>=8)' : '未解锁(需研究>=8)' %>
+飞船科技: <%= shipTechUnlocked ? '已解锁(研究>=14)' : '未解锁(需研究>=14)' %>
+
+[飞船组件需求]
+飞船反应堆 x3 + 飞船AI核心 x1 + 飞船结构 x1 -> 发射飞天结局
+当前进度: 反应堆<%= shipReactor %>/3 + AI核心<%= shipAICore %>/1 + 结构<%= shipStructure %>/1
+
+[飞天结局条件]
+1. 研究技能>=14 (解锁T9飞船组件)
+2. 飞船反应堆x3 已建造
+3. 飞船AI核心x1 已建造
+4. 飞船结构x1 已建造
+5. 启动发射序列 -> 游戏胜利结局
+
+[行为校验要求]
+研究行为必须输出行为校验块:
+- 行为类型: 研究/解锁科技/建造飞船组件
+- 执行者: 殖民者姓名 + 研究技能等级
+- 研究目标: 科技名称 + 等级
+- 研究点产出: 技能x0.5x设备修正x专注修正 = 点/小时
+- 累计研究点: 已投入/总需求
+- 设备修正: 无台0 / 简单1.0 / 高级1.5
+- 专注修正: 单人1.0 / 协助1.3~1.6
+- 解锁状态: 是否完成解锁
+</科技系统就绪>

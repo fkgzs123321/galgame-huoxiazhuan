@@ -1,0 +1,117 @@
+@@generate_before
+<%_
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var lastTradeDay = Number(getvar('stat_data.事件计时器.上次贸易日', { scope: 'local', defaults: 0 })) || 0;
+var socialSkill = Number(getvar('stat_data.殖民者_主角.社交', { scope: 'local', defaults: 5 })) || 5;
+
+var daysSinceTrade = gameDay - lastTradeDay;
+var tradeReady = (daysSinceTrade >= 7);
+
+var factions = [
+  { name: '部落联盟', relation: Number(getvar('stat_data.派系.部落联盟.关系', { scope: 'local', defaults: 0 })) || 0, stance: '中立', sells: '草药/皮革/木材/野生动物', buys: '钢铁/武器/盐/糖', modifier: 1.0 },
+  { name: '城市邦联', relation: Number(getvar('stat_data.派系.城市邦联.关系', { scope: 'local', defaults: 0 })) || 0, stance: '中立', sells: '武器/装备/组件/高级材料', buys: '食物/原料/艺术品', modifier: 1.0 },
+  { name: '海盗团', relation: Number(getvar('stat_data.派系.海盗团.关系', { scope: 'local', defaults: -40 })) || -40, stance: '敌对', sells: '不贸易', buys: '不贸易', modifier: 1.5 },
+  { name: '机械教团', relation: Number(getvar('stat_data.派系.机械教团.关系', { scope: 'local', defaults: -50 })) || -50, stance: '敌对', sells: '不贸易', buys: '不贸易', modifier: 1.8 },
+  { name: '商人公会', relation: Number(getvar('stat_data.派系.商人公会.关系', { scope: 'local', defaults: 15 })) || 15, stance: '友好', sells: '全品类', buys: '全品类', modifier: 0.9 },
+  { name: '帝国', relation: Number(getvar('stat_data.派系.帝国.关系', { scope: 'local', defaults: -20 })) || -20, stance: '中立偏敌', sells: '高科技武器/高级组件/仿生体', buys: '白银/黄金/艺术品', modifier: 1.5 },
+  { name: '游牧部落', relation: Number(getvar('stat_data.派系.游牧部落.关系', { scope: 'local', defaults: 5 })) || 5, stance: '中立', sells: '马/皮革/肉干', buys: '钢铁/武器/盐', modifier: 0.9 },
+  { name: '流亡者组织', relation: Number(getvar('stat_data.派系.流亡者组织.关系', { scope: 'local', defaults: -10 })) || -10, stance: '中立偏敌', sells: '违禁品/情报', buys: '白银/武器', modifier: 0.7 }
+];
+
+function _relationTier(rel) {
+  var r = Number(rel) || 0;
+  if (r <= -50) { return '仇恨'; }
+  if (r <= -10) { return '敌对'; }
+  if (r < 10) { return '中立'; }
+  if (r < 50) { return '友好'; }
+  return '盟友';
+}
+
+function _tradeSuccess(social, seed) {
+  var threshold = social * 5;
+  var checkResult = _check(threshold, seed, '普通');
+  return checkResult;
+}
+
+function _buyPrice(baseValue, factionMod, social) {
+  var raw = baseValue * factionMod * (1.2 - social * 0.01);
+  return Math.round(raw * 100) / 100;
+}
+
+function _sellPrice(baseValue, factionMod, social) {
+  var raw = baseValue * factionMod * (0.8 + social * 0.01);
+  return Math.round(raw * 100) / 100;
+}
+
+function _relationPriceMod(tier) {
+  if (tier === '盟友') { return { buy: 0.9, sell: 1.1 }; }
+  if (tier === '友好') { return { buy: 0.95, sell: 1.05 }; }
+  if (tier === '中立') { return { buy: 1.0, sell: 1.0 }; }
+  return { buy: 0, sell: 0 };
+}
+
+var tradeCheckDemo = _tradeSuccess(socialSkill, 'trade_' + gameDay);
+var priceModDemo = _relationPriceMod(_relationTier(15));
+var buyDemo = _buyPrice(3, 1.0, socialSkill);
+var sellDemo = _sellPrice(3, 1.0, socialSkill);
+_%>
+<派系贸易系统就绪>
+[当前派系状态]
+游戏日: <%= gameDay %> / 殖民地阶段: <%= phase %> / 故事讲述者: <%= storyteller %>
+殖民者社交技能: <%= socialSkill %> / 殖民地银两: <%= silver %>
+距上次贸易: <%= daysSinceTrade %>天 (冷却7天) → <%= tradeReady ? '可贸易' : '冷却中' %>
+
+[派系列表]
+<%_ for (var i = 0; i < factions.length; i++) { var f = factions[i]; _%>
+<%= (i+1) %>. <%= f.name %>
+   当前关系: <%= f.relation %> (<%= _relationTier(f.relation) %>)
+   贸易特长: 卖<%= f.sells %> / 买<%= f.buys %>
+   价格修正: ×<%= f.modifier %>
+<%_ } _%>
+
+[贸易规则]
+1. 贸易成功率: _check(社交技能×5, seed, '普通')
+   示例: 社交<%= socialSkill %> → 阈值<%= socialSkill * 5 %>
+   当前检定: 骰值<%= tradeCheckDemo.roll %> / 阈值<%= tradeCheckDemo.threshold %> → <%= tradeCheckDemo.result %>
+   成功: 可进行贸易 / 失败: 交易取消且关系-2
+
+2. 价格计算:
+   买入价 = 基础估值 × 派系修正 × (1.2 - 社交×0.01)
+   卖出价 = 基础估值 × 派系修正 × (0.8 + 社交×0.01)
+   示例(钢铁基础3): 买入<%= buyDemo %> / 卖出<%= sellDemo %>
+
+3. 关系修正(叠加于价格):
+   盟友: 买×0.9 卖×1.1 / 友好: 买×0.95 卖×1.05
+   中立: 标准 / 敌对: 拒绝贸易
+   当前友好示范: 买×<%= priceModDemo.buy %> 卖×<%= priceModDemo.sell %>
+
+4. 关系变化触发:
+   +5 完成派系任务 / +3 成功贸易 / +10 援助战斗
+   -10 攻击成员 / -20 杀害成员 / -30 袭击据点
+
+[交易价值参考表]
+查MATERIAL_DB: 木材(买2.4/卖1.6) 石块(买2.4/卖1.6) 钢铁(买3.6/卖2.4) 布(买3.6/卖2.4) 皮革(买6/卖4) 化学燃料(买9.6/卖6.4)
+查MATERIAL_DB: 玻璃(买6/卖4) 黄金(买36/卖24) 铀(买96/卖64) 组件(买60/卖40) 高级组件(买180/卖120)
+查FOOD_DB: 简餐8 精制餐12 奢华餐18
+查MED_DB: 草药包8 高级药25 工业药50 疫苗80
+
+[关系阈值表]
+仇恨(-100~-50): 主动袭击
+敌对(-49~-10): 遇袭反击
+中立(-9~+9): 互不干涉
+友好(+10~+49): 可贸易
+盟友(+50~+100): 可召唤援军
+
+[行为校验要求]
+贸易行为必须输出行为校验块:
+<贸易行为校验>
+- 派系名称 / 当前关系值 / 关系层级
+- 贸易检定结果 (_check结果)
+- 交易明细 (商品/数量/单价/总价)
+- 关系变化 (触发原因/增减值/新关系值)
+- 银两变动 (扣除/增加/余额)
+</贸易行为校验>
+</派系贸易系统就绪>

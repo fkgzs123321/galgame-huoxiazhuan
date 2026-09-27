@@ -1,0 +1,15 @@
+{
+  "id": "a1b2c3d4-0210-4000-8000-000000000210",
+  "scriptName": "10-UpdateVariable折叠美化",
+  "findRegex": "/<UpdateVariable>([\\s\\S]*?)<\\/UpdateVariable>/gi",
+  "replaceString": "<details class=\"mvu-update-detail variable\" style=\"margin:8px 0;border-left:3px solid #3498db;padding:4px 12px;background:rgba(52,152,219,0.05);border-radius:4px;\"><summary style=\"cursor:pointer;color:#3498db;font-size:0.85em;opacity:0.8;\">🔄 MVU变量更新（点击展开JSONPatch）</summary>\n\n```json\n$1\n```\n\n</details>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

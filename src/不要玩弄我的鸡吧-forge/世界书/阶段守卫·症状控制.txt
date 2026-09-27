@@ -1,0 +1,13 @@
+@@generate_before
+<% var sy_us = Number(getvar('stat_data.使用阶段.当前阶段', { scope: 'local', defaults: 1 })) || 1; %>
+<% var sy_e = Number(getvar('stat_data.状态.精力', { scope: 'local', defaults: 80 })) || 80; %>
+<% var sy_s = Number(getvar('stat_data.状态.理智', { scope: 'local', defaults: 80 })) || 80; %>
+<% var sy_fd = getvar('stat_data.症状.疲劳描述', { scope: 'local', defaults: '' }) || ''; %>
+<% var sy_sd = getvar('stat_data.症状.敏感描述', { scope: 'local', defaults: '' }) || ''; %>
+<% var sy_ad = getvar('stat_data.症状.外观描述', { scope: 'local', defaults: '' }) || ''; %>
+<% var sy_snd = getvar('stat_data.症状.理智描述', { scope: 'local', defaults: '' }) || ''; %>
+<% var sy_sc = Number(getvar('stat_data.学业.分数', { scope: 'local', defaults: 75 })) || 75; %>
+阶段<%= sy_us %>/5 · 精力<%= sy_e %>% · 理智<%= sy_s %>% · 学业<%= sy_sc %>
+【当前症状】<%= sy_fd %> · <%= sy_sd %>
+【外观印象】<%= sy_ad %>
+【心理表现】<%= sy_snd %>

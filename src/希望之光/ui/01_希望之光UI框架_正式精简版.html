@@ -1,0 +1,567 @@
+<div id="hl-spa-wrapper" class="hl-theme-dark hl-font-sans">
+  <div class="hl-crt-overlay"></div>
+  <style>
+    /* ================= SPA CSS VARIABLES & BASE ================= */
+    #hl-spa-wrapper {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 10000000 !important;
+      display: flex;
+      flex-direction: column;
+      background: #0f172a;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
+      color: #e2e8f0;
+      margin: 0 !important;
+      padding: 0 !important;
+      --hl-bg: #0f172a;
+      --hl-primary: #10b981;
+      --hl-primary-dim: rgba(16, 185, 129, 0.2);
+      --hl-danger: #ef4444;
+      --hl-warning: #f59e0b;
+      --hl-info: #0ea5e9;
+      --hl-surface: rgba(30, 41, 59, 0.7);
+      --hl-border: rgba(51, 65, 85, 0.8);
+      --hl-text-main: #f8fafc;
+      --hl-text-dim: #94a3b8;
+      --hl-glow: 0 0 10px rgba(16, 185, 129, 0.5);
+      --hl-glow-danger: 0 0 15px rgba(239, 68, 68, 0.8);
+      --hl-panel-width: 320px;
+    }
+    .hl-crt-overlay {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      z-index: 9999;
+      opacity: 0.4;
+      background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+        linear-gradient(90deg, rgba(235, 0, 0, 0.03), rgba(0, 235, 0, 0.01), rgba(0, 0, 235, 0.03));
+      background-size:
+        100% 4px,
+        6px 100%;
+    }
+    #hl-spa-wrapper ::-webkit-scrollbar {
+      width: 6px;
+    }
+    #hl-spa-wrapper ::-webkit-scrollbar-thumb {
+      background: var(--hl-border);
+      border-radius: 4px;
+    }
+    .hl-view {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow-y: auto;
+    }
+    .hl-view.active {
+      display: flex;
+    }
+
+    /* ================= LOGIN VIEW ================= */
+    #hl-login-view {
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+      padding: 40px 0;
+      min-height: 100%;
+    }
+    .hl-login-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--hl-border);
+      border-top: 3px solid var(--hl-primary);
+      border-radius: 8px;
+      width: 90%;
+      max-width: 700px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .hl-form-section {
+      margin-bottom: 20px;
+      padding: 16px;
+      border: 1px solid var(--hl-border);
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .hl-field-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .hl-input,
+    .hl-select {
+      background: #0f172a;
+      border: 1px solid var(--hl-border);
+      color: var(--hl-text-main);
+      padding: 8px 12px;
+      border-radius: 4px;
+      outline: none;
+    }
+    .hl-btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--hl-primary-dim);
+      border: 1px solid var(--hl-primary);
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* ================= MAIN CONSOLE ================= */
+    .hl-topbar {
+      height: 50px;
+      background: #1e293b;
+      border-bottom: 1px solid var(--hl-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+    }
+    .hl-nav-menus {
+      display: flex;
+      gap: 8px;
+    }
+    .hl-nav-btn {
+      background: var(--hl-surface);
+      border: 1px solid var(--hl-border);
+      color: var(--hl-text-main);
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .hl-nav-btn.active {
+      border-color: var(--hl-primary);
+      color: var(--hl-primary);
+    }
+    .hl-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .hl-sidebar-left {
+      width: 340px;
+      background: #0f172a;
+      border-right: 1px solid var(--hl-border);
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .hl-stat-card {
+      border: 1px solid var(--hl-border);
+      background: var(--hl-surface);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--hl-primary);
+    }
+    .hl-vital-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+    .hl-prog-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 3px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .hl-prog-fill {
+      height: 100%;
+      background: var(--hl-primary);
+      transition: width 0.4s;
+    }
+
+    /* Command Buttons */
+    .hl-cmd-btn {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--hl-primary);
+      color: var(--hl-primary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin: 2px;
+      transition: all 0.2s;
+    }
+    .hl-cmd-btn:hover {
+      background: var(--hl-primary);
+      color: #000;
+    }
+
+    .hl-chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    }
+    .hl-story-log {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    .hl-log-message {
+      margin-bottom: 20px;
+      animation: hl-fade 0.3s;
+    }
+    @keyframes hl-fade {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .hl-log-wrapper {
+      background: rgba(15, 23, 42, 0.7);
+      border-left: 3px solid var(--hl-primary);
+      padding: 12px 18px;
+      border-radius: 4px;
+      backdrop-filter: blur(5px);
+    }
+    .hl-input-area {
+      min-height: 80px;
+      background: #1e293b;
+      border-top: 1px solid var(--hl-border);
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+    }
+    #hl-input-box {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--hl-border);
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      resize: none;
+    }
+
+    .hl-panel {
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      right: 10px;
+      width: 380px;
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid var(--hl-primary);
+      border-radius: 8px;
+      z-index: 50;
+      transform: translateX(110%);
+      transition: 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .hl-panel.open {
+      transform: translateX(0);
+    }
+    .hl-panel-header {
+      padding: 12px;
+      border-bottom: 1px solid var(--hl-border);
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      color: var(--hl-primary);
+    }
+  </style>
+
+  <!-- HTML VIEWS -->
+  <div id="hl-login-view" class="hl-view hl-init-hidden" style="display: none">
+    <div class="hl-login-box">
+      <h2 style="color: var(--hl-primary); text-align: center">希望之光 系统初始化</h2>
+      <div class="hl-form-section">
+        <label>干员姓名</label><input id="hl-inp-name" class="hl-input" style="width: 100%" value="{{user}}" />
+        <div class="hl-field-group" style="margin-top: 10px">
+          <div>
+            <label>难度</label
+            ><select id="hl-inp-diff" class="hl-select" style="width: 100%">
+              <option>新手</option>
+              <option selected>标准</option>
+              <option>困难</option>
+            </select>
+          </div>
+          <div>
+            <label>NSFW</label
+            ><select id="hl-inp-nsfw" class="hl-select" style="width: 100%">
+              <option value="关">禁止</option>
+              <option value="开">授权</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button id="hl-btn-confirm" class="hl-btn-submit">签署协议并进入</button>
+    </div>
+  </div>
+
+  <div id="hl-main-view" class="hl-view">
+    <div class="hl-topbar">
+      <div style="color: var(--hl-primary); font-weight: bold; display: flex; align-items: center; gap: 10px">
+        <div id="hl-dot" style="width: 8px; height: 8px; background: var(--hl-primary); border-radius: 50%"></div>
+        希望之光·驻地终端
+        <span style="font-size: 11px; opacity: 0.7"
+          >@ <span class="hl-live-var" data-var="系统.当前日期">03-04</span> [<span
+            class="hl-live-var"
+            data-var="系统.当前班次"
+            >白班</span
+          >]</span
+        >
+      </div>
+      <div class="hl-nav-menus">
+        <button class="hl-nav-btn" onclick="HLUI.togglePanel('profile')">🧑 档案</button>
+        <button class="hl-nav-btn" onclick="HLUI.togglePanel('task')">📋 任务</button>
+        <button class="hl-nav-btn" onclick="HLUI.togglePanel('inventory')">🎒 背包</button>
+        <button class="hl-nav-btn" onclick="HLUI.toggleSPA(false)">🔽 折叠</button>
+      </div>
+    </div>
+    <div class="hl-layout">
+      <div class="hl-sidebar-left">
+        <div class="hl-stat-card">
+          <div class="hl-vital-row">
+            <span>健康 HP</span><span class="hl-live-var" data-var="主角.体力值.当前值">100</span>
+          </div>
+          <div class="hl-prog-track"><div id="hl-bar-hp" class="hl-prog-fill"></div></div>
+          <div class="hl-vital-row" style="margin-top: 8px">
+            <span>精神 SAN</span><span class="hl-live-var" data-var="主角.精神值.当前值">100</span>
+          </div>
+          <div class="hl-prog-track">
+            <div id="hl-bar-san" class="hl-prog-fill" style="background: var(--hl-info)"></div>
+          </div>
+          <div class="hl-vital-row" style="margin-top: 12px">
+            <span>资金余额</span><span class="hl-live-var" data-var="主角.资金">0</span>
+          </div>
+        </div>
+        <div
+          id="hl-sidebar-cmds"
+          style="
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--hl-text-dim);
+          "
+        >
+          探测到指令:
+          <div id="hl-node-cmds"></div>
+        </div>
+      </div>
+      <div class="hl-chat-container">
+        <div id="hl-story-log" class="hl-story-log"></div>
+        <div class="hl-input-area">
+          <textarea id="hl-input-box" placeholder="输入指令..."></textarea>
+          <button id="hl-send-btn" class="hl-btn-submit" style="width: 100px; padding: 0">执行</button>
+        </div>
+      </div>
+      <div id="hl-panel-profile" class="hl-panel">
+        <div class="hl-panel-header">
+          🧑 个人档案<span onclick="HLUI.togglePanel('')" style="cursor: pointer">&times;</span>
+        </div>
+        <div style="padding: 15px" class="hl-live-var" data-var="主角">加载中...</div>
+      </div>
+      <div id="hl-panel-task" class="hl-panel">
+        <div class="hl-panel-header">
+          📋 任务终端<span onclick="HLUI.togglePanel('')" style="cursor: pointer">&times;</span>
+        </div>
+        <div style="padding: 15px" class="hl-live-var" data-var="任务日志">加载中...</div>
+      </div>
+      <div id="hl-panel-inventory" class="hl-panel">
+        <div class="hl-panel-header">
+          🎒 背包装备<span onclick="HLUI.togglePanel('')" style="cursor: pointer">&times;</span>
+        </div>
+        <div style="padding: 15px" class="hl-live-var" data-var="装备状态">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="hl-floater"
+    style="
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999999;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--hl-primary);
+      padding: 10px;
+      border-radius: 20px;
+      color: var(--hl-primary);
+      cursor: pointer;
+      font-weight: bold;
+    "
+    onclick="HLUI.toggleSPA(true)"
+  >
+    ▲ 监控终端
+  </div>
+
+  <script>
+    (function () {
+      window.HLUI = window.HLUI || {};
+      let SPA, Floater, Log, IBx, SBtn;
+
+      window.HLUI_INIT = function () {
+        SPA = document.getElementById('hl-spa-wrapper');
+        Floater = document.getElementById('hl-floater');
+        Log = document.getElementById('hl-story-log');
+        IBx = document.getElementById('hl-input-box');
+        SBtn = document.getElementById('hl-send-btn');
+        if (!SPA || !Log) return false;
+
+        const ensureBody = () => {
+          if (SPA.parentElement && SPA.parentElement.tagName !== 'BODY') document.body.appendChild(SPA);
+          if (Floater && Floater.parentElement && Floater.parentElement.tagName !== 'BODY')
+            document.body.appendChild(Floater);
+        };
+        ensureBody();
+        setInterval(ensureBody, 2000);
+
+        HLUI.toggleSPA = show => {
+          SPA.style.display = show ? 'flex' : 'none';
+          if (Floater) Floater.style.display = show ? 'none' : 'block';
+        };
+
+        HLUI.togglePanel = id => {
+          ['profile', 'task', 'inventory'].forEach(p => {
+            const el = document.getElementById('hl-panel-' + p);
+            if (el) el.classList.toggle('open', p === id);
+          });
+        };
+
+        HLUI.sendCommand = txt => {
+          if (!txt) return;
+          const ta = document.getElementById('send_textarea');
+          const bt = document.getElementById('send_but');
+          if (ta && bt) {
+            ta.value = txt;
+            ta.dispatchEvent(new Event('input', { bubbles: true }));
+            bt.click();
+          }
+        };
+
+        if (SBtn)
+          SBtn.onclick = () => {
+            HLUI.sendCommand(IBx.value);
+            IBx.value = '';
+          };
+
+        // --- MVU Integration ---
+        function getNested(obj, path) {
+          return path.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), obj);
+        }
+
+        function refreshUI() {
+          if (SPA.style.display === 'none') return;
+          const M = window.Mvu;
+          const ST = window.SillyTavern || window.ST;
+          if (!M || !ST) return;
+          const data = M.getMvuData ? M.getMvuData() : {};
+
+          SPA.querySelectorAll('.hl-live-var').forEach(el => {
+            const path = el.getAttribute('data-var');
+            let val = getNested(data, path);
+            if (val === undefined) val = ST.getContext().substituteParams('{{getvar::' + path + '}}');
+            if (typeof val === 'object') val = JSON.stringify(val, null, 2);
+            if (el.innerText !== String(val)) el.innerText = val;
+          });
+
+          const hp = parseInt(getNested(data, '主角.体力值.当前值')) || 100;
+          const san = parseInt(getNested(data, '主角.精神值.当前值')) || 100;
+          document.getElementById('hl-bar-hp').style.width = hp + '%';
+          document.getElementById('hl-bar-san').style.width = san + '%';
+        }
+
+        setInterval(refreshUI, 1000);
+        if (window.eventOn && window.Mvu && window.Mvu.events) {
+          eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, refreshUI);
+        }
+
+        // --- Chat & Command Hydration ---
+        function hydrate(node) {
+          const text = node.innerText || '';
+          const cmds = text.match(/【[^】]+】/g);
+          if (!cmds) return;
+          const wrap = document.createElement('div');
+          wrap.style.marginTop = '8px';
+          [...new Set(cmds)].forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'hl-cmd-btn';
+            btn.innerText = c.replace(/[【】]/g, '');
+            btn.onclick = () => HLUI.sendCommand(c);
+            wrap.appendChild(btn);
+          });
+          node.appendChild(wrap);
+        }
+
+        const chatObs = new MutationObserver(muts => {
+          const chat = document.getElementById('chat');
+          if (!chat) return;
+          Log.innerHTML = '';
+          const messages = chat.querySelectorAll('.mes');
+          messages.forEach(m => {
+            if (m.querySelector('#hl-spa-wrapper')) return;
+            const clone = m.cloneNode(true);
+            const textNode = clone.querySelector('.mes_text');
+            if (textNode) hydrate(textNode);
+            Log.appendChild(clone);
+          });
+          Log.scrollTop = Log.scrollHeight;
+
+          // Sidebar commands update
+          const lastMes = messages[messages.length - 1];
+          if (lastMes) {
+            const sidebarNode = document.getElementById('hl-node-cmds');
+            sidebarNode.innerHTML = '';
+            const cmds = lastMes.innerText.match(/【[^】]+】/g);
+            if (cmds)
+              [...new Set(cmds)].forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'hl-cmd-btn';
+                btn.innerText = c;
+                btn.onclick = () => HLUI.sendCommand(c);
+                sidebarNode.appendChild(btn);
+              });
+          }
+        });
+        if (document.getElementById('chat'))
+          chatObs.observe(document.getElementById('chat'), { childList: true, subtree: true });
+
+        // --- Logic Initialization ---
+        const ST = window.SillyTavern || window.ST;
+        const isStarted =
+          ST && ST.getContext && ST.getContext().chat
+            ? ST.getContext().chat.length > 2
+            : document.querySelectorAll('#chat .mes').length > 2;
+        document.getElementById('hl-login-view').style.display = isStarted ? 'none' : 'flex';
+        document.getElementById('hl-main-view').style.display = isStarted ? 'flex' : 'none';
+
+        document.getElementById('hl-btn-confirm').onclick = () => {
+          const n = document.getElementById('hl-inp-name').value;
+          const d = document.getElementById('hl-inp-diff').value;
+          const s = document.getElementById('hl-inp-nsfw').value;
+          HLUI.sendCommand(`【入职申请】姓名：${n} | 难度：${d} | NSFW：${s}。请立即生成第一天工作简报！`);
+          HLUI.toggleSPA(true);
+        };
+
+        return true;
+      };
+
+      const iInt = setInterval(() => {
+        if (window.HLUI_INIT()) clearInterval(iInt);
+      }, 500);
+    })();
+  </script>
+</div>

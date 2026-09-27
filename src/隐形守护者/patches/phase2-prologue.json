@@ -1,0 +1,10 @@
+[
+  {"op":"add","path":"/entryManifest/EJS预处理/EJS预处理","value":{"path":"世界书/EJS/EJS预处理.txt","abstract":"EJS全局变量：章节/节点/派生门闩","keywords":[]}},
+  {"op":"add","path":"/entryManifest/世界观/角色能力矩阵","value":{"path":"世界书/世界观/角色能力矩阵.yaml","abstract":"全员八维能力0-10矩阵与对比铁律","keywords":["能力","矩阵"]}},
+  {"op":"add","path":"/entryManifest/MVU/[mvu_update]判定公式总表","value":{"part":"update_rules","path":"世界书/MVU/判定公式总表.yaml","abstract":"暴露风险/行动级别/对抗差公式","keywords":[]}},
+  {"op":"add","path":"/entryManifest/事件/结局谱系","value":{"path":"世界书/事件/结局谱系.yaml","abstract":"四大主线与序章BE等结局ID","keywords":["结局","BE"]}},
+  {"op":"add","path":"/entryManifest/事件/抉择校验表","value":{"path":"世界书/事件/抉择校验表.yaml","abstract":"选项→结果写死表，序章全节点","keywords":["抉择","选项","校验"]}},
+  {"op":"replace","path":"/entryManifest/事件/序章-事件/abstract","value":"序章潜伏归来：EJS按当前节点注入，原作五抉择+五BE"},
+  {"op":"add","path":"/entryManifest/NPC/方敏","value":{"path":"世界书/NPC/方敏.yaml","abstract":"青梅竹马第三号，序章信任门闩","keywords":["方敏","敏敏"]}},
+  {"op":"add","path":"/entryManifest/NPC/方汉洲","value":{"path":"世界书/NPC/方汉洲.yaml","abstract":"恩师春风，序章苦肉计","keywords":["方汉洲","老师","春风"]}}
+]

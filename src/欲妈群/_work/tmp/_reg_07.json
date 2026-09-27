@@ -1,0 +1,18 @@
+{
+  "id": "yumq-regex-075-var-fold",
+  "scriptName": "2变量更新折叠",
+  "findRegex": "/<UpdateVariable>([\\s\\S]*?)<\\/UpdateVariable>/gi",
+  "replaceString": "<details class=\"mvu-update-detail\" style=\"margin:8px 0;border-left:3px solid #f472b6;padding:4px 12px;background:rgba(244,114,182,0.05);border-radius:4px;\"><summary style=\"cursor:pointer;color:#f472b6;font-size:0.85em;opacity:0.8;\">⚙️ MVU变量更新（点击展开）</summary>\n\n```json\n$1\n```\n\n</details>",
+  "trimStrings": [],
+  "placement": [
+    1,
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

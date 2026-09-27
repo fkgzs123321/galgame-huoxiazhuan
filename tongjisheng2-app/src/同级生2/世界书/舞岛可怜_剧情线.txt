@@ -1,0 +1,223 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 舞岛可怜 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=3 / 女角 · 日记本第 5 本持有者 + 青梅竹马重逢型偶像弧线
+   核心弧线：青梅竹马重逢—电视台偶遇—日记本第 5 本—身份揭示—偶像压力—主角支持—恋人成立（七阶段）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 舞岛可怜_STORYLINE = {
+  heroine_id: 3,
+  name: '舞岛可怜',
+  core_position: {
+    role: '可怜线核心女角 — 日记本第 5 本持有者，青梅竹马重逢型偶像弧线',
+    archetype: '青梅竹马重逢的地下偶像 — 被崇拜 vs 被看见的双重注视困境',
+    function: '通过"电视台偶遇→商业区重逢→日记本第 5 本交付→童星身份揭示→偶像压力爆发→主角支持"的六段式弧线，把可怜从"甜美营业的偶像可怜酱"推向"卸妆后被主角看见的真实少女"，最终达成"被占有而非崇拜"的恋人成立',
+    plot_weight: 'high — 可怜线专属道具日记本第 5 本是揭示青梅竹马关系的核心钥匙；电视台是主要出现地点'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: '全天',
+      location: '—（未登场）',
+      event: '寒假第一天 · 可怜锁定未登场',
+      description: '可怜作为商业区/海岸线出现女角，12/22 寒假首日被调度器锁定（DATE_OVERRIDES[1].locked 含 id=3）；主角此日无法遇见可怜',
+      triggers_route: '可怜线 — 未开启（锁定状态）',
+      is_reversible: true,
+      flags: ['flag_karen_route_locked_d1']
+    },
+    {
+      date: '12-23',
+      time_slot: 'PM',
+      location: '八十八学园 / 八十八町商业区',
+      event: '校园开放日 · 可怜首次可能登场',
+      description: '校园开放日解除锁定，主角可能在学园或商业区偶遇可怜；此时可怜以"Snow Drops 偶像可怜酱"的营业面孔出现，主角仅作为"围观粉丝之一"被她扫过；好感初始 affection=0，无任何青梅竹马暗示',
+      triggers_route: '可怜线 — 开启"初遇（主角未识）"前置阶段',
+      is_reversible: true,
+      flags: ['flag_karen_first_encounter']
+    },
+    {
+      date: '12-27',
+      time_slot: '上午',
+      location: '电视台',
+      event: '电视台偶遇舞岛可怜（好感 +3）',
+      description: '主角在电视台打工/办事时偶遇正在打工的可怜；可怜脱离舞台妆，卸下营业笑容，显出疲惫真实的一面；主角未认出她是青梅竹马，但可怜一眼认出主角却隐忍不说；对话以漫画/音乐/童话等非偶像话题切入时，可怜会露出"被看见"的微妙表情，好感 affection +3',
+      triggers_route: '可怜线 — 开启"电视台偶遇"核心阶段，可怜对主角的童年记忆被激活',
+      is_reversible: true,
+      flags: ['flag_karen_tv_encounter', 'flag_karen_affection_3'],
+      note: '★ 可怜线核心触发点 — 电视台是可怜线主要出现地点；此节点未触发则可怜线进入"延迟触发"分支'
+    },
+    {
+      date: '12-24 ~ 12-30',
+      time_slot: 'PM/晚',
+      location: '电视台 / 八十八町商业区 / 八十八海岸',
+      event: '多次偶遇期 · 关系累积阶段',
+      description: '12/24~12/30 期间，主角可在电视台（上午/下午）、商业区（下午/晚）、海岸（下午/晚）多次偶遇可怜；每次非偶像场合的真诚接触（图书馆、便利店、公园清晨等）累积好感与信任；可怜逐渐在主角面前卸妆、放下营业声线，露出沉闷疲惫的低音',
+      triggers_route: '可怜线 — 累积阶段，为日记本第 5 本交付做铺垫',
+      is_reversible: true,
+      flags: ['flag_karen_trust_building']
+    },
+    {
+      date: '12-31 ~ 01-03 上午',
+      time_slot: '全天',
+      location: '—（夏威夷出差，不可遇）',
+      event: '可怜夏威夷出差期 · 完全锁定',
+      description: '12/31~1/3 上午可怜随 Snow Drops 赴夏威夷出差（DATE_OVERRIDES[10~12].locked 含 id=3，1/3 上午仍锁定）；期间主角绝对无法在八十八町遇见可怜；若主角此期间试图寻找可怜，会从商业区居民处得知"可怜酱去夏威夷了"',
+      triggers_route: '可怜线 — 暂停阶段（出差期）',
+      is_reversible: true,
+      flags: ['flag_karen_hawaii_absence'],
+      note: '★ 调度器强制锁定 — 12/31~1/3 上午可怜绝对不出现；1/3 下午出差返回后解除'
+    },
+    {
+      date: '01-03',
+      time_slot: 'PM',
+      location: '八十八町商业区 / 电视台',
+      event: '可怜从夏威夷返回 · 重新可遇',
+      description: '1/3 下午可怜从夏威夷返回八十八町（DATE_OVERRIDES[13] 解除 id=3 锁定，下午起可遇）；主角若当日午后在商业区或电视台，会遇见晒得微黑的可怜；她会带着夏威夷特产（水果糖）悄悄递给主角，暗示"我记得你喜欢的"',
+      triggers_route: '可怜线 — 进入"身份揭示前奏"阶段',
+      is_reversible: true,
+      flags: ['flag_karen_returned_hawaii', 'flag_karen_omiyage_hint']
+    },
+    {
+      date: '01-04 ~ 01-06',
+      time_slot: 'PM/夜',
+      location: '可怜公寓 / 电视台 / 商业区',
+      event: '日记本第 5 本交付 · 童星身份揭示',
+      description: '可怜线核心节点：当可怜好感 affection≥40 且信任 trust≥30 时，可怜会在深夜电视台下班后邀主角回她商业区附近的公寓；卸妆后她从书桌抽屉取出日记本第 5 本交给主角——记录她童星时代在八十八町度过的夏天，以及与童年主角的相遇；主角此时才意识到可怜是青梅竹马；可怜红着眼眶说"你终于...看见我了"',
+      triggers_route: '可怜线 — 进入"身份揭示→主角支持"转折阶段；日记本第 5 本是可怜线专属道具',
+      is_reversible: false,
+      flags: ['flag_karen_diary_5_delivered', 'flag_karen_identity_revealed', 'flag_karen_childhood_friend_confirmed'],
+      note: '★ 不可逆 flag — 日记本第 5 本一旦交付，可怜线进入"恋人成立前夜"分支；此节点是可怜线不可回退的核心转折'
+    },
+    {
+      date: '01-04 ~ 01-06',
+      time_slot: 'PM/夜',
+      location: '电视台 / 经纪人办公室 / 可怜公寓',
+      event: '偶像压力爆发 · 主角支持事件',
+      description: '身份揭示后，可怜的偶像压力集中爆发——经纪人施压 C 位竞争、粉丝骚扰升级、父母在地方只汇钱不关心；可怜崩溃哭诉"被粉丝崇拜和被你看见是两种根本不同的注视"；主角选择"我看见的是人，不是偶像"并坚定陪伴，可怜心跳 heartbeat 大幅上升；若主角此期间强行亲密或混淆"崇拜"与"占有"，触发 BAD_END_1（报警 + 偶像事业崩溃）',
+      triggers_route: '可怜线 — 进入"主角支持→恋人成立"收束阶段',
+      is_reversible: false,
+      flags: ['flag_karen_pressure_burst', 'flag_karen_supported_by_protagonist'],
+      note: '★ 不可逆 flag — 主角的态度决定可怜线走向 Good End / Normal End / Bad End'
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '八十八町（结局判定）',
+      event: '最终判定 · 可怜好感 ≥60 达成 Good End',
+      description: '寒假最后一天深夜触发结局判定：可怜好感 affection≥60 且日记本第 5 本已交付且主角支持 flag 已触发 → Good End（可怜×主角恋人成立，可怜继续偶像事业但不再孤独）；affection 40~59 → Normal End（暧昧未明，可怜继续偶像事业，主角成为她唯一的"看见者"）；affection <40 或触发 BAD_END_1 → Bad End（可怜崩溃退出偶像界或报警事件）',
+      triggers_route: '可怜线 — 结局判定',
+      is_reversible: false,
+      flags: ['flag_karen_final_judgment'],
+      note: '★ 不可逆 flag — 寒假最后一天深夜触发，可怜线最终结局固化'
+    }
+  ],
+
+  triggered_routes: {
+    '可怜线 · 电视台偶遇分支': {
+      role: 'core — 可怜线主入口',
+      trigger_nodes: ['12-27 上午 电视台偶遇（好感+3）'],
+      impact: '电视台偶遇是可怜线核心触发点；若 12/27 上午主角未去电视台，可怜线进入"延迟触发"分支（12/28~12/30 商业区/海岸偶遇仍可开启，但好感累积延迟，1/7 判定时可能无法达到 Good End 阈值）'
+    },
+    '可怜线 · 日记本第 5 本分支': {
+      role: 'core — 可怜线核心转折',
+      trigger_nodes: ['01-04~01-06 日记本第 5 本交付 + 童星身份揭示'],
+      impact: '日记本第 5 本是可怜线专属道具；未交付则可怜线无法进入"恋人成立"分支，1/7 判定时即使好感≥60 也只能达成 Normal End（暧昧未明）'
+    },
+    '可怜线 · 出差锁定分支': {
+      role: 'lock — 调度器强制锁定',
+      trigger_nodes: ['12-31~01-03 上午 夏威夷出差'],
+      impact: '夏威夷出差期间可怜绝对不可遇；此期间主角若强行推进可怜线会因"找不到人"而停滞，需等 1/3 下午返回后继续'
+    },
+    '可怜线 · Bad End 分支': {
+      role: 'risk — 强行亲密触发崩溃',
+      trigger_nodes: ['01-04~01-06 偶像压力爆发期 强行亲密 / 混淆崇拜与占有'],
+      impact: '偶像营业 vs 被人占有的反差是可怜核心创伤；强行亲密或混淆"被崇拜"与"被占有"会触发 BAD_END_1（报警 + 偶像事业崩溃事件），可怜线直接进入 Bad End'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'childhood_friend — 青梅竹马（主角未识）',
+      detail: '童年八十八町夏日相遇的玩伴，可怜一直记得主角，主角因年幼记忆模糊未第一时间认出；初始 affection=0/trust=0（表面陌生），实际可怜内心已有童年记忆伏笔'
+    },
+    'Snow Drops 成员': {
+      type: 'colleague — 偶像同事',
+      detail: '同属地下偶像团体 Snow Drops，C 位竞争关系；同事间未深交，是可怜偶像压力的来源之一'
+    },
+    '经纪人': {
+      type: 'work — 工作关系',
+      detail: '电视台打工与偶像事业的直接管理者，施压 C 位与行程；是可怜疲惫与崩溃的主要源头'
+    },
+    '父母（在地方）': {
+      type: 'distant — 疏远家庭',
+      detail: '父母在地方，关系淡，每月汇生活费，过年才见面；家庭情感缺失是可怜"渴望被看见"创伤的根源'
+    },
+    '同班同学（八十八学园二年生）': {
+      type: 'fan_distanced — 粉丝向未深交',
+      detail: '同班同学多视她为"偶像可怜酱"，未深交；校园里被围观的小偶像形象，无真实朋友'
+    },
+    '南川洋子（heroine_id=6，间接）': {
+      type: 'coast_neighbor — 海岸散步偶遇',
+      detail: '可怜下午/晚常在八十八海岸散步（DEFAULT_SCHEDULE 同区域），与洋子有非直接交集；无剧情冲突'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_karen_first_encounter',
+      trigger: '12-23 PM 校园开放日/商业区首次登场',
+      effect: '可怜以偶像营业面孔首次出现，主角未识青梅竹马关系；可怜线开启"初遇（主角未识）"前置阶段',
+      reversibility: '可逆 — 此 flag 仅标记首次相遇，不影响后续分支'
+    },
+    {
+      flag: 'flag_karen_tv_encounter',
+      trigger: '12-27 上午 电视台偶遇（好感 +3）',
+      effect: '可怜线核心触发点；可怜认出主角但隐忍不说，童年记忆被激活',
+      reversibility: '可逆 — 若 12/27 未触发，12/28~12/30 商业区/海岸偶遇仍可开启延迟分支'
+    },
+    {
+      flag: 'flag_karen_hawaii_absence',
+      trigger: '12-31~01-03 上午 夏威夷出差期',
+      effect: '调度器强制锁定，可怜绝对不可遇；可怜线暂停',
+      reversibility: '可逆 — 1/3 下午返回后自动解除'
+    },
+    {
+      flag: 'flag_karen_diary_5_delivered',
+      trigger: '01-04~01-06 可怜公寓事件（需 affection≥40 且 trust≥30）',
+      effect: '日记本第 5 本交付，童星身份揭示，青梅竹马关系确认；可怜线进入"恋人成立前夜"分支',
+      reversibility: '不可逆 — 一旦交付无法回退；未交付则 1/7 判定只能达 Normal End'
+    },
+    {
+      flag: 'flag_karen_identity_revealed',
+      trigger: '01-04~01-06 日记本第 5 本交付同步',
+      effect: '主角意识到可怜是青梅竹马；后续所有对话解锁童年回忆选项',
+      reversibility: '不可逆 — 身份揭示后无法假装不知'
+    },
+    {
+      flag: 'flag_karen_supported_by_protagonist',
+      trigger: '01-04~01-06 偶像压力爆发期 主角选择"我看见的是人，不是偶像"',
+      effect: '可怜心跳 heartbeat 大幅上升，可怜线进入"恋人成立"收束分支；Good End 阈值达成必要条件',
+      reversibility: '不可逆 — 主角支持态度一旦确立无法回退'
+    },
+    {
+      flag: 'BAD_END_1',
+      trigger: '01-04~01-06 偶像压力爆发期 强行亲密 / 混淆崇拜与占有',
+      effect: '报警 + 偶像事业崩溃事件，可怜线直接进入 Bad End',
+      reversibility: '不可逆 — 一旦触发无法挽救，1/7 判定直接 Bad End'
+    },
+    {
+      flag: 'flag_karen_final_judgment',
+      trigger: '01-07 深夜结局判定',
+      effect: '可怜好感 affection≥60 + 日记本第 5 本已交付 + 主角支持 flag → Good End；40~59 → Normal End；<40 或 BAD_END_1 → Bad End',
+      reversibility: '不可逆 — 寒假最后一天深夜触发，可怜线最终结局固化'
+    }
+  ],
+
+  summary: '舞岛可怜的剧情线是"青梅竹马重逢—电视台偶遇—日记本第 5 本—身份揭示—偶像压力—主角支持—恋人成立"七阶段弧线，核心功能是通过日记本第 5 本（可怜线专属道具）揭示她与主角的童年青梅竹马关系，把可怜从"被崇拜的偶像可怜酱"推向"被主角看见的真实少女"。电视台是主要出现地点（12/27 上午偶遇为可怜线核心触发点），12/31~1/3 上午夏威夷出差期间绝对不可遇，1/3 下午返回后可重新遇见。1/7 深夜最终判定：好感 affection≥60 + 日记本第 5 本已交付 + 主角支持 flag 达成 Good End。核心风险：强行亲密或混淆"被崇拜"与"被占有"会触发 BAD_END_1（报警 + 偶像事业崩溃）。'
+};
+%>
+
+舞岛可怜 · 剧情线已加载。核心定位：可怜线核心女角（heroine_id=3）+ 日记本第 5 本持有者 + 青梅竹马重逢型偶像弧线。七阶段弧线：12/23 首次登场→12/27 上午电视台偶遇（好感+3，核心触发点）→12/24~12/30 多次偶遇累积→12/31~1/3 上午夏威夷出差（绝对锁定）→1/3 下午返回可遇→1/4~1/6 日记本第 5 本交付+童星身份揭示+偶像压力爆发+主角支持→1/7 深夜最终判定（affection≥60 达 Good End）。不可逆 flag：flag_karen_diary_5_delivered（日记本第 5 本交付）、flag_karen_identity_revealed（身份揭示）、flag_karen_supported_by_protagonist（主角支持）、BAD_END_1（强行亲密触发崩溃）、flag_karen_final_judgment（1/7 结局判定）。电视台是主要出现地点；夏威夷出差期间不可遇；日记本第 5 本是可怜线专属道具。

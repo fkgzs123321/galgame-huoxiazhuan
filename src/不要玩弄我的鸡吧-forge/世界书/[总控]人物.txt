@@ -1,0 +1,132 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · 人物总控（分控层）
+   ════════════════════════════════════════════════════════════
+   关灯加载：enabled:false，由 D0 通过 getwi('[总控]人物') 调用
+   职责：
+   1. 读取所有女性角色的活跃状态
+   2. 筛选活跃角色（持有者、已确认使用者、当前在场角色）
+   3. 输出活跃角色摘要（姓名/阶段/好感/使用次数），供AI识别在场名单
+   4. token优化（绿灯模式）：基础信息/调色盘已改绿灯（关键词=角色名），
+      聊天提到名字即由酒馆原生注入，此处不再getwi（每轮省约55KB）
+   5. 深度档案按场景getwi：NSW档案（仅使用/终局场景）、独立剧情线（在场角色全部加载）
+   6. 全局索引见蓝灯条目 [mvu_plot]角色速览名单（53人一句话）
+   7. 加载玩家档案（每轮必加载，玩家_基础档案蓝灯，NSW档案按场景）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+// ===== 读取女性角色数据 =====
+var _allFemales = getvar('stat_data.女性角色', { scope: 'local', defaults: {} }) || {};
+var _holderId = getvar('stat_data.隐藏层.持有者ID', { scope: 'local', defaults: '林婉清' }) || '林婉清';
+var _confirmedUsers = getvar('stat_data.隐藏层.确认使用者', { scope: 'local', defaults: [] }) || [];
+var _activeUsersCount = Number(getvar('stat_data.隐藏层.活跃使用人数', { scope: 'local', defaults: 0 })) || 0;
+
+// ===== 筛选活跃角色（在场角色 + 持有者强制包含） =====
+// token优化：仅筛选在场角色进摘要，离场角色跳过
+// 持有者无论是否在场都强制包含（确保AI每轮知道持有者状态）
+// 注：持有者ID 存的是中文姓名，女性角色 键是 UID
+var _femaleKeys = Object.keys(_allFemales).filter(function(k) {
+  var f = _allFemales[k];
+  if (!f || !f.基础 || !f.基础.姓名) return false;
+  var isPresent = f.叙事 && f.叙事.在场状态 === '在场';
+  var isHolder = f.基础.姓名 === _holderId;
+  return isPresent || isHolder;
+});
+
+// 持有者是否在场（用于决定是否加载独立剧情线）
+var _holderPresent = _femaleKeys.some(function(k) {
+  var f = _allFemales[k];
+  return f && f.基础 && f.基础.姓名 === _holderId
+    && f.叙事 && f.叙事.在场状态 === '在场';
+});
+
+// 排序：持有者最优先，已确认使用者次之，其余按uid
+var _sortedKeys = _femaleKeys.sort(function(a, b) {
+  var aName = _allFemales[a] && _allFemales[a].基础 && _allFemales[a].基础.姓名;
+  var bName = _allFemales[b] && _allFemales[b].基础 && _allFemales[b].基础.姓名;
+  if (aName === _holderId) return -1;
+  if (bName === _holderId) return 1;
+  var aConfirmed = _confirmedUsers.indexOf(a) >= 0 ? 0 : 1;
+  var bConfirmed = _confirmedUsers.indexOf(b) >= 0 ? 0 : 1;
+  return aConfirmed - bConfirmed;
+});
+
+// 最多5个在场角色（token控制）
+var _activeFemales = _sortedKeys.slice(0, 5);
+
+// 构建活跃角色摘要
+var _femaleSummary = _activeFemales.map(function(k) {
+  var f = _allFemales[k] || {};
+  var ms = f.多维状态 || {};
+  var wl = f.与玩家关系 || {};
+  var nsfw = f.NSFW || {};
+  var dildoExp = nsfw.假阴茎经验 || {};
+  return {
+    uid: k,
+    name: f.基础.姓名 || '--',
+    role: f.基础.角色 || '--',
+    composite: ms.综合阶段 || 'A_理性期',
+    favor: wl.好感度 || 0,
+    hasUsed: dildoExp.总次数 > 0,
+    totalUses: dildoExp.总次数 || 0,
+    isHolder: (f.基础 && f.基础.姓名) === _holderId,
+    template: (f.阶段轨迹 && f.阶段轨迹.模板类型) || '文静',
+  };
+});
+%>
+
+[char_total_control]
+【人物总控 · 活跃角色调度】
+══════════════════════════════════════════════
+已建档女性：<%= _femaleKeys.length %>人 | 活跃：<%= _activeFemales.length %>人 | 已确认传播：<%= _confirmedUsers.length %>人
+
+<% _femaleSummary.forEach(function(f) { %>
+<%= f.isHolder ? '★' : '·' %><%= f.name %>(<%= f.uid %>):<%= f.composite %> 好感<%= f.favor %> 使用<%= f.totalUses %>次<%= f.isHolder ? ' [持有者]' : '' %>
+<% }); %>
+══════════════════════════════════════════════
+[/char_total_control]
+
+<%/* ─── 读取场景模式（必须在玩家档案加载之前定义） ─── */%>
+<% var _stats = getvar('stat_data.状态', { scope: 'local', defaults: {} }) || {}; %>
+<% var _useStage = getvar('stat_data.使用阶段', { scope: 'local', defaults: {} }) || {}; %>
+<% var _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {}; %>
+<% var _pStage = Number(_useStage.当前阶段) || 1; %>
+<% var _pTodayUses = Number(_useStage.今日使用) || 0; %>
+<% var _pHour = Number(_time.小时) || 8; %>
+<% var _pCorruption = Number(_stats.堕落值) || 0; %>
+<% var _pTimeSlot = '上午'; %>
+<% if (_pHour >= 22 || _pHour < 2) { _pTimeSlot = '夜里'; } else if (_pHour >= 2 && _pHour < 5) { _pTimeSlot = '半夜'; } %>
+<% var _isUseScene = (_pTimeSlot === '夜里' || _pTimeSlot === '半夜') && _pStage >= 1 && (_pTodayUses > 0 || _activeUsersCount > 0); %>
+<% var _isEndingScene = (Number(_stats.怀疑值) || 0) >= 150 || (Number(_useStage.总使用次数) || 0) >= 100 || _pCorruption >= 150; %>
+
+<%/* ─── 加载玩家档案（基础档案每轮必加载，NSW档案仅使用/终局场景） ─── */%>
+<%/* 玩家_基础档案已设为蓝灯常驻（enabled:true），无需getwi调用 */%>
+<% if (_isUseScene || _isEndingScene) { %>
+  <%- await getwi('[mvu_plot]玩家_NSW档案') %>
+<% } %>
+
+<%/* ─── 加载活跃女性角色的深度档案（NSW档案/独立剧情线） ───
+   token优化策略（绿灯模式·参考欲望都市）：
+   - 基础信息+调色盘：已改为绿灯（enabled:true，关键词=角色名），
+     聊天提到角色名即由酒馆原生注入，此处不再getwi —— 每轮省约55KB
+   - 角色全局索引：蓝灯条目 名录总表 提供53人一句话识别
+   - 私密档案（30-70KB）：仅"使用场景/终局场景"加载（NSFW总控判定为'使用'时）
+   - 阶段行为：在场角色全部加载（内部按 综合阶段×使用阶段 过滤，
+     渲染后只输出当前段，实测每条1.5-3.7KB）
+   非活跃角色完全跳过 */%>
+
+<% for (var i = 0; i < _activeFemales.length; i++) { %>
+  <% var uid = _activeFemales[i]; %>
+  <% var f = _allFemales[uid] || {}; %>
+  <% var name = f.基础 ? f.基础.姓名 : ''; %>
+  <% if (name) { %>
+    <%/* 私密档案（30-70KB）：仅使用场景/终局场景加载，避免日常浪费 */%>
+    <% if (_isUseScene || _isEndingScene) { %>
+      <% if (name === _holderId || _confirmedUsers.indexOf(uid) >= 0) { %>
+        <%- await getwi(name + '_私密档案') %>
+      <% } %>
+    <% } %>
+    <%/* 阶段行为：在场角色全部加载（渲染后按综合阶段×使用阶段过滤，成本可控） */%>
+    <%- await getwi(name + '_阶段行为') %>
+  <% } %>
+<% } %>

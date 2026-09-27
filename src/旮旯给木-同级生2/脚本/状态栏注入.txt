@@ -1,0 +1,297 @@
+// 状态栏 · 每层注入版（主文档脚本）
+// 为什么用脚本：正则替换 / CDN 只在「有占位符的楼层」生效，
+// 而占位符是打包时追加到开场白的 → AI 后续楼层永远没有。
+// 本脚本遍历每一楼，在 .mes_text 末尾各插一个面板，并用该层的 mesid 读变量。
+(function () {
+  var NS = 'gg2';
+  var CSS = "\n#gg2{--bg0:#0a0c11;--bg1:#11151d;--line:#28303d;--ink:#d6dded;--dim:#78829a;--faint:#4e5769;\n  --gold:#e8b84b;--grn:#7ec8a0;--rose:#e07a9a;--blu:#8fb8d8;--pur:#d8a0e0;\n  font-family:-apple-system,\"PingFang SC\",\"Microsoft YaHei\",system-ui,sans-serif;color:var(--ink);\n  background:linear-gradient(180deg,var(--bg1),var(--bg0));border:1px solid var(--line);\n  border-radius:12px;padding:0;margin:10px 0;font-size:13px;line-height:1.7;overflow:hidden}\n#gg2 .hd{display:flex;align-items:center;gap:9px;padding:9px 13px;background:#0d1119;border-bottom:1px solid var(--line)}\n#gg2 .hd .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}\n#gg2 .hd .t{font-size:13.5px;font-weight:700;color:#e3e9f5}\n#gg2 .hd .s{color:var(--dim);font-size:11px;margin-left:auto}\n#gg2 .bd{padding:10px 13px}\n#gg2 h5{margin:11px 0 6px;font-size:11.5px;font-weight:600;color:var(--faint);letter-spacing:.6px;\n  border-bottom:1px dashed #232b38;padding-bottom:3px;display:flex;align-items:center;gap:6px}\n#gg2 h5:first-child{margin-top:0}\n#gg2 h5 .r{margin-left:auto;font-weight:400;font-style:normal;letter-spacing:0;color:#4e5769}\n#gg2 .bars{display:flex;flex-wrap:wrap;gap:5px 15px}\n#gg2 .bar{display:flex;align-items:center;gap:6px}\n#gg2 .bar .lb{color:var(--dim);font-size:11.5px;min-width:34px}\n#gg2 .tk{display:inline-block;position:relative;height:6px;width:76px;border-radius:3px;background:#1b2130;overflow:hidden;flex:0 0 auto}\n#gg2 .tk>i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;transition:width .3s}\n#gg2 .tk.hp>i{background:linear-gradient(90deg,#a05252,#e07a7a)}\n#gg2 .tk.re>i{background:linear-gradient(90deg,#4a6fa0,#8fb8d8)}\n#gg2 .tk.ex>i{background:linear-gradient(90deg,#8a5aa0,#d8a0e0)}\n#gg2 .tk.mo>i{background:linear-gradient(90deg,#5a7a4a,#9fd07a)}\n#gg2 .bar .vv{font-variant-numeric:tabular-nums;font-weight:600;min-width:24px;text-align:right;font-size:12.5px}\n#gg2 .chips{display:flex;flex-wrap:wrap;gap:4px}\n#gg2 .chip{background:#1a2029;border:1px solid #262e3a;border-radius:5px;padding:0 7px;font-size:11px;color:#98a2b6}\n#gg2 .chip b{color:#cfd7e6;margin-left:3px;font-variant-numeric:tabular-nums}\n#gg2 .chip i{color:#5d6779;font-style:normal;font-size:10px;margin-left:2px}\n#gg2 .box{background:rgba(232,184,75,.05);border:1px solid rgba(232,184,75,.22);border-radius:8px;padding:7px 9px;font-size:12px}\n#gg2 .box.pink{background:rgba(224,122,154,.06);border-color:rgba(224,122,154,.25)}\n#gg2 .row{display:flex;gap:6px;margin-bottom:2px}\n#gg2 .row .k{color:var(--dim);flex:0 0 52px;font-size:11.5px}\n#gg2 .row .v{flex:1;font-size:12px;color:#dfe6f2}\n#gg2 .row .v.hi{color:var(--gold)}\n#gg2 details{margin-top:7px;border:1px solid #232b38;border-radius:8px;background:#0f141c}\n#gg2 details>summary{cursor:pointer;padding:5px 9px;font-size:11.5px;color:#8d97ab;list-style:none;user-select:none}\n#gg2 details>summary::-webkit-details-marker{display:none}\n#gg2 details>summary:before{content:'▸ ';color:var(--faint)}\n#gg2 details[open]>summary:before{content:'▾ '}\n#gg2 details>summary .n{color:var(--gold)}\n#gg2 .girls{padding:4px 9px 8px}\n#gg2 .g{display:flex;align-items:center;gap:7px;font-size:11.5px;padding:1px 0;flex-wrap:wrap}\n#gg2 .g .nm{min-width:68px;color:#c2cbdc}\n#gg2 .g .st{min-width:40px;font-size:10.5px;padding:0 5px;border-radius:4px;text-align:center;\n  background:#1a2029;border:1px solid #262e3a;color:#8d97ab}\n#gg2 .g .st.恋{color:var(--rose);border-color:#4a2632}\n#gg2 .g .st.依{color:var(--grn);border-color:#2b4a37}\n#gg2 .g .st.亲{color:var(--blu);border-color:#2b4a63}\n#gg2 .g .tk{width:auto;flex:1;max-width:140px}\n#gg2 .g .af{font-variant-numeric:tabular-nums;color:#98a2b6;min-width:30px;text-align:right}\n#gg2 .g .lb2{font-size:10.5px;color:#6b7484;flex-basis:100%;padding-left:0;line-height:1.6}\n#gg2 .opts{display:flex;flex-direction:column;gap:5px}\n#gg2 .opt{display:flex;align-items:flex-start;gap:8px;background:#141a24;border:1px solid #232b38;\n  border-radius:8px;padding:6px 9px}\n#gg2 .opt.she{border-color:var(--gold);background:rgba(232,184,75,.06)}\n#gg2 .opt .no{width:18px;height:18px;border-radius:4px;background:#1c2330;color:var(--gold);\n  font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px}\n#gg2 .opt.she .no{background:var(--gold);color:#1a1408}\n#gg2 .opt .tx{flex:1;font-size:12px;line-height:1.55}\n#gg2 .opt .lv{font-size:10px;padding:0 5px;border-radius:4px;background:#1a2029;border:1px solid #262e3a;color:#8d97ab;flex:0 0 auto}\n#gg2 .opt .lv.mid{color:var(--blu);border-color:#2b4a63}\n#gg2 .opt .lv.strong{color:var(--pur);border-color:#4a2b63}\n#gg2 .opt .lv.extreme{color:var(--rose);border-color:#4a2632}\n#gg2 .opt .btns{display:flex;gap:4px;flex:0 0 auto}\n#gg2 .opt button{font-size:10.5px;padding:1px 8px;border-radius:5px;cursor:pointer;font-family:inherit;\n  border:1px solid #333d4d;background:#1a2029;color:#98a2b6}\n#gg2 .opt button.rj{border-color:#4a2632;background:#221318;color:var(--rose)}\n#gg2 .opt button.rj:hover:not(:disabled){background:#2e1a20}\n#gg2 .opt button.ig:hover:not(:disabled){background:#222a36;color:#c2cbdc}\n#gg2 .opt button:disabled{border-color:#262d38;background:#181d24;color:#4a5361;cursor:not-allowed}\n#gg2 .tip{margin-top:5px;font-size:10.5px;color:var(--faint);font-style:italic}\n#gg2 .res{margin-top:6px;padding:6px 9px;border-radius:7px;font-size:11.5px;display:none}\n#gg2 .res.on{display:block}\n#gg2 .res.ok{border:1px solid #2b4a37;background:#16221b;color:#8fd0a8}\n#gg2 .res.no{border:1px solid #4a2632;background:#221318;color:#e8a0a0}\n#gg2 .res.ig{border:1px solid #333d4d;background:#161b24;color:#98a2b6}\n";
+
+  function 装样式() {
+    if (document.getElementById(NS + '-style')) return;
+    var s = document.createElement('style');
+    s.id = NS + '-style';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }
+
+  /* ── 面板逻辑（由 dist/nanpa2-ui/index.html 生成，改成可重复调用）── */
+  var _当前容器 = null;
+  var 容器 = null;
+  var 楼层 = -1;      /* ★ 这次要渲染的楼层 */
+  var 上次指纹 = '';
+
+  
+    var NS = 'gg2';
+    var 等级 = { 微:{c:[3,5],r:90,k:'micro'}, 中:{c:[10,15],r:60,k:'mid'}, 强:{c:[25,35],r:30,k:'strong'},
+                 极:{c:[50,60],r:10,k:'extreme'}, 锁:{c:null,r:0,k:'lock'} };
+    var 英中 = { micro:'微', mid:'中', strong:'强', extreme:'极', lock:'锁' };
+    function 归(v){v=String(v||'');return 等级[v]?v:(英中[v]||'微');}
+    function 数(v,d){var n=Number(v);return isFinite(n)?n:(d||0);}
+    function 夹(v,a,b){return Math.max(a,Math.min(b,v));}
+    function E(s){return String(s===undefined||s===null?'':s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function 有(v){return v!==undefined&&v!==null&&String(v).trim()!=='';}
+    function 键(o){try{return Object.keys(o||{}).filter(function(k){return 有(o[k])||typeof o[k]==='object';});}catch(e){return [];}}
+    function 阶(s){s=String(s||'');if(/恋|爱/.test(s))return '恋';if(/依/.test(s))return '依';if(/亲/.test(s))return '亲';return '';}
+  
+    /* ── 取值 ──
+       ① getCurrentMessageId(): 面板**自己所在那一楼**（iframe 里可用）→ 显示该楼的值
+       ② message_id:-1        : 官方「最新楼层」语义（部分环境可用）
+       ③ 多来源楼层探测       : 兜底
+    */
+    function 我在哪楼(){
+      try{if(typeof getCurrentMessageId==='function'){var a=getCurrentMessageId();if(typeof a==='number'&&a>=0)return a;}}catch(e){}
+      try{var w=window.parent||window;if(w&&typeof w.getCurrentMessageId==='function'){var b=w.getCurrentMessageId();if(typeof b==='number'&&b>=0)return b;}}catch(e){}
+      return -1;
+    }
+    function 读楼(楼){
+      if(楼===undefined||楼===null||楼<0)return null;
+      try{var v=getVariables({type:'message',message_id:楼});if(v&&v.stat_data&&v.stat_data.主角)return v.stat_data;}catch(e){}
+      try{if(typeof Mvu!=='undefined'&&Mvu.getMvuData){var m=Mvu.getMvuData({type:'message',message_id:楼});
+        if(m&&m.stat_data&&m.stat_data.主角)return m.stat_data;}}catch(e){}
+      return null;
+    }
+    function 取数据(楼){
+      // ① 我这一楼
+      var mine=我在哪楼();
+      if(mine>=0){ var a=读楼(mine); if(a) return a; }
+      // ② 官方最新楼层语义
+      if(楼===undefined||楼===null){
+        try{var v=getVariables({type:'message',message_id:-1});if(v&&v.stat_data&&v.stat_data.主角)return v.stat_data;}catch(e){}
+        try{if(typeof Mvu!=='undefined'&&Mvu.getMvuData){var m=Mvu.getMvuData({type:'message',message_id:-1});
+          if(m&&m.stat_data&&m.stat_data.主角)return m.stat_data;}}catch(e){}
+        try{var w=window.parent||window;if(w&&typeof w.getVariables==='function'){var v2=w.getVariables({type:'message',message_id:-1});
+          if(v2&&v2.stat_data&&v2.stat_data.主角)return v2.stat_data;}}catch(e){}
+      } else { var b=读楼(楼); if(b) return b; }
+      // ③ 兜底：多来源楼层探测
+      var last=最佳楼();
+      for(var i=last;i>=0&&i>last-30;i--){ var c=读楼(i); if(c) return c; }
+      return null;
+    }
+    function 最佳楼(){
+      try{if(typeof getLastMessageId==='function'){var a=getLastMessageId();if(a>0)return a;}}catch(e){}
+      try{var w=window.parent||window;if(w&&typeof w.getLastMessageId==='function'){var c=w.getLastMessageId();if(c>0)return c;}}catch(e){}
+      try{var ctx=(typeof SillyTavern!=='undefined'&&SillyTavern.getContext)?SillyTavern.getContext():null;
+        if(ctx&&ctx.chat&&ctx.chat.length)return ctx.chat.length-1;}catch(e){}
+      try{var w2=window.parent||window;var c2=w2.SillyTavern&&w2.SillyTavern.getContext?w2.SillyTavern.getContext():null;
+        if(c2&&c2.chat&&c2.chat.length)return c2.chat.length-1;}catch(e){}
+      try{if(typeof chat!=='undefined'&&chat.length)return chat.length-1;}catch(e){}
+      return 30;
+    }
+    function 最好楼层(){
+      var 直取=取数据();
+      if(直取) return {楼:我在哪楼(), d:直取};   /* ★ 优先「我这一楼」 */
+      var last=最佳楼();
+      var 兜底=null;
+      for(var i=last;i>=0&&i>last-30;i--){
+        var sd=取数据(i);if(!sd)continue;
+        if(!兜底)兜底={楼:i,d:sd};
+        if(键((sd.局面&&sd.局面.当前选项)||{}).length) return {楼:i,d:sd};
+      }
+      return 兜底;
+    }
+  
+    function 画(d){
+      var t=d.时间||{},sc=d.场景||{},p=d.主角||{},she=d.她||{},ec=d.经济||{},ws=d.世界||{},局=d.局面||{};
+      var 面=局.场面||{}, 女角=d.女角||ws.女角||{};
+      var H='';
+      H+='<div class="hd"><span class="dot"></span><span class="t">第 '+数(t.天数,1)+' 天 · '+E(t.当前日期||'—')+' · '+E(t.时段||'')+'</span>'
+        +'<span class="s">'+E([t.章节,sc.场景模式,t.天气].filter(Boolean).join(' · '))+'</span></div><div class="bd">';
+  
+      /* ── 你 ── */
+      H+='<h5>你 <span class="r">'+E(p.状态||'在线')+'</span></h5><div class="bars">';
+      var 条=[['体力',p.身体状态,'hp'],['抵抗',p.反抗值,'re'],['心情',p.心情,'mo']];
+      for(var i=0;i<条.length;i++){var v=夹(数(条[i][1]),0,100);
+        H+='<span class="bar"><span class="lb">'+条[i][0]+'</span><span class="tk '+条[i][2]+'"><i style="width:'+v+'%"></i></span><span class="vv">'+v+'</span></span>';}
+      H+='</div>';
+  
+      var sk=p.技能||{};
+      H+='<div class="chips" style="margin-top:6px">'
+        +'<span class="chip">口才<i>说话</i><b>'+数(p.说话)+'</b></span>'
+        +'<span class="chip">身手<i>做事</i><b>'+数(p.做事)+'</b></span>'
+        +'<span class="chip">见识<i>懂东西</i><b>'+数(p.懂东西)+'</b></span>'
+        +'<span class="chip">打工<b>'+数(sk.打工)+'</b></span>'
+        +'<span class="chip">学业<b>'+数(sk.学业)+'</b></span>'
+        +'<span class="chip">机车<b>'+数(sk.机车)+'</b></span>'
+        +'<span class="chip">现金<b>'+数(ec.现金)+'</b></span>'
+        +'<span class="chip">储蓄<b>'+数(ec.累计储蓄)+'</b></span>'
+        +'<span class="chip">当日<b>'+数(ec.当日盈亏)+'</b></span>'
+        +'</div>';
+  
+      /* ── 屏幕外的她 ── */
+      H+='<h5>屏幕外的她 <span class="r">目的进度 '+数(she.目的进度)+'%　已拿到 '+数(she.已拿到)+'　懂她 '+数(p.对她的了解)+'</span></h5>';
+      H+='<div class="box pink">'
+        +'<div class="row"><span class="k">谁在玩</span><span class="v hi">'+E(she.人设||'—')+'　熟练度 '+数(she.熟练度)+'　此刻情绪 '+E(she.情绪||'—')+'</span></div>'
+        +'<div class="bars" style="margin:4px 0 3px">'
+        +'<span class="bar"><span class="lb">她的兴奋</span><span class="tk ex"><i style="width:'+夹(数(she.兴奋度),0,100)+'%"></i></span><span class="vv">'+数(she.兴奋度)+'</span></span>'
+        +'</div>';
+      if(有(she.此刻)) H+='<div class="row"><span class="k">她此刻</span><span class="v">'+E(she.此刻)+'</span></div>';
+      if(有(局.她打的字)) H+='<div class="row"><span class="k">正在打</span><span class="v">'+E(局.她打的字)+'</span></div>';
+      if(有(局.她的倾向)) H+='<div class="row"><span class="k">她的倾向</span><span class="v">第 '+E(局.她的倾向)+' 条</span></div>';
+      H+='</div>';
+  
+      /* ── 场面 ── */
+      if(有(面.地点)||有(面.体位)||有(面.节奏)||有(面.留痕)||有(面.她看到的)){
+        H+='<h5>场面</h5><div class="box">';
+        if(有(面.地点)) H+='<div class="row"><span class="k">地点</span><span class="v">'+E(面.地点)+'</span></div>';
+        if(有(面.体位)) H+='<div class="row"><span class="k">体位</span><span class="v">'+E(面.体位)+'</span></div>';
+        if(有(面.节奏)) H+='<div class="row"><span class="k">节奏</span><span class="v">'+E(面.节奏)+'</span></div>';
+        var 参=键(面.参与); if(参.length) H+='<div class="row"><span class="k">参与</span><span class="v">'+E(参.join('、'))+'</span></div>';
+        if(有(面.留痕)) H+='<div class="row"><span class="k">留痕</span><span class="v">'+E(面.留痕)+'</span></div>';
+        if(有(面.她看到的)) H+='<div class="row"><span class="k">她看到</span><span class="v">'+E(面.她看到的)+'</span></div>';
+        H+='</div>';
+      }
+  
+      /* ── 女角 ── */
+      var 名=键(女角);
+      if(名.length){
+        var 活=名.filter(function(n){var o=女角[n]||{};return 数(o.好感度)||数(o.开发度);});
+        H+='<details'+(活.length?' open':'')+'><summary>女角<span class="n"> '+名.length+' </span>位'+(活.length?'（有进展 '+活.length+'）':'（都还没动）')+'</summary><div class="girls">';
+        for(var g=0;g<名.length;g++){
+          var o=女角[名[g]]||{};
+          var af=数(o.好感度), dv=数(o.开发度);
+          var st=E(o.关系阶段||'—');
+          H+='<div class="g"><span class="nm">'+E(名[g])+'</span><span class="st '+阶(st)+'">'+st+'</span>'
+            +'<span class="tk re"><i style="width:'+夹((af+100)/2,0,100)+'%"></i></span><span class="af">好感 '+(af>0?'+':'')+af+'</span>'
+            +(dv?'<span class="af" style="color:#d8a0e0">开发 '+dv+'</span>':'')+'</div>';
+          var 细=[];
+          if(有(o.状态)) 细.push(E(o.状态));
+          if(有(o.身体记忆)) 细.push('记得：'+E(o.身体记忆));
+          var 器=[['胸',o.胸],['阴',o.阴部],['后',o.后穴]];
+          for(var q=0;q<器.length;q++){var v=器[q][1]||{};
+            if(数(v.开发度)||有(v.现状)) 细.push('【'+器[q][0]+'】'+数(v.开发度)+(v.破瓜?' 已破':'')+(有(v.现状)?'　'+E(v.现状):''));}
+          if(细.length) H+='<div class="g"><span class="lb2">'+细.join('　·　')+'</span></div>';
+        }
+        H+='</div></details>';
+      }
+  
+      /* ── 她摆出来的 ── */
+      var 选=局.当前选项||{}, 选键=键(选), 她选=String(局.她已选||'');
+      H+='<h5>她摆出来的 <span class="r">'+(她选?('她点了第 '+E(她选)+' 条'):'她还没点')+'</span></h5>';
+      if(选键.length){
+        H+='<div class="opts">';
+        for(var k=0;k<选键.length;k++){
+          var s=选[选键[k]]||{}, lv=归(s.等级), 被选=(她选===选键[k]);
+          H+='<div class="opt'+(被选?' she':'')+'">'
+            +'<span class="no">'+E(选键[k])+'</span><span class="tx">'+E(s.文本||'')+'</span>'
+            +'<span class="lv '+等级[lv].k+'">'+lv+(等级[lv].c?' '+等级[lv].c[0]+'~'+等级[lv].c[1]:'')+'</span>'
+            +'<span class="btns">'
+            +'<button class="ig" type="button" data-ig="'+E(选键[k])+'">无视</button>'
+            +'<button class="rj" type="button" data-k="'+E(选键[k])+'">拒绝</button>'
+            +'</span></div>';
+        }
+        H+='</div><div class="res"></div>';
+        H+='<div class="tip">拒绝＝花抵抗值跟她顶（等级越高越贵越难成）；无视＝不管这条，什么都不花。</div>';
+      }else{
+        H+='<div class="tip">这一层她没有摆选项，等她自己动手。</div>';
+        if(有(局.今日指令)) H+='<div class="box" style="margin-top:5px"><div class="row"><span class="k">今日指令</span><span class="v">'+E(局.今日指令)+'</span></div></div>';
+      }
+  
+      H+='</div>';
+      return H;
+    }
+  
+    var 上次指纹='';
+    function 指纹(d){try{return JSON.stringify([d.主角,d.她,d.局面,d.时间]);}catch(e){return String(Math.random());}}
+    function 刷新(){
+      var r=最好楼层(); if(!r)return; 楼=r.楼;
+      var 盒=容器; if(!盒)return;
+      var fp=指纹(r.d)+'|'+r.楼;
+      if(fp===上次指纹) return;            /* ★ 值没变就不重画 → 折叠不会被重置 */
+      上次指纹=fp;
+      /* 记住折叠状态 */
+      var 开={}; var ds=盒.querySelectorAll('details');
+      for(var i=0;i<ds.length;i++) 开[i]=ds[i].open;
+      盒.innerHTML=画(r.d);
+      盒.setAttribute('data-'+NS+'-init','1');
+      var ds2=盒.querySelectorAll('details');
+      for(var j=0;j<ds2.length;j++) if(开[j]!==undefined) ds2[j].open=开[j];
+      绑(盒);
+    }
+  
+    function 写(变化, 结果类, 文案){
+      try{updateVariablesWith(function(v){
+        v=v||{};if(!v.stat_data)v.stat_data={};
+        var pr=v.stat_data.主角||(v.stat_data.主角={});
+        var jj=v.stat_data.局面||(v.stat_data.局面={});
+        变化(pr,jj);
+        return v;
+      },{type:'message',message_id:(楼>=0?楼:-1)});}catch(e){}
+      var res=容器.querySelector('.res');
+      if(res){res.className='res on '+结果类;res.textContent=文案;}
+      var 全部=容器.querySelectorAll('.opt button');
+      for(var m=0;m<全部.length;m++) 全部[m].disabled=true;
+    }
+  
+    function 绑(盒){
+      var rs=盒.querySelectorAll('.rj');
+      for(var i=0;i<rs.length;i++){rs[i].onclick=function(){
+        var k=this.getAttribute('data-k');
+        var sd=取数据(楼); if(!sd)return;
+        var 选=(sd.局面&&sd.局面.当前选项)||{}, o=选[k]||{};
+        var lv=归(o.等级), 表=等级[lv];
+        if(!表.c){写(function(){},'no','这一条锁住了，拒不了。');return;}
+        var 反抗=数(sd.主角&&sd.主角.反抗值,0);
+        var 耗=表.c[0]+Math.floor(Math.random()*(表.c[1]-表.c[0]+1));
+        if(反抗<耗){写(function(){},'no','抵抗值不够（要 '+耗+'，你只有 '+反抗+'）。');return;}
+        var 掷=Math.floor(Math.random()*100)+1, 成=掷<表.r;
+        写(function(pr,jj){
+          pr.反抗值=Math.max(0,反抗-耗);
+          jj.玩家拒绝=String(k);
+          jj.判定结果={选项:String(o.文本||''),等级:lv,消耗:耗,成功率:表.r,掷值:掷,结果:成?'成功':'失败',效果倍数:成?1:0.6};
+        },'on '+(成?'ok':'no'),
+          '拒绝了「'+(o.文本||'')+'」｜ 扣 '+耗+' · 掷 '+掷+' · 需 '+表.r+' → '+(成?'顶住了':'没顶住'));
+      };}
+      var ig=盒.querySelectorAll('.ig');
+      for(var j=0;j<ig.length;j++){ig[j].onclick=function(){
+        var k=this.getAttribute('data-ig');
+        var sd=取数据(楼); if(!sd)return;
+        var 选=(sd.局面&&sd.局面.当前选项)||{}, o=选[k]||{};
+        写(function(pr,jj){
+          jj.玩家拒绝='';
+          jj.判定结果={选项:String(o.文本||''),等级:'',消耗:0,成功率:0,掷值:0,结果:'无视',效果倍数:1};
+        },'on ig','无视了「'+(o.文本||'')+'」｜ 不花抵抗值，也没表态。');
+      };}
+    }
+  
+
+  /* ── 外层驱动：每一楼各插一个 ── */
+  function 渲染一层(层) {
+    var id = Number(层.getAttribute('mesid'));
+    if (isNaN(id) || id < 0) return;
+    var txt = 层.querySelector('.mes_text');
+    if (!txt) return;
+    var 盒 = txt.querySelector('#' + NS);
+    if (!盒) {
+      盒 = document.createElement('div');
+      盒.id = NS + '-' + id;
+      盒.setAttribute('data-' + NS, '1');
+      盒.style.marginTop = '10px';
+      txt.appendChild(盒);
+    }
+    容器 = 盒;
+    楼层 = id;
+    上次指纹 = '';        /* 每层独立渲染 */
+    刷新();
+  }
+
+  function 全跑() {
+    var 层们 = document.querySelectorAll('.mes');
+    if (!层们.length) return;
+    装样式();
+    for (var i = 0; i < 层们.length; i++) {
+      try { 渲染一层(层们[i]); } catch (e) {}
+    }
+  }
+
+  setTimeout(全跑, 500);
+  try {
+    if (typeof eventOn === 'function' && typeof tavern_events !== 'undefined') {
+      [tavern_events.MESSAGE_RENDERED, tavern_events.MESSAGE_UPDATED, tavern_events.CHAT_CHANGED, tavern_events.MESSAGE_SWIPED]
+        .forEach(function (t) { if (t) eventOn(t, function () { setTimeout(全跑, 200); }); });
+    }
+  } catch (e) {}
+  try { new MutationObserver(function () { 全跑(); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  try { setInterval(全跑, 2500); } catch (e) {}
+  console.log('[gg2] 状态栏已启动（每层注入）');
+}());

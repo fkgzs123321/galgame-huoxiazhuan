@@ -1,0 +1,1259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {
+    "时间": {
+      "日期": "2026年9月1日",
+      "星期": "星期一",
+      "时段": "上午"
+    },
+    "玩家": {
+      "学业总分": 420,
+      "各科": {
+        "语文": 100,
+        "数学": 85,
+        "英语": 95,
+        "物理": 70,
+        "化学": 80,
+        "生物": 90
+      },
+      "技能": {
+        "螺旋": {
+          "等级": 1,
+          "经验": 0
+        },
+        "颗粒": {
+          "等级": 1,
+          "经验": 0
+        },
+        "敏感度加倍": {
+          "等级": 1,
+          "经验": 0
+        },
+        "硬度翻倍": {
+          "等级": 1,
+          "经验": 0
+        },
+        "热量翻倍": {
+          "等级": 1,
+          "经验": 0
+        },
+        "次数翻倍": {
+          "等级": 1,
+          "经验": 0
+        },
+        "频率翻倍": {
+          "等级": 1,
+          "经验": 0
+        }
+      },
+      "体力": 80,
+      "性欲": 30,
+      "勃起度": 10,
+      "今日胜场": 0,
+      "今日败场": 0,
+      "累计缴械": 0,
+      "累计被缴械": 0,
+      "道具栏": {
+        "印度神油": 3,
+        "伟哥": 2,
+        "辣椒油": 1,
+        "六神花露水": 1,
+        "清凉油": 0,
+        "润滑液": 2
+      },
+      "恢复技能": {
+        "提肛": {
+          "等级": 1,
+          "经验": 0
+        },
+        "思维分散": {
+          "等级": 1,
+          "经验": 0
+        }
+      }
+    },
+    "排班": {
+      "今日场次": {},
+      "当前战斗目标": "",
+      "战斗状态": "未开始",
+      "战斗": {
+        "回合": 0,
+        "主角防守值": 96,
+        "主角防守值上限": 96,
+        "她防守值": 44,
+        "她防守值上限": 44,
+        "麻痒点": 0,
+        "主角麻痒点": 0,
+        "她减伤修正": 0,
+        "目标列表": [],
+        "目标防守值": {},
+        "本场经验": {},
+        "主角BUFF": {},
+        "她BUFF": {}
+      }
+    },
+    "女性角色": {}
+  },
+  "type": "object",
+  "properties": {
+    "时间": {
+      "default": {
+        "日期": "2026年9月1日",
+        "星期": "星期一",
+        "时段": "上午"
+      },
+      "type": "object",
+      "properties": {
+        "日期": {
+          "default": "2026年9月1日",
+          "type": "string"
+        },
+        "星期": {
+          "default": "星期一",
+          "type": "string"
+        },
+        "时段": {
+          "default": "上午",
+          "type": "string",
+          "enum": [
+            "上午",
+            "下午场",
+            "晚场",
+            "深夜"
+          ]
+        }
+      }
+    },
+    "玩家": {
+      "default": {
+        "学业总分": 420,
+        "各科": {
+          "语文": 100,
+          "数学": 85,
+          "英语": 95,
+          "物理": 70,
+          "化学": 80,
+          "生物": 90
+        },
+        "技能": {
+          "螺旋": {
+            "等级": 1,
+            "经验": 0
+          },
+          "颗粒": {
+            "等级": 1,
+            "经验": 0
+          },
+          "敏感度加倍": {
+            "等级": 1,
+            "经验": 0
+          },
+          "硬度翻倍": {
+            "等级": 1,
+            "经验": 0
+          },
+          "热量翻倍": {
+            "等级": 1,
+            "经验": 0
+          },
+          "次数翻倍": {
+            "等级": 1,
+            "经验": 0
+          },
+          "频率翻倍": {
+            "等级": 1,
+            "经验": 0
+          }
+        },
+        "体力": 80,
+        "性欲": 30,
+        "勃起度": 10,
+        "今日胜场": 0,
+        "今日败场": 0,
+        "累计缴械": 0,
+        "累计被缴械": 0,
+        "道具栏": {
+          "印度神油": 3,
+          "伟哥": 2,
+          "辣椒油": 1,
+          "六神花露水": 1,
+          "清凉油": 0,
+          "润滑液": 2
+        },
+        "恢复技能": {
+          "提肛": {
+            "等级": 1,
+            "经验": 0
+          },
+          "思维分散": {
+            "等级": 1,
+            "经验": 0
+          }
+        },
+        "生理": {
+          "今日射精次数": 0,
+          "射精冷却剩余": 0,
+          "最后射精日期": "",
+          "晨勃": true,
+          "上次恢复体力日期": "",
+          "上次推进日期": ""
+        }
+      },
+      "type": "object",
+      "properties": {
+        "学业总分": {
+          "default": 420,
+          "type": "number"
+        },
+        "各科": {
+          "default": {
+            "语文": 100,
+            "数学": 85,
+            "英语": 95,
+            "物理": 70,
+            "化学": 80,
+            "生物": 90
+          },
+          "type": "object",
+          "properties": {
+            "语文": {
+              "default": 100,
+              "type": "number"
+            },
+            "数学": {
+              "default": 85,
+              "type": "number"
+            },
+            "英语": {
+              "default": 95,
+              "type": "number"
+            },
+            "物理": {
+              "default": 70,
+              "type": "number"
+            },
+            "化学": {
+              "default": 80,
+              "type": "number"
+            },
+            "生物": {
+              "default": 90,
+              "type": "number"
+            }
+          }
+        },
+        "技能": {
+          "default": {
+            "螺旋": {
+              "等级": 1,
+              "经验": 0
+            },
+            "颗粒": {
+              "等级": 1,
+              "经验": 0
+            },
+            "敏感度加倍": {
+              "等级": 1,
+              "经验": 0
+            },
+            "硬度翻倍": {
+              "等级": 1,
+              "经验": 0
+            },
+            "热量翻倍": {
+              "等级": 1,
+              "经验": 0
+            },
+            "次数翻倍": {
+              "等级": 1,
+              "经验": 0
+            },
+            "频率翻倍": {
+              "等级": 1,
+              "经验": 0
+            }
+          },
+          "type": "object",
+          "properties": {
+            "螺旋": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "颗粒": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "敏感度加倍": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "硬度翻倍": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "热量翻倍": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "次数翻倍": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "频率翻倍": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "体力": {
+          "default": 80,
+          "type": "number"
+        },
+        "性欲": {
+          "default": 30,
+          "type": "number"
+        },
+        "勃起度": {
+          "default": 10,
+          "type": "number"
+        },
+        "今日胜场": {
+          "default": 0,
+          "type": "number"
+        },
+        "今日败场": {
+          "default": 0,
+          "type": "number"
+        },
+        "累计缴械": {
+          "default": 0,
+          "type": "number"
+        },
+        "累计被缴械": {
+          "default": 0,
+          "type": "number"
+        },
+        "道具栏": {
+          "default": {
+            "印度神油": 3,
+            "伟哥": 2,
+            "辣椒油": 1,
+            "六神花露水": 1,
+            "清凉油": 0,
+            "润滑液": 2
+          },
+          "type": "object",
+          "properties": {
+            "印度神油": {
+              "default": 3,
+              "type": "number"
+            },
+            "伟哥": {
+              "default": 2,
+              "type": "number"
+            },
+            "辣椒油": {
+              "default": 1,
+              "type": "number"
+            },
+            "六神花露水": {
+              "default": 1,
+              "type": "number"
+            },
+            "清凉油": {
+              "default": 0,
+              "type": "number"
+            },
+            "润滑液": {
+              "default": 2,
+              "type": "number"
+            }
+          }
+        },
+        "恢复技能": {
+          "default": {
+            "提肛": {
+              "等级": 1,
+              "经验": 0
+            },
+            "思维分散": {
+              "等级": 1,
+              "经验": 0
+            }
+          },
+          "type": "object",
+          "properties": {
+            "提肛": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "思维分散": {
+              "default": {
+                "等级": 1,
+                "经验": 0
+              },
+              "type": "object",
+              "properties": {
+                "等级": {
+                  "default": 1,
+                  "type": "number"
+                },
+                "经验": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "生理": {
+          "default": {
+            "今日射精次数": 0,
+            "射精冷却剩余": 0,
+            "最后射精日期": "",
+            "晨勃": true,
+            "上次恢复体力日期": "",
+            "上次推进日期": ""
+          },
+          "type": "object",
+          "properties": {
+            "今日射精次数": {
+              "default": 0,
+              "type": "number"
+            },
+            "射精冷却剩余": {
+              "default": 0,
+              "type": "number"
+            },
+            "最后射精日期": {
+              "default": "",
+              "type": "string"
+            },
+            "晨勃": {
+              "default": true,
+              "type": "boolean"
+            },
+            "上次恢复体力日期": {
+              "default": "",
+              "type": "string"
+            },
+            "上次推进日期": {
+              "default": "",
+              "type": "string"
+            }
+          }
+        },
+        "副API配置": {
+          "description": "副API描写配置(浏览器localStorage兜底,可选)",
+          "$ref": "#/$defs/__schema0"
+        }
+      }
+    },
+    "排班": {
+      "default": {
+        "今日场次": {},
+        "当前战斗目标": "",
+        "战斗状态": "未开始",
+        "战斗": {
+          "回合": 0,
+          "主角防守值": 96,
+          "主角防守值上限": 96,
+          "她防守值": 44,
+          "她防守值上限": 44,
+          "麻痒点": 0,
+          "主角麻痒点": 0,
+          "她减伤修正": 0,
+          "本场经验": {},
+          "主角BUFF": {},
+          "她BUFF": {}
+        }
+      },
+      "type": "object",
+      "properties": {
+        "今日场次": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "时段"
+          },
+          "additionalProperties": {
+            "default": {
+              "参与者": "",
+              "结果": "未开战",
+              "是否参战": false
+            },
+            "type": "object",
+            "properties": {
+              "参与者": {
+                "default": "",
+                "type": "string"
+              },
+              "结果": {
+                "default": "未开战",
+                "type": "string"
+              },
+              "是否参战": {
+                "default": false,
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "当前战斗目标": {
+          "default": "",
+          "type": "string"
+        },
+        "战斗状态": {
+          "default": "未开始",
+          "type": "string",
+          "enum": [
+            "未开始",
+            "进行中",
+            "已结算"
+          ]
+        },
+        "战斗": {
+          "default": {
+            "回合": 0,
+            "主角防守值": 96,
+            "主角防守值上限": 96,
+            "她防守值": 44,
+            "她防守值上限": 44,
+            "麻痒点": 0,
+            "主角麻痒点": 0,
+            "她减伤修正": 0,
+            "目标列表": [],
+            "目标防守值": {},
+            "本场经验": {},
+            "主角BUFF": {},
+            "她BUFF": {}
+          },
+          "type": "object",
+          "properties": {
+            "回合": {
+              "default": 0,
+              "type": "number"
+            },
+            "主角防守值": {
+              "default": 96,
+              "type": "number"
+            },
+            "主角防守值上限": {
+              "default": 96,
+              "type": "number"
+            },
+            "她防守值": {
+              "default": 44,
+              "type": "number"
+            },
+            "她防守值上限": {
+              "default": 44,
+              "type": "number"
+            },
+            "麻痒点": {
+              "default": 0,
+              "type": "number"
+            },
+            "主角麻痒点": {
+              "default": 0,
+              "type": "number"
+            },
+            "她减伤修正": {
+              "default": 0,
+              "type": "number"
+            },
+            "目标列表": {
+              "description": "多人战斗参与者姓名数组（当前战斗目标=多人时使用）",
+              "default": [],
+              "$ref": "#/$defs/__schema1"
+            },
+            "目标防守值": {
+              "description": "多人战斗各参与者当前防守值",
+              "default": {},
+              "$ref": "#/$defs/__schema2"
+            },
+            "本场经验": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "主角BUFF": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "description": "BUFF名"
+              },
+              "additionalProperties": {
+                "default": {
+                  "剩余回合": 0,
+                  "效果值": 0
+                },
+                "type": "object",
+                "properties": {
+                  "剩余回合": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "效果值": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "她BUFF": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "description": "BUFF名"
+              },
+              "additionalProperties": {
+                "default": {
+                  "剩余回合": 0,
+                  "效果值": 0
+                },
+                "type": "object",
+                "properties": {
+                  "剩余回合": {
+                    "default": 0,
+                    "type": "number"
+                  },
+                  "效果值": {
+                    "default": 0,
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "女性角色": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "角色名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "身份": {
+            "default": "",
+            "type": "string"
+          },
+          "省份": {
+            "default": "",
+            "type": "string"
+          },
+          "方言": {
+            "default": "",
+            "type": "string"
+          },
+          "关系": {
+            "default": "",
+            "type": "string"
+          },
+          "好感度": {
+            "description": "她对<user>的社交好感（0~100，独立于缴械值）：分档决定日常社交可做/不可做；与假阴茎完全解耦——好感度再高也不揭晓假阴茎真相，唯一解锁=缴械值100俘虏",
+            "default": 3,
+            "$ref": "#/$defs/__schema3"
+          },
+          "缴械值": {
+            "default": 0,
+            "type": "number"
+          },
+          "缴械次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "战斗次数": {
+            "default": 0,
+            "type": "number"
+          },
+          "胜场": {
+            "default": 0,
+            "type": "number"
+          },
+          "败场": {
+            "default": 0,
+            "type": "number"
+          },
+          "名器": {
+            "default": "",
+            "type": "string"
+          },
+          "名器防御": {
+            "default": 6,
+            "type": "number"
+          },
+          "防守值上限": {
+            "default": 44,
+            "type": "number"
+          },
+          "技能": {
+            "default": {
+              "名": "",
+              "等级": 1,
+              "经验": 0,
+              "技能组": {}
+            },
+            "type": "object",
+            "properties": {
+              "名": {
+                "default": "",
+                "type": "string"
+              },
+              "等级": {
+                "default": 1,
+                "type": "number"
+              },
+              "经验": {
+                "default": 0,
+                "type": "number"
+              },
+              "技能组": {
+                "default": {},
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "description": "辅技能名"
+                },
+                "additionalProperties": {
+                  "default": {
+                    "等级": 1,
+                    "经验": 0
+                  },
+                  "type": "object",
+                  "properties": {
+                    "等级": {
+                      "default": 1,
+                      "type": "number"
+                    },
+                    "经验": {
+                      "default": 0,
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "能力值": {
+            "default": {
+              "忍耐": 5,
+              "持久": 5,
+              "反攻": 5
+            },
+            "type": "object",
+            "properties": {
+              "忍耐": {
+                "default": 5,
+                "type": "number"
+              },
+              "持久": {
+                "default": 5,
+                "type": "number"
+              },
+              "反攻": {
+                "default": 5,
+                "type": "number"
+              }
+            }
+          },
+          "特质": {
+            "default": "",
+            "type": "string"
+          },
+          "缺陷": {
+            "default": "",
+            "type": "string"
+          },
+          "欲望积压": {
+            "default": 0,
+            "type": "number"
+          },
+          "压力值": {
+            "description": "她自己的生活压力（0~100，独立运转）：学生=模考/排名，老师=教学指标，陪读妈妈=生计孤独；分档驱动欲望积压自然增长与使用假阴茎意愿",
+            "default": 50,
+            "$ref": "#/$defs/__schema4"
+          },
+          "是否俘虏": {
+            "default": false,
+            "type": "boolean"
+          },
+          "俘虏日期": {
+            "default": "",
+            "type": "string"
+          },
+          "今日已使用": {
+            "default": false,
+            "type": "boolean"
+          },
+          "道具栏": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "description": "道具名"
+            },
+            "additionalProperties": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          "恢复技能": {
+            "default": {
+              "名": "",
+              "等级": 1,
+              "经验": 0
+            },
+            "type": "object",
+            "properties": {
+              "名": {
+                "default": "",
+                "type": "string"
+              },
+              "等级": {
+                "default": 1,
+                "type": "number"
+              },
+              "经验": {
+                "default": 0,
+                "type": "number"
+              }
+            }
+          },
+          "服装": {
+            "default": {},
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "description": "部位"
+            },
+            "additionalProperties": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          "身体状态": {
+            "default": {
+              "胸部": {
+                "状态": "白皙挺立",
+                "乳头": "淡粉平坦",
+                "敏感度": 50
+              },
+              "阴道": {
+                "状态": "粉嫩闭合",
+                "湿润度": 30,
+                "敏感度": 50
+              },
+              "肛门": {
+                "状态": "浅粉紧致"
+              },
+              "嘴": {
+                "状态": "粉润轻抿"
+              },
+              "肌肤": {
+                "状态": "白皙干爽",
+                "体温": "微温"
+              },
+              "大腿": {
+                "状态": "白皙并拢"
+              },
+              "臀部": {
+                "状态": "白皙圆润"
+              }
+            },
+            "type": "object",
+            "properties": {
+              "胸部": {
+                "default": {
+                  "状态": "白皙挺立",
+                  "乳头": "淡粉平坦",
+                  "敏感度": 50
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "胸部状态词（随刺激阶段）：白皙挺立→粉晕微胀→胀立颤巍→酸软泛红→红肿敏感，写具体视觉词勿写\"正常\"",
+                    "default": "白皙挺立",
+                    "$ref": "#/$defs/__schema5"
+                  },
+                  "乳头": {
+                    "description": "乳头词：淡粉平坦→粉嫩微立→嫣红挺立→硬挺湿亮",
+                    "default": "淡粉平坦",
+                    "$ref": "#/$defs/__schema6"
+                  },
+                  "敏感度": {
+                    "default": 50,
+                    "type": "number"
+                  }
+                }
+              },
+              "阴道": {
+                "default": {
+                  "状态": "粉嫩闭合",
+                  "湿润度": 30,
+                  "敏感度": 50
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "阴道状态词（随刺激阶段）：粉嫩闭合→微潮微张→湿亮翕动→湿透抽搐→余韵酸软→红肿泥泞",
+                    "default": "粉嫩闭合",
+                    "$ref": "#/$defs/__schema7"
+                  },
+                  "湿润度": {
+                    "default": 30,
+                    "type": "number"
+                  },
+                  "敏感度": {
+                    "default": 50,
+                    "type": "number"
+                  }
+                }
+              },
+              "肛门": {
+                "default": {
+                  "状态": "浅粉紧致"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "肛门状态词：浅粉紧致→湿润微松→红肿扩张→余韵收缩",
+                    "default": "浅粉紧致",
+                    "$ref": "#/$defs/__schema8"
+                  }
+                }
+              },
+              "嘴": {
+                "default": {
+                  "状态": "粉润轻抿"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "嘴状态词：粉润轻抿→微张喘息→唾液拉丝→红肿微肿",
+                    "default": "粉润轻抿",
+                    "$ref": "#/$defs/__schema9"
+                  }
+                }
+              },
+              "肌肤": {
+                "default": {
+                  "状态": "白皙干爽",
+                  "体温": "微温"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "肌肤状态词：白皙干爽→泛红微汗→绯红发烫→潮红汗湿",
+                    "default": "白皙干爽",
+                    "$ref": "#/$defs/__schema10"
+                  },
+                  "体温": {
+                    "description": "体温词：清凉→微温→发烫→滚烫",
+                    "default": "微温",
+                    "$ref": "#/$defs/__schema11"
+                  }
+                }
+              },
+              "大腿": {
+                "default": {
+                  "状态": "白皙并拢"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "大腿状态词：白皙并拢→微颤夹紧→泛红轻颤→酸软大开",
+                    "default": "白皙并拢",
+                    "$ref": "#/$defs/__schema12"
+                  }
+                }
+              },
+              "臀部": {
+                "default": {
+                  "状态": "白皙圆润"
+                },
+                "type": "object",
+                "properties": {
+                  "状态": {
+                    "description": "臀部状态词：白皙圆润→泛红发烫→潮红轻颤→酸软挺翘",
+                    "default": "白皙圆润",
+                    "$ref": "#/$defs/__schema13"
+                  }
+                }
+              }
+            }
+          },
+          "生理周期": {
+            "default": {
+              "月经日": 1,
+              "周期天数": 28,
+              "月经状态": "卵泡期",
+              "经期开始日": 1,
+              "怀孕": false,
+              "怀孕周数": 0,
+              "避孕": true,
+              "备孕": false,
+              "排卵日": 14
+            },
+            "type": "object",
+            "properties": {
+              "月经日": {
+                "default": 1,
+                "type": "number"
+              },
+              "周期天数": {
+                "default": 28,
+                "type": "number"
+              },
+              "月经状态": {
+                "default": "卵泡期",
+                "type": "string",
+                "enum": [
+                  "经期",
+                  "卵泡期",
+                  "排卵期",
+                  "黄体期"
+                ]
+              },
+              "经期开始日": {
+                "default": 1,
+                "type": "number"
+              },
+              "怀孕": {
+                "default": false,
+                "type": "boolean"
+              },
+              "怀孕周数": {
+                "default": 0,
+                "type": "number"
+              },
+              "避孕": {
+                "default": true,
+                "type": "boolean"
+              },
+              "备孕": {
+                "default": false,
+                "type": "boolean"
+              },
+              "排卵日": {
+                "default": 14,
+                "type": "number"
+              }
+            }
+          },
+          "心理状态": {
+            "default": {
+              "欲望度": 20,
+              "羞耻感": 40,
+              "兴奋": 10,
+              "期待": 10,
+              "精神状态": "正常"
+            },
+            "type": "object",
+            "properties": {
+              "欲望度": {
+                "default": 20,
+                "type": "number"
+              },
+              "羞耻感": {
+                "default": 40,
+                "type": "number"
+              },
+              "兴奋": {
+                "default": 10,
+                "type": "number"
+              },
+              "期待": {
+                "default": 10,
+                "type": "number"
+              },
+              "精神状态": {
+                "default": "正常",
+                "type": "string"
+              }
+            }
+          },
+          "心声": {
+            "default": "",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "女性角色"
+  ],
+  "$defs": {
+    "__schema0": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": {}
+    },
+    "__schema1": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema2": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "__schema3": {
+      "type": "number"
+    },
+    "__schema4": {
+      "type": "number"
+    },
+    "__schema5": {
+      "type": "string"
+    },
+    "__schema6": {
+      "type": "string"
+    },
+    "__schema7": {
+      "type": "string"
+    },
+    "__schema8": {
+      "type": "string"
+    },
+    "__schema9": {
+      "type": "string"
+    },
+    "__schema10": {
+      "type": "string"
+    },
+    "__schema11": {
+      "type": "string"
+    },
+    "__schema12": {
+      "type": "string"
+    },
+    "__schema13": {
+      "type": "string"
+    }
+  }
+}

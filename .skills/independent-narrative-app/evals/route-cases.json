@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "skill": "independent-narrative-app",
+  "cases": [
+    {
+      "id": "p01-from-zero-rp-app",
+      "shouldTrigger": true,
+      "prompt": "我只有一个关于经营旅店和角色互动的想法，想从零做成独立 RP 应用，请先帮我讨论清楚。",
+      "expectedRoute": "workflow-entry-discovery-and-draft",
+      "expectedBehaviors": ["先收敛作品轮廓", "建立讨论记录", "不直接生成完整项目"],
+      "forbiddenBehaviors": ["把模糊想法直接升级为已确认需求"]
+    },
+    {
+      "id": "p02-card-to-app",
+      "shouldTrigger": true,
+      "prompt": "把这张 SillyTavern 角色卡连同世界书和预设升级成不依赖酒馆运行的独立应用。",
+      "expectedRoute": "bridge-st-card-to-app",
+      "expectedBehaviors": ["先盘点源资产与依赖", "保留未知字段和来源", "输出兼容分类"],
+      "forbiddenBehaviors": ["静默删除未知宏或插件依赖"]
+    },
+    {
+      "id": "p03-existing-rp-app-audit",
+      "shouldTrigger": true,
+      "prompt": "审查这个已有独立叙事应用为什么 UI、存档和正文中的关系状态经常不同步。",
+      "expectedRoute": "bridge-existing-app-audit-and-modernization",
+      "expectedBehaviors": ["先建立当前行为证据", "定位状态 owner 和依赖飞线", "给出渐进改造路径"],
+      "forbiddenBehaviors": ["没有基线就整体重写"]
+    },
+    {
+      "id": "p04-worldbook-authoring",
+      "shouldTrigger": true,
+      "prompt": "为我的独立 RP 角色卡应用设计世界书条目，区分常驻知识和关键词触发内容。",
+      "expectedRoute": "rp-worldbook-authoring",
+      "expectedBehaviors": ["先确认世界知识边界", "区分条目内容和运行时注入"],
+      "forbiddenBehaviors": ["把具体玩法示例当成默认系统"]
+    },
+    {
+      "id": "p05-gameplay-story-integration",
+      "shouldTrigger": true,
+      "prompt": "给现有 RP 应用增加一个通讯系统，并保证其中的对话记忆能与主剧情和其他系统一致。",
+      "expectedRoute": "rp-gameplay-story-integration",
+      "expectedBehaviors": ["先设计系统自身闭环", "定义状态和记忆 owner", "验证跨系统联动"],
+      "forbiddenBehaviors": ["把新系统做成与主剧情无关的孤立功能"]
+    },
+    {
+      "id": "p06-rp-visual-direction",
+      "shouldTrigger": true,
+      "prompt": "为一个独立 RP 应用确定视觉风格、配色和正文界面方向，但具体页面结构由我最后决定。",
+      "expectedRoute": "ui-visual-style-and-color-guidance",
+      "expectedBehaviors": ["提供风格与配色方案", "保留作者对结构的决定权"],
+      "forbiddenBehaviors": ["未经确认固定完整页面结构"]
+    },
+    {
+      "id": "p07-prompt-preset-design",
+      "shouldTrigger": true,
+      "prompt": "为独立 RP 应用设计基础和高级 Prompt 预设，说明 AI 职责、冲突优先级和输出协议。",
+      "expectedRoute": "rp-prompt-policy-and-presets",
+      "expectedBehaviors": ["区分基础与高级提示词组", "明确正文与独立系统的输出分工"],
+      "forbiddenBehaviors": ["用 Prompt 代替程序权限校验"]
+    },
+    {
+      "id": "p08-save-recovery-bug",
+      "shouldTrigger": true,
+      "prompt": "独立 RP 应用保存后重开会回退一部分变量，请检查保存、迁移和恢复链路。",
+      "expectedRoute": "runtime-save-migrations-and-recovery",
+      "expectedBehaviors": ["检查提交与耐久确认", "区分新档保存和旧档迁移证据"],
+      "forbiddenBehaviors": ["把页面能打开当成恢复成功"]
+    },
+    {
+      "id": "p09-bootstrap-first-slice",
+      "shouldTrigger": true,
+      "prompt": "设计已经确认，现在请在这个仓库里建立第一条可运行 RP 回合并验证保存重开。",
+      "expectedRoute": "workflow-project-bootstrap-and-first-slice",
+      "expectedBehaviors": ["先做工作区预检", "沿用已有工程约束", "实现最小垂直闭环"],
+      "forbiddenBehaviors": ["把脚手架生成等同于应用完成"]
+    },
+    {
+      "id": "n01-generic-react-spacing",
+      "shouldTrigger": false,
+      "prompt": "帮我修一下这个普通 React 营销页面的按钮间距。",
+      "expectedRoute": "none",
+      "expectedBehaviors": ["使用普通前端或 UI 工作流"],
+      "forbiddenBehaviors": ["进入 RP 作品发现流程"]
+    },
+    {
+      "id": "n02-generic-saas-dashboard",
+      "shouldTrigger": false,
+      "prompt": "从零制作一个库存管理 SaaS 后台。",
+      "expectedRoute": "none",
+      "expectedBehaviors": ["按通用应用开发处理"],
+      "forbiddenBehaviors": ["要求定义角色卡、世界书或 RP 玩家身份"]
+    },
+    {
+      "id": "n03-st-only-card",
+      "shouldTrigger": false,
+      "prompt": "只给这张酒馆角色卡增加 MVU 变量和状态栏，不需要迁移成独立应用。",
+      "expectedRoute": "none",
+      "expectedBehaviors": ["路由到酒馆角色卡制作能力"],
+      "forbiddenBehaviors": ["强行规划独立运行时"]
+    },
+    {
+      "id": "n04-prose-only",
+      "shouldTrigger": false,
+      "prompt": "帮我把这一段第三人称小说润色得更有画面感。",
+      "expectedRoute": "none",
+      "expectedBehaviors": ["按普通文本润色处理"],
+      "forbiddenBehaviors": ["建立独立 RP 应用设计"]
+    },
+    {
+      "id": "n05-generic-desktop-tool",
+      "shouldTrigger": false,
+      "prompt": "做一个批量重命名本地文件的桌面工具。",
+      "expectedRoute": "none",
+      "expectedBehaviors": ["按通用桌面工具开发处理"],
+      "forbiddenBehaviors": ["引入 Prompt、世界书和角色关系契约"]
+    },
+    {
+      "id": "n06-image-generation",
+      "shouldTrigger": false,
+      "prompt": "生成一张夜晚城市街道的背景图。",
+      "expectedRoute": "none",
+      "expectedBehaviors": ["使用图像生成能力"],
+      "forbiddenBehaviors": ["启动独立 RP 应用完整确认门"]
+    }
+  ]
+}

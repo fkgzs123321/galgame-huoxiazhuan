@@ -1,0 +1,4 @@
+[
+  {"op":"add","path":"/entryManifest/EJS预处理/剧情注入路由","value":{"path":"世界书/EJS/剧情注入路由.yaml","abstract":"EJS按章节路由，分拆条目已关","keywords":[]}},
+  {"op":"replace","path":"/creator_notes","value":"必开：MVU+Zod+SP·数据库。开场白含<initvar>勿用[]。世界书：分拆序章/第一章条目已灰灯，仅EJS路由+写死表+阶段指导注入。角色卡正则含数据库1/2/远楼层+状态栏。新聊后状态栏应有数值。"}
+]

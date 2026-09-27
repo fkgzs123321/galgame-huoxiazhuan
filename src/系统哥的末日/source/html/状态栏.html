@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · 系统哥的末日</title>
+<style>
+:root{
+  --bg-0:#0a0608;--bg-1:#160a0e;--bg-card:rgba(28,12,16,.88);
+  --c-text:#f3e8e8;--c-dim:#9ca3af;--c-border:rgba(220,38,38,.22);
+  --c-danger:#ef4444;--c-warn:#f59e0b;--c-orange:#db6d28;--c-safe:#10b981;--c-accent:#a371f7;--c-blue:#3b82f6;--c-pink:#f472b6;--c-gold:#fbbf24;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin:6px 0;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:700;letter-spacing:.5px}
+.hd-sub{font-size:var(--fs-xs);color:var(--c-dim);width:100%;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(163,113,247,.12);border:1px solid rgba(163,113,247,.3);color:#d2a8ff;white-space:nowrap}
+.pill.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:var(--c-warn)}
+.pill.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:var(--c-danger)}
+.pill.safe{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);color:var(--c-safe)}
+.pill.gold{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.35);color:var(--c-gold)}
+.pill.hell{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.5);color:#fca5a5;font-weight:700}
+.rfr{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0;transition:color .2s}
+.rfr:hover{color:var(--c-text)}
+.rfr.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+details.block{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:0;margin-bottom:8px;overflow:hidden}
+details.block>summary{font-size:var(--fs-sm);font-weight:700;padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none}
+details.block>summary::-webkit-details-marker{display:none}
+details.block[open]>summary{border-bottom:1px solid var(--c-border)}
+details.block[open]>summary .caret{transform:rotate(90deg)}
+details.block>summary .caret{margin-left:auto;transition:transform .2s}
+.card-t.villain{color:var(--c-danger)}
+.card-t.user{color:var(--c-safe)}
+.card-t.roster{color:var(--c-accent)}
+.card-t.nego{color:var(--c-warn)}
+.card-t.skill{color:#34d399}
+.card-t.attr{color:var(--c-blue)}
+.card-t.comment{color:var(--c-pink)}
+.card-t.memory{color:var(--c-dim)}
+.block-body{padding:6px 10px 8px;display:block}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:6px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.kv{display:flex;flex-direction:column;gap:1px}
+.kv .k{font-size:var(--fs-xs);color:var(--c-dim)}
+.kv .v{font-size:var(--fs-sm);font-weight:600}
+.v.danger{color:var(--c-danger)}.v.warn{color:var(--c-warn)}.v.safe{color:var(--c-safe)}.v.neutral{color:var(--c-dim)}.v.accent{color:var(--c-accent)}.v.blue{color:var(--c-blue)}.v.pink{color:var(--c-pink)}.v.gold{color:var(--c-gold)}
+.bar{margin:5px 0}
+.bar-h{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}
+.bar-h .bv{color:var(--c-text);font-weight:600}
+.bar-t{height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar-f{height:100%;border-radius:4px;transition:width .5s ease;width:0}
+.bar-f.r{background:linear-gradient(90deg,#7f1d1d,var(--c-danger))}
+.bar-f.o{background:linear-gradient(90deg,#78350f,var(--c-orange))}
+.bar-f.y{background:linear-gradient(90deg,#78350f,var(--c-warn))}
+.bar-f.g{background:linear-gradient(90deg,#064e3b,var(--c-safe))}
+.bar-f.b{background:linear-gradient(90deg,#1e3a8a,var(--c-blue))}
+.bar-f.p{background:linear-gradient(90deg,#831843,var(--c-pink))}
+.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.sect-title{font-size:var(--fs-xs);color:var(--c-dim);margin:8px 0 4px;font-weight:600;border-bottom:1px solid rgba(220,38,38,.1);padding-bottom:2px}
+.wcard{background:rgba(163,113,247,.06);border:1px solid rgba(163,113,247,.2);border-radius:6px;padding:6px 8px;margin-bottom:4px;cursor:pointer;transition:background .2s}
+.wcard:hover{background:rgba(163,113,247,.12)}
+.wcard.active{border-color:rgba(163,113,247,.6);background:rgba(163,113,247,.15)}
+.wcard-row{display:flex;justify-content:space-between;align-items:center;gap:4px;flex-wrap:wrap}
+.wcard-name{font-weight:700;font-size:var(--fs-sm);color:var(--c-accent)}
+.wcard-stage{font-size:var(--fs-xs);padding:1px 6px;border-radius:8px;background:rgba(220,38,38,.2);color:#fca5a5}
+.wcard-stage.safe{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:var(--c-safe)}
+.wcard-stage.warn{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--c-warn)}
+.wcard-stage.pink{background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.3);color:var(--c-pink)}
+.wcard-stats{display:flex;gap:6px;margin-top:3px;font-size:var(--fs-xs);color:var(--c-dim);flex-wrap:wrap}
+.wcard-stats span{white-space:nowrap}
+.flag-on{color:var(--c-safe);font-weight:700}
+.flag-off{color:var(--c-dim)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:10px}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;padding:12px}
+.modal-title{font-size:var(--fs-md);font-weight:700;margin-bottom:8px;color:var(--c-accent);display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:4px;padding:2px 8px;cursor:pointer;font-size:var(--fs-md)}
+.modal-close:hover{color:var(--c-text)}
+.nsfw-tag{font-size:var(--fs-xs);padding:1px 5px;border-radius:4px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;margin-left:4px}
+.attr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-bottom:6px}
+.attr-card{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:6px;padding:5px 8px}
+.attr-name{font-size:var(--fs-xs);color:var(--c-blue);font-weight:700;margin-bottom:2px}
+.attr-row{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);gap:4px}
+.attr-row .v{color:var(--c-text);font-weight:600}
+.skill-slot{background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:5px;padding:4px 7px;margin-bottom:4px;font-size:var(--fs-xs)}
+.skill-slot .sk-name{color:#34d399;font-weight:700}
+.skill-slot .sk-type{font-size:9px;padding:1px 4px;border-radius:3px;background:rgba(52,211,153,.15);color:#34d399;margin-left:4px}
+.skill-slot .sk-desc{color:var(--c-dim);margin-top:2px;line-height:1.35}
+.skill-slot.used{opacity:.5}
+.memory-item{background:rgba(156,163,175,.06);border-left:2px solid var(--c-dim);padding:4px 8px;margin-bottom:3px;font-size:var(--fs-xs);color:var(--c-dim);line-height:1.4}
+@media(max-width:480px){
+  .g{grid-template-columns:repeat(2,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .hd-t{font-size:var(--fs-sm)}
+  .hd{flex-wrap:wrap}
+  .hd-l{width:100%}
+  .rfr{padding:4px 10px}
+  .pill{font-size:9px;padding:1px 6px}
+  .modal{max-width:95vw;max-height:80vh;padding:10px}
+  .wcard-stats{flex-wrap:wrap;gap:4px}
+  .wcard-stats span{font-size:9px}
+  .hd-sub{font-size:9px}
+  .attr-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:360px){
+  .g{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .hd-t{font-size:var(--fs-xs)}
+  .wcard-name{font-size:var(--fs-xs)}
+}
+details.block>summary{min-height:36px}
+.wcard{min-height:44px}
+.modal-close{min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
+.rfr{min-width:36px;min-height:32px;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div id="sb-root">
+  <div class="loading" id="sb-loading">正在载入状态栏…</div>
+  <div class="sb" id="sb-body" style="display:none"></div>
+</div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+<script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* ===== 状态栏 · 系统哥的末日 · 同级生2模板架构 ===== */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+
+function parseEmbeddedStat(){
+  var el=document.getElementById('mvu-stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'){
+      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+
+function resolveMessageIdFromDom(){
+  try{
+    var frame=window.frameElement;
+    if(frame&&frame.closest){var mes=frame.closest('.mes');if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(id>=0)return id}}
+    var el=frame;
+    while(el){if(el.classList&&el.classList.contains('mes')){var id2=parseInt(el.getAttribute('mesid'),10);if(id2>=0)return id2}el=el.parentElement}
+    for(var i=0;i<TH_HOSTS.length;i++){try{var host=TH_HOSTS[i];var host$=host.$||host.jQuery;if(!host$||!frame)continue;var $mes=host$(frame).closest('.mes');if($mes&&$mes.length){var id3=parseInt($mes.attr('mesid'),10);if(id3>=0)return id3}}catch(e){}}
+  }catch(e){}
+  return -1;
+}
+function resolveMessageIdFromIframeName(){
+  var fn=pickHostFn('getIframeName');if(!fn)return -1;
+  try{var name=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}
+  return -1;
+}
+function resolveMessageId(){
+  var fromDom=resolveMessageIdFromDom();if(fromDom>=0)return fromDom;
+  var fromName=resolveMessageIdFromIframeName();if(fromName>=0)return fromName;
+  if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;
+  var fn=pickHostFn('getCurrentMessageId');
+  if(fn){try{var id=fn();if(typeof id==='number'&&id>=0)return id}catch(e){}}
+  return -1;
+}
+function getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}
+function hasMeaningfulStatData(stat){return stat&&typeof stat==='object'&&!Array.isArray(stat)&&Object.keys(stat).length>0}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;return hasMeaningfulStatData(stat)?stat:null}
+
+var cachedStatFromBridge=null;
+var cachedBridgeMessageId=-1;
+
+/* 同步降级读取：仅用于初始化快速渲染（数据可能滞后）
+   根因修复：原 readStatData 同步调用 Mvu.getMvuData() 返回的是 Promise，
+   pickStatData(Promise) 返回 null，导致降级到 embed 旧快照。
+   参考暗黑地牢生产级实现，拆分为 sync(快速降级) + async(真实读取) */
+function readStatDataSync(){
+  var mesId=resolveMessageId();
+  // 优先级1: bridge 缓存
+  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)&&(cachedBridgeMessageId<0||mesId<0||cachedBridgeMessageId===mesId)){
+    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);
+  }
+  // 优先级2: embed 块（主模型消息内嵌的快照）
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  // 优先级3: DEFAULT_STAT
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+
+/* 异步读取：参考暗黑地牢生产级实现
+   用 getLastMessageId 遍历最近消息，找最后一条 assistant 消息，
+   用 await Mvu.getMvuData({type:'message', message_id}) 获取真实数据 */
+async function readStatDataAsync(){
+  try{
+    if(typeof getLastMessageId==='function'){
+      var maxId=getLastMessageId();
+      var Mvu=getMvu();
+      var gv=pickHostFn('getVariables');
+      for(var i=0;i<15;i++){
+        var cid=maxId-i;
+        if(cid<0)break;
+        var msg=null;
+        try{msg=getChatMessages(cid)}catch(e){continue}
+        if(Array.isArray(msg))msg=msg[0];
+        if(!msg||msg.role!=='assistant')continue;
+        var mid=msg.message_id;
+        if(typeof mid!=='number'||mid<0)continue;
+        var v=null;
+        try{
+          if(Mvu&&typeof Mvu.getMvuData==='function'){
+            v=await Mvu.getMvuData({type:'message',message_id:mid});
+          }else if(gv){
+            v=await gv({type:'message',message_id:mid});
+          }
+        }catch(e){}
+        var stat=pickStatData(v);
+        if(stat&&hasMeaningfulStatData(stat)){
+          return deepMergeStat(DEFAULT_STAT,stat);
+        }
+      }
+    }
+  }catch(e){}
+  // 降级1: bridge 缓存
+  var mesId=resolveMessageId();
+  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)&&(cachedBridgeMessageId<0||mesId<0||cachedBridgeMessageId===mesId)){
+    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);
+  }
+  // 降级2: embed 快照
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  // 降级3: DEFAULT_STAT
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+
+function requestStatFromBridge(){
+  var mesId=resolveMessageId();var payload={type:'xtmd-mvu-stat-request',messageId:mesId};
+  for(var i=0;i<TH_HOSTS.length;i++){try{TH_HOSTS[i].postMessage(payload,'*')}catch(e){}}
+}
+function waitForReadableStat(timeoutMs,cb){
+  timeoutMs=timeoutMs||8000;var started=Date.now();
+  (function poll(){
+    var stat=readStatDataSync();
+    if(hasMeaningfulStatData(stat)){cb(stat);return}
+    requestStatFromBridge();
+    if(Date.now()-started<timeoutMs){setTimeout(poll,180)}else{cb(readStatDataSync())}
+  })();
+}
+
+/* 工具 */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function barClass4(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'y';if(v>=30)return'o';return'r'}
+function kv(k,v,cls){return '<div class="kv"><span class="k">'+k+'</span><span class="v'+(cls?' '+cls:'')+'">'+esc(v)+'</span></div>'}
+function bar(label,val,max){
+  max=max||100;var v=num(val,0);
+  return '<div class="bar"><div class="bar-h"><span>'+label+'</span><span class="bv">'+v+'/'+max+'</span></div><div class="bar-t"><div class="bar-f '+barClass4(v)+'" style="width:'+pct(v,max)+'%"></div></div></div>';
+}
+function flagStr(v){return v?'<span class="flag-on">✓</span>':'<span class="flag-off">✗</span>'}
+function fmtMoney(v){v=num(v,0);return '¥'+Math.round(v).toLocaleString()}
+
+/* 空槽位模板：绑定花名册女N的53字段骨架（含30+ NSFW字段），由 MVU 数据通过 deepMergeStat 覆盖填充
+   变量名与数据库列名完全一致（全中文），便于双写同步 */
+function emptyWoman(n){
+  return {
+    /* 4.7.1 绑定基本信息（14字段） */
+    "姓名":"","类型":"","绑定等级":"A"+n,"绑定顺序":n,"状态":"待绑定","绑定深度":0,"清醒频率":0,
+    "解绑代价":"","身份":"","家庭关系":"","原伴侣":"无","子女信息":"无","上次清醒瞬间":"","NTR玩法类型":"",
+    /* 4.7.2 NSFW 实时状态（7字段） */
+    "当前衣着":"N/A","暴露程度":"N/A","湿润度":0,"兴奋度":0,"精液残留":"N/A","占有印记":"","皮肤痕迹":"N/A",
+    /* 4.7.3 NSFW 身体测量（6字段） */
+    "罩杯":"","胸围":0,"腰围":0,"臀围":0,"身高":0,"体重":0,
+    /* 4.7.4 NSFW 胸部细节（6字段） */
+    "乳头大小":"","乳头颜色":"","乳晕大小":"","胸型":"","胸部敏感度":0,"泌乳":"",
+    /* 4.7.5 NSFW 腰部与手部（4字段） */
+    "腰型":"","腰部敏感度":0,"手部描述":"","美甲风格":"",
+    /* 4.7.6 NSFW 臀部与后庭（3字段） */
+    "臀型":"","臀部敏感度":0,"后庭描述":"",
+    /* 4.7.7 NSFW 下体细节（9字段） */
+    "阴毛":"","阴唇大小":"","阴唇颜色":"","阴道紧度":"","特殊体质":"","润滑程度":"","处女膜状态":"","生育能力":"","全身敏感度":0,
+    /* 4.7.8 NSFW 敏感带与触发（2字段） */
+    "敏感带":"","兴奋触发点":"",
+    /* 4.7.9 EJS阶段控制（2字段） */
+    "EJS阶段":"","时期":""
+  };
+}
+/* DEFAULT_STAT 仅作为结构骨架 + 最小系统默认值，所有角色数据由 MVU 变量通过 deepMergeStat 覆盖填充 */
+var DEFAULT_STAT={
+  "系统变量":{"游戏阶段":"日常轮","当前章节":1,"天数":1,"时段":"上午","$代写模式":false,"$已初始化":false},
+  "反派状态":{"姓名":"","财富等级":"","财富值":0,"绑定名额总数":10,"已绑定数":0,"剩余名额":10,"系统状态":"活跃","评价值":0,"评价趋势":"稳定","良知值":0,"系统警告":"无","当前阶段":"","当前位置":"","心情":"","OOC计数":0,"玩法偏好":"","当前目标":""},
+  "user状态":{"姓名":"","财富等级":"","财富值":0,"婚姻状态":"完好","反抗力":0,"觉醒度":0,"理智值":0,"心理状态":"","怀疑度":0,"证据数量":0,"当前位置":"","与妻子关系":""},
+  "交涉状态":{"交涉进行中":false,"交涉对象":"","交涉回合":0,"交涉幕次":"结束","user交涉策略":"","对手交涉策略":"","user气势":0,"user口才":0,"user情报":0,"user地位":0,"对手气势":0,"对手口才":0,"对手情报":0,"对手地位":0,"上轮user骰":0,"上轮对手骰":0,"上轮判定":"","user共识分":0,"对手共识分":0,"交涉历史":[]},
+  "角色属性":{},
+  "角色技能":{},
+  "绑定花名册":{
+    "陈雪华":emptyWoman(1),"林雅芝":emptyWoman(2),"王秀兰":emptyWoman(3),"赵敏":emptyWoman(4),"孙莉":emptyWoman(5),
+    "周慧敏":emptyWoman(6),"吴琼":emptyWoman(7),"郑秀":emptyWoman(8),"苏婉":emptyWoman(9),"沈梦瑶":emptyWoman(10)
+  },
+  "评论系统":{"本轮评论":[],"累计点赞":0,"累计吐槽":0,"热门评论":"","评论倾向":"中性"},
+  "最近记忆":[],
+  "思维链历史":[]
+};
+
+function deepMergeStat(dst,src){
+  if(!src||typeof src!=='object')return dst;
+  var out={};try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}
+  for(var k in src){
+    if(!Object.prototype.hasOwnProperty.call(src,k))continue;
+    var sv=src[k],dv=out[k];
+    if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){out[k]=deepMergeStat(dv,sv)}
+    else{out[k]=sv}
+  }
+  return out;
+}
+
+var State={loading:true,refreshing:false,mvu:{},_refreshing:false,expanded:{}};
+
+function mvuObj(key){return(State.mvu&&State.mvu[key])||{}}
+
+function cardTitle(cls,icon,text,key){
+  var open=State.expanded[key]?' open':'';
+  return '<details class="block"'+open+' data-key="'+key+'"><summary class="card-t '+cls+'">'+icon+' '+text+'<span class="caret">▶</span></summary><div class="block-body">';
+}
+
+/* 渲染：顶部（所有字段从 MVU 读取，无硬编码角色数据） */
+function renderHeader(){
+  var s=mvuObj('系统变量'),v=mvuObj('反派状态');
+  var stage=s.游戏阶段||'日常轮';
+  var stageCls=stage==='交涉中'?'danger':(stage==='结算中'?'warn':(stage==='结束'?'hell':'safe'));
+  var sysCls=v.系统状态==='警告'?'warn':(v.系统状态==='解绑'?'danger':'safe');
+  return '<div class="hd"><div class="hd-l">'
+    +'<span class="hd-t">第'+esc(s.当前章节||1)+'章 · '+esc(v.当前阶段||'——')+'</span>'
+    +'<span class="pill">Day '+esc(s.天数||1)+'</span>'
+    +'<span class="pill '+stageCls+'">'+esc(stage)+'</span>'
+    +'<span class="pill safe">'+esc(s.时段||'上午')+'</span>'
+    +'<span class="pill '+sysCls+'">系统:'+esc(v.系统状态||'活跃')+'</span>'
+    +'<span class="pill danger">评价值:'+esc(v.评价值||0)+'</span>'
+    +'<div class="hd-sub">📍 '+esc(v.当前位置||'——')+' · 🎯 '+esc(v.当前目标||'——')+'</div>'
+    +'</div>'
+    +'<button class="rfr'+(State.refreshing?' spinning':'')+'" data-act="refresh">🔄</button>'
+    +'</div>';
+}
+
+/* 反派状态（标题用 MVU 姓名，无硬编码） */
+function renderVillain(){
+  var v=mvuObj('反派状态');
+  var vName=v.姓名||'反派';
+  var body='<div class="sect-title">身份</div><div class="g2">'
+    +kv('姓名',vName||'——')+kv('当前阶段',v.当前阶段||'——')
+    +kv('心情',v.心情||'——')+kv('当前位置',v.当前位置||'——')
+    +'</div>'
+    +'<div class="sect-title">财富</div><div class="g2">'
+    +kv('财富等级',v.财富等级||'——','gold')+kv('财富值',fmtMoney(v.财富值||0),'gold')
+    +kv('当前目标',v.当前目标||'——','danger')
+    +'</div>'
+    +'<div class="sect-title">绑定系统</div><div class="g">'
+    +kv('绑定名额',v.绑定名额总数||10)+kv('已绑定',v.已绑定数||0,'danger')
+    +kv('剩余',v.剩余名额||10,'safe')+kv('系统状态',v.系统状态||'活跃')
+    +'</div>'
+    +bar('评价值',v.评价值||0,100)
+    +bar('良知值',v.良知值||0,100)
+    +'<div class="sect-title">OOC与玩法</div><div class="g2">'
+    +kv('OOC计数',v.OOC计数||0,(v.OOC计数||0)>0?'danger':'')
+    +kv('评价趋势',v.评价趋势||'——')
+    +kv('玩法偏好',v.玩法偏好||'——')
+    +kv('系统警告',v.系统警告||'无',(v.系统警告&&v.系统警告!=='无')?'warn':'')
+    +'</div>';
+  return cardTitle('villain','😈','反派 · '+esc(vName),'villain')+body+'</div></details>';
+}
+
+/* user状态（无硬编码） */
+function renderUser(){
+  var u=mvuObj('user状态');
+  var psyCls=u.心理状态==='反抗'?'danger':(u.心理状态==='崩溃'?'danger':(u.心理状态==='隐忍'?'warn':''));
+  var body='<div class="sect-title">身份</div><div class="g2">'
+    +kv('姓名',u.姓名||'——')+kv('财富等级',u.财富等级||'——','gold')
+    +kv('财富值',fmtMoney(u.财富值||0),'gold')
+    +kv('当前位置',u.当前位置||'——')
+    +'</div>'
+    +'<div class="sect-title">心理状态</div><div class="g2">'
+    +kv('心理状态','<span class="'+psyCls+'">'+esc(u.心理状态||'——')+'</span>')
+    +kv('婚姻状态',u.婚姻状态||'——')
+    +kv('与妻子关系',u.与妻子关系||'——')
+    +'</div>'
+    +bar('反抗力',u.反抗力||0,100)
+    +bar('觉醒度',u.觉醒度||0,100)
+    +bar('理智值',u.理智值||0,100)
+    +bar('怀疑度',u.怀疑度||0,100)
+    +'<div class="sect-title">证据</div><div class="g">'
+    +kv('证据数量',u.证据数量||0,u.证据数量>0?'safe':'')
+    +'</div>';
+  return cardTitle('user','🛡️','user状态','user')+body+'</div></details>';
+}
+
+/* 交涉状态（无硬编码） */
+function renderNegotiation(){
+  var n=mvuObj('交涉状态');
+  if(!n.交涉进行中){
+    return cardTitle('nego','⚔️','交涉状态 · 待命','nego')+'<div style="text-align:center;color:var(--c-dim);padding:8px;font-size:var(--fs-xs)">当前无交涉进行中</div></div></details>';
+  }
+  var body='<div class="g2">'
+    +kv('交涉对象',n.交涉对象||'——','danger')
+    +kv('回合',n.交涉回合||0)
+    +kv('幕次',n.交涉幕次||'寒暄','warn')
+    +'</div>'
+    +'<div class="sect-title">user四维</div><div class="g">'
+    +kv('气势',n.user气势||0)+kv('口才',n.user口才||0)
+    +kv('情报',n.user情报||0)+kv('地位',n.user地位||0)
+    +'</div>'
+    +'<div class="sect-title">对手四维</div><div class="g">'
+    +kv('气势',n.对手气势||0,'danger')+kv('口才',n.对手口才||0,'danger')
+    +kv('情报',n.对手情报||0,'danger')+kv('地位',n.对手地位||0,'danger')
+    +'</div>'
+    +'<div class="sect-title">策略与判定</div><div class="g2">'
+    +kv('user策略',n.user交涉策略||'——')
+    +kv('对手策略',n.对手交涉策略||'——','danger')
+    +kv('上轮user骰',n.上轮user骰||0)
+    +kv('上轮对手骰',n.上轮对手骰||0,'danger')
+    +kv('上轮判定',n.上轮判定||'——')
+    +'</div>'
+    +bar('user共识分',n.user共识分||0,100)
+    +bar('对手共识分',n.对手共识分||0,100);
+  if(n.交涉历史&&n.交涉历史.length){
+    body+='<div class="sect-title">交涉历史 ('+n.交涉历史.length+')</div>';
+    for(var i=0;i<n.交涉历史.length;i++){body+='<div class="memory-item">'+esc(n.交涉历史[i])+'</div>'}
+  }
+  return cardTitle('nego','⚔️','交涉 · '+esc(n.交涉对象||'进行中'),'nego')+body+'</div></details>';
+}
+
+/* 绑定花名册单项 body */
+function renderWomanBody(w,name){
+  name=name||w.姓名||'无';
+  var isReal=name!=='无'&&name!==''&&name!=='0';
+  var status=w.状态||'待绑定';
+  var statusCls=status==='已绑定'?'pink':(status==='绑定中'?'warn':(status==='待绑定'?'':'safe'));
+  var body='<div class="g2">'
+    +kv('姓名',name)+kv('类型',w.类型||'——')
+    +kv('绑定等级',w.绑定等级||'A10','danger')
+    +kv('绑定顺序',w.绑定顺序||10)
+    +kv('状态','<span class="'+statusCls+'">'+esc(status)+'</span>')
+    +kv('绑定深度',w.绑定深度||0)
+    +kv('清醒频率',w.清醒频率||0)
+    +kv('解绑代价',w.解绑代价||'——',(w.解绑代价&&w.解绑代价!=='无')?'danger':'')
+    +'</div>'
+    +bar('绑定深度',w.绑定深度||0,100)
+    +bar('清醒频率',w.清醒频率||0,100)
+    +'<div class="sect-title">身份背景</div><div class="g2">'
+    +kv('身份',w.身份||'——')+kv('家庭关系',w.家庭关系||'——')
+    +kv('原伴侣',w.原伴侣||'无')+kv('子女信息',w.子女信息||'无')
+    +kv('上次清醒',w.上次清醒瞬间||'——')
+    +kv('NTR玩法',w.NTR玩法类型||'——','danger')
+    +'</div>';
+  if(isReal){
+    body+='<div class="sect-title">NSFW · 实时状态 <span class="nsfw-tag">18+</span></div><div class="g2">'
+      +kv('当前衣着',w.当前衣着||'N/A')
+      +kv('暴露程度',w.暴露程度||'N/A')
+      +kv('皮肤痕迹',w.皮肤痕迹||'N/A')
+      +kv('精液残留',w.精液残留||'N/A')
+      +kv('占有印记',w.占有印记||'——','pink')
+      +'</div>'
+      +bar('湿润度',w.湿润度||0,100)
+      +bar('兴奋度',w.兴奋度||0,100)
+      +'<div class="sect-title">NSFW · 身体测量</div><div class="g2">'
+      +kv('罩杯',w.罩杯||'——','pink')
+      +kv('胸围',(w.胸围||0)+'cm')
+      +kv('腰围',(w.腰围||0)+'cm')
+      +kv('臀围',(w.臀围||0)+'cm')
+      +kv('身高',(w.身高||0)+'cm')
+      +kv('体重',(w.体重||0)+'kg')
+      +'</div>'
+      +'<div class="sect-title">NSFW · 胸部细节</div><div class="g2">'
+      +kv('乳头大小',w.乳头大小||'——')
+      +kv('乳头颜色',w.乳头颜色||'——')
+      +kv('乳晕大小',w.乳晕大小||'——')
+      +kv('胸型',w.胸型||'——')
+      +kv('泌乳',w.泌乳||'——',(w.泌乳&&w.泌乳!=='无')?'pink':'')
+      +'</div>'
+      +bar('胸部敏感度',w.胸部敏感度||0,300)
+      +'<div class="sect-title">NSFW · 腰部与手部</div><div class="g2">'
+      +kv('腰型',w.腰型||'——')
+      +kv('手部描述',w.手部描述||'——')
+      +kv('美甲风格',w.美甲风格||'——')
+      +'</div>'
+      +bar('腰部敏感度',w.腰部敏感度||0,300)
+      +'<div class="sect-title">NSFW · 臀部与后庭</div><div class="g2">'
+      +kv('臀型',w.臀型||'——')
+      +kv('后庭描述',w.后庭描述||'——',(w.后庭描述&&w.后庭描述!=='未开发')?'pink':'')
+      +'</div>'
+      +bar('臀部敏感度',w.臀部敏感度||0,300)
+      +'<div class="sect-title">NSFW · 下体细节</div><div class="g2">'
+      +kv('阴毛',w.阴毛||'——')
+      +kv('阴唇大小',w.阴唇大小||'——')
+      +kv('阴唇颜色',w.阴唇颜色||'——')
+      +kv('阴道紧度',w.阴道紧度||'——')
+      +kv('特殊体质',w.特殊体质||'无',(w.特殊体质&&w.特殊体质!=='无')?'pink':'')
+      +kv('润滑程度',w.润滑程度||'——')
+      +kv('处女膜状态',w.处女膜状态||'——')
+      +kv('生育能力',w.生育能力||'——')
+      +'</div>'
+      +bar('全身敏感度',w.全身敏感度||0,300)
+      +'<div class="sect-title">NSFW · 敏感带与触发</div><div class="g2">'
+      +kv('敏感带',w.敏感带||'——','pink')
+      +kv('兴奋触发点',w.兴奋触发点||'——','pink')
+      +'</div>';
+  }
+  return body;
+}
+
+/* 绑定花名册列表 */
+function renderRoster(){
+  var roster=mvuObj('绑定花名册');
+  var keys=Object.keys(roster).filter(function(k){return k&&roster[k]&&roster[k].姓名});
+  var body='';
+  if(keys.length===0){
+    body='<div style="text-align:center;color:var(--c-dim);padding:10px;font-size:var(--fs-sm)">暂无绑定数据</div>';
+  }else{
+    for(var i=0;i<keys.length;i++){
+      var key=keys[i];
+      var w=roster[key];
+      var name=w.姓名||'无';
+      var stage=w.绑定等级||'A10';
+      var status=w.状态||'待绑定';
+      var stageCls=status==='已绑定'?'pink':(status==='绑定中'?'warn':(status==='待绑定'?'':'safe'));
+      body+='<div class="wcard" data-act="woman-detail" data-key="'+esc(key)+'">'
+        +'<div class="wcard-row">'
+        +'<span class="wcard-name">'+esc(name)+'</span>'
+        +'<span class="wcard-stage '+stageCls+'">'+esc(stage)+'</span>'
+        +'</div>'
+        +'<div class="wcard-stats">'
+        +'<span>深度:'+esc(w.绑定深度||0)+'</span>'
+        +'<span>清醒:'+esc(w.清醒频率||0)+'</span>'
+        +'<span>'+esc(status)+'</span>'
+        +'</div></div>';
+    }
+  }
+  return cardTitle('roster','⛓️','绑定花名册 ('+keys.length+'/10)','roster')+body+'</div></details>';
+}
+
+/* 角色属性 */
+function renderAttrs(){
+  var attrs=mvuObj('角色属性');
+  var keys=Object.keys(attrs).filter(function(k){return attrs[k]&&typeof attrs[k]==='object'});
+  var body='<div class="attr-grid">';
+  for(var i=0;i<keys.length;i++){
+    var name=keys[i];
+    var a=attrs[name];
+    body+='<div class="attr-card"><div class="attr-name">'+esc(name)+'</div>'
+      +'<div class="attr-row"><span>气势</span><span class="v">'+esc(a.气势||0)+'</span></div>'
+      +'<div class="attr-row"><span>口才</span><span class="v">'+esc(a.口才||0)+'</span></div>'
+      +'<div class="attr-row"><span>情报</span><span class="v">'+esc(a.情报||0)+'</span></div>'
+      +'<div class="attr-row"><span>地位</span><span class="v">'+esc(a.地位||0)+'</span></div>'
+      +'</div>';
+  }
+  body+='</div>';
+  return cardTitle('attr','📊','角色属性 ('+keys.length+')','attrs')+body+'</div></details>';
+}
+
+/* 角色技能 */
+function renderSkills(){
+  var skills=mvuObj('角色技能');
+  var keys=Object.keys(skills).filter(function(k){return skills[k]&&typeof skills[k]==='object'});
+  var body='';
+  for(var i=0;i<keys.length;i++){
+    var name=keys[i];
+    var s=skills[name];
+    body+='<div class="sect-title">'+esc(name)+'</div>';
+    for(var j=1;j<=9;j++){
+      var slot=s['技能'+j];
+      if(!slot||!slot.名称)continue;
+      var usedCls=slot.已使用?'used':'';
+      body+='<div class="skill-slot '+usedCls+'">'
+        +'<span class="sk-name">'+esc(slot.名称)+'</span>'
+        +'<span class="sk-type">'+esc(slot.类型||'——')+'</span>'
+        +'<div class="sk-desc">'+esc(slot.说明||'——')+'</div>'
+        +(slot.已使用?'<div style="color:var(--c-danger);font-size:9px">已使用</div>':'')
+        +'</div>';
+    }
+  }
+  if(!body)body='<div style="text-align:center;color:var(--c-dim);padding:8px;font-size:var(--fs-xs">暂无技能数据</div>';
+  return cardTitle('skill','🎯','角色技能 ('+keys.length+')','skills')+body+'</div></details>';
+}
+
+/* 评论系统 */
+function renderComments(){
+  var c=mvuObj('评论系统');
+  var body='<div class="g2">'
+    +kv('评论倾向',c.评论倾向||'中性')
+    +kv('累计点赞',c.累计点赞||0,'safe')
+    +kv('累计吐槽',c.累计吐槽||0,'danger')
+    +'</div>';
+  if(c.热门评论){body+='<div class="sect-title">热门评论</div><div class="memory-item" style="border-left-color:var(--c-pink);color:var(--c-text)">'+esc(c.热门评论)+'</div>'}
+  if(c.本轮评论&&c.本轮评论.length){
+    body+='<div class="sect-title">本轮评论 ('+c.本轮评论.length+')</div>';
+    for(var i=0;i<c.本轮评论.length;i++){body+='<div class="memory-item" style="border-left-color:var(--c-pink)">'+esc(c.本轮评论[i])+'</div>'}
+  }
+  return cardTitle('comment','💬','评论系统','comments')+body+'</div></details>';
+}
+
+/* 最近记忆 */
+function renderMemory(){
+  var m=mvuObj('最近记忆');
+  var h=mvuObj('思维链历史');
+  var body='';
+  if(Array.isArray(m)&&m.length){
+    body+='<div class="sect-title">最近记忆 ('+m.length+')</div>';
+    for(var i=0;i<m.length;i++){body+='<div class="memory-item">'+esc(m[i])+'</div>'}
+  }
+  if(Array.isArray(h)&&h.length){
+    body+='<div class="sect-title">思维链历史 ('+h.length+')</div>';
+    for(var i=0;i<h.length;i++){body+='<div class="memory-item">'+esc(h[i])+'</div>'}
+  }
+  if(!body)body='<div style="text-align:center;color:var(--c-dim);padding:8px;font-size:var(--fs-xs">暂无记忆数据</div>';
+  return cardTitle('memory','🧠','记忆 & 思维链','memory')+body+'</div></details>';
+}
+
+/* 主渲染 */
+function render(){
+  var loadingEl=document.getElementById('sb-loading');
+  var bodyEl=document.getElementById('sb-body');
+  if(!bodyEl)return;
+  if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}
+  try{
+    loadingEl.style.display='none';bodyEl.style.display='';
+    bodyEl.innerHTML=renderHeader()+renderVillain()+renderUser()+renderNegotiation()+renderRoster()+renderAttrs()+renderSkills()+renderComments()+renderMemory();
+  }catch(e){
+    /* 渲染失败时也要隐藏 loading，显示错误信息 */
+    try{loadingEl.style.display='none';bodyEl.style.display='';bodyEl.innerHTML='<div style="padding:12px;color:#f87171;font-size:12px">状态栏渲染错误: '+esc(e.message||String(e))+'</div>'}catch(x){}
+  }
+}
+
+/* 模态框 */
+function showModal(title,content){
+  var overlay=document.getElementById('modal-overlay');
+  var modal=document.getElementById('modal-content');
+  modal.innerHTML='<div class="modal-title"><span>'+esc(title)+'</span><button class="modal-close" data-act="close-modal">✕</button></div>'+content;
+  overlay.className='modal-overlay show';
+}
+function closeModal(){document.getElementById('modal-overlay').className='modal-overlay'}
+
+/* 花名册详情 */
+function showWomanDetail(key){
+  var roster=mvuObj('绑定花名册');
+  var w=roster[key];
+  if(!w){showModal('错误','<p>未找到：'+esc(key)+'</p>');return}
+  var content=renderWomanBody(w,w.姓名);
+  showModal(esc(w.姓名||key)+' · 完整详情',content);
+}
+
+/* refresh - 异步版本，参考同级生2/暗黑地牢生产级实现 */
+async function refresh(){
+  if(State._refreshing)return;
+  State._refreshing=true;State.refreshing=true;
+  /* 第一步：用 embed 快照快速渲染一次（避免界面空白） */
+  try{
+    var stat=readStatDataSync();
+    if(hasData(stat)){State.mvu=stat;State.loading=false}
+    render();
+  }catch(e){State.loading=false;State._refreshing=false;State.refreshing=false;render();return}
+  /* 第二步：异步获取最新 MVU 数据 */
+  try{
+    var realStat=await readStatDataAsync();
+    if(hasData(realStat)){State.mvu=realStat;State.loading=false}
+    State._refreshing=false;State.refreshing=false;
+    render();requestStatFromBridge();
+  }catch(e){State._refreshing=false;State.refreshing=false;render()}
+}
+
+/* 事件绑定 */
+function bindEvents(){
+  var root=document.getElementById('sb-root');
+  root.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.tagName==='DETAILS'){var key=t.getAttribute('data-key');if(key){State.expanded[key]=t.hasAttribute('open')}}
+  },true);
+  root.addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(!t)return;
+    var act=t.getAttribute('data-act');
+    if(act==='refresh'){refresh()}
+    else if(act==='woman-detail'){showWomanDetail(t.getAttribute('data-key'))}
+  });
+  document.getElementById('modal-overlay').addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(t&&t.getAttribute('data-act')==='close-modal'){closeModal()}
+  });
+}
+
+/* 初始化 */
+(function init(){
+  try{bindEvents()}catch(e){}
+  var autoRefresh=function(){try{setTimeout(refresh,800)}catch(e){}};
+  try{if(typeof eventOn==='function'){eventOn('GENERATION_ENDED',autoRefresh);eventOn('MESSAGE_EDITED',autoRefresh);eventOn('mag_variable_update_ended',autoRefresh)}}catch(e){}
+  try{var Mvu=getMvu();if(Mvu&&Mvu.events&&Mvu.events.VARIABLE_UPDATE_ENDED&&typeof eventOn==='function'){eventOn(Mvu.events.VARIABLE_UPDATE_ENDED,autoRefresh)}}catch(e){}
+  window.addEventListener('message',function(e){
+    try{
+      var data=e.data;
+      if(data&&data.type==='xtmd-mvu-stat-data'&&data.stat_data){
+        var mesId=resolveMessageId();
+        if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;
+        if(hasMeaningfulStatData(data.stat_data)){
+          cachedStatFromBridge=data.stat_data;
+          cachedBridgeMessageId=typeof data.messageId==='number'?data.messageId:mesId;
+          State.mvu=deepMergeStat(DEFAULT_STAT,data.stat_data);
+          State.loading=false;render();
+        }
+        return;
+      }
+      var t=(data&&data.type)||data||'';
+      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0))autoRefresh();
+    }catch(x){}
+  });
+  try{var embedded=parseEmbeddedStat();if(embedded){cachedStatFromBridge=embedded;cachedBridgeMessageId=resolveMessageId()}}catch(e){}
+  try{requestStatFromBridge()}catch(e){}
+  try{refresh()}catch(e){State.loading=false;render()}
+  /* 超时兜底：3秒后如果仍在loading，强制用DEFAULT_STAT渲染 */
+  setTimeout(function(){if(State.loading){State.loading=false;State.mvu=DEFAULT_STAT;render()}},3000);
+})();
+</script>
+</body>
+</html>

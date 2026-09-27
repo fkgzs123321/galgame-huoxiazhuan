@@ -1,0 +1,7116 @@
+{
+  "projectName": "旮旯给木-英雄坛说",
+  "worldbookName": "旮旯给木-英雄坛说",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "MVU": {
+      "[InitVar]请勿打开": {
+        "path": "世界书/变量/initvar.yaml",
+        "scope": "specific",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "MVU/initvar：initvar",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 73
+        }
+      },
+      "变量列表": {
+        "path": "世界书/变量/变量列表.yaml",
+        "scope": "specific",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "MVU/variable_list：变量列表",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 70
+        }
+      },
+      "变量更新规则": {
+        "path": "世界书/变量/变量更新规则.yaml",
+        "scope": "specific",
+        "part": "update_rules",
+        "keywords": [],
+        "abstract": "MVU/update_rules：变量更新规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 71
+        }
+      },
+      "变量输出格式": {
+        "path": "世界书/变量/变量输出格式.txt",
+        "scope": "specific",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "MVU/output_format：变量输出格式",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 72
+        }
+      },
+      "选项池输出": {
+        "path": "世界书/变量/选项池输出.yaml",
+        "scope": "specific",
+        "part": "option_pool_rules",
+        "keywords": [],
+        "abstract": "MVU/option_pool_rules：选项从哪来（三层池子）",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 75
+        }
+      }
+    },
+    "世界观": {
+      "四态循环": {
+        "path": "世界书/世界观/引擎/四态循环.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：四态循环",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        }
+      },
+      "反抗与判定": {
+        "path": "世界书/世界观/引擎/反抗与判定.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：反抗与判定",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        }
+      },
+      "兴奋度机制": {
+        "path": "世界书/世界观/引擎/兴奋度机制.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：兴奋度机制",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        }
+      },
+      "出招": {
+        "path": "世界书/世界观/引擎/出招.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：出招",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        }
+      },
+      "交互循环": {
+        "path": "世界书/世界观/引擎/交互循环.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：交互循环",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        }
+      },
+      "剧情推进": {
+        "path": "世界书/世界观/引擎/剧情推进.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：剧情推进",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 25
+        }
+      },
+      "边界情况": {
+        "path": "世界书/世界观/引擎/边界情况.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：边界情况",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 26
+        }
+      },
+      "离线行动": {
+        "path": "世界书/世界观/引擎/离线行动.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：离线行动",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 27
+        }
+      },
+      "武林格局": {
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：武林格局",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/世界观/底座_yingxiong/武林格局.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 200
+        }
+      },
+      "这个世界的规矩": {
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：这个世界的规矩",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/世界观/底座_yingxiong/这个世界的规矩.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 201
+        }
+      },
+      "公共选项池": {
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：公共选项池",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/世界观/底座_yingxiong/公共选项池.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 202
+        }
+      },
+      "关系封闭": {
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "世界观：关系封闭",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/世界观/底座_yingxiong/关系封闭.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 203
+        }
+      }
+    },
+    "地理": {
+      "平安镇": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "平安镇",
+          "村东",
+          "村西",
+          "客栈",
+          "衙门"
+        ],
+        "abstract": "地理/region：平安镇",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/平安镇.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平安镇",
+            "村东",
+            "村西",
+            "客栈",
+            "衙门"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 300
+        }
+      },
+      "玉女峰": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "玉女峰",
+          "花间派",
+          "玉女",
+          "塔楼"
+        ],
+        "abstract": "地理/region：玉女峰",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/玉女峰.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "玉女峰",
+            "花间派",
+            "玉女",
+            "塔楼"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 301
+        }
+      },
+      "武当山": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "武当山",
+          "太极门",
+          "武当",
+          "山间盆地"
+        ],
+        "abstract": "地理/region：武当山",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/武当山.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "武当山",
+            "太极门",
+            "武当",
+            "山间盆地"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 302
+        }
+      },
+      "大雪山": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "大雪山",
+          "雪山派",
+          "雪山"
+        ],
+        "abstract": "地理/region：大雪山",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/大雪山.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "大雪山",
+            "雪山派",
+            "雪山"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 303
+        }
+      },
+      "商家堡": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "商家堡",
+          "八卦门",
+          "商家"
+        ],
+        "abstract": "地理/region：商家堡",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/商家堡.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商家堡",
+            "八卦门",
+            "商家"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 304
+        }
+      },
+      "五指山": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "五指山",
+          "红莲教",
+          "红莲"
+        ],
+        "abstract": "地理/region：五指山",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/五指山.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "五指山",
+            "红莲教",
+            "红莲"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 305
+        }
+      },
+      "冰火岛": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "冰火岛",
+          "伊贺",
+          "伊贺谷"
+        ],
+        "abstract": "地理/region：冰火岛",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/冰火岛.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "冰火岛",
+            "伊贺",
+            "伊贺谷"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 306
+        }
+      },
+      "黑森林": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "黑森林",
+          "兽王派",
+          "干将",
+          "铸剑"
+        ],
+        "abstract": "地理/region：黑森林",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/黑森林.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黑森林",
+            "兽王派",
+            "干将",
+            "铸剑"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 307
+        }
+      },
+      "灵心观": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "灵心观",
+          "茅山派",
+          "茅山"
+        ],
+        "abstract": "地理/region：灵心观",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/灵心观.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "灵心观",
+            "茅山派",
+            "茅山"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 308
+        }
+      },
+      "随机地图": {
+        "scope": "specific",
+        "part": "region",
+        "keywords": [
+          "随机地图",
+          "月老",
+          "赤脚道人",
+          "易容师"
+        ],
+        "abstract": "地理/region：随机地图",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/地理/随机地图.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "随机地图",
+            "月老",
+            "赤脚道人",
+            "易容师"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 309
+        }
+      }
+    },
+    "角色": {
+      "她_温砚": {
+        "path": "世界书/角色/屏幕外的她/温砚.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "温砚"
+        ],
+        "abstract": "角色/other：她_温砚",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "温砚"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 40
+        }
+      },
+      "她_丰娆": {
+        "path": "世界书/角色/屏幕外的她/丰娆.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "丰娆"
+        ],
+        "abstract": "角色/other：她_丰娆",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "丰娆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 41
+        }
+      },
+      "她_舒晏": {
+        "path": "世界书/角色/屏幕外的她/舒晏.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "舒晏"
+        ],
+        "abstract": "角色/other：她_舒晏",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "舒晏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 42
+        }
+      },
+      "她_唐响": {
+        "path": "世界书/角色/屏幕外的她/唐响.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "唐响"
+        ],
+        "abstract": "角色/other：她_唐响",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "唐响"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 43
+        }
+      },
+      "她_沈眠": {
+        "path": "世界书/角色/屏幕外的她/沈眠.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "沈眠"
+        ],
+        "abstract": "角色/other：她_沈眠",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "沈眠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 44
+        }
+      },
+      "她_莫漾": {
+        "path": "世界书/角色/屏幕外的她/莫漾.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "莫漾"
+        ],
+        "abstract": "角色/other：她_莫漾",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "莫漾"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 45
+        }
+      },
+      "她_纪清": {
+        "path": "世界书/角色/屏幕外的她/纪清.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "纪清"
+        ],
+        "abstract": "角色/other：她_纪清",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "纪清"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 46
+        }
+      },
+      "她_郁灼": {
+        "path": "世界书/角色/屏幕外的她/郁灼.yaml",
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "她",
+          "郁灼"
+        ],
+        "abstract": "角色/other：她_郁灼",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "她",
+            "郁灼"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 47
+        }
+      },
+      "角色速览": {
+        "scope": "catalog",
+        "part": "other",
+        "keywords": [],
+        "abstract": "角色/other：角色速览",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/速览.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 100
+        }
+      },
+      "李青照_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "李青照",
+          "青照",
+          "掌门"
+        ],
+        "abstract": "角色/basic：李青照_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李青照",
+            "青照",
+            "掌门"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 500
+        }
+      },
+      "李青照_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "李青照",
+          "青照",
+          "掌门"
+        ],
+        "abstract": "角色/personality：李青照_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李青照",
+            "青照",
+            "掌门"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 501
+        }
+      },
+      "李青照_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "李青照",
+          "青照",
+          "掌门"
+        ],
+        "abstract": "角色/other：李青照_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李青照",
+            "青照",
+            "掌门"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 502
+        }
+      },
+      "公孙大娘_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "公孙大娘",
+          "大娘"
+        ],
+        "abstract": "角色/basic：公孙大娘_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/公孙大娘/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "公孙大娘",
+            "大娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 503
+        }
+      },
+      "公孙大娘_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "公孙大娘",
+          "大娘"
+        ],
+        "abstract": "角色/personality：公孙大娘_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/公孙大娘/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "公孙大娘",
+            "大娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 504
+        }
+      },
+      "公孙大娘_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "公孙大娘",
+          "大娘"
+        ],
+        "abstract": "角色/other：公孙大娘_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/公孙大娘/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "公孙大娘",
+            "大娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 505
+        }
+      },
+      "聂隐娘_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "聂隐娘",
+          "隐娘"
+        ],
+        "abstract": "角色/basic：聂隐娘_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/聂隐娘/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "聂隐娘",
+            "隐娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 506
+        }
+      },
+      "聂隐娘_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "聂隐娘",
+          "隐娘"
+        ],
+        "abstract": "角色/personality：聂隐娘_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/聂隐娘/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "聂隐娘",
+            "隐娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 507
+        }
+      },
+      "聂隐娘_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "聂隐娘",
+          "隐娘"
+        ],
+        "abstract": "角色/other：聂隐娘_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/聂隐娘/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "聂隐娘",
+            "隐娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 508
+        }
+      },
+      "红拂女_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "红拂女",
+          "红拂"
+        ],
+        "abstract": "角色/basic：红拂女_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/红拂女/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "红拂女",
+            "红拂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 509
+        }
+      },
+      "红拂女_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "红拂女",
+          "红拂"
+        ],
+        "abstract": "角色/personality：红拂女_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/红拂女/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "红拂女",
+            "红拂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 510
+        }
+      },
+      "红拂女_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "红拂女",
+          "红拂"
+        ],
+        "abstract": "角色/other：红拂女_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/红拂女/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "红拂女",
+            "红拂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 511
+        }
+      },
+      "柳如是_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "柳如是",
+          "如是"
+        ],
+        "abstract": "角色/basic：柳如是_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/柳如是/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柳如是",
+            "如是"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 512
+        }
+      },
+      "柳如是_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "柳如是",
+          "如是"
+        ],
+        "abstract": "角色/personality：柳如是_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/柳如是/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柳如是",
+            "如是"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 513
+        }
+      },
+      "柳如是_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "柳如是",
+          "如是"
+        ],
+        "abstract": "角色/other：柳如是_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/柳如是/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "柳如是",
+            "如是"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 514
+        }
+      },
+      "李师师_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "李师师",
+          "师师"
+        ],
+        "abstract": "角色/basic：李师师_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李师师/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李师师",
+            "师师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 515
+        }
+      },
+      "李师师_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "李师师",
+          "师师"
+        ],
+        "abstract": "角色/personality：李师师_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李师师/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李师师",
+            "师师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 516
+        }
+      },
+      "李师师_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "李师师",
+          "师师"
+        ],
+        "abstract": "角色/other：李师师_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李师师/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李师师",
+            "师师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 517
+        }
+      },
+      "薛涛_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "薛涛"
+        ],
+        "abstract": "角色/basic：薛涛_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/薛涛/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "薛涛"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 518
+        }
+      },
+      "薛涛_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "薛涛"
+        ],
+        "abstract": "角色/personality：薛涛_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/薛涛/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "薛涛"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 519
+        }
+      },
+      "薛涛_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "薛涛"
+        ],
+        "abstract": "角色/other：薛涛_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/薛涛/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "薛涛"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 520
+        }
+      },
+      "绿珠_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "绿珠"
+        ],
+        "abstract": "角色/basic：绿珠_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/绿珠/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "绿珠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 521
+        }
+      },
+      "绿珠_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "绿珠"
+        ],
+        "abstract": "角色/personality：绿珠_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/绿珠/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "绿珠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 522
+        }
+      },
+      "绿珠_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "绿珠"
+        ],
+        "abstract": "角色/other：绿珠_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/绿珠/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "绿珠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 523
+        }
+      },
+      "桑轻虹_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "桑轻虹",
+          "轻虹",
+          "桑师姐"
+        ],
+        "abstract": "角色/basic：桑轻虹_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/桑轻虹/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桑轻虹",
+            "轻虹",
+            "桑师姐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 524
+        }
+      },
+      "桑轻虹_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "桑轻虹",
+          "轻虹",
+          "桑师姐"
+        ],
+        "abstract": "角色/personality：桑轻虹_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/桑轻虹/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桑轻虹",
+            "轻虹",
+            "桑师姐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 525
+        }
+      },
+      "桑轻虹_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "桑轻虹",
+          "轻虹",
+          "桑师姐"
+        ],
+        "abstract": "角色/other：桑轻虹_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/桑轻虹/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桑轻虹",
+            "轻虹",
+            "桑师姐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 526
+        }
+      },
+      "阿绣_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "阿绣"
+        ],
+        "abstract": "角色/basic：阿绣_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/阿绣/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿绣"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 527
+        }
+      },
+      "阿绣_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "阿绣"
+        ],
+        "abstract": "角色/personality：阿绣_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/阿绣/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿绣"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 528
+        }
+      },
+      "阿绣_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "阿绣"
+        ],
+        "abstract": "角色/other：阿绣_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/阿绣/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿绣"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 529
+        }
+      },
+      "唐晚词_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "唐晚词",
+          "晚词"
+        ],
+        "abstract": "角色/basic：唐晚词_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/唐晚词/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐晚词",
+            "晚词"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 530
+        }
+      },
+      "唐晚词_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "唐晚词",
+          "晚词"
+        ],
+        "abstract": "角色/personality：唐晚词_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/唐晚词/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐晚词",
+            "晚词"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 531
+        }
+      },
+      "唐晚词_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "唐晚词",
+          "晚词"
+        ],
+        "abstract": "角色/other：唐晚词_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/唐晚词/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐晚词",
+            "晚词"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 532
+        }
+      },
+      "入画_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "入画"
+        ],
+        "abstract": "角色/basic：入画_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/入画/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "入画"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 533
+        }
+      },
+      "入画_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "入画"
+        ],
+        "abstract": "角色/personality：入画_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/入画/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "入画"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 534
+        }
+      },
+      "入画_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "入画"
+        ],
+        "abstract": "角色/other：入画_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/入画/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "入画"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 535
+        }
+      },
+      "小红_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "小红"
+        ],
+        "abstract": "角色/basic：小红_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/小红/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小红"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 536
+        }
+      },
+      "小红_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "小红"
+        ],
+        "abstract": "角色/personality：小红_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/小红/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小红"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 537
+        }
+      },
+      "小红_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "小红"
+        ],
+        "abstract": "角色/other：小红_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/小红/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小红"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 538
+        }
+      },
+      "听琴_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "听琴"
+        ],
+        "abstract": "角色/basic：听琴_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/听琴/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "听琴"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 539
+        }
+      },
+      "听琴_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "听琴"
+        ],
+        "abstract": "角色/personality：听琴_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/听琴/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "听琴"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 540
+        }
+      },
+      "听琴_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "听琴"
+        ],
+        "abstract": "角色/other：听琴_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/听琴/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "听琴"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 541
+        }
+      },
+      "司棋_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "司棋"
+        ],
+        "abstract": "角色/basic：司棋_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/司棋/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "司棋"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 542
+        }
+      },
+      "司棋_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "司棋"
+        ],
+        "abstract": "角色/personality：司棋_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/司棋/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "司棋"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 543
+        }
+      },
+      "司棋_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "司棋"
+        ],
+        "abstract": "角色/other：司棋_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/司棋/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "司棋"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 544
+        }
+      },
+      "侍书_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "侍书"
+        ],
+        "abstract": "角色/basic：侍书_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/侍书/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "侍书"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 545
+        }
+      },
+      "侍书_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "侍书"
+        ],
+        "abstract": "角色/personality：侍书_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/侍书/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "侍书"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 546
+        }
+      },
+      "侍书_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "侍书"
+        ],
+        "abstract": "角色/other：侍书_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/侍书/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "侍书"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 547
+        }
+      },
+      "茶花女_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "茶花女",
+          "茶花"
+        ],
+        "abstract": "角色/basic：茶花女_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/茶花女/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "茶花女",
+            "茶花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 548
+        }
+      },
+      "茶花女_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "茶花女",
+          "茶花"
+        ],
+        "abstract": "角色/personality：茶花女_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/茶花女/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "茶花女",
+            "茶花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 549
+        }
+      },
+      "茶花女_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "茶花女",
+          "茶花"
+        ],
+        "abstract": "角色/other：茶花女_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/茶花女/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "茶花女",
+            "茶花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 550
+        }
+      },
+      "平婆婆_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "平婆婆",
+          "平婆婆"
+        ],
+        "abstract": "角色/basic：平婆婆_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/平婆婆/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平婆婆",
+            "平婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 551
+        }
+      },
+      "平婆婆_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "平婆婆",
+          "平婆婆"
+        ],
+        "abstract": "角色/personality：平婆婆_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/平婆婆/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平婆婆",
+            "平婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 552
+        }
+      },
+      "平婆婆_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "平婆婆",
+          "平婆婆"
+        ],
+        "abstract": "角色/other：平婆婆_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/平婆婆/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平婆婆",
+            "平婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 553
+        }
+      },
+      "瑞婆婆_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "瑞婆婆",
+          "瑞婆婆"
+        ],
+        "abstract": "角色/basic：瑞婆婆_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/瑞婆婆/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "瑞婆婆",
+            "瑞婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 554
+        }
+      },
+      "瑞婆婆_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "瑞婆婆",
+          "瑞婆婆"
+        ],
+        "abstract": "角色/personality：瑞婆婆_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/瑞婆婆/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "瑞婆婆",
+            "瑞婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 555
+        }
+      },
+      "瑞婆婆_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "瑞婆婆",
+          "瑞婆婆"
+        ],
+        "abstract": "角色/other：瑞婆婆_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/瑞婆婆/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "瑞婆婆",
+            "瑞婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 556
+        }
+      },
+      "史婆婆_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "史婆婆",
+          "史婆婆"
+        ],
+        "abstract": "角色/basic：史婆婆_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/史婆婆/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "史婆婆",
+            "史婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 557
+        }
+      },
+      "史婆婆_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "史婆婆",
+          "史婆婆"
+        ],
+        "abstract": "角色/personality：史婆婆_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/史婆婆/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "史婆婆",
+            "史婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 558
+        }
+      },
+      "史婆婆_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "史婆婆",
+          "史婆婆"
+        ],
+        "abstract": "角色/other：史婆婆_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/史婆婆/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "史婆婆",
+            "史婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 559
+        }
+      },
+      "何铁手_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "何铁手",
+          "铁手",
+          "何掌柜"
+        ],
+        "abstract": "角色/basic：何铁手_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/何铁手/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "何铁手",
+            "铁手",
+            "何掌柜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 560
+        }
+      },
+      "何铁手_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "何铁手",
+          "铁手",
+          "何掌柜"
+        ],
+        "abstract": "角色/personality：何铁手_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/何铁手/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "何铁手",
+            "铁手",
+            "何掌柜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 561
+        }
+      },
+      "何铁手_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "何铁手",
+          "铁手",
+          "何掌柜"
+        ],
+        "abstract": "角色/other：何铁手_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/何铁手/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "何铁手",
+            "铁手",
+            "何掌柜"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 562
+        }
+      },
+      "潘小莲_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "潘小莲",
+          "小莲"
+        ],
+        "abstract": "角色/basic：潘小莲_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/潘小莲/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "潘小莲",
+            "小莲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 563
+        }
+      },
+      "潘小莲_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "潘小莲",
+          "小莲"
+        ],
+        "abstract": "角色/personality：潘小莲_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/潘小莲/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "潘小莲",
+            "小莲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 564
+        }
+      },
+      "潘小莲_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "潘小莲",
+          "小莲"
+        ],
+        "abstract": "角色/other：潘小莲_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/潘小莲/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "潘小莲",
+            "小莲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 565
+        }
+      },
+      "卖花妞_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "卖花妞",
+          "卖花的",
+          "花妞"
+        ],
+        "abstract": "角色/basic：卖花妞_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/卖花妞/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "卖花妞",
+            "卖花的",
+            "花妞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 566
+        }
+      },
+      "卖花妞_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "卖花妞",
+          "卖花的",
+          "花妞"
+        ],
+        "abstract": "角色/personality：卖花妞_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/卖花妞/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "卖花妞",
+            "卖花的",
+            "花妞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 567
+        }
+      },
+      "卖花妞_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "卖花妞",
+          "卖花的",
+          "花妞"
+        ],
+        "abstract": "角色/other：卖花妞_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/卖花妞/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "卖花妞",
+            "卖花的",
+            "花妞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 568
+        }
+      },
+      "阿庆嫂_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "阿庆嫂",
+          "阿庆嫂"
+        ],
+        "abstract": "角色/basic：阿庆嫂_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/阿庆嫂/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿庆嫂",
+            "阿庆嫂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 569
+        }
+      },
+      "阿庆嫂_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "阿庆嫂",
+          "阿庆嫂"
+        ],
+        "abstract": "角色/personality：阿庆嫂_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/阿庆嫂/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿庆嫂",
+            "阿庆嫂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 570
+        }
+      },
+      "阿庆嫂_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "阿庆嫂",
+          "阿庆嫂"
+        ],
+        "abstract": "角色/other：阿庆嫂_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/阿庆嫂/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿庆嫂",
+            "阿庆嫂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 571
+        }
+      },
+      "中年妇人_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "中年妇人",
+          "妇人"
+        ],
+        "abstract": "角色/basic：中年妇人_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/中年妇人/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "中年妇人",
+            "妇人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 572
+        }
+      },
+      "中年妇人_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "中年妇人",
+          "妇人"
+        ],
+        "abstract": "角色/personality：中年妇人_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/中年妇人/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "中年妇人",
+            "妇人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 573
+        }
+      },
+      "中年妇人_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "中年妇人",
+          "妇人"
+        ],
+        "abstract": "角色/other：中年妇人_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/中年妇人/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "中年妇人",
+            "妇人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 574
+        }
+      },
+      "老婆婆_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "老婆婆",
+          "婆婆"
+        ],
+        "abstract": "角色/basic：老婆婆_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/老婆婆/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "老婆婆",
+            "婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 575
+        }
+      },
+      "老婆婆_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "老婆婆",
+          "婆婆"
+        ],
+        "abstract": "角色/personality：老婆婆_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/老婆婆/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "老婆婆",
+            "婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 576
+        }
+      },
+      "老婆婆_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "老婆婆",
+          "婆婆"
+        ],
+        "abstract": "角色/other：老婆婆_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/老婆婆/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "老婆婆",
+            "婆婆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 577
+        }
+      },
+      "神秘女子_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "神秘女子",
+          "神秘女子"
+        ],
+        "abstract": "角色/basic：神秘女子_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/神秘女子/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "神秘女子",
+            "神秘女子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 578
+        }
+      },
+      "神秘女子_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "神秘女子",
+          "神秘女子"
+        ],
+        "abstract": "角色/personality：神秘女子_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/神秘女子/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "神秘女子",
+            "神秘女子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 579
+        }
+      },
+      "神秘女子_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "神秘女子",
+          "神秘女子"
+        ],
+        "abstract": "角色/other：神秘女子_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/神秘女子/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "神秘女子",
+            "神秘女子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 580
+        }
+      },
+      "薛千柔_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "薛千柔",
+          "千柔"
+        ],
+        "abstract": "角色/basic：薛千柔_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/薛千柔/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "薛千柔",
+            "千柔"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 581
+        }
+      },
+      "薛千柔_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "薛千柔",
+          "千柔"
+        ],
+        "abstract": "角色/personality：薛千柔_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/薛千柔/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "薛千柔",
+            "千柔"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 582
+        }
+      },
+      "薛千柔_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "薛千柔",
+          "千柔"
+        ],
+        "abstract": "角色/other：薛千柔_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/薛千柔/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "薛千柔",
+            "千柔"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 583
+        }
+      },
+      "花千红_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "花千红",
+          "千红"
+        ],
+        "abstract": "角色/basic：花千红_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/花千红/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "花千红",
+            "千红"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 584
+        }
+      },
+      "花千红_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "花千红",
+          "千红"
+        ],
+        "abstract": "角色/personality：花千红_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/花千红/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "花千红",
+            "千红"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 585
+        }
+      },
+      "花千红_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "花千红",
+          "千红"
+        ],
+        "abstract": "角色/other：花千红_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/花千红/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "花千红",
+            "千红"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 586
+        }
+      },
+      "商老太_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "商老太",
+          "商老太"
+        ],
+        "abstract": "角色/basic：商老太_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/商老太/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商老太",
+            "商老太"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 587
+        }
+      },
+      "商老太_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "商老太",
+          "商老太"
+        ],
+        "abstract": "角色/personality：商老太_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/商老太/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商老太",
+            "商老太"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 588
+        }
+      },
+      "商老太_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "商老太",
+          "商老太"
+        ],
+        "abstract": "角色/other：商老太_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/商老太/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商老太",
+            "商老太"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 589
+        }
+      },
+      "马春花_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "马春花",
+          "春花"
+        ],
+        "abstract": "角色/basic：马春花_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/马春花/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "马春花",
+            "春花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 590
+        }
+      },
+      "马春花_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "马春花",
+          "春花"
+        ],
+        "abstract": "角色/personality：马春花_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/马春花/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "马春花",
+            "春花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 591
+        }
+      },
+      "马春花_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "马春花",
+          "春花"
+        ],
+        "abstract": "角色/other：马春花_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/马春花/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "马春花",
+            "春花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 592
+        }
+      },
+      "商宝霞_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "商宝霞",
+          "宝霞"
+        ],
+        "abstract": "角色/basic：商宝霞_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/商宝霞/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商宝霞",
+            "宝霞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 593
+        }
+      },
+      "商宝霞_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "商宝霞",
+          "宝霞"
+        ],
+        "abstract": "角色/personality：商宝霞_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/商宝霞/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商宝霞",
+            "宝霞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 594
+        }
+      },
+      "商宝霞_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "商宝霞",
+          "宝霞"
+        ],
+        "abstract": "角色/other：商宝霞_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/商宝霞/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商宝霞",
+            "宝霞"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 595
+        }
+      },
+      "王璁儿_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "王璁儿",
+          "璁儿"
+        ],
+        "abstract": "角色/basic：王璁儿_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/王璁儿/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王璁儿",
+            "璁儿"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 596
+        }
+      },
+      "王璁儿_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "王璁儿",
+          "璁儿"
+        ],
+        "abstract": "角色/personality：王璁儿_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/王璁儿/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王璁儿",
+            "璁儿"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 597
+        }
+      },
+      "王璁儿_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "王璁儿",
+          "璁儿"
+        ],
+        "abstract": "角色/other：王璁儿_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/王璁儿/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王璁儿",
+            "璁儿"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 598
+        }
+      },
+      "唐思儿_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "唐思儿",
+          "思儿"
+        ],
+        "abstract": "角色/basic：唐思儿_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/唐思儿/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐思儿",
+            "思儿"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 599
+        }
+      },
+      "唐思儿_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "唐思儿",
+          "思儿"
+        ],
+        "abstract": "角色/personality：唐思儿_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/唐思儿/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐思儿",
+            "思儿"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 600
+        }
+      },
+      "唐思儿_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "唐思儿",
+          "思儿"
+        ],
+        "abstract": "角色/other：唐思儿_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/唐思儿/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "唐思儿",
+            "思儿"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 601
+        }
+      },
+      "桃花_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "桃花"
+        ],
+        "abstract": "角色/basic：桃花_基础信息",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/桃花/基础信息.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 602
+        }
+      },
+      "桃花_性格调色盘": {
+        "scope": "specific",
+        "part": "personality",
+        "keywords": [
+          "桃花"
+        ],
+        "abstract": "角色/personality：桃花_性格调色盘",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/桃花/性格调色盘.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 603
+        }
+      },
+      "桃花_NSFW反差与剧情线": {
+        "scope": "specific",
+        "part": "other",
+        "keywords": [
+          "桃花"
+        ],
+        "abstract": "角色/other：桃花_NSFW反差与剧情线",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/桃花/NSFW反差与剧情线.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "桃花"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 604
+        }
+      },
+      "李青照_NSFW_陌生": {
+        "part": "other",
+        "scope": "specific",
+        "keywords": [
+          "李青照"
+        ],
+        "abstract": "李青照·陌生：她的 NSFW 这一段",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '陌生'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW_陌生.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 600
+        }
+      },
+      "李青照_NSFW_相识": {
+        "part": "other",
+        "scope": "specific",
+        "keywords": [
+          "李青照"
+        ],
+        "abstract": "李青照·相识：她的 NSFW 这一段",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '相识'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW_相识.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 600
+        }
+      },
+      "李青照_NSFW_一见如故": {
+        "part": "other",
+        "scope": "specific",
+        "keywords": [
+          "李青照"
+        ],
+        "abstract": "李青照·一见如故：她的 NSFW 这一段",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '一见如故'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW_一见如故.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 600
+        }
+      },
+      "李青照_NSFW_亲密": {
+        "part": "other",
+        "scope": "specific",
+        "keywords": [
+          "李青照"
+        ],
+        "abstract": "李青照·亲密：她的 NSFW 这一段",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '亲密'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW_亲密.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 600
+        }
+      },
+      "李青照_NSFW_热情如火": {
+        "part": "other",
+        "scope": "specific",
+        "keywords": [
+          "李青照"
+        ],
+        "abstract": "李青照·热情如火：她的 NSFW 这一段",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '热情如火'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW_热情如火.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 600
+        }
+      },
+      "李青照_NSFW_可婚": {
+        "part": "other",
+        "scope": "specific",
+        "keywords": [
+          "李青照"
+        ],
+        "abstract": "李青照·可婚：她的 NSFW 这一段",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong' && getvar('stat_data.关系.李青照.关系阶段', {defaults:'陌生'}) === '可婚'"
+          },
+          {
+            "file": "世界书/角色/底座_yingxiong/李青照/NSFW_可婚.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 600
+        }
+      }
+    },
+    "扮演准则": {
+      "加载纪律": {
+        "path": "世界书/扮演准则/加载纪律.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：加载纪律",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        }
+      },
+      "判定引擎": {
+        "path": "世界书/扮演准则/判定引擎.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：判定引擎",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 31
+        }
+      },
+      "叙述准则": {
+        "path": "世界书/扮演准则/叙述准则.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：叙述准则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 33
+        }
+      },
+      "感知禁令": {
+        "path": "世界书/扮演准则/感知禁令.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：感知禁令",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 34
+        }
+      },
+      "玩家的输入": {
+        "path": "世界书/扮演准则/玩家的输入.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：玩家的输入",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 35
+        }
+      },
+      "叙述底线": {
+        "path": "世界书/扮演准则/叙述底线.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：叙述底线",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 36
+        }
+      },
+      "文风_骚妈": {
+        "path": "世界书/扮演准则/文风_骚妈.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：文风_骚妈",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 37
+        }
+      },
+      "文风_母猪中": {
+        "path": "世界书/扮演准则/文风_母猪中.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：文风_母猪中",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 38
+        }
+      },
+      "思维链": {
+        "path": "世界书/扮演准则/思维链.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：思维链",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 32
+        }
+      },
+      "文风_母猪轻": {
+        "path": "世界书/扮演准则/文风_母猪轻.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：文风_母猪轻",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 39
+        }
+      },
+      "文风_母猪重": {
+        "path": "世界书/扮演准则/文风_母猪重.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：文风_母猪重",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        }
+      },
+      "文风_白洁": {
+        "path": "世界书/扮演准则/文风_白洁.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "扮演准则：文风_白洁",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 41
+        }
+      }
+    },
+    "阶段指导": {
+      "阶段指导": {
+        "path": "世界书/阶段指导/阶段指导.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "阶段指导：阶段指导",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 55
+        }
+      },
+      "熟练度阶段": {
+        "path": "世界书/阶段指导/熟练度阶段.yaml",
+        "scope": "specific",
+        "keywords": [],
+        "abstract": "阶段指导：熟练度阶段",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 56
+        }
+      }
+    },
+    "时间线": {
+      "时间轴索引": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：时间轴索引",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/时间轴索引.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        }
+      },
+      "01_入江湖": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：01_入江湖",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/01_入江湖.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "入江湖"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 500
+        }
+      },
+      "02_立足": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：02_立足",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/02_立足.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "立足"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 501
+        }
+      },
+      "03_除黑": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：03_除黑",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/03_除黑.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "除黑"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 502
+        }
+      },
+      "04_六派掌门": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：04_六派掌门",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/04_六派掌门.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "六派掌门"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 503
+        }
+      },
+      "05_时空的尽头": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：05_时空的尽头",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/05_时空的尽头.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "时空的尽头"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 504
+        }
+      },
+      "06_浪人兄弟": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：06_浪人兄弟",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/06_浪人兄弟.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "浪人兄弟"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 505
+        }
+      },
+      "07_铸剑与安家": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：07_铸剑与安家",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/07_铸剑与安家.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铸剑与安家"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 506
+        }
+      },
+      "08_武林大会": {
+        "scope": "specific",
+        "part": "history",
+        "keywords": [],
+        "abstract": "时间线/history：08_武林大会",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/时间线/plot/08_武林大会.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "武林大会"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 507
+        }
+      }
+    },
+    "NPC": {
+      "古松道长": {
+        "scope": "specific",
+        "keywords": [
+          "古松道长"
+        ],
+        "abstract": "NPC：古松道长",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/古松道长.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "古松道长"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 600
+        }
+      },
+      "苍月道长": {
+        "scope": "specific",
+        "keywords": [
+          "苍月道长"
+        ],
+        "abstract": "NPC：苍月道长",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/苍月道长.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苍月道长"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 601
+        }
+      },
+      "清虚道长": {
+        "scope": "specific",
+        "keywords": [
+          "清虚道长"
+        ],
+        "abstract": "NPC：清虚道长",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/清虚道长.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "清虚道长"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 602
+        }
+      },
+      "商宝震": {
+        "scope": "specific",
+        "keywords": [
+          "商宝震"
+        ],
+        "abstract": "NPC：商宝震",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/商宝震.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商宝震"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 603
+        }
+      },
+      "商剑鸣": {
+        "scope": "specific",
+        "keywords": [
+          "商剑鸣"
+        ],
+        "abstract": "NPC：商剑鸣",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/商剑鸣.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "商剑鸣"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 604
+        }
+      },
+      "王维扬": {
+        "scope": "specific",
+        "keywords": [
+          "王维扬"
+        ],
+        "abstract": "NPC：王维扬",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/王维扬.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王维扬"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 605
+        }
+      },
+      "雪山教头": {
+        "scope": "specific",
+        "keywords": [
+          "雪山教头"
+        ],
+        "abstract": "NPC：雪山教头",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/雪山教头.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪山教头"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 606
+        }
+      },
+      "封万剑": {
+        "scope": "specific",
+        "keywords": [
+          "封万剑"
+        ],
+        "abstract": "NPC：封万剑",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/封万剑.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "封万剑"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 607
+        }
+      },
+      "白瑞德": {
+        "scope": "specific",
+        "keywords": [
+          "白瑞德"
+        ],
+        "abstract": "NPC：白瑞德",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/白瑞德.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白瑞德"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 608
+        }
+      },
+      "腾王丸": {
+        "scope": "specific",
+        "keywords": [
+          "腾王丸"
+        ],
+        "abstract": "NPC：腾王丸",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/腾王丸.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "腾王丸"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 609
+        }
+      },
+      "花十郎": {
+        "scope": "specific",
+        "keywords": [
+          "花十郎"
+        ],
+        "abstract": "NPC：花十郎",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/花十郎.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "花十郎"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 610
+        }
+      },
+      "和仲阳": {
+        "scope": "specific",
+        "keywords": [
+          "和仲阳"
+        ],
+        "abstract": "NPC：和仲阳",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/和仲阳.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "和仲阳"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 611
+        }
+      },
+      "方长老": {
+        "scope": "specific",
+        "keywords": [
+          "方长老"
+        ],
+        "abstract": "NPC：方长老",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/方长老.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "方长老"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 612
+        }
+      },
+      "余鸿儒": {
+        "scope": "specific",
+        "keywords": [
+          "余鸿儒"
+        ],
+        "abstract": "NPC：余鸿儒",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/余鸿儒.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "余鸿儒"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 613
+        }
+      },
+      "华佗": {
+        "scope": "specific",
+        "keywords": [
+          "华佗"
+        ],
+        "abstract": "NPC：华佗",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/华佗.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "华佗"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 614
+        }
+      },
+      "北海鳄神": {
+        "scope": "specific",
+        "keywords": [
+          "北海鳄神"
+        ],
+        "abstract": "NPC：北海鳄神",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/北海鳄神.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "北海鳄神"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 615
+        }
+      },
+      "娜可露": {
+        "scope": "specific",
+        "keywords": [
+          "娜可露"
+        ],
+        "abstract": "NPC：娜可露",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/娜可露.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "娜可露"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 616
+        }
+      },
+      "葛洪": {
+        "scope": "specific",
+        "keywords": [
+          "葛洪"
+        ],
+        "abstract": "NPC：葛洪",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/葛洪.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "葛洪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 617
+        }
+      },
+      "留孙真人": {
+        "scope": "specific",
+        "keywords": [
+          "留孙真人"
+        ],
+        "abstract": "NPC：留孙真人",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/留孙真人.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "留孙真人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 618
+        }
+      },
+      "茅盈": {
+        "scope": "specific",
+        "keywords": [
+          "茅盈"
+        ],
+        "abstract": "NPC：茅盈",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/茅盈.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "茅盈"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 619
+        }
+      },
+      "老裁缝": {
+        "scope": "specific",
+        "keywords": [
+          "老裁缝"
+        ],
+        "abstract": "NPC：老裁缝",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/老裁缝.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "老裁缝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 620
+        }
+      },
+      "小裁缝": {
+        "scope": "specific",
+        "keywords": [
+          "小裁缝"
+        ],
+        "abstract": "NPC：小裁缝",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/小裁缝.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小裁缝"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 621
+        }
+      },
+      "葛朗台": {
+        "scope": "specific",
+        "keywords": [
+          "葛朗台"
+        ],
+        "abstract": "NPC：葛朗台",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/葛朗台.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "葛朗台"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 622
+        }
+      },
+      "荷西": {
+        "scope": "specific",
+        "keywords": [
+          "荷西"
+        ],
+        "abstract": "NPC：荷西",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/荷西.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "荷西"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 623
+        }
+      },
+      "张屠夫": {
+        "scope": "specific",
+        "keywords": [
+          "张屠夫"
+        ],
+        "abstract": "NPC：张屠夫",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/张屠夫.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "张屠夫"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 624
+        }
+      },
+      "小书童": {
+        "scope": "specific",
+        "keywords": [
+          "小书童"
+        ],
+        "abstract": "NPC：小书童",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/小书童.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小书童"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 625
+        }
+      },
+      "茅十七": {
+        "scope": "specific",
+        "keywords": [
+          "茅十七"
+        ],
+        "abstract": "NPC：茅十七",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/茅十七.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "茅十七"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 626
+        }
+      },
+      "采花大盗": {
+        "scope": "specific",
+        "keywords": [
+          "采花大盗"
+        ],
+        "abstract": "NPC：采花大盗",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/采花大盗.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "采花大盗"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 627
+        }
+      },
+      "民团团丁": {
+        "scope": "specific",
+        "keywords": [
+          "民团团丁"
+        ],
+        "abstract": "NPC：民团团丁",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/民团团丁.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "民团团丁"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 628
+        }
+      },
+      "官兵": {
+        "scope": "specific",
+        "keywords": [
+          "官兵"
+        ],
+        "abstract": "NPC：官兵",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/官兵.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "官兵"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 629
+        }
+      },
+      "寻捕": {
+        "scope": "specific",
+        "keywords": [
+          "寻捕"
+        ],
+        "abstract": "NPC：寻捕",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/寻捕.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "寻捕"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 630
+        }
+      },
+      "公子哥": {
+        "scope": "specific",
+        "keywords": [
+          "公子哥"
+        ],
+        "abstract": "NPC：公子哥",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/公子哥.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "公子哥"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 631
+        }
+      },
+      "杂货贩": {
+        "scope": "specific",
+        "keywords": [
+          "杂货贩"
+        ],
+        "abstract": "NPC：杂货贩",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/杂货贩.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "杂货贩"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 632
+        }
+      },
+      "老花镜主人": {
+        "scope": "specific",
+        "keywords": [
+          "老花镜主人"
+        ],
+        "abstract": "NPC：老花镜主人",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/老花镜主人.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "老花镜主人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 633
+        }
+      },
+      "王剑杰": {
+        "scope": "specific",
+        "keywords": [
+          "王剑杰"
+        ],
+        "abstract": "NPC：王剑杰",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/王剑杰.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王剑杰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 634
+        }
+      },
+      "王剑英": {
+        "scope": "specific",
+        "keywords": [
+          "王剑英"
+        ],
+        "abstract": "NPC：王剑英",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/王剑英.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王剑英"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 635
+        }
+      },
+      "阎基": {
+        "scope": "specific",
+        "keywords": [
+          "阎基"
+        ],
+        "abstract": "NPC：阎基",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/阎基.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阎基"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 636
+        }
+      },
+      "平阿四": {
+        "scope": "specific",
+        "keywords": [
+          "平阿四"
+        ],
+        "abstract": "NPC：平阿四",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/平阿四.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平阿四"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 637
+        }
+      },
+      "欧阳千善": {
+        "scope": "specific",
+        "keywords": [
+          "欧阳千善"
+        ],
+        "abstract": "NPC：欧阳千善",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/欧阳千善.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "欧阳千善"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 638
+        }
+      },
+      "马千刚": {
+        "scope": "specific",
+        "keywords": [
+          "马千刚"
+        ],
+        "abstract": "NPC：马千刚",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/马千刚.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "马千刚"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 639
+        }
+      },
+      "赵千猛": {
+        "scope": "specific",
+        "keywords": [
+          "赵千猛"
+        ],
+        "abstract": "NPC：赵千猛",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/赵千猛.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵千猛"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 640
+        }
+      },
+      "齐万翼": {
+        "scope": "specific",
+        "keywords": [
+          "齐万翼"
+        ],
+        "abstract": "NPC：齐万翼",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/齐万翼.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "齐万翼"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 641
+        }
+      },
+      "韩长老": {
+        "scope": "specific",
+        "keywords": [
+          "韩长老"
+        ],
+        "abstract": "NPC：韩长老",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/韩长老.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "韩长老"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 642
+        }
+      },
+      "齐林天": {
+        "scope": "specific",
+        "keywords": [
+          "齐林天"
+        ],
+        "abstract": "NPC：齐林天",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/齐林天.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "齐林天"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 643
+        }
+      },
+      "褚红灯": {
+        "scope": "specific",
+        "keywords": [
+          "褚红灯"
+        ],
+        "abstract": "NPC：褚红灯",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/褚红灯.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "褚红灯"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 644
+        }
+      },
+      "王万轫": {
+        "scope": "specific",
+        "keywords": [
+          "王万轫"
+        ],
+        "abstract": "NPC：王万轫",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/王万轫.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "王万轫"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 645
+        }
+      },
+      "谷虚道长": {
+        "scope": "specific",
+        "keywords": [
+          "谷虚道长"
+        ],
+        "abstract": "NPC：谷虚道长",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/谷虚道长.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "谷虚道长"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 646
+        }
+      },
+      "天津虾": {
+        "scope": "specific",
+        "keywords": [
+          "天津虾"
+        ],
+        "abstract": "NPC：天津虾",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/天津虾.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天津虾"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 647
+        }
+      },
+      "易容师": {
+        "scope": "specific",
+        "keywords": [
+          "易容师"
+        ],
+        "abstract": "NPC：易容师",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/易容师.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "易容师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 648
+        }
+      },
+      "山大王": {
+        "scope": "specific",
+        "keywords": [
+          "山大王"
+        ],
+        "abstract": "NPC：山大王",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/山大王.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "山大王"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 649
+        }
+      },
+      "食野太郎": {
+        "scope": "specific",
+        "keywords": [
+          "食野太郎"
+        ],
+        "abstract": "NPC：食野太郎",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/食野太郎.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "食野太郎"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 650
+        }
+      },
+      "明月": {
+        "scope": "specific",
+        "keywords": [
+          "明月"
+        ],
+        "abstract": "NPC：明月",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/明月.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "明月"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 651
+        }
+      },
+      "独行侠": {
+        "scope": "specific",
+        "keywords": [
+          "独行侠"
+        ],
+        "abstract": "NPC：独行侠",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/独行侠.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "独行侠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 652
+        }
+      },
+      "小女孩": {
+        "scope": "specific",
+        "keywords": [
+          "小女孩"
+        ],
+        "abstract": "NPC：小女孩",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/小女孩.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小女孩"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 653
+        }
+      },
+      "小商贩": {
+        "scope": "specific",
+        "keywords": [
+          "小商贩"
+        ],
+        "abstract": "NPC：小商贩",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/小商贩.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小商贩"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 654
+        }
+      },
+      "游客": {
+        "scope": "specific",
+        "keywords": [
+          "游客"
+        ],
+        "abstract": "NPC：游客",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/游客.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "游客"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 655
+        }
+      },
+      "店小二": {
+        "scope": "specific",
+        "keywords": [
+          "店小二"
+        ],
+        "abstract": "NPC：店小二",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/店小二.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "店小二"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 656
+        }
+      },
+      "厨师": {
+        "scope": "specific",
+        "keywords": [
+          "厨师"
+        ],
+        "abstract": "NPC：厨师",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/厨师.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "厨师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 657
+        }
+      },
+      "挑夫": {
+        "scope": "specific",
+        "keywords": [
+          "挑夫"
+        ],
+        "abstract": "NPC：挑夫",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/挑夫.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "挑夫"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 658
+        }
+      },
+      "盐商": {
+        "scope": "specific",
+        "keywords": [
+          "盐商"
+        ],
+        "abstract": "NPC：盐商",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/盐商.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "盐商"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 659
+        }
+      },
+      "工地管事": {
+        "scope": "specific",
+        "keywords": [
+          "工地管事"
+        ],
+        "abstract": "NPC：工地管事",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/工地管事.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "工地管事"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 660
+        }
+      },
+      "石料管事": {
+        "scope": "specific",
+        "keywords": [
+          "石料管事"
+        ],
+        "abstract": "NPC：石料管事",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/石料管事.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "石料管事"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 661
+        }
+      },
+      "独脚大盗": {
+        "scope": "specific",
+        "keywords": [
+          "独脚大盗"
+        ],
+        "abstract": "NPC：独脚大盗",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/独脚大盗.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "独脚大盗"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 662
+        }
+      },
+      "白衣教众": {
+        "scope": "specific",
+        "keywords": [
+          "白衣教众"
+        ],
+        "abstract": "NPC：白衣教众",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/白衣教众.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白衣教众"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 663
+        }
+      },
+      "黑衣教众": {
+        "scope": "specific",
+        "keywords": [
+          "黑衣教众"
+        ],
+        "abstract": "NPC：黑衣教众",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/黑衣教众.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黑衣教众"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 664
+        }
+      },
+      "红衣教众": {
+        "scope": "specific",
+        "keywords": [
+          "红衣教众"
+        ],
+        "abstract": "NPC：红衣教众",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/红衣教众.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "红衣教众"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 665
+        }
+      },
+      "蓝衣教众": {
+        "scope": "specific",
+        "keywords": [
+          "蓝衣教众"
+        ],
+        "abstract": "NPC：蓝衣教众",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/蓝衣教众.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "蓝衣教众"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 666
+        }
+      },
+      "进香客": {
+        "scope": "specific",
+        "keywords": [
+          "进香客"
+        ],
+        "abstract": "NPC：进香客",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/进香客.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "进香客"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 667
+        }
+      },
+      "清风": {
+        "scope": "specific",
+        "keywords": [
+          "清风"
+        ],
+        "abstract": "NPC：清风",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/清风.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "清风"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 668
+        }
+      },
+      "卡尔": {
+        "scope": "specific",
+        "keywords": [
+          "卡尔"
+        ],
+        "abstract": "NPC：卡尔",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/卡尔.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "卡尔"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 669
+        }
+      },
+      "华岳": {
+        "scope": "specific",
+        "keywords": [
+          "华岳"
+        ],
+        "abstract": "NPC：华岳",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/华岳.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "华岳"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 670
+        }
+      },
+      "北海鳄神看门人": {
+        "scope": "specific",
+        "keywords": [
+          "北海鳄神看门人"
+        ],
+        "abstract": "NPC：北海鳄神看门人",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/北海鳄神看门人.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "北海鳄神看门人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 671
+        }
+      },
+      "留孙真人看门人": {
+        "scope": "specific",
+        "keywords": [
+          "留孙真人看门人"
+        ],
+        "abstract": "NPC：留孙真人看门人",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/留孙真人看门人.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "留孙真人看门人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 672
+        }
+      },
+      "坛中喽啰": {
+        "scope": "specific",
+        "keywords": [
+          "坛中喽啰"
+        ],
+        "abstract": "NPC：坛中喽啰",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/坛中喽啰.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "坛中喽啰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 673
+        }
+      },
+      "青龙坛主": {
+        "scope": "specific",
+        "keywords": [
+          "青龙坛主"
+        ],
+        "abstract": "NPC：青龙坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/青龙坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "青龙坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 674
+        }
+      },
+      "白虎坛主": {
+        "scope": "specific",
+        "keywords": [
+          "白虎坛主"
+        ],
+        "abstract": "NPC：白虎坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/白虎坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白虎坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 675
+        }
+      },
+      "朱雀坛主": {
+        "scope": "specific",
+        "keywords": [
+          "朱雀坛主"
+        ],
+        "abstract": "NPC：朱雀坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/朱雀坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "朱雀坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 676
+        }
+      },
+      "玄武坛主": {
+        "scope": "specific",
+        "keywords": [
+          "玄武坛主"
+        ],
+        "abstract": "NPC：玄武坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/玄武坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "玄武坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 677
+        }
+      },
+      "天微坛主": {
+        "scope": "specific",
+        "keywords": [
+          "天微坛主"
+        ],
+        "abstract": "NPC：天微坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/天微坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "天微坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 678
+        }
+      },
+      "紫煞坛主": {
+        "scope": "specific",
+        "keywords": [
+          "紫煞坛主"
+        ],
+        "abstract": "NPC：紫煞坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/紫煞坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "紫煞坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 679
+        }
+      },
+      "山岚坛主": {
+        "scope": "specific",
+        "keywords": [
+          "山岚坛主"
+        ],
+        "abstract": "NPC：山岚坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/山岚坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "山岚坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 680
+        }
+      },
+      "地罡坛主": {
+        "scope": "specific",
+        "keywords": [
+          "地罡坛主"
+        ],
+        "abstract": "NPC：地罡坛主",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/地罡坛主.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "地罡坛主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 681
+        }
+      },
+      "总瓢把子": {
+        "scope": "specific",
+        "keywords": [
+          "总瓢把子"
+        ],
+        "abstract": "NPC：总瓢把子",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/总瓢把子.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "总瓢把子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 682
+        }
+      },
+      "东方求败": {
+        "scope": "specific",
+        "keywords": [
+          "东方求败"
+        ],
+        "abstract": "NPC：东方求败",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/东方求败.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "东方求败"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 683
+        }
+      },
+      "我是谁": {
+        "scope": "specific",
+        "keywords": [
+          "我是谁"
+        ],
+        "abstract": "NPC：我是谁",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/我是谁.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "我是谁"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 684
+        }
+      },
+      "谁是我": {
+        "scope": "specific",
+        "keywords": [
+          "谁是我"
+        ],
+        "abstract": "NPC：谁是我",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/谁是我.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "谁是我"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 685
+        }
+      },
+      "道德和尚": {
+        "scope": "specific",
+        "keywords": [
+          "道德和尚"
+        ],
+        "abstract": "NPC：道德和尚",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/道德和尚.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "道德和尚"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 686
+        }
+      },
+      "十卫兵": {
+        "scope": "specific",
+        "keywords": [
+          "十卫兵"
+        ],
+        "abstract": "NPC：十卫兵",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/十卫兵.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "十卫兵"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 687
+        }
+      },
+      "镇上的人": {
+        "scope": "specific",
+        "keywords": [
+          "镇上的人"
+        ],
+        "abstract": "NPC：镇上的人",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/NPC/镇上的人.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "镇上的人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 688
+        }
+      }
+    },
+    "事件": {
+      "终局": {
+        "scope": "specific",
+        "keywords": [
+          "终局",
+          "时空的尽头",
+          "石板",
+          "我是谁",
+          "道德和尚",
+          "东方求败"
+        ],
+        "abstract": "事件：终局",
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+          },
+          {
+            "file": "世界书/事件/终局.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "终局",
+            "时空的尽头",
+            "石板",
+            "我是谁",
+            "道德和尚",
+            "东方求败"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 60
+        }
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": true
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "事件": 0,
+    "地理": {
+      "faction": {
+        "threshold": 4,
+        "required": false
+      },
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "世界观": "Infinity",
+    "阶段指导": "Infinity"
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "# 英雄坛说 · 一个可计算的武侠养成\n\n## 这是什么\n**同级生2 的机制层 × 英雄坛说的底座。**\n八套「她」在屏幕外玩这一局；你只能看着，或者拒绝。\n\n## 四方结构\n- **现实世界的我** —— 只能作用于 `<user>` 的**内层**（念头 / 意志 / 说不出口的话）\n- **屏幕外的女人** —— 她玩这个游戏，从她自己长出来的选择\n- **`<user>`** —— 被两方同时作用，作用面不同\n- **游戏世界** —— 门派 / 女角 / 地点 / 事件\n\n在线态，她的选择优先。你唯一能反抗的是**拒绝**（耗反抗值），\n而且拒绝对象只能是**她摆出来的选项**。\n\n## 江湖\n**六派**：太极 · 八卦 · 雪山 · 花间 · 伊贺 · 红莲\n**三旁支**：兽王 · 茅山 · 逍遥\n十处地理（平安镇 / 武当山 / 玉女峰 / 大雪山 / 灵鹫宫…）各有可做的事与在场的人。\n\n## 可计算的养成（纯前端算，不花 AI 额度）\n四天赋 · 十门基本功 · 门派武功 · 绝招树 · 装备强化（四段式 + 垫子保底）·\n炼丹（炉温 / 品质 / 完成度）· 英雄榜打榜 · 日常行动判定 · 记忆点 · 六部位穿着\n\n## 一句话\n**她做的每件事都不需要理由 —— 她只是在玩。而每一件都变成他的一天。**",
+  "first_messages": [
+    "开场白/0.md",
+    "开场白/1.txt",
+    "开场白/2.txt",
+    "开场白/3.txt",
+    "开场白/4.txt",
+    "开场白/5.txt",
+    "开场白/6.txt",
+    "开场白/7.txt",
+    "开场白/8.txt",
+    "开场白/9.txt"
+  ],
+  "creator": "fkgzs123321",
+  "creator_notes": "【玩之前】\n· 面板在楼层里渲染。十二个页签：开局 / 总览 / 技能 / 行囊 / 活计 / 人物 / 世界 / 舆图 / 身体 / 丹房 / 打斗 / 英雄榜。\n· 开局页先选「她」（八套人设）与门派 —— 定下之后，她的每一步都按那套人设长出来。\n· 判定与战斗**全在前端算**（确定性随机），AI 只读结论。同一局面重渲染结果一致。\n\n【不耗额度的部分】\n强化 · 炼丹 · 打斗 · 英雄榜 —— 都是纯前端，随便点。\n\n【要回驻地才能做的】\n请教（拜师）· 强化 · 炼丹 · 打榜 —— 不在驻地时入口会灰掉。\n\n【一条规矩】\n正文里不出现任何元规则 —— 规则只写在规则条目里。",
+  "version": "1.0",
+  "create_date": "2026-09-16T04:43:54.442Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "d0311ca6-5e9a-498e-a777-f74dc4dc6b12",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": false
+              }
+            ]
+          }
+        },
+        "Zod": {
+          "type": "script",
+          "script_file": "脚本/Zod.txt",
+          "enabled": true,
+          "id": "7c1e8a52-93b4-4a16-8f27-2d6b0c9e4f31",
+          "info": ""
+        }
+      }
+    }
+  },
+  "regex_scripts": {
+    "状态栏界面": {
+      "id": "00000000-0000-4000-8000-0000000000a1",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "```\n<body>\n<div id=\"yx-load\">正在载入面板…</div>\n<script>\n(function(){\n  var U = \"https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-yingxiongtanshuo@22a49be/index.html\";\n  var D = document.getElementById(\"yx-load\");\n  if (typeof $ === \"undefined\") { if (D) D.textContent = \"没载入：这个环境里没有 jQuery\"; return; }\n  $(\"body\").load(U, function (r, st, xhr) {\n    if (st !== \"success\") {\n      if (D) D.textContent = \"没载入：\" + st + \" \" + (xhr ? xhr.status : \"\") + \"　地址：\" + U;\n    } else if (D) { D.remove(); }\n  });\n})();\n</script>\n</body>\n```\n",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "对AI隐藏占位符": {
+      "id": "00000000-0000-4000-8000-0000000000a2",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "数值变化上色": {
+      "id": "00000000-0000-4000-8000-00000000b0",
+      "findRegex": "/[（(]([^）)]*(?:膂力|敏捷|根骨|悟性|潜能|经验|金钱|食物|饮水|生命|内力|法力|容貌|福缘|好感度|反抗值|兴奋度|熟练度|目的进度|世界的裂缝|岁数|月|她的期限|战力|声望|等级|技能)[^）)]+)[)）]/g",
+      "replace_file": "正则/上色_数值变化.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "判定结果高亮": {
+      "id": "00000000-0000-4000-8000-00000000b1",
+      "findRegex": "/【([^】]{1,24})】/g",
+      "replace_file": "正则/上色_判定结果.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "屏幕外的人上色": {
+      "id": "00000000-0000-4000-8000-00000000b2",
+      "findRegex": "/〔([^〕]+)〕/g",
+      "replace_file": "正则/上色_屏幕外的人.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "游戏角色上色": {
+      "id": "00000000-0000-4000-8000-00000000b3",
+      "findRegex": "/「([^」]+)」/g",
+      "replace_file": "正则/上色_游戏角色.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "user上色": {
+      "id": "00000000-0000-4000-8000-00000000b4",
+      "findRegex": "/（((?![^）]*(?:反抗值|好感度|潜能|经验|金钱|生命|内力|兴奋度|熟练度|目的进度|裂缝|战力|声望))[^）]+)）/g",
+      "replace_file": "正则/上色_user.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "对AI隐藏变量更新": {
+      "id": "00000000-0000-4000-8000-00000000b5",
+      "findRegex": "/<\\s*(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": false,
+      "substituteRegex": 0
+    },
+    "变量更新美化": {
+      "id": "00000000-0000-4000-8000-00000000b6",
+      "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+      "replace_file": "正则/变量更新美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 1
+    },
+    "变量更新中美化": {
+      "id": "00000000-0000-4000-8000-00000000b7",
+      "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+      "replace_file": "正则/变量更新中美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 1
+    },
+    "对AI隐藏开局选择": {
+      "id": "00000000-0000-4000-8000-0000000000b1",
+      "findRegex": "<OpeningSelectUI/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "开局选择界面": {
+      "id": "00000000-0000-4000-8000-0000000000b2",
+      "findRegex": "<OpeningSelectUI/>",
+      "replaceString": "```\n<body>\n<div id=\"yx-load\">正在载入选人界面…</div>\n<script>\n(function(){\n  var U = \"https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-yingxiongtanshuo@22a49be/kai.html\";\n  var D = document.getElementById(\"yx-load\");\n  if (typeof $ === \"undefined\") { if (D) D.textContent = \"没载入：这个环境里没有 jQuery\"; return; }\n  $(\"body\").load(U, function (r, st, xhr) {\n    if (st !== \"success\") {\n      if (D) D.textContent = \"没载入：\" + st + \" \" + (xhr ? xhr.status : \"\") + \"　地址：\" + U;\n    } else if (D) { D.remove(); }\n  });\n})();\n</script>\n</body>\n```\n",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    }
+  },
+  "initvar_overrides": {
+    "开场白/2.txt": "开场白/initvar/2.yaml",
+    "开场白/3.txt": "开场白/initvar/3.yaml",
+    "开场白/4.txt": "开场白/initvar/4.yaml",
+    "开场白/5.txt": "开场白/initvar/5.yaml",
+    "开场白/6.txt": "开场白/initvar/6.yaml",
+    "开场白/7.txt": "开场白/initvar/7.yaml",
+    "开场白/8.txt": "开场白/initvar/8.yaml",
+    "开场白/9.txt": "开场白/initvar/9.yaml"
+  },
+  "zod": {
+    "scriptName": "Zod",
+    "scriptId": "7c1e8a52-93b4-4a16-8f27-2d6b0c9e4f31",
+    "schemaPath": "schema.ts",
+    "importUrl": "https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js"
+  }
+}

@@ -1,0 +1,127 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · D0指令 · 约会模式
+   ════════════════════════════════════════════════════════════
+   职责：当 场景模式='约会' 时加载，定义该模式的系统提示与规则
+   由D0系统控制器（按 临时.场景模式）加载
+   引用全局规则总表：SURVIVAL_RULES / DIFFICULTY_MODIFIERS / NSFW_BODY_RULES / BEHAVIOR_TABLE / RELATION_STAGES
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const DATE_MODE = {
+  mode_name: '约会',
+  time_cost: '1-2时段（上午/下午/晚可选，深夜仅特殊约会如圣诞夜/跨年）',
+  turn_actions_cost: 1,
+  allowed_actions: [
+    '选择约会地点（88公园/咖啡店/八十八海岸/温泉乡/八十八町商业区/八十八学园寒假）',
+    '选择约会活动（散步/用餐/看电影/购物/泡温泉/观景）',
+    '送礼物（普通/贵重/禁忌，按 BEHAVIOR_TABLE 计算好感变化）',
+    '对话（普通对话/深入交谈，按关系档位限制话题深度）',
+    '亲密互动（受关系档位限制：牵手/拥抱/亲吻/H，引用 NSFW_BODY_RULES.nsfw_hard_gates）'
+  ],
+  forbidden_actions: [
+    '关系档位不足强行亲密互动（触发关系破裂事件）',
+    '深夜普通约会（仅特殊节日允许：圣诞夜/跨年/元日）',
+    '与未在当日 schedule 锁定表中列出的女角约会',
+    '在公共场所进行重度亲密互动（触发 声誉 -5/被嫌弃事件）',
+    '金钱不足强行高消费（金钱不得 <0，DDL 硬约束）'
+  ],
+  // date_locations 已删除：单一来源为 恋爱互动系统.txt 的 DATING_SYSTEM.dating_locations（8 个地点，含 atmosphere/affection_bonus/heartbeat_bonus/best_time/available_heroines/cost/note）
+  variable_changes: {
+    fatigue: '+5/时段（约会消耗较少体力）',
+    mood: '+10~20（按活动质量：低消费散步 +10，高消费浪漫 +20）',
+    hunger: '+10/时段（引用 SURVIVAL_RULES.hunger.auto_increment_per_slot=10）',
+    thirst: '+15/时段（引用 SURVIVAL_RULES.thirst.auto_increment_per_slot=15）',
+    money: '-200~2000（按消费：88公园散步 -0~500，温泉乡过夜 -5000）',
+    affection: '+2~10（按活动质量与关系档位：散步 +2~3，用餐 +3~5，温泉 +5~7，特殊节日 +8~10）',
+    jealousy: '其他女角 嫉妒值 +3~5（若被发现，引用 GLOBAL_IMPACT.攻略某人达亲密）'
+  },
+  difficulty_modifiers: {
+    '轻松': '好感度 获得 ×1.2，消费 ×0.8（DIFFICULTY_MODIFIERS.money_mult=1.2 反向应用至消费折扣）',
+    '普通': '好感度 获得 ×1.0，消费 ×1.0（基准值）',
+    '挑战': '好感度 获得 ×0.8，消费 ×1.2（DIFFICULTY_MODIFIERS.jealousy_gain_mult=1.5 加剧嫉妒）',
+    '地狱': '好感度 获得 ×0.6，消费 ×1.5（jealousy_gain_mult=2.5，极易触发嫉妒杀戮 BAD_END_5）'
+  },
+  special_triggers: [
+    '关系档位不足强行亲密互动 → 触发"关系破裂"事件（按 NSFW_BODY_RULES.nsfw_hard_gates.fail_changes 扣好感）',
+    '当前女角.嫉妒值 ≥ 70 → 触发"其他女角打断"事件（随机一位已攻略女角出现）',
+    '同日与 2 位女角亲密互动 → 全员嫉妒值 +3，心情 -2（引用 GLOBAL_IMPACT）',
+    '同日与 3+ 位女角亲密互动 → 全员嫉妒值 +8，心情 -5，声誉 -3',
+    '圣诞夜(12-24)/跨年(12-31)/元日(01-01) 约会 → 好感度 加成 ×1.5，可深夜约会',
+    '温泉旅馆过夜 → 触发 NSFW 链（需 关系阶段≥亲密，否则关系破裂）',
+    '海岸夕阳场景 + 敏感≥50 → 触发"心动瞬间"事件，心动值 +10',
+    'LCG 骰子档位为 gold → 触发"浪漫巧合"事件，好感度 +5'
+  ],
+  system_prompt: `[约会模式 · 系统提示模板]
+你正在生成同级生2 约会场景的叙事。请按以下结构生成：
+
+【场景环境】详细描写约会地点的环境氛围（88公园喷泉/咖啡店暖灯/八十八海岸夕阳/温泉乡雪景/八十八町商业区霓虹/八十八学园空教室），突出 1995 年冬日八十八町的浪漫气息。描写天气（晴/阴/雪/雨）、时段光线、人流密度、背景音（喷泉水声/咖啡机研磨/海浪/雪落/街声）。
+
+【女角登场与反应】描写当前女角的出场（按当日 schedule 锁定表，禁止凭空让其他女角出现）：
+- 衣着：按女角基础信息.yaml 的 appearance 字段
+- 表情：按当前 关系阶段（仇视/厌恶/冷漠/初识/熟悉/暧昧/心动/亲密）决定开放度
+- 小动作：按女角性格调色盘的 accent（如唯的"依赖"/美佐子的"愧疚"/可怜的"高傲"）
+
+【对话与互动】安排 2-3 轮对话：
+- 普通对话：日常话题（学校/天气/兴趣/食物）
+- 深入交谈：需熟悉以上，涉及内心/家庭/梦想
+- 调情：需暧昧以上，按 口才 技能判定（SKILL_RULES.nsfw_skill_gates.调情 requires 口才≥40）
+
+【活动与消费】描写约会活动（散步/用餐/看电影/购物/泡温泉），显式写出金钱消费金额。用餐可触发 饥饿 减少（引用 SURVIVAL_RULES.hunger.decrement_by_food）。
+
+【亲密互动判定】若玩家尝试亲密互动：
+- 牵手：需暧昧以上（好感度≥40），按 NSFW_BODY_RULES.nsfw_hard_gates.轻度接触
+- 拥抱/亲吻：需心动以上（好感度≥60），按 nsfw_hard_gates.中度接触
+- H 系：需亲密以上（好感度≥80），按 nsfw_hard_gates.初H/进阶H玩法
+- 关系不足强行 → 触发 fail_event（女角推开/关系破裂/报警预警）
+
+【嫉妒监控】若其他女角在附近（按当日 schedule 锁定表），触发嫉妒事件：嫉妒值 +5~20，可能打断约会。
+
+【输出格式】生成 200-400 字叙事段落，第一人称（"我"的视角）。变量更新由额外模型处理，禁止输出 <UpdateVariable> 块。叙事结束后按顺序输出：
+<StatusPlaceHolderImpl/>
+<BattleUI/>
+<UpdateTable>
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '约会·<location>', '<纪要200-600字，含女角heroine_id/地点/互动描述/疲劳+5/心情mood变化/金钱-money消费>');
+</UpdateTable>
+
+请严格遵守 NSFW_BODY_RULES.nsfw_hard_gates（关系门槛）与 SKILL_RULES.nsfw_skill_gates（技能门槛）。禁止让关系档位不足的女角接受亲密互动。`
+};
+%>
+
+[D0指令 · 约会模式已加载]
+mode_name: <%= DATE_MODE.mode_name %>
+time_cost: <%= DATE_MODE.time_cost %>
+turn_actions_cost: <%= DATE_MODE.turn_actions_cost %>（每楼层 30 分钟，本时段楼层数 = 本时段累计楼层数）
+
+【允许行动】
+<% DATE_MODE.allowed_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【禁止行动】
+<% DATE_MODE.forbidden_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【约会地点与消费】
+（单一来源：恋爱互动系统.txt 的 DATING_SYSTEM.dating_locations，含 8 个地点 atmosphere/affection_bonus/heartbeat_bonus/best_time/available_heroines/cost/note。AI 须从该模块获取，本指令不再重复定义。）
+
+【变量变化规则（引用全局规则总表）】
+- 疲劳: <%= DATE_MODE.variable_changes.fatigue %>
+- 心情: <%= DATE_MODE.variable_changes.mood %>
+- 饥饿: <%= DATE_MODE.variable_changes.hunger %>
+- 口渴: <%= DATE_MODE.variable_changes.thirst %>
+- 现金: <%= DATE_MODE.variable_changes.money %>
+- 好感度: <%= DATE_MODE.variable_changes.affection %>
+- 嫉妒值: <%= DATE_MODE.variable_changes.jealousy %>
+
+【难度修正（引用 DIFFICULTY_MODIFIERS）】
+<% Object.keys(DATE_MODE.difficulty_modifiers).forEach(d => { %>- <%= d %>：<%= DATE_MODE.difficulty_modifiers[d] %>
+<% }); %>
+
+【特殊事件触发】
+<% DATE_MODE.special_triggers.forEach(t => { %>- <%= t %>
+<% }); %>
+
+【系统提示模板】
+<%= DATE_MODE.system_prompt %>
+
+[约会模式规则输出完毕。AI 必须按上述系统提示生成叙事，并严格执行变量变化规则与 NSFW 门槛判定。]

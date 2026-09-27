@@ -1,0 +1,14 @@
+{
+  "id": "d2a1f001-0005-4000-8000-000000000015",
+  "findRegex": "/(读心|透视|瞬间移动|时间停止|意念控制|意念移物|魔法|咒语|法术|神灵|鬼魂|妖怪|灵异|附身|通灵|时间旅行|平行世界|预知未来|心灵感应|超能力|异能|超感知|超自然|系统外挂|金手指|穿越重生)/gi",
+  "replaceString": "[检测到超自然/系统类关键词，AI必须按防神化准则将此描述驳回为user的幻想或虚构，引导user回到KK园区现实叙事]",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

@@ -1,0 +1,99 @@
+---
+# ══════════════════════════════════════════════════════════════
+# 变量输出格式 —— MVU 每回合末输出变量更新的格式契约
+#
+# ★ 本卡用 JSON Patch（RFC 6902 变体）。引擎写完状态后，
+#   AI 只按这个格式把「发生了什么」翻译成 patch。
+# ══════════════════════════════════════════════════════════════
+变量输出格式:
+  rule:
+    - Output the update analysis and the actual update commands at once at the end of the next reply.
+    - The update commands work like the **JSON Patch (RFC 6902)** standard: a valid JSON array of operation objects.
+    - Supported ops: replace / delta / insert / remove / move.
+    - delta is for numbers only — it adds the given value.
+    - Do not touch any field whose name starts with `_` (readonly).
+    - Do not output patches for 战斗.* , 前置.已解锁, 前置.已错过, 世界.年/月/旬, 世界.当前节点, 你.战斗.* — these are written by the engine only.
+  format: |-
+    <UpdateVariable>
+    <Analysis>$(IN CHINESE, no more than 120 words)
+    - ${算出过去了多久：以「行动」为单位，不是钟点}
+    - ${本回合是否发生越界更新：是/否。若 AI 试图改时间或战斗数值，此处答「是」并在下方略过}
+    - ${逐个变量对其 check 做分析，只依据本回合正文，不依据前情}
+    </Analysis>
+    <JSONPatch>
+    [
+      { "op": "replace", "path": "${/path/to/variable}", "value": "${new_value}" },
+      { "op": "delta", "path": "${/path/to/number/variable}", "value": "${positive_or_negative_delta}" },
+      { "op": "insert", "path": "${/path/to/object/new_key}", "value": "${new_value}" },
+      { "op": "insert", "path": "${/path/to/array/-}", "value": "${new_value}" },
+      { "op": "remove", "path": "${/path/to/object/key}" },
+      { "op": "move", "from": "${/path/to/variable}", "to": "${/path/to/another/path}" }
+    ]
+    </JSONPatch>
+    </UpdateVariable>
+
+# ══════════════════════════════════════════════════════════════
+# 本卡常用 patch 示例（照抄格式，不要照抄数值）
+# ══════════════════════════════════════════════════════════════
+示例:
+  - 说明: 用掉一次行动
+    patch: [{ op: delta, path: /世界/行动次数, value: -1 }]
+  - 说明: 在锻冶场干了一旬
+    patch:
+      - { op: delta, path: /你/锻造, value: 8 }
+      - { op: delta, path: /你/体力/当前, value: -12 }
+      - { op: delta, path: /世界/行动次数, value: -1 }
+  - 说明: 认识一个新人
+    patch:
+      - op: insert
+        path: /关系/唐芳
+        value: { 身份: 同门师姊, 好感: 0, 我的好感: 0, 认知: 尚不熟识, 欠人情: 0, 状态: 相识 }
+  - 说明: 读完一本秘籍
+    patch:
+      - { op: replace, path: /秘籍/唐门暗器总纲/已读, value: true }
+      - { op: delta, path: /秘籍/唐门暗器总纲/熟练, value: 15 }
+      - { op: delta, path: /你/八系/暗器, value: 3 }
+  - 说明: 记下发生过的事
+    patch:
+      - op: replace
+        path: /任务/事件标记
+        value: 入门、初见掌门、替四师兄跑腿
+  - 说明: 接一个支线
+    patch:
+      - op: insert
+        path: /任务/支线/S0014
+        value: { 名: 四师兄的私货, 节点: S0014_01 }
+  - 说明: 了结一个支线
+    patch:
+      - { op: replace, path: /任务/支线/S0014/节点, value: clear }
+  - 说明: 门里两人关系变了（★ 键必须按两人名字典序拼，写反会存成两条）
+    patch:
+      - { op: delta, path: "/关系网/唐中翎|唐默铃/强度", value: 5 }
+  - 说明: 一件事传到了某人耳朵里（★ 只能追加，不能删）
+    patch:
+      - {
+          op: replace,
+          path: /关系/唐布衣/认知,
+          value: 知道你是外姓师弟，常怂恿你偷懒、听说过你在后山练暗器,
+        }
+  - 说明: 断了一段关系（不删条目，改类型并留下「曾经」）
+    patch:
+      - { op: replace, path: "/关系网/唐铮|唐默铃/曾经", value: 兄妹 }
+      - { op: replace, path: "/关系网/唐铮|唐默铃/类型", value: 断了 }
+      - { op: replace, path: "/关系网/唐铮|唐默铃/强度", value: 0 }
+
+# ══════════════════════════════════════════════════════════════
+# 禁止项（引擎专属，AI 写了会被忽略）
+# ══════════════════════════════════════════════════════════════
+禁止更新:
+  - /世界/年
+  - /世界/月
+  - /世界/旬
+  - /世界/当前节点
+  - /世界/已发生节点
+  - /世界/随机种子
+  - /你/战斗
+  - /战斗
+  - /前置/已解锁
+  - /前置/已错过
+  - /前置/可见条件

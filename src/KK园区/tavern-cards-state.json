@@ -1,0 +1,1982 @@
+{
+  "projectName": "KK园区",
+  "worldbookName": "KK园区",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "EJS预处理": {
+      "EJS预处理": {
+        "path": "世界书/EJS/EJS预处理.txt",
+        "keywords": [
+          "EJS预处理",
+          "EJS"
+        ],
+        "abstract": "@@generate_before主EJS预处理——定义21个变量(current_identity/identity_stage/plot_progress/ending_branch/user_appearance/is_victim等)供其他条目使用",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        },
+        "uid": 0
+      },
+      "状态快照": {
+        "path": "世界书/EJS/状态快照.txt",
+        "keywords": [
+          "状态快照",
+          "状态栏"
+        ],
+        "abstract": "@@generate_before状态栏快照——按身份分支输出当前状态(身份/阶段/进度/时间/位置/体力/精神/道德/容貌值+身份专属状态)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        },
+        "uid": 1
+      },
+      "防口胡机制": {
+        "path": "世界书/EJS/防口胡机制.txt",
+        "keywords": [
+          "防口胡机制",
+          "防口胡",
+          "ANTI_CHEAT"
+        ],
+        "abstract": "@@generate_before EJS预处理层防口胡机制--强制校验开关/操作前置条件表/AI放水检测规则10条/身份阶段校验矩阵/validateAction校验函数/6项强制检查清单",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        },
+        "uid": 2
+      }
+    },
+    "世界观": {
+      "园区总纲": {
+        "path": "世界书/世界观/园区总纲.yaml",
+        "scope": "catalog",
+        "keywords": [
+          "KK园区",
+          "园区"
+        ],
+        "abstract": "KK园区完整设定——位置/性质/以貌定性别/残酷系统/暗网系统/多视角叙事",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        },
+        "uid": 3
+      },
+      "园区规则与等级": {
+        "path": "世界书/世界观/园区规则与等级.yaml",
+        "keywords": [
+          "园区规则",
+          "等级"
+        ],
+        "abstract": "园区内部等级制度/受害者分级/编号制度/日常运作/惩罚阶梯",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        },
+        "uid": 4
+      },
+      "残酷系统": {
+        "path": "世界书/世界观/残酷系统.yaml",
+        "keywords": [
+          "残酷",
+          "惩罚",
+          "暴力"
+        ],
+        "abstract": "暴力体系/惩罚阶梯/精神控制/死亡威胁/生存条件/性暴力/精神摧毁",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        },
+        "uid": 5
+      },
+      "暗网系统": {
+        "path": "世界书/世界观/暗网系统.yaml",
+        "keywords": [
+          "暗网",
+          "拍卖",
+          "直播"
+        ],
+        "abstract": "暗网业务线——人口拍卖/被迫直播/贩卖网络/非法交易/猎杀直播",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        },
+        "uid": 6
+      },
+      "以貌定性别": {
+        "path": "世界书/世界观/以貌定性别.yaml",
+        "keywords": [
+          "以貌定性别",
+          "容貌值",
+          "容貌"
+        ],
+        "abstract": "园区核心社会规则——容貌即性别/美貌即原罪/容貌值影响一切",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        },
+        "uid": 7
+      },
+      "RPG属性与技能系统": {
+        "path": "世界书/世界观/RPG系统.yaml",
+        "keywords": [
+          "RPG",
+          "属性",
+          "技能"
+        ],
+        "abstract": "三层属性体系(六维/生存/技能)、LCG判定公式、暴击机制、难度系数、情境修正、成长机制",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 25
+        },
+        "uid": 8
+      },
+      "LCG骰子判定系统": {
+        "path": "世界书/世界观/LCG骰子.yaml",
+        "keywords": [
+          "LCG",
+          "骰子",
+          "判定"
+        ],
+        "abstract": "LCG确定性骰子——判定公式/暴击机制/难度系数表/情境修正表/角色生成",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 26
+        },
+        "uid": 9
+      },
+      "行为判定规则": {
+        "path": "世界书/世界观/行为判定.yaml",
+        "keywords": [
+          "行为判定",
+          "判定规则"
+        ],
+        "abstract": "7类行为判定(行动/社交/战斗/潜行/技术/求生/特殊)，每个用户行为都走LCG判定",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 27
+        },
+        "uid": 10
+      },
+      "成长机制": {
+        "path": "世界书/世界观/成长机制.yaml",
+        "keywords": [
+          "成长",
+          "升级"
+        ],
+        "abstract": "属性/技能/专属技能成长路径、学习事件触发、成长上限、成长追踪",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 28
+        },
+        "uid": 11
+      },
+      "任务系统": {
+        "path": "世界书/世界观/任务系统.yaml",
+        "keywords": [
+          "任务",
+          "主线",
+          "支线"
+        ],
+        "abstract": "主线/支线/日常任务、任务奖励、任务触发条件",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 29
+        },
+        "uid": 12
+      },
+      "道德系统": {
+        "path": "世界书/世界观/道德系统.yaml",
+        "keywords": [
+          "道德",
+          "善恶值"
+        ],
+        "abstract": "善恶值(-100~+100)、行为影响、道德值对路线和结局的影响",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        },
+        "uid": 13
+      },
+      "派系系统": {
+        "path": "世界书/世界观/派系系统.yaml",
+        "keywords": [
+          "派系",
+          "势力",
+          "站队"
+        ],
+        "abstract": "5大派系关系、派系冲突、站队机制、派系福利",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 31
+        },
+        "uid": 14
+      },
+      "情报系统": {
+        "path": "世界书/世界观/情报系统.yaml",
+        "keywords": [
+          "情报",
+          "信息",
+          "线索"
+        ],
+        "abstract": "情报类型/来源/真伪/组合/时效/保管/价值",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 32
+        },
+        "uid": 15
+      },
+      "暗网经济系统": {
+        "path": "世界书/世界观/暗网经济.yaml",
+        "keywords": [
+          "暗网经济",
+          "拍卖",
+          "竞拍"
+        ],
+        "abstract": "拍卖市场/定价因素/供需波动/竞拍/直播收益/黑市价格/经济周期",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 33
+        },
+        "uid": 16
+      },
+      "女性角色生成模板": {
+        "path": "世界书/世界观/角色生成模板.yaml",
+        "keywords": [
+          "角色生成",
+          "模板",
+          "生成"
+        ],
+        "abstract": "统一女性NPC生成模板——11维度字段(容貌/身体/性格/能力/NSFW/关系/成长/剧情)、LCG随机生成+身份修正、受害者多样性保障",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 34
+        },
+        "uid": 17
+      },
+      "防护机制体系": {
+        "path": "世界书/世界观/防护机制.yaml",
+        "keywords": [
+          "防护",
+          "防口胡",
+          "防神化",
+          "防绝望"
+        ],
+        "abstract": "7类28条防护规则——防口胡/防神化/防绝望/防同质化/防被动/防崩坏/防疲劳",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 35
+        },
+        "uid": 18
+      }
+    },
+    "扮演准则": {
+      "核心铁律": {
+        "path": "世界书/扮演准则/扮演准则.yaml",
+        "keywords": [
+          "核心铁律",
+          "扮演准则",
+          "行为约束"
+        ],
+        "abstract": "最高优先级全局AI行为约束总纲--三段输出顺序/30分钟铁律/选择机制/RPG后台判定/全中文变量路径/增量更新策略/防口胡防神化索引",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        },
+        "uid": 19
+      },
+      "防口胡": {
+        "path": "世界书/扮演准则/防口胡.yaml",
+        "keywords": [
+          "防口胡",
+          "知识边界",
+          "防数值口胡"
+        ],
+        "abstract": "防口胡12条+10个致命错误示例--知识边界/时间跳跃/NPC崩坏/结局跳跃/变量臆造/数值口胡/关系突变/资源凭空/能力凭空/情报凭空",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 41
+        },
+        "uid": 20
+      },
+      "防神化": {
+        "path": "世界书/扮演准则/防神化.yaml",
+        "keywords": [
+          "防神化",
+          "防龙傲天",
+          "防无敌"
+        ],
+        "abstract": "防神化8条+6项强制检查清单--防超自然/龙傲天/无敌/信息全知/资源无限/后宫王/性别护盾/剧情护盾",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 42
+        },
+        "uid": 21
+      },
+      "防超自然": {
+        "path": "世界书/扮演准则/防超自然.yaml",
+        "keywords": [
+          "防超自然",
+          "现实锁定"
+        ],
+        "abstract": "缅甸边境现实锁定--22个超自然关键词检测/三振出局触发BAD_END_精神异常",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 43
+        },
+        "uid": 22
+      },
+      "防全知": {
+        "path": "世界书/扮演准则/防全知.yaml",
+        "keywords": [
+          "防全知",
+          "NPC认知"
+        ],
+        "abstract": "NPC知识边界约束--四身份各自知识范围/层级交叉规则/信息传播规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 44
+        },
+        "uid": 23
+      },
+      "防崩溃": {
+        "path": "世界书/扮演准则/防崩溃.yaml",
+        "keywords": [
+          "防崩溃",
+          "BAD_END"
+        ],
+        "abstract": "8类BAD_END+死局保护+AI自纠机制--被处死/被转卖/精神崩溃/被献祭/灭口/越权被杀/内斗失败/警方突袭",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 45
+        },
+        "uid": 24
+      },
+      "防绝望": {
+        "path": "世界书/扮演准则/防绝望.yaml",
+        "keywords": [
+          "防绝望",
+          "希望值"
+        ],
+        "abstract": "希望值<10触发微光事件/禁止自杀自残/3高压后1喘息/重要NPC死亡需铺垫",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 46
+        },
+        "uid": 25
+      },
+      "防被动": {
+        "path": "世界书/扮演准则/防被动.yaml",
+        "keywords": [
+          "防被动",
+          "选择分支"
+        ],
+        "abstract": "每楼层≥2选择/禁假选择/防道德说教/防无效选择/主动性激励",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 47
+        },
+        "uid": 26
+      },
+      "合理性审查": {
+        "path": "世界书/扮演准则/合理性审查.yaml",
+        "keywords": [
+          "合理性",
+          "审查"
+        ],
+        "abstract": "五维合理性校验--物理/社会/经济/时间/逻辑",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 48
+        },
+        "uid": 27
+      },
+      "思维链": {
+        "path": "世界书/扮演准则/思维链.yaml",
+        "keywords": [
+          "思维链",
+          "推理"
+        ],
+        "abstract": "12步AI强制推理链(<thought>标签)--读变量/定身份/析意图/查防口胡/掷骰子/推剧情/算变量/生分支",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 49
+        },
+        "uid": 28
+      },
+      "NSFW规范": {
+        "path": "世界书/扮演准则/NSFW规范.yaml",
+        "keywords": [
+          "NSFW",
+          "成人"
+        ],
+        "abstract": "NSFW场景写作规范——真实向/不美化/情境触发/四身份NSFW类型/RPG判定联动/道德系统联动/以貌定性别特色",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        },
+        "uid": 29
+      },
+      "暴力描写规范": {
+        "path": "世界书/扮演准则/暴力描写规范.yaml",
+        "keywords": [
+          "暴力",
+          "描写规范"
+        ],
+        "abstract": "暴力场景写作规范——阶梯递进/防暴力疲劳/四类暴力类型/RPG判定联动/变量联动/NPC差异化反应",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 51
+        },
+        "uid": 30
+      }
+    },
+    "时间线": {
+      "园区大事件": {
+        "path": "世界书/时间线/园区大事件.yaml",
+        "part": "plot",
+        "keywords": [
+          "时间线",
+          "历史",
+          "园区大事件"
+        ],
+        "abstract": "园区历史关键节点(2018-当前)——建立/扩张/暗网上线/警方关注/内部斗争",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 60
+        },
+        "uid": 31
+      }
+    },
+    "地理": {
+      "诈骗大楼": {
+        "path": "世界书/地理/诈骗大楼.yaml",
+        "part": "region",
+        "keywords": [
+          "诈骗大楼",
+          "诈骗"
+        ],
+        "abstract": "诈骗业务核心——键盘组大厅/话务组大厅/技术组办公室/会议室/惩罚室，管理者冷雪",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "诈骗大楼",
+            "诈骗"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 70
+        },
+        "uid": 32
+      },
+      "生活区": {
+        "path": "世界书/地理/生活区.yaml",
+        "part": "region",
+        "keywords": [
+          "生活区",
+          "宿舍"
+        ],
+        "abstract": "受害者居住区——宿舍/食堂/浴室/晾衣场，管理者铁姨，饥饿和睡眠剥夺控制",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "生活区",
+            "宿舍"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 80
+        },
+        "uid": 33
+      },
+      "监禁区": {
+        "path": "世界书/地理/监禁区.yaml",
+        "part": "region",
+        "keywords": [
+          "监禁区",
+          "水牢",
+          "小黑屋"
+        ],
+        "abstract": "惩罚设施——水牢/小黑屋/暗室/刑讯室，管理者影子，影响精神/希望值/伤势",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "监禁区",
+            "水牢",
+            "小黑屋"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 90
+        },
+        "uid": 34
+      },
+      "管理层别墅区": {
+        "path": "世界书/地理/管理层别墅区.yaml",
+        "part": "region",
+        "keywords": [
+          "管理层别墅区",
+          "别墅"
+        ],
+        "abstract": "管理者/老板住所——龙姐别墅/玫瑰庄园/毒蛇宅邸/联排别墅/私人泳池",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "管理层别墅区",
+            "别墅"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "uid": 35
+      },
+      "娱乐城": {
+        "path": "世界书/地理/娱乐城.yaml",
+        "part": "region",
+        "keywords": [
+          "娱乐城",
+          "陪侍",
+          "直播"
+        ],
+        "abstract": "NSFW核心场所——陪侍大厅/包厢/直播间/拍卖展示台/选品室/地下赌场，管理者玫瑰+媚娘",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "娱乐城",
+            "陪侍",
+            "直播"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 110
+        },
+        "uid": 36
+      },
+      "外围防线": {
+        "path": "世界书/地理/外围防线.yaml",
+        "part": "region",
+        "keywords": [
+          "外围防线",
+          "围墙",
+          "哨塔"
+        ],
+        "abstract": "武装看守防线——大门检查站/围墙哨塔/铁丝网区/巡逻道/码头沉海处，管理者黑寡妇",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "外围防线",
+            "围墙",
+            "哨塔"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 120
+        },
+        "uid": 37
+      },
+      "黑市巷": {
+        "path": "世界书/地理/黑市巷.yaml",
+        "part": "region",
+        "keywords": [
+          "黑市巷",
+          "黑市"
+        ],
+        "abstract": "园区内部黑市——情报贩子窝点/走私仓库/违禁品店铺/地下诊所，NPC老鼠+白大褂",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黑市巷",
+            "黑市"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 130
+        },
+        "uid": 38
+      }
+    },
+    "角色": {
+      "user_基础信息": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "玩家"
+        ],
+        "abstract": "user完整档案——唯一生理男性、身份选择、性别稀缺性、容貌值影响、四身份能力定位",
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"user\">"
+          },
+          {
+            "file": "世界书/角色/user基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 140
+        },
+        "uid": 39
+      }
+    },
+    "NPC": {
+      "龙姐_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "龙姐"
+        ],
+        "abstract": "园区总负责人，董事会之首。冷酷铁腕，说一不二，最终BOSS级NPC",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"龙姐\">"
+          },
+          {
+            "file": "世界书/NPC/龙姐.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "龙姐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 150
+        },
+        "uid": 40
+      },
+      "玫瑰_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "玫瑰"
+        ],
+        "abstract": "娱乐城老板娘，负责NSFW业务。艳丽毒辣，对美貌病态执着",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"玫瑰\">"
+          },
+          {
+            "file": "世界书/NPC/玫瑰.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "玫瑰"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 151
+        },
+        "uid": 41
+      },
+      "毒蛇_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "毒蛇"
+        ],
+        "abstract": "暗网业务负责人，阴鸷冷酷。掌管拍卖/直播/贩卖网络",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"毒蛇\">"
+          },
+          {
+            "file": "世界书/NPC/毒蛇.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "毒蛇"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 152
+        },
+        "uid": 42
+      },
+      "黑寡妇_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "黑寡妇"
+        ],
+        "abstract": "外卫武装头子，负责园区防逃。暴戾嗜血，龙姐左膀右臂",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"黑寡妇\">"
+          },
+          {
+            "file": "世界书/NPC/黑寡妇.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黑寡妇"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 153
+        },
+        "uid": 43
+      },
+      "冷雪_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "冷雪"
+        ],
+        "abstract": "诈骗组长，负责诈骗业务业绩。冷漠业绩至上，前受害者上位",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"冷雪\">"
+          },
+          {
+            "file": "世界书/NPC/冷雪.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "冷雪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 154
+        },
+        "uid": 44
+      },
+      "媚娘_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "媚娘"
+        ],
+        "abstract": "陪侍组长，负责娱乐城日常NSFW业务。媚俗刻薄，嫉妒式虐待",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"媚娘\">"
+          },
+          {
+            "file": "世界书/NPC/媚娘.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "媚娘"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 155
+        },
+        "uid": 45
+      },
+      "铁姨_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "铁姨"
+        ],
+        "abstract": "后勤组长，负责生活区管理。粗暴贪婪，可被贿赂的情报来源",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"铁姨\">"
+          },
+          {
+            "file": "世界书/NPC/铁姨.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "铁姨"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 156
+        },
+        "uid": 46
+      },
+      "阿烈_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "阿烈"
+        ],
+        "abstract": "内卫打手，负责看守受害者。残暴嗜暴，享受施暴",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"阿烈\">"
+          },
+          {
+            "file": "世界书/NPC/阿烈.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿烈"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 157
+        },
+        "uid": 47
+      },
+      "影子_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "影子"
+        ],
+        "abstract": "内卫打手，冷血执行者。负责监禁区，像机器一样执行惩罚",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"影子\">"
+          },
+          {
+            "file": "世界书/NPC/影子.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "影子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 158
+        },
+        "uid": 48
+      },
+      "小刀_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "小刀"
+        ],
+        "abstract": "内卫打手，有同情心的异类。潜在盟友，逃脱突破口",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"小刀\">"
+          },
+          {
+            "file": "世界书/NPC/小刀.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小刀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 159
+        },
+        "uid": 49
+      },
+      "小薇_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "小薇"
+        ],
+        "abstract": "认命的受害者，键盘手。展示沉沦状态，园区秘密信息来源",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"小薇\">"
+          },
+          {
+            "file": "世界书/NPC/小薇.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "小薇"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 160
+        },
+        "uid": 50
+      },
+      "阿凤_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "阿凤"
+        ],
+        "abstract": "抗争的受害者，仍在暗中抗争。可能成为逃脱同盟",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"阿凤\">"
+          },
+          {
+            "file": "世界书/NPC/阿凤.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "阿凤"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 161
+        },
+        "uid": 51
+      },
+      "灵灵_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "灵灵"
+        ],
+        "abstract": "崩溃的受害者，陪侍组。展示精神摧毁，美貌即原罪的活证据",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"灵灵\">"
+          },
+          {
+            "file": "世界书/NPC/灵灵.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "灵灵"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 162
+        },
+        "uid": 52
+      },
+      "丽萨_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "丽萨"
+        ],
+        "abstract": "上位的前受害者，管理者情妇。展示另一种沉沦，背叛者镜像",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"丽萨\">"
+          },
+          {
+            "file": "世界书/NPC/丽萨.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "丽萨"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 163
+        },
+        "uid": 53
+      },
+      "白大褂_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "白大褂"
+        ],
+        "abstract": "园区唯一医生，被迫治疗/堕胎。内心痛苦，有限盟友",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"白大褂\">"
+          },
+          {
+            "file": "世界书/NPC/白大褂.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "白大褂"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 164
+        },
+        "uid": 54
+      },
+      "老鼠_NPC": {
+        "scope": "specific",
+        "part": "basic",
+        "keywords": [
+          "老鼠"
+        ],
+        "abstract": "黑市巷情报贩子。什么都卖，只认钱，情报有真有假",
+        "contents": [
+          {
+            "content": "---\n<npc_basic npc=\"老鼠\">"
+          },
+          {
+            "file": "世界书/NPC/老鼠.yaml"
+          },
+          {
+            "content": "</npc_basic>"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "老鼠"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 165
+        },
+        "uid": 55
+      }
+    },
+    "阶段指导": {
+      "受害者_阶段指导": {
+        "part": "stage_guide",
+        "keywords": [
+          "受害者",
+          "阶段指导"
+        ],
+        "abstract": "受害者五阶段叙事总控——入园恐惧→适应求生→暗中谋划→逃脱行动→结局（含精液成瘾能力+飞机杯系统联动）",
+        "contents": [
+          {
+            "file": "世界书/阶段指导/受害者.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 170
+        },
+        "uid": 56
+      }
+    },
+    "事件": {
+      "受害者_事件库": {
+        "part": "event_library",
+        "keywords": [
+          "受害者",
+          "事件"
+        ],
+        "abstract": "受害者5阶段事件库——入园恐惧/适应求生/暗中谋划/逃脱行动/结局（含精液成瘾能力触发事件+飞机杯激活事件）",
+        "contents": [
+          {
+            "file": "世界书/事件/受害者事件.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "受害者",
+            "事件"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 180
+        },
+        "uid": 60
+      },
+      "暗网事件": {
+        "path": "世界书/事件/暗网事件.yaml",
+        "part": "event_library",
+        "keywords": [
+          "暗网",
+          "拍卖",
+          "直播"
+        ],
+        "abstract": "暗网业务事件——人口拍卖/被迫直播/贩卖网络/非法交易/猎杀直播，按身份触发不同视角",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "暗网",
+            "拍卖",
+            "直播"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 190
+        },
+        "uid": 64
+      },
+      "暴力惩罚事件": {
+        "path": "世界书/事件/暴力惩罚事件.yaml",
+        "part": "event_library",
+        "keywords": [
+          "惩罚",
+          "暴力",
+          "水牢"
+        ],
+        "abstract": "惩罚阶梯事件——训斥→罚跪→殴打→钝器→水牢→小黑屋→挑断脚筋→处死，含描写规范",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "惩罚",
+            "暴力",
+            "水牢"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 200
+        },
+        "uid": 65
+      },
+      "NSFW事件": {
+        "path": "世界书/事件/NSFW事件.yaml",
+        "part": "event_library",
+        "keywords": [
+          "NSFW",
+          "验货",
+          "接客"
+        ],
+        "abstract": "NSFW场景库——验货/被迫接客/直播/种马/权力性交易，按身份和处境触发",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "NSFW",
+            "验货",
+            "接客"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 210
+        },
+        "uid": 66
+      },
+      "结局_受害者_逃脱": {
+        "part": "ending",
+        "keywords": [
+          "结局",
+          "逃脱"
+        ],
+        "abstract": "受害者A_逃脱成功——光明结局，利用精液成瘾能力+飞机杯收集情报成功逃脱园区",
+        "contents": [
+          {
+            "file": "世界书/事件/结局/受害者_逃脱.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结局",
+            "逃脱"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 220
+        },
+        "uid": 67
+      },
+      "结局_受害者_沉沦": {
+        "part": "ending",
+        "keywords": [
+          "结局",
+          "沉沦"
+        ],
+        "abstract": "受害者B_沉沦——黑暗结局，精神崩溃被同化或认命",
+        "contents": [
+          {
+            "file": "世界书/事件/结局/受害者_沉沦.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结局",
+            "沉沦"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 221
+        },
+        "uid": 68
+      },
+      "结局_受害者_转卖": {
+        "part": "ending",
+        "keywords": [
+          "结局",
+          "转卖"
+        ],
+        "abstract": "受害者C_转卖——黑暗结局，通过暗网被卖到更惨的地方",
+        "contents": [
+          {
+            "file": "世界书/事件/结局/受害者_转卖.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结局",
+            "转卖"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 222
+        },
+        "uid": 69
+      },
+      "结局_受害者_反杀": {
+        "part": "ending",
+        "keywords": [
+          "结局",
+          "反杀"
+        ],
+        "abstract": "受害者D_反杀上位——黑化结局，利用精液成瘾能力控制女性NPC+飞机杯具现辅助，反杀女老板成为新老板",
+        "contents": [
+          {
+            "file": "世界书/事件/结局/受害者_反杀.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结局",
+            "反杀"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 223
+        },
+        "uid": 70
+      },
+      "结局_受害者_被救": {
+        "part": "ending",
+        "keywords": [
+          "结局",
+          "被救"
+        ],
+        "abstract": "受害者E_被救——光明结局，通过成瘾女性向警方传递证据，警方捣毁园区user获救",
+        "contents": [
+          {
+            "file": "世界书/事件/结局/受害者_被救.yaml"
+          }
+        ],
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结局",
+            "被救"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 224
+        },
+        "uid": 71
+      }
+    },
+    "MVU": {
+      "变量列表": {
+        "path": "世界书/MVU/变量列表.yaml",
+        "part": "variable_list",
+        "keywords": [
+          "变量列表",
+          "MVU变量"
+        ],
+        "abstract": "MVU变量完整列表参考文档——约160字段，按7个顶层命名空间组织(时间系统/玩家/女性角色/男性角色/园区/RPG/人际/角色库)，含飞机杯三系统+精液成瘾能力(7字段)+园区利用计划(3字段)+女性角色70字段(含孕期监测20字段)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 240
+        },
+        "uid": 83
+      },
+      "[InitVar]请勿打开": {
+        "path": "世界书/MVU/initvar.yaml",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "MVU初始变量文件——stat_data顶层结构(7命名空间)，含时间系统(3)+玩家(30字段含飞机杯三系统+精液成瘾能力)+女性角色(70字段/角色)+男性角色(6字段/角色)+园区(30字段含利用计划)+RPG(25字段)+人际(3)+角色库(3)",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 250
+        },
+        "uid": 84
+      },
+      "[mvu_update]变量更新规则": {
+        "path": "世界书/MVU/变量更新规则.yaml",
+        "part": "update_rules",
+        "keywords": [
+          "变量更新",
+          "更新规则"
+        ],
+        "abstract": "额外模型变量更新规则——事件驱动/全量输出/量纲一致/上限约束/不可逆；生存属性/RPG属性/关系值/派系/道德/暗网更新规则",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 260
+        },
+        "uid": 85
+      },
+      "[mvu_update]变量输出格式": {
+        "path": "世界书/MVU/变量输出格式.yaml",
+        "part": "output_format",
+        "keywords": [
+          "变量输出",
+          "输出格式"
+        ],
+        "abstract": "[mvu_update]变量输出格式（主模型模式·已禁用）--主模型模式下使用，额外模型模式时禁用",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 261
+        },
+        "uid": 86
+      },
+      "[mvu_update]变量输出格式（额外模型）": {
+        "path": "世界书/MVU/变量输出格式_额外模型.yaml",
+        "part": "output_format",
+        "keywords": [
+          "变量输出",
+          "输出格式",
+          "额外模型"
+        ],
+        "abstract": "[mvu_update]变量输出格式（额外模型）--额外模型专用，ONLY输出UpdateVariable+JSONPatch块，禁止叙事/StatusPlaceHolderImpl/thinking，增量更新约160字段(含女性角色70字段全量输出)",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 262
+        },
+        "uid": 87
+      },
+      "[mvu_plot]输出格式": {
+        "path": "世界书/MVU/输出格式_剧情.yaml",
+        "part": "output_format",
+        "keywords": [
+          "剧情输出",
+          "输出格式"
+        ],
+        "abstract": "[mvu_plot]剧情输出格式——第二人称/黑暗基调/每楼层500~800字/30分钟固定/选择分支/RPG判定后台运行/叙事禁忌",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 263
+        },
+        "uid": 88
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "EJS预处理",
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "世界观": "Infinity",
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "地理": {
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      },
+      "faction": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": false
+      },
+      "personality": {
+        "threshold": 2,
+        "required": false
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "阶段指导": "Infinity",
+    "事件": 0,
+    "MVU": {
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "initvar": {
+        "threshold": null,
+        "required": false
+      }
+    },
+    "EJS预处理": "Infinity"
+  },
+  "partOrder": {
+    "时间线": [
+      "history",
+      "plot"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "NPC": [
+      "basic"
+    ],
+    "阶段指导": [
+      "stage_guide"
+    ],
+    "事件": [
+      "event_library",
+      "ending"
+    ],
+    "MVU": [
+      "variable_list",
+      "initvar",
+      "update_rules",
+      "output_format"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "avatar": "头像.png",
+  "description": "KK园区 缅甸边境诈骗园区受害者视角角色卡：全女性园区+user唯一生理男性+以貌定性别+残酷系统+暗网系统+RPG三层属性(六维/生存/技能)+LCG确定性骰子判定+受害者5阶段×5结局+7类34条防护机制+任务/道德/派系/情报/暗网经济系统。核心创意：user天生精液成瘾能力(口服/内射触发，园区仅知内射)+飞机杯(按飞机杯通用系统世界书设定)。MVU约160字段+EJS预处理条件显隐+JSONPatch增量变量更新。",
+  "first_messages": [
+    "开场白/0.txt"
+  ],
+  "creator": "",
+  "creator_notes": "",
+  "version": "1.0",
+  "create_date": "2026-07-10T16:20:59.750Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "d2a1f001-0004-4000-8000-000000000001",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": true
+              },
+              {
+                "name": "重演楼层",
+                "visible": true
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": true
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": true
+              }
+            ]
+          }
+        },
+        "Zod结构": {
+          "type": "script",
+          "script_file": "脚本/Zod结构.txt",
+          "enabled": true,
+          "id": "d2a1f001-0004-4000-8000-000000000002"
+        }
+      }
+    }
+  },
+  "regex_scripts": {
+    "对 AI 隐藏 UpdateVariable 块": {
+      "id": "d2a1f001-0003-4000-8000-000000000011",
+      "findRegex": "<UpdateVariable>[\\s\\S]*?</UpdateVariable>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "对 AI 隐藏状态栏占位符": {
+      "id": "d2a1f001-0003-4000-8000-000000000002",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "对 AI 隐藏 UpdateTable 块": {
+      "id": "d2a1f001-0003-4000-8000-000000000012",
+      "findRegex": "<UpdateTable>[\\s\\S]*?</UpdateTable>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "对 AI 隐藏思维链": {
+      "id": "d2a1f001-0005-4000-8000-000000000013",
+      "findRegex": "<thought>([\\s\\S]*?)</thought>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "防数值口胡·禁止AI输出变量数值": {
+      "id": "d2a1f001-0005-4000-8000-000000000014",
+      "findRegex": "(体力|精神|饥饿|脱水|疲劳|性欲|勃起度|累计射精次数|金钱|容貌值|性别稀缺度|被觊觎度|生育价值|伪装度|逃跑准备|情报网|信任值|伤势|恐惧值|希望值|被迫度|警方线索|善恶值|暗网知名度|拍卖价格|园区董事会|管理层|打手团|受害者群|暗网网络|利用进度|已诈骗金额|剧情进度|生存天数|结识NPC数|救助人数|察觉度|倾心度|具现度|成瘾度|爱意值|已口服次数|已内射次数|成瘾女性总数|觉醒进度|园区知晓程度)\\s*[=＝:]\\s*-?\\d+",
+      "replaceString": "[数值由MVU变量管理，禁止AI在叙事中直接输出具体数值]",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "超自然关键词检测·提示AI驳回": {
+      "id": "d2a1f001-0005-4000-8000-000000000015",
+      "findRegex": "(读心|透视|瞬间移动|时间停止|意念控制|意念移物|魔法|咒语|法术|神灵|鬼魂|妖怪|灵异|附身|通灵|时间旅行|平行世界|预知未来|心灵感应|超能力|异能|超感知|超自然|系统外挂|金手指|穿越重生)",
+      "replaceString": "[检测到超自然/系统类关键词，AI必须按防神化准则将此描述驳回为user的幻想或虚构，引导user回到KK园区现实叙事]",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "变量折叠显示": {
+      "id": "d2a1f001-0005-4000-8000-000000000016",
+      "findRegex": "<UpdateVariable>([\\s\\S]*?)</UpdateVariable>",
+      "replaceString": "<details style=\"margin:8px 0;border:1px solid rgba(220,38,38,0.25);border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.15);\"><summary style=\"padding:6px 10px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:0.5px;color:#dc2626;background:rgba(220,38,38,0.08);border-left:3px solid #dc2626;list-style:none;display:flex;justify-content:space-between;align-items:center;\">📊 变量更新<span style=\"font-size:9px;color:#64748b;font-weight:400;\">点击展开/折叠</span></summary><pre style=\"margin:0;padding:8px 10px;font-size:10px;color:#94a3b8;white-space:pre-wrap;word-wrap:break-word;max-height:400px;overflow-y:auto;font-family:'Courier New',monospace;line-height:1.5;\">$1</pre></details>",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "UpdateTable折叠显示": {
+      "id": "d2a1f001-0005-4000-8000-000000000017",
+      "findRegex": "<UpdateTable>([\\s\\S]*?)</UpdateTable>",
+      "replaceString": "<details style=\"margin:8px 0;border:1px solid rgba(59,130,246,0.25);border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.15);\"><summary style=\"padding:6px 10px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:0.5px;color:#3b82f6;background:rgba(59,130,246,0.08);border-left:3px solid #3b82f6;list-style:none;display:flex;justify-content:space-between;align-items:center;\">📋 表格更新<span style=\"font-size:9px;color:#64748b;font-weight:400;\">点击展开/折叠</span></summary><pre style=\"margin:0;padding:8px 10px;font-size:10px;color:#94a3b8;white-space:pre-wrap;word-wrap:break-word;max-height:400px;overflow-y:auto;font-family:'Courier New',monospace;line-height:1.5;\">$1</pre></details>",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "状态栏": {
+      "id": "d2a1f001-0003-4000-8000-000000000001",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "```html\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no\">\n<title>状态栏 · KK园区 · 受害者视角</title>\n<style>\n:root{\n  --bg-0:#0a0a0a;--bg-1:#1a0a0a;--bg-card:rgba(40,12,12,.88);\n  --c-text:#e8d0d0;--c-dim:#8a6a6a;--c-border:rgba(180,40,40,.25);\n  --c-danger:#dc2626;--c-warn:#d97706;--c-orange:#c2410c;--c-safe:#16a34a;--c-accent:#b91c1c;--c-blue:#60a5fa;--c-pink:#f472b6;--c-purple:#a78bfa;\n  --font:-apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Microsoft YaHei\",sans-serif;\n  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);\n}\n*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}\nhtml,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}\n.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin:6px 0;box-shadow:0 4px 16px rgba(0,0,0,.6)}\n.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}\n.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}\n.hd-t{font-size:var(--fs-md);font-weight:700;letter-spacing:.5px;color:#ef4444}\n.hd-sub{font-size:var(--fs-xs);color:var(--c-dim);width:100%;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(185,28,28,.12);border:1px solid rgba(185,28,28,.3);color:#fca5a5;white-space:nowrap}\n.pill.warn{background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.35);color:var(--c-warn)}\n.pill.danger{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.5);color:#fca5a5;font-weight:700}\n.pill.safe{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.35);color:var(--c-safe)}\n.pill.dark{background:rgba(80,20,20,.2);border-color:rgba(180,40,40,.4);color:#c06060}\n.pill.light{background:rgba(250,240,220,.1);border-color:rgba(250,240,220,.25);color:#fde68a}\n.pill.purple{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35);color:var(--c-purple)}\n.pill.pink{background:rgba(244,114,182,.12);border-color:rgba(244,114,182,.35);color:var(--c-pink)}\n.rfr{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0;transition:color .2s}\n.rfr:hover{color:var(--c-text)}\n.rfr.spinning{animation:spin .8s linear infinite}\n@keyframes spin{to{transform:rotate(360deg)}}\ndetails.block{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:0;margin-bottom:8px;overflow:hidden}\ndetails.block>summary{font-size:var(--fs-sm);font-weight:700;padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none}\ndetails.block>summary::-webkit-details-marker{display:none}\ndetails.block[open]>summary{border-bottom:1px solid var(--c-border)}\ndetails.block[open]>summary .caret{transform:rotate(90deg)}\ndetails.block>summary .caret{margin-left:auto;transition:transform .2s}\n.card-t.stage{color:#ef4444}\n.card-t.time{color:#f59e0b}\n.card-t.survival{color:#c2410c}\n.card-t.nsfw{color:#f472b6}\n.card-t.rpg{color:#a78bfa}\n.card-t.victim{color:#fb923c}\n.card-t.addiction{color:#dc2626}\n.card-t.fjb{color:#60a5fa}\n.card-t.park{color:#fbbf24}\n.card-t.faction{color:#818cf8}\n.card-t.darknet{color:#dc2626}\n.card-t.morality{color:#c084fc}\n.card-t.quest{color:#34d399}\n.card-t.female{color:#f472b6}\n.block-body{padding:6px 10px 8px;display:block}\n.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:6px}\n.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}\n.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}\n.kv{display:flex;flex-direction:column;gap:1px}\n.kv .k{font-size:var(--fs-xs);color:var(--c-dim)}\n.kv .v{font-size:var(--fs-sm);font-weight:600}\n.v.danger{color:var(--c-danger)}.v.warn{color:var(--c-warn)}.v.safe{color:var(--c-safe)}.v.neutral{color:var(--c-dim)}.v.accent{color:var(--c-accent)}.v.blue{color:var(--c-blue)}.v.pink{color:var(--c-pink)}.v.purple{color:var(--c-purple)}\n.bar{margin:5px 0}\n.bar-h{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}\n.bar-h .bv{color:var(--c-text);font-weight:600}\n.bar-t{height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}\n.bar-f{height:100%;border-radius:4px;transition:width .5s ease;width:0}\n.bar-f.r{background:linear-gradient(90deg,#7f1d1d,var(--c-danger))}\n.bar-f.o{background:linear-gradient(90deg,#78350f,var(--c-orange))}\n.bar-f.y{background:linear-gradient(90deg,#78350f,var(--c-warn))}\n.bar-f.g{background:linear-gradient(90deg,#064e3b,var(--c-safe))}\n.bar-f.b{background:linear-gradient(90deg,#1e3a8a,var(--c-blue))}\n.bar-f.p{background:linear-gradient(90deg,#831843,var(--c-pink))}\n.bar-f.purple{background:linear-gradient(90deg,#581c87,var(--c-purple))}\n.bar-f.blood{background:linear-gradient(90deg,#450a0a,#dc2626)}\n.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}\n@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}\n.sect-title{font-size:var(--fs-xs);color:var(--c-dim);margin:8px 0 4px;font-weight:600;border-bottom:1px solid rgba(180,40,40,.12);padding-bottom:2px}\n.morality-bar{height:12px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden;position:relative;margin:5px 0}\n.morality-fill{height:100%;border-radius:6px;transition:width .5s ease}\n.morality-label{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)}\n.female-card{background:rgba(60,20,30,.4);border:1px solid rgba(180,40,40,.3);border-radius:6px;padding:6px 8px;margin-top:6px}\n.female-name{font-size:var(--fs-sm);font-weight:700;color:var(--c-pink);margin-bottom:4px;border-bottom:1px solid rgba(244,114,182,.2);padding-bottom:3px}\n@media(max-width:480px){\n  .g{grid-template-columns:repeat(2,1fr)}\n  .g2{grid-template-columns:repeat(2,1fr)}\n  .g3{grid-template-columns:1fr}\n  .hd-t{font-size:var(--fs-sm)}\n  .hd{flex-wrap:wrap}\n  .hd-l{width:100%}\n  .rfr{padding:4px 10px}\n  .pill{font-size:9px;padding:1px 6px}\n  .hd-sub{font-size:9px}\n}\n@media(max-width:360px){\n  .g{grid-template-columns:1fr}\n  .g2{grid-template-columns:1fr}\n  .g3{grid-template-columns:1fr}\n  .hd-t{font-size:var(--fs-xs)}\n}\n</style>\n</head>\n<body>\n<div id=\"sb-root\">\n  <div class=\"loading\" id=\"sb-loading\">正在载入状态栏...</div>\n  <div class=\"sb\" id=\"sb-body\" style=\"display:none\"></div>\n</div>\n<script type=\"application/json\" id=\"mvu-stat-embed\">{{format_message_variable::stat_data}}</script>\n<script>\n/* ===== 状态栏 · KK园区 · 受害者视角·飞机杯·精液成瘾 ===== */\nvar TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});\nfunction pickHostFn(name){\n  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};\n  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}\n  return null;\n}\nfunction pickHostValue(name){\n  if(window[name]!==undefined)return window[name];\n  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}\n  return undefined;\n}\nfunction getMvu(){return pickHostValue('Mvu')||window.Mvu||null}\n\nfunction parseEmbeddedStat(){\n  var el=document.getElementById('mvu-stat-embed');\n  if(!el)return null;\n  var raw=(el.textContent||el.innerText||'').trim();\n  if(!raw||raw.indexOf('format_message_variable')>=0)return null;\n  try{var parsed=JSON.parse(raw);\n    if(parsed&&typeof parsed==='object'){\n      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;\n      return parsed;\n    }\n  }catch(e){}\n  return null;\n}\nfunction hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}\n\nfunction resolveMessageIdFromDom(){\n  try{\n    var frame=window.frameElement;\n    if(frame&&frame.closest){var mes=frame.closest('.mes');if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(id>=0)return id}}\n    var el=frame;\n    while(el){if(el.classList&&el.classList.contains('mes')){var id2=parseInt(el.getAttribute('mesid'),10);if(id2>=0)return id2}el=el.parentElement}\n    for(var i=0;i<TH_HOSTS.length;i++){try{var host=TH_HOSTS[i];var host$=host.$||host.jQuery;if(!host$||!frame)continue;var $mes=host$(frame).closest('.mes');if($mes&&$mes.length){var id3=parseInt($mes.attr('mesid'),10);if(id3>=0)return id3}}catch(e){}}\n  }catch(e){}\n  return -1;\n}\nfunction resolveMessageIdFromIframeName(){\n  var fn=pickHostFn('getIframeName');if(!fn)return -1;\n  try{var name=String(fn()||'');var m=/^TH-message--(\\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}\n  return -1;\n}\nfunction resolveMessageId(){\n  var fromDom=resolveMessageIdFromDom();if(fromDom>=0)return fromDom;\n  var fromName=resolveMessageIdFromIframeName();if(fromName>=0)return fromName;\n  if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;\n  var fn=pickHostFn('getCurrentMessageId');\n  if(fn){try{var id=fn();if(typeof id==='number'&&id>=0)return id}catch(e){}}\n  return -1;\n}\nfunction getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}\nfunction hasMeaningfulStatData(stat){return stat&&typeof stat==='object'&&!Array.isArray(stat)&&Object.keys(stat).length>0}\nfunction pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;return hasMeaningfulStatData(stat)?stat:null}\n\nvar cachedStatFromBridge=null;\nvar cachedBridgeMessageId=-1;\n\nfunction readStatData(){\n  var mesId=resolveMessageId();\n  var Mvu=getMvu();var opt=getMessageOption();\n  try{var stat=null;if(Mvu&&typeof Mvu.getMvuData==='function'){stat=pickStatData(Mvu.getMvuData(opt))}if(stat)return deepMergeStat(DEFAULT_STAT,stat)}catch(e){}\n  try{var gv=pickHostFn('getVariables');if(gv){var s2=pickStatData(gv(opt));if(s2)return deepMergeStat(DEFAULT_STAT,s2)}}catch(e){}\n  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)&&(cachedBridgeMessageId<0||mesId<0||cachedBridgeMessageId===mesId)){\n    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);\n  }\n  var embedded=parseEmbeddedStat();\n  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);\n  try{var gav=pickHostFn('getAllVariables');if(gav){var s3=pickStatData(gav());if(s3)return deepMergeStat(DEFAULT_STAT,s3)}}catch(e){}\n  return deepMergeStat(DEFAULT_STAT,{});\n}\n\nfunction requestStatFromBridge(){\n  var mesId=resolveMessageId();var payload={type:'kk-mvu-stat-request',messageId:mesId};\n  for(var i=0;i<TH_HOSTS.length;i++){try{TH_HOSTS[i].postMessage(payload,'*')}catch(e){}}\n}\n\n/* ===== DEFAULT_STAT (与 schema.ts 对齐) ===== */\nvar DEFAULT_STAT={\n  \"日期\":\"2024.11.15\",\n  \"星期\":\"周五\",\n  \"时间\":\"19:00\",\n  \"玩家\":{\n    \"当前位置\":\"KK园区·猪仔宿舍\",\n    \"飞机杯当前绑定\":\"无\",\n    \"飞机杯定位\":\"玩家藏在贴身衣物内\",\n    \"体力\":70,\"精神\":60,\"饥饿\":50,\"脱水\":30,\"疲劳\":40,\n    \"性欲\":30,\"勃起度\":0,\"累计射精次数\":0,\n    \"金钱\":0,\"持有物品\":[],\n    \"容貌值\":65,\"性别稀缺度\":100,\"被觊觎度\":40,\"生育价值\":70,\n    \"伪装度\":10,\"逃跑准备\":0,\"情报网\":0,\"信任值\":0,\n    \"伤势\":10,\"恐惧值\":60,\"希望值\":50,\"被迫度\":30,\n    \"权力接触\":false,\"外部援助\":false,\"警方线索\":0,\n    \"精液成瘾能力\":{\n      \"已觉醒\":true,\"觉醒进度\":100,\n      \"已触发口服次数\":0,\"已触发内射次数\":0,\n      \"园区知晓程度\":60,\"园区知晓途径\":\"网恋聊天记录+受害者体检\",\n      \"成瘾女性总数\":0\n    }\n  },\n  \"女性角色\":{},\n  \"男性角色\":{},\n  \"园区\":{\n    \"当前阶段\":\"入园恐惧\",\"剧情进度\":1,\"结局分支\":\"\",\n    \"拍卖状态\":\"未上架\",\"拍卖价格\":0,\"直播次数\":0,\n    \"暗网知名度\":0,\"买家关注\":[],\n    \"园区董事会\":0,\"管理层\":0,\"打手团\":0,\"受害者群\":10,\"暗网网络\":0,\n    \"善恶值\":0,\n    \"当前主线任务\":\"活下去，了解园区规则\",\n    \"已接取支线\":[],\"已完成任务\":[],\n    \"已获取情报\":[],\"待验证情报\":[],\n    \"已达成\":[],\"生存天数\":0,\"结识NPC数\":0,\"救助人数\":0,\n    \"已招募\":[],\"待招募候选\":[],\n    \"已收集\":[],\"已传递\":0,\n    \"LCG种子\":0,\n    \"利用计划\":\"观察user能力真实性，待确认后用于诈骗大陆女性\",\n    \"利用进度\":5,\"已诈骗金额\":0\n  },\n  \"RPG\":{\n    \"力量\":5,\"敏捷\":5,\"体质\":5,\"智力\":5,\"感知\":5,\"魅力\":5,\n    \"未分配点数\":30,\n    \"诈骗术\":0,\"格斗术\":0,\"潜行术\":0,\"社交术\":0,\"技术术\":0,\n    \"求生术\":0,\"伪装术\":0,\"情报收集\":0,\"逃脱术\":0,\"交际手腕\":0,\n    \"暗网操作\":0,\"拷问抗性\":0,\n    \"成长\":{\n      \"力量使用计数\":0,\"敏捷使用计数\":0,\"体质使用计数\":0,\n      \"智力使用计数\":0,\"感知使用计数\":0,\"魅力使用计数\":0,\n      \"技能使用计数\":{}\n    }\n  },\n  \"人际\":{\"NPC关系\":{},\"当前在场角色\":[],\"互动计数\":{}},\n  \"角色库\":{\"已生成列表\":[],\"当前交互角色\":\"\",\"角色生成计数器\":0}\n};\n\nfunction deepMergeStat(dst,src){\n  if(!src||typeof src!=='object')return dst;\n  var out={};try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}\n  for(var k in src){\n    if(!Object.prototype.hasOwnProperty.call(src,k))continue;\n    var sv=src[k],dv=out[k];\n    if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){out[k]=deepMergeStat(dv,sv)}\n    else{out[k]=sv}\n  }\n  return out;\n}\n\n/* 工具 */\nfunction esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;')}\nfunction num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}\nfunction pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}\nfunction barClass4(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'y';if(v>=30)return'o';return'r'}\nfunction kv(k,v,cls){return '<div class=\"kv\"><span class=\"k\">'+k+'</span><span class=\"v'+(cls?' '+cls:'')+'\">'+esc(v)+'</span></div>'}\nfunction bar(label,val,max){\n  max=max||100;var v=num(val,0);\n  return '<div class=\"bar\"><div class=\"bar-h\"><span>'+label+'</span><span class=\"bv\">'+v+'/'+max+'</span></div><div class=\"bar-t\"><div class=\"bar-f '+barClass4(v)+'\" style=\"width:'+pct(v,max)+'%\"></div></div></div>';\n}\nfunction flagStr(v){return v?'<span class=\"v safe\">&#10003;</span>':'<span class=\"v danger\">&#10007;</span>'}\n\nvar State={loading:true,refreshing:false,mvu:{},_refreshing:false,expanded:{}};\n\nfunction mvuObj(key){return(State.mvu&&State.mvu[key])||{}}\nfunction mvuVal(path){\n  var parts=path.split('.');\n  var obj=State.mvu;\n  for(var i=0;i<parts.length;i++){\n    if(!obj||typeof obj!=='object')return undefined;\n    obj=obj[parts[i]];\n  }\n  return obj;\n}\n\nfunction cardTitle(cls,icon,text,key){\n  var open=State.expanded[key]?' open':'';\n  return '<details class=\"block\"'+open+' data-key=\"'+key+'\"><summary class=\"card-t '+cls+'\">'+icon+' '+text+'<span class=\"caret\">&#9654;</span></summary><div class=\"block-body\">';\n}\n\n/* ===== 渲染：顶部 ===== */\nfunction renderHeader(){\n  var p=mvuObj('玩家');\n  var park=mvuObj('园区');\n  var stage=park.当前阶段||'入园恐惧';\n  var progress=park.剧情进度||1;\n  var ending=park.结局分支||'未确定';\n  var dateStr=mvuVal('日期')||'2024.11.15';\n  var timeStr=mvuVal('时间')||'19:00';\n  var pos=p.当前位置||'KK园区·猪仔宿舍';\n  var stageCls=stage==='入园恐惧'?'danger':(stage==='适应求生'?'warn':(stage==='暗中谋划'?'':(stage==='逃脱行动'?'dark':(stage==='结局'?'light':'safe'))));\n  return '<div class=\"hd\"><div class=\"hd-l\">'\n    +'<span class=\"hd-t\">KK园区·受害者</span>'\n    +'<span class=\"pill '+stageCls+'\">'+esc(stage)+'</span>'\n    +'<span class=\"pill\">进度 '+esc(progress)+'%</span>'\n    +'<span class=\"pill\">'+esc(dateStr)+' '+esc(timeStr)+'</span>'\n    +'<span class=\"pill\">'+esc(ending)+'</span>'\n    +'<div class=\"hd-sub\">'+esc(pos)+'</div>'\n    +'</div>'\n    +'<button class=\"rfr'+(State.refreshing?' spinning':'')+'\" data-act=\"refresh\">&#8635;</button>'\n    +'</div>';\n}\n\n/* ===== 园区阶段系统 ===== */\nfunction renderStage(){\n  var park=mvuObj('园区');\n  var body='<div class=\"g2\">'\n    +kv('当前阶段',park.当前阶段||'入园恐惧')\n    +kv('剧情进度',(park.剧情进度||1)+'%')\n    +kv('结局分支',park.结局分支||'未确定')\n    +kv('LCG种子',park.LCG种子||0)\n    +'</div>'\n    +'<div class=\"sect-title\">园区利用计划</div>'\n    +'<div class=\"g2\">'\n    +kv('利用计划',park.利用计划||'无','warn')\n    +kv('利用进度',(park.利用进度||0)+'%','warn')\n    +kv('已诈骗金额',num(park.已诈骗金额||0,0),'danger')\n    +'</div>';\n  return cardTitle('stage','&#9760;','园区阶段','stage')+body+'</div></details>';\n}\n\n/* ===== 时间位置区 ===== */\nfunction renderTimeLocation(){\n  var body='<div class=\"g2\">'\n    +kv('日期',mvuVal('日期')||'2024.11.15')\n    +kv('星期',mvuVal('星期')||'周五')\n    +kv('时间',mvuVal('时间')||'19:00')\n    +kv('当前位置',mvuVal('玩家.当前位置')||'KK园区·猪仔宿舍')\n    +'</div>';\n  return cardTitle('time','&#9200;','时间与位置','time')+body+'</div></details>';\n}\n\n/* ===== 生存属性区 ===== */\nfunction renderSurvival(){\n  var p=mvuObj('玩家');\n  var body=bar('体力',p.体力||0,100)\n    +bar('精神',p.精神||0,100)\n    +bar('饥饿',p.饥饿||0,100)\n    +bar('脱水',p.脱水||0,100)\n    +bar('疲劳',p.疲劳||0,100)\n    +'<div class=\"g2\">'\n    +kv('金钱',num(p.金钱||0,0),'warn')\n    +kv('伤势',p.伤势||0,(p.伤势||0)>30?'danger':'')\n    +'</div>'\n    +'<div class=\"sect-title\">持有物品</div>';\n  var items=p.持有物品||[];\n  if(Array.isArray(items)&&items.length>0){\n    body+='<div class=\"g2\">';\n    for(var i=0;i<items.length;i++){body+=kv('物品'+(i+1),items[i])}\n    body+='</div>';\n  }else{body+='<div class=\"kv\"><span class=\"k\">无物品</span></div>'}\n  return cardTitle('survival','&#9764;','生存属性','survival')+body+'</div></details>';\n}\n\n/* ===== NSFW属性区 ===== */\nfunction renderNSFW(){\n  var p=mvuObj('玩家');\n  var body=bar('性欲',p.性欲||0,100)\n    +bar('勃起度',p.勃起度||0,100)\n    +'<div class=\"g2\">'\n    +kv('累计射精次数',p.累计射精次数||0,'pink')\n    +'</div>';\n  return cardTitle('nsfw','&#9888;','NSFW属性','nsfw')+body+'</div></details>';\n}\n\n/* ===== RPG属性区 ===== */\nfunction renderRPG(){\n  var r=mvuObj('RPG');\n  var body='<div class=\"sect-title\">六维属性</div><div class=\"g\">'\n    +kv('力量',r.力量||0)+kv('敏捷',r.敏捷||0)+kv('体质',r.体质||0)\n    +kv('智力',r.智力||0)+kv('感知',r.感知||0)+kv('魅力',r.魅力||0)\n    +kv('未分配',r.未分配点数||0,'safe')\n    +'</div>'\n    +'<div class=\"sect-title\">关键技能</div><div class=\"g\">'\n    +kv('诈骗',r.诈骗术||0)+kv('格斗',r.格斗术||0)+kv('潜行',r.潜行术||0)\n    +kv('社交',r.社交术||0)+kv('技术',r.技术术||0)+kv('求生',r.求生术||0)\n    +kv('伪装',r.伪装术||0)+kv('情报',r.情报收集||0)+kv('逃脱',r.逃脱术||0)\n    +kv('交际',r.交际手腕||0)+kv('暗网',r.暗网操作||0)+kv('拷问抗性',r.拷问抗性||0)\n    +'</div>';\n  return cardTitle('rpg','&#9876;','RPG属性','rpg')+body+'</div></details>';\n}\n\n/* ===== user专属区 ===== */\nfunction renderUser(){\n  var p=mvuObj('玩家');\n  var body=bar('容貌值',p.容貌值||0,100)\n    +bar('性别稀缺度',p.性别稀缺度||0,100)\n    +bar('被觊觎度',p.被觊觎度||0,100)\n    +'<div class=\"g2\">'\n    +kv('生育价值',p.生育价值||0,'pink')\n    +'</div>';\n  return cardTitle('victim','&#9792;','user属性','user')+body+'</div></details>';\n}\n\n/* ===== 受害者状态区 ===== */\nfunction renderVictim(){\n  var p=mvuObj('玩家');\n  var body=bar('希望值',p.希望值||0,100)\n    +bar('恐惧值',p.恐惧值||0,100)\n    +bar('伪装度',p.伪装度||0,100)\n    +bar('逃跑准备',p.逃跑准备||0,100)\n    +'<div class=\"g2\">'\n    +kv('情报网',p.情报网||0)\n    +kv('信任值',p.信任值||0)\n    +kv('被迫度',p.被迫度||0,(p.被迫度||0)>50?'danger':'')\n    +kv('警方线索',p.警方线索||0)\n    +kv('权力接触',flagStr(p.权力接触))\n    +kv('外部援助',flagStr(p.外部援助))\n    +'</div>';\n  return cardTitle('victim','&#9888;','受害者状态','victim')+body+'</div></details>';\n}\n\n/* ===== 精液成瘾能力区（本次创意核心） ===== */\nfunction renderAddiction(){\n  var a=mvuVal('玩家.精液成瘾能力')||{};\n  var total=a.成瘾女性总数||0;\n  var oral=a.已触发口服次数||0;\n  var internal=a.已触发内射次数||0;\n  var parkKnown=a.园区知晓程度||0;\n\n  var stageName,stageCls;\n  if(!a.已觉醒){stageName='未觉醒';stageCls='neutral'}\n  else if(total===0){stageName='觉醒态';stageCls='warn'}\n  else if(total===1){stageName='首次触发';stageCls='danger'}\n  else if(total>=2&&total<=4){stageName='后宫雏形';stageCls='danger'}\n  else if(total>=5&&total<=9){stageName='后宫规模';stageCls='danger'}\n  else{stageName='后宫王';stageCls='purple'}\n\n  var parkName,parkCls;\n  if(parkKnown<30){parkName='一无所知';parkCls='safe'}\n  else if(parkKnown<60){parkName='起疑';parkCls='warn'}\n  else if(parkKnown<90){parkName='知晓(仅内射)';parkCls='danger'}\n  else{parkName='完全掌握';parkCls='danger'}\n\n  var body='<div class=\"g2\">'\n    +kv('已觉醒',a.已觉醒?'是':'否',a.已觉醒?'safe':'danger')\n    +kv('觉醒进度',(a.觉醒进度||0)+'%')\n    +kv('当前阶段','<span class=\"v '+stageCls+'\">'+stageName+'</span>')\n    +kv('园区态度','<span class=\"v '+parkCls+'\">'+parkName+'</span>')\n    +'</div>'\n    +'<div class=\"sect-title\">触发统计</div>'\n    +'<div class=\"g2\">'\n    +kv('口服触发次数',oral,'blue')\n    +kv('内射触发次数',internal,'pink')\n    +kv('成瘾女性总数',total,'purple')\n    +'</div>'\n    +'<div class=\"bar\"><div class=\"bar-h\"><span>园区知晓程度（仅内射）</span><span class=\"bv\">'+parkKnown+'%</span></div><div class=\"bar-t\"><div class=\"bar-f r\" style=\"width:'+parkKnown+'%\"></div></div></div>'\n    +'<div class=\"g2\">'\n    +kv('园区知晓途径',a.园区知晓途径||'网恋聊天记录+受害者体检','dim')\n    +'</div>';\n\n  return cardTitle('addiction','&#9760;','精液成瘾能力','addiction')+body+'</div></details>';\n}\n\n/* ===== 飞机杯系统区 ===== */\nfunction renderFJB(){\n  var p=mvuObj('玩家');\n  var binding=p.飞机杯当前绑定||'无';\n  var location=p.飞机杯定位||'';\n  var isUnbound=(binding==='无'||binding==='');\n\n  var body='<div class=\"g2\">'\n    +kv('当前绑定',binding||'无',isUnbound?'neutral':'blue')\n    +kv('飞机杯定位',location,'dim')\n    +'</div>';\n\n  if(!isUnbound){\n    var female=mvuVal('女性角色.'+binding)||{};\n    var awareness=female.察觉度||0;\n    var passion=female.倾心度||0;\n    var manifest=female.具现度||0;\n\n    var fjbStage;\n    if(manifest<=0){fjbStage='休眠'}\n    else if(manifest<=30){fjbStage='初探期'}\n    else if(manifest<=60){fjbStage='渐深期'}\n    else if(manifest<=90){fjbStage='具现期'}\n    else if(manifest<=120){fjbStage='投影期'}\n    else if(manifest<=150){fjbStage='实体化期'}\n    else{fjbStage='降临期'}\n\n    body+='<div class=\"sect-title\">绑定目标：'+esc(binding)+'</div>'\n      +'<div class=\"g2\">'\n      +kv('飞机杯阶段',fjbStage,'blue')\n      +'</div>'\n      +'<div class=\"bar\"><div class=\"bar-h\"><span>察觉度</span><span class=\"bv\">'+awareness+'/200</span></div><div class=\"bar-t\"><div class=\"bar-f b\" style=\"width:'+pct(awareness,200)+'%\"></div></div></div>'\n      +'<div class=\"bar\"><div class=\"bar-h\"><span>倾心度</span><span class=\"bv\">'+passion+'/200</span></div><div class=\"bar-t\"><div class=\"bar-f p\" style=\"width:'+pct(passion,200)+'%\"></div></div></div>'\n      +'<div class=\"bar\"><div class=\"bar-h\"><span>具现度</span><span class=\"bv\">'+manifest+'/200</span></div><div class=\"bar-t\"><div class=\"bar-f purple\" style=\"width:'+pct(manifest,200)+'%\"></div></div></div>';\n\n    if(female.成瘾度!==undefined||female.爱意值!==undefined){\n      body+='<div class=\"sect-title\">精液成瘾状态</div><div class=\"g2\">'\n        +kv('成瘾度',female.成瘾度||0,'pink')\n        +kv('爱意值',female.爱意值||0,'pink')\n        +kv('触发方式',female.成瘾触发方式||'未触发','dim')\n        +kv('口服次数',female.已口服次数||0,'blue')\n        +kv('内射次数',female.已内射次数||0,'pink')\n        +'</div>';\n    }\n\n    body+='<div class=\"sect-title\">实时状态</div><div class=\"g2\">'\n      +kv('心情',female.心情||'—','pink')\n      +kv('当前状态',female.当前状态||'','dim')\n      +kv('心情文本',female.心声||'','dim')\n      +'</div>';\n  }else{\n    body+='<div class=\"sect-title\">激活条件</div>'\n      +'<div class=\"kv\"><span class=\"k\">需获取目标女性的毛发/指甲/血液/皮屑等身体关联物，放入飞机杯内壁静置1分钟激活</span></div>';\n  }\n\n  return cardTitle('fjb','&#9881;','飞机杯系统','fjb')+body+'</div></details>';\n}\n\n/* ===== 已激活女性角色列表 ===== */\nfunction renderFemales(){\n  var females=mvuObj('女性角色')||{};\n  var keys=Object.keys(females).filter(function(k){return k&&k!=='_schema'});\n  var body='';\n  if(keys.length===0){\n    body='<div class=\"kv\"><span class=\"k\">尚未激活任何女性角色</span></div>';\n  }else{\n    body='<div class=\"g2\">'+kv('已激活数量',keys.length,'pink')+'</div>';\n    for(var i=0;i<keys.length;i++){\n      var name=keys[i];\n      var f=females[name]||{};\n      var status=f.已激活?'已激活':'未激活';\n      var bound=f.被绑定状态;\n      body+='<div class=\"female-card\">'\n        +'<div class=\"female-name\">'+esc(name)+(bound?' [当前绑定]':'')+'</div>'\n        +'<div class=\"g2\">'\n        +kv('身份',f.身份||'','dim')\n        +kv('状态',status,bound?'blue':'')\n        +kv('察觉度',f.察觉度||0,'blue')\n        +kv('倾心度',f.倾心度||0,'pink')\n        +kv('具现度',f.具现度||0,'purple')\n        +kv('成瘾度',f.成瘾度||0,'pink')\n        +kv('爱意值',f.爱意值||0,'pink')\n        +'</div>'\n        +'<div class=\"g2\">'\n        +kv('心情',f.心情||'—','pink')\n        +kv('当前状态',f.当前状态||'','dim')\n        +'</div>'\n        +'</div>';\n    }\n  }\n  return cardTitle('female','&#9792;','女性角色('+keys.length+')','females')+body+'</div></details>';\n}\n\n/* ===== 派系关系区 ===== */\nfunction renderFactions(){\n  var park=mvuObj('园区');\n  var body=bar('园区董事会',park.园区董事会||0,100)\n    +bar('管理层',park.管理层||0,100)\n    +bar('打手团',park.打手团||0,100)\n    +bar('受害者群',park.受害者群||0,100)\n    +bar('暗网网络',park.暗网网络||0,100);\n  return cardTitle('faction','&#9775;','派系关系','factions')+body+'</div></details>';\n}\n\n/* ===== 暗网状态区 ===== */\nfunction renderDarknet(){\n  var park=mvuObj('园区');\n  var body='<div class=\"g2\">'\n    +kv('拍卖状态',park.拍卖状态||'未上架')\n    +kv('拍卖价格',park.拍卖价格||0)\n    +kv('暗网知名度',park.暗网知名度||0)\n    +kv('直播次数',(park.直播次数||0)+'次')\n    +'</div>';\n  return cardTitle('darknet','&#9760;','暗网状态','darknet')+body+'</div></details>';\n}\n\n/* ===== 道德值区 ===== */\nfunction renderMorality(){\n  var park=mvuObj('园区');\n  var val=num(park.善恶值||0,0);\n  var pctVal=Math.max(0,Math.min(100,(val+100)/2));\n  var fillCls,routeName,routeColor;\n  if(val>=30){fillCls='g';routeName='光明路线';routeColor='var(--c-safe)'}\n  else if(val<=-30){fillCls='r';routeName='黑暗路线';routeColor='var(--c-danger)'}\n  else{fillCls='y';routeName='中立路线';routeColor='var(--c-warn)'}\n  var body='<div class=\"g2\">'\n    +kv('善恶值',val)\n    +kv('当前路线','<span style=\"color:'+routeColor+'\">'+esc(routeName)+'</span>')\n    +'</div>'\n    +'<div class=\"morality-bar\">'\n    +'<div class=\"morality-fill bar-f '+fillCls+'\" style=\"width:'+pctVal+'%\"></div>'\n    +'<div class=\"morality-label\">'+esc(val)+' / -100 ~ +100</div>'\n    +'</div>'\n    +'<div style=\"display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim)\">'\n    +'<span>黑暗 -100</span><span>中立 0</span><span>光明 +100</span>'\n    +'</div>';\n  return cardTitle('morality','&#9878;','道德值','morality')+body+'</div></details>';\n}\n\n/* ===== 任务区 ===== */\nfunction renderQuest(){\n  var park=mvuObj('园区');\n  var body='<div class=\"g2\">'\n    +kv('当前主线任务',park.当前主线任务||'无')\n    +'</div>';\n  var side=park.已接取支线;\n  if(Array.isArray(side)&&side.length>0){\n    body+='<div class=\"sect-title\">已接取支线</div><div class=\"g2\">';\n    for(var i=0;i<side.length;i++){body+=kv('支线'+(i+1),side[i])}\n    body+='</div>';\n  }\n  var done=park.已完成任务;\n  if(Array.isArray(done)&&done.length>0){\n    body+='<div class=\"sect-title\">已完成任务</div><div class=\"g2\">';\n    for(var i=0;i<done.length;i++){body+=kv('已完成'+(i+1),done[i])}\n    body+='</div>';\n  }\n  /* 情报 */\n  var intel=park.已获取情报||[];\n  if(Array.isArray(intel)&&intel.length>0){\n    body+='<div class=\"sect-title\">已获取情报</div><div class=\"g2\">';\n    for(var i=0;i<intel.length;i++){body+=kv('情报'+(i+1),intel[i])}\n    body+='</div>';\n  }\n  /* 成就 */\n  body+='<div class=\"sect-title\">成就统计</div><div class=\"g2\">'\n    +kv('生存天数',park.生存天数||0)\n    +kv('结识NPC数',park.结识NPC数||0)\n    +kv('救助人数',park.救助人数||0,'safe')\n    +'</div>';\n  return cardTitle('quest','&#9733;','任务与情报','quest')+body+'</div></details>';\n}\n\n/* ===== 主渲染 ===== */\nfunction render(){\n  var loadingEl=document.getElementById('sb-loading');\n  var bodyEl=document.getElementById('sb-body');\n  if(!bodyEl)return;\n  if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}\n  loadingEl.style.display='none';bodyEl.style.display='';\n  bodyEl.innerHTML=renderHeader()\n    +renderStage()\n    +renderTimeLocation()\n    +renderSurvival()\n    +renderNSFW()\n    +renderRPG()\n    +renderUser()\n    +renderVictim()\n    +renderAddiction()\n    +renderFJB()\n    +renderFemales()\n    +renderFactions()\n    +renderDarknet()\n    +renderMorality()\n    +renderQuest();\n}\n\n/* refresh */\nfunction refresh(){\n  if(State._refreshing)return;\n  State._refreshing=true;State.refreshing=true;\n  var stat=readStatData();\n  if(hasData(stat)){State.mvu=stat;State.loading=false}\n  render();\n  waitForReadableStat(8000,function(realStat){\n    if(hasData(realStat)){State.mvu=realStat;State.loading=false}\n    State._refreshing=false;State.refreshing=false;\n    render();requestStatFromBridge();\n  });\n}\n\nfunction waitForReadableStat(timeoutMs,cb){\n  timeoutMs=timeoutMs||8000;var started=Date.now();\n  (function poll(){\n    var stat=readStatData();\n    if(hasMeaningfulStatData(stat)){cb(stat);return}\n    requestStatFromBridge();\n    if(Date.now()-started<timeoutMs){setTimeout(poll,180)}else{cb(readStatData())}\n  })();\n}\n\n/* 事件绑定 */\nfunction bindEvents(){\n  var root=document.getElementById('sb-root');\n  root.addEventListener('toggle',function(e){\n    var t=e.target;\n    if(t&&t.tagName==='DETAILS'){var key=t.getAttribute('data-key');if(key){State.expanded[key]=t.hasAttribute('open')}}\n  },true);\n  root.addEventListener('click',function(e){\n    var t=e.target.closest('[data-act]');\n    if(!t)return;\n    var act=t.getAttribute('data-act');\n    if(act==='refresh'){refresh()}\n  });\n}\n\n/* ===== 初始化 ===== */\nfunction init(){\n  bindEvents();\n  var autoRefresh=function(){setTimeout(refresh,800)};\n  try{if(typeof eventOn==='function'){eventOn('GENERATION_ENDED',autoRefresh);eventOn('MESSAGE_EDITED',autoRefresh);eventOn('mag_variable_update_ended',autoRefresh)}}catch(e){}\n  try{var Mvu=getMvu();if(Mvu&&Mvu.events&&Mvu.events.VARIABLE_UPDATE_ENDED&&typeof eventOn==='function'){eventOn(Mvu.events.VARIABLE_UPDATE_ENDED,autoRefresh)}}catch(e){}\n  window.addEventListener('message',function(e){\n    try{\n      var data=e.data;\n      if(data&&data.type==='kk-mvu-stat-data'&&data.stat_data){\n        var mesId=resolveMessageId();\n        if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;\n        if(hasMeaningfulStatData(data.stat_data)){\n          cachedStatFromBridge=data.stat_data;\n          cachedBridgeMessageId=typeof data.messageId==='number'?data.messageId:mesId;\n          State.mvu=deepMergeStat(DEFAULT_STAT,data.stat_data);\n          State.loading=false;render();\n        }\n        return;\n      }\n      var t=(data&&data.type)||data||'';\n      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0))autoRefresh();\n    }catch(x){}\n  });\n  var embedded=parseEmbeddedStat();\n  if(embedded){cachedStatFromBridge=embedded;cachedBridgeMessageId=resolveMessageId()}\n  requestStatFromBridge();refresh();\n}\n\ninit();\n</script>\n</body>\n</html>\n\n```\n",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    }
+  }
+}

@@ -1,0 +1,1024 @@
+
+==============================================================================
+### 时间与场景
+==============================================================================
+  CurrentYear              = 1
+  CurrentMonth             = 4
+  CurrentStage             = 1
+  CurrentDayEnvironment    = 1
+  CurrentStoryScript       = 'back_free_001'
+  StartStoryScript         = 'ch1_1'
+  CurrentScene             = 'Free'
+  CurrentSceneKey          = 'S9906_01'
+  CurrentNextScene         = 'Story'
+  CurrentTravelScript      = ''
+  TempScript1              = 'room_exit_01'
+  TempScript2              = ''
+  TempScript3              = ''
+  IsTriggerSubMission      = False
+  TriggerSubMissionKey     = ''
+  Version                  = 'release_1.0.3128.1'
+
+==============================================================================
+### TimeSave (len=10)
+==============================================================================
+  [ 0] {'Name': 'Back_Work_E_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 1] {'Name': 'Kitchen_Special_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 2] {'Name': 'M7001_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 3] {'Name': 'M7002_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 4] {'Name': 'S0018_02', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 5] {'Name': 'S0101_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 6] {'Name': 'S0102_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 7] {'Name': 'S0106_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 8] {'Name': 'S0200_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+  [ 9] {'Name': 'S0302_01', 'Year': 1, 'Month': 4, 'Stage': 1}
+
+==============================================================================
+### StorySave (len=1)
+==============================================================================
+  [ 0] {'Key': 'Ch_1_1_001'}
+
+==============================================================================
+### MainMission
+==============================================================================
+  {'Name': 'main', 'Key': 'M0002'}
+
+==============================================================================
+### Stats (len=54)
+==============================================================================
+  [ 0] {'Key': 'action', 'Value': 2}
+  [ 1] {'Key': 'add-action-1', 'Value': 1}
+  [ 2] {'Key': 'add-action-2', 'Value': 1}
+  [ 3] {'Key': 'add-action-3', 'Value': 1}
+  [ 4] {'Key': 'assets', 'Value': 99999}
+  [ 5] {'Key': 'default-battle-hp', 'Value': 1000}
+  [ 6] {'Key': 'fame', 'Value': 12}
+  [ 7] {'Key': 'faction', 'Value': 1}
+  [ 8] {'Key': 'people', 'Value': 900}
+  [ 9] {'Key': 'poison', 'Value': 500}
+  [10] {'Key': 'team', 'Value': 99}
+  [11] {'Key': 'total-poison-point', 'Value': 500}
+  [12] {'Key': 'total-weapon-point', 'Value': 500}
+  [13] {'Key': 'weapon', 'Value': 500}
+  [14] {'Key': 'faction-contribution', 'Value': 50}
+  [15] {'Key': 'behaviour', 'Value': 100}
+  [16] {'Key': 'buddhism', 'Value': 100}
+  [17] {'Key': 'change-heart', 'Value': 5}
+  [18] {'Key': 'charisma', 'Value': 100}
+  [19] {'Key': 'confucianism', 'Value': 100}
+  [20] {'Key': 'contribution', 'Value': 200}
+  [21] {'Key': 'cook', 'Value': 100}
+  [22] {'Key': 'dexterity', 'Value': 100}
+  [23] {'Key': 'disposition', 'Value': 100}
+  [24] {'Key': 'fate', 'Value': 100}
+  [25] {'Key': 'girl', 'Value': 0}
+  [26] {'Key': 'internal', 'Value': 50}
+  [27] {'Key': 'karma', 'Value': 90}
+  [28] {'Key': 'life', 'Value': 100}
+  [29] {'Key': 'literacy', 'Value': 100}
+  [30] {'Key': 'lover', 'Value': 1}
+  [31] {'Key': 'm-fist', 'Value': 100}
+  [32] {'Key': 'm-internal', 'Value': 100}
+  [33] {'Key': 'm-leg', 'Value': 100}
+  [34] {'Key': 'm-odd', 'Value': 100}
+  [35] {'Key': 'm-projectile', 'Value': 100}
+  [36] {'Key': 'm-soft', 'Value': 100}
+  [37] {'Key': 'm-stick', 'Value': 100}
+  [38] {'Key': 'm-sword', 'Value': 100}
+  [39] {'Key': 'martial-point', 'Value': 500}
+  [40] {'Key': 'mental', 'Value': 100}
+  [41] {'Key': 'money', 'Value': 99999}
+  [42] {'Key': 'paralysis-resistance', 'Value': 100}
+  [43] {'Key': 'poison-resistance', 'Value': 100}
+  [44] {'Key': 'stamina', 'Value': 100}
+  [45] {'Key': 'talking', 'Value': 100}
+  [46] {'Key': 'taoism', 'Value': 100}
+  [47] {'Key': 'title', 'Value': 0}
+  [48] {'Key': 'total-contribution', 'Value': 9999}
+  [49] {'Key': 'total-martial-point', 'Value': 350}
+  [50] {'Key': 'training', 'Value': 95}
+  [51] {'Key': 'combat-attack-dice', 'Value': 100}
+  [52] {'Key': 'combat-weapon-dice', 'Value': 100}
+  [53] {'Key': 'combat-defence', 'Value': 100}
+
+==============================================================================
+### Relationships (len=34)
+==============================================================================
+  [ 0] {'Key': 'brother1', 'Value': 100, 'Active': False}
+  [ 1] {'Key': 'brother2', 'Value': 100, 'Active': False}
+  [ 2] {'Key': 'brother3', 'Value': 100, 'Active': True}
+  [ 3] {'Key': 'brother4', 'Value': 100, 'Active': True}
+  [ 4] {'Key': 'girl1', 'Value': 100, 'Active': False}
+  [ 5] {'Key': 'girl2', 'Value': 100, 'Active': False}
+  [ 6] {'Key': 'girl4', 'Value': 100, 'Active': False}
+  [ 7] {'Key': 'girl5', 'Value': 100, 'Active': False}
+  [ 8] {'Key': 'girl6', 'Value': 100, 'Active': False}
+  [ 9] {'Key': 'girl7', 'Value': 100, 'Active': False}
+  [10] {'Key': 'girl8', 'Value': 100, 'Active': False}
+  [11] {'Key': 'girl9', 'Value': 100, 'Active': False}
+  [12] {'Key': 'master', 'Value': 100, 'Active': False}
+  [13] {'Key': 'sister1', 'Value': 100, 'Active': True}
+  [14] {'Key': 'special1', 'Value': 100, 'Active': False}
+  [15] {'Key': 'special102', 'Value': 100, 'Active': False}
+  [16] {'Key': 'special103', 'Value': 100, 'Active': False}
+  [17] {'Key': 'special2', 'Value': 100, 'Active': False}
+  [18] {'Key': 'special205', 'Value': 100, 'Active': False}
+  [19] {'Key': 'special206', 'Value': 100, 'Active': False}
+  [20] {'Key': 'special3', 'Value': 100, 'Active': False}
+  [21] {'Key': 'special4', 'Value': 100, 'Active': False}
+  [22] {'Key': 'special401', 'Value': 100, 'Active': False}
+  [23] {'Key': 'special403', 'Value': 100, 'Active': False}
+  [24] {'Key': 'special404', 'Value': 100, 'Active': False}
+  [25] {'Key': 'special405', 'Value': 100, 'Active': False}
+  [26] {'Key': 'special409', 'Value': 100, 'Active': False}
+  [27] {'Key': 'special6', 'Value': 100, 'Active': False}
+  [28] {'Key': 'special7', 'Value': 100, 'Active': False}
+  [29] {'Key': 'special800', 'Value': 100, 'Active': False}
+  [30] {'Key': 'special808', 'Value': 100, 'Active': False}
+  [31] {'Key': 'special809', 'Value': 100, 'Active': False}
+  [32] {'Key': 'special825', 'Value': 100, 'Active': False}
+  [33] {'Key': 'special999', 'Value': 100, 'Active': False}
+
+==============================================================================
+### SubMissions (len=129)  --- 原样
+==============================================================================
+  [  0] {'Name': 'M6002_01', 'Key': 'M6002_01_01'}
+  [  1] {'Name': 'M6002_02', 'Key': 'M6002_02_01'}
+  [  2] {'Name': 'M6002_03', 'Key': 'M6002_03_01'}
+  [  3] {'Name': 'M6002_04', 'Key': 'M6002_04_01'}
+  [  4] {'Name': 'M6002_05', 'Key': 'M6002_05_01'}
+  [  5] {'Name': 'M6002_06', 'Key': 'M6002_06_01'}
+  [  6] {'Name': 'M6002_07', 'Key': 'M6002_07_01'}
+  [  7] {'Name': 'M6002_08', 'Key': 'M6002_08_01'}
+  [  8] {'Name': 'M6002_09', 'Key': 'M6002_09_01'}
+  [  9] {'Name': 'M6002_10', 'Key': 'M6002_10_01'}
+  [ 10] {'Name': 'M6003_01', 'Key': 'M6003_01_01'}
+  [ 11] {'Name': 'M6003_02', 'Key': 'M6003_02_01'}
+  [ 12] {'Name': 'M6003_03_01', 'Key': 'M6003_03_01_01'}
+  [ 13] {'Name': 'M6003_03_02', 'Key': 'M6003_03_02_01'}
+  [ 14] {'Name': 'M6003_04_01', 'Key': 'M6003_04_01_01'}
+  [ 15] {'Name': 'M6003_04_02', 'Key': 'M6003_04_02_01'}
+  [ 16] {'Name': 'M6003_05', 'Key': 'M6003_05_01'}
+  [ 17] {'Name': 'M6003_06', 'Key': 'M6003_06_01'}
+  [ 18] {'Name': 'M6003_07', 'Key': 'M6003_07_01'}
+  [ 19] {'Name': 'M6003_08', 'Key': 'M6003_08_01'}
+  [ 20] {'Name': 'M6003_09', 'Key': 'M6003_09_01'}
+  [ 21] {'Name': 'M6003_10', 'Key': 'M6003_10_01'}
+  [ 22] {'Name': 'M6003_11', 'Key': 'M6003_11_01'}
+  [ 23] {'Name': 'M6004_01', 'Key': 'M6004_01_01'}
+  [ 24] {'Name': 'M6004_02', 'Key': 'M6004_02_01'}
+  [ 25] {'Name': 'M6004_03', 'Key': 'M6004_03_01'}
+  [ 26] {'Name': 'M6004_04', 'Key': 'M6004_04_01'}
+  [ 27] {'Name': 'M6004_05', 'Key': 'M6004_05_01'}
+  [ 28] {'Name': 'M7001_02', 'Key': 'M7001_02_01'}
+  [ 29] {'Name': 'S0001', 'Key': ''}
+  [ 30] {'Name': 'S0002', 'Key': 'S0002_03'}
+  [ 31] {'Name': 'S0003', 'Key': 'S0003_00'}
+  [ 32] {'Name': 'S0004', 'Key': ''}
+  [ 33] {'Name': 'S0005', 'Key': ''}
+  [ 34] {'Name': 'S0007', 'Key': ''}
+  [ 35] {'Name': 'S0008', 'Key': ''}
+  [ 36] {'Name': 'S0009', 'Key': ''}
+  [ 37] {'Name': 'S0010', 'Key': ''}
+  [ 38] {'Name': 'S0011', 'Key': ''}
+  [ 39] {'Name': 'S0012', 'Key': 'S0012_01'}
+  [ 40] {'Name': 'S0013', 'Key': 'S0013_01'}
+  [ 41] {'Name': 'S0014', 'Key': 'S0014_01'}
+  [ 42] {'Name': 'S0017', 'Key': 'S0017_01'}
+  [ 43] {'Name': 'S0018', 'Key': 'S0018_01'}
+  [ 44] {'Name': 'S0019', 'Key': 'S0019_01'}
+  [ 45] {'Name': 'S0020', 'Key': 'S0020_01'}
+  [ 46] {'Name': 'S0021_01_01', 'Key': 'S0021_01_01_01'}
+  [ 47] {'Name': 'S0021_01_02', 'Key': 'S0021_01_02_01'}
+  [ 48] {'Name': 'S0022', 'Key': 'S0022_01'}
+  [ 49] {'Name': 'S0024', 'Key': 'S0024_01'}
+  [ 50] {'Name': 'S0025', 'Key': 'S0025_01'}
+  [ 51] {'Name': 'S0026', 'Key': 'S0026_01'}
+  [ 52] {'Name': 'S0100', 'Key': 'S0100_01'}
+  [ 53] {'Name': 'S0101', 'Key': 'S0101_01'}
+  [ 54] {'Name': 'S0102', 'Key': 'S0102_01'}
+  [ 55] {'Name': 'S0103', 'Key': 'S0103_01'}
+  [ 56] {'Name': 'S0104', 'Key': 'S0104_01'}
+  [ 57] {'Name': 'S0105', 'Key': 'S0105_01'}
+  [ 58] {'Name': 'S0106', 'Key': 'S0106_01'}
+  [ 59] {'Name': 'S0107', 'Key': 'S0107_01'}
+  [ 60] {'Name': 'S0108', 'Key': 'S0108_01'}
+  [ 61] {'Name': 'S0109', 'Key': 'S0109_01'}
+  [ 62] {'Name': 'S0110', 'Key': 'S0110_01'}
+  [ 63] {'Name': 'S0111', 'Key': 'S0111_01'}
+  [ 64] {'Name': 'S0200', 'Key': 'S0200_01'}
+  [ 65] {'Name': 'S0204', 'Key': 'S0204_01'}
+  [ 66] {'Name': 'S0301', 'Key': 'S0301_01'}
+  [ 67] {'Name': 'S0302', 'Key': 'S0302_01'}
+  [ 68] {'Name': 'S0303', 'Key': 'S0303_01'}
+  [ 69] {'Name': 'S0401', 'Key': 'S0401_01'}
+  [ 70] {'Name': 'S0501', 'Key': 'S0501_01'}
+  [ 71] {'Name': 'S0502', 'Key': 'S0502_01'}
+  [ 72] {'Name': 'S0503', 'Key': 'S0503_01'}
+  [ 73] {'Name': 'S0601', 'Key': 'S0601_01'}
+  [ 74] {'Name': 'S0602', 'Key': 'S0602_01'}
+  [ 75] {'Name': 'S0603', 'Key': 'S0603_01'}
+  [ 76] {'Name': 'S0604', 'Key': 'S0604_01'}
+  [ 77] {'Name': 'S0701_01', 'Key': 'S0701_01_01'}
+  [ 78] {'Name': 'S0701_02', 'Key': 'S0701_02_01'}
+  [ 79] {'Name': 'S0702_01', 'Key': 'S0702_01_01'}
+  [ 80] {'Name': 'S0702_02', 'Key': 'S0702_02_01'}
+  [ 81] {'Name': 'S0703_01', 'Key': 'S0703_01_01'}
+  [ 82] {'Name': 'S0703_02', 'Key': 'S0703_02_01'}
+  [ 83] {'Name': 'S1107', 'Key': 'S1107_01'}
+  [ 84] {'Name': 'S1108', 'Key': 'S1108_01'}
+  [ 85] {'Name': 'S1109', 'Key': 'S1109_01'}
+  [ 86] {'Name': 'S1201', 'Key': 'S1201_01'}
+  [ 87] {'Name': 'S1203', 'Key': 'S1203_01'}
+  [ 88] {'Name': 'S1204', 'Key': 'S1204_01'}
+  [ 89] {'Name': 'S1205', 'Key': 'S1205_01'}
+  [ 90] {'Name': 'S1211', 'Key': 'S1211_01'}
+  [ 91] {'Name': 'S1212', 'Key': 'S1212_01'}
+  [ 92] {'Name': 'S1301', 'Key': 'S1301_01'}
+  [ 93] {'Name': 'S1302', 'Key': 'S1302_01'}
+  [ 94] {'Name': 'S1303', 'Key': 'S1303_01'}
+  [ 95] {'Name': 'S1304', 'Key': 'S1304_01'}
+  [ 96] {'Name': 'S1306', 'Key': 'S1306_01'}
+  [ 97] {'Name': 'S1307', 'Key': 'S1307_01'}
+  [ 98] {'Name': 'S2001', 'Key': 'S2001_01'}
+  [ 99] {'Name': 'S2002', 'Key': 'S2002_01'}
+  [100] {'Name': 'S2100', 'Key': 'S2100_01'}
+  [101] {'Name': 'S2101', 'Key': 'S2101_01'}
+  [102] {'Name': 'S2102', 'Key': 'S2102_01'}
+  [103] {'Name': 'S2200', 'Key': 'S2200_01'}
+  [104] {'Name': 'S2300', 'Key': 'S2300_01'}
+  [105] {'Name': 'S2401', 'Key': 'S2401_01'}
+  [106] {'Name': 'S2402', 'Key': 'S2402_01'}
+  [107] {'Name': 'S2500', 'Key': 'S2500_01'}
+  [108] {'Name': 'S2504', 'Key': ''}
+  [109] {'Name': 'S8000', 'Key': 'S8000_01'}
+  [110] {'Name': 'S8100', 'Key': 'S8100_01'}
+  [111] {'Name': 'S8200', 'Key': 'clear'}
+  [112] {'Name': 'S8300', 'Key': 'S8300_01'}
+  [113] {'Name': 'S8400', 'Key': 'S8400_01'}
+  [114] {'Name': 'S8500', 'Key': 'S8500_01'}
+  [115] {'Name': 'S9001', 'Key': 'S9001_01'}
+  [116] {'Name': 'S9002', 'Key': 'S9002_01'}
+  [117] {'Name': 'S9003', 'Key': 'S9003_01'}
+  [118] {'Name': 'S9100', 'Key': 'S9100_01'}
+  [119] {'Name': 'S9101', 'Key': 'S9101_01'}
+  [120] {'Name': 'S9200', 'Key': 'S9200_01'}
+  [121] {'Name': 'S9900', 'Key': 'S9900_01'}
+  [122] {'Name': 'S9901', 'Key': 'S9901_01'}
+  [123] {'Name': 'S9902', 'Key': 'S9902_01'}
+  [124] {'Name': 'S9903', 'Key': 'S9903_01'}
+  [125] {'Name': 'S9904', 'Key': 'S9904_01'}
+  [126] {'Name': 'S9905', 'Key': 'S9905_01'}
+  [127] {'Name': 'S9907', 'Key': 'S9907_01'}
+  [128] {'Name': 'S9907', 'Key': 'S9907_01'}
+
+==============================================================================
+### EventFlags (len=707)  --- 全量
+==============================================================================
+  [  0] {'Name': 'A00001', 'State': 0}
+  [  1] {'Name': 'A00002', 'State': 0}
+  [  2] {'Name': 'A00003', 'State': 0}
+  [  3] {'Name': 'A00004', 'State': 0}
+  [  4] {'Name': 'A00005', 'State': 0}
+  [  5] {'Name': 'A00006', 'State': 0}
+  [  6] {'Name': 'A10001', 'State': 0}
+  [  7] {'Name': 'A10002', 'State': 0}
+  [  8] {'Name': 'A10003', 'State': 0}
+  [  9] {'Name': 'A10004', 'State': 0}
+  [ 10] {'Name': 'A10005', 'State': 0}
+  [ 11] {'Name': 'A10006', 'State': 0}
+  [ 12] {'Name': 'A10007', 'State': 0}
+  [ 13] {'Name': 'A10008', 'State': 0}
+  [ 14] {'Name': 'A10009', 'State': 0}
+  [ 15] {'Name': 'A10010', 'State': 0}
+  [ 16] {'Name': 'A10011', 'State': 0}
+  [ 17] {'Name': 'A10012', 'State': 0}
+  [ 18] {'Name': 'A10013', 'State': 0}
+  [ 19] {'Name': 'A10014', 'State': 0}
+  [ 20] {'Name': 'ActionCheck01', 'State': 0}
+  [ 21] {'Name': 'Alchemy_Work_M_01', 'State': 0}
+  [ 22] {'Name': 'Alpha_001', 'State': 0}
+  [ 23] {'Name': 'B00001', 'State': 0}
+  [ 24] {'Name': 'B00002', 'State': 0}
+  [ 25] {'Name': 'B00003', 'State': 0}
+  [ 26] {'Name': 'B00004', 'State': 0}
+  [ 27] {'Name': 'Back_02_501_01', 'State': 0}
+  [ 28] {'Name': 'Back_Free_M_01', 'State': 0}
+  [ 29] {'Name': 'Back_Work_E_01', 'State': 0}
+  [ 30] {'Name': 'Back_Work_M_02', 'State': 0}
+  [ 31] {'Name': 'BattleResult_001', 'State': 0}
+  [ 32] {'Name': 'C00000', 'State': 0}
+  [ 33] {'Name': 'C00001', 'State': 0}
+  [ 34] {'Name': 'C00002', 'State': 0}
+  [ 35] {'Name': 'C00003', 'State': 0}
+  [ 36] {'Name': 'C00004', 'State': 0}
+  [ 37] {'Name': 'C00005', 'State': 0}
+  [ 38] {'Name': 'C30000', 'State': 0}
+  [ 39] {'Name': 'Center_Free_01', 'State': 0}
+  [ 40] {'Name': 'Ch_0_M_Option_02', 'State': 0}
+  [ 41] {'Name': 'Ch_0_M_Option_03', 'State': 0}
+  [ 42] {'Name': 'Ch_0_M_Option_04', 'State': 0}
+  [ 43] {'Name': 'Ch_6_4_3_Break_01_001', 'State': 0}
+  [ 44] {'Name': 'D00001', 'State': 0}
+  [ 45] {'Name': 'Demo', 'State': 0}
+  [ 46] {'Name': 'Door_Free_201', 'State': 0}
+  [ 47] {'Name': 'Door_Work_101', 'State': 0}
+  [ 48] {'Name': 'Door_Work_201', 'State': 0}
+  [ 49] {'Name': 'Door_Work_S_01', 'State': 0}
+  [ 50] {'Name': 'E00001', 'State': 0}
+  [ 51] {'Name': 'E00002', 'State': 0}
+  [ 52] {'Name': 'E00003', 'State': 0}
+  [ 53] {'Name': 'E00004', 'State': 0}
+  [ 54] {'Name': 'E00005', 'State': 0}
+  [ 55] {'Name': 'E00006', 'State': 0}
+  [ 56] {'Name': 'E00007', 'State': 0}
+  [ 57] {'Name': 'E00008', 'State': 0}
+  [ 58] {'Name': 'E00009', 'State': 0}
+  [ 59] {'Name': 'E00010', 'State': 0}
+  [ 60] {'Name': 'E00011', 'State': 0}
+  [ 61] {'Name': 'E00012', 'State': 0}
+  [ 62] {'Name': 'E10000', 'State': 0}
+  [ 63] {'Name': 'E10001', 'State': 0}
+  [ 64] {'Name': 'E10002', 'State': 0}
+  [ 65] {'Name': 'E10003', 'State': 0}
+  [ 66] {'Name': 'E10004', 'State': 0}
+  [ 67] {'Name': 'E10005', 'State': 0}
+  [ 68] {'Name': 'E10006', 'State': 0}
+  [ 69] {'Name': 'E11000', 'State': 0}
+  [ 70] {'Name': 'E12000', 'State': 0}
+  [ 71] {'Name': 'E12001', 'State': 0}
+  [ 72] {'Name': 'E12002', 'State': 0}
+  [ 73] {'Name': 'E12003', 'State': 0}
+  [ 74] {'Name': 'E12004', 'State': 0}
+  [ 75] {'Name': 'E12005', 'State': 0}
+  [ 76] {'Name': 'E12100', 'State': 0}
+  [ 77] {'Name': 'E12101', 'State': 0}
+  [ 78] {'Name': 'E12102', 'State': 0}
+  [ 79] {'Name': 'E12103', 'State': 0}
+  [ 80] {'Name': 'E12200', 'State': 0}
+  [ 81] {'Name': 'E13001', 'State': 0}
+  [ 82] {'Name': 'E13002', 'State': 0}
+  [ 83] {'Name': 'E13003', 'State': 0}
+  [ 84] {'Name': 'E13004', 'State': 0}
+  [ 85] {'Name': 'E13005', 'State': 0}
+  [ 86] {'Name': 'E13006', 'State': 0}
+  [ 87] {'Name': 'E13007', 'State': 0}
+  [ 88] {'Name': 'E13008', 'State': 0}
+  [ 89] {'Name': 'E13009', 'State': 0}
+  [ 90] {'Name': 'E13010', 'State': 0}
+  [ 91] {'Name': 'E13011', 'State': 0}
+  [ 92] {'Name': 'E13012', 'State': 0}
+  [ 93] {'Name': 'E13013', 'State': 0}
+  [ 94] {'Name': 'E14000', 'State': 0}
+  [ 95] {'Name': 'E14001', 'State': 0}
+  [ 96] {'Name': 'E14002', 'State': 0}
+  [ 97] {'Name': 'E20001', 'State': 0}
+  [ 98] {'Name': 'E20002', 'State': 0}
+  [ 99] {'Name': 'E20003', 'State': 0}
+  [100] {'Name': 'E20004', 'State': 0}
+  [101] {'Name': 'E20005', 'State': 0}
+  [102] {'Name': 'E21001', 'State': 0}
+  [103] {'Name': 'E21002', 'State': 0}
+  [104] {'Name': 'E21003', 'State': 0}
+  [105] {'Name': 'E21004', 'State': 0}
+  [106] {'Name': 'E30001', 'State': 0}
+  [107] {'Name': 'Facility_001', 'State': 0}
+  [108] {'Name': 'Facility_001_01', 'State': 0}
+  [109] {'Name': 'Facility_002', 'State': 0}
+  [110] {'Name': 'Facility_002_01', 'State': 0}
+  [111] {'Name': 'Facility_003', 'State': 0}
+  [112] {'Name': 'Facility_003_01', 'State': 0}
+  [113] {'Name': 'Facility_004', 'State': 0}
+  [114] {'Name': 'Facility_004_01', 'State': 0}
+  [115] {'Name': 'Facility_005', 'State': 0}
+  [116] {'Name': 'Facility_005_01', 'State': 0}
+  [117] {'Name': 'Facility_006', 'State': 0}
+  [118] {'Name': 'FacilityAdd_001_01', 'State': 0}
+  [119] {'Name': 'FacilityAdd_002_01', 'State': 0}
+  [120] {'Name': 'FacilityAdd_002_02', 'State': 0}
+  [121] {'Name': 'FacilityAdd_003_01', 'State': 0}
+  [122] {'Name': 'FacilityAdd_004_01', 'State': 0}
+  [123] {'Name': 'FacilityAdd_005_01', 'State': 0}
+  [124] {'Name': 'FacilityAdd_006_01', 'State': 0}
+  [125] {'Name': 'G00001', 'State': 0}
+  [126] {'Name': 'G00002', 'State': 0}
+  [127] {'Name': 'G00003', 'State': 0}
+  [128] {'Name': 'G00004', 'State': 0}
+  [129] {'Name': 'G10001', 'State': 0}
+  [130] {'Name': 'G10002', 'State': 0}
+  [131] {'Name': 'G10003', 'State': 0}
+  [132] {'Name': 'G10004', 'State': 0}
+  [133] {'Name': 'G10005', 'State': 0}
+  [134] {'Name': 'G10006', 'State': 0}
+  [135] {'Name': 'G10007', 'State': 0}
+  [136] {'Name': 'G10008', 'State': 0}
+  [137] {'Name': 'G11000', 'State': 0}
+  [138] {'Name': 'G11001', 'State': 0}
+  [139] {'Name': 'G11002', 'State': 0}
+  [140] {'Name': 'G11003', 'State': 0}
+  [141] {'Name': 'G11004', 'State': 0}
+  [142] {'Name': 'G11005', 'State': 0}
+  [143] {'Name': 'G11006', 'State': 0}
+  [144] {'Name': 'G11007', 'State': 0}
+  [145] {'Name': 'G11008', 'State': 0}
+  [146] {'Name': 'G20000', 'State': 1}
+  [147] {'Name': 'G30000', 'State': 0}
+  [148] {'Name': 'G30001', 'State': 0}
+  [149] {'Name': 'G30002', 'State': 0}
+  [150] {'Name': 'G30003', 'State': 0}
+  [151] {'Name': 'G30004', 'State': 0}
+  [152] {'Name': 'G30005', 'State': 0}
+  [153] {'Name': 'G30006', 'State': 0}
+  [154] {'Name': 'G30007', 'State': 0}
+  [155] {'Name': 'G30008', 'State': 0}
+  [156] {'Name': 'G30009', 'State': 0}
+  [157] {'Name': 'G30010', 'State': 0}
+  [158] {'Name': 'G30011', 'State': 0}
+  [159] {'Name': 'Guard_Work_001', 'State': 0}
+  [160] {'Name': 'H00001', 'State': 0}
+  [161] {'Name': 'H00002', 'State': 0}
+  [162] {'Name': 'H00003', 'State': 0}
+  [163] {'Name': 'H00004', 'State': 0}
+  [164] {'Name': 'H00005', 'State': 0}
+  [165] {'Name': 'H00006', 'State': 0}
+  [166] {'Name': 'H01001', 'State': 0}
+  [167] {'Name': 'H01002', 'State': 0}
+  [168] {'Name': 'H01003', 'State': 0}
+  [169] {'Name': 'H02001', 'State': 0}
+  [170] {'Name': 'H02002', 'State': 0}
+  [171] {'Name': 'H02003', 'State': 0}
+  [172] {'Name': 'H03001', 'State': 0}
+  [173] {'Name': 'H03002', 'State': 0}
+  [174] {'Name': 'H03003', 'State': 0}
+  [175] {'Name': 'H03004', 'State': 0}
+  [176] {'Name': 'H03005', 'State': 0}
+  [177] {'Name': 'H03006', 'State': 0}
+  [178] {'Name': 'H04001', 'State': 0}
+  [179] {'Name': 'H04002', 'State': 0}
+  [180] {'Name': 'K00001', 'State': 0}
+  [181] {'Name': 'Kitchen_Work_M_02', 'State': 0}
+  [182] {'Name': 'Kitchen_Work_M_03', 'State': 0}
+  [183] {'Name': 'M00001', 'State': 0}
+  [184] {'Name': 'M00002', 'State': 0}
+  [185] {'Name': 'M00003', 'State': 0}
+  [186] {'Name': 'M00004', 'State': 0}
+  [187] {'Name': 'M00005', 'State': 0}
+  [188] {'Name': 'M00006', 'State': 0}
+  [189] {'Name': 'M00007', 'State': 0}
+  [190] {'Name': 'M00008', 'State': 0}
+  [191] {'Name': 'M00009', 'State': 0}
+  [192] {'Name': 'M00010', 'State': 0}
+  [193] {'Name': 'M00011', 'State': 0}
+  [194] {'Name': 'M00012', 'State': 0}
+  [195] {'Name': 'M00013', 'State': 0}
+  [196] {'Name': 'M00014', 'State': 0}
+  [197] {'Name': 'M00015', 'State': 0}
+  [198] {'Name': 'M00016', 'State': 0}
+  [199] {'Name': 'M00017', 'State': 0}
+  [200] {'Name': 'M00018', 'State': 0}
+  [201] {'Name': 'M00019', 'State': 0}
+  [202] {'Name': 'M00020', 'State': 0}
+  [203] {'Name': 'M00021', 'State': 0}
+  [204] {'Name': 'M00022', 'State': 0}
+  [205] {'Name': 'M10001', 'State': 0}
+  [206] {'Name': 'M10002', 'State': 0}
+  [207] {'Name': 'M10004', 'State': 0}
+  [208] {'Name': 'M10005', 'State': 0}
+  [209] {'Name': 'M10006', 'State': 0}
+  [210] {'Name': 'M10007', 'State': 0}
+  [211] {'Name': 'M10008', 'State': 0}
+  [212] {'Name': 'M10009', 'State': 0}
+  [213] {'Name': 'M10010', 'State': 0}
+  [214] {'Name': 'M10011', 'State': 0}
+  [215] {'Name': 'M10012', 'State': 0}
+  [216] {'Name': 'M10013', 'State': 0}
+  [217] {'Name': 'M10014', 'State': 0}
+  [218] {'Name': 'M10015', 'State': 0}
+  [219] {'Name': 'M10016', 'State': 0}
+  [220] {'Name': 'M10017', 'State': 0}
+  [221] {'Name': 'M10018', 'State': 0}
+  [222] {'Name': 'M10019', 'State': 0}
+  [223] {'Name': 'M10020', 'State': 0}
+  [224] {'Name': 'M10021', 'State': 0}
+  [225] {'Name': 'M10022', 'State': 0}
+  [226] {'Name': 'M20001', 'State': 0}
+  [227] {'Name': 'M20002', 'State': 0}
+  [228] {'Name': 'M20003', 'State': 0}
+  [229] {'Name': 'M20004', 'State': 0}
+  [230] {'Name': 'M20005', 'State': 0}
+  [231] {'Name': 'M20006', 'State': 0}
+  [232] {'Name': 'M20007', 'State': 0}
+  [233] {'Name': 'M20008', 'State': 0}
+  [234] {'Name': 'M20009', 'State': 0}
+  [235] {'Name': 'M20010', 'State': 0}
+  [236] {'Name': 'M20011', 'State': 0}
+  [237] {'Name': 'M20012', 'State': 0}
+  [238] {'Name': 'M20013', 'State': 0}
+  [239] {'Name': 'M20014', 'State': 0}
+  [240] {'Name': 'M20015', 'State': 0}
+  [241] {'Name': 'M20016', 'State': 0}
+  [242] {'Name': 'M20017', 'State': 0}
+  [243] {'Name': 'M20018', 'State': 0}
+  [244] {'Name': 'M20019', 'State': 0}
+  [245] {'Name': 'M20020', 'State': 0}
+  [246] {'Name': 'M20021', 'State': 0}
+  [247] {'Name': 'M20022', 'State': 0}
+  [248] {'Name': 'M20023', 'State': 0}
+  [249] {'Name': 'M20024', 'State': 0}
+  [250] {'Name': 'M20025', 'State': 0}
+  [251] {'Name': 'M20026', 'State': 0}
+  [252] {'Name': 'M20027', 'State': 0}
+  [253] {'Name': 'M20028', 'State': 0}
+  [254] {'Name': 'M20029', 'State': 0}
+  [255] {'Name': 'M20030', 'State': 0}
+  [256] {'Name': 'M21000', 'State': 0}
+  [257] {'Name': 'M21001', 'State': 0}
+  [258] {'Name': 'M30001', 'State': 0}
+  [259] {'Name': 'M30002', 'State': 0}
+  [260] {'Name': 'M30003', 'State': 0}
+  [261] {'Name': 'M30004', 'State': 0}
+  [262] {'Name': 'M30005', 'State': 0}
+  [263] {'Name': 'M30006', 'State': 0}
+  [264] {'Name': 'M30007', 'State': 0}
+  [265] {'Name': 'M30008', 'State': 0}
+  [266] {'Name': 'M30009', 'State': 0}
+  [267] {'Name': 'M30010', 'State': 0}
+  [268] {'Name': 'M30011', 'State': 0}
+  [269] {'Name': 'M30012', 'State': 0}
+  [270] {'Name': 'M30013', 'State': 0}
+  [271] {'Name': 'M30014', 'State': 0}
+  [272] {'Name': 'M30015', 'State': 0}
+  [273] {'Name': 'M30016', 'State': 0}
+  [274] {'Name': 'M30017', 'State': 0}
+  [275] {'Name': 'M30018', 'State': 0}
+  [276] {'Name': 'M30019', 'State': 0}
+  [277] {'Name': 'M30020', 'State': 0}
+  [278] {'Name': 'M30021', 'State': 0}
+  [279] {'Name': 'M30022', 'State': 0}
+  [280] {'Name': 'M30023', 'State': 0}
+  [281] {'Name': 'M30024', 'State': 0}
+  [282] {'Name': 'M30025', 'State': 0}
+  [283] {'Name': 'M30026', 'State': 0}
+  [284] {'Name': 'M30027', 'State': 0}
+  [285] {'Name': 'M30028', 'State': 0}
+  [286] {'Name': 'M30029', 'State': 0}
+  [287] {'Name': 'M30030', 'State': 0}
+  [288] {'Name': 'M30031', 'State': 0}
+  [289] {'Name': 'M30032', 'State': 0}
+  [290] {'Name': 'M30033', 'State': 0}
+  [291] {'Name': 'M30034', 'State': 0}
+  [292] {'Name': 'M30035', 'State': 0}
+  [293] {'Name': 'M30036', 'State': 0}
+  [294] {'Name': 'M30037', 'State': 0}
+  [295] {'Name': 'M30038', 'State': 0}
+  [296] {'Name': 'M30039', 'State': 0}
+  [297] {'Name': 'M40001', 'State': 0}
+  [298] {'Name': 'M40002', 'State': 0}
+  [299] {'Name': 'M40003', 'State': 0}
+  [300] {'Name': 'M40004', 'State': 0}
+  [301] {'Name': 'M40005', 'State': 0}
+  [302] {'Name': 'M40006', 'State': 0}
+  [303] {'Name': 'M40007', 'State': 0}
+  [304] {'Name': 'M40008', 'State': 0}
+  [305] {'Name': 'M40009', 'State': 0}
+  [306] {'Name': 'M40010', 'State': 0}
+  [307] {'Name': 'M40011', 'State': 0}
+  [308] {'Name': 'M40012', 'State': 0}
+  [309] {'Name': 'M40013', 'State': 0}
+  [310] {'Name': 'M40014', 'State': 0}
+  [311] {'Name': 'M40015', 'State': 0}
+  [312] {'Name': 'M40016', 'State': 0}
+  [313] {'Name': 'M40017', 'State': 0}
+  [314] {'Name': 'M40018', 'State': 0}
+  [315] {'Name': 'M40019', 'State': 0}
+  [316] {'Name': 'M40020', 'State': 0}
+  [317] {'Name': 'M40021', 'State': 0}
+  [318] {'Name': 'M40022', 'State': 0}
+  [319] {'Name': 'M40023', 'State': 0}
+  [320] {'Name': 'M40024', 'State': 0}
+  [321] {'Name': 'M40025', 'State': 0}
+  [322] {'Name': 'M40026', 'State': 0}
+  [323] {'Name': 'M40027', 'State': 0}
+  [324] {'Name': 'M40028', 'State': 0}
+  [325] {'Name': 'M40029', 'State': 0}
+  [326] {'Name': 'M40030', 'State': 0}
+  [327] {'Name': 'M40031', 'State': 0}
+  [328] {'Name': 'M40032', 'State': 0}
+  [329] {'Name': 'M40033', 'State': 0}
+  [330] {'Name': 'M40034', 'State': 0}
+  [331] {'Name': 'M40035', 'State': 0}
+  [332] {'Name': 'M40036', 'State': 0}
+  [333] {'Name': 'M40037', 'State': 0}
+  [334] {'Name': 'M40038', 'State': 0}
+  [335] {'Name': 'M40039', 'State': 0}
+  [336] {'Name': 'M40040', 'State': 0}
+  [337] {'Name': 'M40041', 'State': 0}
+  [338] {'Name': 'M40042', 'State': 0}
+  [339] {'Name': 'M40043', 'State': 0}
+  [340] {'Name': 'M40044', 'State': 0}
+  [341] {'Name': 'M40045', 'State': 0}
+  [342] {'Name': 'M40046', 'State': 0}
+  [343] {'Name': 'M40047', 'State': 0}
+  [344] {'Name': 'M40048', 'State': 0}
+  [345] {'Name': 'M40049', 'State': 0}
+  [346] {'Name': 'M40050', 'State': 0}
+  [347] {'Name': 'M40051', 'State': 0}
+  [348] {'Name': 'M50001', 'State': 0}
+  [349] {'Name': 'M50002', 'State': 21}
+  [350] {'Name': 'M50003', 'State': 0}
+  [351] {'Name': 'M50004', 'State': 0}
+  [352] {'Name': 'M50005', 'State': 0}
+  [353] {'Name': 'M50006', 'State': 0}
+  [354] {'Name': 'M50007', 'State': 0}
+  [355] {'Name': 'M50008', 'State': 0}
+  [356] {'Name': 'M50009', 'State': 0}
+  [357] {'Name': 'M50010', 'State': 0}
+  [358] {'Name': 'M50011', 'State': 0}
+  [359] {'Name': 'M50012', 'State': 0}
+  [360] {'Name': 'M50013', 'State': 0}
+  [361] {'Name': 'M50014', 'State': 0}
+  [362] {'Name': 'M50015', 'State': 0}
+  [363] {'Name': 'M50016', 'State': 0}
+  [364] {'Name': 'M50017', 'State': 0}
+  [365] {'Name': 'M50018', 'State': 0}
+  [366] {'Name': 'M50019', 'State': 0}
+  [367] {'Name': 'M50020', 'State': 0}
+  [368] {'Name': 'M50021', 'State': 0}
+  [369] {'Name': 'M50022', 'State': 0}
+  [370] {'Name': 'M60001', 'State': 0}
+  [371] {'Name': 'M60002', 'State': 0}
+  [372] {'Name': 'M60003', 'State': 0}
+  [373] {'Name': 'M60004', 'State': 0}
+  [374] {'Name': 'M60005', 'State': 0}
+  [375] {'Name': 'M60006', 'State': 0}
+  [376] {'Name': 'M60007', 'State': 0}
+  [377] {'Name': 'M60008', 'State': 0}
+  [378] {'Name': 'M60009', 'State': 0}
+  [379] {'Name': 'M60010', 'State': 0}
+  [380] {'Name': 'M60011', 'State': 0}
+  [381] {'Name': 'M60012', 'State': 0}
+  [382] {'Name': 'M60013', 'State': 0}
+  [383] {'Name': 'M60014', 'State': 0}
+  [384] {'Name': 'M60015', 'State': 0}
+  [385] {'Name': 'M60016', 'State': 0}
+  [386] {'Name': 'M60017', 'State': 0}
+  [387] {'Name': 'M60017', 'State': 0}
+  [388] {'Name': 'M60018', 'State': 0}
+  [389] {'Name': 'M60019', 'State': 0}
+  [390] {'Name': 'M60020', 'State': 0}
+  [391] {'Name': 'M60021', 'State': 0}
+  [392] {'Name': 'M60022', 'State': 0}
+  [393] {'Name': 'M60023', 'State': 0}
+  [394] {'Name': 'M60024', 'State': 0}
+  [395] {'Name': 'M60025', 'State': 0}
+  [396] {'Name': 'M60026', 'State': 0}
+  [397] {'Name': 'M60027', 'State': 0}
+  [398] {'Name': 'M60028', 'State': 0}
+  [399] {'Name': 'M60029', 'State': 0}
+  [400] {'Name': 'M60030', 'State': 0}
+  [401] {'Name': 'M60031', 'State': 0}
+  [402] {'Name': 'M60032', 'State': 0}
+  [403] {'Name': 'M60033', 'State': 0}
+  [404] {'Name': 'M60034', 'State': 0}
+  [405] {'Name': 'M60035', 'State': 0}
+  [406] {'Name': 'M60036', 'State': 0}
+  [407] {'Name': 'M60037', 'State': 0}
+  [408] {'Name': 'M60038', 'State': 0}
+  [409] {'Name': 'M60039', 'State': 0}
+  [410] {'Name': 'M60040', 'State': 0}
+  [411] {'Name': 'M60041', 'State': 0}
+  [412] {'Name': 'M60042', 'State': 0}
+  [413] {'Name': 'M60043', 'State': 0}
+  [414] {'Name': 'M60044', 'State': 0}
+  [415] {'Name': 'M60045', 'State': 0}
+  [416] {'Name': 'M60046', 'State': 0}
+  [417] {'Name': 'M60047', 'State': 0}
+  [418] {'Name': 'M60048', 'State': 0}
+  [419] {'Name': 'M60049', 'State': 0}
+  [420] {'Name': 'M60050', 'State': 0}
+  [421] {'Name': 'M60051', 'State': 0}
+  [422] {'Name': 'M60052', 'State': 0}
+  [423] {'Name': 'M60053', 'State': 0}
+  [424] {'Name': 'M60054', 'State': 0}
+  [425] {'Name': 'M60055', 'State': 0}
+  [426] {'Name': 'M60056', 'State': 0}
+  [427] {'Name': 'M60057', 'State': 0}
+  [428] {'Name': 'M60058', 'State': 0}
+  [429] {'Name': 'M60059', 'State': 0}
+  [430] {'Name': 'M60060', 'State': 0}
+  [431] {'Name': 'M60061', 'State': 0}
+  [432] {'Name': 'M60062', 'State': 0}
+  [433] {'Name': 'M60063', 'State': 0}
+  [434] {'Name': 'M60064', 'State': 0}
+  [435] {'Name': 'M60065', 'State': 0}
+  [436] {'Name': 'M60066', 'State': 0}
+  [437] {'Name': 'M60067', 'State': 0}
+  [438] {'Name': 'M60068', 'State': 0}
+  [439] {'Name': 'M60069', 'State': 0}
+  [440] {'Name': 'M60070', 'State': 0}
+  [441] {'Name': 'M60071', 'State': 0}
+  [442] {'Name': 'M70001', 'State': 0}
+  [443] {'Name': 'M70002', 'State': 0}
+  [444] {'Name': 'M70003', 'State': 0}
+  [445] {'Name': 'M70004', 'State': 0}
+  [446] {'Name': 'M70005', 'State': 0}
+  [447] {'Name': 'M70006', 'State': 0}
+  [448] {'Name': 'M70007', 'State': 0}
+  [449] {'Name': 'M70008', 'State': 0}
+  [450] {'Name': 'M70009', 'State': 0}
+  [451] {'Name': 'M70010', 'State': 0}
+  [452] {'Name': 'M70011', 'State': 0}
+  [453] {'Name': 'M70012', 'State': 0}
+  [454] {'Name': 'M70013', 'State': 0}
+  [455] {'Name': 'M70014', 'State': 0}
+  [456] {'Name': 'M70015', 'State': 0}
+  [457] {'Name': 'M70016', 'State': 0}
+  [458] {'Name': 'M70017', 'State': 0}
+  [459] {'Name': 'M70018', 'State': 0}
+  [460] {'Name': 'M70019', 'State': 0}
+  [461] {'Name': 'M70020', 'State': 0}
+  [462] {'Name': 'M70021', 'State': 0}
+  [463] {'Name': 'M70022', 'State': 0}
+  [464] {'Name': 'M70023', 'State': 0}
+  [465] {'Name': 'M70024', 'State': 0}
+  [466] {'Name': 'M70025', 'State': 0}
+  [467] {'Name': 'M70026', 'State': 0}
+  [468] {'Name': 'M70027', 'State': 0}
+  [469] {'Name': 'M70028', 'State': 0}
+  [470] {'Name': 'M70029', 'State': 0}
+  [471] {'Name': 'M70030', 'State': 0}
+  [472] {'Name': 'M70031', 'State': 0}
+  [473] {'Name': 'M70032', 'State': 0}
+  [474] {'Name': 'M70033', 'State': 0}
+  [475] {'Name': 'M70034', 'State': 0}
+  [476] {'Name': 'M70035', 'State': 0}
+  [477] {'Name': 'M70036', 'State': 0}
+  [478] {'Name': 'M70037', 'State': 0}
+  [479] {'Name': 'M70038', 'State': 0}
+  [480] {'Name': 'M70039', 'State': 0}
+  [481] {'Name': 'M70040', 'State': 0}
+  [482] {'Name': 'M70041', 'State': 0}
+  [483] {'Name': 'M70042', 'State': 0}
+  [484] {'Name': 'M70043', 'State': 0}
+  [485] {'Name': 'M70044', 'State': 0}
+  [486] {'Name': 'M70045', 'State': 0}
+  [487] {'Name': 'M70046', 'State': 0}
+  [488] {'Name': 'M70047', 'State': 0}
+  [489] {'Name': 'M70048', 'State': 0}
+  [490] {'Name': 'M70049', 'State': 0}
+  [491] {'Name': 'M70050', 'State': 0}
+  [492] {'Name': 'M70051', 'State': 0}
+  [493] {'Name': 'M70052', 'State': 0}
+  [494] {'Name': 'M70053', 'State': 0}
+  [495] {'Name': 'M70054', 'State': 0}
+  [496] {'Name': 'M70055', 'State': 0}
+  [497] {'Name': 'M70056', 'State': 0}
+  [498] {'Name': 'M80001', 'State': 0}
+  [499] {'Name': 'M80002', 'State': 0}
+  [500] {'Name': 'M80003', 'State': 0}
+  [501] {'Name': 'M80004', 'State': 0}
+  [502] {'Name': 'M80005', 'State': 0}
+  [503] {'Name': 'M80006', 'State': 0}
+  [504] {'Name': 'M80007', 'State': 0}
+  [505] {'Name': 'M80008', 'State': 0}
+  [506] {'Name': 'M80009', 'State': 0}
+  [507] {'Name': 'M80010', 'State': 0}
+  [508] {'Name': 'M80011', 'State': 0}
+  [509] {'Name': 'M80012', 'State': 0}
+  [510] {'Name': 'M80013', 'State': 0}
+  [511] {'Name': 'M80014', 'State': 0}
+  [512] {'Name': 'M80015', 'State': 0}
+  [513] {'Name': 'M80016', 'State': 0}
+  [514] {'Name': 'M80018', 'State': 0}
+  [515] {'Name': 'M80019', 'State': 0}
+  [516] {'Name': 'M80020', 'State': 0}
+  [517] {'Name': 'M80021', 'State': 0}
+  [518] {'Name': 'M80022', 'State': 0}
+  [519] {'Name': 'M81000', 'State': 0}
+  [520] {'Name': 'M81001', 'State': 0}
+  [521] {'Name': 'M81002', 'State': 0}
+  [522] {'Name': 'M81003', 'State': 0}
+  [523] {'Name': 'M81004', 'State': 0}
+  [524] {'Name': 'M81005', 'State': 0}
+  [525] {'Name': 'M81006', 'State': 0}
+  [526] {'Name': 'M81007', 'State': 0}
+  [527] {'Name': 'M81008', 'State': 0}
+  [528] {'Name': 'M81009', 'State': 0}
+  [529] {'Name': 'M82000', 'State': 0}
+  [530] {'Name': 'M82001', 'State': 0}
+  [531] {'Name': 'M82002', 'State': 0}
+  [532] {'Name': 'M82003', 'State': 0}
+  [533] {'Name': 'M82004', 'State': 0}
+  [534] {'Name': 'M82005', 'State': 0}
+  [535] {'Name': 'M82006', 'State': 0}
+  [536] {'Name': 'M82007', 'State': 0}
+  [537] {'Name': 'M82008', 'State': 0}
+  [538] {'Name': 'M82009', 'State': 0}
+  [539] {'Name': 'Meeting_Option_101_01', 'State': 0}
+  [540] {'Name': 'Meeting_Option_102_01', 'State': 0}
+  [541] {'Name': 'Meeting_Option_103_01', 'State': 0}
+  [542] {'Name': 'Meeting_Option_104_01', 'State': 0}
+  [543] {'Name': 'Meeting_Option_105_01', 'State': 0}
+  [544] {'Name': 'Meeting_Option_106_01', 'State': 0}
+  [545] {'Name': 'Meeting_Option_501_01', 'State': 0}
+  [546] {'Name': 'Meeting_Option_701_01', 'State': 0}
+  [547] {'Name': 'Meeting_Option_702_01', 'State': 0}
+  [548] {'Name': 'Meeting_Option_703_01', 'State': 0}
+  [549] {'Name': 'Meeting_Option_704_01', 'State': 0}
+  [550] {'Name': 'N00001', 'State': 0}
+  [551] {'Name': 'N00002', 'State': 0}
+  [552] {'Name': 'P_Alchemy_01', 'State': 0}
+  [553] {'Name': 'P_Back_01', 'State': 0}
+  [554] {'Name': 'P_Center_01', 'State': 0}
+  [555] {'Name': 'P_Door_01', 'State': 0}
+  [556] {'Name': 'P_Forge_01', 'State': 0}
+  [557] {'Name': 'P_GirlRoom_01', 'State': 0}
+  [558] {'Name': 'P_Kitchen_01', 'State': 0}
+  [559] {'Name': 'P_Mall_01', 'State': 0}
+  [560] {'Name': 'P_Out_01', 'State': 0}
+  [561] {'Name': 'P_Room_01', 'State': 0}
+  [562] {'Name': 'P_Secret_01', 'State': 1}
+  [563] {'Name': 'P_Study_01', 'State': 0}
+  [564] {'Name': 'Pharmacy_Work_301_01', 'State': 0}
+  [565] {'Name': 'Pharmacy_Work_302_01', 'State': 0}
+  [566] {'Name': 'Pharmacy_Work_303_01', 'State': 0}
+  [567] {'Name': 'Pharmacy_Work_402_01', 'State': 0}
+  [568] {'Name': 'Pharmacy_Work_403_01', 'State': 0}
+  [569] {'Name': 'Pharmacy_Work_404_01', 'State': 0}
+  [570] {'Name': 'Prison_01', 'State': 0}
+  [571] {'Name': 'Prologue', 'State': 0}
+  [572] {'Name': 'S0002', 'State': 0}
+  [573] {'Name': 'S0002_01', 'State': 0}
+  [574] {'Name': 'S0014_01', 'State': 0}
+  [575] {'Name': 'S0014_02', 'State': 0}
+  [576] {'Name': 'S0015_01', 'State': 0}
+  [577] {'Name': 'S0016_01', 'State': 0}
+  [578] {'Name': 'S0019_01', 'State': 0}
+  [579] {'Name': 'S0022_01', 'State': 0}
+  [580] {'Name': 'S0023_01', 'State': 0}
+  [581] {'Name': 'S0100_01', 'State': 0}
+  [582] {'Name': 'S0101_01', 'State': 0}
+  [583] {'Name': 'S0105_01', 'State': 0}
+  [584] {'Name': 'S0301_01', 'State': 0}
+  [585] {'Name': 'S0501_01', 'State': 0}
+  [586] {'Name': 'S2001_01', 'State': 0}
+  [587] {'Name': 'S2002_01', 'State': 0}
+  [588] {'Name': 'S2003_01', 'State': 0}
+  [589] {'Name': 'S2003_02', 'State': 0}
+  [590] {'Name': 'S2503_Break_01_001', 'State': 0}
+  [591] {'Name': 'S8000', 'State': 0}
+  [592] {'Name': 'S8400', 'State': 0}
+  [593] {'Name': 'S9001', 'State': 0}
+  [594] {'Name': 'S9100', 'State': 0}
+  [595] {'Name': 'S9200', 'State': 0}
+  [596] {'Name': 'S9904_01', 'State': 0}
+  [597] {'Name': 'S9904_02', 'State': 0}
+  [598] {'Name': 'S9906_01', 'State': 0}
+  [599] {'Name': 'S9906_01_Option_01', 'State': 0}
+  [600] {'Name': 'S9906_01_Option_02', 'State': 0}
+  [601] {'Name': 'S9906_01_Option_03', 'State': 0}
+  [602] {'Name': 'S9906_01_Option_04', 'State': 0}
+  [603] {'Name': 'S9907_01', 'State': 0}
+  [604] {'Name': 'Shop_01', 'State': 930}
+  [605] {'Name': 'T0001', 'State': 0}
+  [606] {'Name': 'T0002', 'State': 0}
+  [607] {'Name': 'T0003', 'State': 0}
+  [608] {'Name': 'Talk_Brother2_00', 'State': 0}
+  [609] {'Name': 'Talk_Brother3', 'State': 0}
+  [610] {'Name': 'Talk_Brother3_00', 'State': 0}
+  [611] {'Name': 'Talk_Brother3_Option_01', 'State': 0}
+  [612] {'Name': 'Talk_Brother3_Option_02', 'State': 0}
+  [613] {'Name': 'Talk_Brother3_Option_03', 'State': 0}
+  [614] {'Name': 'Talk_Brother3_Option_04', 'State': 0}
+  [615] {'Name': 'Talk_Brother3_Option_05', 'State': 0}
+  [616] {'Name': 'Talk_Brother4', 'State': 1}
+  [617] {'Name': 'Talk_Brother4_00', 'State': 1}
+  [618] {'Name': 'Talk_Brother4_00_01', 'State': 1}
+  [619] {'Name': 'Talk_Brother4_00_02', 'State': 1}
+  [620] {'Name': 'Talk_Brother4_00_03', 'State': 0}
+  [621] {'Name': 'Talk_Brother4_Option_01', 'State': 0}
+  [622] {'Name': 'Talk_Brother4_Option_02', 'State': 0}
+  [623] {'Name': 'Talk_Brother4_Option_03', 'State': 0}
+  [624] {'Name': 'Talk_Count_01', 'State': 0}
+  [625] {'Name': 'Talk_Count_01', 'State': 0}
+  [626] {'Name': 'Talk_Girl_04_10', 'State': 0}
+  [627] {'Name': 'Talk_Girl_05', 'State': 0}
+  [628] {'Name': 'Talk_Girl_05_01', 'State': 0}
+  [629] {'Name': 'Talk_Girl_05_01_001', 'State': 0}
+  [630] {'Name': 'Talk_Girl_05_02', 'State': 0}
+  [631] {'Name': 'Talk_Girl_05_02_001', 'State': 0}
+  [632] {'Name': 'Talk_Girl_05_03', 'State': 0}
+  [633] {'Name': 'Talk_Girl_05_04', 'State': 0}
+  [634] {'Name': 'Talk_Girl_05_05', 'State': 0}
+  [635] {'Name': 'Talk_Girl_05_06', 'State': 0}
+  [636] {'Name': 'Talk_Girl_05_07', 'State': 0}
+  [637] {'Name': 'Talk_Girl_05_08', 'State': 0}
+  [638] {'Name': 'Talk_Girl_05_09', 'State': 0}
+  [639] {'Name': 'Talk_Girl_05_09_001', 'State': 0}
+  [640] {'Name': 'Talk_Girl_05_10', 'State': 0}
+  [641] {'Name': 'Talk_Girl_05_11', 'State': 0}
+  [642] {'Name': 'Talk_Girl_05_11_001', 'State': 0}
+  [643] {'Name': 'Talk_Girl_05_12', 'State': 0}
+  [644] {'Name': 'Talk_Girl_05_12_001', 'State': 0}
+  [645] {'Name': 'Talk_Girl_05_13', 'State': 0}
+  [646] {'Name': 'Talk_Girl_05_13_001', 'State': 0}
+  [647] {'Name': 'Talk_Option_01', 'State': 0}
+  [648] {'Name': 'Talk_Option_02', 'State': 0}
+  [649] {'Name': 'Talk_Option_03', 'State': 0}
+  [650] {'Name': 'Talk_Option_04', 'State': 0}
+  [651] {'Name': 'Talk_Option_05', 'State': 0}
+  [652] {'Name': 'Talk_Option_06', 'State': 0}
+  [653] {'Name': 'Talk_Option_07', 'State': 0}
+  [654] {'Name': 'Talk_Option_08', 'State': 0}
+  [655] {'Name': 'Talk_Option_09', 'State': 0}
+  [656] {'Name': 'Talk_Option_10', 'State': 0}
+  [657] {'Name': 'Talk_Sister1_00', 'State': 0}
+  [658] {'Name': 'TC0001', 'State': 0}
+  [659] {'Name': 'TC0002', 'State': 0}
+  [660] {'Name': 'TC0003', 'State': 0}
+  [661] {'Name': 'TC0004', 'State': 0}
+  [662] {'Name': 'TC0005', 'State': 0}
+  [663] {'Name': 'TC0006', 'State': 0}
+  [664] {'Name': 'TC0007', 'State': 0}
+  [665] {'Name': 'TC0008', 'State': 0}
+  [666] {'Name': 'TC0009', 'State': 0}
+  [667] {'Name': 'TC0010', 'State': 0}
+  [668] {'Name': 'test', 'State': 0}
+  [669] {'Name': 'E12006', 'State': 0}
+  [670] {'Name': 'E12104', 'State': 0}
+  [671] {'Name': 'E14003', 'State': 0}
+  [672] {'Name': 'G30012', 'State': 0}
+  [673] {'Name': 'G30013', 'State': 0}
+  [674] {'Name': 'M00023', 'State': 0}
+  [675] {'Name': 'M10023', 'State': 0}
+  [676] {'Name': 'M20031', 'State': 0}
+  [677] {'Name': 'M40052', 'State': 0}
+  [678] {'Name': 'M60072', 'State': 0}
+  [679] {'Name': 'M80017', 'State': 0}
+  [680] {'Name': 'M80023', 'State': 0}
+  [681] {'Name': 'M80024', 'State': 0}
+  [682] {'Name': 'M80025', 'State': 0}
+  [683] {'Name': 'M80026', 'State': 0}
+  [684] {'Name': 'M80027', 'State': 0}
+  [685] {'Name': 'M80028', 'State': 0}
+  [686] {'Name': 'M80029', 'State': 0}
+  [687] {'Name': 'M80030', 'State': 0}
+  [688] {'Name': 'M80031', 'State': 0}
+  [689] {'Name': 'M80032', 'State': 0}
+  [690] {'Name': 'M80033', 'State': 0}
+  [691] {'Name': 'M80034', 'State': 0}
+  [692] {'Name': 'M80035', 'State': 0}
+  [693] {'Name': 'M80036', 'State': 0}
+  [694] {'Name': 'M80037', 'State': 0}
+  [695] {'Name': 'M80038', 'State': 0}
+  [696] {'Name': 'M80039', 'State': 0}
+  [697] {'Name': 'M80040', 'State': 0}
+  [698] {'Name': 'M80041', 'State': 0}
+  [699] {'Name': 'M80042', 'State': 0}
+  [700] {'Name': 'M81010', 'State': 0}
+  [701] {'Name': 'M81011', 'State': 0}
+  [702] {'Name': 'M81012', 'State': 0}
+  [703] {'Name': 'NewGamePlus', 'State': 0}
+  [704] {'Name': 'S0025_01', 'State': 0}
+  [705] {'Name': 'S0604_01', 'State': 0}
+  [706] {'Name': 'Z00001', 'State': 1}
+
+==============================================================================
+### EventFlags 命名前缀统计
+==============================================================================
+  M           385
+  E            60
+  Talk         50
+  G            36
+  S            34
+  A            20
+  H            20
+  P            12
+  Facility     11
+  Meeting      11
+  TC           10
+  C             7
+  FacilityAdd    7
+  Pharmacy      6
+  B             4
+  Back          4
+  Ch            4
+  Door          4
+  T             3
+  Kitchen       2
+  N             2
+  ActionCheck    1
+  Alchemy       1
+  Alpha         1
+  BattleResult    1
+  Center        1
+  D             1
+  Demo          1
+  Guard         1
+  K             1
+  Prison        1
+  Prologue      1
+  Shop          1
+  test          1
+  NewGamePlus    1
+  Z             1

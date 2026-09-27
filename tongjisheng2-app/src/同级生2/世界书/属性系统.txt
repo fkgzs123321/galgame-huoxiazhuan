@@ -1,0 +1,333 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 6维属性系统（恋爱模拟基础 · 单一来源）
+   ════════════════════════════════════════════════════════════
+   职责：定义 6 维基础属性（charm/academic/physical/social/perception/willpower）
+         作为恋爱卡基础数值系统，用于判定恋爱事件成功率。
+   属性是天赋维度，与 12 核心技能（SKILL_RULES）正交：
+     - 属性 = 天赋（先天基础值，每日缓慢增长/衰减）
+     - 技能 = 熟练度（后天学习，行动提升）
+   范围 0-100，单次变化 ±10 上限由思维链第 6 步强制校验。
+
+   引用关系：
+     - 全局规则总表.txt → PLAYER_IDENTITIES.initial_stats 引用本表分档定义
+     - schema.ts → 主角.charm/academic/physical/social/perception/willpower 变量源
+     - 思维链.txt → 第 6 步数值校验引用本表 growth/decay 规则
+     - 角色性格控制器.txt → 读取本表影响女角初印象与告白判定
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ───────── 一、6维属性定义（0-100，恋爱卡基础维度） ───────── */
+const PLAYER_STATS = {
+  charm: {
+    name: '魅力',
+    desc: '影响告白成功率、女角初印象、社交开场',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '平庸':     { range: [0, 19],   desc: '女角初印象不佳，社交开场困难' },
+      '普通':     { range: [20, 39],  desc: '基础社交，无明显加成' },
+      '中上':     { range: [40, 59],  desc: '初印象良好，社交顺畅' },
+      '出众':     { range: [60, 79],  desc: '女角初印象加成，告白成功率提升' },
+      '极具魅力': { range: [80, 100], desc: '女角主动靠近，告白大幅加成' }
+    },
+    categories: {
+      romantic:   { name: '恋爱魅力', desc: '影响告白/约会/亲密互动判定' },
+      social:     { name: '社交魅力', desc: '影响群体社交开场与第一印象' },
+      intimidate: { name: '威慑魅力', desc: '影响威慑/压制场景判定' }
+    }
+  },
+  academic: {
+    name: '学业',
+    desc: '影响学校事件、家庭教师打工、美铃线',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '学渣':   { range: [0, 19],   desc: '学校事件易失败，无法家教' },
+      '中下':   { range: [20, 39],  desc: '基础学业，事件成功率低' },
+      '中上':   { range: [40, 59],  desc: '学业稳定，可解锁家教打工' },
+      '优等生': { range: [60, 79],  desc: '学校事件加成，美铃线友好' },
+      '学霸':   { range: [80, 100], desc: '美铃线核心解锁，学业事件必成' }
+    },
+    categories: {
+      exam:  { name: '考试', desc: '影响考试类事件判定' },
+      study: { name: '学习', desc: '影响学习行动效率与属性增长' },
+      tutor: { name: '辅导', desc: '影响家庭教师打工解锁与收益' }
+    }
+  },
+  physical: {
+    name: '体质',
+    desc: '影响打工效率、行动次数、H持久度',
+    range: [0, 100],
+    default: 80,
+    thresholds: {
+      '虚弱':     { range: [0, 19],   desc: '强制休息，无法打工/锻炼' },
+      '普通':     { range: [20, 39],  desc: '基础行动，打工效率低' },
+      '健康':     { range: [40, 59],  desc: '正常行动，打工效率中' },
+      '强健':     { range: [60, 79],  desc: '行动效率高，H持久度加成' },
+      '精力充沛': { range: [80, 100], desc: '行动次数上限+1，H持久度满' }
+    },
+    action_limit_rule: 'physical < 20 时强制休息，无法再行动；physical ≥ 80 时每日行动次数 +1（上限 6）',
+    h_physical_note: 'H 场景持久度由 physical 档位决定，精力充沛档可触发"持久"判定'
+  },
+  social: {
+    name: '社交',
+    desc: '影响对话选项、人脉建立、群体事件',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '孤僻':     { range: [0, 19],   desc: '对话选项受限，人脉建立困难' },
+      '内向':     { range: [20, 39],  desc: '基础对话，群体事件边缘' },
+      '普通':     { range: [40, 59],  desc: '正常社交，对话选项齐全' },
+      '活跃':     { range: [60, 79],  desc: '群体事件加成，人脉扩展' },
+      '社交达人': { range: [80, 100], desc: '群体事件主导，特殊对话解锁' }
+    },
+    categories: {
+      romantic: { name: '恋爱社交', desc: '影响约会/调情对话选项' },
+      business: { name: '商务社交', desc: '影响打工/谈判场景判定' },
+      threat:   { name: '威慑社交', desc: '影响威慑/谈判类事件' }
+    }
+  },
+  perception: {
+    name: '感知',
+    desc: '影响女角情绪感知、隐藏剧情发现、艺术事件',
+    range: [0, 100],
+    default: 30,
+    thresholds: {
+      '迟钝':     { range: [0, 19],   desc: '无法察觉女角情绪，错过隐藏剧情' },
+      '普通':     { range: [20, 39],  desc: '基础感知，无隐藏剧情发现' },
+      '细腻':     { range: [40, 59],  desc: '可察觉女角微表情，艺术事件加成' },
+      '敏锐':     { range: [60, 79],  desc: '解锁隐藏剧情发现，礼物偏好判断准' },
+      '洞察人心': { range: [80, 100], desc: '隐藏剧情全解锁，女角心思全知' }
+    },
+    hidden_plot_rule: 'perception ≥ 60 可发现女角微表情与隐藏剧情线索'
+  },
+  willpower: {
+    name: '意志',
+    desc: '影响抵抗诱惑、坚持行动、危机应对、坏结局规避',
+    range: [0, 100],
+    default: 50,
+    thresholds: {
+      '软弱':     { range: [0, 19],   desc: '易被诱惑，坏结局规避率极低，触发 BAD_END 预警' },
+      '动摇':     { range: [20, 39],  desc: '意志不坚，易受外界影响' },
+      '普通':     { range: [40, 59],  desc: '基础意志，可抵抗一般诱惑' },
+      '坚定':     { range: [60, 79],  desc: '意志坚定，危机应对加成，坏结局规避率提升' },
+      '钢铁意志': { range: [80, 100], desc: '不被情绪左右，坏结局规避率大幅加成' }
+    },
+    bad_ending_rule: 'willpower < 20 时易被诱惑，坏结局规避率大幅降低，触发 BAD_END 预警'
+  }
+};
+
+/* ───────── 二、属性增长机制 ───────── */
+const GROWTH_RULES = {
+  daily_natural_growth: {
+    rule: '根据行动类型，对应属性 +1~3/日',
+    actions: {
+      '学习':       { stat: 'academic',   gain: 3, time_cost: '1 时段' },
+      '锻炼':       { stat: 'physical',    gain: 3, time_cost: '1 时段' },
+      '梳洗打扮':   { stat: 'charm',      gain: 2, time_cost: '0.5 时段' },
+      '社交聊天':   { stat: 'social',     gain: 2, time_cost: '1 时段' },
+      '观察女角':   { stat: 'perception', gain: 2, time_cost: '即时' }
+    }
+  },
+  work_growth: {
+    rule: '打工同时提升属性（建筑工地+physical/+willpower，家庭教师+academic/+willpower）',
+    jobs: {
+      '便利店打工':     { stats: { physical: 0, willpower: 0 },   note: '基础工作，无属性提升' },
+      '车站搬运':       { stats: { physical: 0, willpower: 0 },   note: '体力消耗大，无属性提升' },
+      '家教':           { stats: { academic: +1, willpower: +1 }, note: '需 academic ≥ 50，学业+意志双提升' },
+      '温泉旅馆服务':   { stats: { willpower: +2, charm: 0 },    note: '意志提升，需在温泉乡' },
+      '偶像助理':       { stats: { willpower: +3, charm: 0 },    note: '需舞岛可怜好感 ≥ 40' }
+    }
+  },
+  event_growth: {
+    rule: '关键剧情选择正确 +对应属性',
+    examples: {
+      '学校事件正确选择': { stat: 'academic',   gain: 3 },
+      '群体事件主导':     { stat: 'social',     gain: 5 },
+      '艺术事件正确判断': { stat: 'perception', gain: 3 },
+      '正义行为':         { stat: 'willpower', gain: 3 }
+    }
+  },
+  training_growth: {
+    rule: '特定地点训练对应属性（健身房/图书馆等）',
+    locations: {
+      '健身房':   { stat: 'physical',    gain: 3, time_cost: '1 时段' },
+      '图书馆':   { stat: 'academic',   gain: 3, time_cost: '1 时段' },
+      '武道馆':   { stat: 'physical',    gain: 5, time_cost: '1 时段' },
+      '美术室':   { stat: 'perception', gain: 2, time_cost: '1 时段' }
+    }
+  },
+  cap_rule: {
+    per_change_max: 10,
+    per_change_min: -10,
+    enforced_by: '思维链第 6 步强制校验',
+    note: '单次变化 ±10 上限，防止数值暴涨/暴跌'
+  }
+};
+
+/* ───────── 三、属性衰减机制 ───────── */
+const DECAY_RULES = {
+  daily_natural_decay: {
+    rule: '每日凌晨自动衰减',
+    decay: {
+      physical:  { amount: -5, condition: '不休息时', note: '每日子夜自动 -5' },
+      academic: { amount: -2, condition: '不学习时', note: '每日子夜自动 -2' }
+    }
+  },
+  negative_event_decay: {
+    rule: '负面事件触发属性下降（违法行为/被发现偷窥等）',
+    events: {
+      '违法行为被发现': { stats: { willpower: -15 }, note: '偷窥/尾随被抓' },
+      '暴力威胁女角':   { stats: { willpower: -10 }, note: '触发法律预警' },
+      '强制猥亵':       { stats: { willpower: -30 }, note: '触发 BAD_END_1_报警' }
+    }
+  },
+  hunger_impact: {
+    rule: 'hunger ≥ 70 时所有属性 -10',
+    condition: 'hunger ≥ 70',
+    effect: { all_stats: -10 },
+    note: '饥饿debuff 全属性下降'
+  },
+  sleep_impact: {
+    rule: 'sleep_quality < 30 时 charm -5 / social -5',
+    condition: 'sleep_quality < 30',
+    effect: { charm: -5, social: -5 },
+    note: '睡眠不足 影响魅力与社交'
+  }
+};
+
+/* ───────── 四、属性对恋爱的影响 ───────── */
+const ROMANCE_INFLUENCE = {
+  confession_success_rate: {
+    formula: 'base 30% + charm×0.3% + social×0.2% + perception×0.1% + willpower×0.1%',
+    base: 30,
+    weights: { charm: 0.3, social: 0.2, perception: 0.1, willpower: 0.1 },
+    note: '告白成功率，需 affection ≥ 60 且 relationship_stage ≥ 心动'
+  },
+  first_impression_bonus: {
+    formula: '首次见面好感 + charm/10 - 5',
+    note: '女角初次见面好感度加成'
+  },
+  date_atmosphere: {
+    rule: 'perception 高时可选对话选项更多',
+    thresholds: {
+      'perception ≥ 40': '约会对话选项 +1',
+      'perception ≥ 60': '约会对话选项 +2',
+      'perception ≥ 80': '约会对话选项 +3'
+    }
+  },
+  gift_effect: {
+    rule: 'perception 高时礼物偏好判断更准',
+    thresholds: {
+      'perception ≥ 40': '可判断女角礼物大类偏好',
+      'perception ≥ 60': '可判断女角礼物具体偏好',
+      'perception ≥ 80': '可判断女角禁忌礼物'
+    }
+  },
+  hidden_plot_discovery: {
+    rule: 'perception ≥ 60 可发现隐藏剧情线索',
+    threshold: 60,
+    note: '高感知发现女角微表情、隐藏剧情线索'
+  },
+  work_unlock: {
+    rules: {
+      '家庭教师': { requires: { academic: 30 }, note: 'academic ≥ 30 解锁' },
+      '建筑工地': { requires: { physical: 15 },  note: 'physical ≥ 15 解锁' }
+    }
+  }
+};
+
+/* ───────── 五、属性初始化（5 种 player_identity） ───────── */
+/* 5身份初始属性：参 全局规则总表.txt.PLAYER_IDENTITIES[x].initial_stats（避免重复） */
+var PLAYER_INITIAL_STATS = {};
+if (typeof PLAYER_IDENTITIES !== 'undefined' && PLAYER_IDENTITIES) {
+  for (var _idKey in PLAYER_IDENTITIES) {
+    if (PLAYER_IDENTITIES[_idKey] && PLAYER_IDENTITIES[_idKey].initial_stats) {
+      PLAYER_INITIAL_STATS[_idKey] = PLAYER_IDENTITIES[_idKey].initial_stats;
+    }
+  }
+}
+
+/* ───────── 六、属性 category 修正（±0~±15） ───────── */
+const CATEGORY_MODIFIERS = {
+  charm_modifiers: {
+    romantic: 0,
+    social: 0,
+    intimidate: 0,
+    range: [0, 15],
+    note: 'charm 在恋爱/社交/威慑场景的细分修正'
+  },
+  academic_modifiers: {
+    exam: 0,
+    study: 0,
+    tutor: 0,
+    range: [0, 15],
+    note: 'academic 在考试/学习/辅导场景的细分修正'
+  },
+  social_modifiers: {
+    romantic: 0,
+    business: 0,
+    threat: 0,
+    range: [0, 15],
+    note: 'social 在恋爱/商务/威慑场景的细分修正'
+  },
+  cap_rule: {
+    per_category_max: 15,
+    per_category_min: -15,
+    note: 'category 修正单次变化 ±15 上限'
+  }
+};
+
+/* ─── 辅助函数：根据属性值获取分档 ─── */
+function getStatStage(statName, value) {
+  const v = Number(value) || 0;
+  const stat = PLAYER_STATS[statName];
+  if (!stat || !stat.thresholds) return null;
+  for (const key in stat.thresholds) {
+    const t = stat.thresholds[key];
+    if (v >= t.range[0] && v <= t.range[1]) return { name: key, ...t };
+  }
+  return null;
+}
+
+/* ─── 辅助函数：获取身份初始属性 ─── */
+function getInitialStats(identityKey) {
+  /* 修复：PLAYER_INITIAL_STATS 的键名来自 PLAYER_IDENTITIES 的 Object.keys
+     即 '原作主角'/'川尻信良'/'长冈芳树'/'西御寺有友'/'天道新干线'/'自定义'
+     旧代码 'P1_原作主角' 是错误键名，永远返回 undefined */
+  return PLAYER_INITIAL_STATS[identityKey] || PLAYER_INITIAL_STATS['原作主角'] || {};
+}
+
+/* ─── 辅助函数：计算告白成功率 ─── */
+function calcConfessionRate(stats) {
+  const base = ROMANCE_INFLUENCE.confession_success_rate.base;
+  const w = ROMANCE_INFLUENCE.confession_success_rate.weights;
+  const charm = Number(stats.charm) || 0;
+  const social = Number(stats.social) || 0;
+  const perception = Number(stats.perception) || 0;
+  const willpower = Number(stats.willpower) || 0;
+  return Math.min(100, Math.round(base + charm * w.charm + social * w.social + perception * w.perception + willpower * w.willpower));
+}
+
+/* ─── 辅助函数：计算初印象加成 ─── */
+function calcFirstImpression(charm) {
+  const c = Number(charm) || 0;
+  return Math.round(c / 10 - 5);
+}
+%>
+
+[6维属性系统已加载。所有 EJS 控制器必须从本表读取属性定义、分档、增长/衰减规则与恋爱影响。属性是天赋维度，与 12 核心技能（SKILL_RULES）正交，单次变化 ±10 上限由思维链第 6 步强制校验。]
+
+<%= JSON.stringify({
+  total_stats: Object.keys(PLAYER_STATS).length,
+  stat_names: Object.keys(PLAYER_STATS),
+  stat_descriptions: Object.fromEntries(Object.keys(PLAYER_STATS).map(k => [k, PLAYER_STATS[k].desc])),
+  identities: Object.keys(PLAYER_INITIAL_STATS),
+  growth_actions_count: Object.keys(GROWTH_RULES.daily_natural_growth.actions).length,
+  decay_rule_count: Object.keys(DECAY_RULES).length,
+  romance_rule_count: Object.keys(ROMANCE_INFLUENCE).length,
+  category_modifier_groups: ['charm_modifiers', 'academic_modifiers', 'social_modifiers'],
+  cap_rule: GROWTH_RULES.cap_rule,
+  note: '6维属性系统已加载：charm(魅力)/academic(学业)/physical(体质)/social(社交)/perception(感知)/willpower(意志)。无战斗属性，纯恋爱卡基础数值系统。'
+}, null, 2) %>

@@ -1,0 +1,138 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · D0指令 · 上学模式
+   ════════════════════════════════════════════════════════════
+   职责：当 场景模式='上学' 时加载，定义该模式的系统提示与规则
+   由D0系统控制器（按 临时.场景模式）加载
+   引用全局规则总表：SURVIVAL_RULES / DIFFICULTY_MODIFIERS / SKILL_RULES / BEHAVIOR_TABLE
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const SCHOOL_MODE = {
+  mode_name: '上学',
+  time_cost: '2时段（上午+下午，全天）',
+  turn_actions_cost: 2,
+  allowed_actions: [
+    '上课（上午：基础学科/下午：选修或自习）',
+    '自习（图书馆/教室/空教室，学业 +3~5）',
+    '社团活动（弓箭部/文艺部/体育部，触发技能训练）',
+    '图书馆查阅资料（智力 训练 +2）',
+    '学生会事务（社交 训练 +2，与片桐美铃互动）',
+    '校园社交（与同学/老师互动，按当日 schedule 锁定表）'
+  ],
+  forbidden_actions: [
+    '周末上学（周六/周日学校关闭，禁止触发）',
+    '深夜上学（学校夜间关闭）',
+    '玩家身份为"归乡青年"（school_access=false，禁止上学）',
+    '疲劳≥80 强行上学（触发晕倒事件）',
+    '在校内违法（偷窥/暴力，触发 BAD_END_2_学园开除）'
+  ],
+  sub_scenes: [
+    { name: '课堂', academic_gain: 3, fatigue_cost: 5, note: '基础学科，按课表' },
+    { name: '自习室', academic_gain: 5, fatigue_cost: 4, note: '安静自习，需 智力≥40' },
+    { name: '图书馆', academic_gain: 4, fatigue_cost: 3, note: '查阅资料，智力 +2' },
+    { name: '弓箭练习场', academic_gain: 0, fatigue_cost: 8, note: '筱原泉美社团，敏捷 +2' },
+    { name: '体育馆', academic_gain: 0, fatigue_cost: 10, note: '体育部，力量 +2 / 体力 +3' },
+    { name: '学生会室', academic_gain: 1, fatigue_cost: 3, note: '与片桐美铃互动，社交 +2' }
+  ],
+  variable_changes: {
+    fatigue: '+10/全天（上午+下午累计，按子场景微调）',
+    mood: '-5~+5（按社交质量：独自自习 -5，与同学互动 +0~+5）',
+    hunger: '+20/全天（两时段累计，引用 SURVIVAL_RULES.hunger.auto_increment_per_slot=10 ×2）',
+    thirst: '+30/全天（两时段累计，引用 SURVIVAL_RULES.thirst.auto_increment_per_slot=15 ×2）',
+    money: '0（上学不消耗金钱，但午餐需另计 -200~500）',
+    academic: '+3~5/天（按子场景：课堂 +3，自习室 +5，图书馆 +4）',
+    skill_gain: '智力 +2（图书馆）/ 敏捷 +2（弓箭部）/ 力量 +2（体育馆）/ 社交 +2（学生会）'
+  },
+  difficulty_modifiers: {
+    '轻松': '学业 获得 ×1.2（DIFFICULTY_MODIFIERS.increase_mult=1.5 由模式调整为 1.2），疲劳 ×0.8',
+    '普通': '学业 获得 ×1.0（基准值），疲劳 ×1.0',
+    '挑战': '学业 获得 ×0.8（DIFFICULTY_MODIFIERS.increase_mult=0.9 由模式覆盖至 0.8），疲劳 ×1.2',
+    '地狱': '学业 获得 ×0.6，疲劳 ×1.5（DIFFICULTY_MODIFIERS.increase_mult=0.3 由模式放宽至 0.6）'
+  },
+  special_triggers: [
+    '学业 ≥ 80 → 解锁"学霸"成就，片桐美铃好感 +10',
+    '学业 ≥ 90 → 触发"保送推荐"事件，学业 训练效率 +1',
+    '校园内遇见 齐藤澪(row_id=15)/齐藤澪奈(row_id=16) → 互斥攻略触发点',
+    '校园内遇见 加藤美纪(row_id=4) → 神秘眼镜少女事件链触发',
+    '校园内遇见 片桐美铃(row_id=11) → 师生暧昧线推进',
+    '校园内遇见 都筑梢江(row_id=7) → 学妹跟踪事件',
+    '体育课时 力量≥50 → 触发"体育祭预热"事件，声誉 +3',
+    '在校内偷窥/暴力 → 触发 BAD_END_2_学园开除',
+    '当天为周末（周六/周日）→ 学校关闭，禁止上学模式'
+  ],
+  system_prompt: `[上学模式 · 系统提示模板]
+你正在生成同级生2 校园场景的叙事。请按以下结构生成：
+
+【校园环境】描写八十八学园的冬日校园氛围（校庭落叶/体育馆回声/走廊脚步声/教室暖炉），突出 1995 年日本高中寒假补课气息。注意：寒假期间学校部分开放，仅 day01-17（12-22~01-07），周末关闭。
+
+【子场景切换】按玩家选择切换子场景：
+- 课堂：描写上课内容（数学/国语/英语/社会），老师讲课，同学窃窃私语
+- 自习室：描写安静自习氛围，翻书声，窗外阳光
+- 图书馆：描写书架与旧书气息，可能遇见加藤美纪
+- 弓箭练习场：描写筱原泉美指导射箭，弓弦声
+- 体育馆：描写体育课/社团训练，球鞋摩擦声
+- 学生会室：描写片桐美铃处理事务，茶香
+
+【学业成长】描写主角的学习过程（至少 2 个具体动作）：
+- 课堂：听讲/记笔记/回答问题
+- 自习：解题/背诵/查资料
+- 社团：训练动作/与社长互动
+显式写出 学业 增量与 技能 增量。
+
+【校园社交】穿插与同学/老师的互动（按当日 schedule 锁定表，禁止凭空让女角出现）：
+- 同学闲聊（信良的柔道八卦/芳树的偷拍传闻）
+- 老师点名（片桐美铃的温柔关切/天道新干线的虐待狂训斥）
+- 偶遇女角（齐藤姐妹/加藤美纪/都筑梢江等校园 NPC）
+
+【午餐时段】描写午餐（自带便当/便利店便当/咖啡店简餐），饥饿 -20~40，金钱 -200~500。
+
+【输出格式】生成 200-400 字叙事段落，第一人称（"我"的视角）。变量更新由额外模型处理，禁止输出 <UpdateVariable> 块。叙事结束后按顺序输出：
+<StatusPlaceHolderImpl/>
+<UpdateTable>
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '上学·八十八学园', '<纪要200-600字，含上午课程描述/疲劳+5/心情mood变化/午餐-lunch消费>');
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '上学·八十八学园', '<纪要200-600字，含下午课程描述/疲劳+5/无心情变化/无金钱变化>');
+</UpdateTable>
+
+请严格遵守 SKILL_RULES.attribute_synergy（属性联动加成）与 DIFFICULTY_MODIFIERS（难度修正学业获得）。周末与深夜禁止上学。归乡青年身份禁止上学。`
+};
+%>
+
+[D0指令 · 上学模式已加载]
+mode_name: <%= SCHOOL_MODE.mode_name %>
+time_cost: <%= SCHOOL_MODE.time_cost %>
+turn_actions_cost: <%= SCHOOL_MODE.turn_actions_cost %>（每楼层 30 分钟，本时段楼层数 = 本时段累计楼层数）
+
+【允许行动】
+<% SCHOOL_MODE.allowed_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【禁止行动】
+<% SCHOOL_MODE.forbidden_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【子场景与成长】
+<% SCHOOL_MODE.sub_scenes.forEach(s => { %>- <%= s.name %>：学业 +<%= s.academic_gain %>，疲劳 +<%= s.fatigue_cost %>，<%= s.note %>
+<% }); %>
+
+【变量变化规则（引用全局规则总表）】
+- 疲劳: <%= SCHOOL_MODE.variable_changes.fatigue %>
+- 心情: <%= SCHOOL_MODE.variable_changes.mood %>
+- 饥饿: <%= SCHOOL_MODE.variable_changes.hunger %>
+- 口渴: <%= SCHOOL_MODE.variable_changes.thirst %>
+- 现金: <%= SCHOOL_MODE.variable_changes.money %>
+- 学业: <%= SCHOOL_MODE.variable_changes.academic %>
+- 技能加成: <%= SCHOOL_MODE.variable_changes.skill_gain %>
+
+【难度修正（引用 DIFFICULTY_MODIFIERS）】
+<% Object.keys(SCHOOL_MODE.difficulty_modifiers).forEach(d => { %>- <%= d %>：<%= SCHOOL_MODE.difficulty_modifiers[d] %>
+<% }); %>
+
+【特殊事件触发】
+<% SCHOOL_MODE.special_triggers.forEach(t => { %>- <%= t %>
+<% }); %>
+
+【系统提示模板】
+<%= SCHOOL_MODE.system_prompt %>
+
+[上学模式规则输出完毕。AI 必须按上述系统提示生成叙事，并严格执行变量变化规则与校园人物锁定。]

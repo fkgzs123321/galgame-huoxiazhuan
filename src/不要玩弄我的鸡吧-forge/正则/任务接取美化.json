@@ -1,0 +1,15 @@
+{
+  "id": "fjb-task-accept-beautify",
+  "scriptName": "任务接取美化",
+  "findRegex": "/<TaskAccept\\s+name=\"([^\"]+)\"\\s+type=\"([^\"]+)\"\\s+difficulty=\"([^\"]+)\"\\s+reward=\"([^\"]+)\"\\/>/g",
+  "replaceString": "<div class=\"fjb-taskaccept\" data-type=\"$2\" data-difficulty=\"$3\"><div class=\"fjb-taskaccept-tag\">$2任务</div><div class=\"fjb-taskaccept-body\"><div class=\"fjb-taskaccept-name\">$1</div><div class=\"fjb-taskaccept-meta\"><span class=\"fjb-taskaccept-difficulty\">难度 $3</span><span class=\"fjb-taskaccept-reward\">奖励 · $4</span></div></div><div class=\"fjb-taskaccept-icon\">❗</div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

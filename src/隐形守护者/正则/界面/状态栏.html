@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <style>
+    :root {
+      --bg-card: linear-gradient(165deg, #2a2622 0%, #1e1b18 100%);
+      --bg-inner: rgba(255, 255, 255, 0.04);
+      --border: rgba(193, 185, 173, 0.22);
+      --text: #c1b9ad;
+      --text-dim: #9e978e;
+      --text-muted: #645e55;
+      --accent: #7d4940;
+      --accent-soft: #5a6b5e;
+      --danger: #b4534a;
+      --gold: #b8863d;
+      --ok: #7a9e8e;
+    }
+    body { margin: 0; padding: 0; font-family: "Noto Serif SC", "Songti SC", "PingFang SC", serif; color: var(--text); box-sizing: border-box; background: transparent; }
+    .mvu-container {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      box-sizing: border-box;
+    }
+    .stage-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 8px; margin-bottom: 6px; }
+    .stage-title { font-size: 15px; font-weight: 700; color: #f4f1eb; letter-spacing: 0.06em; }
+    .stage-ep { font-size: 11px; color: var(--text-dim); }
+    .stage-meta { font-size: 10px; color: var(--text-muted); font-family: "Courier New", monospace; width: 100%; }
+    .chip { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 600; border: 1px solid transparent; white-space: nowrap; }
+    .chip-risk-low { color: var(--ok); background: rgba(122, 158, 142, 0.12); border-color: rgba(122, 158, 142, 0.28); }
+    .chip-risk-mid { color: var(--gold); background: rgba(184, 134, 61, 0.12); border-color: rgba(184, 134, 61, 0.28); }
+    .chip-risk-high { color: #c97a5a; background: rgba(201, 122, 90, 0.12); border-color: rgba(201, 122, 90, 0.3); }
+    .chip-risk-crit { color: #fff; background: var(--danger); border-color: transparent; }
+    .chip-dead { color: #fff; background: #5c2020; border-color: transparent; }
+    .chip-org { color: var(--text-dim); background: var(--bg-inner); border-color: var(--border); }
+    .chip-ok { color: var(--ok); background: rgba(122, 158, 142, 0.15); border-color: rgba(122, 158, 142, 0.35); }
+    .chip-warn { color: var(--gold); background: rgba(184, 134, 61, 0.12); border-color: rgba(184, 134, 61, 0.3); }
+    .chip-off { color: var(--text-muted); background: var(--bg-inner); border-color: var(--border); opacity: 0.75; }
+    .chapter-timeline { display: flex; flex-wrap: wrap; gap: 3px; margin: 0 0 8px; }
+    .ch-pill {
+      font-size: 8px; padding: 2px 5px; border-radius: 4px; border: 1px solid var(--border);
+      color: var(--text-muted); opacity: 0.45; font-family: "Courier New", monospace; line-height: 1.3;
+    }
+    .ch-pill.past { opacity: 0.65; color: var(--accent-soft); }
+    .ch-pill.current { opacity: 1; font-weight: 700; color: #f4f1eb; background: var(--accent); border-color: transparent; }
+    .ch-pill.future { opacity: 0.35; }
+    .ch-pill.route-split { border-style: dashed; }
+    .progress-chapter { margin-bottom: 8px; }
+    .progress-chapter-label { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); margin-bottom: 3px; }
+    .progress-bar-bg { width: 100%; height: 5px; background: rgba(100, 94, 85, 0.35); border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 4px; transition: width 0.35s ease; background: var(--accent-soft); }
+    .node-rail { display: flex; gap: 3px; margin: 0 0 10px; flex-wrap: wrap; max-height: 52px; overflow: hidden; }
+    .rail-node { font-size: 8px; padding: 2px 6px; border-radius: 5px; border: 1px solid var(--border); color: var(--text-muted); opacity: 0.4; font-family: "Courier New", monospace; }
+    .rail-node.past { opacity: 0.7; color: var(--accent-soft); }
+    .rail-node.current { opacity: 1; font-weight: 700; color: #f4f1eb; background: var(--accent); border-color: transparent; }
+    .rail-node.milestone { border-color: rgba(184, 134, 61, 0.45); }
+    .section { margin-bottom: 10px; }
+    .section-title { font-size: 9px; color: var(--text-muted); letter-spacing: 0.14em; margin-bottom: 5px; text-transform: uppercase; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .metric { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-inner); }
+    .metric.span2 { grid-column: 1 / -1; }
+    .metric-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.06em; margin-bottom: 4px; }
+    .metric-value { font-size: 16px; font-weight: 700; font-family: "Courier New", monospace; line-height: 1.1; }
+    .metric-sub { font-size: 9px; color: var(--text-muted); margin-top: 3px; }
+    .progress-wrap { margin-top: 6px; }
+    .gate-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--bg-inner); border: 1px solid var(--border); color: var(--text-dim); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rel-list { display: flex; flex-direction: column; gap: 6px; }
+    .rel-row { display: grid; grid-template-columns: 52px 1fr; gap: 6px; align-items: center; font-size: 10px; }
+    .rel-name { font-weight: 600; color: var(--text-dim); }
+    .rel-nums { font-family: "Courier New", monospace; font-size: 9px; color: var(--text-muted); margin-bottom: 2px; }
+    .rel-bars { display: flex; flex-direction: column; gap: 3px; }
+    .rel-bar-bg { width: 100%; height: 4px; background: rgba(100, 94, 85, 0.35); border-radius: 3px; overflow: hidden; }
+    .rel-bar-fill { height: 100%; border-radius: 3px; }
+    .ability-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 10px; font-family: "Courier New", monospace; }
+    .ability-cell { padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; text-align: center; }
+    .ability-cell b { display: block; font-size: 13px; color: var(--text); }
+    .ability-cell span { color: var(--text-muted); font-size: 8px; }
+    .ability-cell small { display: block; font-size: 8px; color: var(--accent-soft); margin-top: 1px; }
+    .be-banner { display: none; margin-bottom: 8px; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(180, 83, 74, 0.45); background: rgba(92, 32, 32, 0.35); font-size: 11px; color: #e8c4c0; text-align: center; }
+    .footnote { margin-top: 8px; font-size: 9px; color: var(--text-muted); text-align: center; letter-spacing: 0.06em; line-height: 1.4; }
+    @media (max-width: 400px) {
+      .metrics { grid-template-columns: 1fr; }
+      .metric.span2 { grid-column: auto; }
+      .ability-grid { grid-template-columns: repeat(2, 1fr); }
+      .node-rail { max-height: 40px; }
+    }
+  </style>
+  <script type="module">
+    const TH_HOSTS = [window, window.parent, window.top].filter((w, i, arr) => w && arr.indexOf(w) === i);
+
+    /** 全卡章节顺序（与 MVU 剧情.当前章节 一致） */
+    const CHAPTER_CATALOG = [
+      { id: '序章', short: '序', ep: '重返故土', act: 1 },
+      { id: '第一章', short: '一', ep: '太阳之影', act: 1 },
+      { id: '第二章', short: '二', ep: '狩猎者', act: 1 },
+      { id: '第三章', short: '三', ep: '生死途', act: 2 },
+      { id: '第四章', short: '四', ep: '兄弟的藏身处', act: 2 },
+      { id: '第五章', short: '五', ep: '暗杀', act: 2 },
+      { id: '第六章扶桑', short: '六·扶', ep: '扶桑安魂曲', act: 3, route: '扶桑安魂曲' },
+      { id: '第六章至暗', short: '六·暗', ep: '至暗时刻', act: 3, route: '红色芳华' },
+      { id: '第七章丛林', short: '七·丛', ep: '丛林法则', act: 3, route: '扶桑安魂曲' },
+      { id: '第七章大风', short: '七·风', ep: '大风起兮', act: 3, route: '红色芳华' },
+      { id: '第八章美丽', short: '八·美', ep: '美丽世界', act: 4, route: '美丽世界' },
+      { id: '第八章规则', short: '八·则', ep: '游戏的规则', act: 4, route: '红色芳华' },
+      { id: '第九章', short: '九', ep: '贯彻正义', act: 4 },
+      { id: '第十章', short: '十', ep: '终局前夕', act: 4 },
+      { id: '终章', short: '终', ep: '四种结局', act: 5 },
+    ];
+
+    const NODE_RAILS = {
+      序章: ['序章-1', '序章-2', '序章-3', '序章-4', '序章-5'],
+      第一章: [
+        '第一章-0', '第一章-1', '第一章-2', '第一章-3', '第一章-4', '第一章-5',
+        '第一章-6', '第一章-7', '第一章-8', '第一章-9', '第一章-10', '第一章-11',
+        '第一章-12', '第一章-13', '第一章-14', '第一章-15',
+      ],
+      第二章: [
+        '第二章-0', '第二章-1', '第二章-2', '第二章-3', '第二章-4', '第二章-5',
+        '第二章-6', '第二章-7', '第二章-8', '第二章-9', '第二章-10', '第二章-11',
+        '第二章-12', '第二章-13', '第二章-14', '第二章-15', '第二章-16', '第二章-17',
+        '第二章-18', '第二章-19', '第二章-20', '第二章-21', '第二章-22',
+      ],
+      第三章: [
+        '第三章-0', '第三章-1', '第三章-2', '第三章-3', '第三章-4', '第三章-5',
+        '第三章-6', '第三章-7', '第三章-8', '第三章-9', '第三章-10', '第三章-11',
+        '第三章-12', '第三章-13', '第三章-14', '第三章-15', '第三章-16',
+      ],
+    };
+
+    const NODE_MILESTONE = {
+      '序章-5': '入党',
+      '第一章-0': '章首',
+      '第一章-4': '名单',
+      '第一章-15': '章末',
+      '第二章-5': '宴会',
+      '第二章-14': '分歧',
+      '第二章-22': '章末',
+      '第三章-0': '章首',
+      '第三章-14': '黄夫人',
+      '第三章-16': '章末',
+    };
+
+    const REL_TRUST_MAX = 50;
+    const REL_EMOTION_MIN = -10;
+    const REL_EMOTION_MAX = 10;
+    const GATE_FANG_TRUST = 35;
+    const GATE_ZHUANG_CH2 = 4;
+    const GATE_ZHUANG_CH3 = 7;
+    const GATE_ZHUANG_OPS_TRUST = 33;
+    const GATE_ZHUANG_OPS_EMO = 3;
+
+    const RISK_CLASS = { 低: 'chip-risk-low', 中: 'chip-risk-mid', 高: 'chip-risk-high', 临界: 'chip-risk-crit' };
+    const ROUTE_LABEL = {
+      扶桑安魂曲: '扶桑安魂曲',
+      美丽世界: '美丽世界',
+      红色芳华: '红色芳华',
+      自保: '第二章·自保',
+      共荣圈: '第二章·共荣圈',
+      刺杀浅野: '第五章·刺杀浅野',
+      继续潜伏: '第五章·继续潜伏',
+    };
+
+    const CHAPTER_RELATIONS = {
+      序章: ['方敏'],
+      第一章: ['方敏', '武藤纯子'],
+      第二章: ['方敏', '武藤纯子', '庄晓曼'],
+      第三章: ['方敏', '武藤纯子', '庄晓曼', '陆望舒'],
+      第四章: ['方敏', '武藤纯子', '庄晓曼', '陆望舒'],
+      第五章: ['方敏', '武藤纯子', '庄晓曼', '陆望舒'],
+    };
+
+    function pickHostFn(name) {
+      if (typeof window[name] === 'function') return (...args) => window[name](...args);
+      for (const host of TH_HOSTS) {
+        try { if (typeof host[name] === 'function') return (...args) => host[name](...args); } catch {}
+      }
+      return null;
+    }
+    function pickHostValue(name) {
+      if (window[name] !== undefined) return window[name];
+      for (const host of TH_HOSTS) {
+        try { if (host[name] !== undefined) return host[name]; } catch {}
+      }
+      return undefined;
+    }
+    const $ = (() => {
+      for (const host of TH_HOSTS) {
+        try { if (host.$) return host.$; if (host.jQuery) return host.jQuery; } catch {}
+      }
+      return window.$;
+    })();
+    const _ = pickHostValue('_') ?? window._;
+    const getVariablesFn = pickHostFn('getVariables');
+    const eventOnFn = pickHostFn('eventOn');
+    const waitGlobalInitializedFn = pickHostFn('waitGlobalInitialized');
+    const errorCatchedFn = pickHostFn('errorCatched') ?? (fn => fn);
+
+    function safeGet(value, fallback = '—') {
+      if (value === undefined || value === null || value === '') return fallback;
+      if (Array.isArray(value)) return value.length ? value[0] : fallback;
+      return value;
+    }
+    function safeNum(value, fallback = 0) {
+      const n = Number(safeGet(value, fallback));
+      return Number.isFinite(n) ? n : fallback;
+    }
+    function getMvu() { return pickHostValue('Mvu') ?? window.Mvu; }
+    function parseMesId(value) {
+      const mesid = parseInt(value, 10);
+      return Number.isFinite(mesid) && mesid >= 0 ? mesid : -1;
+    }
+    function resolveMessageIdFromDom() {
+      try {
+        const frame = window.frameElement;
+        const mes = frame?.closest?.('.mes');
+        if (mes) {
+          const id = parseMesId(mes.getAttribute('mesid'));
+          if (id >= 0) return id;
+        }
+      } catch {}
+      return -1;
+    }
+    function resolveMessageId() {
+      const fromDom = resolveMessageIdFromDom();
+      if (fromDom >= 0) return fromDom;
+      if (typeof window.message_id === 'number' && window.message_id >= 0) return window.message_id;
+      const fn = pickHostFn('getCurrentMessageId');
+      if (fn) {
+        try {
+          const id = fn();
+          if (typeof id === 'number' && id >= 0) return id;
+        } catch {}
+      }
+      return -1;
+    }
+    function hasMeaningfulStatData(stat) {
+      return stat && typeof stat === 'object' && !Array.isArray(stat) && Object.keys(stat).length > 0;
+    }
+    function pickStatData(source) {
+      const stat = _.get(source, 'stat_data');
+      return hasMeaningfulStatData(stat) ? stat : null;
+    }
+    function parseEmbeddedStat() {
+      const el = document.getElementById('mvu-stat-embed');
+      if (!el) return null;
+      const raw = (el.textContent || el.innerText || '').trim();
+      if (!raw || raw.includes('format_message_variable')) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed?.stat_data && typeof parsed.stat_data === 'object') return parsed.stat_data;
+        if (parsed && typeof parsed === 'object' && (parsed.剧情 || parsed.肖途)) return parsed;
+      } catch {}
+      return null;
+    }
+    function readStatData() {
+      const Mvu = getMvu();
+      const opts = [{ type: 'chat' }];
+      const domId = resolveMessageIdFromDom();
+      if (domId >= 0) opts.push({ type: 'message', message_id: domId });
+      opts.push({ type: 'message', message_id: 'latest' });
+      if (domId > 0) opts.push({ type: 'message', message_id: domId - 1 });
+      for (const opt of opts) {
+        try {
+          const stat = pickStatData(Mvu?.getMvuData?.(opt));
+          if (stat) return stat;
+        } catch {}
+        try {
+          const stat = pickStatData(getVariablesFn?.(opt));
+          if (stat) return stat;
+        } catch {}
+      }
+      const embedded = parseEmbeddedStat();
+      if (embedded) return embedded;
+      return {};
+    }
+
+    function barColor(value, goodHigh, max = 100) {
+      const v = Number(value) || 0;
+      if (goodHigh) {
+        if (max <= 50) {
+          if (v >= GATE_FANG_TRUST) return '#7a9e8e';
+          if (v >= 28) return '#b8863d';
+          return '#b4534a';
+        }
+        if (v >= 70) return '#7a9e8e';
+        if (v >= 40) return '#b8863d';
+        return '#b4534a';
+      }
+      if (v <= 30) return '#7a9e8e';
+      if (v <= 60) return '#b8863d';
+      return '#b4534a';
+    }
+    function emotionColor(v) {
+      if (v >= 6) return '#7a9e8e';
+      if (v >= 2) return '#b8863d';
+      if (v <= -4) return '#b4534a';
+      return '#9e978e';
+    }
+    function setBar(fillId, value, max, color) {
+      const v = Math.max(0, Math.min(Number(value) || 0, max));
+      const pct = max > 0 ? (v / max) * 100 : 0;
+      $(`#${fillId}`).css({ width: `${pct}%`, background: color });
+    }
+    function setEmoBar(fillId, value) {
+      const v = Math.max(REL_EMOTION_MIN, Math.min(REL_EMOTION_MAX, Number(value) || 0));
+      const pct = ((v - REL_EMOTION_MIN) / (REL_EMOTION_MAX - REL_EMOTION_MIN)) * 100;
+      $(`#${fillId}`).css({ width: `${pct}%`, background: emotionColor(v) });
+    }
+
+    function chapterMeta(chapterId) {
+      return CHAPTER_CATALOG.find((c) => c.id === chapterId) || { id: chapterId, short: '?', ep: chapterId, act: 0 };
+    }
+    function chapterIndex(chapterId) {
+      const i = CHAPTER_CATALOG.findIndex((c) => c.id === chapterId);
+      return i >= 0 ? i : -1;
+    }
+    function visibleChapters(route) {
+      if (!route) return CHAPTER_CATALOG;
+      return CHAPTER_CATALOG.filter((c) => {
+        if (!c.route) return true;
+        if (route === '美丽世界') return c.route === '美丽世界' || c.id === '第九章' || c.id === '第十章' || c.id === '终章';
+        if (route === '扶桑安魂曲') return c.route === '扶桑安魂曲' || c.id === '第九章' || c.id === '第十章' || c.id === '终章';
+        if (route === '红色芳华') return c.route === '红色芳华' || c.id === '第九章' || c.id === '第十章' || c.id === '终章';
+        return true;
+      });
+    }
+    function buildDynamicRail(chapter, nodeId) {
+      const m = String(nodeId || '').match(/^(.+?)-(\d+)$/);
+      if (!m || m[1] !== chapter) return [nodeId || `${chapter}-?`];
+      const n = parseInt(m[2], 10);
+      const cap = Math.min(Math.max(n + 2, 6), 28);
+      return Array.from({ length: cap + 1 }, (_, i) => `${chapter}-${i}`);
+    }
+    function nodeOrderForChapter(chapter, nodeId) {
+      if (NODE_RAILS[chapter]) return NODE_RAILS[chapter];
+      return buildDynamicRail(chapter, nodeId);
+    }
+    function shortNodeLabel(n) {
+      if (NODE_MILESTONE[n]) return NODE_MILESTONE[n];
+      return n
+        .replace(/^序章-/, 'P')
+        .replace(/^第一章-/, 'C1·')
+        .replace(/^第二章-/, 'C2·')
+        .replace(/^第三章-/, 'C3·')
+        .replace(/^第四章-/, 'C4·')
+        .replace(/^第五章-/, 'C5·');
+    }
+    function renderNodeRail(chapter, nodeId) {
+      const order = nodeOrderForChapter(chapter, nodeId);
+      const idx = order.indexOf(nodeId);
+      if (idx < 0) {
+        return `<span class="rail-node current" title="${nodeId}">${shortNodeLabel(nodeId)}</span>`;
+      }
+      const maxShow = 14;
+      let indices = order.map((_, i) => i);
+      if (order.length > maxShow) {
+        const keep = new Set([0, order.length - 1, idx, idx - 1, idx + 1].filter((i) => i >= 0 && i < order.length));
+        indices = [...keep].sort((a, b) => a - b);
+      }
+      const parts = [];
+      let last = -1;
+      for (const i of indices) {
+        if (last >= 0 && i - last > 1) parts.push('<span class="rail-node">…</span>');
+        const n = order[i];
+        const state = i < idx ? 'past' : i === idx ? 'current' : 'future';
+        const ms = NODE_MILESTONE[n] ? ' milestone' : '';
+        parts.push(`<span class="rail-node ${state}${ms}" title="${n}">${shortNodeLabel(n)}</span>`);
+        last = i;
+      }
+      return parts.join('');
+    }
+    function renderChapterTimeline(chapter, route) {
+      const cur = chapterIndex(chapter);
+      const list = visibleChapters(route);
+      return list
+        .map((c) => {
+          const i = chapterIndex(c.id);
+          let state = 'future';
+          if (i < cur) state = 'past';
+          else if (i === cur) state = 'current';
+          const split = c.route ? ' route-split' : '';
+          const title = `${c.id} · ${c.ep}`;
+          return `<span class="ch-pill ${state}${split}" title="${title}">${c.short}</span>`;
+        })
+        .join('');
+    }
+    function chapterProgressPct(chapter, nodeId) {
+      const ci = chapterIndex(chapter);
+      if (ci < 0) return 0;
+      const order = nodeOrderForChapter(chapter, nodeId);
+      const ni = order.indexOf(nodeId);
+      const nodeFrac = ni >= 0 && order.length > 1 ? ni / (order.length - 1) : 0;
+      const total = visibleChapters('').length;
+      return Math.round(((ci + nodeFrac) / Math.max(total - 1, 1)) * 100);
+    }
+    function relationsForChapter(chapter) {
+      if (CHAPTER_RELATIONS[chapter]) return CHAPTER_RELATIONS[chapter];
+      if (chapter.startsWith('第六章') || chapter.startsWith('第七章') || chapter.startsWith('第八章') || chapter === '第九章' || chapter === '第十章' || chapter === '终章') {
+        return ['方敏', '武藤纯子', '庄晓曼', '陆望舒'];
+      }
+      if (chapter === '第三章' || chapter === '第四章' || chapter === '第五章') {
+        return CHAPTER_RELATIONS[chapter] || ['方敏', '武藤纯子', '庄晓曼', '陆望舒'];
+      }
+      return ['方敏'];
+    }
+    function gateChip(label, on, hint) {
+      const cls = on ? 'chip-ok' : 'chip-off';
+      const t = hint ? ` title="${hint}"` : '';
+      return `<span class="chip ${cls}"${t}>${label}</span>`;
+    }
+    function renderRelationRows(stat, names) {
+      const relKey = { 方敏: '方敏', 庄晓曼: '庄晓曼', 武藤纯子: '武藤纯子', 陆望舒: '陆望舒' };
+      return names
+        .map((name) => {
+          const key = relKey[name];
+          const r = _.get(stat, `对user.${key}`) || {};
+          const emo = safeNum(r.情感值, 0);
+          const trustKey = name === '庄晓曼' ? '互信度' : '信任度';
+          const trust = safeNum(r[trustKey], name === '庄晓曼' ? 10 : 20);
+          const trustLabel = name === '庄晓曼' ? '互信' : '信任';
+          const id = key.replace(/\s/g, '');
+          return `
+            <div class="rel-row">
+              <div class="rel-name">${name}</div>
+              <div>
+                <div class="rel-nums">情感 ${emo >= 0 ? '+' : ''}${emo} · ${trustLabel} ${trust}/${REL_TRUST_MAX}</div>
+                <div class="rel-bars">
+                  <div class="rel-bar-bg"><div class="rel-bar-fill" id="rel-trust-${id}"></div></div>
+                  <div class="rel-bar-bg"><div class="rel-bar-fill" id="rel-emo-${id}"></div></div>
+                </div>
+              </div>
+            </div>`;
+        })
+        .join('');
+    }
+    function applyRelationBars(stat, names) {
+      const relKey = { 方敏: '方敏', 庄晓曼: '庄晓曼', 武藤纯子: '武藤纯子', 陆望舒: '陆望舒' };
+      for (const name of names) {
+        const key = relKey[name];
+        const r = _.get(stat, `对user.${key}`) || {};
+        const emo = safeNum(r.情感值, 0);
+        const trustKey = name === '庄晓曼' ? '互信度' : '信任度';
+        const trust = safeNum(r[trustKey], name === '庄晓曼' ? 10 : 20);
+        const id = key.replace(/\s/g, '');
+        setBar(`rel-trust-${id}`, trust, REL_TRUST_MAX, barColor(trust, true, REL_TRUST_MAX));
+        setEmoBar(`rel-emo-${id}`, emo);
+      }
+    }
+
+    function populatePanel() {
+      const stat = readStatData();
+      const plot = stat.剧情 || {};
+      const xt = stat.肖途 || {};
+      const enemy = stat.敌方 || {};
+      const org = stat.组织 || {};
+
+      const chapter = safeGet(plot.当前章节, '序章');
+      const node = safeGet(plot.当前节点, '序章-1');
+      const meta = chapterMeta(chapter);
+      const dead = plot.已死亡 === true;
+      const ending = safeGet(plot.结局分支, '');
+      const unlocked = Array.isArray(plot.已解锁死亡结局) ? plot.已解锁死亡结局 : [];
+      const checkpoint = safeGet(plot.检查点, node);
+      const episode = safeNum(plot.章节进度, 0);
+      const prologueDone = plot.序章已完成 === true;
+      const risk = safeGet(stat.$暴露风险, '低');
+      const actionLv = safeNum(stat.$允许行动级别, 1);
+      const suspect = safeNum(enemy.武藤志雄怀疑度, 0);
+      const disguise = safeNum(xt.伪装完整度, 72);
+      const body = safeNum(xt.身心状态, 80);
+      const orgTrust = safeNum(xt.组织信任度, 67);
+      const camp = safeNum(xt.阵营信用, 55);
+      const mansion = safeNum(xt.公馆资历, 5);
+      const link = safeGet(org.联络状态, '正常');
+      const mission = safeGet(org.当前任务, '');
+      const route = safeGet(plot.主线归属, '');
+      const ch2 = safeGet(plot.第二章分歧, '');
+      const ch5 = safeGet(plot.第五章分歧, '');
+      const clues = Array.isArray(plot.已收集线索) ? plot.已收集线索 : [];
+      const events = Array.isArray(plot.已触发事件) ? plot.已触发事件 : [];
+      const zmEmo = safeNum(_.get(stat, '对user.庄晓曼.情感值'), 0);
+
+      const pct = chapterProgressPct(chapter, node);
+      $('#stage-title').text(`${meta.id} · ${meta.ep}`);
+      $('#stage-ep').text(meta.act ? `第 ${meta.act} 幕` : '');
+      $('#plot-node').text(`${node} · 检查点 ${checkpoint} · 章节进度 ${episode}${prologueDone ? ' · 序章已通' : ''}`);
+      $('#chapter-timeline').html(renderChapterTimeline(chapter, route));
+      $('#chapter-progress-fill').css('width', `${pct}%`);
+      $('#chapter-progress-label').text(`全剧进度约 ${pct}%`);
+      $('#node-rail').html(renderNodeRail(chapter, node));
+
+      const riskChip = $('#risk-chip');
+      riskChip.text(`暴露 · ${risk} · 行动Lv${actionLv}`).attr('class', `chip ${RISK_CLASS[risk] || 'chip-risk-low'}`);
+      $('#org-chip').text(`联络 ${link}${mission && mission !== '—' ? ' · ' + mission : ''}`);
+
+      const routeParts = [
+        route ? ROUTE_LABEL[route] || route : '',
+        ch2 ? ROUTE_LABEL[ch2] || ch2 : '',
+        ch5 ? ROUTE_LABEL[ch5] || ch5 : '',
+      ].filter(Boolean);
+      if (routeParts.length) $('#route-chip').text(routeParts.join(' · ')).show();
+      else $('#route-chip').hide();
+
+      const gates = [
+        gateChip('方敏交底', stat.$方敏可交底 === true, `信任≥${GATE_FANG_TRUST}`),
+        gateChip('庄协同', stat.$庄晓曼可协同高危任务 === true, `互信≥${GATE_ZHUANG_OPS_TRUST}且情感≥${GATE_ZHUANG_OPS_EMO}`),
+      ];
+      if (chapter === '第二章' || chapterIndex(chapter) >= chapterIndex('第三章')) {
+        gates.push(
+          gateChip('自保线', stat.$第二章自保线 === true, '分歧=自保+自保感慨'),
+          gateChip('共荣圈', stat.$第二章共荣圈线 === true, '第二章分歧'),
+          gateChip('自保感慨', stat.$有自保感慨 === true, '线索'),
+        );
+      }
+      if (chapterIndex(chapter) >= chapterIndex('第三章')) {
+        gates.push(gateChip('第三章主路', stat.$第三章主路可通关 === true, `庄情感≥${GATE_ZHUANG_CH3}`));
+      }
+      if (chapter !== '序章' || prologueDone) {
+        gates.push(
+          gateChip('组织支援', stat.$可请求组织支援 === true),
+          gateChip('日方情报', stat.$可套取日方核心情报 === true),
+        );
+      }
+      if (chapter === '第二章' && !dead) {
+        gates.push(
+          gateChip(
+            zmEmo >= GATE_ZHUANG_CH2 ? '章末倒酒✓' : `章末需情感≥${GATE_ZHUANG_CH2}`,
+            zmEmo >= GATE_ZHUANG_CH2,
+            `当前 ${zmEmo}`,
+          ),
+        );
+      }
+      $('#gate-grid').html(gates.join(''));
+
+      if (dead) {
+        const endingLabel = ending || (unlocked.length ? String(unlocked[unlocked.length - 1]).replace(/^BE-/, '') : '结局');
+        $('#be-banner')
+          .show()
+          .html(
+            `【${endingLabel}】已断线 · 检查点 <strong>${checkpoint}</strong><br/>` +
+              `删 BE 楼后，在输入框发送检查点选项原文（如 A. 保持沉默）`,
+          );
+        $('#dead-chip').text('已死亡').show();
+      } else {
+        $('#be-banner').hide();
+        $('#dead-chip').hide();
+      }
+
+      $('#val-disguise').text(disguise);
+      $('#val-body').text(body);
+      $('#val-org').text(orgTrust);
+      setBar('bar-disguise', disguise, 100, barColor(disguise, true));
+      setBar('bar-body', body, 100, barColor(body, true));
+      setBar('bar-org', orgTrust, 100, barColor(orgTrust, true));
+      $('#sub-disguise').text(disguise >= 60 ? '尚可维持' : disguise >= 35 ? '裂痕显现' : '濒临穿帮');
+      $('#sub-body').text(body >= 60 ? '尚能撑住' : body >= 35 ? '疲惫加剧' : '濒临崩溃');
+      $('#sub-org').text(orgTrust >= 75 ? '组织倚重' : orgTrust >= 50 ? '尚可' : '存疑');
+
+      const showWuteng = chapter !== '序章';
+      const showCamp = chapterIndex(chapter) >= chapterIndex('第一章');
+      const showMansion = chapterIndex(chapter) >= chapterIndex('第二章');
+      $('#metric-wuteng').toggle(showWuteng);
+      $('#metric-camp').toggle(showCamp);
+      $('#metric-mansion').toggle(showMansion);
+
+      if (showWuteng) {
+        $('#val-suspect').text(`${suspect}/10`);
+        setBar('bar-suspect', suspect, 10, barColor(suspect * 10, false));
+        $('#sub-suspect').text(suspect <= 3 ? '未起疑' : suspect <= 6 ? '暗中观察' : suspect <= 8 ? '高度警惕' : '随时收网');
+      }
+      if (showCamp) {
+        $('#val-camp').text(camp);
+        setBar('bar-camp', camp, 100, barColor(camp, true));
+        $('#sub-camp').text(camp >= 60 ? '日方倚重' : camp >= 40 ? '灰色地带' : '处境危险');
+      }
+      if (showMansion) {
+        $('#val-mansion').text(mansion);
+        setBar('bar-mansion', mansion, 100, barColor(mansion, true));
+        $('#sub-mansion').text(mansion >= 40 ? '公馆红人' : mansion >= 20 ? '站稳脚跟' : '新人');
+      }
+
+      const relNames = relationsForChapter(chapter);
+      $('#rel-list').html(renderRelationRows(stat, relNames));
+      applyRelationBars(stat, relNames);
+
+      const ab = xt.能力 || {};
+      const eff = [
+        ['社交', ab.社交伪装, stat.$肖途社交有效],
+        ['情报', ab.情报分析, stat.$肖途情报有效],
+        ['审讯', ab.审讯抗性, stat.$肖途审讯有效],
+        ['枪械', ab.枪械, stat.$肖途枪械有效],
+        ['格斗', ab.格斗, stat.$肖途格斗有效],
+        ['潜行', ab.潜行规避, stat.$肖途潜行有效],
+        ['狠决', ab.权衡狠决, stat.$肖途狠决有效],
+      ];
+      $('#ability-grid').html(
+        eff
+          .map(([name, base, effective]) => {
+            const score = safeNum(base, 0);
+            const effN = safeNum(effective, score);
+            return `<div class="ability-cell" title="${name}"><span>${name}</span><b>${score}</b><small>效${effN}</small></div>`;
+          })
+          .join(''),
+      );
+
+      const clueTags = clues.slice(-6).map((c) => `<span class="tag" title="${c}">${String(c).replace(/^第二章-/, '')}</span>`);
+      $('#clue-tags').html(clueTags.length ? clueTags.join('') : '<span class="tag">暂无</span>');
+      $('#clue-count').text(`${clues.length} 条`);
+
+      const evTags = events.slice(-5).map((e) => `<span class="tag" title="${e}">${String(e).replace(/^(序章|第一章|第二章)-/, '')}</span>`);
+      $('#event-tags').html(evTags.length ? evTags.join('') : '<span class="tag">暂无</span>');
+      $('#event-count').text(`${events.length} 条`);
+
+      $('#be-count').text(`${unlocked.length} 个`);
+
+      let foot = `${meta.id} · ${node}`;
+      if (chapter === '序章' && stat.$序章节点名) foot += ` · ${stat.$序章节点名}`;
+      if (ch2) foot += ` · ${ROUTE_LABEL[ch2] || ch2}`;
+      if (route) foot += ` · ${ROUTE_LABEL[route] || route}`;
+      $('#footnote').text(foot);
+    }
+
+    async function init() {
+      const wait = waitGlobalInitializedFn;
+      const onEvent = eventOnFn;
+      const Mvu = getMvu();
+      const tavernEvents = pickHostValue('tavern_events');
+      if (wait) {
+        try { await wait('Mvu'); } catch {}
+      }
+      const refresh = () => populatePanel();
+      refresh();
+      if (Mvu?.events?.VARIABLE_UPDATE_ENDED && onEvent) {
+        onEvent(Mvu.events.VARIABLE_UPDATE_ENDED, refresh);
+      }
+      if (onEvent && tavernEvents) {
+        if (tavernEvents.MESSAGE_SENT) onEvent(tavernEvents.MESSAGE_SENT, refresh);
+        if (tavernEvents.MESSAGE_UPDATED) onEvent(tavernEvents.MESSAGE_UPDATED, refresh);
+        if (tavernEvents.MESSAGE_RECEIVED) onEvent(tavernEvents.MESSAGE_RECEIVED, refresh);
+        if (tavernEvents.CHAT_CHANGED) onEvent(tavernEvents.CHAT_CHANGED, refresh);
+      }
+      setInterval(refresh, 2000);
+    }
+    $(errorCatchedFn(init));
+  </script>
+</head>
+<body>
+  <div class="mvu-container">
+    <div id="be-banner" class="be-banner"></div>
+    <div class="stage-header">
+      <span class="stage-title" id="stage-title">序章 · 重返故土</span>
+      <span class="stage-ep" id="stage-ep"></span>
+      <span class="stage-meta" id="plot-node">序章-1</span>
+      <span class="chip chip-risk-low" id="risk-chip">暴露 · 低</span>
+      <span class="chip chip-org" id="org-chip">联络 · 正常</span>
+      <span class="chip chip-org" id="route-chip" style="display:none">路线</span>
+      <span class="chip chip-dead" id="dead-chip" style="display:none">已死亡</span>
+    </div>
+    <div class="section">
+      <div class="section-title">全剧章节</div>
+      <div class="chapter-timeline" id="chapter-timeline"></div>
+      <div class="progress-chapter">
+        <div class="progress-chapter-label">
+          <span id="chapter-progress-label">全剧进度</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="chapter-progress-fill"></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">本章节点</div>
+      <div class="node-rail" id="node-rail"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">门闩与派生</div>
+      <div class="gate-grid" id="gate-grid"></div>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">伪装完整度</div>
+        <div class="metric-value" id="val-disguise">72</div>
+        <div class="metric-sub" id="sub-disguise">—</div>
+        <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-disguise"></div></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">身心状态</div>
+        <div class="metric-value" id="val-body">80</div>
+        <div class="metric-sub" id="sub-body">—</div>
+        <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-body"></div></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">组织信任</div>
+        <div class="metric-value" id="val-org">67</div>
+        <div class="metric-sub" id="sub-org">—</div>
+        <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-org"></div></div></div>
+      </div>
+      <div class="metric" id="metric-wuteng" style="display:none">
+        <div class="metric-label">武藤怀疑度</div>
+        <div class="metric-value" id="val-suspect">3/10</div>
+        <div class="metric-sub" id="sub-suspect">—</div>
+        <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-suspect"></div></div></div>
+      </div>
+      <div class="metric" id="metric-camp" style="display:none">
+        <div class="metric-label">阵营信用</div>
+        <div class="metric-value" id="val-camp">55</div>
+        <div class="metric-sub" id="sub-camp">—</div>
+        <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-camp"></div></div></div>
+      </div>
+      <div class="metric" id="metric-mansion" style="display:none">
+        <div class="metric-label">公馆资历</div>
+        <div class="metric-value" id="val-mansion">5</div>
+        <div class="metric-sub" id="sub-mansion">—</div>
+        <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-mansion"></div></div></div>
+      </div>
+      <div class="metric span2">
+        <div class="metric-label">肖途能力 · 基础 / 有效</div>
+        <div class="ability-grid" id="ability-grid"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">人物关系 <span id="rel-hint" style="letter-spacing:0">（按章节出场）</span></div>
+      <div class="rel-list" id="rel-list"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">剧情档案</div>
+      <div class="metric-label">线索 <span id="clue-count">0</span></div>
+      <div class="tag-list" id="clue-tags"></div>
+      <div class="metric-label" style="margin-top:6px">已触发 <span id="event-count">0</span> · BE 收录 <span id="be-count">0</span></div>
+      <div class="tag-list" id="event-tags"></div>
+    </div>
+    <div class="footnote" id="footnote">隐形守护者 · MVU</div>
+  </div>
+  <script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 2 - 12-23 周六 ═══
+   当日主题：校园开放日，可遇同学（身份感知独立场景）
+   特殊事件：event_day02_morning_school_visit / event_day02_afternoon_cafe / event_day02_diary_2_window
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day2 场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家起床/学园开放日/咖啡店义母美佐子/友美来访
+     P2 川尻信良 → 川尻家起床/学园开放日/寻找南川洋子（洋子线核心）
+     P3 长冈芳树 → 长冈家起床/学园潜行偷拍友美（敌意）
+     P4 西御寺有友 → 西御寺家豪宅起床/学园骚扰唯（敌意）
+     P5 天道新干线 → 天道家起床/学园教师室办公/接触爱美
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 2,
+  date: '12-23',
+  weekday: '周六',
+  chapter: '寒假前奏',
+  theme: '校园开放日，可遇同学（身份感知独立场景）',
+  special_events: ['event_day02_morning_school_visit', 'event_day02_afternoon_cafe', 'event_day02_diary_2_window'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '晴',
+  notes: '开始接触学校女角；按身份解锁对应核心女角（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃）'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _playerIdentityDesc === 'undefined') var _playerIdentityDesc = _profile ? _profile.identity_desc : '未选择';
+if (typeof _playerSpecialRole === 'undefined') var _playerSpecialRole = _profile ? _profile.special_role : '未选择';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家早/晚（义妹同居，affection=5/trust=30）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（义母，affection=10/trust=40）',
+    tomomi: '水野友美（row_id=8）：水野家上午/晚 + 来访鸣泽家（邻家青梅竹马，affection=15/trust=35）',
+    school: '加藤美纪（row_id=4）/都筑梢江（row_id=7）/片桐美铃（row_id=11）/齐藤澪·澪奈（row_id=15,16）/仁科·正树夏子（row_id=18,19）：八十八学园上午（同学，身份中立）'
+  },
+  '川尻信良': {
+    yui: '鸣泽唯（row_id=1）：学园附近偶遇（认识但不熟，affection=0/trust=10）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：学园附近偶遇（非邻家，陌生）',
+    yoko: '南川洋子（row_id=6）：学园开放日/机车行方向偶遇（同班同学，洋子线核心，affection=10/trust=20）★本日核心',
+    school: '加藤美纪（row_id=4）/都筑梢江（row_id=7）/片桐美铃（row_id=11）/齐藤澪·澪奈（row_id=15,16）/仁科·正树夏子（row_id=18,19）：八十八学园上午（同学，身份中立）'
+  },
+  '长冈芳树': {
+    yui: '鸣泽唯（row_id=1）：学园附近偶遇（陌生，非家庭关系）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：学园附近偷拍场景（敌意，affection=-10/trust=-20）★本日核心（谨慎潜行）',
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意，affection=-5/trust=-10）',
+    school: '都筑梢江（row_id=7）/片桐美铃（row_id=11）/齐藤澪·澪奈（row_id=15,16）/仁科·正树夏子（row_id=18,19）：八十八学园上午（同学，身份中立）'
+  },
+  '西御寺有友': {
+    yui: '鸣泽唯（row_id=1）：学园开放日远观（敌意，affection=-20/trust=-30）★本日核心（禁止骚扰，仅远观）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：学园附近偶遇（非邻家，陌生）',
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意，affection=-10/trust=-20）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（师生关系紧张，affection=-15/trust=-25）',
+    school: '都筑梢江（row_id=7）/齐藤澪·澪奈（row_id=15,16）/仁科·正树夏子（row_id=18,19）：八十八学园上午（同学，身份中立）'
+  },
+  '天道新干线': {
+    yui: '鸣泽唯（row_id=1）：学园附近偶遇（师生关系，陌生）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（咖啡店老板娘，非亲属）',
+    tomomi: '水野友美（row_id=8）：学园附近偶遇（师生关系，陌生）',
+    aimi: '安田爱美（row_id=9）：保育园/学园方向偶遇（有特殊企图，affection=5/trust=10）★本日核心',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（同事关系，affection=10/trust=20）',
+    school: '加藤美纪（row_id=4）/都筑梢江（row_id=7）/齐藤澪·澪奈（row_id=15,16）/仁科·正树夏子（row_id=18,19）：八十八学园上午（学生，师生关系）'
+  },
+  '自定义': {
+    yui: '鸣泽唯（row_id=1）：学园附近偶遇（陌生，按玩家背景调整）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店《憩》全时段（咖啡店老板娘）',
+    tomomi: '水野友美（row_id=8）：学园附近偶遇（陌生，按玩家背景调整）',
+    school: '加藤美纪（row_id=4）/都筑梢江（row_id=7）/片桐美铃（row_id=11）/齐藤澪·澪奈（row_id=15,16）/仁科·正树夏子（row_id=18,19）：八十八学园上午（同学，身份中立）'
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+
+/* 事件描述（身份感知，用具体名字） */
+if (typeof _morningDesc === 'undefined') var _morningDesc = _dayScene ? _dayScene.morning : '玩家身份未初始化，等待玩家选择 P1-P6。';
+if (typeof _afternoonDesc === 'undefined') var _afternoonDesc = _dayScene ? _dayScene.afternoon : '等待玩家选择身份。';
+if (typeof _eveningDesc === 'undefined') var _eveningDesc = _dayScene ? _dayScene.evening : '等待玩家选择身份。';
+if (typeof _diaryHint === 'undefined') var _diaryHint = _dayScene ? _dayScene.diary_hint : '玩家身份未初始化。';
+
+/* event_day02_diary_2_window：梦仙人还书窗口期（P2 玩家即川尻信良本人） */
+if (typeof _diary2Desc === 'undefined') var _diary2Desc = (_playerIdentity === '川尻信良')
+  ? '第2本·梦仙人还书窗口期开启（12-23~12-28）。任意时段温泉乡占卜馆（梦仙人处）触发。前置条件：has_met_川尻信良=true AND 川尻信良求助任务接受。无好感变化，但解锁 日记2 flag 与隐藏剧情线索。叙事提示：' + _playerName + '（川尻信良本人）自行前往占卜馆还书，梦仙人会将夹着缘分的日记本交还' + _playerName
+  : '第2本·梦仙人还书窗口期开启（12-23~12-28）。任意时段温泉乡占卜馆（梦仙人处）触发。前置条件：has_met_川尻信良=true AND 川尻信良求助任务接受。无好感变化，但解锁 日记2 flag 与隐藏剧情线索。叙事提示：川尻信良常出没于八十八学园或商业区便利店，需' + _playerName + '陪同前往占卜馆还书，梦仙人会将夹着缘分的日记本交给' + _playerName;
+%>
+
+[Day 2 调度器已加载：12-23 周六，主题：校园开放日（身份感知独立场景）。
+本日特殊事件：event_day02_morning_school_visit / event_day02_afternoon_cafe / event_day02_diary_2_window。
+本日锁定女角：[13,14]（永岛久美子/永岛佐知子未登场）。
+本日新解锁：无。
+本日天气默认：晴。
+本日备注：开始接触学校女角；按身份解锁对应核心女角（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃）。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _playerIdentityDesc %>
+★ 特殊角色：<%= _playerSpecialRole %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+
+【当日事件详情】
+- event_day02_morning_school_visit：<%= _playerName %> 校园开放日场景。<%= _morningDesc %> 上午八十八学园开放日，可偶遇加藤美纪（row_id=4，好感 +2）与都筑梢江（row_id=7，好感 +1，被动跟踪触发）。自动触发，无前置条件。
+- event_day02_afternoon_cafe：<%= _playerName %> 咖啡店场景。<%= _afternoonDesc %> 下午咖啡店《憩》，与鸣泽美佐子互动。P1 义母关系美佐子好感 +2（可触发美佐子线初期对话，铺垫后续酒后事件）；P2-P6 老板娘非亲属美佐子好感 +1（仅初识对话，无家庭关系铺垫）。
+- event_day02_diary_2_window：<%= _diary2Desc %>。叙事提示：<%= _diaryHint %>
+
+【当日女角出现特殊规则】
+本日为校园开放日，可接触学校相关女角。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% if (_heroineRule.school) { %>- <%= _heroineRule.school %><% } %>
+<% } %>
+其余未列出女角锁定（含永岛母女 row_id=13,14），AI 不可让其出现。
+第二天所有女角 affection 按身份 initial_relations 推进，禁止跳过初识阶段（除 P1 义妹/义母/青梅竹马有基础值）。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。]

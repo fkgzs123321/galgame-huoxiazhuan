@@ -1,0 +1,518 @@
+# ===== MVU 变量输出格式 · 系统哥的末日 =====
+# 参考"同级生2"额外模型双写架构
+# 核心铁律：新出现=全量输出，之后=增量，时间=每轮必须
+# 变量路径、HTML字段名、数据库列名三者完全统一（全中文）
+
+## 一、输出顺序（每轮回复严格按此顺序）
+
+1. 叙事正文（≤1300字，H场景≤1600字，事件触发≤1500字）
+2. <StatusPlaceHolderImpl/>（单独一行，挂载状态栏）
+3. <UpdateVariable> 块（MVU变量更新，必须含 <JSONPatch> 标签）
+4. <UpdateTable> 块（SPV数据库SQL语句）
+
+## 二、UpdateVariable 块格式
+
+
+<UpdateVariable>
+<Analysis>
+【变量思维链·五步】
+1. 事件：本轮发生了什么
+2. 数值：哪些变量需要变化，变化多少
+3. 门槛：是否触发硬门槛（新角色登场/阶段跳跃/结局触发）
+4. 互斥：是否涉及互斥关系（绑定名额/交涉锁定）
+5. 结局：是否触发BAD_END或阶段转换
+</Analysis>
+<JSONPatch>
+[
+  { "op": "replace", "path": "/系统变量/天数", "value": 2 },
+  { "op": "replace", "path": "/反派状态/评价值", "value": 95 }
+]
+</JSONPatch>
+</UpdateVariable>
+
+
+## 三、操作类型（仅支持4种）
+
+- replace：替换现有路径的值（**统一用replace，禁止用delta**）
+- add：向对象/数组插入新项（新增角色时用）
+- remove：删除现有路径
+- move：移动路径（极少用）
+
+**路径格式**：斜杠分隔，无 stat_data 前缀。例：/系统变量/天数 而非 stat_data.系统变量.天数
+
+## 四、变量路径 → 数据库表/列名映射表（核心！AI必须严格对照此表）
+
+### 4.1 系统变量 → global_state表（WHERE row_id=1）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /系统变量/天数 | global_state.day_count | INTEGER 1-17 | 每轮必须更新 |
+| /系统变量/时段 | global_state.time_period | TEXT enum | 每轮必须更新 |
+| /系统变量/游戏阶段 | (纯MVU，不存DB) | TEXT | 日常轮/交涉中/结算中/结束 |
+| /系统变量/当前章节 | (纯MVU，不存DB) | INTEGER | 章节数 |
+| /系统变量/$代写模式 | (纯MVU，禁更新) | boolean | 隐藏字段 |
+| /系统变量/$已初始化 | (纯MVU，禁更新) | boolean | 隐藏字段 |
+
+**SQL同步规则**：每轮必须 UPDATE global_state SET day_count=N, time_period='下午', cur_time='01-01 14:00', current_location='地点', scene_overview='概要' WHERE row_id=1;
+
+### 4.2 反派状态 → important_npc表（WHERE name='林天'）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /反派状态/姓名 | important_npc.name | TEXT | 林天 |
+| /反派状态/财富等级 | important_npc.identity_text | TEXT | A1~A15（存入身份字段） |
+| /反派状态/财富值 | important_npc.resources_text | TEXT | 数字（存入资源数据） |
+| /反派状态/绑定名额总数 | (纯MVU) | INTEGER | 固定10 |
+| /反派状态/已绑定数 | (纯MVU) | INTEGER | 0~10 |
+| /反派状态/剩余名额 | (纯MVU) | INTEGER | 0~10 |
+| /反派状态/系统状态 | important_npc.system_status | TEXT | 活跃/警告/解绑 |
+| /反派状态/评价值 | important_npc.evaluation_value | INTEGER 0-100 | 核心数值 |
+| /反派状态/评价趋势 | important_npc.evaluation_trend | TEXT | 稳定/上升/下降 |
+| /反派状态/良知值 | important_npc.conscience_value | INTEGER 0-100 | 核心数值 |
+| /反派状态/系统警告 | (纯MVU) | TEXT | 无/警告/危险/崩坏 |
+| /反派状态/当前阶段 | important_npc.current_phase | TEXT | 满分巅峰/警觉期/失控期/崩坏期/解绑期/完结期/隐藏期 |
+| /反派状态/当前位置 | important_npc.location_name | TEXT | 文本 |
+| /反派状态/心情 | important_npc.mood | TEXT | 玩味/愉悦/冷漠/愤怒/疯狂 |
+| /反派状态/OOC计数 | important_npc.ooc_count | INTEGER | ≥0 |
+| /反派状态/玩法偏好 | important_npc.play_preference | TEXT | NTR隐奸/NTR明目侵犯/变态道具/精神虐待 |
+| /反派状态/当前目标 | important_npc.current_goal | TEXT | 文本 |
+
+**SQL同步规则**：UPDATE important_npc SET evaluation_value=95, conscience_value=50, system_status='活跃', current_phase='满分巅峰', location_name='林天会所', mood='玩味', last_update='01-01 14:00' WHERE name='林天';
+
+**⚠ 林天作为反派初始INSERT时必须包含全部87列**（含height/weight/cup_size等NSFW字段，可为空但NOT NULL字段必须填值）。
+**⚠ 林天INSERT示例严禁包含ntr_wife_relation列**（该列只在protagonist_info表，不在important_npc表）。
+**⚠ important_npc表没有ntr_wife_relation列**，AI生成SQL时务必核对列名，避免臆造列。
+
+### 4.3 user状态 → protagonist_info表（WHERE row_id=1）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /user状态/姓名 | protagonist_info.name | TEXT | 你 |
+| /user状态/财富等级 | protagonist_info.ntr_wealth_level | TEXT | A1~A15 |
+| /user状态/财富值 | protagonist_info.ntr_wealth_value | INTEGER | 数字 |
+| /user状态/婚姻状态 | protagonist_info.ntr_marriage_status | TEXT | 完好/动摇/破裂/离婚/丧偶 |
+| /user状态/反抗力 | protagonist_info.ntr_resistance | INTEGER 0-100 | 核心数值 |
+| /user状态/觉醒度 | protagonist_info.ntr_awakening | INTEGER 0-100 | 核心数值 |
+| /user状态/理智值 | protagonist_info.ntr_sanity | INTEGER 0-100 | 核心数值 |
+| /user状态/心理状态 | protagonist_info.ntr_mental_state | TEXT | 震惊/愤怒/绝望/冷静/觉醒 |
+| /user状态/怀疑度 | protagonist_info.ntr_suspicion | INTEGER 0-100 | 核心数值 |
+| /user状态/证据数量 | protagonist_info.ntr_evidence_count | INTEGER | ≥0 |
+| /user状态/当前位置 | protagonist_info.location_name | TEXT | 文本 |
+| /user状态/与妻子关系 | protagonist_info.ntr_wife_relation | TEXT | 疏远/冷淡/对立/决裂 |
+
+**SQL同步规则**：UPDATE protagonist_info SET ntr_resistance=35, ntr_awakening=5, ntr_sanity=80, ntr_suspicion=30, ntr_mental_state='愤怒', location_name='家中', last_update='01-01 14:00' WHERE row_id=1;
+
+### 4.4 交涉状态 → 纯MVU变量（不存数据库）
+
+交涉状态是临时状态，每轮变化，不存数据库。所有20字段只更新MVU变量。
+
+| MVU变量路径 | 说明 |
+|---|---|
+| /交涉状态/交涉进行中 | true/false |
+| /交涉状态/交涉对象 | 文本 |
+| /交涉状态/交涉回合 | 数字 |
+| /交涉状态/交涉幕次 | 寒暄/试探/交锋/高潮/结束 |
+| /交涉状态/user交涉策略 | 文本 |
+| /交涉状态/对手交涉策略 | 文本 |
+| /交涉状态/user气势 | 0~100 |
+| /交涉状态/user口才 | 0~100 |
+| /交涉状态/user情报 | 0~100 |
+| /交涉状态/user地位 | 0~100 |
+| /交涉状态/对手气势 | 0~100 |
+| /交涉状态/对手口才 | 0~100 |
+| /交涉状态/对手情报 | 0~100 |
+| /交涉状态/对手地位 | 0~100 |
+| /交涉状态/上轮user骰 | 数字 |
+| /交涉状态/上轮对手骰 | 数字 |
+| /交涉状态/上轮判定 | 文本 |
+| /交涉状态/user共识分 | 0~100 |
+| /交涉状态/对手共识分 | 0~100 |
+| /交涉状态/交涉历史 | 数组 |
+
+### 4.5 角色属性 → 纯MVU变量（不存数据库）
+
+角色属性是交涉时的临时参照值，不存数据库。每个角色4维属性。
+
+| MVU变量路径 | 说明 |
+|---|---|
+| /角色属性/${角色名}/气势 | 0~100 |
+| /角色属性/${角色名}/口才 | 0~100 |
+| /角色属性/${角色名}/情报 | 0~100 |
+| /角色属性/${角色名}/地位 | 0~100 |
+
+**已知角色**：林天/user/苏婉/陈雪华/林雅芝/王秀兰/赵敏/孙莉/周慧敏/吴琼/郑秀/沈梦瑶
+
+### 4.6 角色技能 → 纯MVU变量（不存数据库）
+
+| MVU变量路径 | 说明 |
+|---|---|
+| /角色技能/${角色名}/技能1/名称 | 技能名 |
+| /角色技能/${角色名}/技能1/类型 | 被动/主动/触发 |
+| /角色技能/${角色名}/技能1/说明 | 说明文本 |
+| /角色技能/${角色名}/技能1/已使用 | true/false |
+
+### 4.7 绑定花名册 → important_npc表（WHERE name=该女角姓名）
+
+绑定花名册有10个槽位（陈雪华~沈梦瑶），每个槽位的角色在important_npc表中有一行（通过name列关联）。
+**MVU变量名与DB列名完全一致**，确保双写同步无歧义。
+**当前互动女角的全部字段必须每轮全量输出**（含30+ NSFW字段），非当前女角仅输出变化字段。
+
+#### 4.7.1 绑定基本信息（14字段）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/姓名 | important_npc.name | TEXT | 角色姓名 |
+| /绑定花名册/女N/类型 | (纯MVU) | TEXT | A1时期~A10时期 |
+| /绑定花名册/女N/绑定等级 | important_npc.ntr_bind_level | TEXT | A1~A10 |
+| /绑定花名册/女N/绑定顺序 | important_npc.ntr_bind_order | INTEGER | 1~10 |
+| /绑定花名册/女N/状态 | important_npc.ntr_bind_status | TEXT | 已绑定/绑定中/待绑定/已解绑/死亡 |
+| /绑定花名册/女N/绑定深度 | important_npc.ntr_bind_depth | INTEGER 0-100 | 核心数值 |
+| /绑定花名册/女N/清醒频率 | important_npc.ntr_lucidity_freq | INTEGER 0-100 | 核心数值 |
+| /绑定花名册/女N/解绑代价 | important_npc.ntr_unbind_cost | TEXT | 失忆/发疯/死亡 |
+| /绑定花名册/女N/身份 | important_npc.identity_text | TEXT | 文本 |
+| /绑定花名册/女N/家庭关系 | important_npc.family_relation | TEXT | 文本 |
+| /绑定花名册/女N/原伴侣 | important_npc.original_partner | TEXT | 文本 |
+| /绑定花名册/女N/子女信息 | important_npc.children_info | TEXT | 文本 |
+| /绑定花名册/女N/上次清醒瞬间 | important_npc.ntr_last_lucid_moment | TEXT | 文本 |
+| /绑定花名册/女N/NTR玩法类型 | important_npc.ntr_play_type | TEXT | NTR隐奸/NTR明目侵犯/变态道具/精神虐待 |
+
+#### 4.7.2 NSFW 实时状态（7字段，当前女角每轮必须全量输出）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/当前衣着 | important_npc.current_outfit | TEXT | 文本 |
+| /绑定花名册/女N/暴露程度 | important_npc.exposure_level | TEXT | 保守/日常/微露/暴露/半裸/全裸/N/A |
+| /绑定花名册/女N/湿润度 | important_npc.wetness | INTEGER 0-100 | 核心数值 |
+| /绑定花名册/女N/兴奋度 | important_npc.arousal_level | INTEGER 0-100 | 核心数值 |
+| /绑定花名册/女N/精液残留 | important_npc.semen_residue | TEXT | 无/少量/大量/N/A |
+| /绑定花名册/女N/占有印记 | important_npc.ntr_possession_mark | TEXT | 文本 |
+| /绑定花名册/女N/皮肤痕迹 | (纯MVU) | TEXT | 文本（DB无此列） |
+
+#### 4.7.3 NSFW 静态身体测量（6字段，当前女角每轮必须全量输出）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/罩杯 | important_npc.cup_size | TEXT | 无/A~H |
+| /绑定花名册/女N/胸围 | important_npc.bust_size | INTEGER | cm |
+| /绑定花名册/女N/腰围 | important_npc.waist_size | INTEGER | cm |
+| /绑定花名册/女N/臀围 | important_npc.hip_size | INTEGER | cm |
+| /绑定花名册/女N/身高 | important_npc.height | INTEGER | cm |
+| /绑定花名册/女N/体重 | important_npc.weight | INTEGER | kg |
+
+#### 4.7.4 NSFW 胸部细节（6字段，当前女角每轮必须全量输出）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/乳头大小 | important_npc.nipple_size | TEXT | 小/中等/大 |
+| /绑定花名册/女N/乳头颜色 | important_npc.nipple_color | TEXT | 粉色/深粉/褐色 |
+| /绑定花名册/女N/乳晕大小 | important_npc.areola_size | TEXT | 小/中等/大 |
+| /绑定花名册/女N/胸型 | important_npc.breast_shape | TEXT | 碗状/挺拔/下垂 |
+| /绑定花名册/女N/胸部敏感度 | important_npc.breast_sensitivity | INTEGER 0-300 | 数值 |
+| /绑定花名册/女N/泌乳 | important_npc.lactation | TEXT | 无/泌乳中 |
+
+#### 4.7.5 NSFW 腰部与手部（4字段）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/腰型 | important_npc.waist_shape | TEXT | 纤细/微胖/粗壮 |
+| /绑定花名册/女N/腰部敏感度 | important_npc.waist_sensitivity | INTEGER 0-300 | 数值 |
+| /绑定花名册/女N/手部描述 | important_npc.hands_desc | TEXT | 文本 |
+| /绑定花名册/女N/美甲风格 | important_npc.nail_style | TEXT | 文本 |
+
+#### 4.7.6 NSFW 臀部与后庭（3字段）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/臀型 | important_npc.hip_shape | TEXT | 圆润/丰满/紧翘/宽大 |
+| /绑定花名册/女N/臀部敏感度 | important_npc.hip_sensitivity | INTEGER 0-300 | 数值 |
+| /绑定花名册/女N/后庭描述 | important_npc.anal_desc | TEXT | 紧致/松弛/未开发/半开发/已开发 |
+
+#### 4.7.7 NSFW 下体细节（9字段）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/阴毛 | important_npc.pubic_hair | TEXT | 稀疏/浓密/激光脱毛 |
+| /绑定花名册/女N/阴唇大小 | important_npc.labia_size | TEXT | 适中/较大 |
+| /绑定花名册/女N/阴唇颜色 | important_npc.labia_color | TEXT | 粉色/深粉/深褐 |
+| /绑定花名册/女N/阴道紧度 | important_npc.vagina_tightness | TEXT | 紧致/普通/松弛 |
+| /绑定花名册/女N/特殊体质 | important_npc.special_constitution | TEXT | 无/母乳体质/敏感度改造 |
+| /绑定花名册/女N/润滑程度 | important_npc.lubrication | TEXT | 不足/正常/充足 |
+| /绑定花名册/女N/处女膜状态 | important_npc.hymen_status | TEXT | 完整/已破 |
+| /绑定花名册/女N/生育能力 | important_npc.fertility | TEXT | 正常/已结扎 |
+| /绑定花名册/女N/全身敏感度 | important_npc.body_sensitivity | INTEGER 0-300 | 数值 |
+
+#### 4.7.8 NSFW 敏感带与触发（2字段）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/敏感带 | important_npc.erogenous_zones | TEXT | 文本（如"颈后/耳后"） |
+| /绑定花名册/女N/兴奋触发点 | important_npc.arousal_triggers | TEXT | 文本（如"言语挑逗"） |
+
+#### 4.7.9 EJS阶段控制（2字段）
+
+| MVU变量路径 | 数据库列名 | 类型 | 说明 |
+|---|---|---|---|
+| /绑定花名册/女N/EJS阶段 | important_npc.ejs_stage | TEXT | 阶段0~阶段7 |
+| /绑定花名册/女N/时期 | important_npc.ntr_bind_period | TEXT | 当前目标/刚被控制/完全绑定/绑定深化/濒临解绑/已解绑 |
+
+**SQL同步规则（当前女角全量53字段UPDATE示例，严禁用...省略任何字段）：**
+sql
+UPDATE important_npc SET
+  "类型"='A9时期', ntr_bind_level='A9', ntr_bind_order=9, ntr_bind_status='绑定中', ntr_bind_depth=20, ntr_lucidity_freq=75, ntr_unbind_cost='失忆',
+  identity_text='苏婉集团董事长', family_relation='夫·主角，女·乐乐6岁', original_partner='主角', children_info='乐乐6岁',
+  ntr_last_lucid_moment='开局前一天刚被绑定', ntr_play_type='刚被控制·尚未玷污',
+  current_outfit='黑色连衣裙', exposure_level='保守', wetness=0, arousal_level=0, semen_residue='无', ntr_possession_mark='左手无名指婚戒尚在',
+  cup_size='E', bust_size=105, waist_size=58, hip_size=92, height=168, weight=52,
+  nipple_size='中等', nipple_color='粉色', areola_size='中等', breast_shape='挺拔', breast_sensitivity=100, lactation='无',
+  waist_shape='纤细', waist_sensitivity=70, hands_desc='白嫩修长', nail_style='裸色',
+  hip_shape='圆润', hip_sensitivity=90, anal_desc='未开发',
+  pubic_hair='稀疏', labia_size='适中', labia_color='粉色', vagina_tightness='紧致', special_constitution='无', lubrication='正常', hymen_status='已破', fertility='正常', body_sensitivity=100,
+  erogenous_zones='颈后/耳后', arousal_triggers='耳语挑逗',
+  ejs_stage='阶段0·刚被控制', ntr_bind_period='当前目标',
+  last_update='01-01 14:00'
+WHERE name='苏婉';
+
+
+**非当前女角增量UPDATE示例（只更新变化字段）：**
+sql
+UPDATE important_npc SET ntr_bind_depth=22, ntr_lucidity_freq=73, last_update='01-01 14:00' WHERE name='陈雪华';
+
+
+### 4.8 评论系统 → 纯MVU变量（不存数据库）
+
+| MVU变量路径 | 说明 |
+|---|---|
+| /评论系统/本轮评论 | 数组 |
+| /评论系统/累计点赞 | 数字 |
+| /评论系统/累计吐槽 | 数字 |
+| /评论系统/热门评论 | 文本 |
+| /评论系统/评论倾向 | 正面/中性/负面/极端正面/极端负面/叫好/满意/愤怒/弃书边缘 |
+
+### 4.9 记忆系统 → 纯MVU变量（不存数据库）
+
+| MVU变量路径 | 说明 |
+|---|---|
+| /最近记忆 | 数组 |
+| /思维链历史 | 数组 |
+
+## 五、新增角色全量更新规则（核心铁律）
+
+### 5.1 何时触发全量输出
+
+1. **新女角被绑定**（绑定花名册空槽位填入新角色）→ 必须全量输出该女角28字段 + INSERT important_npc全量87列
+2. **新角色登场**（角色属性中新增角色）→ 必须全量输出该角色4维属性
+3. **新角色有技能** → 必须全量输出该角色所有技能
+4. **交涉开始**（交涉对象从空变为角色名）→ 必须全量输出交涉状态所有20字段
+
+### 5.2 全量输出格式（新增绑定女角示例）
+
+当沈梦瑶从空槽变为新绑定角色时，MVU变量和数据库必须同时全量输出。
+**MVU变量名与DB列名完全一致**，共53条JSONPatch（含全部30+ NSFW字段）。
+
+**MVU变量（53条JSONPatch，含全部NSFW字段，禁止用...省略）：**
+json
+[
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/姓名", "value": "新角色名" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/类型", "value": "A10时期" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/绑定等级", "value": "A10" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/绑定顺序", "value": 10 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/状态", "value": "绑定中" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/绑定深度", "value": 0 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/清醒频率", "value": 80 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/解绑代价", "value": "失忆" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/身份", "value": "角色身份描述" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/家庭关系", "value": "家庭描述" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/原伴侣", "value": "无" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/子女信息", "value": "无" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/上次清醒瞬间", "value": "刚被控制" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/NTR玩法类型", "value": "刚被控制·尚未玷污" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/当前衣着", "value": "日常衣着" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/暴露程度", "value": "日常" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/湿润度", "value": 0 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/兴奋度", "value": 0 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/精液残留", "value": "无" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/占有印记", "value": "" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/皮肤痕迹", "value": "无" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/罩杯", "value": "C" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/胸围", "value": 85 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/腰围", "value": 60 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/臀围", "value": 88 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/身高", "value": 165 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/体重", "value": 50 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/乳头大小", "value": "中等" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/乳头颜色", "value": "粉色" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/乳晕大小", "value": "中等" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/胸型", "value": "挺拔" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/胸部敏感度", "value": 100 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/泌乳", "value": "无" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/腰型", "value": "纤细" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/腰部敏感度", "value": 70 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/手部描述", "value": "纤细白嫩" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/美甲风格", "value": "裸色" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/臀型", "value": "圆润" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/臀部敏感度", "value": 90 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/后庭描述", "value": "未开发" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/阴毛", "value": "稀疏" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/阴唇大小", "value": "适中" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/阴唇颜色", "value": "粉色" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/阴道紧度", "value": "紧致" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/特殊体质", "value": "无" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/润滑程度", "value": "正常" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/处女膜状态", "value": "完整" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/生育能力", "value": "正常" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/全身敏感度", "value": 100 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/敏感带", "value": "颈后/耳后" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/兴奋触发点", "value": "言语挑逗" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/EJS阶段", "value": "阶段0·刚被控制" },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/时期", "value": "刚被控制" },
+  { "op": "replace", "path": "/反派状态/已绑定数", "value": 9 },
+  { "op": "replace", "path": "/反派状态/剩余名额", "value": 1 },
+  { "op": "add", "path": "/角色属性/新角色名", "value": {"气势":40,"口才":30,"情报":20,"地位":15} }
+]
+
+
+**数据库SQL（INSERT全量87列）：**
+sql
+INSERT INTO important_npc (
+  row_id, name, gender, age, brief_intro, appearance, identity_text, base_attributes, special_attributes,
+  location_name, presence_status, relations_text, interaction_options, past_experience, affection, heartbeat, jealousy,
+  trust, relation_stage, stage_locked, is_targeting, route_locked, mutex_group, mutex_partner,
+  h_experience_count, first_kiss, first_h, advanced_h, cup_size, bust_size, waist_size, hip_size, height, weight,
+  nipple_size, nipple_color, areola_size, breast_shape, breast_sensitivity, lactation, waist_shape, waist_sensitivity,
+  hands_desc, nail_style, hip_shape, hip_sensitivity, anal_desc, pubic_hair, labia_size, labia_color,
+  vagina_tightness, special_constitution, lubrication, hymen_status, fertility, body_sensitivity, erogenous_zones,
+  arousal_triggers, current_outfit, exposure_level, wetness, arousal_level, semen_residue, ntr_bind_level, ntr_bind_order,
+  ntr_bind_status, ntr_bind_depth, ntr_lucidity_freq, ntr_unbind_cost, ntr_play_type, ntr_possession_mark, ejs_stage,
+  ntr_bind_period, ntr_last_lucid_moment, original_partner, children_info, family_relation, evaluation_value, conscience_value, ooc_count,
+  system_status, evaluation_trend, current_phase, mood, play_preference, current_goal, last_update
+) VALUES (
+  (SELECT COALESCE(MAX(row_id),0)+1 FROM important_npc),
+  '新角色名', '女', 25, '一句话介绍', '外貌特征', '身份', '{}', '{}',
+  '所在地点', '在场', '人际关系', '交互选项', '过往经历', 0, 0, 0,
+  0, '初识', 0, 0, 0, '', '无',
+  0, 0, 0, 0, 'C', 85, 60, 88, 165, 50,
+  '', '', '', '', 0, '', '', 0,
+  '', '', '', 0, 'N/A', '', '', '',
+  '', '', '', '', '', 0, '',
+  '', '日常衣着', '无', 0, 0, '无', 'A10', 10,
+  '绑定中', 0, 80, '失忆', '刚被控制·尚未玷污', '', '阶段0·刚被控制',
+  '刚被控制', '刚被控制', '无', '无', '', 0, 50, 0,
+  '活跃', '', '', '', '', '', '01-01 14:00'
+);
+
+
+**严禁用 ... 省略任何字段！必须逐条输出全部53条JSONPatch + 87列INSERT！**
+
+### 5.2.0 INSERT铁律（防NOT NULL失败）
+
+**INSERT important_npc 时必须严格遵守：**
+1. **必须列出全部87列字段名** + 对应87个值，禁止只列部分字段
+2. **NOT NULL 字段必须填值**：name/gender/age/"一句话介绍"/"外貌特征"/identity_text/"基础属性"/location_name/"在场状态"/"过往经历"/"好感度"/"心动值"/"嫉妒值"/"信任度"/"关系阶段"/"阶段锁定"/"是否在攻略中"/"攻略路线锁定"/"H经验次数"/"初吻"/"初H"/"进阶H"/cup_size/last_update
+3. **可空字段允许NULL**：height/weight/bust_size等允许为空，但建议填写
+4. **严禁臆造列名**：important_npc 表**没有**以下列（这些列在其他表）：
+   - ❌ ntr_wife_relation（属于 protagonist_info 表）
+   - ❌ "自身状态"（属于 protagonist_info 表）
+   - ❌ "魅力"/"学识"/"社交"/"体质"/"意志"/"感知"（属于 protagonist_info 表）
+   - ❌ "饥饿度"/"口渴度"/"疲劳度"/mood（主角的属于 protagonist_info 表，NPC的mood在 important_npc 表）
+   - ❌ "现金"（属于 protagonist_info 表）
+5. **INSERT 前必须核对列名**：参考 4.7 节的 important_npc 87 列完整列表
+
+**正确INSERT模板（87列全量）：**
+sql
+INSERT INTO important_npc (
+  row_id, name, gender, age, brief_intro, appearance, identity_text, base_attributes, special_attributes,
+  location_name, presence_status, relations_text, interaction_options, past_experience, affection, heartbeat, jealousy,
+  trust, relation_stage, stage_locked, is_targeting, route_locked, mutex_group, mutex_partner,
+  h_experience_count, first_kiss, first_h, advanced_h, cup_size, bust_size, waist_size, hip_size, height, weight,
+  nipple_size, nipple_color, areola_size, breast_shape, breast_sensitivity, lactation, waist_shape, waist_sensitivity,
+  hands_desc, nail_style, hip_shape, hip_sensitivity, anal_desc, pubic_hair, labia_size, labia_color,
+  vagina_tightness, special_constitution, lubrication, hymen_status, fertility, body_sensitivity, erogenous_zones,
+  arousal_triggers, current_outfit, exposure_level, wetness, arousal_level, semen_residue, ntr_bind_level, ntr_bind_order,
+  ntr_bind_status, ntr_bind_depth, ntr_lucidity_freq, ntr_unbind_cost, ntr_play_type, ntr_possession_mark, ejs_stage,
+  ntr_bind_period, ntr_last_lucid_moment, original_partner, children_info, family_relation, evaluation_value, conscience_value, ooc_count,
+  system_status, evaluation_trend, current_phase, mood, play_preference, current_goal, last_update
+) VALUES (
+  (SELECT COALESCE(MAX(row_id),0)+1 FROM important_npc),
+  '姓名', '性别', 年龄, '一句话介绍', '外貌特征', '身份', '{}', '{}',
+  '所在地点', '在场状态', '人际关系', '交互选项', '过往经历', 0, 0, 0,
+  0, '初识', 0, 0, 0, NULL, '无',
+  0, 0, 0, 0, '罩杯', 胸围, 腰围, 臀围, 身高, 体重,
+  '乳头大小', '乳头颜色', '乳晕大小', '胸型', 胸部敏感度, '泌乳', '腰型', 腰部敏感度,
+  '手部描述', '美甲风格', '臀型', 臀部敏感度, '后庭描述', '阴毛', '阴唇大小', '阴唇颜色',
+  '阴道紧度', '特殊体质', '润滑程度', '处女膜状态', '生育能力', 全身敏感度, '敏感带',
+  '兴奋触发点', '当前衣着', '暴露程度', 湿润度, 兴奋度, '精液残留', '绑定等级', 绑定顺序,
+  '绑定状态', 绑定深度, 清醒频率, '解绑代价', 'NTR玩法类型', '占有印记', 'EJS阶段',
+  '绑定时期', '上次清醒瞬间', '原伴侣', '子女信息', '家庭关系', 评价值, 良知值, OOC计数,
+  '系统状态', '评价趋势', '当前阶段', '心情', '玩法偏好', '当前目标', '最后更新'
+);
+
+
+### 5.2.1 当前女角每轮全量输出规则
+
+**当前互动女角**（如苏婉正在与林天/user互动）每轮必须全量输出全部53个字段（含30+ NSFW字段），
+即使没有变化也要输出当前值，确保状态栏完整显示。
+非当前女角仅输出发生变化的字段（增量更新）。
+这与同级生2的"当前女角50字段每轮全量输出"规则一致。
+
+### 5.3 增量更新规则（非首次出现时）
+
+角色已存在后的后续轮次，只输出**有变化的字段**：
+json
+[
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/绑定深度", "value": 15 },
+  { "op": "replace", "path": "/绑定花名册/沈梦瑶/清醒频率", "value": 70 }
+]
+
+对应SQL：
+sql
+UPDATE important_npc SET ntr_bind_depth=15, ntr_lucidity_freq=70, last_update='01-01 14:00' WHERE name='新角色名';
+
+
+### 5.4 时间变量每轮必须更新
+
+每轮必须输出时间相关变量（即使无其他变化）：
+json
+[
+  { "op": "replace", "path": "/系统变量/天数", "value": 2 },
+  { "op": "replace", "path": "/系统变量/时段", "value": "下午" }
+]
+
+对应SQL：
+sql
+UPDATE global_state SET day_count=2, time_period='下午', cur_time='01-01 14:00', scene_overview='场景概要' WHERE row_id=1;
+
+
+## 六、UpdateTable 块格式（SPV数据库同步）
+
+
+<UpdateTable>
+UPDATE global_state SET day_count=2, time_period='下午', cur_time='01-01 14:00', current_location='林天会所', scene_overview='林天在会所审问苏婉' WHERE row_id=1;
+UPDATE protagonist_info SET ntr_resistance=35, ntr_awakening=5, ntr_sanity=80, ntr_suspicion=30, ntr_mental_state='愤怒', location_name='家中', last_update='01-01 14:00' WHERE row_id=1;
+UPDATE important_npc SET evaluation_value=95, conscience_value=50, system_status='活跃', current_phase='满分巅峰', location_name='林天会所', mood='玩味', last_update='01-01 14:00' WHERE name='林天';
+UPDATE important_npc SET ntr_bind_depth=20, ntr_lucidity_freq=75, ntr_bind_status='绑定中', last_update='01-01 14:00' WHERE name='苏婉';
+</UpdateTable>
+
+
+### 双写同步规则（核心铁律！）
+1. **MVU变量变化了哪些字段，<UpdateTable>中对应的UPDATE就SET哪些列**
+2. **/系统变量/* 变化 ↔ UPDATE global_state SET 对应列**
+3. **/反派状态/* 变化 ↔ UPDATE important_npc SET 对应列 WHERE name='林天'**
+4. **/user状态/* 变化 ↔ UPDATE protagonist_info SET 对应列 WHERE row_id=1**
+5. **/绑定花名册/女N/* 变化 ↔ UPDATE important_npc SET 对应列 WHERE name=该女角姓名**
+6. **不漏字段，不多输出未变化字段**
+7. **如果MVU变量与数据库值不一致，以MVU变量为准，修正SQL语句**
+8. **所有中文列名必须用双引号包裹**
+
+## 七、通用规则
+
+1. **路径格式**：斜杠分隔，无 stat_data 前缀
+2. **统一用 replace**：禁止用 delta 操作
+3. **只输出变化的变量**：无变化不输出（时间除外，时间每轮必须）
+4. **数值变更限制**：单轮单值变化 ≤10（特殊事件除外）
+5. **隐藏字段**：$ 开头的字段禁止更新
+6. **JSONPatch标签必须存在**：漏标签 = 所有变量不更新
+7. **UpdateTable标签必须存在**：即使无SQL语句也要输出空块
+8. **禁止正文输出数值**：评价值/反抗力等数值由数据库管理，叙事中禁止出现
+9. **禁止路径错误**：必须与上方变量路径清单完全一致
+10. **数据库列名全中文**：所有列名用双引号包裹，如 evaluation_value、ntr_bind_depth
+11. **WHERE条件**：global_state/protagonist_info用WHERE row_id=1，important_npc用WHERE name='角色名'

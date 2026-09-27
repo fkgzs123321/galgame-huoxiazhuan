@@ -1,0 +1,15 @@
+{
+  "id": "fjb-yds-battleui",
+  "scriptName": "战斗面板界面",
+  "findRegex": "/<BattleUI\\s*\\/>/gi",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": -100,
+  "maxDepth": 100,
+  "replace_file": "正则/战斗面板界面.html"
+}

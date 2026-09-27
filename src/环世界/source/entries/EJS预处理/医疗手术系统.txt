@@ -1,0 +1,318 @@
+@@generate_before
+<%_
+/* 医疗手术系统 - 殖民地外科手术/仿生体植入/器官移植的统一控制器 */
+
+var pName = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var pMedical = Number(getvar('stat_data.殖民者_主角.医疗', { scope: 'local', defaults: 5 })) || 5;
+var pHealth = Number(getvar('stat_data.殖民者_主角.健康', { scope: 'local', defaults: 80 })) || 80;
+var pBlood = Number(getvar('stat_data.殖民者_主角.血量', { scope: 'local', defaults: 100 })) || 100;
+var pAge = Number(getvar('stat_data.殖民者_主角.年龄', { scope: 'local', defaults: 25 })) || 25;
+var pSurgeryCount = Number(getvar('stat_data.殖民者_主角.手术次数', { scope: 'local', defaults: 0 })) || 0;
+
+/* 手术类型数据库 SURGERY_DB - 难度1-20 / 耗时小时 / 成功率公式 / 失败后果 / 恢复时间 / 所需药品 / 所需设备 */
+var SURGERY_DB = {
+  '缝合':         { 难度: 3,  耗时: 1,  成功率公式: 'skill×5+health×0.3+50', 失败后果: '伤口感染',     恢复时间: 2,  所需药品: '基础药品', 所需设备: '基础手术包' },
+  '截肢':         { 难度: 8,  耗时: 3,  成功率公式: 'skill×4+health×0.2+40', 失败后果: '大出血',       恢复时间: 10, 所需药品: '基础药品', 所需设备: '截肢锯/手术台' },
+  '器官移植':     { 难度: 15, 耗时: 6,  成功率公式: 'skill×3+health×0.2+30', 失败后果: '器官衰竭',     恢复时间: 20, 所需药品: '高级药品', 所需设备: '移植舱/生命维持' },
+  '仿生体植入':   { 难度: 12, 耗时: 4,  成功率公式: 'skill×4+health×0.2+35', 失败后果: '神经损伤',     恢复时间: 15, 所需药品: '高级药品', 所需设备: '神经接口/手术台' },
+  '整容':         { 难度: 6,  耗时: 2,  成功率公式: 'skill×5+health×0.3+45', 失败后果: '毁容',         恢复时间: 5,  所需药品: '基础药品', 所需设备: '激光手术刀' },
+  '剖腹产':       { 难度: 10, 耗时: 2,  成功率公式: 'skill×4+health×0.3+40', 失败后果: '产妇/婴儿风险', 恢复时间: 12, 所需药品: '基础药品', 所需设备: '手术台/保温箱' },
+  '肿瘤切除':     { 难度: 14, 耗时: 5,  成功率公式: 'skill×3+health×0.2+35', 失败后果: '癌细胞扩散',   恢复时间: 15, 所需药品: '高级药品', 所需设备: '激光刀/手术台' },
+  '骨折复位':     { 难度: 7,  耗时: 2,  成功率公式: 'skill×5+health×0.3+45', 失败后果: '畸形愈合',     恢复时间: 20, 所需药品: '基础药品', 所需设备: '骨夹板/X光机' },
+  '心脏手术':     { 难度: 18, 耗时: 8,  成功率公式: 'skill×3+health×0.1+25', 失败后果: '心脏骤停',     恢复时间: 25, 所需药品: '高级药品', 所需设备: '体外循环/手术台' },
+  '脑部手术':     { 难度: 20, 耗时: 10, 成功率公式: 'skill×2+health×0.1+20', 失败后果: '脑损伤/死亡',   恢复时间: 30, 所需药品: '高级药品', 所需设备: '神经监测/手术显微镜' }
+};
+
+/* 仿生体数据库 BIONIC_DB - 效果/手术难度/排斥概率/估值/恢复时间 */
+var BIONIC_DB = {
+  '仿生眼':     { 效果: '视力提升至150%,含夜视模块',   手术难度: 12, 排斥概率: 0.10, 估值: 1800, 恢复时间: 10 },
+  '仿生臂':     { 效果: '操控力提升,工作效率+30%',     手术难度: 13, 排斥概率: 0.12, 估值: 2200, 恢复时间: 12 },
+  '仿生腿':     { 效果: '移动速度+40%,负重+50kg',      手术难度: 13, 排斥概率: 0.12, 估值: 2000, 恢复时间: 12 },
+  '心脏起搏器': { 效果: '心脏功能恢复,免疫心律失常',   手术难度: 15, 排斥概率: 0.15, 估值: 2800, 恢复时间: 15 },
+  '增强肺':     { 效果: '肺活量×1.5,潜水/高海拔耐受',  手术难度: 14, 排斥概率: 0.13, 估值: 2400, 恢复时间: 14 },
+  '神经芯片':   { 效果: '反应速度+25%,学习效率+50%',   手术难度: 19, 排斥概率: 0.25, 估值: 4500, 恢复时间: 20 }
+};
+
+/* 器官移植数据库 ORGAN_DB - 存活率/排斥概率/恢复时间/供体要求 */
+var ORGAN_DB = {
+  '心脏': { 存活率: 0.55, 排斥概率: 0.30, 恢复时间: 25, 供体要求: '活体捐献/新鲜尸体(≤6小时)', 血型匹配: '必须' },
+  '肺':   { 存活率: 0.65, 排斥概率: 0.25, 恢复时间: 20, 供体要求: '活体捐献/新鲜尸体(≤8小时)', 血型匹配: '必须' },
+  '肝':   { 存活率: 0.70, 排斥概率: 0.20, 恢复时间: 18, 供体要求: '可部分移植,活体优先',       血型匹配: '建议' },
+  '肾':   { 存活率: 0.85, 排斥概率: 0.15, 恢复时间: 14, 供体要求: '活体捐献优先',               血型匹配: '建议' },
+  '胃':   { 存活率: 0.75, 排斥概率: 0.18, 恢复时间: 15, 供体要求: '新鲜尸体(≤10小时)',         血型匹配: '建议' },
+  '皮肤': { 存活率: 0.90, 排斥概率: 0.10, 恢复时间: 7,  供体要求: '自体移植优先/异体需培养',     血型匹配: '不要求' }
+};
+
+/* 手术风险等级表 SURGERY_RISK_DB - 死亡率/感染率/失败率/麻醉时间 */
+var SURGERY_RISK_DB = {
+  '极低': { 死亡率: 0.01, 感染率: 0.05, 失败率: 0.05, 麻醉时间: 1,  适用难度: '1-4'   },
+  '低':   { 死亡率: 0.03, 感染率: 0.10, 失败率: 0.10, 麻醉时间: 2,  适用难度: '5-8'   },
+  '中':   { 死亡率: 0.08, 感染率: 0.20, 失败率: 0.20, 麻醉时间: 4,  适用难度: '9-12'  },
+  '高':   { 死亡率: 0.15, 感染率: 0.30, 失败率: 0.30, 麻醉时间: 6,  适用难度: '13-16' },
+  '极高': { 死亡率: 0.30, 感染率: 0.45, 失败率: 0.40, 麻醉时间: 10, 适用难度: '17-20' }
+};
+
+/* _surgeryInfo(type) - 获取手术信息 */
+function _surgeryInfo(type) {
+  var t = String(type || '缝合');
+  var info = SURGERY_DB[t] || SURGERY_DB['缝合'];
+  var diff = info.难度;
+  var risk;
+  if (diff <= 4) { risk = '极低'; }
+  else if (diff <= 8) { risk = '低'; }
+  else if (diff <= 12) { risk = '中'; }
+  else if (diff <= 16) { risk = '高'; }
+  else { risk = '极高'; }
+  return {
+    名称: t,
+    难度: diff,
+    耗时: info.耗时,
+    成功率公式: info.成功率公式,
+    失败后果: info.失败后果,
+    恢复时间: info.恢复时间,
+    所需药品: info.所需药品,
+    所需设备: info.所需设备,
+    风险等级: risk,
+    风险数据: SURGERY_RISK_DB[risk]
+  };
+}
+
+/* _surgerySuccessRate(skill, difficulty, patientHealth) - 手术成功率计算 */
+function _surgerySuccessRate(skill, difficulty, patientHealth) {
+  var s = Number(skill) || 0;
+  var d = Number(difficulty) || 1;
+  var h = Number(patientHealth) || 80;
+  /* 基础成功率: skill×4 + health×0.2 + 40 - difficulty×3 */
+  var base = (s * 4) + (h * 0.2) + 40 - (d * 3);
+  /* 难度惩罚: 难度>15时额外递减 */
+  if (d > 15) { base -= (d - 15) * 4; }
+  /* 年龄修正: 老年患者成功率下降 */
+  if (pAge > 60) { base -= (pAge - 60) * 0.5; }
+  /* 多次手术累积疲劳 */
+  if (pSurgeryCount > 3) { base -= (pSurgeryCount - 3) * 2; }
+  /* 上下限钳制 */
+  if (base > 98) { base = 98; }
+  if (base < 5) { base = 5; }
+  return Math.round(base);
+}
+
+/* _surgeryFailure(skill, difficulty) - 手术失败后果 */
+function _surgeryFailure(skill, difficulty) {
+  var s = Number(skill) || 0;
+  var d = Number(difficulty) || 1;
+  var info = null;
+  for (var k in SURGERY_DB) {
+    if (SURGERY_DB[k].难度 === d) { info = SURGERY_DB[k]; break; }
+  }
+  if (!info) { info = SURGERY_DB['缝合']; }
+  var baseFailure = info.失败后果;
+  var riskLevel;
+  if (d <= 4) { riskLevel = '极低'; }
+  else if (d <= 8) { riskLevel = '低'; }
+  else if (d <= 12) { riskLevel = '中'; }
+  else if (d <= 16) { riskLevel = '高'; }
+  else { riskLevel = '极高'; }
+  var riskData = SURGERY_RISK_DB[riskLevel];
+  /* 技能修正: 高技能减轻后果 */
+  var mitigate = s >= 10 ? 0.5 : (s >= 6 ? 0.7 : 1.0);
+  var finalDeath = Math.round(riskData.死亡率 * mitigate * 100) / 100;
+  var finalInfect = Math.round(riskData.感染率 * mitigate * 100) / 100;
+  return {
+    后果: baseFailure,
+    风险等级: riskLevel,
+    死亡率: finalDeath,
+    感染率: finalInfect,
+    技能缓解: mitigate,
+    详情: '手术失败[' + baseFailure + '] 风险等级[' + riskLevel + '] 执行技能缓解×' + mitigate
+  };
+}
+
+/* _organRejection(organType, days) - 器官排斥判定 */
+function _organRejection(organType, days) {
+  var t = String(organType || '肾');
+  var organ = ORGAN_DB[t] || ORGAN_DB['肾'];
+  var d = Number(days) || 0;
+  var baseReject = organ.排斥概率;
+  /* 排斥概率随时间衰减: 前7天最高,之后递减 */
+  var timeFactor;
+  if (d <= 7) { timeFactor = 1.5; }
+  else if (d <= 14) { timeFactor = 1.0; }
+  else if (d <= 30) { timeFactor = 0.6; }
+  else { timeFactor = 0.3; }
+  var currentRisk = Math.round(baseReject * timeFactor * 100) / 100;
+  if (currentRisk > 0.95) { currentRisk = 0.95; }
+  var stage;
+  if (d <= 7) { stage = '急性排斥期'; }
+  else if (d <= 30) { stage = '亚急性期'; }
+  else { stage = '慢性维持期'; }
+  return {
+    器官: t,
+    存活率: organ.存活率,
+    排斥概率: currentRisk,
+    基础排斥: baseReject,
+    时间因子: timeFactor,
+    阶段: stage,
+    恢复时间: organ.恢复时间,
+    供体要求: organ.供体要求,
+    详情: stage + ' 排斥概率' + (currentRisk * 100).toFixed(0) + '%'
+  };
+}
+
+/* _bionicEffect(bionicType) - 仿生体效果 */
+function _bionicEffect(bionicType) {
+  var t = String(bionicType || '仿生眼');
+  var b = BIONIC_DB[t] || BIONIC_DB['仿生眼'];
+  /* 排斥判定: 神经芯片最难适应 */
+  var rejectRoll = _lcgRoll('bionic_reject_' + t + '_' + pName, 1, 100)[0];
+  var rejectThreshold = Math.round(b.排斥概率 * 100);
+  var rejected = rejectRoll <= rejectThreshold;
+  return {
+    类型: t,
+    效果: b.效果,
+    手术难度: b.手术难度,
+    排斥概率: b.排斥概率,
+    估值: b.估值,
+    恢复时间: b.恢复时间,
+    排斥检定: rejected,
+    骰值: rejectRoll,
+    判定: rejected ? '发生排斥反应' : '植入成功,无排斥',
+    详情: t + '效果[' + b.效果 + '] 排斥阈值' + rejectThreshold + '% 骰值' + rejectRoll
+  };
+}
+
+/* _anesthesiaRisk(patientHealth, duration) - 麻醉风险 */
+function _anesthesiaRisk(patientHealth, duration) {
+  var h = Number(patientHealth) || 80;
+  var dur = Number(duration) || 1;
+  /* 基础风险: (100-health)×0.3 + duration×1.5 */
+  var base = ((100 - h) * 0.3) + (dur * 1.5);
+  /* 健康低于40额外危险 */
+  if (h < 40) { base += (40 - h) * 0.5; }
+  /* 长时间麻醉(>6小时)陡增 */
+  if (dur > 6) { base += (dur - 6) * 3; }
+  if (base > 90) { base = 90; }
+  if (base < 1) { base = 1; }
+  var level;
+  if (base < 10) { level = '极低'; }
+  else if (base < 25) { level = '低'; }
+  else if (base < 45) { level = '中'; }
+  else if (base < 65) { level = '高'; }
+  else { level = '极高'; }
+  return {
+    风险值: Math.round(base * 100) / 100,
+    风险等级: level,
+    麻醉时长: dur,
+    健康基础: h,
+    详情: '麻醉风险[' + level + '] 风险值' + Math.round(base * 100) / 100 + '% 时长' + dur + 'h'
+  };
+}
+
+/* _surgeryRecovery(days, care) - 术后恢复 */
+function _surgeryRecovery(days, care) {
+  var d = Number(days) || 0;
+  var c = Number(care) || 1;
+  /* care: 1=无护理 2=基础护理 3=高级护理 4=专业护理 */
+  var careFactor;
+  if (c >= 4) { careFactor = 1.5; }
+  else if (c === 3) { careFactor = 1.2; }
+  else if (c === 2) { careFactor = 1.0; }
+  else { careFactor = 0.6; }
+  /* 每日恢复量 = 基础5 × careFactor + 医疗技能修正 */
+  var dailyGain = 5 * careFactor + (pMedical * 0.3);
+  var recovered = d * dailyGain;
+  if (recovered > 100) { recovered = 100; }
+  var completion = Math.round(recovered);
+  var stage;
+  if (completion < 25) { stage = '危重期'; }
+  else if (completion < 50) { stage = '观察期'; }
+  else if (completion < 75) { stage = '恢复期'; }
+  else if (completion < 100) { stage = '康复期'; }
+  else { stage = '痊愈'; }
+  return {
+    恢复天数: d,
+    护理等级: c,
+    护理系数: careFactor,
+    每日恢复: Math.round(dailyGain * 100) / 100,
+    累计恢复: completion,
+    恢复阶段: stage,
+    详情: stage + ' 累计恢复' + completion + '% 日恢复' + Math.round(dailyGain * 100) / 100 + '%'
+  };
+}
+
+/* 当前主角手术状态示例 */
+var sampleSurgery = _surgeryInfo('缝合');
+var sampleSuccess = _surgerySuccessRate(pMedical, sampleSurgery.难度, pHealth);
+var sampleFailure = _surgeryFailure(pMedical, sampleSurgery.难度);
+var sampleAnesthesia = _anesthesiaRisk(pHealth, sampleSurgery.耗时);
+var sampleRecovery = _surgeryRecovery(3, 2);
+var sampleBionic = _bionicEffect('仿生眼');
+var sampleRejection = _organRejection('肾', 5);
+_%>
+
+<医疗手术校验>
+[医疗手术系统校验]
+执行者: <%= pName %>
+医疗技能: <%= pMedical %>
+当前健康: <%= pHealth %> / 血量: <%= pBlood %>
+年龄: <%= pAge %> / 累计手术: <%= pSurgeryCount %>次
+
+[手术信息示例 - 缝合]
+<%= JSON.stringify(sampleSurgery) %>
+
+[成功率计算示例]
+手术类型: 缝合 / 难度: <%= sampleSurgery.难度 %>
+公式: skill×4 + health×0.2 + 40 - difficulty×3
+计算: <%= pMedical %>×4 + <%= pHealth %>×0.2 + 40 - <%= sampleSurgery.难度 %>×3
+成功率: <%= sampleSuccess %>%
+
+[失败后果示例]
+<%= JSON.stringify(sampleFailure) %>
+
+[麻醉风险示例]
+<%= JSON.stringify(sampleAnesthesia) %>
+
+[术后恢复示例]
+<%= JSON.stringify(sampleRecovery) %>
+
+[仿生体植入示例 - 仿生眼]
+<%= JSON.stringify(sampleBionic) %>
+
+[器官排斥示例 - 肾 移植5天]
+<%= JSON.stringify(sampleRejection) %>
+</医疗手术校验>
+
+[医疗手术系统 · 系统控制器]
+## 手术类型表（查SURGERY_DB）
+缝合(难度3/1h/恢复2天/基础药品) | 截肢(难度8/3h/恢复10天/基础药品) | 器官移植(难度15/6h/恢复20天/高级药品) | 仿生体植入(难度12/4h/恢复15天/高级药品) | 整容(难度6/2h/恢复5天/基础药品) | 剖腹产(难度10/2h/恢复12天/基础药品) | 肿瘤切除(难度14/5h/恢复15天/高级药品) | 骨折复位(难度7/2h/恢复20天/基础药品) | 心脏手术(难度18/8h/恢复25天/高级药品) | 脑部手术(难度20/10h/恢复30天/高级药品)
+
+## 仿生体表（查BIONIC_DB）
+仿生眼(视力150%/难度12/排斥10%/估值1800/恢复10天) | 仿生臂(效率+30%/难度13/排斥12%/估值2200/恢复12天) | 仿生腿(移动+40%/难度13/排斥12%/估值2000/恢复12天) | 心脏起搏器(免疫心律失常/难度15/排斥15%/估值2800/恢复15天) | 增强肺(肺活量×1.5/难度14/排斥13%/估值2400/恢复14天) | 神经芯片(反应+25%/难度19/排斥25%/估值4500/恢复20天)
+
+## 器官移植表（查ORGAN_DB）
+心脏(存活55%/排斥30%/恢复25天/血型必须) | 肺(存活65%/排斥25%/恢复20天/血型必须) | 肝(存活70%/排斥20%/恢复18天/血型建议) | 肾(存活85%/排斥15%/恢复14天/血型建议) | 胃(存活75%/排斥18%/恢复15天/血型建议) | 皮肤(存活90%/排斥10%/恢复7天/血型不要求)
+
+## 手术风险表（查SURGERY_RISK_DB）
+极低(死亡1%/感染5%/失败5%/麻醉1h/难度1-4) | 低(死亡3%/感染10%/失败10%/麻醉2h/难度5-8) | 中(死亡8%/感染20%/失败20%/麻醉4h/难度9-12) | 高(死亡15%/感染30%/失败30%/麻醉6h/难度13-16) | 极高(死亡30%/感染45%/失败40%/麻醉10h/难度17-20)
+
+## 手术规则
+- **成功率公式**：基础 = skill×4 + health×0.2 + 40 - difficulty×3；难度>15额外-(d-15)×4；上限98%下限5%
+- **风险等级**：由手术难度决定(1-4极低/5-8低/9-12中/13-16高/17-20极高)
+- **年龄修正**：患者>60岁成功率每岁额外-0.5%
+- **手术疲劳**：累计手术>3次后每多一次成功率-2%
+- **失败后果**：由手术类型决定(感染/大出血/器官衰竭/神经损伤/毁容/产妇风险/癌细胞扩散/畸形愈合/心脏骤停/脑损伤)
+- **技能缓解**：失败后果死亡率/感染率 × 缓解系数(技能≥10为0.5/技能≥6为0.7/否则1.0)
+- **器官排斥**：前7天急性期×1.5 / 8-14天亚急性×1.0 / 15-30天×0.6 / 30天后慢性×0.3
+- **麻醉风险**：(100-health)×0.3 + duration×1.5；健康<40额外惩罚；麻醉>6h陡增
+- **术后恢复**：每日恢复 = 5 × careFactor + skill×0.3；护理等级(无护理0.6/基础1.0/高级1.2/专业1.5)
+- **血型匹配**：心脏/肺必须匹配，肝/肾/胃建议匹配，皮肤不要求
+- **供体时效**：心脏≤6h / 肺≤8h / 胃≤10h，超时存活率减半
+
+## 叙事要求
+- 难度≥17(极高)的手术(心脏手术/脑部手术)叙事须描写手术室紧张氛围、生命体征波动、汗湿的手套
+- 手术失败时叙事须依据失败后果类型描写(感染化脓/血液喷涌/器官颜色异常/神经痉挛)
+- 器官移植急性排斥期(前7天)叙事须描写患者高热、移植部位肿痛、免疫抑制剂的副作用
+- 仿生体植入后叙事须描写神经接口接入的刺痛、机械部件与肉体的磨合、不协调的抽动
+- 麻醉风险"极高"时叙事须描写患者瞳孔变化、呼吸抑制、监护仪警报
+- 术后恢复"危重期"叙事须描写患者虚弱、伤口渗液、间歇性意识模糊
+- 截肢手术叙事须描写骨锯的震动声、断面的处理、患者醒来后的幻肢痛
+- 剖腹产手术叙事须描写新生儿的哭声、产妇的疲惫、保温箱的暖光

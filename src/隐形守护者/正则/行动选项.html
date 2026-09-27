@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+:root{
+  --bg-card:linear-gradient(165deg,#2a2622 0%,#1e1b18 100%);
+  --bg-inner:rgba(255,255,255,.04);
+  --border:rgba(193,185,173,.22);
+  --text:#c1b9ad;
+  --text-dim:#9e978e;
+  --gold:#b8863d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{padding:8px 12px;margin:0;background:transparent;font-family:"Noto Serif SC","Songti SC",serif;color:var(--text);-webkit-font-smoothing:antialiased}
+.wrap{
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--bg-card);
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  margin:8px 0;width:100%;max-width:720px;
+}
+.head{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  cursor:pointer;user-select:none;list-style:none;outline:none;
+}
+.head::-webkit-details-marker{display:none}
+details[open].wrap>.head{border-bottom:1px solid var(--border)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(184,134,61,.55);flex-shrink:0}
+.title{font-size:11px;letter-spacing:.22em;color:var(--gold);font-weight:700;font-family:"Courier New",monospace}
+.body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.option-item{
+  width:100%;text-align:left;padding:11px 14px;border-radius:8px;
+  border:1px solid var(--border);background:var(--bg-inner);
+  cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;
+  opacity:0;transform:translateY(8px);animation:flyIn .4s forwards;
+  transition:border-color .2s,background .2s;
+}
+.option-item:hover{border-color:rgba(184,134,61,.45);background:rgba(125,73,64,.2)}
+.row{display:flex;align-items:center;gap:12px}
+.idx{
+  flex-shrink:0;width:26px;height:26px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-family:"Courier New",monospace;
+  color:var(--text-dim);border:1px solid var(--border);background:rgba(0,0,0,.15);
+}
+.option-item:hover .idx{color:var(--gold);border-color:rgba(184,134,61,.4)}
+.option-text{font-size:14px;line-height:1.45;color:var(--text)}
+@keyframes flyIn{to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<details class="wrap" open>
+  <summary class="head"><div class="dot"></div><span class="title">请选择</span></summary>
+  <div class="body" id="ol"></div>
+</details>
+<div id="rd" style="display:none">$1</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var HOSTS=[];
+  try{[window,window.parent,window.top].forEach(function(w){if(w&&HOSTS.indexOf(w)<0)HOSTS.push(w);});}catch(e){HOSTS=[window];}
+
+  var NODE_OPTIONS={
+    '序章-1':['A. 保持沉默','B. 老师不是我！一定另有隐情！'],
+    '序章-2':['A. 都已经过去了，问那么多干嘛','B. 不是我干的！请你相信我'],
+    '序章-3':['A. 去图书馆看看书','B. 回到旅馆好好休息','C. 去酒馆喝酒，忘掉今天的烦心事'],
+    '序章-4':['A. 再呆一会儿','B. 我还是回去吧'],
+    '序章-5':['A. 逐一了解','B. 跳过了解，直接要任务','C. 取入党申请书']
+  };
+
+  function H(){
+    try{var f=window.frameElement;if(f)f.style.height=document.body.scrollHeight+'px';}catch(e){}
+  }
+  new ResizeObserver(H).observe(document.body);
+  setTimeout(H,80);
+  document.querySelector('details').addEventListener('toggle',function(){setTimeout(H,40)});
+
+  function resolveMesId(){
+    try{
+      var f=window.frameElement;
+      var mes=f&&f.closest?f.closest('.mes'):null;
+      if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(!isNaN(id)&&id>=0)return id;}
+    }catch(e){}
+    return -1;
+  }
+
+  function setInput(text){
+    HOSTS.forEach(function(h){
+      try{
+        var inp=h.document&&h.document.querySelector('#send_textarea');
+        if(inp){
+          inp.value=text;
+          inp.dispatchEvent(new Event('input',{bubbles:true}));
+          inp.focus();
+        }
+        if(typeof h.triggerSlash==='function')h.triggerSlash('/setinput '+text);
+      }catch(e){}
+    });
+  }
+
+  function fallbackFromMvu(){
+    var mid=resolveMesId();
+    if(mid<0)return [];
+    for(var i=0;i<HOSTS.length;i++){
+      var h=HOSTS[i];
+      try{
+        if(typeof h.getVariables!=='function')continue;
+        var v=h.getVariables({type:'message',message_id:mid});
+        var plot=v&&v.stat_data&&v.stat_data.剧情;
+        if(!plot)continue;
+        var key=plot.已死亡===true?String(plot.检查点||'序章-1'):String(plot.当前节点||'序章-1');
+        var arr=NODE_OPTIONS[key];
+        return arr?arr.slice():[];
+      }catch(e){}
+    }
+    return [];
+  }
+
+  function parseOptionLines(raw){
+    var lines=raw.split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean);
+    var out=[];
+    lines.forEach(function(line){
+      line=line.replace(/^\*+|\*+$/g,'').trim();
+      if(/^[A-CＡ-Ｃ][.、．:\s]/.test(line))out.push(line);
+    });
+    return out;
+  }
+
+  var d=document.getElementById('rd'),list=document.getElementById('ol');
+  if(!d||!list)return;
+
+  var temp=document.createElement('div');
+  temp.innerHTML=d.innerHTML.replace(/<br\s*\/?>/gi,'\n');
+  var raw=(temp.textContent||temp.innerText||'').trim();
+  var lines=parseOptionLines(raw);
+  if(!lines.length)lines=fallbackFromMvu();
+
+  var optIdx=0;
+  lines.forEach(function(line){
+    var item=document.createElement('button');
+    item.type='button';
+    item.className='option-item';
+    item.style.animationDelay=(optIdx*0.07)+'s';
+    optIdx++;
+    var letter=(line.match(/^([A-CＡ-Ｃ])/)||['?'])[0];
+    item.innerHTML='<div class="row"><div class="idx">'+letter+'</div><div class="option-text"></div></div>';
+    item.querySelector('.option-text').textContent=line.replace(/^[A-CＡ-Ｃ][.、．:\s]+/,'').trim()||line;
+    item.addEventListener('click',function(){setInput(line);});
+    list.appendChild(item);
+  });
+
+  if(!list.children.length){
+    list.innerHTML='<div class="option-text" style="opacity:.6">暂无选项（请确认本楼含 &lt;branches&gt; 或已启用序章写死强制）</div>';
+  }
+  H();
+});
+</script>
+</body>
+</html>

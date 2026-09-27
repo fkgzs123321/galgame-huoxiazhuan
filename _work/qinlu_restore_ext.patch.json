@@ -1,0 +1,19 @@
+[
+  {
+    "op": "add",
+    "path": "/extensions/xiaobaix-tasks",
+    "value": {
+      "tasks": []
+    }
+  },
+  {
+    "op": "add",
+    "path": "/extensions/odysseia_trace",
+    "value": {
+      "v": 1,
+      "kid": "v1",
+      "nonce": "y284Bfn5YUoi7YJ3",
+      "ciphertext": "GQh4vPrId53ABEfTRx8Paxi-IBUD5KTEkpPM9M_VJ6KjaHavoCutfJ4f2fJbz4UYchR9STuoacgwH-y5LaVceqQn7BjVjG9aVN15Gu5TtrUM_qCrPtSC6RH2fO-3pzxoDLRirNeCbwxA4PQcnANiJXwQ8255SCxMRYcR5yk6deM-zotQjc0UtoslC5o56YkrNGU-LFtAnyPRvzNj3UVC9bVAoFRe9nhvwCHtgCuvwylcDI8796Q"
+    }
+  }
+]

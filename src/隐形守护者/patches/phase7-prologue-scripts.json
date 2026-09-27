@@ -1,0 +1,11 @@
+[
+  {"op":"add","path":"/entryManifest/世界观/能力档位说明","value":{"path":"世界书/世界观/能力档位说明.yaml","abstract":"肖途低中高 vs NPC矩阵0-10","keywords":["能力","档位"]}},
+  {"op":"add","path":"/entryManifest/事件/序章节点推进铁律","value":{"path":"世界书/事件/序章/序章节点推进铁律.yaml","abstract":"序章禁止跳戏与同轮推进","keywords":["序章"]}},
+  {"op":"add","path":"/entryManifest/事件/序章-1-方汉洲当面对质","value":{"path":"世界书/事件/序章/序章-1-方汉洲当面对质.yaml","abstract":"序章-1台词镜头选项","keywords":["序章","方汉洲"]}},
+  {"op":"add","path":"/entryManifest/事件/序章-1A-沉默通过后","value":{"path":"世界书/事件/序章/序章-1A-沉默通过后.yaml","abstract":"P1-A后没读好书台词+变量","keywords":["序章","沉默"]}},
+  {"op":"add","path":"/entryManifest/事件/序章-2-方敏追问","value":{"path":"世界书/事件/序章/序章-2-方敏追问.yaml","abstract":"序章-2方敏门外追问","keywords":["序章","方敏"]}},
+  {"op":"add","path":"/entryManifest/事件/序章-3-去向选择","value":{"path":"世界书/事件/序章/序章-3-去向选择.yaml","abstract":"序章-3图书馆旅馆酒馆","keywords":["序章","图书馆"]}},
+  {"op":"add","path":"/entryManifest/事件/序章-4-图书馆等待","value":{"path":"世界书/事件/序章/序章-4-图书馆等待.yaml","abstract":"序章-4图书馆等老师","keywords":["序章","图书馆"]}},
+  {"op":"add","path":"/entryManifest/事件/序章-5-秘密基地","value":{"path":"世界书/事件/序章/序章-5-秘密基地.yaml","abstract":"序章-5入党与任务简报","keywords":["序章","基地"]}},
+  {"op":"replace","path":"/entryManifest/事件/序章-事件/abstract","value":"序章总览；分节点剧本见序章-*条目"}
+]

@@ -1,0 +1,573 @@
+```
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+.gg2{--bg0:#0a0c11;--bg1:#11151d;--bg2:#171c26;--bg3:#1e242f;
+ --line:#28303d;--line2:#39445a;--ink:#d6dded;--dim:#78829a;--faint:#4e5768;
+ --gold:#e8b84b;--gold2:#b98a2a;--grn:#6fcf97;--rose:#e07a9a;--blu:#5fa8d0;--vio:#b07ae0;
+ font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:13px;line-height:1.62;
+ color:var(--ink);margin:10px 0;border-radius:15px;position:relative;overflow:hidden;isolation:isolate;
+ background:radial-gradient(1100px 260px at 8% -12%,rgba(232,184,75,.09),transparent 62%),
+            radial-gradient(900px 240px at 94% -4%,rgba(176,122,224,.075),transparent 62%),
+            linear-gradient(180deg,var(--bg1),var(--bg0));
+ border:1px solid var(--line);box-shadow:0 12px 34px -14px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.035)}
+.gg2 *{box-sizing:border-box}
+.gg2:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;opacity:.5;
+ background:repeating-linear-gradient(180deg,rgba(255,255,255,.013) 0 1px,transparent 1px 3px)}
+
+.gg2 .head{display:flex;align-items:center;gap:12px;padding:11px 14px;
+ background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);border-bottom:1px solid var(--line)}
+.gg2 .d1{font-size:17px;font-weight:700;letter-spacing:.7px;
+ background:linear-gradient(180deg,#fff,#c3cde3);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gg2 .d2{font-size:11px;color:var(--dim);letter-spacing:.4px;margin-top:1px}
+.gg2 .right{margin-left:auto;display:flex;align-items:center;gap:11px}
+.gg2 .slots{display:flex;gap:5px}
+.gg2 .slots i{width:17px;height:5px;border-radius:3px;background:#212834;display:block;transition:.25s}
+.gg2 .slots i.on{background:linear-gradient(90deg,#3d78a8,#5fa8d0)}
+.gg2 .slots i.now{background:linear-gradient(90deg,#4fbf7a,#8fe0b0);box-shadow:0 0 9px rgba(111,207,151,.7)}
+.gg2 .ring{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+ background:conic-gradient(from -90deg,var(--gold) calc(var(--p,0)*1%),#1c222c 0);box-shadow:0 0 16px -5px rgba(232,184,75,.55)}
+.gg2 .ring>b{width:40px;height:40px;border-radius:50%;background:var(--bg1);display:flex;flex-direction:column;
+ align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.gg2 .ring>b:after{content:"天";font-size:9px;font-weight:400;color:var(--faint);margin-top:2px}
+
+.gg2 .bars{padding:11px 14px 8px;display:grid;grid-template-columns:auto 1fr auto;gap:7px 10px;align-items:center}
+.gg2 .k{font-size:11.5px;color:var(--dim);white-space:nowrap;letter-spacing:.3px}
+.gg2 .v{font-size:11.5px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:28px;text-align:right;transition:.25s}
+.gg2 .v.up{color:var(--grn);text-shadow:0 0 9px rgba(111,207,151,.6)}
+.gg2 .v.dn{color:var(--rose);text-shadow:0 0 9px rgba(224,122,154,.6)}
+.gg2 .tk{height:9px;border-radius:5px;background:#141922;border:1px solid #212834;overflow:hidden;position:relative}
+.gg2 .tk>i{display:block;height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.gg2 .tk:after{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.1) 50%,transparent)}
+.gg2 .hp>i{background:linear-gradient(90deg,#8c3f4a,#d9707f);box-shadow:0 0 11px -2px rgba(217,112,127,.65)}
+.gg2 .re>i{background:linear-gradient(90deg,#2f5f86,#6fb8e0);box-shadow:0 0 11px -2px rgba(111,184,224,.65)}
+.gg2 .ex>i{background:linear-gradient(90deg,#6a3a86,#c78ae8);box-shadow:0 0 11px -2px rgba(199,138,232,.65)}
+
+.gg2 .chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.gg2 .chips>span{font-size:11.5px;padding:3px 9px;border-radius:8px;background:#161b24;
+ border:1px solid #222a35;color:#94a0b8;display:inline-flex;align-items:center;gap:5px}
+.gg2 .chips>span b{color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.gg2 .chips>span.sk b{color:var(--vio)}
+.gg2 .chips>span.mn b{color:var(--grn)}
+.gg2 .sec{padding:0 14px 4px;font-size:10.5px;font-weight:700;letter-spacing:1.4px;color:var(--faint);
+ display:flex;align-items:center;gap:7px}
+.gg2 .sec:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+.gg2 .cam{display:flex;gap:12px;padding:11px 14px;border-top:1px solid var(--line);
+ background:linear-gradient(180deg,rgba(0,0,0,.2),transparent)}
+.gg2 .win{width:84px;height:64px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line2);
+ background:radial-gradient(circle at 50% 34%,#2d3748,#101419);display:grid;place-items:center;font-size:11px;
+ color:#616d81;position:relative;overflow:hidden}
+.gg2 .win:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 28%,rgba(111,207,151,.1),transparent 66%)}
+.gg2 .win:after{content:"";position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;
+ background:var(--grn);box-shadow:0 0 9px var(--grn);animation:gg2p 2.4s ease-in-out infinite}
+.gg2 .win.pause:after{background:var(--gold);box-shadow:0 0 9px var(--gold);animation:none}
+.gg2 .win.off:after{background:var(--faint);box-shadow:none;animation:none}
+@keyframes gg2p{0%,100%{opacity:1}50%{opacity:.3}}
+.gg2 .info{flex:1;min-width:0;display:grid;gap:4px;font-size:12px;color:var(--dim)}
+.gg2 .info b{color:var(--ink);font-weight:600}
+.gg2 .know{display:inline-flex;gap:2px;vertical-align:middle;margin:0 4px}
+.gg2 .know i{width:7px;height:7px;border-radius:50%;background:#212834;display:block}
+.gg2 .know i.on{background:linear-gradient(180deg,#e8c46b,#b98a2a);box-shadow:0 0 7px rgba(232,184,75,.6)}
+
+/* ── ★ 女角多阶段矩阵（隔壁没有） ── */
+.gg2 .girls{padding:6px 14px 12px;display:grid;gap:5px}
+.gg2 .g{display:grid;grid-template-columns:58px 62px 1fr 42px;gap:8px;align-items:center;
+ padding:4px 8px;border-radius:8px;background:#141922;border:1px solid #1e2530;transition:.15s}
+.gg2 .g:hover{border-color:var(--line2);background:#171d27}
+.gg2 .g .nm{font-size:11.5px;color:#b9c4d8;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gg2 .g .st{font-size:10.5px;padding:1px 6px;border-radius:6px;text-align:center;white-space:nowrap;
+ background:#1b222c;border:1px solid #262f3c;color:#8d97ab}
+.gg2 .g[data-s="0"] .st{color:#6b7484}
+.gg2 .g[data-s="1"] .st{color:#5fa8d0;border-color:#2b4a63;background:#16222c}
+.gg2 .g[data-s="2"] .st{color:#6fcf97;border-color:#2b4a37;background:#16221b}
+.gg2 .g[data-s="3"] .st{color:#e8b84b;border-color:#4a3f22;background:#221c10}
+.gg2 .g[data-s="4"] .st{color:#e07a9a;border-color:#4a2632;background:#221318}
+.gg2 .dual{position:relative;height:9px;border-radius:5px;background:#12161d;border:1px solid #212834;overflow:hidden}
+.gg2 .dual:before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:#2b3341}
+.gg2 .dual>i{position:absolute;top:0;bottom:0;border-radius:4px;transition:.4s}
+.gg2 .dual>i.p{left:50%;background:linear-gradient(90deg,#3f7a5a,#6fcf97)}
+.gg2 .dual>i.n{right:50%;background:linear-gradient(270deg,#8c3f4a,#d9707f)}
+.gg2 .g .af{font-size:11px;text-align:right;font-variant-numeric:tabular-nums;color:#94a0b8}
+.gg2 .g .af.p{color:var(--grn)}.gg2 .g .af.n{color:var(--rose)}
+.gg2 .g.locked{opacity:.42}
+.gg2 .g.locked .nm:after{content:" ✕";color:var(--rose)}
+
+.gg2 .draw{padding:11px 14px 13px;border-top:1px solid var(--line);
+ background:linear-gradient(180deg,rgba(232,184,75,.035),transparent 44%)}
+.gg2 .draw h4{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:var(--faint)}
+.gg2 .hint{font-weight:400;letter-spacing:0;color:#8d97ab;margin-left:7px;font-size:11.5px}
+.gg2 .opt{position:relative;display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:11px;margin-bottom:6px;
+ border:1px solid #232b37;background:linear-gradient(180deg,#181f29,#141922);transition:.16s}
+.gg2 .opt:hover{border-color:var(--line2);transform:translateX(2px)}
+.gg2 .opt.tip{border-color:var(--gold2);box-shadow:0 0 0 1px rgba(232,184,75,.24),0 0 20px -9px rgba(232,184,75,.7)}
+.gg2 .opt.tip:before{content:"她的光标";position:absolute;top:-8px;right:9px;font-size:9.5px;padding:0 6px;border-radius:6px;
+ background:var(--gold2);color:#1a1408;font-weight:700;letter-spacing:.3px}
+.gg2 .lv{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:7px;flex:0 0 auto;letter-spacing:.5px}
+.gg2 .lv.micro{background:rgba(111,207,151,.14);color:#8fe0b0;border:1px solid rgba(111,207,151,.3)}
+.gg2 .lv.mid{background:rgba(95,168,208,.14);color:#9dd0f0;border:1px solid rgba(95,168,208,.3)}
+.gg2 .lv.strong{background:rgba(176,122,224,.14);color:#d0a8f0;border:1px solid rgba(176,122,224,.3)}
+.gg2 .lv.extreme{background:rgba(224,122,154,.16);color:#f0a8bc;border:1px solid rgba(224,122,154,.32)}
+.gg2 .lv.lock{background:#1c222b;color:var(--faint);border:1px solid #272f3b}
+.gg2 .txt{flex:1;min-width:0;font-size:12.5px;color:#c6cfe0}
+.gg2 .cost{flex:0 0 auto;font-size:10.5px;color:var(--faint);text-align:right;line-height:1.35;font-variant-numeric:tabular-nums}
+.gg2 .cost b{display:block;color:#93a0b8;font-weight:700}
+.gg2 .opt button{flex:0 0 auto;font:inherit;font-size:12px;font-weight:700;padding:6px 13px;border-radius:9px;cursor:pointer;
+ border:1px solid #7a4250;background:linear-gradient(180deg,#452630,#341c24);color:#f2b8c6;transition:.15s;letter-spacing:.3px}
+.gg2 .opt button:hover:not(:disabled){background:linear-gradient(180deg,#5c303e,#47262f);border-color:#b35f74;
+ box-shadow:0 0 16px -5px rgba(224,122,154,.65);transform:translateY(-1px)}
+.gg2 .opt button:disabled{border-color:#242b35;background:#181d24;color:#4a5361;cursor:not-allowed;box-shadow:none;transform:none}
+.gg2 .res{margin-top:8px;font-size:12px;padding:9px 12px;border-radius:10px;border:1px dashed #38404e;color:var(--dim);line-height:1.6}
+.gg2 .res.ok{border:1px solid rgba(111,207,151,.42);color:#a8e8c4;background:linear-gradient(180deg,rgba(111,207,151,.11),rgba(111,207,151,.03));
+ box-shadow:0 0 22px -11px rgba(111,207,151,.8);animation:gg2f .5s ease-out}
+.gg2 .res.bad{border:1px solid rgba(224,122,154,.42);color:#f0b0c2;background:linear-gradient(180deg,rgba(224,122,154,.11),rgba(224,122,154,.03));
+ box-shadow:0 0 22px -11px rgba(224,122,154,.8);animation:gg2f .5s ease-out}
+.gg2 .res b{font-weight:700}
+.gg2 .res small{color:#78829a;font-variant-numeric:tabular-nums}
+@keyframes gg2f{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.gg2 .foot{padding:0 14px 12px;font-size:11px;color:var(--faint);line-height:1.55}
+.gg2 .tabs{display:flex;gap:6px;padding:10px 14px 0}
+.gg2 .tabs button{font:inherit;font-size:11.5px;font-weight:600;letter-spacing:.4px;padding:5px 12px;border-radius:9px 9px 0 0;cursor:pointer;transition:.15s;border:1px solid #232b37;border-bottom:0;background:#141922;color:#79839c}
+.gg2 .tabs button:hover{color:#b9c4d8}
+.gg2 .tabs button[aria-selected="true"]{background:linear-gradient(180deg,#1d2330,#1a202a);color:#e8b84b;border-color:#3a3a2a}
+.gg2 .panel{padding:10px 14px 12px;border-top:1px solid var(--line)}
+.gg2 .kv{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center}
+.gg2 .day17{display:flex;gap:3px;flex-wrap:wrap;padding:2px 0 4px}
+.gg2 .day17 i{width:15px;height:15px;border-radius:4px;background:#161b24;border:1px solid #232a36;display:grid;place-items:center;font-size:9px;color:#4e5768;font-style:normal}
+.gg2 .day17 i.on{background:#22323a;border-color:#2f5d45;color:#8fe0b0}
+.gg2 .day17 i.now{background:#4a3f22;border-color:#b98a2a;color:#e8c98a;box-shadow:0 0 8px -2px rgba(232,184,75,.7)}
+.gg2 .goalbar{height:10px;border-radius:5px;background:#141922;border:1px solid #212834;overflow:hidden;position:relative}
+.gg2 .goalbar>i{display:block;height:100%;background:linear-gradient(90deg,#6a3a86,#c78ae8);transition:width .5s}
+.gg-her{color:#e8b84b;font-weight:700}
+.gg-role{color:#9fdcb4}
+.gg-you{color:#8b93a5;font-style:italic}
+</style>
+</head>
+<body>
+<!-- 底座_nanpa2 · 状态栏 + 出招层 v3
+     比隔壁（欲望都市）多显示：属性 / 技能 / 金钱 / ★女角多阶段矩阵 / 目的进度 / 封闭线
+     边界（sillytavern-embedded-ui）：状态栏只显示频繁读取的状态；出招层只做「拒绝」这一个决定。
+     状态源 MVU stat_data；写入三通道；判定 LCG（禁 Math.random）。 -->
+
+<div class="gg2" id="gg2-root" data-gg2-init="">
+  <div class="head">
+    <div>
+      <div class="d1" id="gg2-date">{{format_message_variable::stat_data.时间.当前日期}} · 第 {{format_message_variable::stat_data.时间.天数}} 天</div>
+      <div class="d2" id="gg2-sub">{{format_message_variable::stat_data.时间.章节}} · {{format_message_variable::stat_data.场景.场景模式}}</div>
+    </div>
+    <div class="right">
+      <div class="slots" id="gg2-slots"></div>
+      <div class="ring" id="gg2-ring"><b id="gg2-left">{{format_message_variable::stat_data.时间.天数}}</b></div>
+    </div>
+  </div>
+
+  <div class="bars">
+    <span class="k">体力</span><span class="tk hp"><i id="gg2-hp" style="width:{{format_message_variable::stat_data.主角.身体状态}}%"></i></span><span class="v" id="gg2-hpv">{{format_message_variable::stat_data.主角.身体状态}}</span>
+    <span class="k">反抗</span><span class="tk re"><i id="gg2-re" style="width:{{format_message_variable::stat_data.主角.反抗值}}%"></i></span><span class="v" id="gg2-rev">{{format_message_variable::stat_data.主角.反抗值}}</span>
+    <span class="k">兴奋</span><span class="tk ex"><i id="gg2-ex" style="width:{{format_message_variable::stat_data.她.兴奋度}}%"></i></span><span class="v" id="gg2-exv">{{format_message_variable::stat_data.她.兴奋度}}</span>
+  </div>
+
+  <div class="chips" id="gg2-attr"><span>说话<b>{{format_message_variable::stat_data.主角.说话}}</b></span><span>做事<b>{{format_message_variable::stat_data.主角.做事}}</b></span><span>懂东西<b>{{format_message_variable::stat_data.主角.懂东西}}</b></span></div>
+  <div class="chips" id="gg2-skill"><span class="sk">打工<b>{{format_message_variable::stat_data.主角.技能.打工}}</b></span><span class="sk">学业<b>{{format_message_variable::stat_data.主角.技能.学业}}</b></span><span class="sk">机车<b>{{format_message_variable::stat_data.主角.技能.机车}}</b></span></div>
+  <div class="chips" id="gg2-money"><span class="mn">现金<b>{{format_message_variable::stat_data.经济.现金}}</b></span><span class="mn">累计储蓄<b>{{format_message_variable::stat_data.经济.累计储蓄}}</b></span><span class="mn">当日<b>{{format_message_variable::stat_data.经济.当日盈亏}}</b></span></div>
+
+  <div class="cam">
+    <div class="win" id="gg2-win">{{format_message_variable::stat_data.主角.状态}}</div>
+    <div class="info">
+      <div>她 <b id="gg2-who">{{format_message_variable::stat_data.她.人设}}</b> · 目的进度 <b id="gg2-goal">{{format_message_variable::stat_data.她.目的进度}}%</b> · 熟练度 <b id="gg2-prof">—</b></div>
+      <div>对她的了解 <span class="know" id="gg2-knowdots"></span> <b id="gg2-know">{{format_message_variable::stat_data.主角.对她的了解}}</b></div>
+      <div>📍 <b id="gg2-place">{{format_message_variable::stat_data.场景.当前地点}}</b> · 在场 <b id="gg2-cast">{{format_message_variable::stat_data.场景.在场}}</b></div>
+    </div>
+  </div>
+
+  
+  <div class="tabs" id="gg2-tabs"></div>
+  <div class="panel" id="gg2-p-概览"></div>
+  <div class="panel" id="gg2-p-日程" hidden></div>
+  <div class="panel" id="gg2-p-账本" hidden></div>
+  <div class="sec">关系 · 15 位</div>
+  <div class="girls" id="gg2-girls">
+    <div class="g" data-s="0"><span class="nm">鸣泽唯</span><span class="st">{{format_message_variable::stat_data.女角.鸣泽唯.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.鸣泽唯.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.鸣泽唯.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">水野友美</span><span class="st">{{format_message_variable::stat_data.女角.水野友美.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.水野友美.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.水野友美.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">筱原泉</span><span class="st">{{format_message_variable::stat_data.女角.筱原泉.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.筱原泉.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.筱原泉.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">南川洋子</span><span class="st">{{format_message_variable::stat_data.女角.南川洋子.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.南川洋子.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.南川洋子.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">加藤美纪</span><span class="st">{{format_message_variable::stat_data.女角.加藤美纪.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.加藤美纪.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.加藤美纪.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">舞岛可怜</span><span class="st">{{format_message_variable::stat_data.女角.舞岛可怜.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.舞岛可怜.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.舞岛可怜.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">杉本樱子</span><span class="st">{{format_message_variable::stat_data.女角.杉本樱子.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.杉本樱子.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.杉本樱子.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">都筑梢</span><span class="st">{{format_message_variable::stat_data.女角.都筑梢.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.都筑梢.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.都筑梢.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">野野村美里</span><span class="st">{{format_message_variable::stat_data.女角.野野村美里.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.野野村美里.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.野野村美里.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">安田爱美</span><span class="st">{{format_message_variable::stat_data.女角.安田爱美.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.安田爱美.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.安田爱美.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">田中美沙</span><span class="st">{{format_message_variable::stat_data.女角.田中美沙.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.田中美沙.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.田中美沙.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">片桐美铃</span><span class="st">{{format_message_variable::stat_data.女角.片桐美铃.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.片桐美铃.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.片桐美铃.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">鸣泽美佐子</span><span class="st">{{format_message_variable::stat_data.女角.鸣泽美佐子.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.鸣泽美佐子.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.鸣泽美佐子.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">永岛佐知子</span><span class="st">{{format_message_variable::stat_data.女角.永岛佐知子.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.永岛佐知子.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.永岛佐知子.好感度}}</span></div>
+    <div class="g" data-s="0"><span class="nm">永岛久美子</span><span class="st">{{format_message_variable::stat_data.女角.永岛久美子.关系阶段}}</span><span class="dual"><i class="p" style="width:{{format_message_variable::stat_data.女角.永岛久美子.好感度}}%"></i></span><span class="af">{{format_message_variable::stat_data.女角.永岛久美子.好感度}}</span></div>
+  </div>
+
+  <div class="sec" id="gg2-worldsec" hidden>世界 · 她的痕迹</div>
+  <div class="foot" id="gg2-world" hidden></div>
+
+  <div class="draw" id="gg2-draw" hidden>
+    <h4>她摆出的选项<span class="hint" id="gg2-hint"></span></h4>
+    <div id="gg2-opts"></div>
+    <div class="res" id="gg2-res" hidden></div>
+    <div class="foot">拒绝要指定目标。拒绝的不是她正要点的那个：反抗值照扣，什么也没发生。</div>
+  </div>
+</div>
+<script>
+ 
+(async function () {
+  var NS = 'gg2';
+  var ROOT = document.getElementById(NS + '-root');
+  if (!ROOT || ROOT.getAttribute('data-' + NS + '-init') === '1') return;
+  ROOT.setAttribute('data-' + NS + '-init', '1');
+
+  var LV = {
+    微: { label: '微', cost: [3, 5],   rate: 90 },
+
+    中: { label: '中', cost: [10, 15], rate: 60 },
+
+    强: { label: '强', cost: [25, 35], rate: 30 },
+
+    极: { label: '极', cost: [50, 60], rate: 10 },
+
+    锁: { label: '锁', cost: null,     rate: 0 }
+  };
+  /* 等级统一为中文；CSS 类名保留英文（改动会破坏样式）；英文写法保留兼容 */
+  var 类名映射 = { 微: 'micro', 中: 'mid', 强: 'strong', 极: 'extreme', 锁: 'lock' };
+  var 中文映射 = { micro: '微', mid: '中', strong: '强', extreme: '极', lock: '锁' };
+  function 归一(v) { v = String(v || ''); return LV[v] ? v : (中文映射[v] || '微'); }
+  var STAGE = ['陌生', '警惕', '动摇', '依附', '崩坏'];
+  var PROF = ['', '新手', '上手', '沉浸', '狂热', '收官'];
+  var PREV = {};
+
+  /* MVU 变量读法（@types/iframe/exported.mvu.d.ts）：
+     Mvu.getMvuData({ type: 'message', message_id: 'latest' }) 是「最新消息楼层的 mvu 数据」；
+     getVariables({type:'chat'}) 是酒馆变量，不是 MVU 的。逐级兜底。 */
+  async function allVars() {
+    /* 照 src/暗黑地牢 的取法（生产卡验证过的实现）：
+       - 从 getLastMessageId() 往回找最多 15 层
+       - 只认 role === 'assistant' 的楼层：用户消息层没有变量
+       - getChatMessages / Mvu.getMvuData 都要 await
+       - 全找不到 → 兜底空对象 */
+    try {
+      let maxId = 0;
+      try { maxId = getLastMessageId(); } catch (e0) {}
+      for (let i = 0; i < 15; i++) {
+        let cid = maxId - i;
+        if (cid < 0) break;
+        let msg = null;
+        try { msg = await getChatMessages(cid); } catch (e1) { continue; }
+        if (Array.isArray(msg)) msg = msg[0];
+        if (!msg) continue;
+        if (msg.role && msg.role !== 'assistant') continue;
+        let v = null;
+        try {
+          if (window.Mvu && Mvu.getMvuData) v = await Mvu.getMvuData({ type: 'message', message_id: msg.message_id });
+          else if (typeof getVariables === 'function') v = await getVariables({ type: 'message', message_id: msg.message_id });
+        } catch (e2) {}
+        if (v && v.stat_data) return v.stat_data;
+      }
+    } catch (e) {}
+    try { if (typeof getVariables === 'function') { var c = await getVariables({ type: 'chat' }); if (c && c.stat_data) return c.stat_data; } } catch (e3) {}
+    return {};
+  }
+  function walk(o, path) {
+    var p = String(path || '').replace(/^stat_data\./, '').split('.');
+    var c = (o && o.stat_data !== undefined) ? o.stat_data : o;
+    for (var i = 0; i < p.length && c != null; i++) c = c[p[i]];
+    return c;
+  }
+  function get(path, dflt) { var v = walk(allVars(), path); return v === undefined || v === null ? dflt : v; }
+  function setLocal(o, path, val) {
+    var p = String(path).replace(/^stat_data\./, '').split('.');
+    if (o.stat_data === undefined) o.stat_data = {};
+    var c = o.stat_data;
+    for (var i = 0; i < p.length - 1; i++) { if (typeof c[p[i]] !== 'object' || c[p[i]] === null) c[p[i]] = {}; c = c[p[i]]; }
+    c[p[p.length - 1]] = val;
+  }
+  function set(path, val) {
+    var full = 'stat_data.' + String(path).replace(/^stat_data\./, '');
+    try { if (typeof updateVariablesWith === 'function') updateVariablesWith(function (v) { v = v || {}; setLocal(v, full, val); return v; }, { type: 'chat' }); } catch (e) {}
+    try {
+      if (typeof updateVariablesWith === 'function' && typeof getCurrentMessageId === 'function')
+        updateVariablesWith(function (v) { v = v || {}; setLocal(v, full, val); return v; }, { type: 'message', message_id: getCurrentMessageId() });
+    } catch (e) {}
+    try { if (typeof triggerSlash === 'function') triggerSlash('/setvar ' + full + ' ' + JSON.stringify(JSON.stringify(val))); } catch (e) {}
+  }
+
+  var A = 1664525, C = 1013904223, M = 4294967296;
+  function nxt(s) { return (A * s + C) % M; }
+
+  function num(id, v) {
+    var el = document.getElementById(NS + '-' + id); if (!el) return;
+    var nv = Math.round(Number(v) || 0), old = PREV[id];
+    el.textContent = nv;
+    if (old !== undefined && old !== nv) {
+      el.className = 'v ' + (nv > old ? 'up' : 'dn');
+      setTimeout(function () { el.className = 'v'; }, 1200);
+    }
+    PREV[id] = nv;
+  }
+  function bar(id, v) { var el = document.getElementById(NS + '-' + id); if (el) el.style.width = Math.max(0, Math.min(100, Number(v) || 0)) + '%'; }
+  function txt(id, s) { var el = document.getElementById(NS + '-' + id); if (el) el.textContent = s; }
+  function chips(id, arr) {
+    var el = document.getElementById(NS + '-' + id); if (!el) return;
+    el.innerHTML = arr.map(function (x) {
+      return '<span' + (x.cls ? ' class="' + x.cls + '"' : '') + '>' + x.k + '<b>' + x.v + '</b></span>';
+    }).join('');
+  }
+
+
+  var TAB = ['概览', '日程', '账本'];
+  function renderTabs() {
+    var box = document.getElementById(NS + '-tabs'); if (!box) return;
+    var cur = PREV.tab || '概览';   /* 重绘时保留用户选的 Tab */
+    box.innerHTML = TAB.map(function (t) {
+      return '<button type="button" data-t="' + t + '" aria-selected="' + (t === cur) + '">' + t + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) {
+      b.addEventListener('click', function () { PREV.tab = b.getAttribute('data-t'); renderPanels(); renderTabs(); });
+    });
+    TAB.forEach(function (t) { var el = document.getElementById(NS + '-p-' + t); if (el) el.hidden = (t !== cur); });
+  }
+  function renderPanels() {
+    var t = get('时间', {}) || {}, sc = get('场景', {}) || {}, p = get('主角', {}) || {};
+    var she = get('她', {}) || {}, ec = get('经济', {}) || {}, pr = get('过程', {}) || {};
+    var cash = Number(ec.现金) || 0, save = Number(ec.累计储蓄) || 0, dl = Number(ec.当日盈亏) || 0;
+    var g = document.getElementById(NS + '-p-概览');
+    if (g) {
+      g.innerHTML = '<div class="kv">'
+        + '<span class="k">日期</span><span>' + (t.当前日期 || '—') + ' · 第 ' + (Number(t.天数) || 1) + ' 天</span><span class="v">' + (t.天气 || '') + '</span>'
+        + '<span class="k">时段</span><span>' + (t.时段 || '—') + ' · ' + (sc.场景模式 || '') + '</span><span class="v">' + (t.章节 || '') + '</span>'
+        + '<span class="k">她的状态</span><span>' + (p.状态 || '在线') + ' · 熟练度 ' + (PROF[Number(she.熟练度) || 1] || '—') + '</span><span class="v">' + (she.人设 || '—') + '</span>'
+        + '<span class="k">目的进度</span><span class="goalbar"><i style="width:' + Math.min(100, Number(she.目的进度) || 0) + '%"></i></span><span class="v">' + Math.round(Number(she.目的进度) || 0) + '%</span>'
+        + '</div>';
+    }
+    var d = document.getElementById(NS + '-p-日程');
+    if (d) {
+      var day = Number(t.天数) || 1, cells = '';
+      for (var i = 1; i <= 17; i++) cells += '<i class="' + (i === day ? 'now' : (i < day ? 'on' : '')) + '">' + i + '</i>';
+      d.innerHTML = '<div class="day17">' + cells + '</div><div class="kv">'
+        + '<span class="k">当前地点</span><span>' + (sc.当前地点 || '—') + '</span><span class="v">' + (sc.在场 || '') + '</span>'
+        + '<span class="k">今日指令</span><span>' + (局.今日指令 || '已发布') + '</span><span class="v">' + (pr.当前难度 || '') + '</span>'
+        + '</div>';
+    }
+    var b = document.getElementById(NS + '-p-账本');
+    if (b) {
+      var neg = Number(pr.连续无收入天数) || 0;
+      b.innerHTML = '<div class="kv">'
+        + '<span class="k">现金</span><span class="v">¥' + cash.toLocaleString() + '</span><span></span>'
+        + '<span class="k">累计储蓄</span><span class="v">' + save.toLocaleString() + ' / 50000</span><span class="v">' + (save >= 50000 ? '达到 True End 硬条件' : '') + '</span>'
+        + '<span class="k">今日盈亏</span><span class="v">' + (dl >= 0 ? '+' : '') + dl + '</span><span class="v">' + (dl < 0 ? '赤字' : '') + '</span>'
+        + '<span class="k">无收入天数</span><span class="v">' + neg + ' / 3</span><span class="v">' + (neg >= 2 ? '逼近破产' : '') + '</span>'
+        + '</div>';
+    }
+  }
+  function render() {
+    var t = get('时间', {}) || {}, sc = get('场景', {}) || {}, p = get('主角', {}) || {};
+    var she = get('她', {}) || {}, pr = get('过程', {}) || {}, ec = get('经济', {}) || {}, nws = get('当前女角状态', {}) || {};
+
+    var day = Number(t.天数) || 1;
+    txt('date', (t.当前日期 || '—') + ' · 第 ' + day + ' 天');
+    txt('sub', [t.章节, sc.场景模式, t.天气].filter(Boolean).join(' · '));
+    txt('left', Math.max(0, 18 - day));
+    var ring = document.getElementById(NS + '-ring');
+    if (ring) ring.style.setProperty('--p', Math.round(day / 17 * 100));
+
+    var slots = ['早', '上午', '下午', '晚', '深夜'], slot = String(t.时段 || '早'), at = slots.indexOf(slot), h = '';
+    for (var i = 0; i < slots.length; i++) h += '<i class="' + (i === at ? 'now' : (i < at ? 'on' : '')) + '"></i>';
+    var sl = document.getElementById(NS + '-slots'); if (sl) sl.innerHTML = h;
+
+    bar('hp', p.身体状态); num('hpv', p.身体状态);
+    bar('re', p.反抗值); num('rev', p.反抗值);
+    var exv = (she.兴奋度 !== undefined ? she.兴奋度 : nws.兴奋度);
+    bar('ex', exv); num('exv', exv);
+
+    chips('attr', [
+      { k: '说话', v: Math.round(Number(p.说话) || 0) },
+      { k: '做事', v: Math.round(Number(p.做事) || 0) },
+      { k: '懂东西', v: Math.round(Number(p.懂东西) || 0) }
+    ]);
+    var sk = p.技能 || {};
+    chips('skill', [
+      { k: '打工', v: Math.round(Number(sk.打工) || 0), cls: 'sk' },
+      { k: '学业', v: Math.round(Number(sk.学业) || 0), cls: 'sk' },
+      { k: '机车', v: Math.round(Number(sk.机车) || 0), cls: 'sk' }
+    ]);
+    var cash = Number(ec.现金) || 0, save = Number(ec.累计储蓄) || 0, dl = Number(ec.当日盈亏) || 0;
+    chips('money', [
+      { k: '现金', v: cash.toLocaleString(), cls: 'mn' },
+      { k: '累计储蓄', v: save.toLocaleString(), cls: 'mn' },
+      { k: '当日', v: (dl >= 0 ? '+' : '') + dl, cls: 'mn' }
+    ]);
+
+    txt('who', she.人设 || '—');
+    txt('goal', Math.round(Number(she.目的进度) || 0) + '%');
+    txt('prof', PROF[Number(she.熟练度) || 1] || '—');
+    var know = Math.round(Number(p.对她的了解) || 0), dots = '';
+    for (var d = 0; d < 5; d++) dots += '<i class="' + (know >= (d + 1) * 20 ? 'on' : '') + '"></i>';
+    var kd = document.getElementById(NS + '-knowdots'); if (kd) kd.innerHTML = dots;
+    txt('know', (STAGE[Math.min(4, Math.floor(know / 20))] || '陌生') + ' ' + know);
+    txt('place', sc.当前地点 || '—');
+    txt('cast', sc.在场 || '—');
+
+    var win = document.getElementById(NS + '-win');
+    if (win) { var st = p.状态 || '在线'; win.className = 'win' + (st === '暂停' ? ' pause' : (st === '离线' ? ' off' : '')); win.textContent = st; }
+
+    renderGirls();
+    renderPanels();
+    renderTabs();
+    renderWorld();
+    renderDraw(know);
+  }
+
+  /* ★ 女角多阶段矩阵 */
+  function renderGirls() {
+    var rel = get('女角', {}) || {};
+    var closed = (get('世界', {}) || {}).关系封闭 || {};
+    var box = document.getElementById(NS + '-girls'); if (!box) return;
+    var keys = Object.keys(rel);
+    if (!keys.length) { box.innerHTML = '<div class="foot">（女角变量未加载）</div>'; return; }
+    box.innerHTML = keys.map(function (n) {
+      var v = rel[n] || {};
+      var af = Math.max(-100, Math.min(100, Number(v.好感度) || 0));
+      var si = STAGE.indexOf(v.关系阶段);
+      if (si < 0) si = Math.max(0, Math.min(4, Math.floor((af + 100) / 40)));
+      var w = Math.abs(af) / 2;
+      var lock = closed[n] ? ' locked' : '';
+      return '<div class="g' + lock + '" data-s="' + si + '">'
+        + '<span class="nm">' + n + '</span>'
+        + '<span class="st">' + (STAGE[si] || '陌生') + '</span>'
+        + '<span class="dual">' + (af >= 0
+            ? '<i class="p" style="width:' + w + '%"></i>'
+            : '<i class="n" style="width:' + w + '%"></i>') + '</span>'
+        + '<span class="af ' + (af > 0 ? 'p' : (af < 0 ? 'n' : '')) + '">' + (af > 0 ? '+' : '') + af + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
+  function renderWorld() {
+    var pr = get('过程', {}) || {};
+    var parts = [];
+    if (pr.世界的裂缝) parts.push('世界的裂缝 ' + pr.世界的裂缝);
+    var used = pr['她用过的手段'];
+    if (used && Object.keys(used).length) parts.push('她用过的手段 ' + Object.keys(used).length + ' 次');
+    var dmg = get('主角.不可逆损伤', {});
+    if (dmg && Object.keys(dmg).length) parts.push('不可逆损伤 ' + Object.keys(dmg).length + ' 处');
+    var sec = document.getElementById(NS + '-worldsec'), box = document.getElementById(NS + '-world');
+    if (!sec || !box) return;
+    if (!parts.length) { sec.hidden = true; box.hidden = true; return; }
+    sec.hidden = false; box.hidden = false; box.textContent = parts.join(' · ');
+  }
+
+  function renderDraw(know) {
+    var 局 = get('局面', {}) || {};
+    var opts = 局.当前选项;
+    var wrap = document.getElementById(NS + '-draw'), box = document.getElementById(NS + '-opts');
+    if (!wrap || !box) return;
+    if (!opts || !Object.keys(opts).length) { wrap.hidden = true; return; }
+    wrap.hidden = false;
+    var hint;
+    if (know >= 60 && 局.她的倾向) hint = '她的光标停在第 ' + 局.她的倾向 + ' 个上，看得不太真切';
+    else if (know >= 30) hint = '她像是中意这一类，但还没定';
+    else hint = '光标在几个之间来回走，看不出来';
+    txt('hint', '｜ ' + hint);
+
+    var keys = Object.keys(opts), html = '';
+    keys.forEach(function (k, i) {
+      var o = opts[k] || {}, lv = LV[o.等级] || LV.micro;
+      var cost = lv.cost ? ('<b>' + lv.cost[0] + '~' + lv.cost[1] + '</b>拒绝') : '<b>—</b>锁';
+      var tip = (know >= 60 && String(局.她的倾向) === String(k)) ? ' tip' : '';
+      html += '<div class="opt' + tip + '">'
+        + '<span class="lv ' + (类名映射[等] || 'micro') + '">' + lv.label + '</span>'
+        + '<span class="txt">' + (o.文本 || ('选项 ' + (i + 1))) + '</span>'
+        + '<span class="cost">' + cost + '</span>'
+        + '<button type="button" data-refuse="' + k + '">拒绝这个</button></div>';
+    });
+    box.innerHTML = html;
+    Array.prototype.forEach.call(box.querySelectorAll('button[data-refuse]'), function (b) {
+      b.addEventListener('click', function () { refuse(b.getAttribute('data-refuse')); });
+    });
+  }
+
+  function refuse(key) {
+    var 局 = get('局面', {}) || {}, opts = 局.当前选项 || {}, o = opts[key];
+    if (!o) return;
+    var lv = LV[o.等级] || LV.micro, p = get('主角', {}) || {}, she = get('她', {}) || {};
+    var re = Number(p.反抗值) || 0, need = lv.cost ? lv.cost[0] : 0;
+    var res = document.getElementById(NS + '-res'); if (!res) return;
+    res.hidden = false;
+    if (!lv.cost) { res.className = 'res'; res.innerHTML = '这一条的拒绝按钮是灰的。'; return; }
+    if (re < need) { res.className = 'res bad'; res.innerHTML = '<b>反抗值不够</b>　需要 ' + need + '，你只有 ' + Math.round(re) + '。'; return; }
+
+    var aim = String(局.她的倾向 || ''), hit = aim !== '' && String(key) === aim;
+    var rate = lv.rate * (1 + (Number(she.兴奋度) || 0) / 100 * 0.5);
+    rate = rate * (1 - ({ 新手: 0, 上手: .1, 沉浸: .2, 狂热: .3, 收官: .4 }[she.熟练度] || 0));
+    var pw = ((Number(p.说话) || 0) + (Number(p.做事) || 0) + (Number(p.懂东西) || 0)) / 3;
+    var 三维系数 = 0.6 + 0.8 * (pw / 100);
+    rate = rate * 三维系数;
+
+    var seed = Number(get('主角.$骰子种子', 20260915)) || 20260915;
+    var s1 = nxt(seed), r1 = s1 / M, s2 = nxt(s1), r2 = s2 / M, s3 = nxt(s2);
+    var ok = r1 * 100 < rate, spent = lv.cost[0] + Math.round((lv.cost[1] - lv.cost[0]) * r2);
+    var R, MSG;
+    if (!hit) { R = '未命中'; MSG = '<b>你拒绝的不是她要点的那个。</b>反抗值照扣，什么也没有发生，她甚至没注意到。'; }
+    else if (ok) { R = '成功'; MSG = '<b>她点了没反应。</b>她会当成一次卡顿，重试一次，或者换一个。'; }
+    else { R = '失败'; MSG = '<b>她看到你动了一下，然后还是做了。</b>'; }
+
+    set('主角.反抗值', Math.max(0, re - spent));
+    set('主角.$骰子种子', s3);
+    set('局面.判定结果', { 选项: String(o.文本 || key), 等级: lv.label, 消耗: spent,
+      成功率: Math.round(rate * 100) / 100, 掷值: Math.round(r1 * 10000) / 100,
+      三维系数: Math.round(三维系数 * 1000) / 1000, 结果: R, 档位: (hit && ok) ? '成功' : '失败', 效果倍数: 1, 命中: hit });
+    set('局面.玩家拒绝', String(key));
+
+    res.className = 'res ' + ((hit && ok) ? 'ok' : 'bad');
+    res.innerHTML = MSG + '<br><small>扣 ' + spent + '　掷 ' + Math.round(r1 * 100) + ' / 需 ' + Math.round(rate)
+      + '　三维 ×' + (Math.round(三维系数 * 100) / 100) + '　结果 ' + R + '</small>';
+    Array.prototype.forEach.call(document.querySelectorAll('#' + NS + '-opts button'), function (b) { b.disabled = true; });
+    PREV.rev = undefined;
+    render();
+  }
+
+  render();
+  /* ── 生命周期：挂载 + 变量变化时重绘（按 skills：跟随 runtime lifecycle）── */
+  var 指纹 = '';
+  function 指纹取() {
+    var v = allVars();
+    var s = v && v.stat_data ? v.stat_data : v;
+    try { return JSON.stringify(s); } catch (e) { return String(Date.now()); }
+  }
+  function 可能重绘(强制) {
+    var f = 指纹取();
+    if (强制 || f !== 指纹) { 指纹 = f; try { render(); } catch (e) {} }
+  }
+  try { if (typeof waitGlobalInitialized === 'function') await waitGlobalInitialized('Mvu'); } catch (e) {}
+  render();
+  try {
+    var ctx = (typeof SillyTavern !== 'undefined' && SillyTavern.getContext) ? SillyTavern.getContext() : null;
+    if (ctx && ctx.eventSource && ctx.eventTypes) {
+      var T = ctx.eventTypes;
+      [T.MESSAGE_UPDATED, T.MESSAGE_RENDERED, T.MESSAGE_SWIPED, T.CHAT_CHANGED, T.GENERATION_ENDED,
+       T.VARIABLES_UPDATED, T.VARIABLE_CHANGED]
+        .forEach(function (t) { if (t) ctx.eventSource.on(t, function () { 可能重绘(false); }); });
+    }
+  } catch (e) {}
+  /* MVU 自己的变量事件（比酒馆的 VARIABLES_UPDATED 更准） */
+  try {
+    if (typeof Mvu !== 'undefined' && Mvu.eventOn && Mvu.events) {
+      Mvu.eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, function () { 可能重绘(true); });
+    }
+  } catch (e) {}
+  /* ③ 兜底轮询：MVU 的变量写入未必派发事件，指纹变了才重绘（避免无谓重排） */
+  try { setInterval(function () { 可能重绘(false); }, 1500); } catch (e) {}
+})();
+ 
+</script>
+</body>
+</html>
+```

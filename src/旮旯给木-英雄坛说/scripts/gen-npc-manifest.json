@@ -1,0 +1,536 @@
+{
+ "古松道长": {
+  "path": "世界书/NPC/古松道长.yaml",
+  "keywords": [
+   "古松道长"
+  ]
+ },
+ "苍月道长": {
+  "path": "世界书/NPC/苍月道长.yaml",
+  "keywords": [
+   "苍月道长"
+  ]
+ },
+ "清虚道长": {
+  "path": "世界书/NPC/清虚道长.yaml",
+  "keywords": [
+   "清虚道长"
+  ]
+ },
+ "商宝震": {
+  "path": "世界书/NPC/商宝震.yaml",
+  "keywords": [
+   "商宝震"
+  ]
+ },
+ "商剑鸣": {
+  "path": "世界书/NPC/商剑鸣.yaml",
+  "keywords": [
+   "商剑鸣"
+  ]
+ },
+ "王维扬": {
+  "path": "世界书/NPC/王维扬.yaml",
+  "keywords": [
+   "王维扬"
+  ]
+ },
+ "雪山教头": {
+  "path": "世界书/NPC/雪山教头.yaml",
+  "keywords": [
+   "雪山教头"
+  ]
+ },
+ "封万剑": {
+  "path": "世界书/NPC/封万剑.yaml",
+  "keywords": [
+   "封万剑"
+  ]
+ },
+ "白瑞德": {
+  "path": "世界书/NPC/白瑞德.yaml",
+  "keywords": [
+   "白瑞德"
+  ]
+ },
+ "腾王丸": {
+  "path": "世界书/NPC/腾王丸.yaml",
+  "keywords": [
+   "腾王丸"
+  ]
+ },
+ "花十郎": {
+  "path": "世界书/NPC/花十郎.yaml",
+  "keywords": [
+   "花十郎"
+  ]
+ },
+ "和仲阳": {
+  "path": "世界书/NPC/和仲阳.yaml",
+  "keywords": [
+   "和仲阳"
+  ]
+ },
+ "方长老": {
+  "path": "世界书/NPC/方长老.yaml",
+  "keywords": [
+   "方长老"
+  ]
+ },
+ "余鸿儒": {
+  "path": "世界书/NPC/余鸿儒.yaml",
+  "keywords": [
+   "余鸿儒"
+  ]
+ },
+ "华佗": {
+  "path": "世界书/NPC/华佗.yaml",
+  "keywords": [
+   "华佗"
+  ]
+ },
+ "北海鳄神": {
+  "path": "世界书/NPC/北海鳄神.yaml",
+  "keywords": [
+   "北海鳄神"
+  ]
+ },
+ "娜可露": {
+  "path": "世界书/NPC/娜可露.yaml",
+  "keywords": [
+   "娜可露"
+  ]
+ },
+ "葛洪": {
+  "path": "世界书/NPC/葛洪.yaml",
+  "keywords": [
+   "葛洪"
+  ]
+ },
+ "留孙真人": {
+  "path": "世界书/NPC/留孙真人.yaml",
+  "keywords": [
+   "留孙真人"
+  ]
+ },
+ "茅盈": {
+  "path": "世界书/NPC/茅盈.yaml",
+  "keywords": [
+   "茅盈"
+  ]
+ },
+ "老裁缝": {
+  "path": "世界书/NPC/老裁缝.yaml",
+  "keywords": [
+   "老裁缝"
+  ]
+ },
+ "小裁缝": {
+  "path": "世界书/NPC/小裁缝.yaml",
+  "keywords": [
+   "小裁缝"
+  ]
+ },
+ "葛朗台": {
+  "path": "世界书/NPC/葛朗台.yaml",
+  "keywords": [
+   "葛朗台"
+  ]
+ },
+ "荷西": {
+  "path": "世界书/NPC/荷西.yaml",
+  "keywords": [
+   "荷西"
+  ]
+ },
+ "张屠夫": {
+  "path": "世界书/NPC/张屠夫.yaml",
+  "keywords": [
+   "张屠夫"
+  ]
+ },
+ "小书童": {
+  "path": "世界书/NPC/小书童.yaml",
+  "keywords": [
+   "小书童"
+  ]
+ },
+ "茅十七": {
+  "path": "世界书/NPC/茅十七.yaml",
+  "keywords": [
+   "茅十七"
+  ]
+ },
+ "采花大盗": {
+  "path": "世界书/NPC/采花大盗.yaml",
+  "keywords": [
+   "采花大盗"
+  ]
+ },
+ "民团团丁": {
+  "path": "世界书/NPC/民团团丁.yaml",
+  "keywords": [
+   "民团团丁"
+  ]
+ },
+ "官兵": {
+  "path": "世界书/NPC/官兵.yaml",
+  "keywords": [
+   "官兵"
+  ]
+ },
+ "寻捕": {
+  "path": "世界书/NPC/寻捕.yaml",
+  "keywords": [
+   "寻捕"
+  ]
+ },
+ "公子哥": {
+  "path": "世界书/NPC/公子哥.yaml",
+  "keywords": [
+   "公子哥"
+  ]
+ },
+ "杂货贩": {
+  "path": "世界书/NPC/杂货贩.yaml",
+  "keywords": [
+   "杂货贩"
+  ]
+ },
+ "老花镜主人": {
+  "path": "世界书/NPC/老花镜主人.yaml",
+  "keywords": [
+   "老花镜主人"
+  ]
+ },
+ "王剑杰": {
+  "path": "世界书/NPC/王剑杰.yaml",
+  "keywords": [
+   "王剑杰"
+  ]
+ },
+ "王剑英": {
+  "path": "世界书/NPC/王剑英.yaml",
+  "keywords": [
+   "王剑英"
+  ]
+ },
+ "阎基": {
+  "path": "世界书/NPC/阎基.yaml",
+  "keywords": [
+   "阎基"
+  ]
+ },
+ "平阿四": {
+  "path": "世界书/NPC/平阿四.yaml",
+  "keywords": [
+   "平阿四"
+  ]
+ },
+ "欧阳千善": {
+  "path": "世界书/NPC/欧阳千善.yaml",
+  "keywords": [
+   "欧阳千善"
+  ]
+ },
+ "马千刚": {
+  "path": "世界书/NPC/马千刚.yaml",
+  "keywords": [
+   "马千刚"
+  ]
+ },
+ "赵千猛": {
+  "path": "世界书/NPC/赵千猛.yaml",
+  "keywords": [
+   "赵千猛"
+  ]
+ },
+ "齐万翼": {
+  "path": "世界书/NPC/齐万翼.yaml",
+  "keywords": [
+   "齐万翼"
+  ]
+ },
+ "韩长老": {
+  "path": "世界书/NPC/韩长老.yaml",
+  "keywords": [
+   "韩长老"
+  ]
+ },
+ "齐林天": {
+  "path": "世界书/NPC/齐林天.yaml",
+  "keywords": [
+   "齐林天"
+  ]
+ },
+ "褚红灯": {
+  "path": "世界书/NPC/褚红灯.yaml",
+  "keywords": [
+   "褚红灯"
+  ]
+ },
+ "王万轫": {
+  "path": "世界书/NPC/王万轫.yaml",
+  "keywords": [
+   "王万轫"
+  ]
+ },
+ "谷虚道长": {
+  "path": "世界书/NPC/谷虚道长.yaml",
+  "keywords": [
+   "谷虚道长"
+  ]
+ },
+ "天津虾": {
+  "path": "世界书/NPC/天津虾.yaml",
+  "keywords": [
+   "天津虾"
+  ]
+ },
+ "易容师": {
+  "path": "世界书/NPC/易容师.yaml",
+  "keywords": [
+   "易容师"
+  ]
+ },
+ "山大王": {
+  "path": "世界书/NPC/山大王.yaml",
+  "keywords": [
+   "山大王"
+  ]
+ },
+ "食野太郎": {
+  "path": "世界书/NPC/食野太郎.yaml",
+  "keywords": [
+   "食野太郎"
+  ]
+ },
+ "明月": {
+  "path": "世界书/NPC/明月.yaml",
+  "keywords": [
+   "明月"
+  ]
+ },
+ "独行侠": {
+  "path": "世界书/NPC/独行侠.yaml",
+  "keywords": [
+   "独行侠"
+  ]
+ },
+ "小女孩": {
+  "path": "世界书/NPC/小女孩.yaml",
+  "keywords": [
+   "小女孩"
+  ]
+ },
+ "小商贩": {
+  "path": "世界书/NPC/小商贩.yaml",
+  "keywords": [
+   "小商贩"
+  ]
+ },
+ "游客": {
+  "path": "世界书/NPC/游客.yaml",
+  "keywords": [
+   "游客"
+  ]
+ },
+ "店小二": {
+  "path": "世界书/NPC/店小二.yaml",
+  "keywords": [
+   "店小二"
+  ]
+ },
+ "厨师": {
+  "path": "世界书/NPC/厨师.yaml",
+  "keywords": [
+   "厨师"
+  ]
+ },
+ "挑夫": {
+  "path": "世界书/NPC/挑夫.yaml",
+  "keywords": [
+   "挑夫"
+  ]
+ },
+ "盐商": {
+  "path": "世界书/NPC/盐商.yaml",
+  "keywords": [
+   "盐商"
+  ]
+ },
+ "工地管事": {
+  "path": "世界书/NPC/工地管事.yaml",
+  "keywords": [
+   "工地管事"
+  ]
+ },
+ "石料管事": {
+  "path": "世界书/NPC/石料管事.yaml",
+  "keywords": [
+   "石料管事"
+  ]
+ },
+ "独脚大盗": {
+  "path": "世界书/NPC/独脚大盗.yaml",
+  "keywords": [
+   "独脚大盗"
+  ]
+ },
+ "白衣教众": {
+  "path": "世界书/NPC/白衣教众.yaml",
+  "keywords": [
+   "白衣教众"
+  ]
+ },
+ "黑衣教众": {
+  "path": "世界书/NPC/黑衣教众.yaml",
+  "keywords": [
+   "黑衣教众"
+  ]
+ },
+ "红衣教众": {
+  "path": "世界书/NPC/红衣教众.yaml",
+  "keywords": [
+   "红衣教众"
+  ]
+ },
+ "蓝衣教众": {
+  "path": "世界书/NPC/蓝衣教众.yaml",
+  "keywords": [
+   "蓝衣教众"
+  ]
+ },
+ "进香客": {
+  "path": "世界书/NPC/进香客.yaml",
+  "keywords": [
+   "进香客"
+  ]
+ },
+ "清风": {
+  "path": "世界书/NPC/清风.yaml",
+  "keywords": [
+   "清风"
+  ]
+ },
+ "卡尔": {
+  "path": "世界书/NPC/卡尔.yaml",
+  "keywords": [
+   "卡尔"
+  ]
+ },
+ "华岳": {
+  "path": "世界书/NPC/华岳.yaml",
+  "keywords": [
+   "华岳"
+  ]
+ },
+ "北海鳄神看门人": {
+  "path": "世界书/NPC/北海鳄神看门人.yaml",
+  "keywords": [
+   "北海鳄神看门人"
+  ]
+ },
+ "留孙真人看门人": {
+  "path": "世界书/NPC/留孙真人看门人.yaml",
+  "keywords": [
+   "留孙真人看门人"
+  ]
+ },
+ "坛中喽啰": {
+  "path": "世界书/NPC/坛中喽啰.yaml",
+  "keywords": [
+   "坛中喽啰"
+  ]
+ },
+ "青龙坛主": {
+  "path": "世界书/NPC/青龙坛主.yaml",
+  "keywords": [
+   "青龙坛主"
+  ]
+ },
+ "白虎坛主": {
+  "path": "世界书/NPC/白虎坛主.yaml",
+  "keywords": [
+   "白虎坛主"
+  ]
+ },
+ "朱雀坛主": {
+  "path": "世界书/NPC/朱雀坛主.yaml",
+  "keywords": [
+   "朱雀坛主"
+  ]
+ },
+ "玄武坛主": {
+  "path": "世界书/NPC/玄武坛主.yaml",
+  "keywords": [
+   "玄武坛主"
+  ]
+ },
+ "天微坛主": {
+  "path": "世界书/NPC/天微坛主.yaml",
+  "keywords": [
+   "天微坛主"
+  ]
+ },
+ "紫煞坛主": {
+  "path": "世界书/NPC/紫煞坛主.yaml",
+  "keywords": [
+   "紫煞坛主"
+  ]
+ },
+ "山岚坛主": {
+  "path": "世界书/NPC/山岚坛主.yaml",
+  "keywords": [
+   "山岚坛主"
+  ]
+ },
+ "地罡坛主": {
+  "path": "世界书/NPC/地罡坛主.yaml",
+  "keywords": [
+   "地罡坛主"
+  ]
+ },
+ "总瓢把子": {
+  "path": "世界书/NPC/总瓢把子.yaml",
+  "keywords": [
+   "总瓢把子"
+  ]
+ },
+ "东方求败": {
+  "path": "世界书/NPC/东方求败.yaml",
+  "keywords": [
+   "东方求败"
+  ]
+ },
+ "我是谁": {
+  "path": "世界书/NPC/我是谁.yaml",
+  "keywords": [
+   "我是谁"
+  ]
+ },
+ "谁是我": {
+  "path": "世界书/NPC/谁是我.yaml",
+  "keywords": [
+   "谁是我"
+  ]
+ },
+ "道德和尚": {
+  "path": "世界书/NPC/道德和尚.yaml",
+  "keywords": [
+   "道德和尚"
+  ]
+ },
+ "十卫兵": {
+  "path": "世界书/NPC/十卫兵.yaml",
+  "keywords": [
+   "十卫兵"
+  ]
+ },
+ "镇上的人": {
+  "path": "世界书/NPC/镇上的人.yaml",
+  "keywords": [
+   "镇上的人"
+  ]
+ }
+}

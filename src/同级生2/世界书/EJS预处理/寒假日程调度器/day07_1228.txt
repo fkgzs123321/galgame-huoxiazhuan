@@ -1,0 +1,163 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 7 - 12-28 周四 ═══
+   当日主题：西御寺事件预兆
+   特殊事件：event_day07_nishioji_warning / event_day07_yui_anxiety / event_day07_diary_2_window
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day7 场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家/西御寺警告/唯在鸣泽家自宅流露不安
+     P2 川尻信良 → 川尻家/西御寺警告/唯通过偶遇/电话倾诉
+     P3 长冈芳树 → 长冈家/西御寺警告/唯偶遇时不安
+     P4 西御寺有友 → 西御寺家豪宅/玩家即西御寺，事件改为预谋视角★
+     P5 天道新干线 → 天道家/西御寺警告/唯电话倾诉（师生关系）
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 7,
+  date: '12-28',
+  weekday: '周四',
+  chapter: '寒假核心',
+  theme: '西御寺事件预兆（身份感知独立场景）',
+  special_events: ['event_day07_nishioji_warning', 'event_day07_yui_anxiety', 'event_day07_diary_2_window'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '阴',
+  notes: '西御寺开始介入唯线；需在 Day 8 前解决'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 当日开场场景（身份感知；IDENTITY_PROFILES 仅含 day1，day7 由本文件提供） */
+if (typeof _day7Scenes === 'undefined') var _day7Scenes = {
+  '原作主角': `${_playerName}在鸣泽家起床，唯准备早餐时神色略显不安。寒假第七天，西御寺有友（反派 NPC）开始介入唯线，相沢诚需在 Day 8 前解决危机。`,
+  '川尻信良': `${_playerName}在川尻家起床，独自准备早餐。寒假第七天，西御寺有友（反派 NPC）开始介入唯线。信良作为相沢诚的损友，可能从相沢诚处得知唯的危机。`,
+  '长冈芳树': `${_playerName}在长冈家起床，独自准备简单早餐。寒假第七天，西御寺有友（反派 NPC）开始介入唯线。芳树与唯无家庭关系，但可能在学园附近观察到唯的异样。`,
+  '西御寺有友': `${_playerName}在西御寺家豪宅起床，佣人已备好早餐。寒假第七天，${_playerName}（西御寺本人★）开始策划针对唯的阴谋，本日为预兆日，次日（Day 8）将进入高潮。玩家以反派视角推进唯线危机。`,
+  '天道新干线': `${_playerName}在天道家起床，独自准备早餐。寒假第七天，西御寺有友（反派 NPC，与天道同为学园相关人员）开始介入唯线。天道作为教师，可能从学生异动中察觉唯的危机。`,
+  '自定义': `${_playerName}在${_playerHome}起床，按背景描述安排寒假第七天。西御寺有友（反派 NPC）开始介入唯线，需在 Day 8 前解决。`,
+  '未选择': '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+};
+if (typeof _openingScene === 'undefined') var _openingScene = _day7Scenes[_playerIdentity] || _day7Scenes['未选择'];
+
+/* event_day07_nishioji_warning：西御寺警告主角（身份感知）
+   P4 特殊处理：玩家即西御寺，事件改为西御寺预谋视角 */
+if (typeof _nishiojiWarningDesc === 'undefined') var _nishiojiWarningDesc = {
+  '原作主角': `上午/下午时段鸣泽家自宅周边或商业区触发，西御寺有友（反派 NPC）出现警告${_playerName}远离唯。前置条件：唯好感 ≥ 20。触发后唯线危机铺垫开启。${_playerName}被警告后需在 Day 8 前解决。`,
+  '川尻信良': `上午/下午时段${_playerHome}周边或商业区触发，西御寺有友（反派 NPC）出现警告${_playerName}远离唯（西御寺视信良为唯的接近者，即便非家庭关系仍触发警告）。前置条件：唯好感 ≥ 20。触发后唯线危机铺垫开启。`,
+  '长冈芳树': `上午/下午时段${_playerHome}周边或商业区触发，西御寺有友（反派 NPC）出现警告${_playerName}远离唯（西御寺视芳树为潜在竞争者）。前置条件：唯好感 ≥ 20。触发后唯线危机铺垫开启。`,
+  '西御寺有友': `上午/下午时段${_playerHome}或商业区触发，${_playerName}（西御寺本人★）策划针对唯的阴谋预兆。前置条件：唯好感 ≥ 20（此处指唯对其他接近者的好感，西御寺视之为威胁）。事件以反派视角描写：西御寺部署爪牙、收集唯的行踪情报、准备 Day 8 的阴谋行动。唯线危机从西御寺内部铺开。`,
+  '天道新干线': `上午/下午时段${_playerHome}周边或学园触发，西御寺有友（反派 NPC）出现警告${_playerName}远离唯（西御寺视天道为唯的师生关系接近者）。前置条件：唯好感 ≥ 20。触发后唯线危机铺垫开启。`,
+  '自定义': `上午/下午时段${_playerHome}周边或商业区触发，西御寺有友（反派 NPC）出现警告${_playerName}远离唯。前置条件：唯好感 ≥ 20。触发后唯线危机铺垫开启。`
+};
+
+/* event_day07_yui_anxiety：唯表现不安（身份感知）
+   P4 特殊处理：唯的不安针对西御寺（玩家），改为唯回避/警惕玩家 */
+if (typeof _yuiAnxietyDesc === 'undefined') var _yuiAnxietyDesc = {
+  '原作主角': `晚/深夜时段鸣泽家自宅触发，唯表现出明显焦虑（家庭场景，义妹在自宅流露不安）。前置条件：event_day07_nishioji_warning 已触发。唯好感 +2（安慰加成）。${_playerName}安慰唯后，为 Day 8 高潮做准备。`,
+  '川尻信良': `晚/深夜时段${_playerHome}周边/商业区/学园附近偶遇唯，唯表现出明显焦虑（非家庭场景，唯主动寻找${_playerName}倾诉或电话联系）。前置条件：event_day07_nishioji_warning 已触发。唯好感 +2（安慰加成）。`,
+  '长冈芳树': `晚/深夜时段${_playerHome}周边/学园附近偶遇唯，唯表现出明显焦虑（非家庭场景，唯因西御寺事件主动寻找${_playerName}倾诉）。前置条件：event_day07_nishioji_warning 已触发。唯好感 +2（安慰加成）。`,
+  '西御寺有友': `晚/深夜时段${_playerHome}或学园附近触发，唯表现出对${_playerName}（西御寺本人★）的明显回避与警惕（唯察觉西御寺的阴谋预兆，主动远离）。前置条件：event_day07_nishioji_warning 已触发（即西御寺预谋已展开）。事件以反派视角描写：唯的恐惧反应被西御寺观察到，西御寺可加紧部署或调整计划。唯好感变化按既有规则（西御寺线为敌意线，无安慰加成）。`,
+  '天道新干线': `晚/深夜时段${_playerHome}周边/学园附近偶遇唯，唯表现出明显焦虑（非家庭场景，唯因师生关系主动向${_playerName}倾诉或电话联系）。前置条件：event_day07_nishioji_warning 已触发。唯好感 +2（安慰加成）。`,
+  '自定义': `晚/深夜时段${_playerHome}周边/商业区/学园附近偶遇唯，唯表现出明显焦虑（非家庭场景，唯主动寻找${_playerName}倾诉或电话联系）。前置条件：event_day07_nishioji_warning 已触发。唯好感 +2（安慰加成）。`
+};
+
+if (typeof _warningDesc === 'undefined') var _warningDesc = _nishiojiWarningDesc[_playerIdentity] || _nishiojiWarningDesc['自定义'];
+if (typeof _anxietyDesc === 'undefined') var _anxietyDesc = _yuiAnxietyDesc[_playerIdentity] || _yuiAnxietyDesc['自定义'];
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家自宅全时段（义妹，重点场景，唯线危机核心）',
+    misako: '鸣泽美佐子（row_id=2）：咖啡店上午/下午 + 鸣泽家自宅晚/深夜（义母，可提供唯线情报）',
+    tomomi: '水野友美（row_id=8）：水野家上午/晚（邻家，可提供唯线支援）'
+  },
+  '川尻信良': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/商业区/学园附近偶遇（非家庭关系，唯因西御寺事件主动寻找${_playerName}倾诉）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（非亲属，唯线危机期间咖啡店老板娘可提供情报）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家关系）`,
+    yoko: '南川洋子（row_id=6）：海岸/机车行下午（同班同学，洋子线持续★）'
+  },
+  '长冈芳树': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（非家庭关系，唯流露不安）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偷拍场景（敌意，谨慎潜行）★本日核心`,
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意，双身份揭示后续）'
+  },
+  '西御寺有友': {
+    yui: `鸣泽唯（row_id=1）：学园附近/${_playerHome}周边远观（敌意★，唯线危机由${_playerName}本人策划，唯对西御寺回避警惕）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家，陌生）`,
+    miki: '加藤美纪（row_id=4）：商业区偶遇（敌意）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（师生关系紧张）'
+  },
+  '天道新干线': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（师生关系，唯因西御寺事件向老师倾诉）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/学园附近偶遇（师生关系）`,
+    aimi: '安田爱美（row_id=9）：保育园偶遇（爱美线核心★）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（同事关系）'
+  },
+  '自定义': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/商业区/学园附近偶遇（非家庭关系，唯因西御寺事件主动寻找${_playerName}倾诉）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家关系）`
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+%>
+
+[Day 7 调度器已加载：12-28 周四，主题：西御寺事件预兆（身份感知独立场景）。
+本日特殊事件：event_day07_nishioji_warning / event_day07_yui_anxiety / event_day07_diary_2_window。
+本日锁定女角：[13,14]（永岛母女未登场）。
+本日新解锁：无。
+本日天气默认：阴。
+本日备注：西御寺开始介入唯线；需在 Day 8 前解决。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _profile ? _profile.identity_desc : '未选择' %>
+★ 特殊角色：<%= _profile ? _profile.special_role : '未选择' %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+★ 当日开场：<%= _openingScene %>
+
+【当日事件详情】
+- event_day07_nishioji_warning：西御寺有友出现警告。<%= _warningDesc %>
+- event_day07_yui_anxiety：唯表现出不安。<%= _anxietyDesc %>
+- event_day07_diary_2_window：第2本·梦仙人还书窗口期最后一天（12-23~12-28）。任意时段温泉乡占卜馆触发。前置条件同 Day 2。叙事提示：本日为 日记2 获取窗口最后机会，逾期则日记本系统无法全收集，影响真结局 CG_HIDDEN_005 达成。
+
+【当日女角出现特殊规则】
+本日为西御寺事件预兆日，唯线危机开始。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% } %>
+- 田中美沙（row_id=10）：商业区下午
+永岛母女（row_id=13,14）锁定，AI 不可让其出现。
+关键提示：西御寺事件必须在 Day 8 前解决，否则触发 BAD_END_6。建议本日集中推进唯线（P4 除外，P4 以反派视角推进预谋）。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼/唯在鸣泽家自宅流露不安"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。
+5. P4（西御寺有友）玩家即反派本人，西御寺警告/唯不安事件改为预谋/回避视角，禁止 P4 描写"被西御寺警告"或"救援唯"等正派场景。]

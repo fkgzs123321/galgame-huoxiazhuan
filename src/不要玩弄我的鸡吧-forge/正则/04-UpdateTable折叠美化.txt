@@ -1,0 +1,15 @@
+{
+  "id": "a1b2c3d4-0204-4000-8000-000000000204",
+  "scriptName": "04-UpdateTable折叠美化",
+  "findRegex": "/<UpdateTable>([\\s\\S]*?)<\\/UpdateTable>/gi",
+  "replaceString": "<details class=\"mvu-update-detail\" style=\"margin:8px 0;border-left:3px solid #27ae60;padding:4px 12px;background:rgba(39,174,96,0.05);border-radius:4px;\"><summary style=\"cursor:pointer;color:#27ae60;font-size:0.85em;opacity:0.8;\">💾 SP数据库更新（点击展开SQL）</summary>\n\n```sql\n$1\n```\n\n</details>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

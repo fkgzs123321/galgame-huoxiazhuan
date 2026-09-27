@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "note": "旮旯给木-英雄坛说的静态性能预算。阈值按实测定：文件 836KB / 世界书 385KB / 正则 9.5KB / 脚本 12.5KB / prompt 4586B。留了约 1.5~2 倍余量，超了就说明该看是不是无意中写胖了。",
+  "limits": {
+    "fileBytes": 1500000,
+    "stringBytes": 900000,
+    "maxStringBytes": 120000,
+    "embeddedDataBytes": 0,
+    "promptBytes": 60000,
+    "worldbookEntries": 400,
+    "worldbookBytes": 700000,
+    "regexCount": 24,
+    "regexBytes": 30000,
+    "helperScriptCount": 6,
+    "helperScriptBytes": 40000,
+    "remoteUrlCount": 8
+  },
+  "maxGrowth": {
+    "fileBytes": 400000,
+    "promptBytes": 0,
+    "worldbookBytes": 200000,
+    "regexBytes": 8000,
+    "helperScriptBytes": 8000,
+    "remoteUrlCount": 0
+  }
+}

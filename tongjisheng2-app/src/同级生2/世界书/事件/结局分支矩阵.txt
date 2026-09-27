@@ -1,0 +1,1135 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 事件 · 结局分支矩阵
+   ════════════════════════════════════════════════════════════
+   触发时机：01-07（day_count=17）PM8:00 告白日结局判定
+   事件类型：结局判定
+   影响范围：全部女角 + 通用 BAD_END + 隐藏结局 + 特殊结局
+   关联调度器：寒假日程调度器/day17_0107.txt → ending_determination
+   关联规则：全局规则总表.txt → ENDING_RULES / GLOBAL_IMPACT
+   关联flag：关键事件.yaml → 各女角 true_end 关键 flag
+   关联CG：CG触发条件表.txt → CG_ENDING_*
+   总结局数：88（19女角×4 + 隐藏1 + BAD_END×8 + 洋子怀孕1 + 美沙反告白1 + 泉美自动告白1）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ── 读取运行时全局变量（用于结局判定）── */
+const _diff = String(getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' })) || '普通';
+const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 17 })) || 17;
+const _date = String(getvar('stat_data.时间.当前日期', { scope: 'local', defaults: '01-07' })) || '01-07';
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '晚' })) || '晚';
+const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+const _mood = Number(getvar('stat_data.主角.心情', { scope: 'local', defaults: 70 })) || 0;
+const _reputation = Number(getvar('stat_data.主角.声誉', { scope: 'local', defaults: 50 })) || 0;
+const _illegalCount = Number(getvar('stat_data.主角.违法计数', { scope: 'local', defaults: 0 })) || 0;
+const _mealFailureDays = Number(getvar('stat_data.临时.连续无收入天数', { scope: 'local', defaults: 0 })) || 0;  // 复用 连续无收入天数（initvar 已定义），原 用餐失败天数 未定义
+const _jealousyMax = (function() {
+  /* 修复：遍历全部 20 位女角取最大嫉妒值，而非仅查当前女角 */
+  var _max = 0;
+  var _curJealousy = Number(getvar('stat_data.当前女角.嫉妒值', { scope: 'local', defaults: 0 })) || 0;
+  if (_curJealousy > _max) _max = _curJealousy;
+  for (var hid = 1; hid <= 20; hid++) {
+    var _j = Number(getvar('stat_data.女角.' + hid + '.嫉妒值', { scope: 'local', defaults: 0 })) || 0;
+    if (_j > _max) _max = _j;
+  }
+  return _max;
+})();
+const _westTempleResolved = Number(getvar('stat_data.隐藏.西寺解决进度', { scope: 'local', defaults: 0 })) || 0;
+const _yokoPregnancyFlag = Number(getvar('stat_data.女角.6.怀孕标记', { scope: 'local', defaults: 0 })) || 0;  // 动态字段，initvar 女角命名空间未预定义，由 AI 运行时 setvar 写入
+const _yokoRelationship = String(getvar('stat_data.女角.6.关系阶段', { scope: 'local', defaults: '初识' })) || '初识';
+const _yokoUnprotected = Number(getvar('stat_data.女角.6.无保护次数_0104_0106', { scope: 'local', defaults: 0 })) || 0;  // 动态字段，initvar 女角命名空间未预定义，由 AI 运行时 setvar 写入
+
+/* ── 难度修正系数（引用 全局规则总表.txt → DIFFICULTY_MODIFIERS）──
+   轻松：结局阈值放宽 / jealousy×0.5
+   普通：原作阈值 / jealousy×1.0
+   挑战：阈值收紧 / jealousy×1.5
+   地狱：True End 阈值 +10 / jealousy×2.5 */
+const _DIFF = {
+  '轻松': { true_end_threshold: 70, good_end_threshold: 50, jealousy_mult: 0.5, note: '休闲向，结局阈值放宽' },
+  '普通': { true_end_threshold: 80, good_end_threshold: 60, jealousy_mult: 1.0, note: '原作难度' },
+  '挑战': { true_end_threshold: 85, good_end_threshold: 65, jealousy_mult: 1.5, note: '结局阈值收紧' },
+  '地狱': { true_end_threshold: 90, good_end_threshold: 70, jealousy_mult: 2.5, note: '极限难度，True End 极难达成' }
+};
+const _dm = _DIFF[_diff] || _DIFF['普通'];
+
+/* ── flag / 数值读取辅助 ── */
+function _flag(name) { return Number(getvar(`stat_data.隐藏.${name}`, { scope: 'local', defaults: 0 })) === 1; }
+function _aff(heroine_id) { return Number(getvar(`stat_data.女角.${heroine_id}.好感度`, { scope: 'local', defaults: 0 })) || 0; }
+function _rel(heroine_id) { return String(getvar(`stat_data.女角.${heroine_id}.关系阶段`, { scope: 'local', defaults: '初识' })) || '初识'; }
+
+/* ── 19女角 True End 关键 flag 清单 ── */
+const TRUE_END_FLAG_MAP = {
+  1:  { name: '鸣泽唯',     flags: ['唯获救', '西寺对峙', '唯初H完成'] },
+  2:  { name: '鸣泽美佐子', flags: ['美佐子初H完成', '樱子死讯', '唯和解'] },
+  3:  { name: '舞岛可怜',   flags: ['可怜出道援助', '可怜身份接受'] },
+  4:  { name: '加藤美纪',   flags: ['美纪双身份揭示', '美纪秘密保守'] },
+  5:  { name: '筱原泉美',   flags: ['泉美H完成', '泉美射箭援助'] },
+  6:  { name: '南川洋子',   flags: ['洋子告白接受', '川尻问题解决'] },
+  7:  { name: '都筑梢江',   flags: ['梢江信任建立', '梢江酒吧事件'] },
+  8:  { name: '水野友美',   flags: ['友美误会解决', '友美初H完成'] },
+  9:  { name: '安田爱美',   flags: ['爱美获救', '爱美信任建立'] },
+  10: { name: '田中美沙',   flags: ['美沙重逢', '美沙训练援助'] },
+  11: { name: '片桐美铃',   flags: ['美铃男友问题解决', '美铃师生信任'] },
+  12: { name: '野野村美里', flags: ['美里工作援助', '美里约会成功'] },
+  13: { name: '永岛久美子', flags: ['永岛久美子分支', '久美子信任建立'] },
+  14: { name: '永岛佐知子', flags: ['永岛佐知子分支', '佐知子孤独治愈'] },
+  15: { name: '齐藤澪',     flags: ['澪双子真相解决', '澪个人羁绊'] },
+  16: { name: '齐藤澪奈',   flags: ['澪奈双子真相解决', '澪奈个人羁绊'] },
+  17: { name: '铃木美穗',   flags: ['美穗美沙和解', '美穗自我建立'] },
+  18: { name: '仁科',       flags: ['仁科独立', '仁科信任'] },
+  19: { name: '正树夏子',   flags: ['夏子仁科解决', '夏子个人羁绊'] }
+};
+
+function checkHeroineFlags(heroine_id) {
+  const entry = TRUE_END_FLAG_MAP[heroine_id];
+  if (!entry) return false;
+  return entry.flags.every(f => _flag(f));
+}
+
+/* ════════════════════════════════════════════════════════════
+   BAD_END 触发检查（按优先级判定）
+   ════════════════════════════════════════════════════════════ */
+function checkBadEnd() {
+  /* 1. BAD_END_1 报警：强制猥亵 / 强行初H / 暴力威胁（不可逆，最高优先级）*/
+  if (_flag('强制猥亵') || _flag('强行初H') || _flag('暴力威胁')) {
+    return 'BAD_END_1_报警';
+  }
+  /* 2. BAD_END_7 法律制裁：累计 3 次违法行为 */
+  if (_illegalCount >= 3) {
+    return 'BAD_END_7_法律制裁';
+  }
+  /* 3. BAD_END_2 学园开除：校内严重违规 */
+  if (_flag('严重校园违规')) {
+    return 'BAD_END_2_学园开除';
+  }
+  /* 4. BAD_END_3 破产：金钱 ≤ 0 且无法支付三餐连续 3 天 */
+  if (_money <= 0 && _mealFailureDays >= 3) {
+    return 'BAD_END_3_破产';
+  }
+  /* 5. BAD_END_4 崩溃：心情 ≤ 0 */
+  if (_mood <= 0) {
+    return 'BAD_END_4_崩溃';
+  }
+  /* 6. BAD_END_5 嫉妒杀戮：任一女角 jealousy ≥ 90（与关键事件.yaml 对齐）*/
+  if (_jealousyMax >= 90) {
+    return 'BAD_END_5_嫉妒杀戮';
+  }
+  /* 7. BAD_END_6 西御寺阴谋：与唯亲密但未在 12-29 前解决西御寺（唯线专属）*/
+  const _yuiAff = _aff(1);
+  const _yuiRel = _rel(1);
+  if (_yuiAff >= 50 && (_yuiRel === '亲密' || _yuiRel === '攻略完成') && !_flag('西寺对峙')) {
+    return 'BAD_END_6_西御寺阴谋';
+  }
+  /* 8. BAD_END_8 时间终焉：第 17 天结束（必然触发兜底）*/
+  if (_dayCount >= 17 && _date === '01-07') {
+    /* 仅当上述 BAD_END 均未触发且所有女角 affection < 30 时进入 */
+    let _anyAffGte30 = false;
+    for (let hid = 1; hid <= 20; hid++) {
+      /* 樱子(id=20) 需 樱子线解锁 才计入 */
+      if (hid === 20 && !_flag('樱子线解锁')) continue;
+      if (_aff(hid) >= 30) { _anyAffGte30 = true; break; }
+    }
+    if (!_anyAffGte30) return 'BAD_END_8_时间终焉';
+  }
+  return null;
+}
+
+/* ════════════════════════════════════════════════════════════
+   主结局判定函数（1/7 PM8:00 触发）
+   ════════════════════════════════════════════════════════════ */
+function determineEnding(heroine_id) {
+  /* 1. 优先检查 BAD_END（不可逆，通用）*/
+  const badEnd = checkBadEnd();
+  if (badEnd) return badEnd;
+
+  /* 2. 检查隐藏结局（杉本樱子 heroine_id=20）*/
+  if (heroine_id === 20 && _flag('樱子线解锁') && _flag('樱子死讯') && _flag('樱子反告白')) {
+    return 'TRUE_END_HIDDEN';
+  }
+
+  /* 2.5 检查泉美自动告白特殊结局（heroine_id=5，9.B.7）*/
+  if (heroine_id === 5 && _aff(5) >= _dm.true_end_threshold && _flag('泉美H完成') && _flag('泉美射箭援助') && _flag('泉美台词变化day15') && !_flag('主角已告白泉美')) {
+    return 'IZUMI_AUTO_CONFESSION';
+  }
+
+  /* 2.6 检查美沙反告白特殊结局（heroine_id=10，9.B.6）*/
+  if (heroine_id === 10 && _aff(10) >= 50 && _aff(10) < _dm.true_end_threshold && _flag('美沙重逢') && _flag('美沙训练援助') && !_flag('主角已告白美沙')) {
+    return 'MISA_REVERSED_CONFESSION';
+  }
+
+  /* 3. 检查洋子怀孕特殊结局（洋子线 heroine_id=6）*/
+  if (heroine_id === 6 && _yokoPregnancyFlag === 1 && _yokoUnprotected >= 1 && (_yokoRelationship === '亲密' || _yokoRelationship === '攻略完成')) {
+    return 'YOKO_PREGNANCY';
+  }
+
+  /* 4. 按 affection 分档判定 True/Good/Normal/Bad */
+  const aff = _aff(heroine_id);
+  if (aff >= _dm.true_end_threshold && checkHeroineFlags(heroine_id)) return 'TRUE_END';
+  if (aff >= _dm.good_end_threshold) return 'GOOD_END';
+  if (aff >= 30) return 'NORMAL_END';
+  return 'BAD_END';
+}
+
+/* ════════════════════════════════════════════════════════════
+   ENDING_MATRIX · 结局分支矩阵主对象
+   ════════════════════════════════════════════════════════════ */
+const ENDING_MATRIX = {
+
+  /* ═══ 元数据 ═══ */
+  metadata: {
+    matrix_id: 'ending_branch_matrix',
+    total_endings: 88,
+    breakdown: '19女角×4(76) + 隐藏1 + BAD_END×8 + 洋子怀孕1 + 美沙反告白1 + 泉美自动告白1',
+    trigger_date: '01-07',
+    trigger_day_count: 17,
+    trigger_time_slot: 'PM8:00',
+    difficulty_thresholds: _dm,
+    priority_order: ['BAD_END_1_报警', 'BAD_END_7_法律制裁', 'BAD_END_2_学园开除', 'BAD_END_3_破产', 'BAD_END_4_崩溃', 'BAD_END_5_嫉妒杀戮', 'BAD_END_6_西御寺阴谋', 'TRUE_END_HIDDEN', 'YOKO_PREGNANCY', 'IZUMI_AUTO_CONFESSION', 'MISA_REVERSED_CONFESSION', 'TRUE_END', 'GOOD_END', 'NORMAL_END', 'BAD_END', 'BAD_END_8_时间终焉']
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     一、NORMAL_ENDINGS · 19女角 × 4结局 = 76
+     ════════════════════════════════════════════════════════════ */
+  normal_endings: {
+
+    /* ── 女角 1：鸣泽唯 ── */
+    1: {
+      heroine_name: '鸣泽唯',
+      true_end: {
+        ending_id: 'END_TRUE_001', ending_name: '鸣泽唯·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[1].flags },
+        description: '1月7日夜晚，唯在鸣泽家客厅等你。她穿着圣诞夜那件米色开衫，发带松松束着。10年同居的"义兄妹"框架在这一夜被打破——她抬头望向你，眼里的光比窗外烟花更亮："哥哥，我不再是你的妹妹了。"西御寺阴谋被解决，她终于安全。这一夜她成为你的恋人，毫无血缘的隔阂消融在月光里。',
+        cg_id: 'CG_ENDING_YUI_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_001', ending_name: '鸣泽唯·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '唯接受了你的告白，但西御寺阴影未完全消除。她依然住在鸣泽家，依然叫你"哥哥"，但眼神里多了一份只有你能读懂的温柔。开学后你们在校园里保持距离，回家后她却会靠在你肩上看电视。一个介于恋人与义妹之间的微妙平衡。',
+        cg_id: 'CG_ENDING_YUI_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_001', ending_name: '鸣泽唯·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '唯没有接受告白，也没有拒绝。她红着眼眶说："哥哥，我们还是哥哥和妹妹吧。"10年同居的框架没能被打破，她继续做你的义妹。开学后她对你客气得像陌生人，眼神躲闪。寒假的暧昧像一场梦，谁都没再提起。',
+        cg_id: 'CG_ENDING_YUI_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_001', ending_name: '鸣泽唯·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '唯关上房门，没开门让你进去。"哥哥，我们之间没什么好说的。"她声音平静得可怕。10年同居的情分在寒假的疏远中消磨殆尽，你站在她门外，听见里面传来压抑的哭声。她不需要你了。',
+        cg_id: 'CG_ENDING_YUI_BAD'
+      }
+    },
+
+    /* ── 女角 2：鸣泽美佐子 ── */
+    2: {
+      heroine_name: '鸣泽美佐子',
+      true_end: {
+        ending_id: 'END_TRUE_002', ending_name: '鸣泽美佐子·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[2].flags },
+        description: '1月7日夜晚，美佐子在咖啡店《憩》后厨等你。她系着围裙，栗色长发盘起。樱子死讯已确认，唯也已与你和解。她端出一块亲手做的蛋糕，烛光下38岁的她眼角有细纹却温柔得不像话："孩子，我不再是你的母亲了。"她卸下"母亲"的壳，以一个孤独女人的身份接受你的告白。',
+        cg_id: 'CG_ENDING_MISAKO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_002', ending_name: '鸣泽美佐子·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '美佐子接受了你的心意，但坚持"母亲"的身份不能丢。她依然每天为唯做早餐，依然系着围裙，只是深夜时会偷偷推开你的房门。一个不能公开的秘密关系，她独自承担着道德的重量。',
+        cg_id: 'CG_ENDING_MISAKO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_002', ending_name: '鸣泽美佐子·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '美佐子温柔地拒绝了你，她说："你是唯的哥哥，也是我的孩子。"她红了眼眶但没有哭。开学后她依然给你做便当，只是不再单独为你做蛋糕。义母与义子的界限她选择守护。',
+        cg_id: 'CG_ENDING_MISAKO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_002', ending_name: '鸣泽美佐子·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '美佐子把你送出咖啡店，关门时你听见瓷器碎裂的声音。她背对着门说："请以后不要再来了。"你伤害了一个38岁女人的自尊与渴望。她不会再为你开门了。',
+        cg_id: 'CG_ENDING_MISAKO_BAD'
+      }
+    },
+
+    /* ── 女角 3：舞岛可怜 ── */
+    3: {
+      heroine_name: '舞岛可怜',
+      true_end: {
+        ending_id: 'END_TRUE_003', ending_name: '舞岛可怜·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[3].flags },
+        description: '1月7日夜晚，Livehouse「STAR」演出结束后，可怜在后台卸了妆。她出道危机已化解，偶像身份与真实自我达成了和解。她仰着下巴看你，金发在后台灯光下闪烁："哼，本小姐居然会喜欢你这种人。"她攥着矿泉水瓶的手指却在发抖，最后她主动伸手握住你的手："以后，你是我的专属观众。"',
+        cg_id: 'CG_ENDING_KAREN_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_003', ending_name: '舞岛可怜·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '可怜接受了你的告白，但她的偶像事业依然要继续。她公开恋情会引发风波，于是你们成为地下恋人。每次演出她都会在台上悄悄看你一眼，眼神穿过人群准确无误地落到你身上。',
+        cg_id: 'CG_ENDING_KAREN_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_003', ending_name: '舞岛可怜·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '可怜耸耸肩："你是个好人，但本小姐没空谈恋爱。"她继续她的偶像事业，每次见面都像普通朋友。但你偶尔能在她的歌词里听到一丝说不清的遗憾。',
+        cg_id: 'CG_ENDING_KAREN_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_003', ending_name: '舞岛可怜·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '可怜在 Livehouse 后台冷漠看你一眼："你谁啊？"她已经忘了你的名字。偶像光环下的她依然是那个孤独的女孩，但你不配再看到她的真实。',
+        cg_id: 'CG_ENDING_KAREN_BAD'
+      }
+    },
+
+    /* ── 女角 4：加藤美纪 ── */
+    4: {
+      heroine_name: '加藤美纪',
+      true_end: {
+        ending_id: 'END_TRUE_004', ending_name: '加藤美纪·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[4].flags },
+        description: '1月7日夜晚，美纪在变数屋后巷等你。她的双身份已被揭示，你为她保守了秘密。她摘下眼镜，第一次以真实身份面对你："谢谢你，没有揭穿我。"她眼里的防备第一次卸下，主动握住你的手。她不再需要双身份的保护色，因为你接受了她的全部。',
+        cg_id: 'CG_ENDING_MIKI_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_004', ending_name: '加藤美纪·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '美纪接受了你的告白，但她的双身份依然要维持。白天她是普通学生，夜晚是另一个身份。你成为唯一知道她秘密的人，也成为她唯一的依靠。',
+        cg_id: 'CG_ENDING_MIKI_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_004', ending_name: '加藤美纪·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '美纪推了推眼镜，笑了笑："我们还是做朋友吧。"她转身离开，背影里藏着一份说不清的疲惫。她的秘密你永远不会知道。',
+        cg_id: 'CG_ENDING_MIKI_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_004', ending_name: '加藤美纪·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '美纪看你的眼神冷漠得可怕："你差点毁了我。"她转身消失在夜色里，再没出现过。她的双身份被你差点揭穿，她不会原谅这个失误。',
+        cg_id: 'CG_ENDING_MIKI_BAD'
+      }
+    },
+
+    /* ── 女角 5：筱原泉美 ── */
+    5: {
+      heroine_name: '筱原泉美',
+      true_end: {
+        ending_id: 'END_TRUE_005', ending_name: '筱原泉美·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[5].flags },
+        description: '1月7日夜晚，泉美在图书馆角落等你。她射箭部社长的身份与女儿身达成了和解，你也曾帮她度过筱原重工家族的压力。她短发利落，却第一次在你面前红了脸："喂，我……我不讨厌你。"她别过头，耳尖通红，却主动把头靠在你肩上。孤独者找到了她的归宿。',
+        cg_id: 'CG_ENDING_IZUMI_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_005', ending_name: '筱原泉美·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '泉美接受了你的告白，但筱原重工的家族压力依然在。她依然短发利落，依然像男孩子一样说话，只是私下时会红着脸让你叫她名字。一个介于兄弟与恋人之间的微妙关系。',
+        cg_id: 'CG_ENDING_IZUMI_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_005', ending_name: '筱原泉美·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '泉美拍拍你的肩膀："我们还是兄弟吧。"她笑得像男孩子，眼神却闪过一丝失落。她依然是那个孤独的射箭部社长，但图书馆角落多了一个她不愿承认的牵挂。',
+        cg_id: 'CG_ENDING_IZUMI_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_005', ending_name: '筱原泉美·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '泉美在图书馆角落里没有抬头："你走吧。"她翻着射箭杂志，却没有翻页。筱原重工千金再次回到了她的孤独壳里。',
+        cg_id: 'CG_ENDING_IZUMI_BAD'
+      }
+    },
+
+    /* ── 女角 6：南川洋子 ── */
+    6: {
+      heroine_name: '南川洋子',
+      true_end: {
+        ending_id: 'END_TRUE_006', ending_name: '南川洋子·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[6].flags, exclude_pregnancy: true },
+        description: '1月7日夜晚，洋子在八十八海岸等你。川尻信良的纠缠已解决，她也接受了你的告白。海风吹起她的长发，她难得露出少女般的笑容："以后，我不再是一个人了。"成熟女人的疲惫在这一夜融化，她终于找到了可以依靠的肩膀。',
+        cg_id: 'CG_ENDING_YOKO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_006', ending_name: '南川洋子·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '洋子接受了你的告白，但她的过往让她对恋情有戒备。她依然在酒吧工作，依然成熟冷静，只是偶尔会让你送她回家。一个小心翼翼的恋爱。',
+        cg_id: 'CG_ENDING_YOKO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_006', ending_name: '南川洋子·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '洋子温柔地拒绝了你："你还太小了。"她拍了拍你的头，像姐姐对弟弟。她继续她的成熟生活，只是偶尔在酒吧看见你会多看一眼。',
+        cg_id: 'CG_ENDING_YOKO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_006', ending_name: '南川洋子·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '洋子在酒吧里没有看你："我有客人。"她转身去招呼其他客人，眼神冷漠。她不需要一个连她的过去都无法理解的孩子。',
+        cg_id: 'CG_ENDING_YOKO_BAD'
+      }
+    },
+
+    /* ── 女角 7：都筑梢江 ── */
+    7: {
+      heroine_name: '都筑梢江',
+      true_end: {
+        ending_id: 'END_TRUE_007', ending_name: '都筑梢江·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[7].flags },
+        description: '1月7日夜晚，梢江在酒吧「夜色」等你。你建立了她的信任，也陪她度过了酒吧事件的双马尾学妹危机。她递给你那张烫金入场券——圣诞夜那张的复制品，但这次写着"永久"。"前辈，你逃不掉的。"她笑得像只偷到鱼的猫，这次她不再跟踪你，因为你已经属于她。',
+        cg_id: 'CG_ENDING_KOZUE_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_007', ending_name: '都筑梢江·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '梢江接受了你的告白，但她依然改不了跟踪的习惯——这次是公开跟踪。她依然古灵精怪，依然狡黠地眨眼，只是跟踪的理由从"喜欢"变成了"恋人观察"。',
+        cg_id: 'CG_ENDING_KOZUE_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_007', ending_name: '都筑梢江·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '梢江歪着头："前辈，我们还是前辈和后辈吧。"她依然双马尾，依然古灵精怪，但跟踪的频率明显减少了。她在努力放下你。',
+        cg_id: 'CG_ENDING_KOZUE_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_007', ending_name: '都筑梢江·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '梢江在巷子里没有出现。你等了一夜，她再也没有跟踪过你。她彻底放下了你，也放下了自己那颗少女心。',
+        cg_id: 'CG_ENDING_KOZUE_BAD'
+      }
+    },
+
+    /* ── 女角 8：水野友美 ── */
+    8: {
+      heroine_name: '水野友美',
+      true_end: {
+        ending_id: 'END_TRUE_008', ending_name: '水野友美·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[8].flags },
+        description: '1月7日夜晚，友美在白蛇池公园等你。误会已化解，初夜已成。她黑色长发用发卡别着，文学少女的气质在雪地里格外柔和。她捧着你送的精装书，睫毛上落着雪花："今晚的灯饰，比那一年更亮了。"她伸手握住你的手，指尖冰冷却紧握不放。青梅竹马终于成为了恋人。',
+        cg_id: 'CG_ENDING_TOMOMI_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_008', ending_name: '水野友美·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '友美接受了你的告白，但她的文学梦想让她有时疏远你。她依然捧着精装书，依然推着不存在的眼镜，只是偶尔会在书页里夹一张写给你的字条。',
+        cg_id: 'CG_ENDING_TOMOMI_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_008', ending_name: '水野友美·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '友美低头看着书："我们还是青梅竹马吧。"她推了推不存在的眼镜，脸颊微红但语气坚定。她依然会在商业区等你，只是不再有牵手。',
+        cg_id: 'CG_ENDING_TOMOMI_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_008', ending_name: '水野友美·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '友美没有出现在白蛇池公园。你等了一夜，雪落在她常站的那个位置，但没有人来。青梅竹马的情分在寒假的误会中彻底消散。',
+        cg_id: 'CG_ENDING_TOMOMI_BAD'
+      }
+    },
+
+    /* ── 女角 9：安田爱美 ── */
+    9: {
+      heroine_name: '安田爱美',
+      true_end: {
+        ending_id: 'END_TRUE_009', ending_name: '安田爱美·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[9].flags },
+        description: '1月7日夜晚，爱美在保育园门口等你。你曾救她于危难，也建立了她对你的信任。她抱着一个孩子，温柔的眼神第一次为你绽放："谢谢你救了我，也谢谢你救了我们。"她把孩子交给同事，转身拥抱你。',
+        cg_id: 'CG_ENDING_AMAMI_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_009', ending_name: '安田爱美·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '爱美接受了你的告白，但她的工作让她很忙。她依然在保育园工作，依然温柔地照顾孩子，只是偶尔会给你发一张孩子的照片。',
+        cg_id: 'CG_ENDING_AMAMI_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_009', ending_name: '安田爱美·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '爱美笑着摇头："我们还是朋友吧。"她依然温柔，但眼神里多了一份客套。她继续她的保育园工作，你只是她生命中的一个过客。',
+        cg_id: 'CG_ENDING_AMAMI_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_009', ending_name: '安田爱美·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '爱美在保育园门口没有看你："请你不要再来打扰我了。"她转身回到孩子中间，眼神冷漠。你没能救她，也失去了她。',
+        cg_id: 'CG_ENDING_AMAMI_BAD'
+      }
+    },
+
+    /* ── 女角 10：田中美沙 ── */
+    10: {
+      heroine_name: '田中美沙',
+      true_end: {
+        ending_id: 'END_TRUE_010', ending_name: '田中美沙·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[10].flags },
+        description: '1月7日夜晚，美沙在田径部操场等你。你与她重逢，也帮她度过了训练危机。她穿着运动服，短发利落，汗水在月光下闪烁："喂，你这人还不错。"她难得不挖苦你，主动伸手握住你的手。重逢的青梅竹马终于成为了恋人。',
+        cg_id: 'CG_ENDING_MISA_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_010', ending_name: '田中美沙·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '美沙接受了你的告白，但她的田径事业让她很少有时间陪你。她依然挖苦你，依然短发利落，只是偶尔会在训练后给你一个拥抱。',
+        cg_id: 'CG_ENDING_MISA_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_010', ending_name: '田中美沙·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '美沙耸耸肩："我们还是老朋友吧。"她拍拍你的肩，像哥们。她继续她的田径训练，你只是她重逢的老朋友。',
+        cg_id: 'CG_ENDING_MISA_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_010', ending_name: '田中美沙·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '美沙在操场上没有回头："你走吧，我要训练。"她继续跑步，没有再看你一眼。重逢的青梅竹马再次分开。',
+        cg_id: 'CG_ENDING_MISA_BAD'
+      }
+    },
+
+    /* ── 女角 11：片桐美铃 ── */
+    11: {
+      heroine_name: '片桐美铃',
+      true_end: {
+        ending_id: 'END_TRUE_011', ending_name: '片桐美铃·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[11].flags },
+        description: '1月7日夜晚，美铃在八十八学园教师办公室等你。她的男朋友问题已解决，你也建立了她作为教师的信任。她摘下眼镜，第一次以女人而非教师的身份面对你："谢谢你相信我。"她主动握住你的手，眼神里没有了教师的责任，只有女人的温柔。',
+        cg_id: 'CG_ENDING_MISUZU_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_011', ending_name: '片桐美铃·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '美铃接受了你的告白，但师生恋的禁忌让她小心翼翼。她依然在课堂上是严厉的教师，只是私下时会让你叫她的名字。',
+        cg_id: 'CG_ENDING_MISUZU_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_011', ending_name: '片桐美铃·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '美铃严肃地摇头："我们是师生。"她戴上眼镜，眼神恢复了教师的严厉。寒假结束后她依然是你的老师，只是偶尔会多看你一眼。',
+        cg_id: 'CG_ENDING_MISUZU_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_011', ending_name: '片桐美铃·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '美铃在办公室里没有抬头："请你离开。"她继续批改作业，没有再看你一眼。你越过了师生的界限，她不会再原谅你。',
+        cg_id: 'CG_ENDING_MISUZU_BAD'
+      }
+    },
+
+    /* ── 女角 12：野野村美里 ── */
+    12: {
+      heroine_name: '野野村美里',
+      true_end: {
+        ending_id: 'END_TRUE_012', ending_name: '野野村美里·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[12].flags },
+        description: '1月7日夜晚，美里在便利店门口等你。你帮过她的工作，也成功地和她约会过。她穿着便服，不再是便利店的制服，眼神里多了一份松弛："以后，下班后有人等我了。"她主动挽住你的手臂，成熟女人的疲惫在这一夜融化。',
+        cg_id: 'CG_ENDING_MISATO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_012', ending_name: '野野村美里·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '美里接受了你的告白，但她的工作让她很忙。她依然在便利店打工，依然疲惫，只是下班后会有你等她。',
+        cg_id: 'CG_ENDING_MISATO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_012', ending_name: '野野村美里·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '美里笑着摇头："我太忙了，没时间谈恋爱。"她继续她的便利店工作，只是偶尔会多送你一罐咖啡。',
+        cg_id: 'CG_ENDING_MISATO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_012', ending_name: '野野村美里·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '美里在便利店门口没有看你："我有客人。"她转身回到店里，眼神冷漠。你没能理解她的疲惫，也失去了她。',
+        cg_id: 'CG_ENDING_MISATO_BAD'
+      }
+    },
+
+    /* ── 女角 13：永岛久美子 ── */
+    13: {
+      heroine_name: '永岛久美子',
+      true_end: {
+        ending_id: 'END_TRUE_013', ending_name: '永岛久美子·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[13].flags },
+        description: '1月7日夜晚，久美子在永岛家客厅等你。你选择了久美子分支，也建立了她的信任。她温柔地捧着一杯茶，眼神里没有了大家族千金的压力："谢谢你，选择了我。"她主动握住你的手，永岛家长女终于找到了属于她的归宿。',
+        cg_id: 'CG_ENDING_KUMIKO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_013', ending_name: '永岛久美子·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '久美子接受了你的告白，但永岛家的压力让她低调。她依然是大家族的长女，只是私下时会让你陪她喝茶。',
+        cg_id: 'CG_ENDING_KUMIKO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_013', ending_name: '永岛久美子·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '久美子温柔地摇头："我们还是朋友吧。"她依然是大家族的长女，依然温柔，只是眼神里多了一份遗憾。',
+        cg_id: 'CG_ENDING_KUMIKO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_013', ending_name: '永岛久美子·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '久美子在永岛家客厅没有抬头："请你离开。"她继续喝茶，眼神冷漠。永岛家长女不需要一个不懂她的人。',
+        cg_id: 'CG_ENDING_KUMIKO_BAD'
+      }
+    },
+
+    /* ── 女角 14：永岛佐知子 ── */
+    14: {
+      heroine_name: '永岛佐知子',
+      true_end: {
+        ending_id: 'END_TRUE_014', ending_name: '永岛佐知子·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[14].flags },
+        description: '1月7日夜晚，佐知子在永岛家阳台等你。你选择了佐知子分支，也治愈了她的孤独。她靠在阳台栏杆上，月光洒在她的长发上："谢谢你，让我不再孤独。"她转身拥抱你，永岛家次女终于找到了能让她不再孤独的人。',
+        cg_id: 'CG_ENDING_SACHIKO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_014', ending_name: '永岛佐知子·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '佐知子接受了你的告白，但她的孤独感依然时隐时现。她依然喜欢阳台，只是偶尔会有人在身边陪她。',
+        cg_id: 'CG_ENDING_SACHIKO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_014', ending_name: '永岛佐知子·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '佐知子轻轻摇头："我还是习惯一个人。"她继续在阳台上看月亮，只是偶尔会想起你。',
+        cg_id: 'CG_ENDING_SACHIKO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_014', ending_name: '永岛佐知子·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '佐知子在阳台上没有回头："你走吧。"她继续看月亮，眼神冷漠。你没能治愈她的孤独，也失去了她。',
+        cg_id: 'CG_ENDING_SACHIKO_BAD'
+      }
+    },
+
+    /* ── 女角 15：齐藤澪 ── */
+    15: {
+      heroine_name: '齐藤澪',
+      true_end: {
+        ending_id: 'END_TRUE_015', ending_name: '齐藤澪·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[15].flags },
+        description: '1月7日夜晚，澪在齐藤家门口等你。双胞胎的纠葛已化解，你与她建立了属于她个人的羁绊。她穿着与澪奈不同的衣服，第一次以"澪"而非"双胞胎之一"的身份面对你："谢谢你，看到了真正的我。"她主动握住你的手，眼神里没有了双胞胎的影子。',
+        cg_id: 'CG_ENDING_MIO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_015', ending_name: '齐藤澪·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '澪接受了你的告白，但双胞胎的比较依然存在。她依然是"姐姐"，只是私下时会让你叫她的名字。',
+        cg_id: 'CG_ENDING_MIO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_015', ending_name: '齐藤澪·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '澪轻轻摇头："我们还是朋友吧。"她依然是双胞胎的姐姐，只是偶尔会多看你一眼。',
+        cg_id: 'CG_ENDING_MIO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_015', ending_name: '齐藤澪·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '澪在齐藤家门口没有看你："你走吧。"她转身回到屋里，眼神冷漠。你没能看到真正的她。',
+        cg_id: 'CG_ENDING_MIO_BAD'
+      }
+    },
+
+    /* ── 女角 16：齐藤澪奈 ── */
+    16: {
+      heroine_name: '齐藤澪奈',
+      true_end: {
+        ending_id: 'END_TRUE_016', ending_name: '齐藤澪奈·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[16].flags },
+        description: '1月7日夜晚，澪奈在齐藤家门口等你。双胞胎的纠葛已化解，你与她建立了属于她个人的羁绊。她穿着与澪不同的衣服，第一次以"澪奈"而非"双胞胎之一"的身份面对你："谢谢你，看到了真正的我。"她主动握住你的手，眼神里没有了双胞胎的影子。',
+        cg_id: 'CG_ENDING_MINA_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_016', ending_name: '齐藤澪奈·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '澪奈接受了你的告白，但双胞胎的比较依然存在。她依然是"妹妹"，只是私下时会让你叫她的名字。',
+        cg_id: 'CG_ENDING_MINA_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_016', ending_name: '齐藤澪奈·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '澪奈轻轻摇头："我们还是朋友吧。"她依然是双胞胎的妹妹，只是偶尔会多看你一眼。',
+        cg_id: 'CG_ENDING_MINA_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_016', ending_name: '齐藤澪奈·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '澪奈在齐藤家门口没有看你："你走吧。"她转身回到屋里，眼神冷漠。你没能看到真正的她。',
+        cg_id: 'CG_ENDING_MINA_BAD'
+      }
+    },
+
+    /* ── 女角 17：铃木美穗 ── */
+    17: {
+      heroine_name: '铃木美穗',
+      true_end: {
+        ending_id: 'END_TRUE_017', ending_name: '铃木美穗·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[17].flags },
+        description: '1月7日夜晚，美穗在学园门口等你。她与田中美沙的纠葛已和解，也建立了她自己的身份认同。她推了推眼镜，第一次摘下眼镜以真实面貌面对你："谢谢你，让我成为了我自己。"她主动握住你的手，眼镜女孩终于找到了能让她卸下防备的人。',
+        cg_id: 'CG_ENDING_MIHO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_017', ending_name: '铃木美穗·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '美穗接受了你的告白，但她与美沙的复杂关系依然存在。她依然戴眼镜，只是私下时会摘下来给你看。',
+        cg_id: 'CG_ENDING_MIHO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_017', ending_name: '铃木美穗·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '美穗推了推眼镜："我们还是朋友吧。"她依然是戴眼镜的优等生，只是偶尔会在书页里夹一张写给你的字条。',
+        cg_id: 'CG_ENDING_MIHO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_017', ending_name: '铃木美穗·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '美穗在学园门口没有看你："请你离开。"她戴上眼镜，眼神冷漠。你没能理解她的复杂，也失去了她。',
+        cg_id: 'CG_ENDING_MIHO_BAD'
+      }
+    },
+
+    /* ── 女角 18：仁科 ── */
+    18: {
+      heroine_name: '仁科',
+      true_end: {
+        ending_id: 'END_TRUE_018', ending_name: '仁科·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[18].flags },
+        description: '1月7日夜晚，仁科在她常去的角落等你。她已实现了独立，也建立了她对你的信任。她第一次主动走向你，眼神里没有了防备："谢谢你，让我成为了我自己。"她主动握住你的手，孤独的女孩终于找到了属于她的归宿。',
+        cg_id: 'CG_ENDING_NISHINA_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_018', ending_name: '仁科·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '仁科接受了你的告白，但她的独立意识让她保持距离。她依然独来独往，只是偶尔会让你靠近。',
+        cg_id: 'CG_ENDING_NISHINA_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_018', ending_name: '仁科·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '仁科轻轻摇头："我还是习惯一个人。"她依然独来独往，只是偶尔会想起你。',
+        cg_id: 'CG_ENDING_NISHINA_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_018', ending_name: '仁科·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '仁科没有出现。你等了一夜，她再也没有出现。孤独的女孩再次回到了她的壳里。',
+        cg_id: 'CG_ENDING_NISHINA_BAD'
+      }
+    },
+
+    /* ── 女角 19：正树夏子 ── */
+    19: {
+      heroine_name: '正树夏子',
+      true_end: {
+        ending_id: 'END_TRUE_019', ending_name: '正树夏子·True End', ending_type: 'True End',
+        trigger_condition: { affection_min: _dm.true_end_threshold, flags_required: TRUE_END_FLAG_MAP[19].flags },
+        description: '1月7日夜晚，夏子在她常去的咖啡馆等你。她与凛奈的纠葛已化解，你与她建立了属于她个人的羁绊。她捧着咖啡，第一次以"夏子"而非"凛奈的影子"的身份面对你："谢谢你，看到了真正的我。"她主动握住你的手，眼神里没有了凛奈的影子。',
+        cg_id: 'CG_ENDING_NATSUKO_TRUE'
+      },
+      good_end: {
+        ending_id: 'END_GOOD_019', ending_name: '正树夏子·Good End', ending_type: 'Good End',
+        trigger_condition: { affection_min: _dm.good_end_threshold, flags_required: [] },
+        description: '夏子接受了你的告白，但凛奈的影子依然存在。她依然在咖啡馆，只是偶尔会让你陪她。',
+        cg_id: 'CG_ENDING_NATSUKO_GOOD'
+      },
+      normal_end: {
+        ending_id: 'END_NORMAL_019', ending_name: '正树夏子·Normal End', ending_type: 'Normal End',
+        trigger_condition: { affection_min: 30, flags_required: [] },
+        description: '夏子轻轻摇头："我们还是朋友吧。"她依然在咖啡馆，只是偶尔会多看你一眼。',
+        cg_id: 'CG_ENDING_NATSUKO_NORMAL'
+      },
+      bad_end: {
+        ending_id: 'END_BAD_019', ending_name: '正树夏子·Bad End', ending_type: 'Bad End',
+        trigger_condition: { affection_max: 29, flags_required: [] },
+        description: '夏子在咖啡馆没有看你："你走吧。"她继续喝咖啡，眼神冷漠。你没能看到真正的她。',
+        cg_id: 'CG_ENDING_NATSUKO_BAD'
+      }
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     二、HIDDEN_ENDINGS · 隐藏结局（1个）
+     ════════════════════════════════════════════════════════════ */
+  hidden_endings: {
+    /* ── 杉本樱子隐藏 True End（heroine_id=20）── */
+    sakurako_true: {
+      ending_id: 'END_HIDDEN_001',
+      ending_name: '杉本樱子·True End（隐藏）',
+      ending_type: 'True End（隐藏）',
+      heroine_id: 20,
+      heroine_name: '杉本樱子',
+      trigger_condition: {
+        flags_required: ['樱子线解锁', '樱子死讯', 'sakurako_reversal'],
+        description: '解锁樱子路线 + 知晓樱子死讯 + 完成樱子逆转剧情',
+        unlock_path: '集齐5本日记 + 变数屋全解锁 + 1/7深夜樱子樱花树下隐藏反告白'
+      },
+      description: '1月7日深夜，八十八学园旧校舍后的樱花树下，樱子的灵魂在月光里显现。她穿着死前的校服，长发飘动，眼神里没有了死亡的冰冷，只有对你的眷恋。"谢谢你，听到了我的故事。"她轻声说，伸出手。你握住她的手——冰冷却真实。这一夜她不再是死亡的诅咒，而是被你拯救的灵魂。樱花树下，她完成了未完成的反告白，化为光点消散。她成为你心中永远的"那个女孩"。',
+      cg_id: 'CG_ENDING_SAKURAKO_HIDDEN',
+      special_note: '全游戏唯一隐藏结局，需要集齐日记本系统全部5本日记 + 变数屋全解锁 + 樱子死讯flag + 樱子逆转flag。'
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     三、BAD_ENDINGS · 8个通用 BAD_END
+     ════════════════════════════════════════════════════════════ */
+  bad_endings: {
+
+    /* ── BAD_END_1 报警 ── */
+    'BAD_END_1_报警': {
+      ending_id: 'END_BAD_GENERIC_001',
+      ending_name: 'BAD END 1 · 报警',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        flags_any: ['forced_assault', 'forced_first_h', 'violent_threat'],
+        description: '触发强制猥亵 / 强行初H / 暴力威胁任一行为',
+        irreversible: true,
+        priority: 1
+      },
+      description: '警笛声划破八十八町的夜空。你被警察带走，永远失去了自由。受害者的眼泪成为你的罪证，寒假的暧昧变成了一场噩梦。八十八学园开除你的学籍，鸣泽家不再接纳你，你的人生从此坠入深渊。',
+      cg_id: 'CG_BAD_END_001_POLICE',
+      applies_to: '通用（任何女角线）'
+    },
+
+    /* ── BAD_END_2 学园开除 ── */
+    'BAD_END_2_学园开除': {
+      ending_id: 'END_BAD_GENERIC_002',
+      ending_name: 'BAD END 2 · 学园开除',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        flags_any: ['school_violation_severe'],
+        description: '校内严重违规（如校内暴力、校内性行为被揭发、严重破坏公物等）',
+        specific_triggers: [
+          '在校内对女角强行亲密行为被目击',
+          '在校内打架斗殴造成严重伤害',
+          '严重破坏学校设施且被发现',
+          '考试作弊被记大过累计 3 次'
+        ],
+        irreversible: true,
+        priority: 2
+      },
+      description: '校长室里，校长冷酷地递给你退学通知书。你的父母被通知，八十八学园不再接纳你。寒假的暧昧回忆成为你被开除的导火索，你的人生从此走向另一条路。',
+      cg_id: 'CG_BAD_END_002_EXPEL',
+      applies_to: '通用（任何女角线）'
+    },
+
+    /* ── BAD_END_3 破产（详细机制参「事件/破产结局机制.txt」单一来源，本表仅保留判定入口与摘要）── */
+    'BAD_END_3_破产': {
+      ending_id: 'END_BAD_GENERIC_003',
+      ending_name: 'BAD END 3 · 破产',
+      ending_type: 'BAD_END',
+      /* 完整触发条件/恢复选项/难度修正/3种变体（饿死/债务逼迫/精神崩溃）详见 破产结局机制.txt
+         checkBadEnd() 在 money_lte:0 && meal_failure_days_gte:3 时返回本结局 */
+      trigger_condition: {
+        money_lte: 0,
+        meal_failure_days_gte: 3,
+        description: '金钱 ≤ 0 且无法支付三餐连续 3 天（详细机制参 破产结局机制.txt）',
+        detail_source: '事件/破产结局机制.txt',
+        variants: ['BAD_END_3A_饿死', 'BAD_END_3B_债务逼迫', 'BAD_END_3C_精神崩溃'],
+        priority: 3
+      },
+      description: '主角因金钱耗尽，连续 3 天无法解决三餐，身体与精神双重崩溃。八十八町的繁华与他无关，他倒在自宅地板上，胃部抽搐着抗议。手机里是各路同学的朋友圈——唯的蛋糕、友美的灯饰、可怜的演出——而你连一罐热咖啡都买不起。这一夜没有 CG，只有黑暗。寒假结束前，你因严重营养不良被送进医院，但寒假已逝，所有女角的故事都与你无关了。',
+      cg_id: 'CG_BAD_END_003_BANKRUPT',
+      applies_to: '通用（任何身份）',
+      special_note: '玩家破产结局。详细预警/恢复/变体机制参 破产结局机制.txt（单一来源）。'
+    },
+
+    /* ── BAD_END_4 崩溃 ── */
+    'BAD_END_4_崩溃': {
+      ending_id: 'END_BAD_GENERIC_004',
+      ending_name: 'BAD END 4 · 崩溃',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        mood_lte: 0,
+        description: '心情 ≤ 0',
+        specific_triggers: [
+          '连续多日拒绝所有女角邀约',
+          '多次在关键选择中伤透女角心',
+          '遭遇重大打击（如女角死亡、严重事故等）',
+          'hunger 与 thirst 长期处于高位',
+          'mood 持续下降至 0'
+        ],
+        irreversible: true,
+        priority: 4
+      },
+      description: '主角蜷缩在自宅角落，眼神空洞。寒假的暧昧、纠葛、阴谋都与他无关了。他的心已经死了，剩下的只是一具空壳。八十八町的灯火、女角的笑容、雪花飘落的声音——一切都成了背景噪音。',
+      cg_id: 'CG_BAD_END_004_BREAKDOWN',
+      applies_to: '通用（任何女角线）'
+    },
+
+    /* ── BAD_END_5 嫉妒杀戮 ── */
+    'BAD_END_5_嫉妒杀戮': {
+      ending_id: 'END_BAD_GENERIC_005',
+      ending_name: 'BAD END 5 · 嫉妒杀戮',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        jealousy_gte: 100,
+        relationship_required: '亲密',
+        description: 'jealousy ≥ 100 且与至少 1 位女角关系达亲密',
+        specific_triggers: [
+          '同日与 3+ 位女角亲密互动（GLOBAL_IMPACT 触发）',
+          '地狱难度下选任何女角都触发其他女角 jealousy +10',
+          '长期在多位女角之间暧昧不清',
+          '承诺与某女角独处却违约与其他女角亲密',
+          'jealousy 累积至 100 且未及时化解'
+        ],
+        irreversible: true,
+        priority: 5
+      },
+      description: '1月7日夜晚，嫉妒累积到极限的女角手持利器出现。她的眼神已疯狂，只剩下一个念头——既然得不到你，那就毁了你。八十八町的夜空被血色染红，烟花与惨叫同时响起。寒假的暧昧变成了一场屠杀。',
+      cg_id: 'CG_BAD_END_005_MASSACRE',
+      applies_to: '通用（任何女角线，触发者不固定）'
+    },
+
+    /* ── BAD_END_6 西御寺阴谋（唯线专属）── */
+    'BAD_END_6_西御寺阴谋': {
+      ending_id: 'END_BAD_GENERIC_006',
+      ending_name: 'BAD END 6 · 西御寺阴谋',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        heroine_id: 1,
+        yui_affection_min: 50,
+        yui_relationship: ['亲密', '攻略完成'],
+        西寺对峙_required: true,
+        deadline: '12-29',
+        description: '与唯关系达亲密（affection ≥ 50）但未在 12-29 前完成西御寺对峙（西寺对峙 flag 未触发）',
+        specific_triggers: [
+          '唯 affection ≥ 50 且 relationship 达"亲密"或"攻略完成"',
+          '未在 day 8（12-29）前触发 西寺对峙 事件',
+          '西御寺有友完成对唯的阴谋部署（散布谣言 / 威胁 / 安排陷害）',
+          '12-30 后西御寺启动对唯的舆论攻击',
+          '唯被全校孤立，affection 急剧下降',
+          '1/7 告白日时唯已无法接受告白'
+        ],
+        irreversible: true,
+        priority: 6
+      },
+      description: '1月7日夜晚，唯没有出现在鸣泽家客厅。西御寺有友的阴谋成功了——唯被全校孤立，谣言满天飞，她已无法面对任何人。你冲到鸣泽家，门紧锁着。美佐子红着眼眶告诉你："唯走了，她说再也不回来了。"你站在雪地里，眼睁睁看着西御寺在你身后冷笑。寒假的暧昧变成了一场阴谋的牺牲品。',
+      cg_id: 'CG_BAD_END_006_CONSPIRACY',
+      applies_to: '唯线专属（heroine_id=1）'
+    },
+
+    /* ── BAD_END_7 法律制裁 ── */
+    'BAD_END_7_法律制裁': {
+      ending_id: 'END_BAD_GENERIC_007',
+      ending_name: 'BAD END 7 · 法律制裁',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        illegal_count_gte: 3,
+        description: '累计 3 次违法行为',
+        specific_triggers: [
+          '盗窃商店物品被抓获',
+          '非法闯入私人住宅被报警',
+          '对女角或他人实施暴力行为被报警',
+          '在校内实施违法行为被揭发',
+          'illegal_count 累计 ≥ 3（每次违法 +1，部分严重违法 +2）'
+        ],
+        irreversible: true,
+        priority: 7
+      },
+      description: '警察在你家门口等你。三次违法的累计让你被正式起诉，寒假的暧昧变成了一场法律审判。八十八学园开除你的学籍，鸣泽家不再接纳你，所有女角都与你断绝联系。你的人生从此走向另一条路。',
+      cg_id: 'CG_BAD_END_007_LEGAL',
+      applies_to: '通用（任何身份）'
+    },
+
+    /* ── BAD_END_8 时间终焉（必然触发兜底）── */
+    'BAD_END_8_时间终焉': {
+      ending_id: 'END_BAD_GENERIC_008',
+      ending_name: 'BAD END 8 · 时间终焉',
+      ending_type: 'BAD_END',
+      trigger_condition: {
+        day_count_gte: 17,
+        date: '01-07',
+        description: '第 17 天结束（01-07 PM8:00）且所有女角 affection < 30',
+        specific_triggers: [
+          '寒假结束时（day_count=17）所有女角 affection < 30',
+          '未触发任何 BAD_END_1~7',
+          '未达成任何女角的 True/Good/Normal End 阈值',
+          '1/7 PM8:00 告白日判定时无人可选'
+        ],
+        irreversible: true,
+        priority: 8,
+        fallback: true
+      },
+      description: '1月7日夜晚，你独自站在八十八町街头。烟花在夜空绽放，家家户户的窗户里透出暖黄的光与笑声。寒假17天的暧昧、纠葛、阴谋都已过去，但没有人等你。没有邀约，没有告白，只有空荡荡的街道。你忽然意识到——这个寒假，你什么都没得到。雪越下越大，覆盖了你的脚印。',
+      cg_id: 'CG_BAD_END_008_TIME',
+      applies_to: '通用（兜底结局）'
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     四、SPECIAL_ENDINGS · 特殊结局（3个）
+     ════════════════════════════════════════════════════════════ */
+  special_endings: {
+    /* ── 洋子怀孕结局（洋子线特殊）── */
+    yoko_pregnancy: {
+      ending_id: 'END_SPECIAL_001',
+      ending_name: '南川洋子·怀孕结局',
+      ending_type: 'True End（变体）',
+      heroine_id: 6,
+      heroine_name: '南川洋子',
+      trigger_condition: {
+        yoko_relationship_required: ['亲密', '攻略完成'],
+        pregnancy_flag: true,
+        unprotected_count_0104_0106_gte: 1,
+        description: '洋子线关系达亲密 + 1/4~1/6 期间未使用保护措施（H事件）',
+        specific_triggers: [
+          '洋子 affection ≥ 50 且 relationship 达"亲密"或"攻略完成"',
+          '1/4~1/6 期间与洋子发生 H 事件且未使用保护措施（unprotected_count_0104_0106 ≥ 1）',
+          '1/7 PM8:00 告白日时洋子告知怀孕',
+          '川尻信良纠缠已解决（kawajiri_resolved flag 已触发）',
+          'yoko_pregnancy_flag 在 1/7 触发时被 AI 写入为 1'
+        ],
+        priority: 9,
+        variant_of: 'TRUE_END'
+      },
+      description: '1月7日夜晚，洋子在八十八海岸等你。她没有像往常一样笑，而是红着眼眶递给你一张医院的检查单。"我怀孕了。"她声音平静，但手指在颤抖。海风吹起她的长发，她终于说出了这个寒假最沉重的话。川尻信良的纠缠已解决，但你们要面对的不再是浪漫，而是责任。这一夜她接受你的告白，但你们的故事从恋爱转向了养育。洋子成为了母亲，你成为了父亲——比任何 True End 都更沉重，也更真实。',
+      cg_id: 'CG_ENDING_YOKO_PREGNANCY',
+      applies_to: '洋子专属（heroine_id=6）',
+      special_note: '属于 True End 的变体，但增加养育责任线。触发后洋子线进入"父母养成"分支，影响后续剧情走向。'
+    },
+
+    /* ── 田中美沙反告白结局（美沙线特殊 · 9.B.6）── */
+    misa_reversed_confession: {
+      ending_id: 'END_SPECIAL_002',
+      ending_name: '田中美沙·反告白结局',
+      ending_type: 'Normal End（变体）',
+      heroine_id: 10,
+      heroine_name: '田中美沙',
+      trigger_condition: {
+        affection_range: [50, 79],
+        relationship_required: ['熟悉', '暧昧', '心动'],
+        flags_required: ['misa_reunion', 'misa_training_help'],
+        flags_excluded: ['player_confessed_to_misa'],
+        description: '美沙 affection 50~79（未达 True End 阈值 80）+ 玩家未在 1/5~1/7 期间主动告白',
+        specific_triggers: [
+          '美沙 affection 在 50~79 之间（熟悉/暧昧/心动阶段，未达亲密）',
+          '玩家未在 1/5~1/7 任何时段主动向美沙告白（player_confessed_to_misa flag 未设置）',
+          '美沙重逢 flag 已触发（misa_reunion=true）',
+          '美沙训练危机已帮助（misa_training_help=true）',
+          '1/7 PM8:00 告白日时美沙主动反向告白或反向拒绝'
+        ],
+        priority: 8,
+        variant_of: 'NORMAL_END'
+      },
+      description: '1月7日夜晚，美沙在田径部操场等你。你迟迟没有告白，她终于失去了耐心。"喂，你这个优柔寡断的家伙。"她背对着你，声音里带着一丝苦涩，"我已经有男朋友了——骗你的。但是，如果你再不开口，我就真的走了。"她转身，眼眶微红，却没有等你的回答。重逢的青梅竹马因为你的迟疑而错过——她选择用"反告白"的方式保护自己，留给你一个未完成的承诺。比 Bad End 温柔，比 Normal End 遗憾——这是美沙特有的"自我保护"结局。',
+      cg_id: 'CG_ENDING_MISA_REVERSED',
+      applies_to: '美沙专属（heroine_id=10）',
+      special_note: '属于 Normal End 的变体，但触发条件特殊：玩家未主动告白时由美沙反向触发。需要 AI 在 1/5~1/7 期间追踪 player_confessed_to_misa flag 是否被设置。若玩家在此期间向美沙告白则该结局不会触发，转而进入对应 Normal/Good/True End。'
+    },
+
+    /* ── 筱原泉美自动告白结局（泉美线特殊 · 9.B.7）── */
+    izumi_auto_confession: {
+      ending_id: 'END_SPECIAL_003',
+      ending_name: '筱原泉美·自动告白结局',
+      ending_type: 'True End（变体）',
+      heroine_id: 5,
+      heroine_name: '筱原泉美',
+      trigger_condition: {
+        affection_range: [80, 100],
+        relationship_required: ['亲密'],
+        flags_required: ['泉美H完成', '泉美弓道援助', '泉美演讲改变day15'],
+        flags_excluded: ['玩家向泉美告白'],
+        description: '泉美 affection ≥ 80 + 1/5 改变说话语气已触发 + 玩家未在 1/5~1/7 期间主动告白',
+        specific_triggers: [
+          '泉美 affection ≥ 80（True End 阈值，达亲密阶段）',
+          '1/5 改变说话语气事件已触发（泉美演讲改变day15=true）',
+          '玩家未在 1/5~1/7 任何时段主动向泉美告白（玩家向泉美告白 flag 未设置）',
+          '泉美 H 事件已完成（泉美H完成=true）',
+          '泉美射箭部协助已完成（泉美弓道援助=true）',
+          '1/7 PM8:00 告白日时泉美主动告白'
+        ],
+        priority: 7,
+        variant_of: 'TRUE_END'
+      },
+      description: '1月7日夜晚，泉美在图书馆角落等你。你已经帮她度过了筱原重工的家族压力，陪她走过了射箭部的低谷，甚至见证了她在 1/5 改变说话语气——从男孩子的"喂"变成了女孩子轻声的"那个"。但你迟迟没有告白。她合上书，第一次主动开口，声音轻得像怕惊扰图书馆的尘埃："我……我不讨厌你。不，不是不讨厌……是喜欢。"她耳尖通红，没有看你，却主动把头靠在了你肩上。孤独者终于迈出了她从未敢迈出的一步——这是泉美特有的"自动告白"结局，比 True End 多了一份她主动跨越内向的勇气。',
+      cg_id: 'CG_ENDING_IZUMI_AUTO',
+      applies_to: '泉美专属（heroine_id=5）',
+      special_note: '属于 True End 的变体，但触发条件特殊：玩家未主动告白时由泉美反向触发。需要 AI 在 1/5~1/7 期间追踪 玩家向泉美告白 flag 是否被设置。此结局是泉美"改变说话语气"（1/5）的最终收束——她从男孩子气到主动表达感情，是角色弧光的完成。'
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     五、结局统计与执行规则
+     ════════════════════════════════════════════════════════════ */
+  statistics: {
+    total: 88,
+    by_type: {
+      'True End': 19,
+      'Good End': 19,
+      'Normal End': 19,
+      'Bad End（女角个人）': 19,
+      'True End（隐藏·樱子）': 1,
+      'BAD_END_1 报警': 1,
+      'BAD_END_2 学园开除': 1,
+      'BAD_END_3 破产': 1,
+      'BAD_END_4 崩溃': 1,
+      'BAD_END_5 嫉妒杀戮': 1,
+      'BAD_END_6 西御寺阴谋': 1,
+      'BAD_END_7 法律制裁': 1,
+      'BAD_END_8 时间终焉': 1,
+      '洋子怀孕（True End 变体）': 1,
+      '美沙反告白（Normal End 变体 · 9.B.6）': 1,
+      '泉美自动告白（True End 变体 · 9.B.7）': 1
+    },
+    by_priority: 'BAD_END_1 > BAD_END_7 > BAD_END_2 > BAD_END_3 > BAD_END_4 > BAD_END_5 > BAD_END_6 > TRUE_END_HIDDEN > YOKO_PREGNANCY > IZUMI_AUTO_CONFESSION > MISA_REVERSED_CONFESSION > TRUE_END > GOOD_END > NORMAL_END > BAD_END（女角个人）> BAD_END_8'
+  },
+
+  execution_rules: {
+    trigger_timing: '01-07 PM8:00（day_count=17，time_slot=晚）',
+    determination_flow: [
+      '1. AI 必须先调用 checkBadEnd() 检查通用 BAD_END（按 priority 顺序）',
+      '2. 若触发 BAD_END，立即返回对应结局，不再继续判定女角结局',
+      '3. 若未触发 BAD_END，检查杉本樱子隐藏结局（heroine_id=20，需 3 个 flag 全部满足）',
+      '3.5 检查泉美自动告白特殊结局（heroine_id=5，需 affection≥80 + 泉美H完成 + 泉美弓道援助 + 泉美演讲改变day15 + 玩家向泉美告白 未设置）',
+      '3.6 检查美沙反告白特殊结局（heroine_id=10，需 affection 50~79 + misa_reunion + misa_training_help + player_confessed_to_misa 未设置）',
+      '4. 检查洋子怀孕特殊结局（heroine_id=6，需 pregnancy_flag + unprotected_count + relationship 条件）',
+      '5. 按 affection 分档判定女角个人结局（True/Good/Normal/Bad）',
+      '6. True End 需同时满足 affection 阈值 + 关键 flag 全部正确',
+      '7. 若所有女角 affection < 30，触发 BAD_END_8 时间终焉（兜底）',
+      '8. 难度修正：轻松/挑战/地狱会调整 True End 与 Good End 的 affection 阈值',
+      '9. 玩家主动告白追踪：AI 必须在玩家向女角告白时设置 player_confessed_to_<heroine_name> flag（如 player_confessed_to_misa / 玩家向泉美告白），用于美沙反告白与泉美自动告白结局的触发判定'
+    ],
+    ai_obligations: [
+      'AI 必须在 1/7 PM8:00 时段主动触发结局判定，不能推迟',
+      'AI 必须先列出所有 affection ≥ 30 的女角清单，由玩家选择告白对象',
+      'AI 必须按 priority 顺序检查 BAD_END，不可跳过',
+      'AI 必须在结局判定完成后在 chronicle 表插入纪要记录（code_index/time_span/summary/chronicle_text）',
+      'AI 必须在结局判定完成后解锁对应 CG（参考 CG触发条件表.txt）',
+      'AI 不得在结局判定中给予玩家"重试"机会，结局一旦确定不可逆'
+    ]
+  }
+};
+
+/* ── 输出运行时校验信息（供 D0 控制器读取）── */
+const _trigger_ok = (_dayCount === 17 && _date === '01-07' && _timeSlot === '晚');
+const _badEndCheck = checkBadEnd();
+%>
+
+[同级生2 · 结局分支矩阵 已加载]
+触发校验：day_count=<%= _dayCount %> / date=<%= _date %> / time_slot=<%= _timeSlot %> / 难度=<%= _diff %>
+触发状态：<%= _trigger_ok ? '✓ 满足' : '✗ 未到时机' %>
+当前 BAD_END 检查：<%= _badEndCheck || '✓ 未触发' %>
+当前难度阈值：True End ≥ <%= _dm.true_end_threshold %> / Good End ≥ <%= _dm.good_end_threshold %> / Normal End ≥ 30 / Bad End < 30
+
+【结局矩阵摘要】
+- 总结局数：<%= ENDING_MATRIX.metadata.total_endings %>
+- 女角个人结局：19 × 4 = 76（True/Good/Normal/Bad 各 19）
+- 隐藏结局：1（杉本樱子·True End 隐藏）
+- 通用 BAD_END：8（报警/学园开除/破产/崩溃/嫉妒杀戮/西御寺阴谋/法律制裁/时间终焉）
+- 特殊结局：1（洋子怀孕·True End 变体）
+
+【BAD_END 优先级】
+1. BAD_END_1 报警（强制行为·不可逆）
+2. BAD_END_7 法律制裁（累计 3 次违法）
+3. BAD_END_2 学园开除（校内严重违规）
+4. BAD_END_3 破产（金钱 ≤ 0 且无法支付三餐连续 3 天）★用户强调重点
+5. BAD_END_4 崩溃（心情 ≤ 0）
+6. BAD_END_5 嫉妒杀戮（jealousy ≥ 100 且关系达亲密）
+7. BAD_END_6 西御寺阴谋（唯线专属·12-29 前未解决）
+8. BAD_END_8 时间终焉（兜底·所有女角 affection < 30）
+
+【执行规则】
+1. AI 必须先调用 checkBadEnd() 按 priority 顺序检查 BAD_END。
+2. 若 BAD_END 触发，立即返回对应结局，不再判定女角结局。
+3. 若未触发 BAD_END，按顺序检查：樱子隐藏 → 洋子怀孕 → 女角 affection 分档。
+4. True End 需同时满足 affection 阈值 + 关键 flag 全部正确（参考 TRUE_END_FLAG_MAP）。
+5. 难度修正：轻松阈值放宽 / 挑战收紧 / 地狱 True End 阈值 +10。
+6. 玩家在 1/7 PM8:00 选择告白对象后，AI 调用 determineEnding(heroine_id) 返回结局。
+7. 结局一旦确定不可逆，AI 必须在 chronicle 表插入纪要记录并解锁对应 CG。

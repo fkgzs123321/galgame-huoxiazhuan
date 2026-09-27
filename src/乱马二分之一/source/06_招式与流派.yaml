@@ -1,0 +1,86 @@
+# 06 · 招式与流派总表
+# conf: ★ 多源一致 ｜ ☆ 单一来源 ｜ ? 存疑 ｜ anime = 动画原创
+
+techniques:
+  - { name: 飞龙升天破, user: 早乙女乱马（可伦传授）, effect: 引敌成螺旋、己身蓄冷气，上勾拳生成龙卷风, source: 卷13（第71页）, variants: [飞龙降临弹, 飞龙仰天破, 飞龙冰突破], conf: ★ }
+  - { name: 猛虎高飞车, user: 早乙女乱马, effect: 以傲气为源的气弹, note: 原作无完成型；另有双发版, conf: ★ }
+  - { name: 猛虎落地势, user: 早乙女玄马／乱马, effect: 正座双手撑地一味道歉，即土下座, note: 战斗无用, conf: ★ }
+  - { name: 魔犬恸哭破, user: 早乙女玄马／乱马, effect: 蓄气拉开距离后大骂对方，即败犬远吠, note: 早乙女流二大秘技之一，战斗无用, conf: ★ }
+  - { name: 火中天津甘栗拳, user: 早乙女乱马（可伦传授）, effect: 超高速连拳, variants: [空中天津甘栗拳], conf: ★ }
+  - { name: 猫拳, user: 早乙女乱马, effect: 恐猫到极点自我猫化，战中无敌；心智同猫, source: 玄马错误训练所致, extra: 能让他恢复正常的只有天道茜, conf: ★ }
+  - { name: 海千拳, user: 早乙女乱马（早乙女流）, effect: 潜行与奇袭系, moves: [支柱落地势, 白蛇吐信掌, 夜叉探海炮, 鲤鱼翻身, 背山倒海态], conf: ★ }
+  - { name: 山千拳, user: 早乙女玄马所创／公纹龙承, effect: 刚猛系, moves: [猛虎开门破, 鬼神来袭弹, 鬼神群大乱舞, 金丝紧缚翔, 迎门铁扇指, 毒蛇探穴掌, 怀中抱珠杀], source: 卷28, conf: ★ }
+  - { name: 爆破点穴, alias: 爆碎点穴, user: 响良牙（可伦传授）, effect: 指击岩石急所使之崩解, note: 对人体无效；乱马有封锁版, conf: ★ }
+  - { name: 狮子咆哮弹, user: 响良牙, effect: 将不幸的沉重空气化为冲击波，越惨越强, variants: [真·狮子咆哮弹（周身重力波）], conf: ★ }
+  - { name: 龙精飞翔, user: 哈浦, effect: 升空向地面发射气炮，弹跳命中, source: 卷24-25, extra: 性别不同则架势不同, conf: ★ }
+  - { name: 飞刀龙斩破, alias: 飞刀龙斩波, user: 哈浦, effect: 三日月形气刃，可断岩, note: 与气刃剑术「气龙刀」同源, conf: ★ }
+  - { name: 飞鸟千斩翼, user: 纪玛, effect: 振翼生成斩裂镰鼬, note: 日文必杀技辞典作「水鸟千斩翼」, conf: '?' }
+  - { name: 狼牙流星弹, user: 敏杜, effect: 绕背投掷大量短剑, conf: ★ }
+  - { name: 天下瞬灭皇球弹, user: 萨夫郎, effect: 化身为超大火炎弹, conf: ★ }
+  - { name: 皇帝火焰翼, user: 萨夫郎, effect: 撕裂火焰之翼, conf: ★ }
+  - { name: 黑玫瑰旋风, user: 九能小太刀, effect: 格斗新体操招牌技, conf: ★ }
+  - { name: 黑玫瑰吹雪, user: 九能小太刀, effect: 玫瑰暗器与剃刀环, conf: ★ }
+  - { name: 黑玫瑰炸弹乱射, user: 九能小太刀, effect: 爆药乱投, conf: ★ }
+  - { name: 八宝五圆杀, user: 二宫雏子, effect: 以五圆硬币吸尽对方斗气（对方须在放斗气时）, conf: ★ }
+  - { name: 八宝五十圆杀, user: 二宫雏子, effect: 同上但不须对方放气；威力大但破绽大, conf: ★ }
+  - { name: 八宝找零奉还, user: 二宫雏子, effect: 将吸来的斗气成块打回；用多会缩回小孩体型, conf: ★ }
+  - { name: 八宝篮框杀, user: 二宫雏子, effect: 八宝系派生, conf: ☆ }
+  - { name: 雷神猛笔拳, user: 乐京斋, effect: 毛笔技法总称, moves: [小笔爆裂弹, 天顶笔打, 山葵爆烟墨, 胶紧缚墨], extra: 需「锦乃蝶」方完整, conf: ★ }
+  - { name: 蝴蝶乱舞, user: 乐京斋, effect: 雷神猛笔拳究极奥义，七色墨反光如蝶, note: 本质只是取胸拓, conf: ★ }
+  - { name: 火车王流, user: 火车王金之介, effect: 自己一分不花、全靠他人供养的流派；左手人偶腹语, source: 第309话, conf: ★ }
+  - { name: 死灵之盆踊, user: 三千院帝／白鸟梓, effect: 五百连击, conf: ★ }
+  - { name: 别离的旋转木马, user: 三千院帝／白鸟梓, effect: 抓脚大回转「情侣崩坏」, conf: ★ }
+  - { name: 熊拳, user: 可伦, effect: 冰熊操纵, conf: ☆ }
+  - { name: 鲛拳, user: 可伦, effect: 水压冲击, conf: ☆ }
+  - { name: 猫八重身之术, user: 可伦, effect: 幻术分身, note: anime, source: 热斗篇第3话, conf: ☆ }
+  - { name: 雪之舞, user: 可伦, effect: 吹雪龙卷, conf: ☆ }
+  - { name: 秘技鹰爪拳, user: 沐丝, effect: 靴中铁爪, conf: ★ }
+  - { name: 白鸟拳, user: 沐丝, effect: 暗器术, conf: ★ }
+  - { name: 鸡卵拳, user: 沐丝, effect: 爆弹卵, conf: ★ }
+  - { name: 鸵鸟脚, user: 沐丝, effect: 后上段踢, conf: ★ }
+  - { name: 火龙大轮舞, user: 蕗珠, effect: 六臂生火焰龙卷, conf: ★ }
+  - { name: 雷蛇天诛杀, user: 蕗珠, effect: 雷蛇攻击, conf: ★ }
+  - { name: 阿修罗火焰, user: 蕗珠, effect: 变身阿修罗时的热风，可把冷水变热水, conf: ★ }
+  - { name: 裤袜流星脚, user: 裤袜太郎, effect: 必杀踢技, source: 卷18, conf: ★ }
+  - { name: 霸海狂花, user: 未详, source: 卷35「战栗！霸海狂花」, conf: '?' }
+  - { name: 微笑三年必杀技, user: 未详, effect: 需要笑三年才能练成, source: 卷34, conf: '?' }
+  - { name: 徒手孝行乱打, user: 未详, effect: 秘拳, source: 卷32, conf: '?' }
+  - { name: 格斗书法, user: null, effect: 楷书拳、朱墨喷雾、半纸之舞、飞燕文镇, source: 热斗篇第97话, note: anime, conf: ☆ }
+
+# ══════════════════════════════════════════════════════════════
+# 格斗○○ 竞技项目表 —— 原作日常单元的核心发生器
+# ══════════════════════════════════════════════════════════════
+
+contest_styles:
+  - { name: 格斗茶道, rule: 以茶釜、柄杓、茶杓为械，边点茶边攻防, cast: [大文字煎太郎, 大文字家元, 都大路茶月, 天道茜, 早乙女乱马], first: 卷6, conf: ★ }
+  - { name: 格斗新体操, rule: 彩带、棍棒、呼啦圈作武器, cast: [九能小太刀, 今条真理子, 鹭宫飞鸟, 大德寺清康, 早乙女乱马], first: 卷3, conf: ★ }
+  - { name: 格斗花式滑冰（双人滑）, rule: 冰上竞技，含「情侣崩坏」类拆搭档技, cast: [三千院帝, 白鸟梓, 早乙女乱马], first: 卷3, conf: ★ }
+  - { name: 格斗啦啦队, rule: 以助威动作为攻击，绒球、指挥棒为械, cast: [今条真理子, 青春学园啦啦队部, 早乙女乱马], conf: ★ }
+  - { name: 格斗晚宴（法式）, rule: 规则含「不可让对方看见咀嚼姿态」, cast: [皮可莱特·夏尔丹, 早乙女乱马], conf: ★ }
+  - { name: 格斗送饭（出前）, rule: 送餐竞速，可破坏对手食盒, cast: [猫饭店（珊璞）, 七福神大黑流（大黑香织）], first: 卷7, conf: ★ }
+  - { name: 格斗书法, rule: 以笔、墨、镇纸为械, cast: [], source: 热斗篇第97话, note: anime, conf: ☆ }
+  - { name: 格斗游泳, rule: 水中竞技, cast: [二宫雏子], conf: ★ }
+  - { name: 格斗将棋, rule: 棋子化为人形叠压对手, cast: [三吉], source: 动画第85话, note: anime, conf: ☆ }
+  - { name: 餐桌格斗, rule: 吃饭竞速与卡位, source: 卷17, conf: ★ }
+  - { name: 强力羽毛板球, rule: 未详, source: 卷11, conf: '?' }
+  - { name: 地狱篮球赛, rule: 未详, source: 卷25, conf: '?' }
+  - { name: 格斗饮食, rule: 见格斗晚宴, conf: '?' }
+  - { name: 地狱般的十元大战, rule: 未详, source: 卷29, conf: '?' }
+  - { name: 借债王VS借债女王, rule: 比「谁先花自己的钱」, cast: [火车王金之介, 天道靡], source: 卷29, conf: ★ }
+
+# ══════════════════════════════════════════════════════════════
+# 流派与门派
+# ══════════════════════════════════════════════════════════════
+
+schools:
+  - { name: 元祖无差别格斗流, founder: 八宝斋, branches: [早乙女流（玄马）, 天道流（早云）], conf: ★ }
+  - { name: 无差别格斗早乙女流, founder: 早乙女玄马, heir: 早乙女乱马, conf: ★ }
+  - { name: 无差别格斗天道流, founder: 天道早云, heir: 天道茜, conf: ★ }
+  - { name: 中国女杰族拳法, founder: null, members: [可伦, 珊璞, 沐丝, 铃铃, 兰兰], conf: ★ }
+  - { name: 象形拳（麝香王朝）, founder: null, members: [哈浦, 来睦, 敏杜], conf: ★ }
+  - { name: 格斗茶道大文字流, founder: null, members: [大文字煎太郎, 大文字家元], conf: ★ }
+  - { name: 里格斗茶道都大路流, founder: null, members: [都大路茶月], conf: ★ }
+  - { name: 火车王流, founder: null, members: [火车王金之介（第七代）], conf: ★ }
+  - { name: 公纹流（公纹道场）, founder: null, members: [公纹龙], conf: ★ }
+  - { name: 猿隐流卡拉克利豪斯术, founder: null, members: [猿隐佐助], note: anime, conf: ★ }
+  - { name: 喜面流拳印术, founder: null, members: [喜面流拳印术师], conf: ☆ }

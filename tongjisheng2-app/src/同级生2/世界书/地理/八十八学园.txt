@@ -1,0 +1,259 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 八十八学园 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionSchool = {
+  region_name: '八十八学园',
+  scenes: [
+    '校庭',
+    '体育馆后',
+    '弓箭练习场',
+    '校舍走廊',
+    '屋顶',
+    '学生会室',
+    '图书馆',
+    '广播室'
+  ],
+  time_slot_access: {
+    '早':   { accessible: false, note: '寒假期间未开放，翻墙进入触发 illegal_count +1（≥3 触发 BAD_END_7）' },
+    '上午': { accessible: true,  note: '寒假期间部分开放，学生会室与图书馆可用' },
+    '下午': { accessible: true,  note: '寒假期间部分开放，社团活动偶有进行' },
+    '晚':   { accessible: false, note: '寒假期间清校，翻墙进入触发 illegal_count +1' },
+    '深夜': { accessible: false, note: '禁止进入，翻墙进入触发 illegal_count +1 且无 NPC' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["八十八学园"]（3件，关键道具）：修学旅行缴费单/学生证/修学旅行宣传单',
+  special_events: [
+    { day: 3,  slot: '上午', event_id: 'day03上午_学生会工作',     note: '协助齐藤澪/加藤美纪学生会工作，好感提升' },
+    { day: 7,  slot: '下午', event_id: 'day07下午_图书馆偶遇泉美', note: '图书馆偶遇筱原泉美，兄弟期互动' },
+    { day: 10, slot: '下午', event_id: 'day10下午_田径部观摩',     note: '观摩南川洋子田径训练' }
+  ],
+  description: '主角就读学校，寒假期间部分开放，学生会室和图书馆是主要活动点。早/晚/深夜翻墙进入触发 illegal_count，≥3 触发 BAD_END_7。齐藤澪（15）常驻学生会室，筱原泉美（5）常驻图书馆，片桐美铃（11）在办公室。',
+  location_details: {
+    '校庭': {
+      aliases: ['操场','校园','中庭'],
+      description: '八十八学园中央操场，寒假期间空旷，偶有田径部训练',
+      ambient_sounds: '风声/远处哨声/鸟鸣',
+      default_activities: ['散步','观察','偶遇洋子训练','翻墙进入'],
+      time_slot_descriptions: { '早':'空旷无人(翻墙illegal)','上午':'空旷安静','下午':'偶有田径部训练','晚':'空旷无人(翻墙illegal)','深夜':'禁止进入(illegal)' },
+      weather_modifiers: { '晴':'阳光操场','雨':'积水湿滑','雪':'白雪覆盖','暴风雪':'停课封校' },
+      heroines_likely: [6],
+      bad_end_risk: 'medium',
+      flags_set: ['illegal_count'],
+      events_triggered: ['day10下午_田径部观摩']
+    },
+    '体育馆后': {
+      aliases: ['体育馆后方','体育馆后院'],
+      description: '体育馆后方隐蔽角落，社团活动后学生聚集点，偶有秘密对话',
+      ambient_sounds: '体育馆回声/远处球声/低语',
+      default_activities: ['偷听','偶遇','秘密对话'],
+      time_slot_descriptions: { '早':'无人','上午':'偶有人','下午':'社团活动后','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'背阴处','雨':'屋檐避雨','雪':'积雪','暴风雪':'封闭' },
+      heroines_likely: [6, 7],
+      bad_end_risk: 'low'
+    },
+    '弓箭练习场': {
+      aliases: ['弓道场','射箭场'],
+      description: '弓道部练习场，寒假期间偶有部员练习',
+      ambient_sounds: '弓弦声/竹弓声/呼吸声',
+      default_activities: ['观摩','试射','与部员交流'],
+      time_slot_descriptions: { '早':'无人','上午':'偶有练习','下午':'部员练习','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'适练习','雨':'室内','雪':'室内','暴风雪':'封闭' },
+      heroines_likely: [],
+      bad_end_risk: 'low'
+    },
+    '校舍走廊': {
+      aliases: ['走廊','校舍通道'],
+      description: '校舍内走廊，连接各教室与办公室，寒假期间安静',
+      ambient_sounds: '脚步声回响/远处钟声/风声',
+      default_activities: ['通行','偶遇','观察'],
+      time_slot_descriptions: { '早':'空荡(翻墙)','上午':'偶有学生','下午':'放学后人流','晚':'空荡(翻墙)','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'阴沉','雪':'寒冷','暴风雪':'停课' },
+      heroines_likely: [3, 4, 5, 15, 19],
+      bad_end_risk: 'low'
+    },
+    '屋顶': {
+      aliases: ['屋顶','屋上','天台'],
+      description: '学校屋顶，围着铁丝网，可俯瞰整个八十八町，告白圣地',
+      ambient_sounds: '高处风声/远处车流/铁丝网晃动',
+      default_activities: ['眺望','独处','告白','秘密会面'],
+      time_slot_descriptions: { '早':'无人(翻墙)','上午':'偶有人','下午':'放学后独处','晚':'日落告白时段','深夜':'禁止' },
+      weather_modifiers: { '晴':'视野极佳','雨':'湿滑危险','雪':'银装素裹','暴风雪':'禁入' },
+      heroines_likely: [1, 5, 15],
+      bad_end_risk: 'medium',
+      time_lock: 'day17 晚 屋上 告白日',
+      exclusive_choices: ['告白(关系阶段达标→HE)','拒绝(关系下降)','沉默(无变化)'],
+      events_triggered: ['day17晚_屋顶告白'],
+      flags_set: ['confession_done']
+    },
+    '学生会室': {
+      aliases: ['学生会办公室','生徒会室'],
+      description: '学生会办公室，齐藤澪与加藤美纪值班地，寒假期间主要活动点',
+      ambient_sounds: '文件翻动声/键盘敲击/低声讨论',
+      default_activities: ['协助学生会工作','与澪/美纪交流','整理文件'],
+      time_slot_descriptions: { '早':'无人(翻墙)','上午':'澪与美纪值班','下午':'澪值班','晚':'无人(翻墙)','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光窗帘','雨':'室内灯光','雪':'暖炉','暴风雪':'停课' },
+      heroines_likely: [4, 15],
+      bad_end_risk: 'low',
+      events_triggered: ['day03上午_学生会工作'],
+      flags_set: ['student_council_work_count']
+    },
+    '图书馆': {
+      aliases: ['图书室','Library'],
+      description: '学校图书馆，筱原泉美常驻地，藏书丰富，安静阅读空间',
+      ambient_sounds: '翻书声/笔尖沙沙/空调嗡鸣',
+      default_activities: ['阅读','学习','与泉美交流','查阅资料'],
+      time_slot_descriptions: { '早':'无人(翻墙)','上午':'泉美在馆','下午':'泉美偶在','晚':'无人(翻墙)','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光书架','雨':'雨声伴读','雪':'暖灯阅读','暴风雪':'停课' },
+      heroines_likely: [5, 18],
+      bad_end_risk: 'low',
+      events_triggered: ['day07下午_图书馆偶遇泉美']
+    },
+    '广播室': {
+      aliases: ['放送室','播音室'],
+      description: '学校广播室，正树夏子整理设备地，可进行校园广播',
+      ambient_sounds: '设备嗡鸣/麦克风测试/广播声',
+      default_activities: ['与夏子交流','协助广播','整理设备'],
+      time_slot_descriptions: { '早':'无人','上午':'夏子整理','下午':'偶有广播','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'停课' },
+      heroines_likely: [19],
+      bad_end_risk: 'low'
+    },
+    '教室': {
+      aliases: ['班级','三年教室','教室'],
+      description: '主角所在三年生教室，窗户对操场，寒假期间偶尔补课',
+      ambient_sounds: '学生喧哗/上课铃/粉笔声',
+      default_activities: ['上课','与同学聊天','自习','午休'],
+      time_slot_descriptions: { '早':'空荡(翻墙)','上午':'补课/取作业','下午':'偶有同学','晚':'无人(翻墙)','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光洒入','雨':'雨打窗玻璃','雪':'窗外飘雪','暴风雪':'停课通知' },
+      heroines_likely: [3, 4, 5, 6, 7, 8, 10, 15],
+      bad_end_risk: 'low'
+    },
+    '体育馆': {
+      aliases: ['体育馆','体育堂'],
+      description: '室内体育馆，篮球场/观众席，寒假期间偶有社团使用',
+      ambient_sounds: '球鞋摩擦声/回声/哨声',
+      default_activities: ['观摩','运动','社团活动'],
+      time_slot_descriptions: { '早':'无人','上午':'偶有社团','下午':'社团活动','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'室内','暴风雪':'封闭' },
+      heroines_likely: [6],
+      bad_end_risk: 'low'
+    },
+    '楼梯口': {
+      aliases: ['楼梯间','阶梯口'],
+      description: '校舍楼梯间，连接各层，偶有秘密对话与偶遇',
+      ambient_sounds: '脚步声回响/远处钟声/低语',
+      default_activities: ['通行','偶遇','秘密对话'],
+      time_slot_descriptions: { '早':'空荡','上午':'人流','下午':'放学人流','晚':'空荡','深夜':'禁止' },
+      weather_modifiers: { '晴':'普通','雨':'阴沉','雪':'寒冷','暴风雪':'停课' },
+      heroines_likely: [3, 5, 15],
+      bad_end_risk: 'low'
+    },
+    '鞋柜区': {
+      aliases: ['鞋柜','玄关鞋柜'],
+      description: '校舍玄关鞋柜区，学生换鞋处，告白信投放点',
+      ambient_sounds: '脚步声/鞋柜开合声/闲聊',
+      default_activities: ['换鞋','投递情书','偶遇'],
+      time_slot_descriptions: { '早':'无人(翻墙)','上午':'上学换鞋','下午':'放学换鞋','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'湿滑','雪':'积雪','暴风雪':'停课' },
+      heroines_likely: [1, 3, 4, 5, 6, 8, 10, 15],
+      bad_end_risk: 'low',
+      flags_set: ['love_letter_delivered']
+    },
+    '教师室': {
+      aliases: ['办公室','教师办公室','职员室'],
+      description: '教师办公室，片桐美铃工作地，可咨询学业与生活',
+      ambient_sounds: '键盘声/电话声/教师讨论',
+      default_activities: ['咨询美铃','递交作业','师生对话'],
+      time_slot_descriptions: { '早':'无人','上午':'美铃办公','下午':'美铃偶在','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'普通','雨':'室内','雪':'室内','暴风雪':'停课' },
+      heroines_likely: [11],
+      bad_end_risk: 'low',
+      events_triggered: ['美铃师生咨询']
+    },
+    '部室': {
+      aliases: ['社团办公室','部室'],
+      description: '各社团活动室集中区，寒假期间部分社团开放',
+      ambient_sounds: '社团活动声/乐器声/讨论声',
+      default_activities: ['参观','与部员交流','社团活动'],
+      time_slot_descriptions: { '早':'无人','上午':'偶有社团','下午':'社团活动高峰','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'室内','暴风雪':'封闭' },
+      heroines_likely: [6, 19],
+      bad_end_risk: 'low'
+    },
+    '网球部': {
+      aliases: ['网球场','网球部'],
+      description: '网球部活动场地，寒假期间偶有部员练习',
+      ambient_sounds: '网球击球声/球鞋摩擦/哨声',
+      default_activities: ['观摩','试打','与部员交流'],
+      time_slot_descriptions: { '早':'无人','上午':'偶有练习','下午':'部员练习','晚':'无人','深夜':'禁止' },
+      weather_modifiers: { '晴':'适练习','雨':'室内','雪':'封闭','暴风雪':'封闭' },
+      heroines_likely: [],
+      bad_end_risk: 'low'
+    },
+    '神秘地点': {
+      aliases: ['学校隐藏地点','旧校舍地下室','秘密空间'],
+      description: '学园内隐藏的神秘空间，可触发特殊事件，影响剧情走向',
+      ambient_sounds: '神秘回声/低语/风铃',
+      default_activities: ['探索','触发特殊事件','获取稀有道具'],
+      time_slot_descriptions: { '早':'关闭','上午':'偶现','下午':'偶现','晚':'开启','深夜':'异象' },
+      weather_modifiers: { '晴':'普通','雨':'神秘','雪':'寂静','暴风雪':'异象' },
+      heroines_likely: [],
+      bad_end_risk: 'high',
+      hidden_location: true,
+      unlock_condition: '特定剧情flag触发（illegal_count相关）',
+      flags_set: ['school_mystery_count'],
+      events_triggered: ['学校神秘事件']
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 15 个地点） */
+const _currentLocationDetail = _regionSchool.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出（v3 · 精简版，npc_schedule 由人物出现总表提供） ─── */%>
+[区域：八十八学园。寒假期间部分开放，仅上午/下午合法进入。早/晚/深夜翻墙进入触发 illegal_count +1（累计 ≥3 触发 BAD_END_7）。学生会室、图书馆为主要活动点，办公室为片桐美铃工作地。当前时段下可遭遇 NPC 已由「人物出现总表」锁定，禁止引入未列出的女角。商店仅售关键道具（修学旅行相关），无生活消费品。]
+
+<%= JSON.stringify({
+  region: _regionSchool.region_name,
+  scenes: _regionSchool.scenes,
+  time_slot_access: _regionSchool.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["八十八学园"]',
+  shop_items_count: 3,
+  illegal_warning: '翻墙进入（早/晚/深夜）触发 illegal_count +1，累计 ≥3 触发 BAD_END_7',
+  special_events: _regionSchool.special_events,
+  description: _regionSchool.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

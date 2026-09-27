@@ -1,0 +1,101 @@
+const FORBIDDEN_KNOWLEDGE = [
+  /假阴茎|仿真阴茎|飞机杯.*反|反向.*飞机杯|阴茎.*复制|阴茎.*投影/i,
+  /具现度|阶段.*[1-5]|manifestation|stage.*[1-5]/i,
+  /林婉清|苏晴|陈老师|张雨萱|林小艾|唐小糖|秦雨|周思琪|学姐|班花|校花|她.*在用|她.*用.*了/i,
+  /内射|外射|边缘控制|边缘.*控制|不射|延时.*射|控制.*射精/i,
+  /透视|读心|预知|瞬移|飞行|超自然|魔法|异能|修仙|灵力|念力/i
+];
+
+const FORBIDDEN_ACTIONS_LOW_SUSPICION = [
+  /搜查|翻包|偷看|跟踪|监视|潜入|破门|强行/i
+];
+
+const FORBIDDEN_ACTIONS_MID_SUSPICION = [
+  /对质|对峙|报警|找老师|告发|当面质问/i
+];
+
+const ABILITY_VIOLATION = [
+  /我用.*能力|我发动.*|我觉醒.*|我开启.*眼|我有.*力量/i
+];
+
+function interceptPlayerInput(input, mvu) {
+  const suspicion = (mvu && mvu.stat_data && mvu.stat_data.状态 && mvu.stat_data.状态.怀疑值) || 0;
+  const stage = (mvu && mvu.stat_data && mvu.stat_data.使用阶段 && mvu.stat_data.使用阶段.当前阶段) || 1;
+
+  for (const pattern of FORBIDDEN_KNOWLEDGE) {
+    if (pattern.test(input)) {
+      return { blocked: true, rewrite: rewriteToUserReality(input, mvu), reason: 'knowledge_violation' };
+    }
+  }
+
+  if (suspicion < 50) {
+    for (const pattern of FORBIDDEN_ACTIONS_LOW_SUSPICION) {
+      if (pattern.test(input)) {
+        return { blocked: true, rewrite: '虽然觉得最近怪怪的，但是<user>找不到任何理由去怀疑身边的人，只能继续硬撑着上课。', reason: 'insufficient_suspicion' };
+      }
+    }
+  }
+
+  if (suspicion < 90) {
+    for (const pattern of FORBIDDEN_ACTIONS_MID_SUSPICION) {
+      if (pattern.test(input)) {
+        return { blocked: true, rewrite: '怀疑归怀疑，但没有证据<user>不敢轻举妄动，免得闹笑话。', reason: 'insufficient_evidence' };
+      }
+    }
+  }
+
+  if (suspicion < 130) {
+    if (/强行搜身|破门|直接报警抓人/i.test(input)) {
+      return { blocked: true, rewrite: '冲动是魔鬼，<user>深吸一口气，决定再找找确凿证据。', reason: 'rash_action' };
+    }
+  }
+
+  for (const pattern of ABILITY_VIOLATION) {
+    if (pattern.test(input)) {
+      return { blocked: true, rewrite: '<user>只是个普通高中生，唯一的"超能力"大概是熬夜不猝死。', reason: 'ability_violation' };
+    }
+  }
+
+  return { blocked: false, rewrite: input };
+}
+
+function rewriteToUserReality(input, mvu) {
+  const rewrites = {
+    '假阴茎': '那个……奇怪的感觉',
+    '林婉清': '那个女生',
+    '苏晴': '那个学姐',
+    '陈老师': '那位老师',
+    '张雨萱': '那个文艺委员',
+    '林小艾': '那个短发女生',
+    '唐小糖': '那个染头发的',
+    '秦雨': '同桌',
+    '周思琪': '那个图书委员',
+    '在用': '让我感到疲惫',
+    '内射': '那种被掏空的感觉',
+    '搜查': '找借口靠近',
+    '质问': '欲言又止',
+    '透视': '瞪大眼睛看',
+    '读心': '盯着对方脸看',
+  };
+  let result = input;
+  for (const [k, v] of Object.entries(rewrites)) {
+    result = result.replace(new RegExp(k, 'gi'), v);
+  }
+  return result || '<user>想了想，但什么也做不了，只能继续趴在桌上发呆。';
+}
+
+$(async () => {
+  await waitGlobalInitialized('Mvu');
+  eventOn('message_sent', async function onUserMessage() {
+    const ctx = SillyTavern.getContext();
+    const lastMsg = ctx.chat[ctx.chat.length - 1];
+    if (!lastMsg || lastMsg.is_system || lastMsg.role !== 'user') return;
+    const mvuData = await Mvu.getMvuData({ type: 'message', message_id: lastMsg.message_id });
+    const result = interceptPlayerInput(lastMsg.mes, mvuData || {});
+    if (result.blocked) {
+      lastMsg.mes = result.rewrite;
+      await Mvu.replaceMvuData({ ...mvuData?.stat_data }, { type: 'message', message_id: lastMsg.message_id });
+    }
+  });
+});
+

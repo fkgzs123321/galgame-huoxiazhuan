@@ -1,0 +1,21 @@
+```
+<body>
+<!-- 血月七夜 · 前端界面 loader
+     ★ 面板本身在 CDN 仓库里，不在这张卡里：
+       https://github.com/fkgzs123321/galgame-xueyue
+     面板: 状态栏（身份卡/今日广播/存活名单/入夜行动/处决投票/下毒/取物/终局/重开）
+     ⚠ 改了面板要跑 _ui_repo/xueyue/push.cjs，它会复制、上传、并把新 commit 回填到这里
+     ⚠ 必须带 commit：不带会被 jsDelivr 缓存住，改了看不到变化 -->
+<div id="xy-load" style="padding:12px;color:#828b98;font-size:12px">血月正在升起…</div>
+<script>
+(function () {
+  var U = "https://testingcf.jsdelivr.net/gh/fkgzs123321/galgame-xueyue@6c9b429/index.html";
+  var D = document.getElementById("xy-load");
+  if (typeof $ === "undefined") { if (D) D.textContent = "界面没载入：这个环境里没有 jQuery"; return; }
+  $("body").load(U, function (r, st) {
+    if (st === "error" && D) D.textContent = "界面没载入：CDN 取不到 " + U;
+  });
+})();
+</script>
+</body>
+```

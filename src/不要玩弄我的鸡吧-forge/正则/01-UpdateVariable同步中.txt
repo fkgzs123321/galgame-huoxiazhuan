@@ -1,0 +1,15 @@
+{
+  "id": "a1b2c3d4-0201-4000-8000-000000000201",
+  "scriptName": "01-UpdateVariable同步中",
+  "findRegex": "/<UpdateVariable>(?![\\s\\S]*<\\/UpdateVariable>)\\s*([\\s\\S]*)$/gi",
+  "replaceString": "<div style=\"margin:8px 0;padding:10px 14px;border:1px solid #9b59b6;border-radius:6px;background:linear-gradient(90deg,rgba(155,89,182,0.08),rgba(155,89,182,0.18));color:#9b59b6;font-size:0.9em;\"><span style=\"display:inline-block;\">⚙️</span> 变量同步中…</div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

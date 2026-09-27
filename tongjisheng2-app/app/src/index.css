@@ -1,0 +1,243 @@
+/* ============================================================
+   同级生2 · 恋爱游戏视觉系统
+   ============================================================
+   设计理念:
+   - 樱花粉 + 玫瑰金 + 暖象牙白 的浪漫基调
+   - 柔和渐变 + 微光晕 + 圆角卡片
+   - 5 主题切换(樱/夜樱/月光/夕阳/雪)
+   ============================================================ */
+
+:root {
+  /* ── 樱(默认)主题 ── */
+  --c-bg: #fff5f7;
+  --c-bg-gradient: linear-gradient(135deg, #fff5f7 0%, #ffe8ee 50%, #ffdce6 100%);
+  --c-overlay: #ffffff;
+  --c-overlay-soft: rgba(255, 255, 255, 0.72);
+  --c-text: #4a2c3a;
+  --c-text-muted: #8b6478;
+  --c-text-soft: #b08fa0;
+  --c-primary: #e91e63;
+  --c-primary-soft: #f8bbd0;
+  --c-primary-glow: rgba(233, 30, 99, 0.18);
+  --c-accent: #d4af7a;
+  --c-accent-soft: #f5e6c8;
+  --c-border: #f0d4dc;
+  --c-border-soft: #f8e0e8;
+  --c-success: #ec407a;
+  --c-warning: #ff7043;
+  --c-danger: #d32f2f;
+  --c-info: #7e57c2;
+
+  /* ── 阴影系统 ── */
+  --shadow-sm: 0 1px 3px rgba(233, 30, 99, 0.08), 0 1px 2px rgba(233, 30, 99, 0.04);
+  --shadow-md: 0 4px 12px rgba(233, 30, 99, 0.10), 0 2px 4px rgba(233, 30, 99, 0.06);
+  --shadow-lg: 0 10px 30px rgba(233, 30, 99, 0.14), 0 4px 8px rgba(233, 30, 99, 0.08);
+  --shadow-glow: 0 0 24px var(--c-primary-glow);
+
+  /* ── 字体 ── */
+  --font-display: 'Noto Serif JP', 'Songti SC', 'STKaiti', 'KaiTi', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+
+  font-family: var(--font-body);
+  font-feature-settings: 'palt';
+}
+
+/* ── 夜樱主题(暗色恋爱) ── */
+[data-theme='night'] {
+  --c-bg: #1a0e16;
+  --c-bg-gradient: linear-gradient(135deg, #1a0e16 0%, #2d1525 50%, #1f0d18 100%);
+  --c-overlay: #2d1820;
+  --c-overlay-soft: rgba(45, 24, 32, 0.82);
+  --c-text: #f5e0e8;
+  --c-text-muted: #b08fa0;
+  --c-text-soft: #8b6478;
+  --c-primary: #ff6b9d;
+  --c-primary-soft: #c2185b;
+  --c-primary-glow: rgba(255, 107, 157, 0.32);
+  --c-accent: #e8c896;
+  --c-accent-soft: #5a3d28;
+  --c-border: #4a2535;
+  --c-border-soft: #3a1f2a;
+  --shadow-glow: 0 0 32px var(--c-primary-glow);
+}
+
+/* ── 月光主题(冷紫浪漫) ── */
+[data-theme='moon'] {
+  --c-bg: #f4f0fa;
+  --c-bg-gradient: linear-gradient(135deg, #f4f0fa 0%, #e8dff5 50%, #d9c9ed 100%);
+  --c-overlay: #ffffff;
+  --c-text: #3a2858;
+  --c-text-muted: #6b5588;
+  --c-primary: #8e44ad;
+  --c-primary-soft: #d2b4de;
+  --c-primary-glow: rgba(142, 68, 173, 0.20);
+  --c-accent: #b8a9c9;
+  --c-border: #d9c9ed;
+  --shadow-glow: 0 0 24px var(--c-primary-glow);
+}
+
+/* ── 夕阳主题(暖橙回忆) ── */
+[data-theme='sunset'] {
+  --c-bg: #fff4ec;
+  --c-bg-gradient: linear-gradient(135deg, #fff4ec 0%, #ffe0cc 50%, #ffd0b8 100%);
+  --c-overlay: #ffffff;
+  --c-text: #5a2c1a;
+  --c-text-muted: #9a6448;
+  --c-primary: #ff6f3c;
+  --c-primary-soft: #ffccbc;
+  --c-primary-glow: rgba(255, 111, 60, 0.20);
+  --c-accent: #d4af7a;
+  --c-border: #ffd0b8;
+  --shadow-glow: 0 0 24px var(--c-primary-glow);
+}
+
+/* ── 雪主题(纯净白恋) ── */
+[data-theme='snow'] {
+  --c-bg: #f8fafc;
+  --c-bg-gradient: linear-gradient(135deg, #f8fafc 0%, #eef2f7 50%, #dde4ec 100%);
+  --c-overlay: #ffffff;
+  --c-text: #2c3e50;
+  --c-text-muted: #7a8a99;
+  --c-primary: #5b8def;
+  --c-primary-soft: #c5dafc;
+  --c-primary-glow: rgba(91, 141, 239, 0.18);
+  --c-accent: #b8c5d6;
+  --c-border: #dde4ec;
+  --shadow-glow: 0 0 24px var(--c-primary-glow);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--c-bg-gradient);
+  background-attachment: fixed;
+  color: var(--c-text);
+  font-family: var(--font-body);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+body {
+  overflow: auto;
+  /* 樱花飘落背景装饰(纯CSS) */
+  background-image:
+    radial-gradient(circle at 10% 20%, var(--c-primary-glow) 0%, transparent 35%),
+    radial-gradient(circle at 90% 80%, var(--c-primary-glow) 0%, transparent 35%),
+    var(--c-bg-gradient);
+  background-attachment: fixed;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
+
+/* ── 滚动条美化(跨浏览器) ── */
+/* Firefox 64+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-primary-soft) var(--c-border-soft);
+}
+
+/* WebKit/Blink(Chrome/Edge/Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-border-soft);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-primary-soft);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-primary);
+}
+
+/* ── 通用动画 ── */
+@keyframes heart-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes soft-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 16px var(--c-primary-glow); }
+  50% { box-shadow: 0 0 32px var(--c-primary-glow); }
+}
+
+@keyframes petal-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── 工具类 ── */
+.romance-card {
+  background: var(--c-overlay);
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.romance-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.romance-button {
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-soft) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.romance-button:hover:not(:disabled) {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+.romance-button:disabled {
+  background: var(--c-text-soft);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.romance-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.romance-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-primary-soft), transparent);
+  margin: 12px 0;
+}

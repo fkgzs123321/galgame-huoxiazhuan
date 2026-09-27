@@ -1,0 +1,15 @@
+{
+  "id": "fjb-purchase-beautify",
+  "scriptName": "购买补给美化",
+  "findRegex": "/<Purchase\\s+item=\"([^\"]+)\"\\s+price=\"(\\d+)\"\\s+effects=\"([^\"]+)\"\\s+location=\"([^\"]+)\"\\/>/g",
+  "replaceString": "<div class=\"fjb-purchase\"><div class=\"fjb-purchase-icon\">🛒</div><div class=\"fjb-purchase-body\"><div class=\"fjb-purchase-title\">购买确认 · $1</div><div class=\"fjb-purchase-row\"><span class=\"fjb-purchase-label\">价格</span><span class=\"fjb-purchase-value\">¥$2</span></div><div class=\"fjb-purchase-row\"><span class=\"fjb-purchase-label\">效果</span><span class=\"fjb-purchase-value\">$3</span></div><div class=\"fjb-purchase-row\"><span class=\"fjb-purchase-label\">地点</span><span class=\"fjb-purchase-value\">$4</span></div></div><div class=\"fjb-purchase-glow\"></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

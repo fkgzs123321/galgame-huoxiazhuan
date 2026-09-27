@@ -1,0 +1,15 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/阶段指导/阶段指导",
+    "value": {
+      "path": "世界书/阶段指导/阶段指导.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "七夜主持策略：EJS 按天数渲染试探/对峙/审判三阶段四件套，夜=结算窗昼=主场，回合闭合铁律",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 109, "role": "system" }
+    }
+  }
+]

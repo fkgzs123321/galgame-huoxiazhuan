@@ -1,0 +1,516 @@
+# SQL填表规则 · 不要玩弄我的鸡吧-forge（英文列名）
+# 适配 chatSheets 模板，AI 通过 <UpdateTable> 块输出 SQL，SPV 扩展自动执行
+# 英文表名+英文列名，12张表，覆盖假阴茎传播剧情全维度 + 物品/检定/纪要/身体档案/当前状态
+# 变更：female_users 扩25列(成长/轨迹/交叉影响/多维状态/使用习惯/玩家关系/持有者/生育补充)，female_body 扩11列(体型/胸围/阴道/阴蒂/分泌物/阴唇/乳晕/质感/大腿/足部)
+
+表格总数: 12
+数据流: SP数据库脚本自动加载SPV并从世界书"表格模板JSON"条目导入模板 → 12张表初始化(含39条女性初始数据+39条身体档案+39条当前状态+全局状态+结局) → AI 每轮输出 <UpdateTable> 块执行 SQL 更新
+注意: 表数据由模板导入时初始化，AI 不需要在开场白里 INSERT 初始数据；每轮只需 UPDATE 变化的行
+
+SHEETS:
+  global_state: 全局状态表(32列,单行,row_id=1) — 时间/难度/使用阶段/玩家状态/持有者/场景概览
+  female_users: 女性角色表(93列,多行,39条初始记录) — 女性档案/技能/上限/阶段轨迹/持有者信息/使用习惯/传播/学业/叙事/生育/成长/轨迹/交叉影响
+  propagation_chain: 传播链表(9列,多行,初始空) — 假阴茎传播链路(from/to/方法/时间/原因)
+  usage_log: 使用记录表(11列,多行,初始空) — 每次使用的详细记录(时间/地点/时长/强度/损耗/技能增长/场景)
+  events: 事件日志表(14列,多行,初始空) — 重要事件时序记录(使用/症状/调查/社交/考试/结局/系统)
+  relationship_graph: 关系图谱表(6列,多行,初始空) — 女性间全局关系(from/to/类型/信任度/亲密度)
+  endings: 结局追踪表(11列,单行,row_id=1) — 8种布尔结局 + 某人清醒/某人崩坏JSON数组
+  inventory: 物品表(8列,多行,初始空) — 物品名/类别/数量/品质/描述/来源/使用次数
+  check_suggestions: 检定建议表(3列,最多5行,row_id 1-5,初始空) — 每轮AI动态生成最多5条检定建议
+  chronicle: 纪要表(6列,多行,初始空,禁止UPDATE/DELETE) — 长期记忆纪要(时间段总结),与 events 实时日志区分
+  female_body: 女性身体档案表(33列,多行,39条初始记录) — 女性身体数据(三围/罩杯/敏感度/体型/胸围/阴道/阴蒂/分泌物/阴唇/乳晕/质感/大腿/足部),uid 外键关联 female_users.uid
+  female_current_state: 女性当前状态表(24列,多行,39条初始记录) — 女性动态当前状态(外衣/内衣/月经/卫生用品/身体反应等),uid 外键关联 female_users.uid
+
+# ===== WHERE 条件规则（核心） =====
+WHERE规则:
+  global_state: WHERE row_id=1
+  endings: WHERE row_id=1
+  female_users: WHERE uid='林婉清'（按 uid 精确定位，如 WHERE uid='林婉清' 找林婉清）
+  propagation_chain: WHERE from_uid='林婉清' AND to_uid='柳思雨'（按传播双方定位）
+  usage_log: WHERE user_uid='林婉清' AND day=1（按使用者+日期定位单次记录）
+  events: WHERE event_id='EVT0001'（按事件编码定位）
+  relationship_graph: WHERE from_uid='林婉清' AND to_uid='柳思雨'（按关系双方定位）
+  inventory: WHERE item_name='润滑液'（按物品名定位，item_name 唯一）
+  check_suggestions: WHERE row_id=1（按行号 1-5 定位，最多5条）
+  chronicle: WHERE code_index='TL0001'（按纪要编码定位）
+  female_body: WHERE uid='林婉清'（按 uid 定位，与 female_users.uid 一一对应）
+  female_current_state: WHERE uid='林婉清'（按 uid 定位，与 female_users.uid 一一对应）
+
+# ===== 各表规则 =====
+规则:
+  global_state:
+    行数: 1
+    初始化: 开场白首轮INSERT一行(row_id=1)，后续禁止INSERT第二行
+    更新: 每轮回复结束时UPDATE唯一行
+    删除: 禁止
+    说明: |
+      存储全局时间(day/hour/weekday/date_str/time_slot)/难度/使用阶段/玩家六维状态
+      /持有者ID/活跃使用人数/传播次数/场景概览/系统警报/不可逆flag
+      时间推进规则：day从1开始（02-24开学），hour 0-23，time_slot 由 hour 映射（5-7 早晨 / 7-8 晨读 / 8-12 上午 / 12-14 中午 / 14-17 下午 / 17-19 傍晚 / 19-22 晚自习 / 22-2 夜里 / 2-5 半夜）
+
+  female_users:
+    行数: 多行（初始39条，可扩展）
+    初始化: 开场白首轮INSERT 39行初始女性（uid 叶知秋~039），row_id 1~39
+    更新: 每轮回复结束时UPDATE当前互动女性行（其他女性按需UPDATE）
+    删除: 禁止
+    说明: |
+      核心表，93列（68列 + 新增25列）。覆盖女性完整档案：
+      - 身份基础：uid/name/role/grade_class/age
+      - 阶段轨迹：template_type(纯真/御姐/辣妹/运动/文静/熟女/萝莉)/current_stage(1-5)/sanity(0-100)
+      - 心理四维：rationality/obsession/academic_pressure/escape_awareness（0-100）
+      - 技能能力：skill_level/stealth/endurance/control/temptation/desire（0-100）
+      - 能力上限：skill_level_cap/stealth_cap/endurance_cap/control_cap（0-100，成长天花板）
+      - 玩家关系：favorability/familiarity/interaction_count/known_truth
+      - 持有者信息：is_holder/acquire_method/acquire_day/package_status/has_used/use_count
+      - 使用习惯：preferred_time/preferred_location/usage_style/special_props
+      - 传播属性：propagation_tendency(0-1 REAL)/propagation_method
+      - 学业：academic_score/academic_stage
+      - 使用统计：total_uses/orgasm_count/total_drain/last_use_day/used_today/daily_growth_used
+      [新增 13 叙事列]
+      - appearance(60字外貌)/brief_intro(30字简介)/identity_text(身份标签)
+      - location_name(当前位置)/presence_status(在场/离场,默认'离场')
+      - past_experience(过往经历)/last_updated(最后更新时间戳)
+      - heartbeat(-100~100 心跳)/jealousy(-100~100 嫉妒)/trust(0~100 信任度,默认50)
+      - stage_locked(0/1 阶段锁定)/mutex_group(互斥组)/mutex_partner_name(互斥伙伴名)
+      [新增 8 生育列]
+      - cycle_day(1~28 生理周期日,默认1)/cycle_stage(行经期/卵泡期/排卵期/黄体期,默认'行经期')
+      - pregnancy_state(>=0 怀孕日数,0=未孕)/pregnancy_stage(未孕/无症状/孕吐期/行动受限/临产期/分娩触发,默认'未孕')
+      - conception_seed(受孕判定种子)/delivery_result(未分娩/成功/风险,默认'未分娩')
+      - postpartum_days(>=0 产后恢复剩余天数)/child_count(>=0 已生育子女数)
+      [新增 25 成长/轨迹/交叉影响列（v2.0对齐schema.ts）]
+      - 成长经验值：skill_level_exp/stealth_exp/endurance_exp/control_exp(>=0)/growth_total_uses(>=0)
+      - 阶段轨迹参数：base_prob(0-1 REAL,默认0.3)/personality_mod(0.2-2 REAL,默认1.0)/hard_cap(1-5,默认5)
+      - 交叉影响系数：cross_academic(-20~0,默认-3)/cross_discipline(-10~0,默认-1)/cross_economy(-20~10,默认0)/cross_social(-10~10,默认-2)/cross_energy_cost(>=0,默认8)/cross_sanity_cost(>=0,默认5)
+      - 多维状态补充：composite_stage(A_理性期/B_动摇期/C_沉沦期/D_疯狂期/E_清醒反攻期/E_崩坏期,默认'A_理性期')/multi_skill_level(0-100)
+      - 使用习惯补充：skill_threshold_meditation(>=0)/skill_threshold_disguise(>=0)/min_stage(1-5,默认1)
+      - 玩家关系补充：last_interaction(默认'')/energy_drained(>=0)/relationship(默认'')
+      - 持有者信息补充：is_initial_holder(0/1,默认0)
+      - 生育补充：last_conception_day(默认0)/father_uid(默认'')
+      初始持有者：林婉清 林婉清（is_holder=1, acquire_method='taobao_purchase', acquire_day=1, package_status='已送达待拆', has_used=0）
+      其他女性：is_holder=0, acquire_method='', package_status='', has_used=0
+      新增陌生女性：row_id 自增，uid 直接用该角色的中文姓名（与既有39位角色保持一致，禁止使用 female_user_NNN 代号格式）；新增时也需同步 INSERT female_body 行
+
+  propagation_chain:
+    行数: 多行（初始空）
+    初始化: 无（发生首次传播时才INSERT）
+    更新: 禁止UPDATE（传播链不可篡改，历史事实）
+    删除: 禁止
+    说明: |
+      记录假阴茎在女性间传播的每一条链路。
+      method 取值：借出/归还/分享/偷窃/买卖/捡到/强制
+      每次传播事件 INSERT 一行，row_id 自增
+      from_uid/to_uid 必须是已存在的 female_users.uid
+
+  usage_log:
+    行数: 多行（初始空）
+    初始化: 无（发生首次使用时才INSERT）
+    更新: 禁止UPDATE（使用记录不可篡改）
+    删除: 禁止
+    说明: |
+      每次女性使用假阴茎的详细记录。
+      location 必须是 preferred_location 枚举值之一
+      intensity 1-10（强度等级）
+      drain_amount 指本次精液损耗量（ml）
+      skill_gain 指本次使用带来的技能增长（skill_level 经验值）
+      scene_tag 自由文本标签（如 'dorm_night_solo' / 'classroom_risk'）
+
+  events:
+    行数: 多行（初始空）
+    初始化: 无（重要事件发生时才INSERT）
+    更新: 禁止UPDATE（事件日志不可篡改）
+    删除: 禁止
+    说明: |
+      重要事件时序记录，event_id 格式 EVT0001 起（4位数字）。
+      type 取值：使用/症状/调查/社交/考试/结局/系统
+      hour 限制 0-23（支持夜间事件）
+      related_uids 存 JSON 数组字符串（如 '["林婉清","柳思雨"]'）
+      blocked 0/1（是否被反制/打断）
+      mode/rhythm/scene 对应 _hidden 临时字段快照
+
+  relationship_graph:
+    行数: 多行（初始空）
+    初始化: 无（关系确立时才INSERT）
+    更新: 关系值变化时UPDATE对应行
+    删除: 关系彻底断裂（如 type='陌生人' 且 closeness='敌对' 持续）时DELETE
+    说明: |
+      女性间全局关系图谱，from_uid/to_uid 必须是已存在的 female_users.uid。
+      type 取值：闺蜜/好友/对手/暗恋/师生/母女/买卖/同事/上下级/陌生人
+      trust 0-1 REAL（信任度）
+      closeness 取值：亲密/普通/疏远/敌对
+      双向关系只存一行（from_uid < to_uid 字典序），避免重复
+
+  endings:
+    行数: 1
+    初始化: 开场白首轮INSERT一行(row_id=1)，全0/空数组
+    更新: 结局触发时UPDATE唯一行
+    删除: 禁止
+    说明: |
+      8种布尔结局（全 INTEGER 0/1·统一中文列名）：
+      - 健康: 健康结局（真相揭示+全员清醒+无崩坏）
+      - 平庸: 平庸结局（未揭示真相+未崩坏+学业维持）
+      - 真相揭示: 真相揭示结局（玩家完全掌握真相但未必然救赎）
+      - 坠落: 坠落结局（玩家沉沦）
+      - 崩坏: 崩坏结局（多人崩坏）
+      - 黑市掌控: 黑市掌控结局（玩家成为黑市之主）
+      - 同归于尽: 同归于尽结局（玩家与道具共毁）
+      - 未解之谜: 未解之谜结局（真相未明，开放式）
+      2个 JSON 数组（TEXT，存 '[]' 或 '["姓名1","姓名2"]'）：
+      - 某人清醒: 某人清醒（记录清醒女姓名单）
+      - 某人崩坏: 某人崩坏（记录崩坏女姓名单）
+      触发结局时 UPDATE 对应字段置1，同时按需追加姓名到 某人清醒/某人崩坏
+
+  inventory:
+    行数: 多行（初始空）
+    初始化: 无（物品获得时才INSERT）
+    更新: 物品数量/使用次数变化时UPDATE对应行
+    删除: 物品数量为0时DELETE该行
+    说明: |
+      物品表，8列。记录玩家持有的所有物品。
+      item_name 唯一（最长10字），item_type 取值：道具/耗材/线索/药品/其他
+      quality 取值：普通/精良/稀有/史诗/传说/神话
+      quantity 为0时 DELETE 该行（物品消耗完）
+      used_count 记录物品累计使用次数（每次使用 +1）
+      source_text 记录物品来源描述（如 '林婉清赠予' / '保健室获取'）
+
+  check_suggestions:
+    行数: 最多5行（row_id 固定 1-5，初始空）
+    初始化: 无（每轮AI动态生成）
+    更新: 每轮回复时UPDATE现有行（覆盖旧建议）
+    删除: 禁止DELETE（用UPDATE覆盖旧建议）
+    说明: |
+      检定建议表，3列。每轮AI动态生成最多5条检定建议供玩家点击。
+      row_id 固定 1-5（CHECK约束禁止第6行），display_text 为按钮显示文本，dice_command 为对应骰子指令。
+      每轮回复结束时按需 INSERT/UPDATE，覆盖上一轮的建议。
+      示例：row_id=1, display_text='潜行检定(难度60)', dice_command='1d100'
+      注意：display_text 和 dice_command 均不允许为空字符串（CHECK TRIM <> ''）
+
+  chronicle:
+    行数: 多行（初始空）
+    初始化: 无（重要阶段节点发生时才INSERT）
+    更新: 禁止UPDATE（纪要不可篡改，历史事实）
+    删除: 禁止
+    说明: |
+      纪要表，6列。长期记忆纪要（时间段总结），与 events 实时日志区分。
+      - events：实时日志，单次事件快照（如 '林婉清首次使用'）
+      - chronicle：长期纪要，时间段总结（如 '第1-3天：林婉清开箱并首次使用，唐小糖介入'）
+      code_index 格式 TL0001 起（4位数字零填充，CHECK GLOB 'TL[0-9][0-9][0-9][0-9]'）
+      time_span 格式 '??-?? ??:?? ~ ??-?? ??:??'（如 '02-24 08:00 ~ 02-26 22:00'）
+      summary 最长60字，chronicle_text 为详细纪要正文
+      related_uids 存 JSON 数组字符串（如 '["林婉清","唐小糖"]'）
+
+  female_body:
+    行数: 多行（初始39条，与 female_users 一一对应）
+    初始化: 开场白首轮INSERT 39行初始身体档案（uid 对应 female_users.uid），row_id 1~39
+    更新: 身体数据变化时UPDATE对应行（如敏感度提升/发育变化/怀孕体态变化）
+    删除: 禁止
+    说明: |
+      女性身体档案表，33列。uid 外键关联 female_users.uid（一一对应，UNIQUE）。
+      - 罩杯：cup_size(无/A-H)
+      - 三围：bust_size/waist_size/hip_size（INTEGER，cm）
+      - 体型：height(140-190)/weight(35-80)
+      - 胸部细节：nipple_size/nipple_color/areola_size/breast_shape/breast_sensitivity(0-300)/lactation
+      - 腰部：waist_shape/waist_sensitivity(0-300)
+      - 手部：hand_desc/nail_style
+      - 臀部：hip_shape/hip_sensitivity(0-300)
+      - 其他：anal_desc/pubic_hair
+      [新增 11 列（v2.0对齐schema.ts）]
+      - 体型：body_type(默认'匀称')
+      - 胸围：breast_cm(>=0,默认80)/breast_cup(默认'B',与cup_size重复但保留以兼容schema)
+      - 隐私描述：vagina_desc/clitoris_desc/secretion_desc/labia_desc(均默认'')
+      - 乳晕质感：areola_color/breast_texture(均默认'')
+      - 肢体：thigh_desc/foot_desc(均默认'')
+      初始数据按 template_type 分配合理默认值（御姐D/熟女E/辣妹C/运动B/文静B/纯真A/萝莉A）。
+      新增陌生女性时必须同步 INSERT female_body 行（uid 关联）。
+      敏感度变化（如使用后提升）需 UPDATE 对应字段。
+
+  female_current_state:
+    行数: 多行（初始39条，与 female_users 一一对应）
+    初始化: 开场白首轮INSERT 39行初始当前状态（uid 对应 female_users.uid），row_id 1~39
+    更新: 每轮回复结束时UPDATE当前互动女性行（衣着/月经/兴奋度等动态变化）
+    删除: 禁止
+    说明: |
+      女性当前状态表，24列。uid 外键关联 female_users.uid（一一对应，UNIQUE）。
+      - 外衣：outerwear_top/outerwear_bottom/outerwear_detail
+      - 内衣：bra/bra_color/panties/panties_color
+      - 月经：menstrual_phase(月经期/行经期/卵泡期/排卵期/黄体期/经期前)/menstrual_day(0-35)/menstrual_flow(无/微量/少量/中等/量大)/is_menstruating(0/1)
+      - 卫生用品：sanitary_product(无/日用卫生巾/夜用卫生巾/卫生棉条/月经杯/护垫/卫生巾)/sanitary_change_time
+      - 身体反应：arousal_level(0-100)/lubrication_level(0-100)/nipple_state(柔软/微挺/勃起/肿胀)/clitoris_state(休眠/微充血/充血/勃起)
+      - 其他：body_temperature(35-40)/last_bath_time/is_virgin(0/1)/hymen_state(完整/破裂/残存/无)/last_update_hour
+      与 female_body（静态身体档案）分离，本表只存动态当前状态。
+      新增陌生女性时必须同步 INSERT female_current_state 行（uid 关联）。
+
+# ===== SQL输出格式（英文列名，无需双引号） =====
+输出格式: |
+  <UpdateTable>
+  -- INSERT 示例：新增陌生女性（必须列出全部93列，禁止省略；uid 直接用中文姓名，与既有39位角色一致）
+  INSERT INTO female_users (row_id,uid,name,role,grade_class,age,template_type,current_stage,sanity,rationality,obsession,academic_pressure,escape_awareness,skill_level,stealth,endurance,control,temptation,desire,skill_level_cap,stealth_cap,endurance_cap,control_cap,favorability,familiarity,interaction_count,known_truth,is_holder,acquire_method,acquire_day,package_status,has_used,use_count,preferred_time,preferred_location,usage_style,special_props,propagation_tendency,propagation_method,academic_score,academic_stage,total_uses,orgasm_count,total_drain,last_use_day,used_today,daily_growth_used,appearance,brief_intro,identity_text,location_name,presence_status,past_experience,last_updated,heartbeat,jealousy,trust,stage_locked,mutex_group,mutex_partner_name,cycle_day,cycle_stage,pregnancy_state,pregnancy_stage,conception_seed,delivery_result,postpartum_days,child_count,skill_level_exp,stealth_exp,endurance_exp,control_exp,growth_total_uses,base_prob,personality_mod,hard_cap,cross_academic,cross_discipline,cross_economy,cross_social,cross_energy_cost,cross_sanity_cost,composite_stage,multi_skill_level,skill_threshold_meditation,skill_threshold_disguise,min_stage,last_interaction,energy_drained,relationship,is_initial_holder,last_conception_day,father_uid) VALUES (26,'新角色姓名','新角色姓名','','',17,'纯真',1,100,80,0,50,0,2,60,40,30,40,35,40,40,40,30,0,0,0,0,0,'',0,'',0,0,'午休','空教室','温柔','无',0.2,'',75,3,0,0,0,0,0,0,'','','','','离场','','',0,0,50,0,'','',1,'行经期',0,'未孕','','未分娩',0,0,0,0,0,0,0,0.3,1.0,5,-3,-1,0,-2,8,5,'A_理性期',0,0,0,1,'',0,'',0,0,'');
+
+  -- 同步 INSERT 示例：新增陌生女性身体档案（必须与 female_users 同步 INSERT）
+  INSERT INTO female_body (row_id,uid,cup_size,bust_size,waist_size,hip_size,height,weight,nipple_size,nipple_color,areola_size,breast_shape,breast_sensitivity,lactation,waist_shape,waist_sensitivity,hand_desc,nail_style,hip_shape,hip_sensitivity,anal_desc,pubic_hair,body_type,breast_cm,breast_cup,vagina_desc,clitoris_desc,secretion_desc,labia_desc,areola_color,breast_texture,thigh_desc,foot_desc) VALUES (26,'新角色姓名','A',76,54,80,156,43,'小巧','粉嫩','小','碗形',95,'无','纤细',90,'娇小','素甲','小巧',90,'紧致','稀疏','匀称',80,'B','','','','','','','','');
+
+  -- 同步 INSERT 示例：新增陌生女性当前状态（必须与 female_users 同步 INSERT）
+  INSERT INTO female_current_state (row_id,uid,outerwear_top,outerwear_bottom,outerwear_detail,bra,bra_color,panties,panties_color,menstrual_phase,menstrual_day,menstrual_flow,is_menstruating,sanitary_product,sanitary_change_time,arousal_level,lubrication_level,nipple_state,clitoris_state,body_temperature,last_bath_time,is_virgin,hymen_state,last_update_hour) VALUES (26,'新角色姓名','校服外套','校服长裤','','运动内衣','白色','棉质三角裤','白色','月经期',1,'无',0,'无','',0,0,'柔软','休眠',36.5,'',1,'完整',0);
+
+  -- UPDATE 示例：更新林婉清状态（首次使用后，含新增叙事+生育列）
+  UPDATE female_users SET has_used=1,use_count=1,total_uses=1,last_use_day=1,used_today=1,skill_level=1,package_status='已开箱',sanity=95,presence_status='在场',location_name='宿舍',last_updated='02-24 22:00',heartbeat=20,trust=55 WHERE uid='林婉清';
+
+  -- UPDATE 示例：更新林婉清身体档案（敏感度提升）
+  UPDATE female_body SET breast_sensitivity=85,waist_sensitivity=65 WHERE uid='林婉清';
+
+  -- UPDATE 示例：更新林婉清当前状态（衣着/兴奋度变化）
+  UPDATE female_current_state SET outerwear_top='校服外套（敞开）',arousal_level=20,lubrication_level=15,nipple_state='微挺',last_update_hour=22 WHERE uid='林婉清';
+
+  -- UPDATE 示例：更新全局状态（时间推进+持有者使用）
+  UPDATE global_state SET day=1,hour=22,time_slot='夜里',use_stage=1,total_uses=1,today_uses=1,last_use_day=1,stage_progress=10,energy=60,sanity=75,stress=20,active_users_count=1,scene_summary='林婉清深夜首次使用假阴茎',system_alert='无' WHERE row_id=1;
+
+  -- UPDATE 示例：唐小糖阶段推进（辣妹模板，传播倾向高，含嫉妒值变化）
+  UPDATE female_users SET current_stage=2,sanity=85,obsession=20,escape_awareness=5,skill_level=16,temptation=80,jealousy=30,presence_status='在场' WHERE uid='唐小糖';
+
+  -- UPDATE 示例：生理周期推进（林婉清进入排卵期）
+  UPDATE female_users SET cycle_day=14,cycle_stage='排卵期' WHERE uid='林婉清';
+
+  -- UPDATE 示例：怀孕状态变更（林婉清受孕）
+  UPDATE female_users SET pregnancy_state=1,pregnancy_stage='无症状',conception_seed='day3_late_night',cycle_stage='黄体期' WHERE uid='林婉清';
+
+  -- INSERT 示例：传播链记录（林婉清 → 唐小糖 借出）
+  INSERT INTO propagation_chain (row_id,from_uid,from_alias,to_uid,to_alias,method,day,hour,reason) VALUES (1,'林婉清','林婉清','唐小糖','唐小糖','借出',3,15,'林婉清在音乐室借给唐小糖试用');
+
+  -- INSERT 示例：使用记录（林婉清深夜宿舍使用）
+  INSERT INTO usage_log (row_id,day,hour,user_uid,user_alias,location,duration,intensity,drain_amount,skill_gain,scene_tag) VALUES (1,1,22,'林婉清','林婉清','宿舍',30,5,5,1,'dorm_night_solo');
+
+  -- INSERT 示例：事件日志（首次使用事件）
+  INSERT INTO events (row_id,event_id,day,hour,type,event_desc,related_uids,drain,stage,users_count,mode,rhythm,scene,blocked) VALUES (1,'EVT0001',1,22,'使用','林婉清深夜在宿舍首次使用假阴茎，伴随强烈心理冲击','["林婉清"]',5,1,1,'internal','normal','dorm_night',0);
+
+  -- INSERT 示例：纪要表（第1-3天阶段总结，禁止UPDATE/DELETE）
+  INSERT INTO chronicle (row_id,code_index,time_span,summary,chronicle_text,related_uids) VALUES (1,'TL0001','02-24 08:00 ~ 02-26 22:00','林婉清开箱首次使用并借出唐小糖','第1-3天纪要：林婉清收到淘宝包裹并于深夜首次使用假阴茎，第3天在音乐室借给唐小糖试用，传播链启动。','["林婉清","唐小糖"]');
+
+  -- INSERT 示例：物品获得（润滑液）
+  INSERT INTO inventory (row_id,item_name,item_type,quantity,quality,description,source_text,used_count) VALUES (1,'润滑液','耗材',1,'普通','降低摩擦不适，提升体验','保健室获取',0);
+
+  -- UPDATE 示例：物品使用（润滑液消耗一次）
+  UPDATE inventory SET used_count=used_count+1 WHERE item_name='润滑液';
+
+  -- DELETE 示例：物品消耗完
+  DELETE FROM inventory WHERE item_name='润滑液' AND quantity=0;
+
+  -- INSERT/UPDATE 示例：检定建议（每轮覆盖，最多5条）
+  INSERT INTO check_suggestions (row_id,display_text,dice_command) VALUES (1,'潜行检定(难度60)','1d100') ON CONFLICT(row_id) DO UPDATE SET display_text=excluded.display_text,dice_command=excluded.dice_command;
+  INSERT INTO check_suggestions (row_id,display_text,dice_command) VALUES (2,'说服检定(难度50)','1d100') ON CONFLICT(row_id) DO UPDATE SET display_text=excluded.display_text,dice_command=excluded.dice_command;
+
+  -- INSERT 示例：关系图谱（林婉清 ↔ 唐小糖 闺蜜）
+  INSERT INTO relationship_graph (row_id,from_uid,to_uid,type,trust,closeness) VALUES (1,'唐小糖','林婉清','闺蜜',0.7,'亲密');
+
+  -- UPDATE 示例：结局触发（崩坏结局，林婉清醒来+唐小糖崩坏）
+  UPDATE endings SET broken=1,someone_sober='["林婉清"]',someone_broken='["唐小糖"]' WHERE row_id=1;
+
+  -- DELETE 示例：关系彻底断裂
+  DELETE FROM relationship_graph WHERE from_uid='唐小糖' AND to_uid='张雨萱';
+  </UpdateTable>
+
+# ===== MVU与SPV双写同步（变量 AI 专用，与 schema.ts / [initvar]请勿打开.yaml 对齐） =====
+双写规则:
+  原则: |
+    变量 AI 每轮回复结束时同时输出两个块：
+    1. <UpdateVariable> 块：JSONPatch 更新 MVU 变量（参见 [mvu_update]变量输出格式.txt）
+    2. <UpdateTable> 块：SQL 更新 SPV 数据库
+    两者的字段必须一一对应，禁止出现"MVU更新了但SPV没更新"或反之。
+    剧情 AI 不输出这两个块，仅负责叙事。
+  字段映射:
+    global_state:
+      - stat_data.时间.天数 ↔ global_state.day WHERE row_id=1
+      - stat_data.时间.小时 ↔ global_state.hour
+      - stat_data.时间.星期 ↔ global_state.weekday
+      - stat_data.时间.日期 ↔ global_state.date_str
+      - stat_data.状态.精力 ↔ global_state.energy
+      - stat_data.状态.精力上限 ↔ global_state.energy_max
+      - stat_data.状态.理智 ↔ global_state.sanity
+      - stat_data.状态.健康 ↔ global_state.health
+      - stat_data.状态.压力 ↔ global_state.stress
+      - stat_data.状态.体力 ↔ global_state.stamina
+      - stat_data.状态.怀疑值 ↔ global_state.suspicion
+      - stat_data.状态.堕落值 ↔ global_state.corruption
+      - stat_data.状态.金钱 ↔ global_state.money
+      - stat_data.状态.难度 ↔ global_state.difficulty
+      - stat_data.使用阶段.当前阶段 ↔ global_state.use_stage
+      - stat_data.使用阶段.总使用次数 ↔ global_state.total_uses
+      - stat_data.使用阶段.今日使用 ↔ global_state.today_uses
+      - stat_data.使用阶段.最后使用日 ↔ global_state.last_use_day
+      - stat_data.使用阶段.阶段进度 ↔ global_state.stage_progress
+      - stat_data.学业.分数 ↔ global_state.academic_score
+      - stat_data.学业.阶段 ↔ global_state.academic_stage
+      - stat_data.学业.今日学习次数 ↔ global_state.study_count_today
+      - stat_data.学业.考试倒计时 ↔ global_state.exam_countdown
+      - stat_data.学业.老师关注度 ↔ global_state.teacher_attention
+      - stat_data.隐藏层.持有者ID ↔ global_state.holder_id
+      - stat_data.隐藏层.活跃使用人数 ↔ global_state.active_users_count
+      - stat_data.隐藏层.传播链.length ↔ global_state.propagation_count
+      - stat_data.隐藏层.使用模式/使用节奏/当前场景 ↔ global_state.scene_summary（衍生）
+    female_users:
+      - stat_data.女性角色.{uid}.基础.姓名 ↔ female_users.name WHERE uid='{uid}'
+      - stat_data.女性角色.{uid}.能力.技能等级 ↔ female_users.skill_level
+      - stat_data.女性角色.{uid}.能力.隐蔽 ↔ female_users.stealth
+      - stat_data.女性角色.{uid}.能力.持久 ↔ female_users.endurance
+      - stat_data.女性角色.{uid}.能力.控制 ↔ female_users.control
+      - stat_data.女性角色.{uid}.能力.诱惑 ↔ female_users.temptation
+      - stat_data.女性角色.{uid}.能力.欲望 ↔ female_users.desire
+      - stat_data.女性角色.{uid}.能力.今日成长已用 ↔ female_users.daily_growth_used
+      - stat_data.女性角色.{uid}.能力上限.技能上限 ↔ female_users.skill_level_cap
+      - stat_data.女性角色.{uid}.能力上限.隐蔽上限 ↔ female_users.stealth_cap
+      - stat_data.女性角色.{uid}.能力上限.持久上限 ↔ female_users.endurance_cap
+      - stat_data.女性角色.{uid}.能力上限.控制上限 ↔ female_users.control_cap
+      - stat_data.女性角色.{uid}.阶段轨迹.模板类型 ↔ female_users.template_type
+      - stat_data.女性角色.{uid}.阶段轨迹.当前阶段 ↔ female_users.current_stage
+      - stat_data.女性角色.{uid}.阶段轨迹.理智 ↔ female_users.sanity
+      - stat_data.女性角色.{uid}.与玩家关系.好感度 ↔ female_users.favorability
+      - stat_data.女性角色.{uid}.与玩家关系.熟悉度 ↔ female_users.familiarity
+      - stat_data.女性角色.{uid}.与玩家关系.互动次数 ↔ female_users.interaction_count
+      - stat_data.女性角色.{uid}.与玩家关系.已知真相 ↔ female_users.known_truth
+      - stat_data.女性角色.{uid}.使用习惯.偏好时段 ↔ female_users.preferred_time
+      - stat_data.女性角色.{uid}.使用习惯.偏好地点 ↔ female_users.preferred_location
+      - stat_data.女性角色.{uid}.使用习惯.使用风格 ↔ female_users.usage_style
+      - stat_data.女性角色.{uid}.使用习惯.特殊道具 ↔ female_users.special_props
+      - stat_data.女性角色.{uid}.传播.倾向 ↔ female_users.propagation_tendency
+      - stat_data.女性角色.{uid}.传播.方式 ↔ female_users.propagation_method
+      - stat_data.女性角色.{uid}.学业.分数 ↔ female_users.academic_score
+      - stat_data.女性角色.{uid}.学业.阶段 ↔ female_users.academic_stage
+      - stat_data.女性角色.{uid}.NSFW.假阴茎经验.总次数 ↔ female_users.total_uses
+      - stat_data.女性角色.{uid}.NSFW.假阴茎经验.高潮次数 ↔ female_users.orgasm_count
+      - stat_data.女性角色.{uid}.NSFW.假阴茎经验.总榨取 ↔ female_users.total_drain
+      - stat_data.女性角色.{uid}.NSFW.当日统计.今日已用 ↔ female_users.used_today
+      - stat_data.女性角色.{uid}.持有者信息.*（仅持有者）↔ female_users.is_holder/acquire_method/acquire_day/package_status/has_used/use_count
+      [新增 13 叙事列]
+      - stat_data.女性角色.{uid}.叙事.外貌 ↔ female_users.appearance
+      - stat_data.女性角色.{uid}.叙事.简介 ↔ female_users.brief_intro
+      - stat_data.女性角色.{uid}.叙事.身份文本 ↔ female_users.identity_text
+      - stat_data.女性角色.{uid}.叙事.位置 ↔ female_users.location_name
+      - stat_data.女性角色.{uid}.叙事.在场状态 ↔ female_users.presence_status
+      - stat_data.女性角色.{uid}.叙事.过往经历 ↔ female_users.past_experience
+      - stat_data.女性角色.{uid}.叙事.最后更新 ↔ female_users.last_updated
+      - stat_data.女性角色.{uid}.叙事.心跳 ↔ female_users.heartbeat
+      - stat_data.女性角色.{uid}.叙事.嫉妒 ↔ female_users.jealousy
+      - stat_data.女性角色.{uid}.叙事.信任 ↔ female_users.trust
+      - stat_data.女性角色.{uid}.叙事.阶段锁定 ↔ female_users.stage_locked
+      - stat_data.女性角色.{uid}.叙事.互斥组 ↔ female_users.mutex_group
+      - stat_data.女性角色.{uid}.叙事.互斥伙伴 ↔ female_users.mutex_partner_name
+      [新增 8 生育列]
+      - stat_data.女性角色.{uid}.生育.周期日 ↔ female_users.cycle_day
+      - stat_data.女性角色.{uid}.生育.周期阶段 ↔ female_users.cycle_stage
+      - stat_data.女性角色.{uid}.生育.怀孕状态 ↔ female_users.pregnancy_state
+      - stat_data.女性角色.{uid}.生育.怀孕阶段 ↔ female_users.pregnancy_stage
+      - stat_data.女性角色.{uid}.生育.受孕种子 ↔ female_users.conception_seed
+      - stat_data.女性角色.{uid}.生育.分娩结果 ↔ female_users.delivery_result
+      - stat_data.女性角色.{uid}.生育.产后天数 ↔ female_users.postpartum_days
+      - stat_data.女性角色.{uid}.生育.孩子数 ↔ female_users.child_count
+    propagation_chain:
+      - stat_data.隐藏层.传播链[] ↔ propagation_chain（数组每项对应一行 INSERT）
+      - 元素 from/to/method/day/hour ↔ from_uid+from_alias/to_uid+to_alias/method/day/hour
+    events:
+      - stat_data.事件[] ↔ events（数组每项对应一行 INSERT）
+      - 元素 id/day/hour/type/desc/related/drain/stage/users/mode/rhythm/scene/blocked ↔ event_id/day/hour/type/desc/related_uids/drain/stage/users_count/mode/rhythm/scene/blocked
+    relationship_graph:
+      - stat_data.关系图谱[from][to] ↔ relationship_graph（嵌套对象每条对应一行）
+      - 字段 type/trust/closeness ↔ type/trust/closeness
+    endings（SQL表名英文，MVU键名中文"结局"，SQL列名英文·对齐其他表 hydrate 机制）:
+      - stat_data.结局.健康 ↔ endings.healthy WHERE row_id=1
+      - stat_data.结局.平庸 ↔ endings.mediocre
+      - stat_data.结局.真相揭示 ↔ endings.truth_revealed
+      - stat_data.结局.坠落 ↔ endings.fallen
+      - stat_data.结局.崩坏 ↔ endings.broken
+      - stat_data.结局.黑市掌控 ↔ endings.blackmarket_control
+      - stat_data.结局.同归于尽 ↔ endings.mutual_destruction
+      - stat_data.结局.未解之谜 ↔ endings.unsolved_mystery
+      - stat_data.结局.某人清醒 ↔ endings.someone_sober（JSON数组）
+      - stat_data.结局.某人崩坏 ↔ endings.someone_broken（JSON数组）
+    [新增 4 张表]
+    inventory:
+      - stat_data.物品栏[] ↔ inventory（数组每项对应一行，初始无对应MVU变量，按需创建）
+      - 元素 item_name/item_type/quantity/quality/description/source_text/used_count ↔ 同名列
+      - 注意：quantity 为0时 DELETE 该行（MVU 数组同步移除该元素）
+    check_suggestions:
+      - stat_data.隐藏层.检定建议[] ↔ check_suggestions（数组长度最多5）
+      - 元素 display_text/dice_command ↔ 同名列（row_id 由数组下标+1 推导）
+      - 注意：每轮覆盖，禁止 DELETE，用 INSERT ON CONFLICT DO UPDATE 或 UPDATE 覆盖
+    chronicle:
+      - stat_data.隐藏层.纪要[] ↔ chronicle（数组每项对应一行 INSERT，禁止UPDATE/DELETE）
+      - 元素 code_index/time_span/summary/chronicle_text/related_uids ↔ 同名列
+      - 注意：长期记忆纪要，与 events 实时日志区分；code_index 格式 TL0001 起自增
+    female_body:
+      - stat_data.女性角色.{uid}.身体.* ↔ female_body（按 uid 一一对应，UNIQUE）
+      - 字段 cup_size/bust_size/waist_size/hip_size/height/weight ↔ 同名列
+      - 字段 nipple_size/nipple_color/areola_size/breast_shape/breast_sensitivity/lactation ↔ 同名列
+      - 字段 waist_shape/waist_sensitivity/hand_desc/nail_style ↔ 同名列
+      - 字段 hip_shape/hip_sensitivity/anal_desc/pubic_hair ↔ 同名列
+      - 注意：新增女性时必须同步 INSERT female_users 行和 female_body 行（uid 关联）
+    female_current_state:
+      - stat_data.女性角色.{uid}.当前状态.* ↔ female_current_state（按 uid 一一对应，UNIQUE）
+      - 字段 outerwear_top/outerwear_bottom/outerwear_detail ↔ 同名列
+      - 字段 bra/bra_color/panties/panties_color ↔ 同名列
+      - 字段 menstrual_phase/menstrual_day/menstrual_flow/is_menstruating ↔ 同名列
+      - 字段 sanitary_product/sanitary_change_time ↔ 同名列
+      - 字段 arousal_level/lubrication_level/nipple_state/clitoris_state ↔ 同名列
+      - 字段 body_temperature/last_bath_time/is_virgin/hymen_state/last_update_hour ↔ 同名列
+      - 注意：与 female_body（静态身体档案）分离，本表只存动态当前状态；新增女性时必须同步 INSERT
+
+# ===== 列名规范 =====
+列名规范:
+  首列: row_id INTEGER PRIMARY KEY（所有表必须，保留英文）
+  英文列名: |
+    所有列名使用英文蛇形命名（snake_case），无需双引号包裹：
+    正确: skill_level INTEGER NOT NULL DEFAULT 1
+    错误: "技能等级" INTEGER NOT NULL DEFAULT 1
+  CHECK约束: |
+    CHECK约束中引用列名直接写英文列名，无需双引号：
+    正确: CHECK(skill_level BETWEEN 0 AND 100)
+    错误: CHECK("skill_level" BETWEEN 0 AND 100)
+  SQL引用: |
+    SQL语句中引用列名直接写英文列名，无需双引号：
+    正确: UPDATE female_users SET skill_level=10 WHERE uid='林婉清';
+    错误: UPDATE female_users SET "skill_level"=10 WHERE "uid"='林婉清';
+  表名规范: |
+    表名保持英文蛇形：global_state / female_users / propagation_chain / usage_log / events / relationship_graph / endings / inventory / check_suggestions / chronicle / female_body / female_current_state
+  字符串字面量: |
+    SQL中字符串字面量用单引号包裹，CHECK约束中的中文枚举值也用单引号：
+    正确: WHERE uid='林婉清'
+    正确: CHECK(usage_style IN ('温柔','粗暴','实验性'))
+    错误: WHERE uid="林婉清"
+  JSON默认值: 含逗号的JSON串用单引号包裹（DEFAULT '[]' 或 DEFAULT '{"key":value}'）
+  枚举值: CHECK约束中的枚举值必须与DDL一致，禁止使用未在CHECK中定义的值
+
+# ===== 重要提醒 =====
+重要提醒:
+  - 每张表的首列必须是 row_id INTEGER PRIMARY KEY
+  - INSERT 必须列出全部列名（禁止用 ... 省略），列数与 VALUES 数量严格匹配
+  - female_users 表 INSERT 必须列出全部 93 列（row_id + 92 业务列，68列+新增25列成长/轨迹/交叉影响/多维状态/使用习惯/玩家关系/持有者/生育补充）
+  - female_body 表 INSERT 必须列出全部 33 列（row_id + uid + 31 业务列，22列+新增11列体型/胸围/隐私描述/乳晕质感/肢体）
+  - female_current_state 表 INSERT 必须列出全部 24 列（row_id + uid + 22 业务列）
+  - inventory 表 INSERT 必须列出全部 8 列（row_id + 7 业务列）
+  - chronicle 表 INSERT 必须列出全部 6 列（row_id + 5 业务列）
+  - check_suggestions 表 INSERT 必须列出全部 3 列（row_id + 2 业务列）
+  - global_state 表 INSERT 必须列出全部 32 列（row_id + 31 业务列）
+  - endings 表 INSERT 必须列出全部 11 列（row_id + 10 业务列）
+  - global_state 和 endings 两张表禁止 INSERT 第二行（CHECK(row_id=1) 约束）
+  - propagation_chain / usage_log / events / chronicle 四张表禁止 UPDATE 和 DELETE（历史不可篡改）
+  - chronicle 是长期记忆纪要（时间段总结），与 events 实时日志区分，code_index 格式 TL0001 起自增
+  - check_suggestions 最多 5 行（row_id 固定 1-5，CHECK 约束禁止第6行），禁止 DELETE，每轮用 UPDATE 或 INSERT ON CONFLICT DO UPDATE 覆盖旧建议
+  - inventory 物品 quantity 为0时必须 DELETE 该行（物品消耗完）；used_count 每次使用 +1
+  - female_body.uid 与 female_users.uid 一一对应（UNIQUE），新增女性时必须同步 INSERT 三个表的行（female_users / female_body / female_current_state）
+  - female_body 敏感度字段（breast_sensitivity/waist_sensitivity/hip_sensitivity）范围为 0-300，使用后可 UPDATE 提升
+  - female_current_state.uid 与 female_users.uid 一一对应（UNIQUE），与 female_body（静态档案）分离，本表只存动态当前状态
+  - female_current_state 每轮回复结束时按需 UPDATE 当前互动女性行（衣着/月经/兴奋度等动态变化）
+  - UPDATE 只更新发生变化的字段，禁止无意义全字段更新
+  - 新增女性角色必须先 INSERT 完整行，之后才允许 UPDATE 字段
+  - uid 是 female_users 的业务唯一键，所有 WHERE 优先用 uid 而非 name（避免重名）
+  - 林婉清（林婉清）是初始持有者，is_holder=1，其他女性 is_holder=0
+  - 持有者变更时必须同步 UPDATE global_state.holder_id 和 female_users.is_holder（旧持有者置0，新持有者置1）
+  - 传播事件必须同时 INSERT propagation_chain 行和 UPDATE global_state.propagation_count
+  - 使用事件必须同时 INSERT usage_log 行、INSERT events 行、UPDATE female_users 使用统计字段
+  - 结局触发时 UPDATE endings 对应英文列字段置1，并在 someone_sober/someone_broken 追加姓名
+  - time_slot 由 hour 自动映射：5-7→早晨 / 7-8→晨读 / 8-12→上午 / 12-14→中午 / 14-17→下午 / 17-19→傍晚 / 19-22→晚自习 / 22-2→夜里 / 2-5→半夜
+  - female_users 新增陌生女性时 row_id 自增（初始40），uid 直接用该角色的中文姓名（与既有39位角色一致，禁止使用 female_user_NNN 代号格式）
+  - events.event_id 格式 EVT0001 起（4位数字零填充），禁止跳号或重用
+  - chronicle.code_index 格式 TL0001 起（4位数字零填充，CHECK GLOB 'TL[0-9][0-9][0-9][0-9]'），禁止跳号或重用
+  - relationship_graph 双向关系只存一行（from_uid 字典序小于 to_uid），避免重复
+  - check_suggestions 每轮回复结束时按需生成最多 5 条检定建议，display_text 和 dice_command 均不允许为空字符串
+  - female_users 生育列（cycle_day/cycle_stage/pregnancy_state/pregnancy_stage/conception_seed/delivery_result/postpartum_days/child_count）随时间推进 UPDATE
+  - female_users 叙事列（appearance/brief_intro/identity_text/location_name/presence_status/past_experience/last_updated/heartbeat/jealousy/trust/stage_locked/mutex_group/mutex_partner_name）按剧情发展 UPDATE
+  - 总表数 12 张：global_state / female_users / propagation_chain / usage_log / events / relationship_graph / endings / inventory / check_suggestions / chronicle / female_body / female_current_state

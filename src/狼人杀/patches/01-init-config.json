@@ -1,0 +1,13 @@
+[
+  {"op":"add","path":"/entryManifest/世界观","value":{}},
+  {"op":"add","path":"/entryManifest/扮演准则","value":{}},
+  {"op":"add","path":"/entryManifest/时间线","value":{}},
+  {"op":"add","path":"/entryManifest/地理","value":{}},
+  {"op":"add","path":"/entryManifest/角色","value":{}},
+  {"op":"add","path":"/entryManifest/NPC","value":{}},
+  {"op":"add","path":"/entryManifest/机制","value":{}},
+  {"op":"add","path":"/entryManifest/阶段指导","value":{}},
+  {"op":"add","path":"/typeLists/depth","value":["机制","阶段指导","MVU"]},
+  {"op":"add","path":"/strategyThresholds/机制","value":"Infinity"},
+  {"op":"add","path":"/tags","value":["狼人杀","血月","群像","悬疑","NSFW"]}
+]

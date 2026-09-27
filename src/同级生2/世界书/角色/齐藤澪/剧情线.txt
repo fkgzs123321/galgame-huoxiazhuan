@@ -1,0 +1,255 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 齐藤澪 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=15 / 女角 · 学生会副会长学姐线
+   ⚠️ 跨界客串自《同级生1 Remake》(2022) · 齐藤姐妹（姐姐）
+   核心弧线：校园偶遇 → 日常交往 → 身份揭示 → 好感推进 → 恋人成立（五阶段）
+   互斥关系：齐藤姐妹（攻略姐姐 affection≥50 触发后，妹妹澪奈锁定仇视）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 齐藤澪_STORYLINE = {
+  heroine_id: 15,
+  name: '齐藤澪',
+  core_position: {
+    role: '学姐线核心女角 — 完美副会长外壳下的脆弱依赖者',
+    archetype: 'INTJ 冷静学姐的秩序崩塌弧线 — 从仰望到对等的破壳之旅',
+    function: '通过"学生会长辈关系 → 文学/剑道共鸣 → 姐妹独居真相 → 完美外壳崩塌 → 恋人成立"的五段式弧线，让主角从"被审视的学弟"升级为"唯一可依赖的人"',
+    plot_weight: 'high — 独立女角线 + 齐藤姐妹互斥锁的主导侧'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: '全天',
+      location: '—（未登场）',
+      event: '寒假第一天锁定',
+      description: '12/22 为寒假第一天，根据人物出现总表 DATE_OVERRIDES[1]，齐藤澪（id=15）在 locked 列表中，全天全时段不可遇；主角仅在自宅周边活动，唯/美佐子/友美可遇',
+      triggers_route: '无 — 角色未登场',
+      is_reversible: true,
+      flags: ['flag_mio_locked_day1'],
+      note: '初始锁定状态，12/23 起自动解锁'
+    },
+    {
+      date: '12-23',
+      time_slot: '上午/下午',
+      location: '八十八学园（学生会事务室 / 校园走廊）',
+      event: '初次相遇 — 副会长的审查',
+      description: '主角寒假期间进入八十八学园，被学生会副会长齐藤澪拦下询问来校事由；她态度客气疏离，纽扣全系、领带端正，公事公办地登记主角信息；若主角回答得体（说明来意清晰、礼貌应对），可获得初始好感 +5；若表现轻浮则好感 -5',
+      triggers_route: '齐藤澪线 — 开启"副会长审查"前置剧情',
+      is_reversible: true,
+      flags: ['flag_mio_first_met', 'flag_mio_route_awareness'],
+      note: '★ 关键入口节点 — 未触发本日相遇则后续剧情延迟（12/24 起仍可在校园偶遇，但缺少"初次审查"的初始好感加成）'
+    },
+    {
+      date: '12-24',
+      time_slot: '下午',
+      location: '八十八学园图书馆',
+      event: '古典文学邂逅 — 话题切入',
+      description: '主角在图书馆偶遇正在阅读古典文学的齐藤澪（她课外常在此读《源氏物语》《徒然草》）；若主角主动搭话并展现对古典文学的基本素养（或诚实承认不懂但表达兴趣），她会从客气疏离转为愿意推荐书单；赠送"文学书"类礼物效果最佳',
+      triggers_route: '齐藤澪线 — 文学共鸣分支开启',
+      is_reversible: true,
+      flags: ['flag_mio_literature_topic'],
+      choice_branch: {
+        '展现古典文学素养': '好感 +10，进入"文学知音"分支 — 后续她主动借书给主角',
+        '诚实表达兴趣': '好感 +5，进入"虚心学弟"分支 — 她会刻意挑入门书单',
+        '聊流行小说/轻小说': '好感 -5，进入"话不投机"分支 — 本日话题提前结束'
+      }
+    },
+    {
+      date: '12-26',
+      time_slot: '下午',
+      location: '八十八学园剑道场',
+      event: '剑道训练见证 — 文武双全的震撼',
+      description: '主角路过剑道场，目睹齐藤澪身着剑道服进行二段训练；她剑风凌厉、气势全开，与图书馆里的文静形象形成强烈反差；训练结束后她发现主角在场，会有些窘迫地整理仪容（罕见地露出非"完美副会长"的表情）；若主角赞美她的剑道而非外貌，好感 +10',
+      triggers_route: '齐藤澪线 — 武面共鸣分支开启',
+      is_reversible: true,
+      flags: ['flag_mio_kendo_witnessed'],
+      note: '★ 这是突破"完美副会长"外壳的第一个契机 — 她开始把主角当作"见过我另一面的人"'
+    },
+    {
+      date: '12-28',
+      time_slot: '上午',
+      location: '八十八学园学生会事务室',
+      event: '学生会协助 — 责任心展现',
+      description: '齐藤澪独自在学生会事务室处理寒假期间的文件整理工作（其他学生会成员多已离校）；主角主动提出帮忙整理文件、跑腿送材料，展现责任心与可靠性；她会从最初的客气推辞转为默许协助；午餐时若主角带回黑咖啡（她喜欢的饮品），好感 +10',
+      triggers_route: '齐藤澪线 — 进入"可信赖学弟"阶段',
+      is_reversible: true,
+      flags: ['flag_mio_student_council_assist', 'flag_mio_trust_stage_1'],
+      note: '本日起 affection ≥ 20 后，她对主角的称呼从"同学"改为"学弟"'
+    },
+    {
+      date: '12-29',
+      time_slot: '下午',
+      location: '八十八町住宅区（齐藤家）',
+      event: '身份揭示 — 姐妹独居真相',
+      description: '主角因送学生会文件到齐藤家，意外发现齐藤澪与妹妹澪奈独居（父母常驻海外工作）；澪奈开门时见到主角与姐姐在一起，态度明显冷淡（互斥预兆）；齐藤澪事后向主角解释家庭情况，这是她首次向主角袒露私密信息',
+      triggers_route: '齐藤澪线 — 进入"信任深化"阶段 + 姐妹互斥预兆浮现',
+      is_reversible: false,
+      flags: ['flag_mio_family_revealed', 'flag_mio_trust_stage_2', 'flag_mio_mutex_premonition'],
+      note: '★ 不可逆 flag — 身份揭示后，齐藤澪对主角的态度从"客气学姐"转为"愿依赖的姐姐"；同时互斥预兆浮现，澪奈开始警觉'
+    },
+    {
+      date: '12-31',
+      time_slot: '全天',
+      location: '八十八神宫（跨年参拜）',
+      event: '跨年邀约 — 关系升华',
+      description: '齐藤澪主动邀主角一同前往八十八神宫跨年参拜（她通常会独自前往或与澪奈同去，今年破例邀主角）；参拜时她会穿和服（罕见造型），并向主角吐露"作为副会长必须时刻完美，很累"的心声；若主角回应"你不必在我面前完美"，好感 +15，进入"暧昧临界"前兆',
+      triggers_route: '齐藤澪线 — 关系升华至"暧昧临界"',
+      is_reversible: false,
+      flags: ['flag_mio_new_year_date', 'flag_mio_intimate_pre'],
+      note: '★ 不可逆 flag — 跨年邀约是她主动越界的标志；本日结束 affection 通常可达 40~50，逼近互斥触发阈值（50）'
+    },
+    {
+      date: '01-02',
+      time_slot: '下午',
+      location: '八十八学园茶道室',
+      event: '茶道邀约 — 完美外壳崩塌',
+      description: '齐藤澪邀主角至茶道室（她的私人精神空间），亲手为主角点茶；茶道过程中她罕见地放下"完美副会长"姿态，流露脆弱面（intimate_face：渴望被理解而非仰望）；若主角此刻不趁机冒犯而是平等对视，她会主动靠近；本日是"完美外壳崩塌"的关键节点',
+      triggers_route: '齐藤澪线 — 进入"恋人前夜"阶段',
+      is_reversible: false,
+      flags: ['flag_mio_tea_ceremony', 'flag_mio_shell_broken', 'flag_mio_intimate_face_shown'],
+      choice_branch: {
+        '平等对视 + 真诚回应': '好感 +15，进入"恋人前夜"分支 — 她会主动牵手',
+        '趁机冒犯/过度亲密': '好感 -20，进入"强势反弹"分支 — 她控制欲发作，要求退回学姐学弟关系',
+        '保持学弟距离': '好感 +5，进入"缓慢推进"分支 — 她尊重但略失望'
+      },
+      note: '★ 不可逆 flag — 完美外壳崩塌后无法回退；但分支走向决定后续是"恋人成立"还是"强势反弹"'
+    },
+    {
+      date: '01-04',
+      time_slot: '全天',
+      location: '八十八学园 / 八十八町住宅区',
+      event: '姐妹冲突 — 互斥触发判定',
+      description: '若此时齐藤澪 affection ≥ 50（达暧昧临界），正式触发齐藤姐妹互斥：妹妹澪奈锁定仇视（affection -50 / jealousy +30 / route_locked=1）；澪奈会主动冷落主角，姐妹独居家庭氛围紧张；齐藤澪并不知情，仍按原节奏推进，但偶尔会察觉妹妹的异常；若 affection < 50 则互斥不触发，齐藤澪线可继续平稳推进',
+      triggers_route: '齐藤姐妹互斥锁 — 主导侧触发',
+      is_reversible: false,
+      flags: ['flag_mio_mutex_triggered', 'flag_miona_jealousy_locked'],
+      condition: 'affection_mio >= 50',
+      note: '★ 不可逆 flag — 互斥一旦触发无法解除；妹妹澪奈线永久锁定为仇视状态，玩家无法同时攻略姐妹两人'
+    },
+    {
+      date: '01-05',
+      time_slot: '下午',
+      location: '八十八学园学生会事务室',
+      event: '脆弱面全开 — 依赖成立',
+      description: '齐藤澪在学生会事务室向主角哭诉妹妹近期对她的冷落（她不知互斥已触发，归因于自己忙于学生会工作忽视妹妹）；这是她首次在主角面前流泪；若主角选择拥抱安慰而非说教，她会产生深度依赖；本日是"脆弱依赖的姐姐"（intimate_face）完全展现的节点',
+      triggers_route: '齐藤澪线 — 进入"依赖成立"阶段',
+      is_reversible: false,
+      flags: ['flag_mio_vulnerability_full', 'flag_mio_dependency_formed'],
+      note: '★ 不可逆 flag — 依赖关系成立后，她对主角的依恋达到峰值'
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '八十八学园天台 / 主角自宅',
+      event: '最终判定 — Good End / Normal End / Bad End',
+      description: '寒假最后一天深夜触发结局判定。齐藤澪约主角至八十八学园天台（或主角自宅），正式告白；结局根据 affection 数值分支',
+      triggers_route: '齐藤澪线 — 最终判定',
+      is_reversible: false,
+      flags: ['flag_mio_final_judgment'],
+      ending_branches: {
+        'Good End（affection ≥ 60）': '齐藤澪告白成立，主角接受 — 澪放下"完美副会长"包袱，成为会撒娇的恋人；姐妹关系虽紧张但澪决心承担',
+        'Normal End（40 ≤ affection < 60）': '齐藤澪告白但主角犹豫 — 两人维持"超越学姐学弟的暧昧关系"，开学后再观察',
+        'Bad End（affection < 40）': '齐藤澪察觉主角心意不在自己 — 退回"完美副会长"外壳，礼貌告别，剧情线关闭'
+      },
+      note: '★ 最终判定 — 1/7 深夜 23:00 后触发，不可回退'
+    }
+  ],
+
+  triggered_routes: {
+    '齐藤澪奈线（heroine_id=16）— 互斥锁从侧': {
+      role: 'mutex — 互斥触发后妹妹线永久锁定',
+      trigger_nodes: ['01-04 姐妹冲突（affection_mio ≥ 50）'],
+      impact: '若主角先攻略姐姐至 affection ≥ 50，妹妹澪奈线永久锁定为仇视状态（route_locked=1），无法再攻略；反之若先攻略妹妹，姐姐线难度提升但未完全锁定'
+    },
+    '南川洋子线（heroine_id=6）— 间接关联': {
+      role: 'indirect — 通过学生会工作间接关联',
+      trigger_nodes: ['12-28 学生会协助'],
+      impact: '若主角在 12/28 学生会协助期间展现运动能力（与洋子线相关），齐藤澪会提及"洋子同学在柔道部的表现"，间接提供洋子线情报'
+    },
+    '片桐美铃线（heroine_id=11）— 工作关系': {
+      role: 'indirect — 老师与学生会副会长的工作关系',
+      trigger_nodes: ['12-23 ~ 01-07 八十八学园共同出现时段'],
+      impact: '齐藤澪与片桐美铃（老师）有工作关系，若主角同时推进美铃线，齐藤澪会察觉并在 01-04 节点增加 jealousy +10（但不直接触发互斥）'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: '学姐 → 恋人（heroine_id=15）',
+      detail: '初识为客气疏离的副会长，affection=0/trust=0；通过 12/23 审查 → 12/24 文学 → 12/26 剑道 → 12/28 协助 → 12/29 身份揭示 → 12/31 跨年 → 01/02 茶道 → 01/05 依赖成立，最终 01/07 判定；Good End 达成后 affection=80+'
+    },
+    '齐藤澪奈（妹妹）': {
+      type: '姐妹 + 互斥锁（heroine_id=16）',
+      detail: '同住八十八町住宅区，父母海外工作；姐姐 affection ≥ 50 触发互斥后，澪奈锁定仇视（affection -50 / jealousy +30 / route_locked=1）；澪不知妹妹为何冷落自己，归因于学生会工作'
+    },
+    '片桐美铃（老师）': {
+      type: '工作关系（heroine_id=11）',
+      detail: '学生会副会长与老师的工作关系，齐藤澪称她"片桐先生"；若主角同时推进美铃线，澪会察觉并增加 jealousy +10'
+    },
+    '加藤美纪（学生会成员）': {
+      type: '部下关系（heroine_id=4）',
+      detail: '加藤美纪是学生会成员，齐藤澪是副会长；工作上有上下级关系，但美纪寒假期间多不在校'
+    },
+    '剑道部主将': {
+      type: '剑道部前辈',
+      detail: '齐藤澪是剑道二段，与主将为训练搭档；主将是她的剑道情报源'
+    },
+    '父母（海外工作）': {
+      type: '缺席家人',
+      detail: '常驻海外工作，姐妹二人独居；这是齐藤澪"早熟+完美外壳"的根因，也是 12/29 身份揭示的内容'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_mio_first_met',
+      trigger: '12-23 上午/下午 八十八学园初次相遇',
+      effect: '齐藤澪线开启，主角进入副会长审查流程',
+      reversibility: '可逆 — 未触发则后续仍可在校园偶遇，但缺少初始好感加成'
+    },
+    {
+      flag: 'flag_mio_family_revealed',
+      trigger: '12-29 下午 八十八町住宅区（齐藤家）',
+      effect: '齐藤澪向主角袒露姐妹独居真相，信任深化 + 互斥预兆浮现',
+      reversibility: '不可逆 — 身份揭示后无法回退，她对主角的态度永久改变'
+    },
+    {
+      flag: 'flag_mio_new_year_date',
+      trigger: '12-31 全天 八十八神宫跨年参拜',
+      effect: '齐藤澪主动邀约跨年，关系升华至"暧昧临界"前兆',
+      reversibility: '不可逆 — 主动越界行为无法收回'
+    },
+    {
+      flag: 'flag_mio_shell_broken',
+      trigger: '01-02 下午 八十八学园茶道室',
+      effect: '完美副会长外壳崩塌，进入"恋人前夜"或"强势反弹"分支',
+      reversibility: '不可逆 — 外壳崩塌后无法重建，但分支走向由 choice_branch 决定'
+    },
+    {
+      flag: 'flag_mio_mutex_triggered',
+      trigger: '01-04 全天 affection_mio ≥ 50',
+      effect: '齐藤姐妹互斥正式触发，妹妹澪奈线永久锁定为仇视状态',
+      reversibility: '不可逆 — 互斥一旦触发无法解除'
+    },
+    {
+      flag: 'flag_mio_vulnerability_full',
+      trigger: '01-05 下午 学生会事务室',
+      effect: '齐藤澪首次在主角面前流泪，依赖关系成立',
+      reversibility: '不可逆 — 依赖成立后依恋达峰值，01-07 必然告白'
+    },
+    {
+      flag: 'flag_mio_final_judgment',
+      trigger: '01-07 深夜 23:00 八十八学园天台/主角自宅',
+      effect: '最终结局判定（Good End ≥60 / Normal End 40~59 / Bad End <40）',
+      reversibility: '不可逆 — 1/7 深夜触发后剧情线关闭'
+    }
+  ],
+
+  summary: '齐藤澪的剧情线是"校园偶遇 → 日常交往 → 身份揭示 → 好感推进 → 恋人成立"五阶段弧线，核心功能是让主角从"被审视的学弟"升级为"唯一可依赖的人"，通过文学/剑道共鸣突破她的"完美副会长"外壳，在茶道室见证她的脆弱面，最终在天台接受她的告白。关键不可逆节点：12/29 身份揭示、12/31 跨年邀约、01/02 完美外壳崩塌、01/04 姐妹互斥触发（affection≥50）、01/05 依赖成立、01/07 最终判定（Good End ≥60）。互斥机制：与妹妹齐藤澪奈（heroine_id=16）互斥，攻略姐姐至 affection≥50 后妹妹线永久锁定为仇视状态。'
+};
+%>
+
+齐藤澪 · 剧情线已加载。核心定位：学生会副会长学姐线（12/23 初遇审查→12/24 文学邂逅→12/26 剑道见证→12/28 学生会协助→12/29 身份揭示→12/31 跨年邀约→01/02 完美外壳崩塌→01/04 姐妹互斥触发→01/05 依赖成立→01/07 最终判定）。不可逆 flag：flag_mio_family_revealed（12/29 身份揭示）、flag_mio_new_year_date（12/31 跨年邀约）、flag_mio_shell_broken（01/02 外壳崩塌）、flag_mio_mutex_triggered（01/04 姐妹互斥，affection≥50）、flag_mio_vulnerability_full（01/05 依赖成立）、flag_mio_final_judgment（01/07 最终判定）。Good End 条件：affection≥60。互斥关系：齐藤姐妹（攻略姐姐后妹妹澪奈锁定仇视，route_locked=1）。

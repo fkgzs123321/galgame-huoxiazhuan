@@ -1,0 +1,140 @@
+@@generate_before
+<%_
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Gender = getvar('stat_data.殖民者_主角.性别', { scope: 'local', defaults: '男' }) || '男';
+var p1Age = Number(getvar('stat_data.殖民者_主角.年龄', { scope: 'local', defaults: 25 })) || 25;
+var p1Mood = Number(getvar('stat_data.殖民者_主角.心情', { scope: 'local', defaults: 50 })) || 50;
+var p1CycleDay = Number(getvar('stat_data.殖民者_主角.周期日', { scope: 'local', defaults: 1 })) || 1;
+var p1Pregnancy = Number(getvar('stat_data.殖民者_主角.怀孕状态', { scope: 'local', defaults: 0 })) || 0;
+var p1Energy = Number(getvar('stat_data.殖民者_主角.精力值', { scope: 'local', defaults: 100 })) || 100;
+var p1Medical = Number(getvar('stat_data.殖民者_主角.医疗', { scope: 'local', defaults: 5 })) || 5;
+var p1Cooking = Number(getvar('stat_data.殖民者_主角.厨艺', { scope: 'local', defaults: 5 })) || 5;
+
+var p2Name = getvar('stat_data.殖民者_2.姓名', { scope: 'local', defaults: '' }) || '';
+var p2Gender = getvar('stat_data.殖民者_2.性别', { scope: 'local', defaults: '男' }) || '男';
+var p2CycleDay = Number(getvar('stat_data.殖民者_2.周期日', { scope: 'local', defaults: 1 })) || 1;
+var p2Pregnancy = Number(getvar('stat_data.殖民者_2.怀孕状态', { scope: 'local', defaults: 0 })) || 0;
+var p2Energy = Number(getvar('stat_data.殖民者_2.精力值', { scope: 'local', defaults: 100 })) || 100;
+
+var p3Name = getvar('stat_data.殖民者_3.姓名', { scope: 'local', defaults: '' }) || '';
+var p3Gender = getvar('stat_data.殖民者_3.性别', { scope: 'local', defaults: '男' }) || '男';
+var p3CycleDay = Number(getvar('stat_data.殖民者_3.周期日', { scope: 'local', defaults: 1 })) || 1;
+var p3Pregnancy = Number(getvar('stat_data.殖民者_3.怀孕状态', { scope: 'local', defaults: 0 })) || 0;
+var p3Energy = Number(getvar('stat_data.殖民者_3.精力值', { scope: 'local', defaults: 100 })) || 100;
+
+var p4Name = getvar('stat_data.殖民者_4.姓名', { scope: 'local', defaults: '' }) || '';
+var p4Gender = getvar('stat_data.殖民者_4.性别', { scope: 'local', defaults: '男' }) || '男';
+var p4CycleDay = Number(getvar('stat_data.殖民者_4.周期日', { scope: 'local', defaults: 1 })) || 1;
+var p4Pregnancy = Number(getvar('stat_data.殖民者_4.怀孕状态', { scope: 'local', defaults: 0 })) || 0;
+var p4Energy = Number(getvar('stat_data.殖民者_4.精力值', { scope: 'local', defaults: 100 })) || 100;
+
+var p5Name = getvar('stat_data.殖民者_5.姓名', { scope: 'local', defaults: '' }) || '';
+var p5Gender = getvar('stat_data.殖民者_5.性别', { scope: 'local', defaults: '男' }) || '男';
+var p5CycleDay = Number(getvar('stat_data.殖民者_5.周期日', { scope: 'local', defaults: 1 })) || 1;
+var p5Pregnancy = Number(getvar('stat_data.殖民者_5.怀孕状态', { scope: 'local', defaults: 0 })) || 0;
+var p5Energy = Number(getvar('stat_data.殖民者_5.精力值', { scope: 'local', defaults: 100 })) || 100;
+
+function _cycleStage(cycleDay) {
+  var d = Number(cycleDay) || 1;
+  if (d <= 5) { return { 阶段: '行经期', 心情修正: -3, NSFW权限: 0, 孕期修正: 0 }; }
+  if (d <= 13) { return { 阶段: '卵泡期', 心情修正: 1, NSFW权限: 1, 孕期修正: 0.05 }; }
+  if (d <= 16) { return { 阶段: '排卵期', 心情修正: 2, NSFW权限: 1, 孕期修正: 0.30 }; }
+  return { 阶段: '黄体期', 心情修正: 0, NSFW权限: 1, 孕期修正: 0.05 };
+}
+
+function _pregnancyStage(pregnancyDay) {
+  var d = Number(pregnancyDay) || 0;
+  if (d <= 0) { return { 阶段: '未孕', 移动修正: 1.0, 工作修正: 1.0, 心情修正: 0, 战斗可用: 1 }; }
+  if (d <= 3) { return { 阶段: '无症状', 移动修正: 1.0, 工作修正: 1.0, 心情修正: 0, 战斗可用: 1 }; }
+  if (d <= 15) { return { 阶段: '孕吐期', 移动修正: 0.9, 工作修正: 0.7, 心情修正: -5, 战斗可用: 1 }; }
+  if (d <= 30) { return { 阶段: '行动受限', 移动修正: 0.7, 工作修正: 0.8, 心情修正: -3, 战斗可用: 1 }; }
+  if (d <= 45) { return { 阶段: '临产期', 移动修正: 0.5, 工作修正: 0.5, 心情修正: -2, 战斗可用: 0 }; }
+  return { 阶段: '分娩触发', 移动修正: 0.3, 工作修正: 0.0, 心情修正: 0, 战斗可用: 0 };
+}
+
+function _conceptionCheck(cycleDay, seed) {
+  var stage = _cycleStage(cycleDay);
+  var prob = stage.孕期修正;
+  if (prob <= 0) { return { 可受孕: 0, 原因: '当前阶段无法受孕', 概率: 0 }; }
+  var checkVal = Math.round(prob * 100);
+  var r = _check(checkVal, seed, '普通');
+  return { 可受孕: r.result === '成功' ? 1 : 0, 原因: stage.阶段 + '受孕概率' + checkVal + '%', 概率: prob, 骰值: r.roll };
+}
+
+function _deliveryCheck(medicalSkill, hasMedicine) {
+  var med = Number(medicalSkill) || 0;
+  var threshold = med >= 5 && hasMedicine ? 95 : 70;
+  var r = _check(threshold, 'delivery', '普通');
+  var risk = r.result === '成功' ? '无' : '产妇/婴儿风险';
+  return { 成功率: threshold, 骰值: r.roll, 结果: r.result, 风险: risk };
+}
+
+/* 精力系统函数定义在NSFW系统.txt，此处不重复 */
+var p1Cycle = _cycleStage(p1CycleDay);
+var p1PregStage = _pregnancyStage(p1Pregnancy);
+var p1Conception = _conceptionCheck(p1CycleDay, 'p1_conception');
+var p1Delivery = _deliveryCheck(p1Medical, 1);
+var p1EnergyRefuse = p1Energy < 30 ? 1 : 0;
+var p1EnergyAfter = Math.max(0, p1Energy - 20);
+var p1EnergyRecover = Math.min(100, p1Energy + 10);
+_%>
+<生理周期系统就绪>
+[当前周期状态]
+读取殖民者_主角/2-5的性别/周期日/怀孕状态/精力值
+
+殖民者状态:
+1. <%= p1Name %>(<%= p1Gender %>) 周期日:<%= p1CycleDay %> 阶段:<%= p1Cycle.阶段 %> 怀孕:<%= p1Pregnancy %>日 精力:<%= p1Energy %>
+2. <%= p2Name %>(<%= p2Gender %>) 周期日:<%= p2CycleDay %> 怀孕:<%= p2Pregnancy %>日 精力:<%= p2Energy %>
+3. <%= p3Name %>(<%= p3Gender %>) 周期日:<%= p3CycleDay %> 怀孕:<%= p3Pregnancy %>日 精力:<%= p3Energy %>
+4. <%= p4Name %>(<%= p4Gender %>) 周期日:<%= p4CycleDay %> 怀孕:<%= p4Pregnancy %>日 精力:<%= p4Energy %>
+5. <%= p5Name %>(<%= p5Gender %>) 周期日:<%= p5CycleDay %> 怀孕:<%= p5Pregnancy %>日 精力:<%= p5Energy %>
+
+[生理周期表]
+女性28天循环(仅女性殖民者适用):
+  行经期(D1-5): 心情-3, NSFW禁用, 孕期0%
+  卵泡期(D6-13): 心情+1, NSFW可, 孕期5%
+  排卵期(D14-16): 心情+2, NSFW可, 孕期30%(高受孕)
+  黄体期(D17-28): 心情0, NSFW可, 孕期5%
+  示例: <%= p1Name %>当前<%= p1Cycle.阶段 %>, 心情修正<%= p1Cycle.心情修正 %>, NSFW<%= p1Cycle.NSFW权限 ? '可用' : '禁用' %>
+
+[怀孕系统]
+受孕判定: NSFW发生时,根据当前周期阶段判定
+  公式: _check(孕期概率×100, seed, '普通')
+  示例: <%= p1Name %>受孕概率<%= Math.round(p1Conception.概率 * 100) %>%, 判定结果:<%= p1Conception.可受孕 ? '可受孕' : '不可受孕' %>
+
+怀孕周期5阶段(游戏日):
+  D0-3: 无症状(不知情), 移动×1.0, 工作×1.0
+  D4-15: 孕吐期, 心情-5, 厨艺速度-30%, 移动×0.9, 工作×0.7
+  D16-30: 行动受限, 移动×0.7, 工作速度×0.8, 心情-3
+  D31-45: 临产期, 移动×0.5, 无法战斗, 工作×0.5
+  D45+: 分娩事件触发
+  示例: <%= p1Name %>怀孕<%= p1Pregnancy %>日, 当前<%= p1PregStage.阶段 %>, 移动×<%= p1PregStage.移动修正 %>, 工作×<%= p1PregStage.工作修正 %>
+
+分娩判定:
+  公式: _check(成功率, seed, '普通')
+  成功率: 医疗≥5且有医药→95%; 医疗<5或无医药→70%
+  失败: 产妇/婴儿风险事件
+  示例: 医疗<%= p1Medical %>, 有医药 → 成功率<%= p1Delivery.成功率 %>%, 结果:<%= p1Delivery.结果 %>
+
+产后恢复:
+  产妇恢复期10天(心情波动大, -5~+10随机)
+  婴儿→14游戏日后成为幼童→可培养
+
+[精力系统]
+男性精力值(0-100):
+  消耗: 每次NSFW消耗-20
+  恢复: 睡眠+10/h, 休息+5/h
+  拒绝阈值: 精力<30时拒绝NSFW
+  示例: <%= p1Name %>当前精力<%= p1Energy %>, NSFW后→<%= p1EnergyAfter %>, 睡眠1h后→<%= p1EnergyRecover %>, 拒绝:<%= p1EnergyRefuse ? '是' : '否' %>
+
+[行为校验要求]
+生理周期/怀孕行为必须输出行为校验块:
+  行为类型: NSFW/受孕判定/怀孕进程/分娩/产后恢复/精力消耗
+  执行者: 殖民者姓名(性别)
+  周期阶段: _cycleStage()结果
+  怀孕阶段: _pregnancyStage()结果(怀孕相关)
+  受孕检定: _conceptionCheck()结果(NSFW相关)
+  分娩检定: _deliveryCheck()结果(分娩相关)
+  精力判定: 引用NSFW系统.txt的_energyCheck()/_energyRecover()结果
+  心情修正: 当前阶段心情修正值
+</生理周期系统就绪>

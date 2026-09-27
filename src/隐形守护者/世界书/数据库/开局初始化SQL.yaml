@@ -1,0 +1,43 @@
+名称: 开局初始化SQL
+类型: 数据库
+启用: false
+激活策略:
+  类型: 蓝灯
+  优先级: 97
+插入位置:
+  类型: 指定深度
+  角色: 系统
+  深度: 0
+  顺序: 103
+
+内容: |
+  【开局执行一次 · 隐形守护者 · 1939 序章方家】
+
+  ```sql
+  INSERT INTO global_state (row_id, current_location, current_minor_region, current_major_region, prev_scene_time, elapsed_time, cur_time)
+  VALUES (1, '方家客厅', '法租界', '上海', NULL, '0分', '1939-03-15 14:00');
+
+  INSERT INTO world_map_points (row_id, location_name, minor_region, major_region, location_type, environment_desc, importance, exploration_status) VALUES
+  (1, '方家客厅', '法租界', '上海', '住宅', '方汉洲宅邸，序章苦肉计发生处', '核心', '已探索'),
+  (2, '济仁大学图书馆', '法租界', '上海', '学校', '方汉洲接头暗号地点，漫长等待', '核心', '部分探索'),
+  (3, '秘密基地', '法租界', '上海', '特殊', '地下党 briefing 与入党手续', '核心', '未探索'),
+  (4, '亚辉通讯社', '租界', '上海', '商业', '肖途公开记者身份据点', '重要', '未探索');
+
+  INSERT INTO plot_state (row_id, chapter, node_id, prologue_done, is_dead, ending_branch, checkpoint)
+  VALUES (1, '序章', '序章-1', '否', '否', '', '序章-1');
+
+  INSERT INTO xiaotu_cover (row_id, disguise, org_trust, wuteng_doubt, exposure_risk, action_level)
+  VALUES (1, 72, 70, 3, '低', 1);
+
+  INSERT INTO character_attr (row_id, char_name, emotion, trust, relation_phase) VALUES
+  (1, '方敏', 0, 35, '序章怀疑'),
+  (2, '庄晓曼', 0, 20, '序章至三章'),
+  (3, '武藤纯子', 0, 15, '序章至三章'),
+  (4, '陆望舒', 0, 40, '序章至三章');
+
+  INSERT INTO important_npc (row_id, name, gender, age, brief_intro, appearance, identity_text, base_attributes, special_attributes, location_name, presence_status, relations_text, interaction_options, past_experience) VALUES
+  (1, '方敏', '女', 22, '方汉洲之女，肖途青梅竹马', '齐肩发，学生装，眼神清澈倔强', '济仁大学学生', '力量:32;敏捷:38;体质:35;智力:58;感知:55;魅力:62', '理想主义:70', '方家客厅', '在场', '肖途:青梅竹马;方汉洲:父女', '搭话,告别', '不知肖途真实任务，对其亲日表现失望又存旧情。'),
+  (2, '方汉洲', '男', 45, '肖途恩师，代号春风', '清瘦教授，目光沉而稳', '济仁大学教授', '力量:40;敏捷:42;体质:45;智力:78;感知:72;魅力:65', '布局者:85', '方家客厅', '在场', '肖途:师徒', '沉默,听训', '安排苦肉计洗白肖途，引其接近日方。');
+
+  -- 检定建议表已停用：勿初始化 check_suggestions。主线选项见各节点世界书【请选择】。
+  ```

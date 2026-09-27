@@ -1,0 +1,164 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 6 - 12-27 周三 ═══
+   当日主题：正常寒假日，多线推进
+   特殊事件：event_day06_karen_tv_station / event_day06_yoko_garage / event_day06_diary_2_window / event_day06_miki_dual_identity
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day6 场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家/唯准备早餐/美佐子义母/友美邻家
+     P2 川尻信良 → 川尻家/机车行找南川洋子（洋子线核心★）
+     P3 长冈芳树 → 长冈家/偷拍友美/美纪双身份揭示关键日★
+     P4 西御寺有友 → 西御寺家豪宅/商业区闲逛/唯美纪敌意线
+     P5 天道新干线 → 天道家/保育园找爱美（核心★）/美铃同事
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 6,
+  date: '12-27',
+  weekday: '周三',
+  chapter: '寒假核心',
+  theme: '正常寒假日，多线推进（身份感知独立场景）',
+  special_events: ['event_day06_karen_tv_station', 'event_day06_yoko_garage', 'event_day06_diary_2_window', 'event_day06_miki_dual_identity'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '晴',
+  notes: '可怜/洋子线推进；自由探索日；按身份解锁对应核心女角'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 当日开场场景（身份感知；IDENTITY_PROFILES 仅含 day1，day6 由本文件提供） */
+if (typeof _day6Scenes === 'undefined') var _day6Scenes = {
+  '原作主角': `${_playerName}在鸣泽家起床，义妹唯已在厨房准备早餐，义母美佐子正在整理客厅。寒假第六天，重组家庭的温馨日常。相沢诚可与唯在客厅闲聊寒假计划，或前往电视台/机车行区域探索。`,
+  '川尻信良': `${_playerName}在川尻家起床，独自准备早餐（父母上班早出）。寒假第六天，作为洋子线推动者，本日可前往机车行方向寻找南川洋子（洋子线核心★）。损友相沢诚（NPC）应该在鸣泽家过寒假。`,
+  '长冈芳树': `${_playerName}在长冈家起床，独自准备简单早餐。寒假第六天，作为偷拍问题儿童，本日可准备偷拍设备尾随水野友美。同时本日是加藤美纪双身份揭示的关键日（芳树已偷拍美纪，掌握其真实身份线索）★。`,
+  '西御寺有友': `${_playerName}在西御寺家豪宅起床，佣人已备好早餐。寒假第六天，作为财阀独生子，本日可在商业区闲逛，或计划次日去学园骚扰唯（敌意线）。加藤美纪（敌意）可能在商业区偶遇。`,
+  '天道新干线': `${_playerName}在天道家起床，独自准备早餐。寒假第六天，作为八十八学园教师，本日可去保育园接触安田爱美（爱美线核心★），或在学园教师室遇到同事片桐美铃。`,
+  '自定义': `${_playerName}在${_playerHome}起床，按背景描述安排寒假第六天。可自由前往电视台/机车行/商业区/保育园等区域探索。`,
+  '未选择': '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+};
+if (typeof _openingScene === 'undefined') var _openingScene = _day6Scenes[_playerIdentity] || _day6Scenes['未选择'];
+
+/* event_day06_yoko_garage：机车行偶遇洋子（身份感知） */
+if (typeof _yokoGarageDesc === 'undefined') var _yokoGarageDesc = {
+  '原作主角': `上午/下午前往机车行区域，${_playerName}可偶遇南川洋子（row_id=6）。洋子好感 +3。触发条件：${_playerName}主动前往机车行。洋子机车文化介绍，可触发试乘特殊事件。`,
+  '川尻信良': `上午/下午前往机车行区域，${_playerName}（洋子线推动者★）可偶遇南川洋子（row_id=6）。洋子好感 +3。触发条件：${_playerName}主动前往机车行。作为同班同学，洋子对信良更为亲近，可触发洋子线核心对话与试乘特殊事件。`,
+  '长冈芳树': `上午/下午前往机车行区域，${_playerName}可偶遇南川洋子（row_id=6，陌生）。洋子好感 +3。触发条件：${_playerName}主动前往机车行。洋子机车文化介绍，可触发试乘特殊事件。`,
+  '西御寺有友': `上午/下午前往机车行区域，${_playerName}可偶遇南川洋子（row_id=6，陌生）。洋子好感 +3。触发条件：${_playerName}主动前往机车行。洋子机车文化介绍，可触发试乘特殊事件。`,
+  '天道新干线': `上午/下午前往机车行区域，${_playerName}（教师身份）可偶遇南川洋子（row_id=6，师生关系）。洋子好感 +3。触发条件：${_playerName}主动前往机车行。洋子机车文化介绍，可触发试乘特殊事件。`,
+  '自定义': `上午/下午前往机车行区域，${_playerName}可偶遇南川洋子（row_id=6）。洋子好感 +3。触发条件：${_playerName}主动前往机车行。洋子机车文化介绍，可触发试乘特殊事件。`
+};
+
+/* event_day06_miki_dual_identity：美纪双身份揭示（身份感知） */
+if (typeof _mikiDualIdentityDesc === 'undefined') var _mikiDualIdentityDesc = {
+  '原作主角': `AM8:00 八十八町便利商店触发。前置条件：has_met_加藤美纪=true AND 长冈芳树线推进中（芳树已偷拍美纪）。${_playerName}从芳树处得知美纪真实身份为铃木裕子，可选择保守秘密或当面揭穿。美纪 trust +5（保守秘密）/ affection -10 trust -20（揭穿）。是美纪线转折点。`,
+  '川尻信良': `AM8:00 八十八町便利商店触发。前置条件：has_met_加藤美纪=true AND 长冈芳树线推进中。${_playerName}从芳树（损友 NPC）处得知美纪真实身份为铃木裕子，可选择保守秘密或当面揭穿。美纪 trust +5（保守秘密）/ affection -10 trust -20（揭穿）。是美纪线转折点。`,
+  '长冈芳树': `AM8:00 八十八町便利商店触发。前置条件：has_met_加藤美纪=true AND ${_playerName}已偷拍美纪★。${_playerName}（偷拍者本人）掌握美纪真实身份为铃木裕子的关键证据，可选择保守秘密或当面揭穿。美纪 trust +5（保守秘密）/ affection -10 trust -20（揭穿）。是美纪线转折点，芳树作为信息源核心。`,
+  '西御寺有友': `AM8:00 八十八町便利商店触发。前置条件：has_met_加藤美纪=true AND 长冈芳树线推进中。${_playerName}（财阀独生子，与美纪同属敌意线）得知美纪真实身份为铃木裕子，可选择保守秘密或当面揭穿（美纪与西御寺同属敌意关系，揭穿后果更严重）。美纪 trust +5（保守秘密）/ affection -10 trust -20（揭穿）。`,
+  '天道新干线': `AM8:00 八十八町便利商店触发。前置条件：has_met_加藤美纪=true AND 长冈芳树线推进中。${_playerName}（教师身份）得知美纪真实身份为铃木裕子，可选择保守秘密或当面揭穿。美纪 trust +5（保守秘密）/ affection -10 trust -20（揭穿）。`,
+  '自定义': `AM8:00 八十八町便利商店触发。前置条件：has_met_加藤美纪=true AND 长冈芳树线推进中。${_playerName}得知美纪真实身份为铃木裕子，可选择保守秘密或当面揭穿。美纪 trust +5（保守秘密）/ affection -10 trust -20（揭穿）。是美纪线转折点。`
+};
+
+if (typeof _yokoDesc === 'undefined') var _yokoDesc = _yokoGarageDesc[_playerIdentity] || _yokoGarageDesc['自定义'];
+if (typeof _mikiDesc === 'undefined') var _mikiDesc = _mikiDualIdentityDesc[_playerIdentity] || _mikiDualIdentityDesc['自定义'];
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家自宅早/晚（义妹同居，affection 基础值）',
+    misako: '鸣泽美佐子（row_id=2）：鸣泽家早/晚 + 咖啡店《憩》上午/下午（义母经营）',
+    tomomi: '水野友美（row_id=8）：水野家上午/晚 + 傍晚来访鸣泽家（邻家青梅竹马）'
+  },
+  '川尻信良': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（认识但不熟，非家庭关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家，陌生）`,
+    yoko: '南川洋子（row_id=6）：机车行上午/下午 + 海岸下午（同班同学，洋子线核心）★本日核心'
+  },
+  '长冈芳树': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（陌生，非家庭关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：水野家附近偷拍场景（敌意，affection=-10/trust=-20）★本日核心（谨慎潜行）`,
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意，affection=-5/trust=-10）★双身份揭示关键'
+  },
+  '西御寺有友': {
+    yui: `鸣泽唯（row_id=1）：学园附近偶遇（敌意，affection=-20/trust=-30）★本日核心（禁止骚扰，仅远观）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（非邻家，陌生）`,
+    miki: '加藤美纪（row_id=4）：商业区偶遇（敌意，affection=-10/trust=-20）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（师生关系紧张，affection=-15/trust=-25）'
+  },
+  '天道新干线': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（师生关系，陌生）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/学园附近偶遇（师生关系，陌生）`,
+    aimi: '安田爱美（row_id=9）：保育园偶遇（有特殊企图，affection=5/trust=10）★本日核心',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（同事关系，affection=10/trust=20）'
+  },
+  '自定义': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（陌生，按玩家背景调整）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午可遇（咖啡店老板娘）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边/水野家附近偶遇（陌生，按玩家背景调整）`
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+%>
+
+[Day 6 调度器已加载：12-27 周三，主题：正常寒假日，多线推进（身份感知独立场景）。
+本日特殊事件：event_day06_karen_tv_station / event_day06_yoko_garage / event_day06_diary_2_window / event_day06_miki_dual_identity。
+本日锁定女角：[13,14]（永岛母女未登场）。
+本日新解锁：无。
+本日天气默认：晴。
+本日备注：可怜/洋子线推进；自由探索日；按身份解锁对应核心女角（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃）。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _profile ? _profile.identity_desc : '未选择' %>
+★ 特殊角色：<%= _profile ? _profile.special_role : '未选择' %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+★ 当日开场：<%= _openingScene %>
+
+【当日事件详情】
+- event_day06_karen_tv_station：电视台偶遇舞岛可怜。上午/下午前往电视台区域，可偶遇舞岛可怜（row_id=3）。可怜好感 +3。触发条件：<%= _playerName %>主动前往电视台。可怜工作场景铺垫，可触发签名/合影特殊对话。
+- event_day06_yoko_garage：机车行偶遇南川洋子。<%= _yokoDesc %>
+- event_day06_diary_2_window：第2本·梦仙人还书窗口期持续（12-23~12-28）。任意时段温泉乡占卜馆触发。前置条件同 Day 2。叙事提示：本日仍可推进川尻信良还书任务。
+- event_day06_miki_dual_identity：加藤美纪双身份揭示。<%= _mikiDesc %> 叙事提示：从芳树处得知美纪真实身份为铃木裕子，<%= _playerName %>可选择保守秘密或当面揭穿，选择直接影响 12/29 美纪威胁事件强度与 12/30 完整揭示，是美纪线转折点。
+
+【当日女角出现特殊规则】
+本日为自由探索日，多区域开放。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% } %>
+- 舞岛可怜（row_id=3）：电视台上午/下午 + 海岸下午
+<% if (!_heroineRule.yoko) { %>- 南川洋子（row_id=6）：机车行上午/下午 + 海岸下午<% } %>
+- 田中美沙（row_id=10）：商业区下午
+- 野野村美里（row_id=12）：商业区上午/下午
+永岛母女（row_id=13,14）锁定，AI 不可让其出现。
+关键提示：本日为多线推进关键日，建议优先推进可怜/洋子线（P2）/美纪线（P3/P4）/爱美线（P5）。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼/鸣泽家跨年聚会"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。]

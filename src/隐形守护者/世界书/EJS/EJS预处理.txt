@@ -1,0 +1,51 @@
+@@generate_before
+<%_
+define('chapter', String(getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '序章' }) || '序章'));
+define('node', String(getvar('stat_data.剧情.当前节点', { scope: 'local', defaults: '序章-0' }) || '序章-0'));
+define('episode', Number(getvar('stat_data.剧情.章节进度', { scope: 'local', defaults: 0 })) || 0);
+define('dead', getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) === true);
+define('ending', String(getvar('stat_data.剧情.结局分支', { scope: 'local', defaults: '' }) || ''));
+define('ending_locked', ending !== '');
+define('route', String(getvar('stat_data.剧情.主线归属', { scope: 'local', defaults: '' }) || ''));
+define('ch2_fork', String(getvar('stat_data.剧情.第二章分歧', { scope: 'local', defaults: '' }) || ''));
+define('ch5_fork', String(getvar('stat_data.剧情.第五章分歧', { scope: 'local', defaults: '' }) || ''));
+define('checkpoint', String(getvar('stat_data.剧情.检查点', { scope: 'local', defaults: '序章-0' }) || '序章-0'));
+define('prologue_done', getvar('stat_data.剧情.序章已完成', { scope: 'local', defaults: false }) === true);
+define('is_route_fusang', route === '扶桑安魂曲');
+define('is_route_beautiful', route === '美丽世界');
+define('is_route_red', route === '红色芳华');
+define('is_ch2_gongrong', ch2_fork === '共荣圈');
+define('is_ch2_zibao', ch2_fork === '自保');
+define('is_ch5_kill_asano', ch5_fork === '刺杀浅野');
+define('is_ch5_stay', ch5_fork === '继续潜伏');
+
+define('cover', Number(getvar('stat_data.肖途.伪装完整度', { scope: 'local', defaults: 72 })) || 72);
+define('stress', Number(getvar('stat_data.肖途.身心状态', { scope: 'local', defaults: 80 })) || 80);
+define('doubt', Number(getvar('stat_data.敌方.武藤志雄怀疑度', { scope: 'local', defaults: 3 })) || 3);
+define('org_trust', Number(getvar('stat_data.肖途.组织信任度', { scope: 'local', defaults: 67 })) || 67);
+define('camp_credit', Number(getvar('stat_data.肖途.阵营信用', { scope: 'local', defaults: 55 })) || 55);
+
+define('fang_emotion', Number(getvar('stat_data.对user.方敏.情感值', { scope: 'local', defaults: 0 })) || 0);
+define('fang_trust', Number(getvar('stat_data.对user.方敏.信任度', { scope: 'local', defaults: 20 })) || 20);
+define('zhuang_emotion', Number(getvar('stat_data.对user.庄晓曼.情感值', { scope: 'local', defaults: 0 })) || 0);
+define('zhuang_mutual', Number(getvar('stat_data.对user.庄晓曼.互信度', { scope: 'local', defaults: 10 })) || 10);
+
+define('risk', String(getvar('stat_data.$暴露风险', { scope: 'local', defaults: '低' }) || '低'));
+define('action_lv', Number(getvar('stat_data.$允许行动级别', { scope: 'local', defaults: 1 })) || 1);
+define('can_fang_truth', getvar('stat_data.$方敏可交底', { scope: 'local', defaults: false }) === true);
+define('can_zhuang_ops', getvar('stat_data.$庄晓曼可协同高危任务', { scope: 'local', defaults: false }) === true);
+
+define('is_prologue', chapter === '序章' && !prologue_done);
+define('is_chapter1', chapter === '第一章');
+define('is_chapter2', chapter === '第二章');
+define('is_chapter3', chapter === '第三章');
+define('ch1_done', (() => {
+  const ev = getvar('stat_data.剧情.已触发事件', { scope: 'local', defaults: [] });
+  return Array.isArray(ev) && ev.includes('第一章-完成');
+})());
+define('ch2_done', (() => {
+  const ev = getvar('stat_data.剧情.已触发事件', { scope: 'local', defaults: [] });
+  return Array.isArray(ev) && ev.includes('第二章-完成');
+})());
+define('ch3_main_ok', getvar('stat_data.$第三章主路可通关', { scope: 'local', defaults: false }) === true);
+_%>

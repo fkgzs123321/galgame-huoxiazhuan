@@ -1,0 +1,198 @@
+@@generate_before
+<%
+if (typeof day === 'undefined') var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+if (typeof stage === 'undefined') var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+if (typeof totalUses === 'undefined') var totalUses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+if (typeof activeUsers === 'undefined') var activeUsers = Number(getvar('stat_data.隐藏层.活跃使用者数量', {scope:'local', defaults:0})) || 0;
+// 加守卫避免与终局分支/读取变量过滤冲突
+if (typeof confirmedUsers === 'undefined') var confirmedUsers = getvar('stat_data.隐藏层.确认使用者', {scope:'local', defaults:[]});
+if (typeof confirmedCount === 'undefined') var confirmedCount = Array.isArray(confirmedUsers) ? confirmedUsers.length : 0;
+// stageProgress从变量读取存储值（加守卫，由读取变量过滤复用）
+if (typeof stageProgress === 'undefined') var stageProgress = Number(getvar('stat_data.使用阶段.阶段进度', {scope:'local', defaults:0})) || 0;
+if (typeof exp === 'undefined') var exp = Number(getvar('stat_data.使用阶段.经验', {scope:'local', defaults:0})) || 0;
+if (typeof dailyExp === 'undefined') var dailyExp = Number(getvar('stat_data.使用阶段.今日经验', {scope:'local', defaults:0})) || 0;
+if (typeof dailyExpMax === 'undefined') var dailyExpMax = Number(getvar('stat_data.使用阶段.今日经验上限', {scope:'local', defaults:30})) || 30;
+
+// 各阶段累计经验下限（与 [mvu_plot]女性使用触发器脚本.txt 保持一致）
+// 加守卫避免与读取变量过滤.txt重复声明
+if (typeof expThresholds === 'undefined') var expThresholds = [0, 30, 100, 200, 350];
+// 各阶段最低天数
+if (typeof dayThresholds === 'undefined') var dayThresholds = [0, 30, 60, 95, 102];
+if (typeof curExpMin === 'undefined') var curExpMin = expThresholds[stage - 1] || 0;
+if (typeof nextExpMin === 'undefined') var nextExpMin = expThresholds[stage] || 350;
+%>
+<stage_progression>
+【阶段晋升系统 — 经验值+天数双触发，按"被使用经验"累计】
+
+---
+■ 核心原则
+---
+- 游戏总时长120天（2月开学 → 第103天高考 → 第120天成绩出炉，终局判定窗口）
+- 5个阶段对应不同天数区间：
+  - 阶段1（初级玩具）：第1-30天
+  - 阶段2（等比复刻）：第31-60天
+  - 阶段3（灵体投影）：第61-95天
+  - 阶段4（人偶容器）：第96-102天
+  - 阶段5（实体化共生）：第103-120天（高考+成绩出炉窗口，终局判定）
+- 阶段晋升需同时满足：①最低天数 ②累计经验达到该阶段阈值 ③特定附加条件
+- 天数不到，经验再多也不晋升（防止几天就阶段5）
+- 经验不足，天数到了也不晋升（防止被动等时间）
+- 附加条件不满足，前两项满足也不晋升
+
+---
+■ 当前状态
+---
+- 第<%= day %>天 / 120天
+- 当前阶段：<%= stage %> / 5
+- 累计被使用经验（exp）：<%= exp %> / <%= nextExpMin %>（下阶段阈值）
+- 今日已得经验：<%= dailyExp %> / <%= dailyExpMax %>（日上限）
+- 累计使用次数：<%= totalUses %>
+- 已确认使用者人数：<%= confirmedCount %>
+- 阶段进度：<%= stageProgress %>%
+
+---
+■ 经验值计算公式（每次被使用获得"被使用经验"passive_exp）
+---
+单次获得经验 = 基础经验 × 多人加成 × 高频加成 × 场景加成 × 阶段加成 × 持有者加成
+
+【1. 基础经验】
+- 每次"被使用"事件获得 1 点（base_exp = 1）
+
+【2. 多人加成 multiUserMult】
+- 1人使用：×1.0
+- 2人同时使用：×1.5
+- 3人同时使用：×2.0
+- 4人同时使用：×2.5
+- 5人及以上：×3.0
+- 公式：users_active===1 ? 1 : users_active===2 ? 1.5 : users_active===3 ? 2.0 : users_active===4 ? 2.5 : 3.0
+
+【3. 高频加成 highFreqMult】
+- 同日第1次：×1.0
+- 同日第2次：×1.2
+- 同日第3次：×1.4
+- 同日第4次：×1.6
+- 同日第5次：×1.8（封顶）
+- 公式：Math.min(1.8, 1 + todayUsesCount * 0.2)（todayUsesCount 为本次使用前当日已使用次数）
+
+【4. 场景加成 sceneMultExp】
+- 高危场景：×1.3（深夜/教室/医务室/空教室）
+  - 命中列表：dorm_night / classroom / infirmary / library_archive / storage
+- 普通场景：×1.0
+
+【5. 阶段加成 stageMult】
+- 阶段1：×1.0
+- 阶段2：×1.1
+- 阶段3：×1.2
+- 阶段4：×1.3
+- 阶段5：×1.5（阶段越高，灵体反馈越强）
+- 公式：stage===1 ? 1.0 : stage===2 ? 1.1 : stage===3 ? 1.2 : stage===4 ? 1.3 : 1.5
+
+【6. 持有者加成 holderMult】
+- 持有者本人使用：×1.5（强化主链接）
+- 非持有者使用：×1.0
+- 判定：currentUid === 持有者UID（holder_id 存中文姓名，需先转换为 UID）
+
+---
+■ 日经验上限（防速通核心）
+---
+- 每日上限：30 点（daily_exp_max = 30）
+- 当 daily_exp 已达 30 时，本次使用不再累加经验（但其他状态照常更新）
+- 单次获得实际经验：actualGain = Math.min(expGain, daily_exp_max - daily_exp)
+- 理论单日最大值验证（即使全加成拉满）：
+  - 5次 × 3.0多人 × 1.8高频 × 1.3场景 × 1.3阶段4加成 × 1.5持有者 ≈ 51.98 点
+  - 但受日上限 30 限制，实际单日最高 30 点
+- 跨日由 [mvu_plot]每日重置.txt 在每日重置时归零 daily_exp
+
+---
+■ 阶段晋升条件表（累计经验 + 最低天数 + 附加条件 三者同时满足）
+---
+
+【阶段1 → 阶段2】等比复刻
+- 累计经验阈值：≥ 30 点
+- 最低天数：第30天
+- 附加条件：持有者已使用过（持有者信息.是否使用过 = true）
+- 理论可达性验证：
+  - 第30天，每日1-2次使用，平均经验1.5/次
+  - 30天 × 1.5 = 45点（达30点门槛）
+- 晋升后效果：假阴茎永久锁定为{{user}}20cm精确复刻形态，7档振动+3脉冲，恒温37.5℃
+- 当前检查：
+  <% if (day >= 30 && exp >= 30) { %>✅ 可晋升<% } else { %>❌ 需第30天+累计exp≥30（当前：<%= day %>天/<%= exp %>点）<% } %>
+
+【阶段2 → 阶段3】灵体投影
+- 累计经验阈值：≥ 100 点
+- 最低天数：第60天
+- 附加条件：传播人数≥3（confirmedUsers.length >= 3）+ 持有者 执念 ≥ 30
+- 理论可达性验证：
+  - 第60天，平均1.5/次×60天 = 90点
+  - 加上多人加成（≥2人场景）+ 偶发高频场景可达 100 点
+- 晋升后效果：假阴茎可变为半透明发光灵体，10-30cm可调，温度可调，可视化脉动
+- 当前检查：
+  <% if (day >= 60 && exp >= 100 && confirmedCount >= 3) { %>✅ 可晋升<% } else { %>❌ 需第60天+累计exp≥100+3人传播（当前：<%= day %>天/<%= exp %>点/<%= confirmedCount %>人）<% } %>
+
+【阶段3 → 阶段4】人偶容器
+- 累计经验阈值：≥ 200 点
+- 最低天数：第95天
+- 附加条件：传播人数≥6 + 至少1名使用者 多维状态.综合阶段 达到 C_沉沦期或更深
+- 理论可达性验证：
+  - 第95天，平均2点/次（含多人/高频加成）×95天 ≈ 190点
+  - 加上高危场景与持有者加成可达 200 点
+- 晋升后效果：假阴茎可附身人偶/玩偶行动，有触觉反馈，能主动互动
+- 当前检查：
+  <% if (day >= 95 && exp >= 200 && confirmedCount >= 6) { %>✅ 可晋升<% } else { %>❌ 需第95天+累计exp≥200+6人传播（当前：<%= day %>天/<%= exp %>点/<%= confirmedCount %>人）<% } %>
+
+【阶段4 → 阶段5】实体化共生
+- 累计经验阈值：≥ 350 点
+- 最低天数：第102天
+- 附加条件：传播人数≥10 + 至少1名使用者 多维状态.综合阶段 达到 D_疯狂期 + user 的 怀疑值 ≥ 60
+- 理论可达性验证：
+  - 第102天，平均2.5点/次（多人/高频/场景/阶段4加成叠加）×102天 ≈ 255点
+  - 加上持有者本人使用 +1.5 倍率与5+人 ×3.0 多人加成可达 350 点
+- 晋升后效果：假阴茎完全实体化为真实男性身体，可自主行动、说话、互动，与user双向感知
+- 当前检查：
+  <% if (day >= 102 && exp >= 350 && confirmedCount >= 10) { %>✅ 可晋升<% } else { %>❌ 需第102天+累计exp≥350+10人传播（当前：<%= day %>天/<%= exp %>点/<%= confirmedCount %>人）<% } %>
+
+---
+■ 阶段进度计算（stage_progress 按经验值计算）
+---
+阶段进度 = (累计exp - 当前阶段下限) / (下阶段下限 - 当前阶段下限) × 100%
+- 阶段1（exp ∈ [0, 30)）：进度 = (exp - 0) / (30 - 0) × 100%
+- 阶段2（exp ∈ [30, 100)）：进度 = (exp - 30) / (100 - 30) × 100%
+- 阶段3（exp ∈ [100, 200)）：进度 = (exp - 100) / (200 - 100) × 100%
+- 阶段4（exp ∈ [200, 350)）：进度 = (exp - 200) / (350 - 200) × 100%
+- 阶段5（exp ≥ 350）：进度 = 100%（终局阶段，无下一阶段）
+
+当前阶段进度（按经验值）：<%= Math.min(100, Math.max(0, Math.round((exp - curExpMin) / Math.max(1, (nextExpMin - curExpMin)) * 100))) %>%
+
+---
+■ AI叙事规则
+---
+1. 阶段晋升只能在满足所有条件后由 [mvu_plot]女性使用触发器脚本.txt 在使用事件中触发，不能由玩家主动触发
+2. 晋升时AI应描写"假阴茎形态变化"的场景（从持有者视角）
+3. 晋升后下一轮回复开始使用新阶段的假阴茎规格和user感知
+4. 未满足条件时，即使经验够了也不晋升——假阴茎保持当前阶段形态
+5. 阶段进度条在状态栏显示，让玩家知道距离下一阶段还有多少经验
+6. daily_exp 达到30时，叙事中可暗示"假阴茎似乎进入了某种饱和状态，今日不再成长"
+
+---
+■ 防速通保护
+---
+- 每日使用次数上限：5次（today_max = 5，超过后假阴茎"过热保护"自动停机）
+- 单次使用间隔：至少2小时（last_use_hour 追踪，防止刷次数）
+- 持有者每日最多使用2次（防止单人刷次数，详见 [mvu_plot]女性使用者管理.txt）
+- 传播有冷却：每人传播后需7天才能再次传播（详见 [mvu_plot]传播链扩散规则.txt）
+- 日经验上限：30点/天（daily_exp_max = 30，即使全加成拉满也最多30点/天）
+- 即使每天5次 × 30点 = 150点/天理论值，也受日上限限制为30点/天
+- 即使每天30点 × 5天 = 150点，也必须等天数到位才能晋升
+
+---
+■ 时间轴对照（与 [mvu_plot]时间轴与事件系统.txt 一致）
+---
+- 第1天：开学（2月24日，高三下学期开学）
+- 第30天：阶段1→2 最早可晋升日 + 第一次季考
+- 第60天：阶段2→3 最早可晋升日 + 第二次季考
+- 第95天：阶段3→4 最早可晋升日
+- 第102天：阶段4→5 最早可晋升日（高考前夕）
+- 第103天：高考日（高考正式开始）
+- 第120天：高考成绩出炉日（触发终局分支判定）
+
+</stage_progression>

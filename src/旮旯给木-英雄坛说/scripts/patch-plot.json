@@ -1,0 +1,234 @@
+[
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/01_入江湖",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/01_入江湖.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：01_入江湖",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "入江湖"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 500
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/02_立足",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/02_立足.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：02_立足",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "立足"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 501
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/03_除黑",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/03_除黑.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：03_除黑",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "除黑"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 502
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/04_六派掌门",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/04_六派掌门.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：04_六派掌门",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "六派掌门"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 503
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/05_时空的尽头",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/05_时空的尽头.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：05_时空的尽头",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "时空的尽头"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 504
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/06_浪人兄弟",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/06_浪人兄弟.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：06_浪人兄弟",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "浪人兄弟"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 505
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/07_铸剑与安家",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/07_铸剑与安家.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：07_铸剑与安家",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "铸剑与安家"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 506
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/时间线/08_武林大会",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/时间线/plot/08_武林大会.yaml"
+    }
+   ],
+   "part": "history",
+   "scope": "specific",
+   "keywords": [],
+   "abstract": "时间线/history：08_武林大会",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "武林大会"
+    ]
+   },
+   "position": {
+    "type": "before_character_definition",
+    "order": 507
+   }
+  }
+ }
+]

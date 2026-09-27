@@ -1,0 +1,126 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 全局规则-NSFW身体规则（扩展模块·按需加载）
+   ════════════════════════════════════════════════════════════
+   职责：NSFW 身体规则（30+ 字段全详细版）
+   来源：从「全局规则总表.txt」拆分（任务 6.6 · token 优化）
+   加载策略：由 D0 系统控制器按 scene_mode 条件加载
+     - 约会模式：加载（需要 NSFW 规则）
+     - 事件模式：加载（可能涉及 NSFW 事件）
+     - 休息/上学/打工模式：不加载（节省 token）
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ───────── 二·补、NSFW 身体规则（30+ 字段全详细版）───────── */
+// 覆盖全局规则总表中的兜底声明（var NSFW_BODY_RULES = { _partial: true }）
+// 身体测量数据存于 DDL.important_npc 表（30+ 字段），MVU.当前女角 存全部51字段（含身体测量+NSFW状态）
+// 注：所有字段都可能动态变化（乳头/阴部/敏感度/体重等），非"静态"
+NSFW_BODY_RULES = {
+  // 身体测量字段（存 DDL.important_npc + MVU.当前女角，由 基础信息.txt 初始化，运行时可变）
+  body_measurement_fields: [
+    // 身体基础（6 列）
+    'cup_size', 'bust_size', 'waist_size', 'hip_size', 'height', 'weight',
+    // 胸部详细（6 列）
+    'nipple_size', 'nipple_color', 'areola_size', 'breast_shape', 'breast_sensitivity', 'lactation',
+    // 腰部（2 列）
+    'waist_shape', 'waist_sensitivity',
+    // 手部（2 列）
+    'hand_desc', 'nail_style',
+    // 臀部（3 列）
+    'hip_shape', 'hip_sensitivity', 'anal_desc',
+    // 下体详细（8 列）
+    'pubic_hair', 'labia_size', 'labia_color', 'vaginal_tightness', 'vaginal_special',
+    'lubrication_level', 'hymen_status', 'fertility',
+    // 敏感度综合（3 列）
+    'body_sensitivity', 'sensitive_zones', 'arousal_triggers'
+  ],
+  // 动态 NSFW 状态字段（存 DDL.important_npc + MVU.当前女角，每轮可能变化）
+  dynamic_state_fields: [
+    'clothing_state', 'exposure', 'wetness', 'skin_marks',
+    'arousal_level', 'semen_residue', 'possession_marks'
+  ],
+  // 身体敏感度倍率解释（body_sensitivity 字段）
+  sensitivity_scale: {
+    0: '未初始化/无 NSFW 数据',
+    100: '常人水平（基准）',
+    150: '常人 1.2 倍（轻微触碰敏感部位即有反应）',
+    200: '常人 1.5 倍（极敏感，触碰全身都可出水）',
+    300: '常人 2 倍（超敏感，言语刺激都触发高潮）'
+  },
+  // NSFW 动态衰减规则（参考 raft_13 npc_tracker 设计，每轮自动应用）
+  decay_rules: {
+    arousal_level: {
+      rule: '无刺激时每轮 -5~15（按难度调整）',
+      difficulty_mult: { '轻松': -5, '普通': -10, '挑战': -12, '地狱': -15 },
+      floor: '平静',
+      note: 'arousal_level 不会自动升至更高档，必须有 NSFW 互动触发'
+    },
+    wetness: {
+      rule: '无刺激时每轮 -1 档（如 极湿→湿润）',
+      floor: '干燥',
+      note: '高度敏感体质（body_sensitivity≥150）可保持在 微润 以上更久'
+    },
+    skin_marks: {
+      rule: '按时间消退：微红（数分钟）→红痕（数小时）→无（一夜）',
+      decay_chain: ['微红', '红痕', '淡痕', '无'],
+      note: '深夜睡眠后自动推进一档'
+    },
+    semen_residue: {
+      rule: '干燥进程：液态→半干→精斑→无（一夜干透）',
+      decay_chain: ['液态', '半干', '精斑', '无'],
+      note: '深夜睡眠后自动推进一档，需清洗立即消除'
+    },
+    exposure: {
+      rule: '衣着恢复：穿衣后立即变为 无暴露',
+      trigger: '主角重新穿衣时自动重置',
+      note: '除非剧情设定强制保持暴露状态'
+    },
+    clothing_state: {
+      rule: '由 EJS 角色性格控制器根据 relationship_stage + h_exp 写入',
+      note: '非 NSFW 场景下保持日常服装状态'
+    },
+    possession_marks: {
+      rule: '只追加不删改，分号分隔',
+      note: '除非剧情明确消除（如洗去印记/标记褪色），否则永久保留'
+    }
+  },
+  // NSFW 触发硬门槛（绝对禁止/允许，由 D0 控制器读取）
+  nsfw_hard_gates: {
+    '轻度接触（拥抱/牵手）': {
+      requires: { relationship_stage: ['熟悉','暧昧','心动','亲密'], affection: 20, trust: 20 },
+      fail_changes: { affection: -3, trust: -5, jealousy: +2 }
+    },
+    '中度接触（亲吻/抚摸上半身）': {
+      requires: { relationship_stage: ['心动','亲密'], affection: 60, heartbeat: 40, trust: 50 },
+      fail_changes: { affection: -10, trust: -10, jealousy: +5, mood: -5 },
+      fail_event: '女角推开主角，可能触发"被冒犯"事件'
+    },
+    '重度接触（抚摸下半身/前戏）': {
+      requires: { relationship_stage: ['亲密'], affection: 80, heartbeat: 50, trust: 60, h_exp: 10 },
+      fail_changes: { affection: -15, trust: -15, jealousy: +8, mood: -8 },
+      fail_event: '女角强烈拒绝，可能触发"报警"预警（illegal_count +1）'
+    },
+    '初H': {
+      requires: { relationship_stage: ['亲密'], affection: 80, heartbeat: 60, trust: 70, h_exp: 20, hymen_status: ['完整','无','已破'] },
+      fail_changes: { affection: -20, trust: -20, jealousy: +10, illegal_count: +1 },
+      fail_event: '强制猥亵→触发 BAD_END_1_报警 预警'
+    },
+    '进阶H玩法（口交/肛交/多人/道具）': {
+      requires: { relationship_stage: ['亲密'], affection: 90, heartbeat: 70, trust: 80, h_exp: 40 },
+      fail_changes: { affection: -25, trust: -25, jealousy: +15, illegal_count: +1 },
+      fail_event: '女角强烈反感，可能触发关系破裂或报警'
+    }
+  },
+  // 身体测量数据初始化模板（每个女角 基础信息.txt 必须填写）
+  body_template: {
+    身材: 'cup_size + bust_size + waist_size + hip_size + height + weight',
+    胸部: 'nipple_size + nipple_color + areola_size + breast_shape + breast_sensitivity + lactation',
+    腰部: 'waist_shape + waist_sensitivity',
+    手部: 'hand_desc + nail_style',
+    臀部: 'hip_shape + hip_sensitivity + anal_desc',
+    下体: 'pubic_hair + labia_size + labia_color + vaginal_tightness + vaginal_special + lubrication_level + hymen_status + fertility',
+    综合: 'body_sensitivity + sensitive_zones + arousal_triggers'
+  }
+};
+%>

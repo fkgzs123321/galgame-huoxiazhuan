@@ -1,0 +1,503 @@
+@@generate_before
+<%_
+/* ════════════════════════════════════════════════════════════
+ * 破产结局机制（BAD_END_3 完整版 · 用户强调）
+ * 职责：建立 user 的多层破产结局系统，从预警到不可逆 BAD_END
+ * 设计原则：
+ *   1. 破产不是瞬间触发，而是渐进式（5阶段预警→3阶段恢复→不可逆）
+ *   2. 给 user 多次拯救机会（打工/借贷/变卖/求助女角/特殊事件）
+ *   3. 不同难度下破产触发速度不同（地狱难度极快）
+ *   4. 破产结局有 3 种变体（饿死/债务逼迫/精神崩溃）
+ *   5. 破产前的资产清算流程（变卖道具/折扣回收）
+ * ════════════════════════════════════════════════════════════ */
+-%>
+
+<%
+// ────────────────────────────────────────────────────────────
+// 一、破产预警系统（5阶段渐进式警告）
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_WARNING_STAGES = {
+  stage_0_safe: {
+    name: '财务健康',
+    condition: 'money > 5000',
+    money_threshold: 5000,
+    alert_level: 0,
+    alert_message: '',
+    effect: null
+  },
+  stage_1_caution: {
+    name: '财务注意',
+    condition: '2000 < money ≤ 5000',
+    money_threshold: 5000,
+    alert_level: 1,
+    alert_message: '你的钱包有些瘪了，需要注意开支。',
+    effect: { mood: -2, alert_flag: 'bankruptcy_caution' }
+  },
+  stage_2_warning: {
+    name: '财务警告',
+    condition: '500 < money ≤ 2000',
+    money_threshold: 2000,
+    alert_level: 2,
+    alert_message: '你的钱所剩无几，必须尽快找到收入来源！三餐和出行都将受限。',
+    effect: { mood: -5, hunger_penalty_mult: 1.2, alert_flag: 'bankruptcy_warning' }
+  },
+  stage_3_danger: {
+    name: '财务危险',
+    condition: '0 < money ≤ 500',
+    money_threshold: 500,
+    alert_level: 3,
+    alert_message: '你已经接近身无分文！再不赚钱就要挨饿了！打工刻不容缓！',
+    effect: { mood: -10, hunger_penalty_mult: 1.5, willpower: -3, alert_flag: 'bankruptcy_danger' }
+  },
+  stage_4_critical: {
+    name: '财务临界·破产边缘',
+    condition: 'money = 0',
+    money_threshold: 0,
+    alert_level: 4,
+    alert_message: '【破产警告】你已经身无分文！无法支付任何消费。请立即打工、借贷或变卖道具！连续3天无收入将触发破产结局！',
+    effect: {
+      mood: -20,
+      hunger_penalty_mult: 2.0,
+      willpower: -5,
+      action_restricted: true,
+      consecutive_no_income_counter: true,
+      alert_flag: 'bankruptcy_critical'
+    }
+  },
+  stage_5_emergency: {
+    name: '财务紧急·破产倒计时',
+    condition: 'money ≤ 0 且 consecutive_no_income_days ≥ 1',
+    alert_level: 5,
+    alert_message: '【破产倒计时】你已连续 {days} 天无收入！剩余天数：{remaining} 天。必须立即行动！',
+    effect: {
+      mood: -15,
+      hunger_penalty_mult: 2.5,
+      all_social_actions_locked: true,
+      forced_labor: true,
+      alert_flag: 'bankruptcy_emergency'
+    }
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 二、破产恢复机制（3阶段拯救机会）
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_RECOVERY_OPTIONS = {
+  // 阶段1：常规恢复（stage_2~3 可用）
+  regular: {
+    available_at_stages: ['stage_2_warning', 'stage_3_danger'],
+    options: [
+      {
+        option_id: 'work_convenience_store',
+        name: '便利店打工',
+        description: '日薪800日元，门槛低但收入少',
+        requirements: { time: '白天', physical_min: 10 },
+        effect: { money: +800, fatigue: +15, physical: -10, mood: -2 },
+        recovery_value: 800,
+        note: '最基础的恢复手段，适合stage_2~3'
+      },
+      {
+        option_id: 'work_tutoring',
+        name: '家庭教师打工',
+        description: '日薪1500日元，需academic≥30',
+        requirements: { time: '白天', academic_min: 30, physical_min: 5 },
+        effect: { money: +1500, fatigue: +10, physical: -5, academic: +1, mood: 0, willpower: +1 },
+        recovery_value: 1500,
+        note: '性价比最高的打工方式'
+      },
+      {
+        option_id: 'work_construction',
+        name: '建筑工地打工',
+        description: '日薪2000日元，体力要求高',
+        requirements: { time: '白天', physical_min: 15, strength_min: 40 },
+        effect: { money: +2000, fatigue: +10, physical: -5, mood: +3, willpower: +3 },
+        recovery_value: 2000,
+        note: '收入最高的常规打工，但体力门槛高'
+      }
+    ]
+  },
+  
+  // 阶段2：紧急恢复（stage_4~5 可用，含借贷和变卖）
+  emergency: {
+    available_at_stages: ['stage_4_critical', 'stage_5_emergency'],
+    options: [
+      {
+        option_id: 'sell_items',
+        name: '变卖道具',
+        description: '将背包道具半价卖给当铺',
+        requirements: { location: '当铺', has_items: true },
+        effect: { money: '+物品原价×0.5', willpower: -5 },
+        recovery_value: 'variable',
+        note: '关键道具不可变卖，普通道具半价回收'
+      },
+      {
+        option_id: 'borrow_from_narisawa',
+        name: '向鸣泽美佐子借钱',
+        description: '向义母美佐子借5000日元',
+        requirements: { heroine_id: 2, affection_min: 30, location: '自宅' },
+        effect: { money: +5000, trust_misako: -10, mood: -5, debt_to_misako: 5000 },
+        recovery_value: 5000,
+        note: '美佐子好感≥30可用，但会降低信任并产生债务'
+      },
+      {
+        option_id: 'borrow_from_friend',
+        name: '向川尻信良借钱',
+        description: '向好友信良借3000日元',
+        requirements: { npc_id: 'N1', flag_required: 'kawajiri_resolved', location: '信良家' },
+        effect: { money: +3000, debt_to_nobuyoshi: 3000 },
+        recovery_value: 3000,
+        note: '需信良线推进到一定阶段，信良仗义相助'
+      },
+      {
+        option_id: 'borrow_from_west_temple',
+        name: '向西御寺借钱（高风险）',
+        description: '向西御寺财阀借10000日元，但会陷入债务陷阱',
+        requirements: { npc_id: 'N3', player_identity: ['P1','P3','P5'], willpower_max: 50 },
+        effect: { money: +10000, debt_to_west_temple: 15000, willpower: -10, flag_set: 'west_temple_debt_trap' },
+        recovery_value: 10000,
+        note: '【危险选项】西御寺利息高达50%，若1/5前未还会触发BAD_END_6变体'
+      },
+      {
+        option_id: 'emergency_aid_hospital',
+        name: '市民医院紧急救助',
+        description: '医院提供免费营养餐（仅限stage_5）',
+        requirements: { location: '市民医院', stage: 'stage_5_emergency', hospital_visits_min: 3 },
+        effect: { hunger: -50, money: 0, mood: +5, flag_set: 'hospital_emergency_aid' },
+        recovery_value: 0,
+        note: '仅缓解饥饿，不增加金钱，但可争取1天缓冲'
+      }
+    ]
+  },
+  
+  // 阶段3：特殊恢复（隐藏机会）
+  special: {
+    available_at_stages: ['stage_4_critical', 'stage_5_emergency'],
+    options: [
+      {
+        option_id: 'heroine_rescue',
+        name: '女角救助',
+        description: '关系达亲密的女角可能主动救助',
+        requirements: { heroine_affection_min: 80, relationship_stage: '亲密' },
+        effect: { money: +3000, affection: +5, flag_set: 'heroine_rescue_triggered' },
+        recovery_value: 3000,
+        note: '每位亲密女角有1次救助机会，affection越高金额越多'
+      },
+      {
+        option_id: 'variable_shop_trade',
+        name: '变数屋交易',
+        description: '用隐藏道具换取金钱',
+        requirements: { flag_required: '变数屋已访问', has_hidden_items: true },
+        effect: { money: +5000, hidden_item_consumed: true },
+        recovery_value: 5000,
+        note: '需已解锁变数屋，隐藏道具可换取较高金额'
+      },
+      {
+        option_id: 'lottery_ticket',
+        name: '彩票抽奖',
+        description: '12/31~1/6 88公园广场彩票摊',
+        requirements: { day_range: [10, 16], location: '88公园', money_min: 100 },
+        effect: { money: '-100 + 随机奖励(0~10000)', luck_based: true },
+        recovery_value: 'variable',
+        note: '赌博性质，可能血本无归，也可能一夜翻身'
+      }
+    ]
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 三、破产结局触发条件（3种变体）
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_ENDINGS = {
+  // 变体1：饿死结局（hunger达到100）
+  bankruptcy_starvation: {
+    ending_id: 'BAD_END_3A_饿死',
+    ending_name: 'BAD_END_3A·饿死',
+    ending_type: 'BAD_END',
+    trigger_condition: {
+      money_lte: 0,
+      consecutive_no_income_days_gte: 3,
+      hunger_eq: 100,
+      hunger_critical_reached: true,
+      all_recovery_failed: true
+    },
+    description: '你倒在自宅地板上，胃里空空如也。意识逐渐模糊，最后看到的画面是窗外的雪花。当你被发现时，已经停止了呼吸。寒假结束了，但你的人生也结束了。',
+    cg_id: 'CG_BAD_003A',
+    irreversible: true,
+    note: '饥饿值达100+金钱≤0+连续3天无收入+所有恢复选项失败'
+  },
+  
+  // 变体2：债务逼迫结局（向西御寺借钱未还）
+  bankruptcy_debt: {
+    ending_id: 'BAD_END_3B_债务逼迫',
+    ending_name: 'BAD_END_3B·债务逼迫',
+    ending_type: 'BAD_END',
+    trigger_condition: {
+      flag_required: 'west_temple_debt_trap',
+      day_gte: 15,
+      debt_unpaid: true,
+      money_lt: 15000
+    },
+    description: '西御寺带着律师上门讨债。你无力偿还15000日元的债务（含利息）。西御寺冷笑着说："既然还不起钱，就用你的身体来抵债吧。"你被强制为西御寺财阀做苦力，寒假结束前都无法脱身。学园、朋友、女角——一切都离你而去。',
+    cg_id: 'CG_BAD_003B',
+    irreversible: true,
+    note: '向西御寺借钱后1/5前未还清（需15000日元）→债务陷阱触发'
+  },
+  
+  // 变体3：精神崩溃结局（mood达到0）
+  bankruptcy_mental_collapse: {
+    ending_id: 'BAD_END_3C_精神崩溃',
+    ending_name: 'BAD_END_3C·破产精神崩溃',
+    ending_type: 'BAD_END',
+    trigger_condition: {
+      money_lte: 0,
+      consecutive_no_income_days_gte: 3,
+      mood_lte: 0,
+      mood_collapse_from_bankruptcy: true
+    },
+    description: '身无分文、饥饿难耐、众叛亲离——多重打击下，你的精神彻底崩溃了。你蜷缩在自宅角落，喃喃自语，不再回应任何人。美佐子叫来了救护车，你被送进了精神病院。寒假结束时，你依然没有康复的迹象。',
+    cg_id: 'CG_BAD_003C',
+    irreversible: true,
+    note: '破产导致mood持续下降至0→精神崩溃（与BAD_END_4联动但根因不同）'
+  },
+  
+  // 标准破产结局（兜底）
+  bankruptcy_standard: {
+    ending_id: 'BAD_END_3_破产',
+    ending_name: 'BAD_END_3·破产',
+    ending_type: 'BAD_END',
+    trigger_condition: {
+      money_lte: 0,
+      consecutive_no_income_days_gte: 3,
+      hunger_gte: 90
+    },
+    description: '饥饿晕倒→被送医→没钱治疗→游戏结束。你倒在路边被路人送进医院，但住院需要费用，而你身无分文。医院只能给你最基础的急救，然后让你出院。你拖着虚弱的身体回到空荡荡的家，寒假的最后几天在饥饿与绝望中度过。',
+    cg_id: 'CG_BAD_003',
+    irreversible: true,
+    note: '标准破产结局，当3种变体都未满足时触发'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 四、破产难度修正
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_DIFFICULTY_MODIFIERS = {
+  '轻松': {
+    consecutive_days_threshold: 5,      // 连续5天无收入才触发（宽松）
+    money_recovery_mult: 1.5,           // 恢复金钱×1.5
+    hunger_increment_per_slot: 8,       // 饥饿增长慢
+    heroine_rescue_chance: 0.8,         // 女角救助概率80%
+    recovery_options_available: ['regular', 'emergency', 'special']
+  },
+  '普通': {
+    consecutive_days_threshold: 3,      // 连续3天无收入触发（标准）
+    money_recovery_mult: 1.0,
+    hunger_increment_per_slot: 10,
+    heroine_rescue_chance: 0.5,
+    recovery_options_available: ['regular', 'emergency', 'special']
+  },
+  '挑战': {
+    consecutive_days_threshold: 2,      // 连续2天无收入触发（紧张）
+    money_recovery_mult: 0.8,
+    hunger_increment_per_slot: 12,
+    heroine_rescue_chance: 0.3,
+    recovery_options_available: ['regular', 'emergency']  // 无特殊恢复
+  },
+  '地狱': {
+    consecutive_days_threshold: 1,      // 连续1天无收入即触发（极严苛）
+    money_recovery_mult: 0.5,
+    hunger_increment_per_slot: 15,
+    heroine_rescue_chance: 0.1,         // 女角几乎不救助
+    recovery_options_available: ['regular']  // 仅常规打工
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 五、破产资产清算流程（变卖机制）
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_LIQUIDATION = {
+  // 可变卖道具的折扣率
+  sell_price_ratios: {
+    '普通': 0.5,        // 半价
+    '稀有': 0.4,        // 4折
+    '传说': 0.3,        // 3折
+    '关键道具': 0,      // 不可变卖
+    '礼物': 0.6         // 礼物类6折
+  },
+  
+  // 变卖流程
+  liquidation_process: [
+    {
+      step: 1,
+      action: '检查背包',
+      description: '列出所有可变卖道具（关键道具除外）',
+      location: '当铺'
+    },
+    {
+      step: 2,
+      action: '选择变卖物品',
+      description: 'user选择要变卖的道具，显示原价和变卖价',
+      ui: '选择菜单'
+    },
+    {
+      step: 3,
+      action: '确认变卖',
+      description: '变卖后金钱增加，道具从背包移除',
+      effect: { willpower: -5, mood: -3 },
+      irreversible: true  // 变卖后不可买回
+    }
+  ],
+  
+  // 特殊变卖规则
+  special_rules: [
+    {
+      rule: '修学旅行宣传单',
+      condition: '关键道具，永远不可变卖',
+      note: '即使破产也不能变卖主线道具'
+    },
+    {
+      rule: '日记本',
+      condition: '已收集的日记本不可变卖',
+      note: '隐藏剧情道具保护'
+    },
+    {
+      rule: '女角礼物',
+      condition: '已赠送的礼物不可回收变卖',
+      note: '已赠送物品属于女角'
+    },
+    {
+      rule: 'H事件道具',
+      condition: 'H相关道具不可变卖',
+      note: '保护NSFW剧情完整性'
+    }
+  ]
+};
+
+// ────────────────────────────────────────────────────────────
+// 六、破产预警检测函数（每日 0 点 + 每时段检测）
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_CHECK = {
+  // 每日 0 点检测（D0系统控制器调用）
+  daily_check: function() {
+    const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+    const _consecutiveNoIncome = Number(getvar('stat_data.临时.连续无收入天数', { scope: 'local', defaults: 0 })) || 0;
+    const _hunger = Number(getvar('stat_data.主角.饥饿', { scope: 'local', defaults: 30 })) || 0;
+    const _mood = Number(getvar('stat_data.主角.心情', { scope: 'local', defaults: 70 })) || 0;
+    const _difficulty = getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' });
+    
+    // 1. 判断当前破产阶段
+    let _currentStage = 'stage_0_safe';
+    if (_money <= 0 && _consecutiveNoIncome >= 1) {
+      _currentStage = 'stage_5_emergency';
+    } else if (_money <= 0) {
+      _currentStage = 'stage_4_critical';
+    } else if (_money <= 500) {
+      _currentStage = 'stage_3_danger';
+    } else if (_money <= 2000) {
+      _currentStage = 'stage_2_warning';
+    } else if (_money <= 5000) {
+      _currentStage = 'stage_1_caution';
+    }
+    
+    // 2. 检测是否触发破产结局
+    const _diffMod = BANKRUPTCY_DIFFICULTY_MODIFIERS[_difficulty] || BANKRUPTCY_DIFFICULTY_MODIFIERS['普通'];
+    const _threshold = _diffMod.consecutive_days_threshold;
+    
+    if (_money <= 0 && _consecutiveNoIncome >= _threshold) {
+      // 检测3种变体
+      if (_hunger >= 100) {
+        return { triggered: true, ending: 'bankruptcy_starvation', stage: _currentStage };
+      }
+      if (_mood <= 0) {
+        return { triggered: true, ending: 'bankruptcy_mental_collapse', stage: _currentStage };
+      }
+      if (_hunger >= 90) {
+        return { triggered: true, ending: 'bankruptcy_standard', stage: _currentStage };
+      }
+    }
+    
+    // 3. 检测债务陷阱
+    const _westTempleDebt = getvar('stat_data.隐藏.西寺债务陷阱', { scope: 'local', defaults: 0 });
+    const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 1 })) || 1;
+    if (_westTempleDebt === 1 && _dayCount >= 15 && _money < 15000) {
+      return { triggered: true, ending: 'bankruptcy_debt', stage: _currentStage };
+    }
+    
+    return { triggered: false, stage: _currentStage };
+  },
+  
+  // 每时段检测（移动/行动后调用）
+  slot_check: function() {
+    const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+    const _stage = this.daily_check().stage;
+    
+    // stage_4~5 时限制社交行动
+    if (_stage === 'stage_4_critical' || _stage === 'stage_5_emergency') {
+      return {
+        social_actions_locked: true,
+        forced_actions: ['work', 'sell_items', 'borrow'],
+        alert_message: BANKRUPTCY_WARNING_STAGES[_stage].alert_message
+      };
+    }
+    
+    return { social_actions_locked: false };
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 七、破产结局叙事模板
+// ────────────────────────────────────────────────────────────
+const BANKRUPTCY_NARRATIVE_TEMPLATES = {
+  // 预警叙事
+  warning_narratives: {
+    stage_1: '你翻了翻钱包，里面的钞票薄得可怜。或许该省着点花了。',
+    stage_2: '钱包几乎空了，你开始焦虑起来。这样下去，连吃饭都成问题。',
+    stage_3: '你掏遍所有口袋，只剩下几个硬币。饥饿感开始啃噬你的胃，必须立刻想办法赚钱！',
+    stage_4: '【系统警告】你已经身无分文！便利店店员用怜悯的目光看着你，所有付费行动已被锁定。请立即打工、变卖道具或借钱！连续{threshold}天无收入将触发破产结局！',
+    stage_5: '【破产倒计时】这是你连续第{days}天没有收入了。你的胃在抽搐，头在发晕。距离破产结局还有{remaining}天。求人不如求己——快行动！'
+  },
+  
+  // 结局叙事
+  ending_narratives: {
+    BAD_END_3A_饿死: '寒冷的冬夜，你蜷缩在冰冷的房间角落。胃已经不疼了——因为它已经放弃了抗议。窗外的雪花飘落，像是为你的生命唱着挽歌。当美佐子发现你时，你的身体已经冰凉。救护车来得太晚了。寒假结束了，但你没能等到春天。',
+    BAD_END_3B_债务逼迫: '咚咚咚——急促的敲门声响起。你打开门，看到西御寺带着两个西装革履的人站在门外。"欠债还钱，天经地义。"西御寺冷笑着递过一份合同，"既然还不起，就签字吧。"合同上写着"自愿为西御寺财阀服役五年"。你的手在颤抖，但饥饿和绝望让你没有选择。签下名字的那一刻，你的人生被西御寺财阀吞噬了。',
+    BAD_END_3C_精神崩溃: '你不再说话，不再吃饭，不再回应任何人。美佐子焦急地拍打你的脸，但你只是木然地盯着天花板。脑海里不断回响着"没钱、没钱、没钱"的声音，像魔咒一样把你锁在绝望里。救护车来了，你被诊断为急性精神崩溃，送进了精神病院。窗外飘着雪，但你已经感受不到了。',
+    BAD_END_3_破产: '你倒在路边，路过的人慌忙叫了救护车。在医院里，医生给你输了营养液，但住院费你根本付不起。医生无奈地叹了口气，让你出院。你拖着虚弱的身体回到空荡荡的家，倒在床上。最后几天，你靠着邻居送的粥勉强维持生命，但寒假结束时，你连去告白的力气都没有了。一切都结束了。'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 八、破产状态输出（供 D0系统控制器调用）
+// ────────────────────────────────────────────────────────────
+const _bankruptcyCheck = BANKRUPTCY_CHECK.daily_check();
+const _currentBankruptcyStage = _bankruptcyCheck.stage;
+const _bankruptcyEnding = _bankruptcyCheck.triggered ? _bankruptcyCheck.ending : null;
+
+// 当前破产状态摘要
+const BANKRUPTCY_STATUS = {
+  current_stage: _currentBankruptcyStage,
+  stage_name: BANKRUPTCY_WARNING_STAGES[_currentBankruptcyStage] ? BANKRUPTCY_WARNING_STAGES[_currentBankruptcyStage].name : '财务健康',
+  alert_level: BANKRUPTCY_WARNING_STAGES[_currentBankruptcyStage] ? BANKRUPTCY_WARNING_STAGES[_currentBankruptcyStage].alert_level : 0,
+  alert_message: BANKRUPTCY_WARNING_STAGES[_currentBankruptcyStage] ? BANKRUPTCY_WARNING_STAGES[_currentBankruptcyStage].alert_message : '',
+  is_triggered: _bankruptcyCheck.triggered,
+  triggered_ending: _bankruptcyEnding,
+  available_recovery_options: (function() {
+    const _stage = _currentBankruptcyStage;
+    const _diff = getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' });
+    const _diffMod = BANKRUPTCY_DIFFICULTY_MODIFIERS[_diff] || BANKRUPTCY_DIFFICULTY_MODIFIERS['普通'];
+    const _options = [];
+    _diffMod.recovery_options_available.forEach(category => {
+      const cat = BANKRUPTCY_RECOVERY_OPTIONS[category];
+      if (cat.available_at_stages.includes(_stage)) {
+        _options.push(...cat.options);
+      }
+    });
+    return _options;
+  })(),
+  total_recovery_options: 0,
+  bankruptcy_endings_count: Object.keys(BANKRUPTCY_ENDINGS).length,
+  difficulty_modifiers_count: Object.keys(BANKRUPTCY_DIFFICULTY_MODIFIERS).length
+};
+
+BANKRUPTCY_STATUS.total_recovery_options = BANKRUPTCY_STATUS.available_recovery_options.length;
+-%>
+<%= JSON.stringify(BANKRUPTCY_STATUS, null, 2) %>

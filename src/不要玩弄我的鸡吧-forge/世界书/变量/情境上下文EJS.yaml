@@ -1,0 +1,54 @@
+@@generate_before
+@@private
+<%_ const tgt = getvar('stat_data.排班.当前战斗目标', { defaults: '' }); _%>
+<%_ const st = getvar('stat_data.排班.战斗状态', { defaults: '未开始' }); _%>
+<%_ const d = Number(getvar('stat_data.时间.天数', { defaults: 1 })) || 1; _%>
+<%_ const hr = Number(getvar('stat_data.时间.小时', { defaults: 8 })) || 8; _%>
+<%_ const wd = getvar('stat_data.时间.星期', { defaults: '周一' }) || '周一'; _%>
+<%_ const e = Number(getvar('stat_data.状态.精力', { defaults: 80 })) || 80; _%>
+<%_ const em = Number(getvar('stat_data.状态.精力上限', { defaults: 80 })) || 80; _%>
+<%_ const s = Number(getvar('stat_data.状态.理智', { defaults: 80 })) || 80; _%>
+<%_ const h = Number(getvar('stat_data.状态.健康', { defaults: 75 })) || 75; _%>
+<%_ const sta = Number(getvar('stat_data.状态.体力', { defaults: 80 })) || 80; _%>
+<%_ const sus = Number(getvar('stat_data.状态.怀疑值', { defaults: 0 })) || 0; _%>
+<%_ const cor = Number(getvar('stat_data.状态.堕落值', { defaults: 0 })) || 0; _%>
+<%_ const money = Number(getvar('stat_data.状态.金钱', { defaults: 500 })) || 500; _%>
+<%_ const us = Number(getvar('stat_data.使用阶段.当前阶段', { defaults: 1 })) || 1; _%>
+<%_ const todayUses = Number(getvar('stat_data.使用阶段.今日使用', { defaults: 0 })) || 0; _%>
+<%_ const todayMax = Number(getvar('stat_data.使用阶段.今日上限', { defaults: 5 })) || 5; _%>
+<%_ const totalUses = Number(getvar('stat_data.使用阶段.总使用次数', { defaults: 0 })) || 0; _%>
+<%_ const cd = Number(getvar('stat_data.学业.考试倒计时', { defaults: 7 })) || 7; _%>
+<%_ const sc = Number(getvar('stat_data.学业.分数', { defaults: 75 })) || 75; _%>
+<%_ const holderId = getvar('stat_data.隐藏层.持有者ID', { defaults: '林婉清' }) || '林婉清'; _%>
+<%_ const activeUsers = Number(getvar('stat_data.隐藏层.活跃使用人数', { defaults: 0 })) || 0; _%>
+<%_ const curUserUid = getvar('stat_data.隐藏层.当前使用者UID', { defaults: '' }) || ''; _%>
+<%_ const overheat = getvar('stat_data.隐藏层.过热保护', { defaults: false }); _%>
+<%_ const interval = getvar('stat_data.隐藏层.间隔保护', { defaults: false }); _%>
+
+## 当前情境概览
+- 时间: 第<%- d %>天 <%- wd %> <%- hr %>:00（距高考 <%- cd %> 天）
+- 状态: 精力 <%- e %>/<%- em %>；理智 <%- s %>；健康 <%- h %>；体力 <%- sta %>；压力 <%- getvar('stat_data.状态.压力', { defaults: 10 }) %>
+- 疑心: <%- sus %>/200；沉沦: <%- cor %>/200；金钱: <%- money %>元；难度: <%- getvar('stat_data.状态.难度', { defaults: '困难' }) %>
+- 使用阶段: <%- us %>/5（今日 <%- todayUses %>/<%- todayMax %>，累计 <%- totalUses %>次）；学业: <%- sc %>分
+- 传播: 确认 <%- getvar('stat_data.隐藏层.确认使用者', { defaults: [] }).length %>人；活跃 <%- activeUsers %>人；持有者: <%- holderId %>
+
+<%_ if (overheat) { _%>
+## ⚠️ 过热保护：今日使用已达上限（<%- todayUses %>/<%- todayMax %>），假阴茎无法再次使用
+<%_ } else if (interval) { _%>
+## ⚠️ 间隔保护：距上次使用不足 2 小时，假阴茎充能中，无法使用
+<%_ } _%>
+
+<%_ if (st === '进行中' && tgt) { _%>
+## 战斗状态：进行中
+- ⚠ **开战轮铁律（最高优先级）**：本轮若刚开战，**必须同时更新变量**——`排班.战斗状态` = "进行中"、`排班.当前战斗目标` = 她姓名（真名/UID）、`隐藏层.当前使用者UID` = 她；**漏写目标 → 战斗面板卡在"目标缺失/同步中"无法显示战斗**，剧情无法推进！
+- 战斗由面板接管：本轮若刚开战，描写 NSFW 过程到"开始"阶段为止（按她的 NSW 档案写特色细节，不写结果/胜负/精力消耗），随后输出 <StatusPlaceHolderImpl/> + <BattleUI/>；已开战则每轮只叙事回合交互与她的反应，不判定胜负；胜负由面板结算，在结算后的下一楼层叙事
+- 数值由【性爱战斗结算】块给出，AI 按块数值写回 stat_data（唯一真源），勿自行重算；消息末尾按占位符协议输出占位符
+<%_ } else if (curUserUid) { _%>
+## ⚡ 使用触发：<%- curUserUid %> 正在使用假阴茎，你被拉入！
+- **本轮必须主动演出开战轮，不要等待玩家指令**：
+- 正文开头立即描写你突如其来的异样（热度/包裹/湿润/心跳加速/脑中模糊异样），<user> 视角不知是谁、不知是假阴茎（按【被使用时受限视角叙事】，禁止说出"假阴茎/玩具"等真相词汇）
+- 按使用者的 NSW 档案写特色细节（敏感带/偏好/反应/气味），**只推进到"开始"阶段为止**，不写结果/胜负/精力消耗
+- **必须更新变量**（开战铁律）：排班.战斗状态 = "进行中"、排班.当前战斗目标 = 她、隐藏层.当前使用者UID = 她——漏写目标面板无法显示战斗
+- 消息末尾输出 <StatusPlaceHolderImpl/> + <BattleUI/>（战斗面板弹出）
+- 战斗结束后按【性爱战斗结算】块写回数值
+<%_ } _%>

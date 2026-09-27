@@ -1,0 +1,98 @@
+名称: 阶段指导
+
+类型: 阶段指导
+
+启用: true
+激活策略:
+
+  类型: 蓝灯
+
+  优先级: 150
+
+插入位置:
+
+  类型: 指定深度
+
+  角色: system
+
+  深度: 0
+
+  顺序: 200
+
+
+
+内容: |
+
+  @@if getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) === true
+
+  【死亡结局模式 · 最高优先级】
+
+  结局名：{{ getvar('stat_data.剧情.结局分支', { scope: 'local', defaults: '' }) }}
+
+  只演绎 BE；禁止推进章节、禁止新抉择。
+
+  **序章口胡禁令**：禁止「睡醒」「第二天」「去图书馆」「方汉洲接头」——例：选旅馆（P3-B）后不得续主线。
+
+  文末必须输出 `<yxsh_be>` + `<branches>`（检查点对应原作选项）。勿在正文再列 A/B/C。
+
+  @@endif
+
+
+
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '序章' }) === '序章' && getvar('stat_data.剧情.序章已完成', { scope: 'local', defaults: false }) !== true && getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) !== true
+
+  【序章 · 本楼末尾】
+
+  叙事写完后 **必须**输出 `<branches>` 块（节点={{ getvar('stat_data.剧情.当前节点', { scope: 'local', defaults: '序章-1' }) }} 对应原作 A/B/C，见《序章当前节点选项·常亮》）。
+
+  然后 `<StatusPlaceHolderImpl/>`；**未开额外模型解析** 时主模型再写 **一个** `<UpdateVariable>`（已开则勿写，避免双份变量面板）。勿在正文写 A/B/C 列表。
+
+  @@endif
+
+
+
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '' }) === '第一章' && getvar('stat_data.剧情.序章已完成', { scope: 'local', defaults: false }) === true && getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) !== true
+
+  【第一章·太阳之影 · 本楼末尾】
+
+  叙事写完后 **必须**输出 `<branches>`（节点={{ getvar('stat_data.剧情.当前节点', { scope: 'local', defaults: '第一章-0' }) }}，见《第一章当前节点选项·常亮》）。
+
+  然后 `<StatusPlaceHolderImpl/>`；未开额外模型解析时主模型再写 **一个** `<UpdateVariable>`。
+
+  - 打入武藤公馆；方汉洲假死（第一章-10）为核心节点
+  - 武藤试探：灰色回答；公开反抗 → BE
+  - 细则：《第一章主持》+写死表（EJS getwi，非本条重复）
+
+  @@endif
+
+
+
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '' }) === '第二章' && getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) !== true
+
+  【第二章·狩猎者 · 本楼末尾】
+
+  叙事写完后 **必须**输出 `<branches>`（节点={{ getvar('stat_data.剧情.当前节点', { scope: 'local', defaults: '第二章-0' }) }}，见《第二章当前节点选项·常亮》）。
+
+  然后 `<StatusPlaceHolderImpl/>`；未开额外模型解析时主模型再写 **一个** `<UpdateVariable>`。
+
+  - 庄晓曼情感累计；章末倒酒须≥4，否则甜蜜子弹
+  - C2-14 写入 `第二章分歧`（自保/共荣圈）
+  - 细则：《第二章主持》+写死表（EJS getwi）
+
+  @@endif
+
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '' }) === '第三章' && getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) !== true
+
+  【第三章·生死途 · 关系门闩（无新增节点）】
+
+  - **主路线**（原作）：须 `剧情.第二章分歧=自保`、线索含「第二章-自保的感慨」、庄晓曼情感≥7（`$第三章主路可通关`）。不满足则走绑架/隐藏失败线，不得口胡通关。
+  - **共荣圈线**：第二章选共荣圈 → 隐藏线倾向，难通主路；勿擅自 replace 主路线节点。
+  - 关系数尺度见《数值尺度与写死选项对照》；写死章内 AI 不得擅自改 `对user.*`。
+
+  @@endif
+
+  【全局派生只读】
+
+  暴露风险=$暴露风险 | 行动级别=$允许行动级别 | 方敏可交底=$方敏可交底 | 第三章主路=$第三章主路可通关
+
+  **序章细则**不在本条：由 EJS `is_prologue` getwi《序章主持》+写死表+分节点剧本。

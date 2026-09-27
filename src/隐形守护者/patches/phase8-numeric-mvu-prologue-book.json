@@ -1,0 +1,5 @@
+[
+  {"op":"add","path":"/entryManifest/事件/序章抉择全书-写死表","value":{"path":"世界书/事件/序章/序章抉择全书-写死表.yaml","abstract":"序章全选项叙事与JSON写死","keywords":["序章","P1","写死"]}},
+  {"op":"replace","path":"/entryManifest/世界观/能力档位说明/abstract","value":"肖途能力0-10数值说明"},
+  {"op":"replace","path":"/entryManifest/世界观/能力档位说明/path","value":"世界书/世界观/能力档位说明.yaml"}
+]

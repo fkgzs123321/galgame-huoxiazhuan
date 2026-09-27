@@ -1,0 +1,102 @@
+  /* ════════════════════════════════════════════════════════════
+     舆图（世界地图）★ 参考项目「姬侠传」有一个独立的世界地图页
+     做法：按「平安镇在大陆中心」摆位，其他地点按方位铺开
+     ════════════════════════════════════════════════════════════ */
+  var 舆图位 = {
+    平安镇: [340, 250],
+    武当山: [220, 190],
+    玉女峰: [470, 320],
+    大雪山: [300, 90],
+    灵心观: [140, 280],
+    五指山: [430, 430],
+    冰火岛: [560, 120],
+    黑森林: [200, 400],
+    商家堡: [520, 230],
+  };
+  var 舆图连 = [
+    ['平安镇', '武当山'], ['平安镇', '玉女峰'], ['平安镇', '灵心观'],
+    ['平安镇', '五指山'], ['平安镇', '商家堡'], ['武当山', '大雪山'],
+    ['大雪山', '冰火岛'], ['灵心观', '黑森林'], ['玉女峰', '五指山'],
+  ];
+  var 选中地 = null;
+
+  function 画舆图() {
+    var 地 = (worldData().地理) || {};
+    var 名s = Object.keys(地).filter(function (k) { return !!舆图位[k]; });
+    var 当前 = String((状态.场景 || {}).当前地点 || "");
+    var W = 680, H = 520;
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" height="' + H + '" class="yx-map">';
+    // 底纹：山河
+    s += '<defs>'
+      + '<radialGradient id="yxmg" cx="50%" cy="45%">'
+      + '<stop offset="0%" stop-color="#1b2334"/><stop offset="100%" stop-color="#0d1119"/></radialGradient>'
+      + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="url(#yxmg)" rx="10"/>';
+    // 山脊（几笔装饰）
+    s += '<path d="M60 420 Q140 350 200 400 T340 380 T470 430 T610 400" fill="none" stroke="#2b3purple" stroke-width="0"/>';
+    s += '<path d="M60 420 Q140 350 200 400 T340 380 T470 430 T610 400" fill="none" stroke="#2a3purple" stroke-width="0"/>';
+    s += '<path d="M60 420 Q140 350 200 400 T340 380 T470 430 T610 400" fill="none" stroke="#243149" stroke-width="1.4" opacity=".5"/>';
+    s += '<path d="M80 140 Q180 90 300 120 T520 100 T640 160" fill="none" stroke="#243149" stroke-width="1.2" opacity=".4"/>';
+    // 连线
+    舆图连.forEach(function (p) {
+      var a = 舆图位[p[0]], b = 舆图位[p[1]];
+      if (!a || !b) return;
+      s += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"'
+        + ' stroke="#3a476606" stroke-width="0"/>';
+      s += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"'
+        + ' stroke="#3a4766" stroke-width="1" opacity=".45" stroke-dasharray="3 4"/>';
+    });
+    // 地点
+    名s.forEach(function (n) {
+      var p = 舆图位[n];
+      var 是 = (n === 当前);
+      var 色 = 是 ? "#e5b44a" : "#6d7893";
+      // 危险度：黑森林 / 五指山 / 冰火岛偏危险
+      var 险 = (["黑森林", "五指山", "冰火岛"].indexOf(n) >= 0);
+      var 点色 = 险 ? "#e05a4a" : 色;
+      s += '<g class="yx-mp" data-place="' + E(n) + '" style="cursor:pointer">';
+      if (是) s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="21" fill="none" stroke="#e5b44a" stroke-width="1" opacity=".5" class="yx-breathe"/>';
+      s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="9" fill="' + 点色 + '22" stroke="' + 点色 + '" stroke-width="1.6"/>';
+      s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="' + 点色 + '"/>';
+      s += '<text x="' + p[0] + '" y="' + (p[1] - 16) + '" text-anchor="middle" fill="' + 点色 + '" font-size="12" font-weight="' + (是 ? 600 : 400) + '">' + E(n) + "</text>";
+      // 门下弟子数
+      var 谁 = String((地[n] || {}).谁在这儿 || "").split(" / ").filter(Boolean).length;
+      if (谁) s += '<text x="' + p[0] + '" y="' + (p[1] + 22) + '" text-anchor="middle" fill="' + 色 + '" font-size="9" opacity=".65">' + 谁 + " 人</text>";
+      s += "</g>";
+    });
+    s += "</svg>";
+
+    var H2 = "";
+    H2 += '<div class="yx-r"><div class="yx-c yx-w"><div class="yx-ttl">舆图 <em>（点一处看详情）</em></div>';
+    H2 += '<div class="yx-nt">金圈是你现在所在。红点是偏僻凶险的地方（黑森林 / 五指山 / 冰火岛）。</div>';
+    H2 += '<div class="yx-tu">' + s + "</div></div>";
+    // 详情
+    if (选中地 && 地[选中地]) {
+      var d = 地[选中地];
+      H2 += '<div class="yx-c yx-w"><div class="yx-ttl">' + E(选中地) + (选中地 === 当前 ? ' <em>（就在这儿）</em>' : "") + "</div>";
+      H2 += 折行("范围", E(d.范围 || "—"));
+      H2 += \'<div class="yx-k2">概览</div><div class="yx-nt">\' + E(d.概览 || "") + "</div>";
+      H2 += 折行("可做的事", E(d.可做的事 || "—"));
+      var 谁2 = String(d.谁在这儿 || "").split(" / ").filter(Boolean);
+      if (谁2.length) {
+        H2 += \'<div class="yx-k2">谁在这儿（\' + 谁2.length + " 人）</div>";
+        H2 += \'<div class="yx-chips">\' + 谁2.map(function (n) {
+          var 品 = NPC品级(n), 色 = 档色(品);
+          return \'<span class="yx-ch" style="border-color:\' + 色 + \'66;color:\' + 色 + \'">\' + E(n) + "　" + 品名(品) + "</span>";
+        }).join("") + "</div>";
+      }
+      if (d.注) H2 += \'<div class="yx-nt">★ \' + E(d.注) + "</div>";
+      H2 += "</div>";
+    }
+    H2 += "</div>";
+    return H2;
+  }
+  function 绑舆图() {
+    [].forEach.call(document.querySelectorAll(".yx-mp"), function (g) {
+      g.addEventListener("click", function () {
+        选中地 = g.getAttribute("data-place");
+        画();
+      });
+    });
+  }
+

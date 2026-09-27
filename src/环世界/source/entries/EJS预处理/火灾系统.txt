@@ -1,0 +1,417 @@
+@@generate_before
+<%_
+/* 火灾系统 - 点燃判定/火势蔓延/扑灭计算/灼伤分级/烟雾影响/大雨灭火 */
+
+/* 可燃物表 FIRE_DB
+   字段: 燃点(0-100), 蔓延速度(0-2), 燃烧时长(小时), 产出, 燃点等级 */
+var FIRE_DB = {
+  '木材':   { 燃点: 40, 蔓延速度: 1.0, 燃烧时长: 2.0, 产出: '灰烬', 燃点等级: '中' },
+  '布':     { 燃点: 25, 蔓延速度: 1.5, 燃烧时长: 0.5, 产出: '灰烬', 燃点等级: '低' },
+  '植物':   { 燃点: 20, 蔓延速度: 0.8, 燃烧时长: 1.0, 产出: '灰烬', 燃点等级: '低' },
+  '油脂':   { 燃点: 10, 蔓延速度: 2.0, 燃烧时长: 3.0, 产出: '黑烟', 燃点等级: '极低' },
+  '金属':   { 燃点: 999, 蔓延速度: 0,   燃烧时长: 0,   产出: '无',   燃点等级: '不可燃' },
+  '石块':   { 燃点: 999, 蔓延速度: 0,   燃烧时长: 0,   产出: '无',   燃点等级: '不可燃' },
+  '皮革':   { 燃点: 35, 蔓延速度: 1.2, 燃烧时长: 1.5, 产出: '黑烟', 燃点等级: '中' },
+  '化学燃料': { 燃点: 5,  蔓延速度: 2.5, 燃烧时长: 4.0, 产出: '毒烟', 燃点等级: '极低' },
+  '麦片':   { 燃点: 30, 蔓延速度: 1.3, 燃烧时长: 1.0, 产出: '灰烬', 燃点等级: '低' }
+};
+
+/* 火势规模等级表 FIRE_SIZE_DB
+   字段: 规模值范围, 描述, 扑灭难度, 蔓延修正 */
+var FIRE_SIZE_DB = {
+  '微火':   { 规模值范围: [1, 10],   描述: '可徒手扑灭',         扑灭难度: 0.5, 蔓延修正: 0.6 },
+  '小火':   { 规模值范围: [11, 30],  描述: '需水桶/灭火器',       扑灭难度: 1.0, 蔓延修正: 1.0 },
+  '中火':   { 规模值范围: [31, 60],  描述: '需多人协作',         扑灭难度: 1.5, 蔓延修正: 1.3 },
+  '大火':   { 规模值范围: [61, 100], 描述: '难以控制,需泡沫',     扑灭难度: 2.0, 蔓延修正: 1.6 },
+  '烈火':   { 规模值范围: [101, 200],描述: '失控,建议撤离',       扑灭难度: 3.0, 蔓延修正: 2.0 }
+};
+
+/* 燃烧产物表 FIRE_OUTPUT_DB
+   字段: 烟雾密度加成, 毒性, 视野遮挡, 残留物 */
+var FIRE_OUTPUT_DB = {
+  '灰烬': { 烟雾密度加成: 1, 毒性: 0,   视野遮挡: 0.1, 残留物: '灰烬堆(可清理)' },
+  '黑烟': { 烟雾密度加成: 3, 毒性: 0.3, 视野遮挡: 0.5, 残留物: '焦黑残渣' },
+  '毒烟': { 烟雾密度加成: 5, 毒性: 1.0, 视野遮挡: 0.8, 残留物: '剧毒残渣(需防化)' }
+};
+
+/* 获取可燃物信息, 不存在返回木材兜底 */
+function _fireMaterialInfo(type) {
+  var t = String(type) || '木材';
+  return FIRE_DB[t] || FIRE_DB['木材'];
+}
+
+/* 获取火势规模等级 */
+function _fireSizeLevel(size) {
+  var s = Number(size) || 0;
+  for (var k in FIRE_SIZE_DB) {
+    var range = FIRE_SIZE_DB[k].规模值范围;
+    if (s >= range[0] && s <= range[1]) {
+      return { 等级: k, 数据: FIRE_SIZE_DB[k] };
+    }
+  }
+  if (s > 200) return { 等级: '烈火', 数据: FIRE_SIZE_DB['烈火'] };
+  return { 等级: '微火', 数据: FIRE_SIZE_DB['微火'] };
+}
+
+/* 火势蔓延概率: fireSize × windSpeed × material系数, 使用DDL骰子引擎判定
+   返回是否蔓延/蔓延规模增量/新着火点数量/检定结果 */
+function _fireSpread(fireSize, windSpeed, material) {
+  var size = Number(fireSize) || 0;
+  var wind = Number(windSpeed) || 0;
+  var mat = _fireMaterialInfo(material);
+  var sizeLevel = _fireSizeLevel(size);
+  var spreadRate = mat.蔓延速度 * sizeLevel.数据.蔓延修正;
+  var spreadScore = size + wind * 5 * spreadRate;
+  var seed = 'firespread_' + material + '_' + size + '_' + wind;
+  var checkResult = _check(spreadScore, seed, '普通');
+  var willSpread = checkResult.result === '普通成功' || checkResult.result === '极难成功' || checkResult.result === '大成功';
+  var sizeIncrement = 0;
+  var newIgnitions = 0;
+  if (willSpread) {
+    var bonus = 0;
+    if (checkResult.result === '大成功') bonus = 0.5;
+    else if (checkResult.result === '极难成功') bonus = 0.2;
+    sizeIncrement = Math.round((size * 0.15 + wind * 2) * spreadRate * (1 + bonus));
+    var igniteSeed = 'ignitecount_' + seed + '_' + checkResult.roll;
+    var igniteRoll = _lcgRoll(igniteSeed, 1, 100)[0] / 100;
+    if (mat.燃点等级 === '极低') newIgnitions = Math.floor(igniteRoll * 3) + 1;
+    else if (mat.燃点等级 === '低') newIgnitions = Math.floor(igniteRoll * 2) + 1;
+    else newIgnitions = Math.floor(igniteRoll * 1) + 1;
+  }
+  return {
+    是否蔓延: willSpread,
+    蔓延规模增量: sizeIncrement,
+    新着火点: newIgnitions,
+    蔓延系数: Math.round(spreadRate * 100) / 100,
+    检定: checkResult
+  };
+}
+
+/* 扑灭速度: skill×2 + 泡沫加成50, 应用扑灭难度修正
+   返回每回合扑灭量/扑灭系数/是否可扑灭/检定结果 */
+function _fireExtinguish(skill, tool, foamBoost) {
+  var skl = Number(skill) || 0;
+  var foam = foamBoost ? 50 : 0;
+  var toolBonus = 0;
+  var toolName = String(tool) || '徒手';
+  if (toolName.indexOf('泡沫') >= 0) toolBonus = 50;
+  else if (toolName.indexOf('水桶') >= 0) toolBonus = 20;
+  else if (toolName.indexOf('灭火器') >= 0) toolBonus = 35;
+  else if (toolName.indexOf('徒手') >= 0) toolBonus = 0;
+  var score = skl * 2 + foam + toolBonus;
+  var seed = 'extinguish_' + skl + '_' + toolName;
+  var checkResult = _check(score, seed, '普通');
+  var extMod = 1.0;
+  if (checkResult.result === '大成功') extMod = 1.5;
+  else if (checkResult.result === '极难成功') extMod = 1.2;
+  else if (checkResult.result === '失败') extMod = 0.6;
+  else if (checkResult.result === '大失败') extMod = 0.3;
+  var extinguishPerTurn = Math.round(score * 0.5 * extMod);
+  var minSkill = Math.max(1, Math.ceil(score / 20));
+  return {
+    每回合扑灭量: extinguishPerTurn,
+    扑灭系数: Math.round(extMod * 100) / 100,
+    是否可扑灭: checkResult.result !== '大失败',
+    最小技能要求: minSkill,
+    工具加成: toolBonus,
+    泡沫加成: foam,
+    检定: checkResult
+  };
+}
+
+/* 灼伤伤害分级: 轻5HP/中15HP/重30HP/致命50HP
+   返回伤害值/严重度/部位损伤描述 */
+function _burnDamage(target, severity) {
+  var sev = String(severity) || '轻';
+  var damageTable = {
+    '轻':   { 伤害: 5,  严重度: '轻度灼伤', 描述: '皮肤红肿起泡,疼痛但可恢复' },
+    '中':   { 伤害: 15, 严重度: '中度灼伤', 描述: '大面积水泡,需医疗处理' },
+    '重':   { 伤害: 30, 严重度: '重度灼伤', 描述: '真皮层损伤,留疤,需高级医疗' },
+    '致命': { 伤害: 50, 严重度: '致命灼伤', 描述: '组织碳化,危及生命,需立即抢救' }
+  };
+  var dmg = damageTable[sev] || damageTable['轻'];
+  var tgt = String(target) || '躯干';
+  var hpField = tgt;
+  if (tgt === '头部' || tgt === '躯干' || tgt === '左臂' || tgt === '右臂' || tgt === '左腿' || tgt === '右腿') {
+    hpField = tgt;
+  } else {
+    hpField = '躯干';
+  }
+  var currentHp = Number(getvar('stat_data.殖民者_主角.' + hpField, {scope:'local',defaults:100})) || 100;
+  var newHp = Math.max(0, currentHp - dmg.伤害);
+  var scarChance = 0;
+  if (sev === '中') scarChance = 0.2;
+  else if (sev === '重') scarChance = 0.5;
+  else if (sev === '致命') scarChance = 0.9;
+  return {
+    目标部位: tgt,
+    伤害值: dmg.伤害,
+    严重度: dmg.严重度,
+    描述: dmg.描述,
+    部位原HP: currentHp,
+    部位新HP: newHp,
+    留疤概率: scarChance
+  };
+}
+
+/* 点燃判定: source(闪电/营火失控/爆炸引燃), chance为点燃概率修正
+   返回是否点燃/点燃材料/初始规模/检定结果 */
+function _fireIgnite(source, target, chance) {
+  var src = String(source) || '闪电';
+  var tgt = _fireMaterialInfo(target);
+  var ch = Number(chance) || 1.0;
+  if (tgt.燃点等级 === '不可燃') {
+    return {
+      是否点燃: false,
+      点燃材料: target,
+      初始规模: 0,
+      不可燃原因: '材料不可燃',
+      检定: null
+    };
+  }
+  var sourceMod = 1.0;
+  var baseSize = 10;
+  if (src === '闪电') { sourceMod = 1.5; baseSize = 20; }
+  else if (src === '营火失控') { sourceMod = 1.0; baseSize = 15; }
+  else if (src === '爆炸引燃') { sourceMod = 2.0; baseSize = 40; }
+  else if (src === '纵火') { sourceMod = 1.2; baseSize = 25; }
+  var envTemp = Number(getvar('stat_data.殖民地.温度', {scope:'local',defaults:20})) || 20;
+  var tempMod = 1.0;
+  if (envTemp > 35) tempMod = 1.4;
+  else if (envTemp > 25) tempMod = 1.2;
+  else if (envTemp < 0) tempMod = 0.5;
+  else if (envTemp < 10) tempMod = 0.8;
+  var igniteScore = sourceMod * tempMod * ch * 40;
+  var seed = 'ignite_' + src + '_' + target;
+  var checkResult = _check(igniteScore, seed, '普通');
+  var ignited = checkResult.result === '普通成功' || checkResult.result === '极难成功' || checkResult.result === '大成功';
+  var initSize = 0;
+  if (ignited) {
+    var bonus = 0;
+    if (checkResult.result === '大成功') bonus = 0.5;
+    else if (checkResult.result === '极难成功') bonus = 0.2;
+    initSize = Math.round(baseSize * (1 + bonus) * tempMod);
+  }
+  return {
+    是否点燃: ignited,
+    点燃材料: target,
+    初始规模: initSize,
+    点燃源: src,
+    温度修正: Math.round(tempMod * 100) / 100,
+    检定: checkResult
+  };
+}
+
+/* 燃烧时长计算: material基础时长 × size规模修正
+   返回总燃烧时长(小时)/规模修正/是否自然熄灭 */
+function _fireDuration(material, size) {
+  var mat = _fireMaterialInfo(material);
+  var sz = Number(size) || 10;
+  if (mat.燃点等级 === '不可燃') {
+    return { 总燃烧时长: 0, 规模修正: 0, 是否自然熄灭: true, 说明: '不可燃材料' };
+  }
+  var sizeMod = 1.0;
+  if (sz > 100) sizeMod = 1.8;
+  else if (sz > 60) sizeMod = 1.5;
+  else if (sz > 30) sizeMod = 1.2;
+  else if (sz < 10) sizeMod = 0.7;
+  var total = Math.round(Number(mat.燃烧时长) * sizeMod * 100) / 100;
+  var weather = String(getvar('stat_data.殖民地.天气', {scope:'local',defaults:'晴'})) || '晴';
+  var naturalExtinguish = false;
+  if (weather === '大雨' || weather === '暴风雪') { total *= 0.4; naturalExtinguish = sz < 30; }
+  else if (weather === '雨' || weather === '雪') { total *= 0.7; }
+  total = Math.round(total * 100) / 100;
+  return {
+    总燃烧时长: total,
+    规模修正: sizeMod,
+    是否自然熄灭: naturalExtinguish,
+    天气: weather
+  };
+}
+
+/* 烟雾影响: density(1-10) × duration(小时), 心情-5~-20, 呼吸损伤
+   返回心情惩罚/呼吸损伤/视野修正/严重度描述 */
+function _smokeEffect(density, duration) {
+  var dens = Number(density) || 1;
+  var dur = Number(duration) || 1;
+  if (dens > 10) dens = 10;
+  if (dens < 1) dens = 1;
+  var moodPenalty = -5;
+  if (dens >= 8) moodPenalty = -20;
+  else if (dens >= 6) moodPenalty = -15;
+  else if (dens >= 4) moodPenalty = -10;
+  var breathDamage = Math.round(dens * dur * 0.5);
+  var visionMod = 1.0 - dens * 0.08;
+  if (visionMod < 0.2) visionMod = 0.2;
+  var severity = '轻微';
+  var desc = '略有呛鼻';
+  if (dens >= 8) { severity = '严重'; desc = '浓烟呛人,视野极差,呼吸损伤明显'; }
+  else if (dens >= 6) { severity = '中度'; desc = '烟雾弥漫,呼吸不适'; }
+  else if (dens >= 4) { severity = '轻度'; desc = '烟雾可见,略有呛鼻'; }
+  return {
+    烟雾密度: dens,
+    持续时长: dur,
+    心情惩罚: moodPenalty,
+    呼吸损伤: breathDamage,
+    视野修正: Math.round(visionMod * 100) / 100,
+    严重度: severity,
+    描述: desc
+  };
+}
+
+/* 大雨灭火效果: rainLevel(1-5) × (1 - fireSize/200)
+   返回每回合灭火量/是否完全扑灭/残余规模 */
+function _rainExtinguish(rainLevel, fireSize) {
+  var rain = Number(rainLevel) || 0;
+  var size = Number(fireSize) || 0;
+  if (rain <= 0) {
+    return { 每回合灭火量: 0, 是否完全扑灭: false, 残余规模: size, 说明: '无雨' };
+  }
+  if (rain > 5) rain = 5;
+  var sizeFactor = Math.max(0.1, 1 - size / 200);
+  var extPerTurn = Math.round(rain * 15 * sizeFactor);
+  var remaining = Math.max(0, size - extPerTurn);
+  var extinguished = remaining <= 0;
+  return {
+    每回合灭火量: extPerTurn,
+    是否完全扑灭: extinguished,
+    残余规模: remaining,
+    雨量等级: rain,
+    说明: rain >= 4 ? '大雨有效压制火势' : '雨减缓火势'
+  };
+}
+
+/* 读取殖民者建设技能与状态(MVU变量) */
+var p1Name = getvar('stat_data.殖民者_主角.姓名', {scope:'local',defaults:''}) || '';
+var p1Construction = Number(getvar('stat_data.殖民者_主角.建设', {scope:'local',defaults:5})) || 5;
+var p1HeadHp = Number(getvar('stat_data.殖民者_主角.头部', {scope:'local',defaults:100})) || 100;
+var p1TorsoHp = Number(getvar('stat_data.殖民者_主角.躯干', {scope:'local',defaults:100})) || 100;
+
+var colonyTemp = Number(getvar('stat_data.殖民地.温度', {scope:'local',defaults:20})) || 20;
+var colonyWeather = getvar('stat_data.殖民地.天气', {scope:'local',defaults:'晴'}) || '晴';
+var colonyWind = Number(getvar('stat_data.殖民地.风速', {scope:'local',defaults:3})) || 3;
+
+/* 主角火灾演示判定 */
+var demoIgnite = _fireIgnite('闪电', '木材', 1.0);
+var demoSpread = _fireSpread(30, colonyWind, '木材');
+var demoExtinguish = _fireExtinguish(p1Construction, '泡沫灭火器', true);
+var demoBurn = _burnDamage('躯干', '中');
+var demoDuration = _fireDuration('木材', 30);
+var demoSmoke = _smokeEffect(5, 2);
+var demoRain = _rainExtinguish(3, 30);
+
+/* 温度修正: 高温环境增加点燃概率 */
+var tempRiskMod = 1.0;
+if (colonyTemp > 35) { tempRiskMod = 1.4; }
+else if (colonyTemp > 25) { tempRiskMod = 1.2; }
+else if (colonyTemp < 0) { tempRiskMod = 0.5; }
+_%>
+
+<火灾校验>
+[火灾系统校验]
+殖民者: <%= p1Name %>
+建设技能: <%= p1Construction %>
+头部HP: <%= p1HeadHp %>
+躯干HP: <%= p1TorsoHp %>
+殖民地温度: <%= colonyTemp %>℃ (温度风险修正×<%= tempRiskMod %>)
+殖民地天气: <%= colonyWeather %>
+殖民地风速: <%= colonyWind %>
+
+[点燃判定]
+点燃源: 闪电
+目标材料: 木材
+温度修正: ×<%= demoIgnite.温度修正 %>
+检定结果: <%= demoIgnite.检定 ? demoIgnite.检定.result : '无需判定' %> <%= demoIgnite.检定 ? '(骰值'+demoIgnite.检定.roll+',阈值'+demoIgnite.检定.threshold+')' : '' %>
+是否点燃: <%= demoIgnite.是否点燃 ? '是' : '否' %>
+初始规模: <%= demoIgnite.初始规模 %>
+
+[火势蔓延判定]
+火势规模: 30 (小火)
+风速: <%= colonyWind %>
+材料: 木材 (蔓延系数<%= demoSpread.蔓延系数 %>)
+检定结果: <%= demoSpread.检定.result %> (骰值<%= demoSpread.检定.roll %>,阈值<%= demoSpread.检定.threshold %>)
+是否蔓延: <%= demoSpread.是否蔓延 ? '是' : '否' %>
+蔓延规模增量: <%= demoSpread.蔓延规模增量 %>
+新着火点: <%= demoSpread.新着火点 %>
+
+[扑灭火灾]
+执行者: <%= p1Name %>
+技能等级: 建设=<%= p1Construction %>
+目标: 木材火势(规模30)
+输入: 木材火势×1, 泡沫灭火器×1
+工具加成: +<%= demoExtinguish.工具加成 %>
+泡沫加成: +<%= demoExtinguish.泡沫加成 %>
+每回合扑灭量: <%= demoExtinguish.每回合扑灭量 %>
+扑灭系数: ×<%= demoExtinguish.扑灭系数 %>
+是否可扑灭: <%= demoExtinguish.是否可扑灭 ? '是' : '否' %>
+最小技能要求: <%= demoExtinguish.最小技能要求 %>
+判定: <%= p1Construction >= demoExtinguish.最小技能要求 ? '成功(技能≥最小要求)' : '技能不足' %>
+
+[灼伤伤害示例]
+目标部位: <%= demoBurn.目标部位 %>
+严重度: <%= demoBurn.严重度 %>
+伤害值: <%= demoBurn.伤害 %> HP
+部位原HP: <%= demoBurn.部位原HP %> → 新HP: <%= demoBurn.部位新HP %>
+留疤概率: <%= demoBurn.留疤概率 * 100 %>%
+描述: <%= demoBurn.描述 %>
+
+[燃烧时长]
+材料: 木材, 规模: 30
+基础燃烧时长: 2.0h
+规模修正: ×<%= demoDuration.规模修正 %>
+天气修正: <%= demoDuration.天气 %>
+总燃烧时长: <%= demoDuration.总燃烧时长 %>h
+是否自然熄灭: <%= demoDuration.是否自然熄灭 ? '是' : '否' %>
+
+[烟雾影响]
+烟雾密度: 5, 持续: 2h
+心情惩罚: <%= demoSmoke.心情惩罚 %>
+呼吸损伤: <%= demoSmoke.呼吸损伤 %> HP
+视野修正: ×<%= demoSmoke.视野修正 %>
+严重度: <%= demoSmoke.严重度 %>
+描述: <%= demoSmoke.描述 %>
+
+[大雨灭火]
+雨量等级: 3
+火势规模: 30
+每回合灭火量: <%= demoRain.每回合灭火量 %>
+是否完全扑灭: <%= demoRain.是否完全扑灭 ? '是' : '否' %>
+残余规模: <%= demoRain.残余规模 %>
+说明: <%= demoRain.说明 %>
+</火灾校验>
+
+[火灾系统 · 系统控制器]
+## 可燃物表（查FIRE_DB）
+木材(燃点40中/蔓延1.0/2h/灰烬) | 布(燃点25低/蔓延1.5/0.5h/灰烬) | 植物(燃点20低/蔓延0.8/1h/灰烬)
+油脂(燃点10极低/蔓延2.0/3h/黑烟) | 金属(不可燃) | 石头(不可燃)
+皮革(燃点35中/蔓延1.2/1.5h/黑烟) | 化学燃料(燃点5极低/蔓延2.5/4h/毒烟) | 麦片(燃点30低/蔓延1.3/1h/灰烬)
+
+## 火势规模等级（查FIRE_SIZE_DB）
+微火(1-10/徒手扑灭/难度0.5) | 小火(11-30/水桶灭火器/难度1.0)
+中火(31-60/多人协作/难度1.5) | 大火(61-100/需泡沫/难度2.0)
+烈火(101-200/建议撤离/难度3.0)
+
+## 燃烧产物（查FIRE_OUTPUT_DB）
+灰烬(烟雾+1/无毒/残留灰烬堆) | 黑烟(烟雾+3/毒性0.3/焦黑残渣)
+毒烟(烟雾+5/毒性1.0/剧毒残渣需防化)
+
+## 火灾规则
+- **点燃判定**：闪电(×1.5初始规模20)/营火失控(×1.0初始15)/爆炸引燃(×2.0初始40)
+- **温度修正**：>35℃点燃概率×1.4, <0℃点燃概率×0.5
+- **火势蔓延**：评分=规模+风速×5×材料蔓延系数, 规模等级影响蔓延修正
+- **扑灭速度**：每回合扑灭量=(建设×2+工具加成+泡沫50)×0.5×检定修正
+- **工具加成**：徒手0/水桶+20/灭火器+35/泡沫+50
+- **灼伤分级**：轻5HP红肿/中15HP水泡/重30HP真皮损伤/致命50HP组织碳化
+- **燃烧时长**：基础时长×规模修正(小火0.7~烈火1.8), 大雨降至40%
+- **烟雾影响**：密度≥8心情-20呼吸损伤明显, 密度4-7心情-10~-15
+- **大雨灭火**：每回合灭火量=雨量×15×(1-规模/200), 大雨可自然扑灭小火
+- **不可燃材料**：金属/石头完全不燃烧, 燃点999
+
+## 叙事要求
+- 发生"闪电引燃"时，叙事须描写雷击的闪光与焦糊气味
+- 火势升级为"大火"时，叙事须描写殖民者的紧迫与热浪扑面
+- 发生"烈火"时，叙事须描写撤离的混乱与殖民地建筑的崩塌
+- 殖民者遭受"重度灼伤"时，叙事须描写皮肤焦黑与痛苦哀嚎
+- 化学燃料火灾时，叙事须描写毒烟的刺鼻与防护紧迫
+- 大雨扑灭火灾时，叙事须描写雨水浇灭火势的嘶嘶白雾
+- 营火失控时，叙事须描写火苗窜出火坑引燃周围物品的过程

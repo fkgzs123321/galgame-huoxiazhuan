@@ -1,0 +1,16 @@
+[
+  { "op": "replace", "path": "/typeLists/before_char", "value": ["文风", "世界观", "扮演准则", "时间线", "地理"] },
+  { "op": "replace", "path": "/typeLists/depth", "value": ["阶段指导", "MVU"] },
+  { "op": "remove", "path": "/strategyThresholds/事件" },
+  { "op": "add", "path": "/strategyThresholds/文风", "value": "Infinity" },
+  { "op": "add", "path": "/entryManifest/文风", "value": {} },
+  { "op": "add", "path": "/entryManifest/世界观", "value": {} },
+  { "op": "add", "path": "/entryManifest/扮演准则", "value": {} },
+  { "op": "add", "path": "/entryManifest/时间线", "value": {} },
+  { "op": "add", "path": "/entryManifest/地理", "value": {} },
+  { "op": "add", "path": "/entryManifest/阶段指导", "value": {} },
+  { "op": "add", "path": "/entryManifest/角色", "value": {} },
+  { "op": "add", "path": "/entryManifest/NPC", "value": {} },
+  { "op": "add", "path": "/entryManifest/MVU", "value": {} },
+  { "op": "add", "path": "/tags", "value": ["现代都市", "NTR", "反派视角", "系统", "NTL", "多角色"] }
+]

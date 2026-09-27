@@ -1,0 +1,26 @@
+- id: sp_database
+  name: SP·数据库
+  contentFile: sp_database.js
+  enabled: true
+  info: 'SPV数据库扩展脚本（spv7.5），提供<UpdateTable>块SQL执行能力。来源：https://github.com/AlbusKen/shujuku'
+  allowExternal: true
+  buttons: []
+  data: {}
+- id: spv_inject_tables
+  name: SPV表格注入器
+  contentFile: spv-inject-tables.js
+  enabled: true
+  info: 'SPV 表格模板注入器（raft_13 方案）：从禁用世界书条目「表格模板JSON」读取 chatSheets JSON 模板，调用 AutoCardUpdaterAPI.importTemplateFromData 自动创建预设并切换。点击按钮即可一键注入，省去手动导入 chatSheets.json 的麻烦。'
+  allowExternal: true
+  buttons:
+    - name: 📦 创建系统哥的末日表格模板
+      visible: true
+  data: {}
+- id: mvu_schema
+  name: zod结构
+  contentFile: mvu-schema.js
+  enabled: true
+  info: '注册系统哥的末日 MVU Schema（zod），定义所有变量路径和默认值，确保变量正确初始化和更新'
+  allowExternal: true
+  buttons: []
+  data: {}

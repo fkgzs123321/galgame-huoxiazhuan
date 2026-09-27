@@ -1,0 +1,173 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 正树夏子 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=19 / 跨界客串自《同级生1 Remake》(2022) · 广播委员
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，于 2022 年同级生1 Remake 中重现
+   本次项目作为「跨界客串」福利配置，与同级生2 原作设定无直接关联
+   互斥关系：仁科正树（与仁科 row_id=18 互斥）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 正树夏子_INFO = {
+  heroine_id: 19,
+  name: '正树夏子',
+  romanization: 'Masaki Natsuko',
+  age: 17,
+  blood_type: 'O',
+  identity: '八十八学园二年生，广播委员',
+  relationship: '主角学妹，初识为校园广播里的甜美声音',
+  home: '八十八町商业区附近公寓（与母亲同住，父亲是电台主播常出差）',
+  birthday: '08-08',
+  height: 160,
+  weight: 47,
+  three_size: 'B82-W57-H84',
+  cv_implied: '甜美清亮系少女声线，咬字清晰，自带广播腔',
+
+  appearance: {
+    hair: '浅栗色微卷中长发，常扎半丸子头或双麻花辫，前额留空气刘海',
+    eyes: '杏仁眼，眼色浅棕，眼神明亮带笑意',
+    body: '纤细但有曲线，肩膀端正，走姿带节奏感（习惯踩广播节拍）',
+    feature: '右耳上方有一颗小痣；说话时习惯用手按喉咙（保护嗓子）',
+    clothing_default: '校服略改：领带换成丝绒款，裙摆及膝；配淡粉针织开衫；冬天配米色贝雷帽与丝绒围巾'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁广播委员/校园明星：声音甜美，皮肤白皙，身形匀称，渴望被倾听而非被听见
+  body_measurements: {
+    // 身体基础测量（6 列）— 标准匀称体型，纤细但有曲线
+    cup_size: 'C',
+    bust_size: 82,
+    waist_size: 57,
+    hip_size: 84,
+    height: 160,
+    weight: 47,
+    // 胸部详细（6 列）— 中等发育，皮肤白皙透出粉嫩
+    nipple_size: '中',
+    nipple_color: '粉嫩',
+    areola_size: '中',
+    breast_shape: '匀称',
+    breast_sensitivity: 100,
+    lactation: '无',
+    // 腰部（2 列）— 广播委员的端正体态练出的匀称腰
+    waist_shape: '匀称',
+    waist_sensitivity: 100,
+    // 手部（2 列）— 长年按喉咙护嗓的习惯印记
+    hand_desc: '纤细白皙，指甲修剪整齐，习惯性按喉咙护嗓',
+    nail_style: '素色淡粉',
+    // 臀部（3 列）— 纤细身形的圆润
+    hip_shape: '圆润',
+    hip_sensitivity: 100,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，收缩型体质
+    pubic_hair: '稀疏',
+    labia_size: '正常',
+    labia_color: '粉嫩',
+    vaginal_tightness: '紧致',
+    vaginal_special: '收缩',
+    lubrication_level: '正常',
+    hymen_status: '完整',
+    fertility: '普通',
+    // 敏感度综合（3 列）— 常人基线敏感度，但声音相关部位反应敏锐
+    body_sensitivity: 100,
+    sensitive_zones: '喉咙,颈侧,锁骨,耳后,后颈,声带',
+    arousal_triggers: '被夸声音,耳畔低语,录音回放,麦克风振动,配音练习,气声'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 82,           // 魅力（外貌吸引力）
+    academic: 70,        // 学业（学习成绩）
+    physical: 55,        // 体力（体能/运动）
+    social: 60,          // 社交（交际能力）
+    perception: 60,      // 敏感（察言观色/直觉）
+    reputation: 60,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 30,        // 力量（物理对抗/搬运）
+    agility: 45,         // 敏捷（反应/逃跑）
+    intelligence: 70,    // 智力（解谜/计划）
+    will_skill: 60,      // 意志（抗压/抵抗诱惑）
+    stealth: 30,         // 潜行（暗中行动）
+    speech: 60,          // 口才（说服/调情）
+    medical: 15,         // 医学（诊疗/急救）
+    cooking: 30,         // 烹饪（料理）
+    art: 50,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 20,        // 格斗（防身）
+    observation: 55,     // 观察（情报收集）
+    romance_skill: 40    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'ENFJ',
+    tags: ['开朗活泼', '甜美声音', '校园明星'],
+    public_face: '校园广播的甜美主持人，人气王',
+    social_face: '热情友好的朋友，喜欢照顾人',
+    intimate_face: '声音疲惫的女孩，渴望被倾听而非被听见'
+  },
+
+  preferences: {
+    like_food: ['草莓大福', '柠檬茶（加蜂蜜）', '亲子丼', '薄荷糖'],
+    hate_food: ['辛辣食物（伤嗓子）', '冰激凌（伤嗓子）', '酒精'],
+    hobby: ['配音练习', '流行音乐', '观察路人写广播稿', '收集丝绒发带', '看老电影配音版'],
+    gift_pref: ['润喉糖', '丝绒发带', '配音剧本', '老电影DVD', '蜂蜜'],
+    topic_pref: ['广播趣事', '配音技巧', '校园八卦', '流行音乐', '关于主角的细节']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '仁科（row_id=18）—— 仁科正树互斥（重制版新增）',
+    family: '父亲（电台主播，常出差）；母亲（前配音演员，现全职主妇）；独女',
+    friends: ['广播委员', '校园人气王朋友圈', '部分二年级同班同学']
+  },
+
+  /* 9.B.10: 互斥触发条件细化 */
+  mutex_trigger: {
+    group_name: '仁科正树',
+    partner_id: 18,
+    partner_name: '仁科',
+    affection_threshold: 30,
+    stage_threshold: '熟悉',
+    flag_auto_set: '仁科正树互斥触发',
+    description: '与正树夏子 affection ≥ 30（达熟悉临界）即触发互斥；仁科锁定失恋（affection -30 / jealousy +20 / route_locked=1）',
+    narrative_hint: '触发后仁科会以"沉浸书中"为由回避主角，偶尔会在图书馆角落听到她低声念诗；她不会主动敌对，但眼神里多了疏离'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '通过校园广播接触，以配音/广播为话题切入；展现对她"声音之外"的真实自我的兴趣；送润喉糖或丝绒发带',
+    warning: '与仁科同时推进会触发互斥锁；她表面开朗实则害怕被定义，强行亲密会触发她的"校园明星"反射；需要先建立"懂她"而非"追她"的关系'
+  }
+};
+%>
+
+正树夏子 · 基础信息已加载。当前女角 row_id=19，互斥关系：仁科正树（攻略后仁科锁定失恋，row_id=18）。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 正树夏子_INFO.name %>（<%- 正树夏子_INFO.age %>岁）
+- 身份: <%- 正树夏子_INFO.identity %>
+- 关系: <%- 正树夏子_INFO.relationship %>
+- 住所: <%- 正树夏子_INFO.home %>
+<%_ if (正树夏子_INFO.appearance) { _%>
+- 外貌: <%- [正树夏子_INFO.appearance.hair, 正树夏子_INFO.appearance.eyes, 正树夏子_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (正树夏子_INFO.personality) { _%>
+- 性格: <%- 正树夏子_INFO.personality.tags ? 正树夏子_INFO.personality.tags.join('、') : 正树夏子_INFO.personality.public_face %>
+<%_ if (正树夏子_INFO.personality.public_face) { _%>- 表面: <%- 正树夏子_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (正树夏子_INFO.personality.intimate_face) { _%>- 亲密面: <%- 正树夏子_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (正树夏子_INFO.preferences) { _%>- 喜好: <%- [(正树夏子_INFO.preferences.like_food || []).join('/'), '爱好：' + (正树夏子_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (正树夏子_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(正树夏子_INFO.relations) %>
+<%_ } _%>
+<%_ if (正树夏子_INFO.strategy) { _%>- 攻略要点: <%- 正树夏子_INFO.strategy.best_approach %>
+<%_ if (正树夏子_INFO.strategy.warning) { _%>- 警告: <%- 正树夏子_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

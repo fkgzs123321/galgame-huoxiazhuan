@@ -1,0 +1,1525 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 事件 · CG触发条件表
+   ════════════════════════════════════════════════════════════
+   用途：全 88 张 CG 的触发条件总表（主线19 + H事件19 + 进阶H19 + 关键剧情10+8 + 隐藏5 + BAD_END8）
+   关联调度器：世界书/EJS预处理/寒假日程调度器/<dayXX>.txt
+   关联规则：全局规则总表.txt → NSFW硬门槛 / DIFFICULTY_MODIFIERS
+   关联flag：关键事件.yaml → 唯获救 / 西寺对峙 / 日记1~5 等
+   补充：第 8 段新增 8 张女主角高光时刻 CG（CG_KEY_011~018，对应 综合设计方案 清单 CG_003~CG_010）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ── 读取运行时全局变量（用于触发校验） ── */
+const _diff = String(getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' })) || '普通';
+const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 1 })) || 1;
+const _date = String(getvar('stat_data.时间.当前日期', { scope: 'local', defaults: '12-22' })) || '12-22';
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' })) || '早';
+
+/* ── 女角 row_id 映射表 ── */
+const HEROINE_MAP = {
+  1:  '鸣泽唯',       2:  '鸣泽美佐子',   3:  '舞岛可怜',
+  4:  '加藤美纪',     5:  '筱原泉美',     6:  '南川洋子',
+  7:  '都筑梢江',     8:  '水野友美',     9:  '安田爱美',
+  10: '田中美沙',     11: '片桐美铃',     12: '野野村美里',
+  13: '永岛久美子',   14: '永岛佐知子',   15: '齐藤澪',
+  16: '齐藤澪奈',     17: '铃木美穗',     18: '仁科',
+  19: '正树夏子',     20: '杉本樱子'
+};
+
+/* ── NSFW 硬门槛（affection / heartbeat / trust） ──
+   引用 全局规则总表.txt → NSFW_THRESHOLD */
+const NSFW_THRESHOLD = {
+  牵手:   { affection: 40, heartbeat: 20, trust: 30 },
+  拥抱:   { affection: 50, heartbeat: 30, trust: 40 },
+  亲吻:   { affection: 60, heartbeat: 40, trust: 50 },
+  初H:    { affection: 80, heartbeat: 50, trust: 60 },
+  进阶H:  { affection: 90, heartbeat: 60, trust: 70 }
+};
+
+/* ── CG 类型枚举 ── */
+const CG_TYPE = {
+  MAIN:    '主线',
+  H_EVENT: 'H事件',
+  ADV_H:   '进阶H',
+  KEY:     '关键剧情',
+  HIDDEN:  '隐藏',
+  BAD_END: 'BAD_END'
+};
+
+/* ════════════════════════════════════════════════════════════
+   CG_LIST · 全 80 张 CG 触发条件表
+   ════════════════════════════════════════════════════════════ */
+const CG_LIST = [
+
+  /* ════════════════════════════════════════════════════════════
+     一、主线 CG（19 张）—— 每女角 1 张 True End CG
+     触发：1/7 告白日(day_count=17) + 关键flag全部正确 + affection ≥ 亲密阈值(80)
+     ════════════════════════════════════════════════════════════ */
+  {
+    cg_id: 'CG_MAIN_001', cg_name: '鸣泽唯·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 1,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '鸣泽家客厅',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['唯获救', '西寺对峙', '唯初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 告白日，唯 affection≥80 且已救出(88公园) + 西御寺对峙完成 + 初H已发生',
+    unlock_record: '主线结局·鸣泽唯',
+    cg_visual: '冬夜十一点的鸣泽家客厅。唯穿着浅粉色居家服蜷缩在沙发角落，膝盖上搭着主角的制服外套。她抬眼望向主角时，睫毛上还挂着方才在88公园流下的泪痕，但嘴角微微上扬。落地灯的暖黄光晕把她浅栗色的发尾染成蜂蜜色，背景里挂在墙上的全家福照片微微倾斜。她伸出的指尖在颤抖，像是在等待被握住。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_002', cg_name: '鸣泽美佐子·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 2,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '咖啡店《憩》',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['西寺对峙', '美佐子初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 美佐子 affection≥80 + 西御寺对峙完成 + 初H已发生',
+    unlock_record: '主线结局·鸣泽美佐子',
+    cg_visual: '冬夜十点后的咖啡店《憩》已经打烊。美佐子穿着黑色连衣裙配米色围裙，栗色长发松散发髻垂落颈侧，坐在吧台后握着一杯已经凉透的抹茶。柜台只开了一盏暖黄小灯，把她鬓角的柔化光晕勾成蜜色。她抬眼望向推门进来的主角时，眼角微微下垂的温柔里那抹化不开的疲惫瞬间消散，左手腕那只老旧银镯在暖光下泛着幽光。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_003', cg_name: '舞岛可怜·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 3,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '温泉乡 Livehouse「STAR」',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['可怜身份接受', '可怜初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 可怜 affection≥80 + 偶像真相揭示 + 初H已发生',
+    unlock_record: '主线结局·舞岛可怜',
+    cg_visual: '冬夜十一点的温泉乡Livehouse「STAR」散场后。可怜褪去舞台妆，素颜披着宽大连帽衫坐在后台化妆镜前，浅金色染发的发尾微卷蓬松。镜前小灯泡一排排亮着暖光，照出她卸下营业笑容后眼底的青黑与释然。她转头看向主角时，琥珀色大眼里没有了镁光灯下的疲惫，只有被看见的真实。桌上Snow Drops的兔耳发饰静静躺着。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_004', cg_name: '加藤美纪·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 4,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八学园屋顶',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美纪双身份揭示', '美纪初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 美纪 affection≥80 + 双身份揭示完成 + 初H已发生',
+    unlock_record: '主线结局·加藤美纪',
+    cg_visual: '冬夜九点的八十八学园屋顶。美纪穿着校服改造款，浅茶色中长发被夜风吹得微卷，狭长杏眼里的审视终于柔和下来。城市灯火在远处铺开如星河，把她的轮廓勾成金边。她靠在围栏上，衬衫首颗纽扣敞开露出锁骨下方的精致弧线，丝绒发带在风里微微飘动。她偏头看向主角时，眼角那抹难得的笑意里带着臣服后的柔软。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_005', cg_name: '筱原泉美·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 5,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八学园射箭场',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['泉美H完成', '泉美家族真相'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 泉美 affection≥80 + 筱原重工家族真相揭示 + H已完成',
+    unlock_record: '主线结局·筱原泉美',
+    cg_visual: '冬夜九点的八十八学园射箭场。泉美穿着校服外套米白色开衫，黑色长直发松松编成麻花辫垂在肩前，圆框眼镜后的圆眼第一次没有躲闪。射箭场暖黄路灯把她的苍白肤色染成蜜色，鬓角碎发垂落遮住半边脸。她手里握着一张写满诗句的纸条，指尖因常年握笔沾着墨渍。她抬眼望向主角时，眼神里发亮的不是文学，是被理解的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_006', cg_name: '南川洋子·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 6,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八海岸机车行',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['洋子赛车梦', '洋子初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 洋子 affection≥80 + 赛车梦想支持 + 初H已发生',
+    unlock_record: '主线结局·南川洋子',
+    cg_visual: '冬夜十一点的八十八海岸机车行二楼。洋子穿着运动背心与高腰短裤，黑色短发高马尾甩在肩后，露出左膝那道旧伤疤。窗外海浪声一下下拍打着堤岸，机车行工具灯把她的健康麦色肌肤照出暖色。她靠在改装中的机车上，右手掌心的薄茧蹭着油门把手，眼神坦荡地望向主角时，笑起来弯成月牙的眼里有了不一样的柔软。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_007', cg_name: '都筑梢江·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 7,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '商业区酒吧「夜色」',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['梢江跟踪真相', '梢江初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 梢江 affection≥80 + 跟踪真相坦白 + 初H已发生',
+    unlock_record: '主线结局·都筑梢江',
+    cg_visual: '冬夜一点的商业区酒吧「夜色」打烊后。梢江解开了营业时的低发髻，黑色长直发披散在肩前，狭长凤眼里的凌厉终于卸下。她穿着黑色丝质衬衫配高腰包臀裙，盘腿坐在吧台上，颈侧的小痣在调光台灯下若隐若现。背景里只剩一盏琥珀色吧台灯，把她唇边的红酒染成深色。她看向推门进来的主角时，眼底那抹不易察觉的疲惫化成了臣服。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_008', cg_name: '水野友美·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 8,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '白蛇池公园',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['友美误会解决', '友美初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 友美 affection≥80 + 误会事件化解 + 初H已发生',
+    unlock_record: '主线结局·水野友美',
+    cg_visual: '冬夜十点的白蛇池公园。友美穿着运动外套与网球裙，黑色短发齐肩发尾微卷，刘海偏分露出额头。公园路灯把池水染成银色，她蹲在池边石凳上，左手腕内侧童年爬树留下的浅疤若隐若现。她抬眼望向走近的主角时，明亮大眼里积着泪光，左颊的浅酒窝却陷了下去。背景里池畔的樱花树枝在冬夜光秃秃地伸展，像极了她十年未曾说出口的暗恋。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_009', cg_name: '安田爱美·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 9,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '保育园',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['爱美获救', '爱美初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 爱美 affection≥80 + 天道爱美分支救赎完成 + 初H已发生',
+    unlock_record: '主线结局·安田爱美',
+    cg_visual: '冬夜九点的保育园休息室。爱美脱下护士帽，黑色中长发松散披肩发尾微卷，温柔杏眼里的疲态终于被温柔取代。她穿着白色护士服配白色丝袜，颈间细银链在暖黄台灯下泛着光。她坐在小床边为孩子掖被角，左手腕内侧实习时留下的浅疤在护士服袖口若隐若现。她转头看向门边的主角时，眼底是终于被作为女人而非护士看见的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_010', cg_name: '田中美沙·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 10,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '88车站',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美沙重逢', '美沙初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 美沙 affection≥80 + 重逢剧情完整 + 初H已发生',
+    unlock_record: '主线结局·田中美沙',
+    cg_visual: '冬夜十点的88车站月台。美沙穿着碎花连衣裙配针织开衫，浅茶色中长发自然微卷蓬松柔软。站台暖黄灯光把她健康有光的肤色染成蜜色，左颊的浅梨涡在笑时陷下去。她手里拎着帆布托特包，里面装着刚烤好的曲奇。她转头看向走近的主角时，明亮圆眼笑得弯成月牙，眼神里第一次没有了照顾人的疲惫，是被宠爱的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_011', cg_name: '片桐美铃·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 11,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八学园教师室',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美铃禁忌化解', '美铃初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 美铃 affection≥80 + 师生禁忌化解 + 初H已发生',
+    unlock_record: '主线结局·片桐美铃',
+    cg_visual: '冬夜十点的八十八学园教师室。美铃解开了严谨的低马尾，黑色长直发披散在肩前，无框眼镜后的狭长锐利凤眼终于柔和下来。她靠在讲台边，白衬衫纽扣系到第三颗，颈窝可见却克制，黑色丝袜与黑色低跟皮鞋一丝不苟。窗外冬夜月光透过窗帘缝隙，把她白皙透光的肤色染成银色。她抬眼望向主角时，眼底的审视化成了沉溺。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_012', cg_name: '野野村美里·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 12,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '商业区野野村家',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美里秘密揭示', '美里初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 美里 affection≥80 + 秘密揭示 + 初H已发生',
+    unlock_record: '主线结局·野野村美里',
+    cg_visual: '冬夜十点的商业区野野村家公寓。美里脱下了便利店制服围裙，换上宅女三件套宽松印花卫衣与运动短裤，浅栗色中长发微卷塌成毛躁散发。圆框眼镜后的明亮杏眼第一次没有了普通店员的客气。她盘腿坐在沙发上，右手腕内侧玩游戏的薄茧在台灯下若隐若现。她抬眼看向主角时，眼底是宅女被看见的真实与悸动。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_013', cg_name: '永岛久美子·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 13,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '温泉乡旅馆',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['永岛分支', '久美子初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 久美子 affection≥80 + 永岛硬分支完成 + 初H已发生',
+    unlock_record: '主线结局·永岛久美子',
+    cg_visual: '冬夜十点的温泉乡旅馆房间。久美子穿着宽松米色针织开衫配及膝长裙，浅茶色中长发松散低马尾，温柔杏眼眼角微微下垂。旅馆暖黄地灯把她的白皙肤色染成蜜色，左手无名指的婚戒在光下泛着冷光。她坐在榻榻米上，手心捧着一杯热茶，鬓角两缕柔化脸型。她抬眼看向主角时，眼底化不开的空虚终于被填满，露出被宠爱的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_014', cg_name: '永岛佐知子·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 14,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '温泉乡旅馆',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['永岛分支', '佐知子初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 佐知子 affection≥80 + 永岛硬分支完成 + 初H已发生',
+    unlock_record: '主线结局·永岛佐知子',
+    cg_visual: '冬夜十点的温泉乡旅馆茶室。佐知子穿着深色和服，黑色长发束成严谨低发髻，发间银丝在暖黄灯光下若隐若现。狭长锐利凤眼深黑，左眼角的小痣与鼻梁上细金边眼镜的压痕勾勒出威严。她坐在茶台前，茶筅在手中搅动，珍珠项链在颈间泛着幽光。她抬眼看向主角时，眼底凌厉如刀的眼神终于柔和，化成被打破威严后的沉溺。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_015', cg_name: '齐藤澪·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 15,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八海岸灯塔',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['澪双子真相', '澪初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 澪 affection≥80 + 双子真相揭示 + 初H已发生',
+    unlock_record: '主线结局·齐藤澪',
+    cg_visual: '冬夜十一点的八十八海岸灯塔下。澪穿着米色长款风衣，深栗色及肩长发束成低马尾发尾整齐，狭长丹凤眼深棕眼神锐利。海浪拍打礁石的声音中，灯塔光柱旋转扫过她的轮廓，把她高挑挺拔的身姿勾成银边。她靠在灯塔围栏上，左耳后的小痣在月光下若隐若现。她偏头看向主角时，眉间浅纹舒展开来，眼底是被理解而非仰望的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_016', cg_name: '齐藤澪奈·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 16,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八町商业区',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['澪奈双子真相', '澪奈初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 澪奈 affection≥80 + 双子真相揭示 + 初H已发生',
+    unlock_record: '主线结局·齐藤澪奈',
+    cg_visual: '冬夜十点的八十八町商业区街道。澪奈穿着校服配田径部外套与红色围巾，深栗色短发高马尾前额碎发凌乱。商业区霓虹灯把她的偏麦色肌肤染成斑斓色彩，左颊的酒窝在笑时陷下去。她蹦跳着走在主角身边，右膝的浅疤在裙摆下若隐若现。她转头看向主角时，圆杏眼明亮带笑意，眼神里是终于被偏爱而非被选择的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_017', cg_name: '铃木美穗·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 17,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八学园部室',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美穗梦想化解', '美穗初H完成'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 美穗 affection≥80 + 梦想困境化解 + 初H已发生',
+    unlock_record: '主线结局·铃木美穗',
+    cg_visual: '冬夜十点的八十八学园部室。美穗穿着机车风衣配短靴，浅栗色齐肩直发挑染几缕亚麻色发尾略微内扣。部室小灯把她的都市感走姿勾成暖色，左锁骨下方的小痣在领口敞开处若隐若现。她靠在窗边，右耳两个耳洞戴着不对称耳钉。她抬眼看向主角时，细长丹凤眼里都市戒备的反射终于卸下，露出逃离东京后被理解的释然。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_018', cg_name: '仁科·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 18,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八学园',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['nina_truth_revealed', 'nina_first_h'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 仁科 affection≥80 + 真相揭示 + 初H已发生',
+    unlock_record: '主线结局·仁科',
+    cg_visual: '冬夜十点的八十八学园图书馆。仁科穿着米色长款开衫配毛绒围巾，黑色长直发及腰编松散麻花辫搭在肩前，鬓角碎发遮住半边脸。圆框眼镜后的圆眼深棕，第一次没有了寡言的躲闪。图书馆暖黄台灯把她苍白肤色染成蜜色，右手食指与中指的墨渍在光下若隐若现。她抬眼望向主角时，眼神里是被倾听而非被看见的诗意。',
+    is_hidden: false, priority: 100
+  },
+  {
+    cg_id: 'CG_MAIN_019', cg_name: '正树夏子·True End', cg_type: CG_TYPE.MAIN,
+    heroine_id: 19,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八学园',
+      affection_min: 80, heartbeat_min: 60, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['natsuko_burden_released', 'natsuko_first_h'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7晚 夏子 affection≥80 + 重担释放 + 初H已发生',
+    unlock_record: '主线结局·正树夏子',
+    cg_visual: '冬夜十点的八十八学园广播室。夏子穿着淡粉针织开衫配丝绒领带款校服，浅栗色微卷中长发扎成半丸子头，前额空气刘海。广播室的红光指示灯亮着，话筒前她用手习惯性按住喉咙护嗓，右耳上方的小痣在话筒灯下若隐若现。她抬眼看向推门进来的主角时，杏仁眼里明亮带笑意，眼神里是被倾听声音之外真实自我的释然。',
+    is_hidden: false, priority: 100
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     二、H事件 CG（19 张）—— 每女角 1 张初H CG
+     触发：关系阶段达亲密 + 关键事件触发 + NSFW硬门槛（初H: 80/50/60）
+     ════════════════════════════════════════════════════════════ */
+  {
+    cg_id: 'CG_H_001', cg_name: '鸣泽唯·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 1,
+    trigger_condition: {
+      day: 16, time_slot: '深夜', location: '鸣泽家客厅',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['唯获救'],
+      h_exp_min: 0,
+      choice_required: '选"我好喜欢唯"'
+    },
+    unlock_condition: '1/6 AM2:00 客厅 唯 affection≥80 + 救出完成 + 选择"我好喜欢唯"',
+    unlock_record: 'H事件·鸣泽唯初H（1/6深夜客厅）',
+    cg_visual: '深夜两点鸣泽家客厅，圣诞树彩灯未关，把沙发染成红绿斑驳。唯蜷在主角怀里，浅栗短发乱翘，琥珀色圆眼半阖却倔强不躲。她松松披着主角的旧T恤，领口滑落露出耳后泛红的薄皮肤与锁骨下那颗小痣。指尖攥住主角衣襟轻颤，呼吸浅而急促，焦点是她抬眼瞬间傲娇崩塌的那抹湿意。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_002', cg_name: '鸣泽美佐子·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 2,
+    trigger_condition: {
+      day: 16, time_slot: '深夜', location: '鸣泽家客厅',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['misako_bathroom_event'],
+      h_exp_min: 0,
+      choice_required: '选"我好喜欢美佐子"'
+    },
+    unlock_condition: '1/6 AM2:00 客厅 美佐子 affection≥80 + 浴室洗背事件完成 + 选择"我好喜欢美佐子"',
+    unlock_record: 'H事件·鸣泽美佐子初H（1/6深夜客厅）',
+    cg_visual: '深夜两点鸣泽家客厅，月光透过纱帘在木地板上铺出冷白。美佐子侧坐沙发边缘，栗色长发披散肩前，杏眼眼角那抹化不开的疲惫此刻被酒精染红。她披着驼色羊毛披肩，黑色连衣裙领口微敞露锁骨下方小痣，右手腕银镯在昏光下泛旧。指尖攥着披肩边缘不肯松，呼吸低回带笑意与颤抖，焦点是她垂眸时人妻十年压抑倾泻的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_003', cg_name: '舞岛可怜·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 3,
+    trigger_condition: {
+      day: 14, time_slot: '深夜', location: '温泉乡 Livehouse后台',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['可怜身份接受'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/4深夜 可怜 affection≥80 + 偶像真相揭示后 + Livehouse后台独处',
+    unlock_record: 'H事件·舞岛可怜初H（1/4后台）',
+    cg_visual: '深夜Livehouse后台，散场后唯一盏工作灯把化妆镜映成昏黄。可怜靠在卸妆台边，浅金色发尾微卷蓬松，琥珀色大眼卸妆后露出眼底青黑。她套着宽大连帽衫，帽檐压低遮半张脸，棉质短裤下腿根还残留舞台汗水。指尖无意识攥紧偶像挂件，呼吸从营业甜软转为沉闷疲惫，焦点是她抬眼那一刻——被看见而非被崇拜的崩塌。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_004', cg_name: '加藤美纪·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 4,
+    trigger_condition: {
+      day: 9, time_slot: '深夜', location: '八十八学园神秘地点',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['miki_threat_resolved'],
+      h_exp_min: 0
+    },
+    unlock_condition: '12/30深夜 美纪 affection≥80 + 威胁事件化解 + 神秘地点独处',
+    unlock_record: 'H事件·加藤美纪初H（12/30神秘地点）',
+    cg_visual: '12月30日深夜八十八学园神秘地点，月光从天窗斜照在木地板上铺出冷白。美纪斜倚旧课桌，浅茶色微卷长发烫染精致，狭长杏眼金色审视此刻被驯服的低垂取代。她校服改造款腰线收紧，丝绒发带歪斜，珍珠耳钉随呼吸颤动。指尖无意识攥住小香风外套领口，呼吸从命令式上扬转为急促喘息，焦点是高傲千金主动臣服的那一瞬。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_005', cg_name: '筱原泉美·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 5,
+    trigger_condition: {
+      day: 8, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['izumi_vulnerability_shown'],
+      h_exp_min: 0
+    },
+    unlock_condition: '12/29深夜 温泉 泉美 affection≥80 + 脆弱面展示后 + 温泉旅馆独处',
+    unlock_record: 'H事件·筱原泉美初H（12/29温泉）',
+    cg_visual: '12月29日深夜温泉乡旅馆客房，纸灯笼暖光把榻榻米染成蜜色。泉美跪坐被褥边缘，黑色长直发松松编成麻花辫垂肩前，鬓角碎发遮住泛红到脖颈的半边脸。圆框眼镜后圆眼低垂躲闪，米白色开衫滑落一肩，露出苍白近乎透明的锁骨与左手腕内侧浅色痣。指尖攥着书签在颤抖，呼吸气声绵软，焦点是文学少女幻想成真那一刻的惊惶。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_006', cg_name: '南川洋子·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 6,
+    trigger_condition: {
+      day: 13, time_slot: '深夜', location: '八十八海岸机车行二楼',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['洋子赛车梦'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/3深夜 机车行 洋子 affection≥80 + 赛车梦想支持后',
+    unlock_record: 'H事件·南川洋子初H（1/3机车行）',
+    cg_visual: '1月3日深夜八十八海岸机车行二楼阁楼，窗外海浪声与店内机油味交织。洋子盘腿坐工作台边，黑色高马尾甩动有力，杏眼深棕眼神直接坦荡却罕见地躲闪。她校服敞开内搭运动背心，肩背线条流畅，左膝旧伤疤在昏光下泛浅白。指尖无意识攥运动护腕，呼吸从爽朗沙哑转为困惑的急促，焦点是恋爱迟钝的笨拙交付瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_007', cg_name: '都筑梢江·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 7,
+    trigger_condition: {
+      day: 15, time_slot: '深夜', location: '商业区酒吧包厢',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['梢江跟踪真相'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/5深夜 酒吧 梢江 affection≥80 + 跟踪真相坦白后',
+    unlock_record: 'H事件·都筑梢江初H（1/5酒吧包厢）',
+    cg_visual: '1月5日深夜商业区酒吧"夜色"包厢，酒红色灯光把丝绒沙发染成暧昧暗调。梢江斜倚沙发扶手，黑色长发盘成低发髻鬓边两缕垂落，狭长凤眼深黑凌厉此刻被酒精染上疲惫。她黑色丝质衬衫领口敞开，高腰包臀裙勾勒腰线，颈侧小痣随呼吸起伏。指尖攥红酒杯底座，呼吸从女低音慵懒转为急促喘息，焦点是强势盔甲崩塌臣服的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_008', cg_name: '水野友美·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 8,
+    trigger_condition: {
+      day: 14, time_slot: '深夜', location: '水野家书房',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['友美误会解决'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/4深夜 友美 affection≥80 + 误会化解后 + 书房独处',
+    unlock_record: 'H事件·水野友美初H（1/4书房）',
+    cg_visual: '1月4日深夜水野家书房，台灯暖光把书桌染成鹅黄。友美坐在书桌一角，黑色短发齐肩微翘，明亮大眼深棕灵动此刻被多年暗恋的湿意取代。她校服松松垮垮领带歪斜，衬衫下摆漏出一角，右手腕内侧童年爬树浅疤在灯光下泛白。指尖攥住主角衣袖不松，呼吸从元气清脆转为颤抖气声，焦点是哥们儿伪装崩塌露出小女孩气的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_009', cg_name: '安田爱美·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 9,
+    trigger_condition: {
+      day: 13, time_slot: '深夜', location: '保育园休息室',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['爱美获救'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/3深夜 保育园 爱美 affection≥80 + 天道救赎完成后',
+    unlock_record: 'H事件·安田爱美初H（1/3保育园）',
+    cg_visual: '1月3日深夜保育园休息室，夜灯把白色瓷砖染成冷蓝。爱美靠在休息床边，黑色中长发散开发尾微卷，温柔杏眼深棕眼底泛青的夜班疲态。她白色护士服领口微敞，护士帽摘下额侧留下一道红痕，左手腕内侧实习浅疤在冷光下泛白。指尖攥住主角衣角不肯松，呼吸从专业柔和转为渴望被照顾的颤抖，焦点是护士盔甲崩塌的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_010', cg_name: '田中美沙·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 10,
+    trigger_condition: {
+      day: 15, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美沙重逢'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/5深夜 温泉旅馆 美沙 affection≥80 + 重逢剧情完整后',
+    unlock_record: 'H事件·田中美沙初H（1/5温泉旅馆）',
+    cg_visual: '1月5日深夜温泉乡旅馆客房，纸窗透出庭院雪光把榻榻米染成冷白。美沙侧坐被褥边缘，浅茶色中长发自然微卷蓬松，明亮圆眼浅棕带金笑意此刻被泪光取代。她校服领口第一颗扣子解开，领带略松，左颊梨涡在颤动的嘴角里若隐若现。指尖攥住针织开衫领口，呼吸从温暖明亮转为急促气声，焦点是邻家姐姐渴望被宠爱而非照顾人的崩塌。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_011', cg_name: '片桐美铃·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 11,
+    trigger_condition: {
+      day: 16, time_slot: '深夜', location: '八十八学园教师室',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美铃禁忌化解'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/6深夜 教师室 美铃 affection≥80 + 师生禁忌化解后',
+    unlock_record: 'H事件·片桐美铃初H（1/6教师室）',
+    cg_visual: '1月6日深夜八十八学园教师室，台灯暖光把办公桌染成昏黄。美铃斜倚办公桌沿，黑色长直发盘发已解开披散肩前，狭长凤眼深黑冷刃此刻被理智崩坏的湿意取代。无框眼镜摘下搁在桌角，白衬衫纽扣解开至第三颗，紧身铅笔裙腰线微乱，黑色丝袜泛冷光。指尖攥住粉笔在颤抖，呼吸从低沉磁性转为急促喘息，焦点是师生禁忌化解的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_012', cg_name: '野野村美里·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 12,
+    trigger_condition: {
+      day: 14, time_slot: '深夜', location: '商业区野野村家',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美里秘密揭示'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/4深夜 美里 affection≥80 + 秘密揭示后',
+    unlock_record: 'H事件·野野村美里初H（1/4野野村家）',
+    cg_visual: '1月4日深夜商业区野野村家公寓，电脑屏幕蓝光把客厅染成暗调。美里盘腿坐沙发，浅栗色中长发塌成毛躁丸子头，杏眼浅棕戴着圆框眼镜。她换上宅女三件套宽松印花卫衣、运动短裤、毛绒袜，右手腕内侧游戏薄茧在屏幕光下泛白。指尖攥住耽美同人本不肯松，呼吸从平淡和气转为变软的颤声，焦点是宅女反差全开幻想成真的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_013', cg_name: '永岛久美子·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 13,
+    trigger_condition: {
+      day: 12, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['永岛分支'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/2深夜 温泉旅馆 久美子 affection≥80 + 永岛硬分支选择后',
+    unlock_record: 'H事件·永岛久美子初H（1/2温泉旅馆）',
+    cg_visual: '1月2日深夜温泉乡旅馆客房，纸灯笼暖光把榻榻米染成蜜色。久美子侧坐被褥边缘，浅茶色中长发松散低马尾，温柔杏眼深棕眼角下垂的空虚此刻被泪光染红。米色针织开衫滑落一肩，及膝长裙腰线微乱，左手无名指婚戒无意识被转动。指尖攥住开衫领口不肯松，呼吸从柔软低回转为急促气声，焦点是人妻孤独倾泻的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_014', cg_name: '永岛佐知子·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 14,
+    trigger_condition: {
+      day: 13, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['永岛分支', '佐知子重担释放'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/3深夜 温泉旅馆 佐知子 affection≥80 + 永岛硬分支 + 重担释放后',
+    unlock_record: 'H事件·永岛佐知子初H（1/3温泉旅馆）',
+    cg_visual: '1月3日深夜温泉乡旅馆茶室，庭院月光透过纸门把榻榻米染成冷白。佐知子正坐茶台边，黑色长发严谨低发髻鬓角一丝不苟，狭长凤眼深黑凌厉此刻被威严崩塌的颤动取代。细金边眼镜摘下鼻梁浅压痕微露，深色和服领口微敞露锁骨，珍珠项链随呼吸起伏。指尖攥住玉镯不松，呼吸从成熟低沉转为急促喘息，焦点是威严祖母私下渴望倾泻的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_015', cg_name: '齐藤澪·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 15,
+    trigger_condition: {
+      day: 14, time_slot: '深夜', location: '八十八海岸灯塔',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['澪双子真相'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/4深夜 海岸灯塔 澪 affection≥80 + 双子真相揭示后',
+    unlock_record: 'H事件·齐藤澪初H（1/4灯塔）',
+    cg_visual: '1月4日深夜八十八海岸灯塔下，灯塔光束扫过把礁石染成冷白。澪靠在灯塔石墙上，深栗色及肩长发束低马尾鬓角两缕垂落，狭长丹凤眼深棕锐利此刻被双子真相揭示后的脆弱取代。米色长款风衣领口敞开，校服纽扣微松，左耳后小痣在海风里若隐若现。指尖攥住风衣领口颤抖，呼吸从低沉稳重转为急促气声，焦点是完美副会长秩序崩塌的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_016', cg_name: '齐藤澪奈·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 16,
+    trigger_condition: {
+      day: 15, time_slot: '深夜', location: '八十八町商业区旅馆',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['澪奈双子真相'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/5深夜 商业区旅馆 澪奈 affection≥80 + 双子真相揭示后',
+    unlock_record: 'H事件·齐藤澪奈初H（1/5商业区旅馆）',
+    cg_visual: '1月5日深夜八十八町商业区旅馆客房，床头灯暖光把床铺染成鹅黄。澪奈盘腿坐床沿，深栗色短发高马尾红色发圈，圆杏眼深棕笑意此刻被崇拜与较劲的复杂泪光取代。田径部外套褪至肩下，红色围巾松垮，校服领口微敞，右膝浅疤在灯光下泛白。指尖攥住外套袖口不肯松，呼吸从明亮元气转为急促气声，焦点是怕被比较的脆弱女孩被偏爱的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_017', cg_name: '铃木美穗·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 17,
+    trigger_condition: {
+      day: 13, time_slot: '深夜', location: '八十八学园部室',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['美穗梦想化解'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/3深夜 部室 美穗 affection≥80 + 梦想困境化解后',
+    unlock_record: 'H事件·铃木美穗初H（1/3部室）',
+    cg_visual: '1月3日深夜八十八学园部室，窗外都市霓虹透过百叶窗把桌椅染成暧昧暗调。美穗斜倚部室桌沿，浅栗色齐肩直发亚麻色挑染发尾内扣，细长丹凤眼浅棕都市自信此刻被逃离东京的脆弱取代。机车风衣领口敞开，校服解开顶部两颗纽扣，左锁骨下方小痣在霓光下若隐若现，右耳不对称耳钉随呼吸颤动。指尖攥住胶片相机带不松，呼吸从都市低沉转为颤抖气声，焦点是异乡孤独被理解的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_018', cg_name: '仁科·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 18,
+    trigger_condition: {
+      day: 14, time_slot: '深夜', location: '八十八学园',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['nina_truth_revealed'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/4深夜 学园 仁科 affection≥80 + 真相揭示后',
+    unlock_record: 'H事件·仁科初H（1/4学园）',
+    cg_visual: '1月4日深夜八十八学园图书馆角落，台灯暖光把书架间染成昏黄。仁科跪坐阅读角坐垫，黑色长直发松松编成麻花辫垂肩前，鬓角碎发遮住泛红到脖颈的半边脸。圆框眼镜后圆眼深棕躲闪，米色长款开衫滑落一肩，毛绒围巾松垮，右手食指与中指墨渍在灯光下泛深。指尖攥住复古书签颤抖，呼吸从细弱文静转为急促气声，焦点是寡言诗人被倾听而非被看见的瞬间。',
+    is_hidden: false, priority: 90
+  },
+  {
+    cg_id: 'CG_H_019', cg_name: '正树夏子·初H', cg_type: CG_TYPE.H_EVENT,
+    heroine_id: 19,
+    trigger_condition: {
+      day: 15, time_slot: '深夜', location: '商业区旅馆',
+      affection_min: 80, heartbeat_min: 50, trust_min: 60,
+      relationship_stage: '亲密',
+      flags_required: ['natsuko_burden_released'],
+      h_exp_min: 0
+    },
+    unlock_condition: '1/5深夜 商业区 夏子 affection≥80 + 重担释放后',
+    unlock_record: 'H事件·正树夏子初H（1/5商业区）',
+    cg_visual: '1月5日深夜八十八町商业区旅馆客房，床头灯暖光把床铺染成鹅黄。夏子侧坐床沿，浅栗色微卷中长发半丸子头空气刘海微乱，杏仁眼浅棕明亮笑意此刻被重担释放的泪光取代。淡粉针织开衫滑落一肩，校服领带歪斜，右耳上方小痣在灯光下若隐若现，习惯性按喉咙护嗓的手此刻攥住主角衣袖。呼吸从甜美清亮转为颤抖气声，焦点是声音疲惫的女孩被倾听而非被听见的瞬间。',
+    is_hidden: false, priority: 90
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     三、进阶 H CG（19 张）—— 每女角 1 张进阶H CG
+     触发：affection ≥ 90 + heartbeat ≥ 60 + trust ≥ 70 + 初H已完成 + 进阶H触发
+     NSFW硬门槛：进阶H(90/60/70)
+     ════════════════════════════════════════════════════════════ */
+  {
+    cg_id: 'CG_ADV_H_001', cg_name: '鸣泽唯·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 1,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '鸣泽家卧室',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['唯初H完成', '西寺对峙'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 唯 affection≥90 + 初H已完成 + 西御寺对峙完成',
+    unlock_record: '进阶H·鸣泽唯（1/7深夜）',
+    cg_visual: '1月7日深夜鸣泽家卧室，床头灯暖光把被褥染成蜜色。唯仰躺枕上，浅栗短发散乱铺开，琥珀色圆眼半阖泪光盈盈，傲娇完全崩塌露出交付后的依赖。主角旧T恤褪至腰间，露出E罩杯反差与耳后泛红到脖颈的薄皮肤，左锁骨下方小痣随呼吸起伏。指尖死死攥住床单，呼吸从冷淡尾音转为无法自拔的喘息，焦点是禁忌框架松绑后敏感体质被开发的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_002', cg_name: '鸣泽美佐子·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 2,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '鸣泽家主卧',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['美佐子初H完成', '西寺对峙'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 美佐子 affection≥90 + 初H已完成 + 西御寺对峙完成',
+    unlock_record: '进阶H·鸣泽美佐子（1/7深夜）',
+    cg_visual: '1月7日深夜鸣泽家主卧，月光透过纱帘把大床染成冷白。美佐子仰躺枕上，栗色长发铺散如扇，温柔杏眼深棕眼角化不开的疲惫此刻被情欲染红。驼色羊毛披肩滑落地毯，黑色连衣裙褪至腰间，丰腴肌肤与锁骨下方小痣在月光下泛光。右手腕银镯随手指攥床单轻响，呼吸从柔软低回带笑意转为无法自持的呻吟，焦点是人妻十年压抑彻底倾泻的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_003', cg_name: '舞岛可怜·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 3,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['可怜初H完成', '可怜身份接受'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 可怜 affection≥90 + 初H已完成 + 偶像真相揭示',
+    unlock_record: '进阶H·舞岛可怜（1/7深夜）',
+    cg_visual: '1月7日深夜温泉乡旅馆客房，纸灯笼暖光把榻榻米染成蜜色。可怜仰躺被褥上，浅金色染发散乱，琥珀色大眼卸妆后眼底青黑此刻被泪光与情欲取代。宽大连帽衫完全褪去，舞台训练的紧实曲线与F罩杯在暖光下起伏，左锁骨下方"幸运痣"随呼吸颤动。指尖攥住主角手腕，呼吸从沉闷疲惫转为被占有而非被崇拜的喘息，焦点是偶像营业彻底崩塌的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_004', cg_name: '加藤美纪·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 4,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八学园神秘地点',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['美纪初H完成', '美纪双身份揭示'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 美纪 affection≥90 + 初H已完成 + 双身份揭示',
+    unlock_record: '进阶H·加藤美纪（1/7深夜）',
+    cg_visual: '1月7日深夜八十八学园神秘地点，月光从天窗斜照在木地板上铺出冷白。美纪仰卧旧课桌，浅茶色微卷长发烫染精致此刻散乱，狭长杏眼金色审视被驯服的湿意取代。校服改造款腰线收紧已被解，丝绒发带歪斜，珍珠耳钉随呼吸颤动，马甲线在月光下起伏。指尖攥住桌沿，呼吸从命令式上扬转为臣服的急促喘息，焦点是高傲千金完全臣服的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_005', cg_name: '筱原泉美·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 5,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['泉美H完成', '泉美家族真相'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 泉美 affection≥90 + H已完成 + 家族真相揭示',
+    unlock_record: '进阶H·筱原泉美（1/7深夜）',
+    cg_visual: '1月7日深夜温泉乡旅馆客房，纸灯笼暖光把榻榻米染成蜜色。泉美仰躺被褥上，黑色长直发松散铺开如墨缎，圆框眼镜已摘圆眼深褐躲闪此刻被泪光取代。米白色开衫完全褪去，苍白近乎透明的肌肤与A4腰、左手腕内侧浅色痣在暖光下泛红。指尖攥住复古书签，呼吸从气声绵软转为耽美幻想成真的无法自控喘息，焦点是文学少女敏感体质被开发的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_006', cg_name: '南川洋子·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 6,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八海岸机车行二楼',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['洋子初H完成', '洋子赛车梦'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 洋子 affection≥90 + 初H已完成 + 赛车梦想支持',
+    unlock_record: '进阶H·南川洋子（1/7深夜）',
+    cg_visual: '1月7日深夜八十八海岸机车行二楼阁楼，窗外海浪声与店内机油味交织。洋子仰躺工作台，黑色高马尾散开，杏眼深棕眼神直接坦荡此刻罕见地被泪光与情欲染上。运动背心褪至腰间，肩背线条流畅与左膝旧伤疤在昏光下泛白，马甲线随呼吸起伏。指尖攥住工作台边缘，呼吸从爽朗沙哑转为坦然评价"原来是这样"后的急促喘息，焦点是恋爱迟钝全然信任交付的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_007', cg_name: '都筑梢江·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 7,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '商业区酒吧包厢',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['梢江初H完成', '梢江跟踪真相'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 梢江 affection≥90 + 初H已完成 + 跟踪真相坦白',
+    unlock_record: '进阶H·都筑梢江（1/7深夜）',
+    cg_visual: '1月7日深夜商业区酒吧"夜色"包厢，酒红色灯光把丝绒沙发染成暧昧暗调。梢江仰躺沙发，黑色长发低发髻已散铺如扇，狭长凤眼深黑凌厉此刻被酒精与臣服的湿意取代。黑色丝质衬衫完全敞开，高腰包臀裙褪至腰间，颈侧小痣随呼吸起伏，锁骨线条明显。指尖攥住丝绒沙发扶手，呼吸从女低音慵懒转为强势盔甲崩塌的急促喘息，焦点是臣服成为救赎的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_008', cg_name: '水野友美·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 8,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '水野家书房',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['友美初H完成', '友美误会解决'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 友美 affection≥90 + 初H已完成 + 误会化解',
+    unlock_record: '进阶H·水野友美（1/7深夜）',
+    cg_visual: '1月7日深夜水野家书房，台灯暖光把书桌染成鹅黄。友美仰躺书桌一角，黑色短发齐肩微翘散乱，明亮大眼深棕灵动此刻被多年暗恋倾泻的泪光取代。校服松松垮垮完全解开，领带歪斜，右手腕内侧童年爬树浅疤在灯光下泛白。指尖攥住主角衣袖不松，呼吸从元气清脆转为哥们儿伪装崩塌后无法自控的颤抖气声，焦点是十年暗恋倾泻的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_009', cg_name: '安田爱美·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 9,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '保育园休息室',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['爱美初H完成', '爱美获救'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 爱美 affection≥90 + 初H已完成 + 天道救赎完成',
+    unlock_record: '进阶H·安田爱美（1/7深夜）',
+    cg_visual: '1月7日深夜保育园休息室，夜灯把白色瓷砖染成冷蓝。爱美仰躺休息床，黑色中长发散开发尾微卷，温柔杏眼深棕眼底泛青的夜班疲态此刻被渴望被照顾的泪光取代。白色护士服完全敞开，护士帽已摘额侧红痕未褪，左手腕内侧实习浅疤在冷光下泛白。指尖攥住床单，呼吸从专业柔和转为护士盔甲崩塌渴望被照顾的急促喘息，焦点是专业冷静完全崩塌的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_010', cg_name: '田中美沙·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 10,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['美沙初H完成', '美沙重逢'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 美沙 affection≥90 + 初H已完成 + 重逢剧情完整',
+    unlock_record: '进阶H·田中美沙（1/7深夜）',
+    cg_visual: '1月7日深夜温泉乡旅馆客房，纸窗透出庭院雪光把榻榻米染成冷白。美沙仰躺被褥上，浅茶色中长发自然微卷蓬松散乱，明亮圆眼浅棕带金笑意此刻被渴望被宠爱的泪光取代。校服领口第一颗扣子解开已被褪，领带略松，左颊梨涡在颤动的嘴角里若隐若现，丰腴肌肤在雪光下泛粉。指尖攥住针织开衫，呼吸从温暖明亮转为邻家姐姐渴望被宠爱而非照顾人的急促气声，焦点是姐姐壳崩塌的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_011', cg_name: '片桐美铃·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 11,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八学园教师室',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['美铃初H完成', '美铃禁忌化解'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 美铃 affection≥90 + 初H已完成 + 师生禁忌化解',
+    unlock_record: '进阶H·片桐美铃（1/7深夜）',
+    cg_visual: '1月7日深夜八十八学园教师室，台灯暖光把办公桌染成昏黄。美铃仰躺办公桌沿，黑色长直发盘发已解开铺散如墨缎，狭长凤眼深黑冷刃此刻被理智崩坏的泪光与情欲取代。无框眼镜已摘搁桌角，白衬衫完全敞开，紧身铅笔裙褪至腰间，黑色丝袜泛冷光。指尖攥住桌沿颤抖，呼吸从低沉磁性转为师生禁忌彻底松绑的急促呻吟，焦点是严肃教师淫荡面倾泻的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_012', cg_name: '野野村美里·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 12,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '商业区野野村家',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['美里初H完成', '美里秘密揭示'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 美里 affection≥90 + 初H已完成 + 秘密揭示',
+    unlock_record: '进阶H·野野村美里（1/7深夜）',
+    cg_visual: '1月7日深夜商业区野野村家公寓，电脑屏幕蓝光把客厅染成暗调。美里仰躺沙发，浅栗色中长发塌成毛躁散发，杏眼浅棕圆框眼镜已摘此刻被宅女反差全开的泪光取代。宅女三件套完全褪去，印花卫衣丢地毯，右手腕内侧游戏薄茧在屏幕光下泛白。指尖攥住耽美同人本，呼吸从平淡和气转为幻想成真无法自控的变软颤声，焦点是宅女反差彻底倾泻的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_013', cg_name: '永岛久美子·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 13,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['久美子初H完成', '永岛分支'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 久美子 affection≥90 + 初H已完成 + 永岛硬分支',
+    unlock_record: '进阶H·永岛久美子（1/7深夜）',
+    cg_visual: '1月7日深夜温泉乡旅馆客房，纸灯笼暖光把榻榻米染成蜜色。久美子仰躺被褥上，浅茶色中长发松散铺开，温柔杏眼深棕眼角下垂的空虚此刻被情欲与泪光染红。米色针织开衫完全褪去，及膝长裙丢地毯，左手无名指婚戒无意识被转动，丰腴肌肤在暖光下泛红。指尖攥住床单，呼吸从柔软低回转为人妻孤独彻底倾泻的无法自持呻吟，焦点是少妇渴望被填满的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_014', cg_name: '永岛佐知子·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 14,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '温泉乡旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['佐知子初H完成', '永岛分支'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 佐知子 affection≥90 + 初H已完成 + 永岛硬分支',
+    unlock_record: '进阶H·永岛佐知子（1/7深夜）',
+    cg_visual: '1月7日深夜温泉乡旅馆茶室，庭院月光透过纸门把榻榻米染成冷白。佐知子仰躺被褥上，黑色长发严谨低发髻已散铺如扇，狭长凤眼深黑凌厉此刻被威严崩塌的泪光与情欲取代。细金边眼镜已摘鼻梁浅压痕微露，深色和服完全敞开，珍珠项链随呼吸起伏，成熟女性韵味浓郁。指尖攥住玉镯，呼吸从成熟低沉转为守寡多年压抑倾泻的急促呻吟，焦点是威严祖母渴望被支配的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_015', cg_name: '齐藤澪·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 15,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八海岸灯塔',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['澪初H完成', '澪双子真相'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 澪 affection≥90 + 初H已完成 + 双子真相揭示',
+    unlock_record: '进阶H·齐藤澪（1/7深夜）',
+    cg_visual: '1月7日深夜八十八海岸灯塔下，灯塔光束扫过把礁石染成冷白。澪仰躺礁石上，深栗色及肩长发束低马尾已散乱，狭长丹凤眼深棕锐利此刻被双子真相揭示后的脆弱与情欲取代。米色长款风衣完全敞开，校服纽扣解开，左耳后小痣在海风里若隐若现，剑道训练的紧实曲线在冷光下起伏。指尖攥住风衣领口，呼吸从低沉稳重转为完美副会长秩序彻底崩塌的急促气声，焦点是冷静学姐沉沦的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_016', cg_name: '齐藤澪奈·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 16,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八町商业区旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['澪奈初H完成', '澪奈双子真相'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 澪奈 affection≥90 + 初H已完成 + 双子真相揭示',
+    unlock_record: '进阶H·齐藤澪奈（1/7深夜）',
+    cg_visual: '1月7日深夜八十八町商业区旅馆客房，床头灯暖光把床铺染成鹅黄。澪奈仰躺床铺，深栗色短发高马尾红色发圈已散乱，圆杏眼深棕笑意此刻被崇拜与较劲的复杂泪光与情欲取代。田径部外套完全褪去，红色围巾松垮，校服领口微敞，右膝浅疤在灯光下泛白，运动型紧实体态起伏。指尖攥住床单，呼吸从明亮元气转为怕被比较的脆弱女孩被偏爱后的急促气声，焦点是运动少女全然交付的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_017', cg_name: '铃木美穗·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 17,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八学园部室',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['美穗初H完成', '美穗梦想化解'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 美穗 affection≥90 + 初H已完成 + 梦想困境化解',
+    unlock_record: '进阶H·铃木美穗（1/7深夜）',
+    cg_visual: '1月7日深夜八十八学园部室，窗外都市霓虹透过百叶窗把桌椅染成暧昧暗调。美穗仰躺部室桌沿，浅栗色齐肩直发亚麻色挑染散乱，细长丹凤眼浅棕都市自信此刻被逃离东京的脆弱与情欲取代。机车风衣完全敞开，校服解开顶部纽扣，左锁骨下方小痣在霓光下若隐若现，右耳不对称耳钉随呼吸颤动。指尖攥住胶片相机带，呼吸从都市低沉转为异乡孤独被理解后的急促颤抖气声，焦点是都市派戒备彻底崩塌的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_018', cg_name: '仁科·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 18,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八学园',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['nina_first_h', 'nina_truth_revealed'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 仁科 affection≥90 + 初H已完成 + 真相揭示',
+    unlock_record: '进阶H·仁科（1/7深夜）',
+    cg_visual: '1月7日深夜八十八学园图书馆角落，台灯暖光把书架间染成昏黄。仁科仰躺阅读角坐垫，黑色长直发松松麻花辫已散铺如墨缎，圆框眼镜已摘圆眼深褐躲闪此刻被泪光与情欲取代。米色长款开衫完全褪去，毛绒围巾松垮，右手食指与中指墨渍在灯光下泛深，苍白近乎透明的肌肤泛红。指尖攥住复古书签，呼吸从细弱文静转为寡言诗人被倾听后的无法自控喘息，焦点是文学少女敏感体质彻底开发的瞬间。',
+    is_hidden: false, priority: 85
+  },
+  {
+    cg_id: 'CG_ADV_H_019', cg_name: '正树夏子·进阶H', cg_type: CG_TYPE.ADV_H,
+    heroine_id: 19,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '商业区旅馆',
+      affection_min: 90, heartbeat_min: 60, trust_min: 70,
+      relationship_stage: '亲密',
+      flags_required: ['natsuko_first_h', 'natsuko_burden_released'],
+      h_exp_min: 1
+    },
+    unlock_condition: '1/7深夜 夏子 affection≥90 + 初H已完成 + 重担释放',
+    unlock_record: '进阶H·正树夏子（1/7深夜）',
+    cg_visual: '1月7日深夜八十八町商业区旅馆客房，床头灯暖光把床铺染成鹅黄。夏子仰躺床铺，浅栗色微卷中长发半丸子头已散乱，杏仁眼浅棕明亮笑意此刻被重担释放的泪光与情欲取代。淡粉针织开衫完全褪去，校服领带歪斜，右耳上方小痣在灯光下若隐若现，习惯性按喉咙护嗓的手此刻攥住主角手腕。指尖攥住床单，呼吸从甜美清亮转为声音疲惫的女孩被倾听后的急促颤抖气声，焦点是校园明星戒备彻底崩塌的瞬间。',
+    is_hidden: false, priority: 85
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     四、关键剧情 CG（10 张）
+     ════════════════════════════════════════════════════════════ */
+  {
+    cg_id: 'CG_KEY_001', cg_name: '88公园救唯', cg_type: CG_TYPE.KEY,
+    heroine_id: 1,
+    trigger_condition: {
+      day: 13, time_slot: '下午', location: '88公园',
+      affection_min: 40, heartbeat_min: 20, trust_min: 30,
+      relationship_stage: '初识',
+      flags_required: [],
+      event_trigger: '唯在88公园遭遇危险，主角及时赶到救出'
+    },
+    unlock_condition: '1/3下午 88公园 触发唯遭遇危险事件，主角成功救出唯',
+    unlock_record: '关键剧情·88公园救唯（1/3）',
+    cg_visual: '1月3日下午八十八公园，冬日斜阳把枯枝染成淡金。唯蜷缩在公园长椅后，浅栗短发被风吹乱，琥珀色圆眼惊魂未定泪光盈盈，校服袖口卷起袖子沾了泥土。主角冲过来挡在她身前的瞬间，她抬眼的目光从惊惧转为难以置信的依赖。背景里公园的枯樱花树在寒风里摇曳，焦点是她攥住主角衣角那只颤抖的手。',
+    is_hidden: false, priority: 95,
+    flag_set: '唯获救'
+  },
+  {
+    cg_id: 'CG_KEY_002', cg_name: '美佐子浴室洗背', cg_type: CG_TYPE.KEY,
+    heroine_id: 2,
+    trigger_condition: {
+      day: 11, time_slot: '晚', location: '鸣泽家浴室',
+      affection_min: 50, heartbeat_min: 30, trust_min: 40,
+      relationship_stage: '熟悉',
+      flags_required: ['christmas_eve_misako'],
+      event_trigger: '美佐子邀请主角帮忙洗背，亲密边界突破'
+    },
+    unlock_condition: '1/1晚 鸣泽家浴室 美佐子 affection≥50 + 圣诞夜邀约已完成',
+    unlock_record: '关键剧情·美佐子浴室洗背（1/1）',
+    cg_visual: '1月1日晚鸣泽家浴室，水蒸气把瓷砖染成朦胧暖白。美佐子背对主角坐在浴缸边缘，栗色长发湿透贴在丰腴背脊，杏眼深棕眼角那抹疲惫被蒸汽染上绯红。她肩头微微颤抖，右手腕银镯在水光下泛旧，回头望向主角的瞬间，眼神里十年母子框架第一次出现"作为女人被看见"的颤动。焦点是她背对的曲线与递出的毛巾。',
+    is_hidden: false, priority: 95,
+    flag_set: 'misako_bathroom_event'
+  },
+  {
+    cg_id: 'CG_KEY_003', cg_name: '圣诞夜事件', cg_type: CG_TYPE.KEY,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 4, time_slot: '晚', location: '八十八町商业区 / 鸣泽家',
+      affection_min: 10, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '初识',
+      flags_required: [],
+      event_trigger: '圣诞夜邀约事件，至少1位女角affection≥10'
+    },
+    unlock_condition: '12/25晚 至少1位女角 affection≥10，触发圣诞夜邀约分支',
+    unlock_record: '关键剧情·圣诞夜事件（12/25）',
+    cg_visual: '12月25日晚八十八町商业区，圣诞彩灯把街道染成红绿金黄交织。街道两旁店铺橱窗映出暖光，雪片零星飘落。主角站在商业区十字路口，周身是被圣诞歌包围的人潮，远处鸣泽家窗户透出暖黄。画面焦点是主角手中那张未送出的圣诞贺卡，与街角某位女角若隐若现的身影——邀约分支的抉择悬在圣诞夜的空气里。',
+    is_hidden: false, priority: 95
+  },
+  {
+    cg_id: 'CG_KEY_004', cg_name: '跨年事件', cg_type: CG_TYPE.KEY,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 11, time_slot: '晚', location: '温泉乡如月神宫',
+      affection_min: 20, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '初识',
+      flags_required: [],
+      event_trigger: '跨年神社参拜，至少1位女角affection≥20'
+    },
+    unlock_condition: '1/1晚→深夜 如月神宫 至少1位女角 affection≥20，触发跨年参拜',
+    unlock_record: '关键剧情·跨年事件（1/1）',
+    cg_visual: '1月1日晚温泉乡如月神宫，参道灯笼把雪夜染成暖橘连绵。神宫鸟居下人潮穿着和服与冬衣，新年钟声余韵未散。主角站在参道石阶上，呼出的白气在冷夜里化开，背景是本殿的灯影与祈愿绘马在风里轻响。画面焦点是主角回头望向参道某位女角对视的瞬间，跨年的钟声把两人的距离拉成暧昧。',
+    is_hidden: false, priority: 95
+  },
+  {
+    cg_id: 'CG_KEY_005', cg_name: '友美误会事件', cg_type: CG_TYPE.KEY,
+    heroine_id: 8,
+    trigger_condition: {
+      day: 8, time_slot: '下午', location: '自宅周边 / 白蛇池公园',
+      affection_min: 40, heartbeat_min: 20, trust_min: 30,
+      relationship_stage: '心动',
+      flags_required: [],
+      event_trigger: '友美目击主角与其他女角亲密，产生误会'
+    },
+    unlock_condition: '12/29下午 友美 affection≥40 + 目击主角与其他女角亲密互动',
+    unlock_record: '关键剧情·友美误会事件（12/29）',
+    cg_visual: '12月29日下午八十八町白蛇池公园，冬日斜阳把池面染成碎金。友美站在公园转角，黑色短发齐肩微翘被风吹乱，明亮大眼深棕灵动此刻被泪光与嫉妒取代。她校服松松垮垮领带歪斜，右手腕内侧童年爬树浅疤攥紧衣角。她目击主角与另一位女角亲密的背影僵在原地，焦点是她转身离开时那道被拉长的孤独影子。',
+    is_hidden: false, priority: 95,
+    flag_set: 'tomomi_misunderstanding'
+  },
+  {
+    cg_id: 'CG_KEY_006', cg_name: '美纪威胁事件', cg_type: CG_TYPE.KEY,
+    heroine_id: 4,
+    trigger_condition: {
+      day: 8, time_slot: '晚', location: '八十八学园',
+      affection_min: 30, heartbeat_min: 0, trust_min: 20,
+      relationship_stage: '初识',
+      flags_required: ['has_met_加藤美纪'],
+      event_trigger: '美纪以主角秘密相威胁，揭示其神秘身份'
+    },
+    unlock_condition: '12/29晚 学园 美纪 affection≥30 + 已相遇，触发威胁事件',
+    unlock_record: '关键剧情·美纪威胁事件（12/29）',
+    cg_visual: '12月29日晚八十八学园走廊，月光从窗户斜照把走廊染成冷白。美纪斜倚走廊窗台，浅茶色微卷长发烫染精致，狭长杏眼深棕带金眼神上扬审视此刻带着威胁的锐利。她校服改造款腰线收紧，丝绒发带端正，珍珠耳钉随呼吸颤动。指尖攥住主角秘密的把柄，嘴角勾起一抹高傲冷笑，焦点是她俯身耳语时千金威严压迫的瞬间。',
+    is_hidden: false, priority: 95,
+    flag_set: '美纪威胁事件'
+  },
+  {
+    cg_id: 'CG_KEY_007', cg_name: '西御寺与芳树秘谋', cg_type: CG_TYPE.KEY,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 12, time_slot: '晚', location: '商业区暗巷',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '初识',
+      flags_required: [],
+      event_trigger: '主角偷听西御寺有友与长冈芳树的阴谋对话'
+    },
+    unlock_condition: '1/2晚 商业区暗巷 主角偷听到西御寺与芳树秘谋',
+    unlock_record: '关键剧情·西御寺与芳树秘谋（1/2）',
+    cg_visual: '1月2日晚八十八町商业区暗巷，路灯昏黄把湿冷石板染成暗黄斑驳。主角蹲在巷角阴影里，背靠砖墙屏住呼吸，前方是西御寺有友与长冈芳树低声密谋的背影。画面焦点是两人交头接耳的剪影与地上拉长的影子，主角攥紧拳头指节泛白，背景里暗巷尽头的霓虹招牌闪烁，阴谋的压迫感悬在空气中。',
+    is_hidden: false, priority: 95,
+    flag_set: '阴谋偷听'
+  },
+  {
+    cg_id: 'CG_KEY_008', cg_name: '永岛母女硬分支', cg_type: CG_TYPE.KEY,
+    heroine_id: 13,
+    trigger_condition: {
+      day: 13, time_slot: '下午', location: '温泉乡旅馆',
+      affection_min: 50, heartbeat_min: 30, trust_min: 40,
+      relationship_stage: '心动',
+      flags_required: [],
+      event_trigger: '永岛母女二选一硬分支，选择久美子或佐知子',
+      choice_required: '二选一（久美子/佐知子）'
+    },
+    unlock_condition: '1/3下午 PM5:00 温泉旅馆 久美子或佐知子 affection≥50，触发硬分支二选一',
+    unlock_record: '关键剧情·永岛母女硬分支（1/3）',
+    cg_visual: '1月3日下午温泉乡旅馆和室，纸窗透出庭院雪光把榻榻米染成冷白。久美子跪坐左侧，浅茶色中长发松散低马尾，温柔杏眼深棕眼角下垂的空虚此刻被不安取代，米色针织开衫裹紧肩膀。佐知子跪坐右侧，黑色长发严谨低发髻，狭长凤眼深黑凌厉，深色和服端庄。两人之间的距离是婆媳伦理的鸿沟，焦点是主角站在门口抉择的背影。',
+    is_hidden: false, priority: 95,
+    flag_set: '永岛分支'
+  },
+  {
+    cg_id: 'CG_KEY_009', cg_name: '天道爱美分支', cg_type: CG_TYPE.KEY,
+    heroine_id: 9,
+    trigger_condition: {
+      day: 8, time_slot: '下午', location: '保育园',
+      affection_min: 30, heartbeat_min: 0, trust_min: 20,
+      relationship_stage: '初识',
+      flags_required: ['has_met_安田爱美'],
+      event_trigger: '在保育园与天道新干线谈话，决定爱美命运',
+      time_span: '12/29~30 两天内完成'
+    },
+    unlock_condition: '12/29~30 保育园 爱美 affection≥30 + 与天道谈话，触发爱美救赎分支',
+    unlock_record: '关键剧情·天道爱美分支（12/29~30）',
+    cg_visual: '12月29日下午88保育园休息室，午后阳光透过百叶窗把白色瓷砖染成暖黄条纹。爱美站在保育园窗边，黑色中长发束低马尾鬓角两缕柔化脸型，温柔杏眼深棕此刻带着不安的疲惫。白色护士服整洁，胸前名签在阳光下反光。窗外是天道新干线与孩子玩耍的背影，焦点是她攥住主角衣角询问爱美命运时颤抖的指尖。',
+    is_hidden: false, priority: 95,
+    flag_set: '爱美获救'
+  },
+  {
+    cg_id: 'CG_KEY_010', cg_name: '樱子反告白', cg_type: CG_TYPE.KEY,
+    heroine_id: 20,
+    trigger_condition: {
+      day: 17, time_slot: '下午', location: '市民医院',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '初识',
+      flags_required: ['樱子死讯'],
+      event_trigger: '樱子在临终前反向主角告白'
+    },
+    unlock_condition: '1/7下午 市民医院 樱子死讯已知，触发樱子临终反告白',
+    unlock_record: '关键剧情·樱子反告白（1/7）',
+    cg_visual: '1月7日下午88市民医院三楼病房，午后阳光透过庭院樱树照进窗把病床染成淡金。樱子半靠病床，黑色及腰长发松散麻花辫搭肩前，浅褐色大眼忧郁此刻被临终的清明与爱意取代。医院浅蓝色病号服宽松，右手无名指老旧银戒在阳光下泛旧。她伸出苍白纤细的手反向握住主角，焦点是她反告白时嘴角那抹终于看见春天的微笑。',
+    is_hidden: false, priority: 95
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     四-2、女主角关键剧情 CG（8 张，补全 10 张清单）
+     —— 综合设计方案补全清单：CG_003~CG_010（ heroine 高光时刻 ）
+     说明：CG_001=88公园救唯 / CG_002=美佐子浴室洗背（已在 CG_KEY_001~002 中）
+     ════════════════════════════════════════════════════════════ */
+  {
+    /* CG_003 · 可怜天台午餐 —— 偶像面具首次松动 */
+    cg_id: 'CG_KEY_011', cg_name: '可怜天台午餐', cg_type: CG_TYPE.KEY,
+    heroine_id: 3,
+    trigger_condition: {
+      day: 4, time_slot: '上午', location: '八十八学园天台',
+      affection_min: 30, heartbeat_min: 0, trust_min: 10,
+      relationship_stage: '熟悉',
+      flags_required: [],
+      item_required: '便当（主角携带）',
+      event_trigger: '主角带便当到天台，撞见独自练习台词的可怜，邀请共进午餐',
+      time_span: 'day4~6 上午任一触发'
+    },
+    unlock_condition: '12/26~28 上午 学园天台 可怜 affection≥30 + 主角携带便当，触发天台午餐事件',
+    unlock_record: '关键剧情·可怜天台午餐（12/26~28）',
+    cg_visual: '12/26上午八十八学园天台，冬日暖阳穿过铁丝网把水泥地染成淡金。可怜穿着宽大连帽衫藏住偶像身段，浅金色染发齐肩微卷被风吹乱，琥珀色大眼警惕地盯着主角递来的便当。她摘下营业式微笑的瞬间，左锁骨下方的幸运痣若隐若现。焦点是她咬下第一口时眼底防备崩塌、露出真实笑容的那一瞬。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '可怜首次在主角面前卸下偶像面具，露出真实笑容；引用 角色性格控制器 → 可怜营业态切换',
+    flag_set: 'karen_real_smile'
+  },
+  {
+    /* CG_004 · 美纪双身份揭示 —— 裕子身份质问（与 CG_HIDDEN_004 完整揭示互补，此为 day6 便利商店初探） */
+    cg_id: 'CG_KEY_012', cg_name: '美纪双身份揭示·初探', cg_type: CG_TYPE.KEY,
+    heroine_id: 4,
+    trigger_condition: {
+      day: 6, time_slot: '上午', location: '八十八町便利商店',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: ['芳树偷拍美纪'],
+      event_trigger: '美纪发现主角偷看到"裕子"身份，在便利商店堵主角质问'
+    },
+    unlock_condition: '12/26 上午 便利商店 芳树偷拍美纪=1，美纪质问主角是否偷看到"裕子"身份',
+    unlock_record: '关键剧情·美纪双身份揭示初探（12/26）',
+    cg_visual: '12/26上午八十八町便利商店，冷白日光灯把货架染成惨白。美纪穿着校服外套便利商店制服围裙，浅茶色中长发微卷烫染被丝绒发带束起，狭长杏眼深棕带金的目光锐利如刀。她俯身堵住主角在货架间的去路，珍珠耳钉在灯光下泛冷光。焦点是她语气从加藤美纪切换到裕子的那一瞬，眉峰压低审视压迫。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '美纪从"加藤美纪"切换到"裕子"语气的瞬间切换；后续 CG_HIDDEN_004 揭示完整真相',
+    flag_set: 'miki_identity_probed'
+  },
+  {
+    /* CG_005 · 泉美学园旧校舍 —— 钢琴回忆流泪 */
+    cg_id: 'CG_KEY_013', cg_name: '泉美旧校舍钢琴', cg_type: CG_TYPE.KEY,
+    heroine_id: 5,
+    trigger_condition: {
+      day: 7, time_slot: '下午', location: '八十八学园旧校舍音乐室',
+      affection_min: 40, heartbeat_min: 0, trust_min: 20,
+      relationship_stage: '熟悉',
+      flags_required: [],
+      event_trigger: '主角在旧校舍听到钢琴声，发现泉美独自弹琴流泪，回忆已故母亲',
+      time_span: 'day7~9 下午任一触发'
+    },
+    unlock_condition: '12/29~31 下午 学园旧校舍 泉美 affection≥40，触发钢琴流泪回忆事件',
+    unlock_record: '关键剧情·泉美旧校舍钢琴（12/29~31）',
+    cg_visual: '12/29下午八十八学园旧校舍音乐室，午后斜阳穿过积灰玻璃把钢琴染成淡金。泉美穿着校服外套米白开衫，黑色长直发松松编成麻花辫垂肩前，圆框眼镜后的圆眼深褐积着泪水。她苍白透明的手指停在琴键上，左手腕内侧浅色痣若隐若现。焦点是她低头落泪时碎发垂落遮住半边脸，社恐外壳在琴声里崩塌的瞬间。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '泉美社恐外壳首次在主角面前完全裂开，1.5 倍敏感体质叠加悲伤泪水的双重崩塌',
+    flag_set: 'izumi_piano_tears'
+  },
+  {
+    /* CG_006 · 友美邻家夜谈 —— 青梅竹马的未来对话 */
+    cg_id: 'CG_KEY_014', cg_name: '友美邻家夜谈', cg_type: CG_TYPE.KEY,
+    heroine_id: 8,
+    trigger_condition: {
+      day: 4, time_slot: '晚', location: '水野家阳台',
+      affection_min: 30, heartbeat_min: 0, trust_min: 20,
+      relationship_stage: '熟悉',
+      flags_required: [],
+      item_required: '毛毯（主角携带或借取）',
+      event_trigger: '主角夜访水野家，与友美在阳台披毯看星星，谈论未来',
+      time_span: 'day4~6 晚任一触发'
+    },
+    unlock_condition: '12/26~28 晚 水野家阳台 友美 affection≥30，触发邻家夜谈事件',
+    unlock_record: '关键剧情·友美邻家夜谈（12/26~28）',
+    cg_visual: '12/26晚水野家二楼阳台，冬日星空清冷银光把阳台染成幽蓝。友美穿着运动外套与短裙，黑色短发齐肩发尾微翘，与主角并肩裹着毛毯看星。她明亮大眼深棕映着星光，右手腕内侧童年爬树浅疤在毯边若隐若现。焦点是她侧脸望向主角时眼底第一次浮现不属于哥们儿的柔软，"原来我是女人"的觉醒前兆。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '友美"哥们儿"框架首次出现裂缝，"原来我是女人"的觉醒前兆；与 CG_KEY_005 友美误会事件互补',
+    flag_set: 'tomomi_star_talk'
+  },
+  {
+    /* CG_007 · 美沙运动场奔跑 —— 姐姐外壳的笑声回归 */
+    cg_id: 'CG_KEY_015', cg_name: '美沙运动场奔跑', cg_type: CG_TYPE.KEY,
+    heroine_id: 10,
+    trigger_condition: {
+      day: 8, time_slot: '下午', location: '八十八学园运动场',
+      affection_min: 30, heartbeat_min: 0, trust_min: 20,
+      relationship_stage: '熟悉',
+      flags_required: [],
+      event_trigger: '美沙拉主角到运动场赛跑，久违地放下"姐姐"包袱放声大笑',
+      time_span: 'day8~10 下午任一触发'
+    },
+    unlock_condition: '12/30~1/1 下午 学园运动场 美沙 affection≥30，触发奔跑笑声事件',
+    unlock_record: '关键剧情·美沙运动场奔跑（12/30~1/1）',
+    cg_visual: '12/30下午八十八学园运动场，冬日斜阳把红色跑道染成暖金。美沙穿着运动T恤与短裤，浅茶色中长发微卷在奔跑中散开，明亮圆眼浅棕带金笑得弯成月牙。她回头朝主角挥手催促时，左颊梨涡深陷，汗水沿着健康蜜色肌肤滑落。焦点是她久违放下"姐姐"包袱放声大笑的瞬间，从照顾者反转为被宠成小女孩。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '美沙"姐姐崩塌"反差起点——从"美沙姐姐照顾你"到"被宠成小女孩"的温柔反转前兆',
+    flag_set: 'misa_run_laugh'
+  },
+  {
+    /* CG_008 · 久美子永岛家茶会 —— 母性哀思的私下时刻 */
+    cg_id: 'CG_KEY_016', cg_name: '久美子永岛家茶会', cg_type: CG_TYPE.KEY,
+    heroine_id: 13,
+    trigger_condition: {
+      day: 10, time_slot: '下午', location: '永岛家客厅',
+      affection_min: 40, heartbeat_min: 0, trust_min: 30,
+      relationship_stage: '熟悉',
+      flags_required: [],
+      event_trigger: '久美子邀请主角到永岛家品茶，谈亡夫之事；佐知子在旁织毛衣沉默',
+      time_span: 'day10~12 下午任一触发'
+    },
+    unlock_condition: '1/1~3 下午 永岛家 久美子 affection≥40，触发茶会亡夫追忆事件',
+    unlock_record: '关键剧情·久美子永岛家茶会（1/1~3）',
+    cg_visual: '1/1下午八十八町永岛家客厅，冬日暖阳透过纸窗把榻榻米染成淡金。久美子穿着米色针织开衫配及膝长裙，浅茶色中长发低马尾松散，温柔杏眼深棕眼角下垂含着哀思。她捧着茶杯的手无名指婚戒泛冷光，鬓角两缕柔化脸型。背景里佐知子沉默织毛衣。焦点是她谈亡夫时眼底空虚倾泻的瞬间。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '久美子母性外壳下的哀思；佐知子沉默的旁观为后续 CG_KEY_008 永岛母女硬分支铺垫',
+    flag_set: 'kumiko_tea_mourning'
+  },
+  {
+    /* CG_009 · 樱子病房日落 —— 日记本交付仪式 */
+    cg_id: 'CG_KEY_017', cg_name: '樱子病房日落', cg_type: CG_TYPE.KEY,
+    heroine_id: 20,
+    trigger_condition: {
+      day: 11, time_slot: '晚', location: '市民医院樱子病房',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: ['樱子线解锁'],
+      event_trigger: '樱子靠窗看日落，递给主角一本日记本，托付最后的回忆',
+      time_span: 'day11~13 晚任一触发'
+    },
+    unlock_condition: '1/2~4 晚 市民医院 樱子 樱子线解锁=1，触发日落日记交付事件',
+    unlock_record: '关键剧情·樱子病房日落（1/2~4）',
+    cg_visual: '1/2傍晚八十八市民医院三楼病房，日落把窗外樱树染成血红。樱子半靠病床，黑色及腰长发松散麻花辫搭肩前，浅褐色大眼忧郁此刻被临终清明取代。医院浅蓝病号服宽松，右手无名指老旧银戒在夕阳下泛旧。她把日记本递向主角的瞬间，焦点是她苍白指尖的颤抖与眼底托付最后的释然。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '樱子对主角的临终托付，日记本系列收集起点；与 CG_HIDDEN_001 反告白（全日记）形成首尾呼应',
+    flag_set: 'sakurako_diary_given'
+  },
+  {
+    /* CG_010 · 88车站离别 —— 结局告别的总闸门 */
+    cg_id: 'CG_KEY_018', cg_name: '88车站离别', cg_type: CG_TYPE.KEY,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 17, time_slot: '任意', location: '八十八车站',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: '1/7 告白日结局判定后，主角与所有攻略女角在88车站告别，根据攻略数判定结局',
+      time_span: 'day17 全时段'
+    },
+    unlock_condition: '1/7 全时段 88车站 主角完成告白日结局判定，触发告别场景（攻略女角≥1）',
+    unlock_record: '关键剧情·88车站离别（1/7）',
+    cg_visual: '1/7傍晚八十八车站月台，冬日斜阳把铁轨染成淡金。主角站在月台中央，身后是错落站立的攻略女角们——唯蜷缩围巾里、美佐子握着银镯、可怜拉连帽衫帽檐。站台暖黄灯把每个人轮廓勾成金边。焦点是列车进站瞬间众女角或挥手或转身或回望的告别群像，结局分支的总闸门在此收束。',
+    is_hidden: false, priority: 95,
+    narrative_focus: '结局分支总闸门——根据攻略女角数量与好感度判定 True End / Good End / Bad End；与各女角 CG_MAIN_xxx 主线结局 CG 联动',
+    flag_set: 'station_farewell',
+    ending_branch: true
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     五、隐藏 CG（5 张）
+     ════════════════════════════════════════════════════════════ */
+  {
+    cg_id: 'CG_HIDDEN_001', cg_name: '杉本樱子·反告白（隐藏版）', cg_type: CG_TYPE.HIDDEN,
+    heroine_id: 20,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '市民医院樱花树下',
+      affection_min: 60, heartbeat_min: 40, trust_min: 50,
+      relationship_stage: '亲密',
+      flags_required: ['樱子死讯', '日记1', '日记2', '日记3', '日记4', '日记5'],
+      event_trigger: '集齐5本日记后，樱子反告白的完整隐藏版本'
+    },
+    unlock_condition: '1/7深夜 樱子 affection≥60 + 死讯已知 + 5本日记全收集，触发隐藏反告白',
+    unlock_record: '隐藏CG·杉本樱子反告白（全日记收集）',
+    cg_visual: '1/7深夜八十八市民医院庭院樱花树下，月光穿过冬樱把地面染成银白。樱子裹着厚披肩半坐石椅，黑色及腰长发松散麻花辫垂胸前，浅褐色大眼忧郁此刻被临终清明与爱意取代。她颤抖的右手握着5本日记与无名指老旧银戒。焦点是她反向告白时嘴角那抹终于看见春天的微笑，神秘而圣洁。',
+    is_hidden: true, priority: 99
+  },
+  {
+    cg_id: 'CG_HIDDEN_002', cg_name: '日记本系统全收集', cg_type: CG_TYPE.HIDDEN,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 17, time_slot: '任意', location: '主角自宅书桌',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: ['日记1', '日记2', '日记3', '日记4', '日记5'],
+      event_trigger: '5本日记全部收集完成，揭示完整故事线'
+    },
+    unlock_condition: '收集齐全部5本日记（日记1~5），日记本系统完成',
+    unlock_record: '隐藏CG·日记本全收集（5本）',
+    cg_visual: '1/7深夜主角自宅书桌，台灯暖黄光晕把桌面染成蜜色。五本日记本整齐摊开在书桌上，泛黄封面写着樱子的笔迹，旁边散落着樱子留下的干花书签。窗外冬夜月光透过窗帘缝隙洒在日记本上。焦点是五本日记拼凑出樱子完整人生的瞬间，神秘氛围里透着沉重的宿命感。',
+    is_hidden: true, priority: 98
+  },
+  {
+    cg_id: 'CG_HIDDEN_003', cg_name: '变数屋全解锁', cg_type: CG_TYPE.HIDDEN,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 17, time_slot: '任意', location: '变数屋',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: ['变数屋全解锁'],
+      event_trigger: '变数屋所有选项解锁完成'
+    },
+    unlock_condition: '变数屋全部选项解锁（需满足各隐藏条件）',
+    unlock_record: '隐藏CG·变数屋全解锁',
+    cg_visual: '1/7深夜八十八町变数屋，奇异金光从店内所有货架涌出把空间染成斑斓。货架上所有原本锁着的选项全部亮起幽蓝光芒，店主神秘身影立于柜台后微笑。主角站在货架中央，被无数光点包围。焦点是全解锁瞬间店主递出钥匙的那一瞬，神秘宿命感与真相揭示的庄严。',
+    is_hidden: true, priority: 98
+  },
+  {
+    cg_id: 'CG_HIDDEN_004', cg_name: '美纪双身份揭示', cg_type: CG_TYPE.HIDDEN,
+    heroine_id: 4,
+    trigger_condition: {
+      day: 9, time_slot: '深夜', location: '八十八学园神秘地点',
+      affection_min: 60, heartbeat_min: 40, trust_min: 50,
+      relationship_stage: '心动',
+      flags_required: ['美纪威胁事件'],
+      event_trigger: '揭示加藤美纪的双重身份完整真相'
+    },
+    unlock_condition: '12/30深夜 美纪 affection≥60 + 威胁事件后，揭示双身份完整真相',
+    unlock_record: '隐藏CG·美纪双身份揭示',
+    cg_visual: '12/30深夜八十八学园神秘地点，月光透过天窗把石阶染成银白。美纪褪去校服伪装，浅茶色中长发微卷烫染散落肩前，狭长杏眼深棕带金的目光第一次失去锐利只剩脆弱。丝绒发带松脱挂在指尖，珍珠耳钉在月光下泛冷光。焦点是她卸下双身份伪装那一刻眼底崩溃的泪水与释然。',
+    is_hidden: true, priority: 98,
+    flag_set: '美纪双身份揭示'
+  },
+  {
+    cg_id: 'CG_HIDDEN_005', cg_name: '隐藏结局·真结局', cg_type: CG_TYPE.HIDDEN,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八学园屋顶',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: ['日记1', '日记2', '日记3', '日记4', '日记5', '樱子死讯', '变数屋全解锁'],
+      event_trigger: '全隐藏条件达成，触发真结局'
+    },
+    unlock_condition: '5本日记全收集 + 樱子死讯已知 + 变数屋全解锁，1/7深夜触发真结局',
+    unlock_record: '隐藏CG·真结局（全条件达成）',
+    cg_visual: '1/7深夜八十八学园屋顶，繁星满天月光如水把屋顶染成银白。主角独自站在围栏边，手中紧握5本日记本与变数屋钥匙。城市灯火在脚下铺开如星河，屋顶上积雪反射着冷月。背景里樱子的影像若隐若现立于星光中。焦点是主角抬头望向星空的瞬间，神秘庄严的宿命感与樱子释然的微笑。',
+    is_hidden: true, priority: 100
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     六、BAD_END CG（8 张）—— 每 BAD_END 1 张
+     ════════════════════════════════════════════════════════════ */
+  {
+    cg_id: 'CG_BAD_001', cg_name: 'BAD_END_1·报警', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 0, time_slot: '任意', location: '任意',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: 'illegal_count 达到阈值，主角被报警逮捕'
+    },
+    unlock_condition: '违法行为累计 illegal_count ≥ 阈值，触发报警逮捕结局',
+    unlock_record: 'BAD_END_1·报警',
+    cg_visual: '深夜八十八町警署审讯室，冷白日光灯把铁栏影子投在水泥地上。主角双手戴着手铐坐在审讯椅上，背后是冰冷的铁栏。警员制服身影立于阴影中，桌上案卷堆积如山。窗外冬夜警车灯红蓝闪烁把墙壁染成诡异色彩。焦点是主角低头看向手铐的那一瞬，压抑的绝望与悔恨。',
+    is_hidden: false, priority: 50
+  },
+  {
+    cg_id: 'CG_BAD_002', cg_name: 'BAD_END_2·学园开除', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 0, time_slot: '任意', location: '八十八学园',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: 'academic 降至 0 或严重违纪，被学园开除'
+    },
+    unlock_condition: 'academic ≤ 0 或严重违纪事件触发，被八十八学园开除',
+    unlock_record: 'BAD_END_2·学园开除',
+    cg_visual: '冬日下午八十八学园校长室，窗外雪花飞舞把室内染成冷白。主角站在校长办公桌前，桌上成绩单满是红字。校长严肃身影背光站立，身后是学园开除通知书。背景里美铃老师立于门口偏过头不忍直视。焦点是主角握着开除书颤抖的手，压抑的失落与前途断送的沉重。',
+    is_hidden: false, priority: 50
+  },
+  {
+    cg_id: 'CG_BAD_003', cg_name: 'BAD_END_3·破产', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 0, time_slot: '任意', location: '任意',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: 'money 与 savings 均归零，负债无法偿还'
+    },
+    unlock_condition: 'money ≤ 0 且 savings ≤ 0 且无法借贷，破产结局',
+    unlock_record: 'BAD_END_3·破产',
+    cg_visual: '深夜八十八町商业区街角，路灯昏黄把积雪染成暗黄。主角蜷缩在商业区街角，身边散落着催债信件与空钱包。冬夜寒风把他的衣摆吹得猎猎作响，远处便利店暖光与他的落魄形成刺眼对比。焦点是他低头看向空空如也的掌心那一瞬，压抑的绝望与生存崩塌。',
+    is_hidden: false, priority: 50
+  },
+  {
+    cg_id: 'CG_BAD_004', cg_name: 'BAD_END_4·崩溃', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 0, time_slot: '任意', location: '任意',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: 'mood 降至 0 或 fatigue 达到 100，精神崩溃'
+    },
+    unlock_condition: 'mood ≤ 0 或 fatigue ≥ 100，精神崩溃结局',
+    unlock_record: 'BAD_END_4·崩溃',
+    cg_visual: '深夜主角自宅卧室，台灯惨白光把房间染成病态苍白。主角蜷缩在床角，双手抱头眼神涣散空洞。桌上散落着未完成的作业与凉透的便当，墙上日历停在某一天。窗外冬夜月光透过窗帘缝隙投下惨白光斑。焦点是他涣散瞳孔里倒映的虚空，压抑的精神崩塌与虚无。',
+    is_hidden: false, priority: 50
+  },
+  {
+    cg_id: 'CG_BAD_005', cg_name: 'BAD_END_5·嫉妒杀戮', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 0, time_slot: '深夜', location: '任意',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: '某女角 jealousy 达到 100，触发嫉妒杀戮事件'
+    },
+    unlock_condition: '任一女角 jealousy ≥ 100，触发嫉妒杀戮结局',
+    unlock_record: 'BAD_END_5·嫉妒杀戮',
+    cg_visual: '深夜八十八学园走廊，月光透过窗户把走廊染成血红。女角手持利器立于血泊中，眼神疯狂而空洞。主角倒在血泊里，校服被染成深红。背景里散落着被撕碎的情书与照片。焦点是女角疯狂眼神里倒映的嫉妒与占有欲的崩塌，压抑的悲剧宿命。',
+    is_hidden: false, priority: 50
+  },
+  {
+    cg_id: 'CG_BAD_006', cg_name: 'BAD_END_6·西御寺阴谋', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 17, time_slot: '晚', location: '八十八町商业区',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: ['阴谋偷听'],
+      event_trigger: '西御寺阴谋得逞，主角未能阻止'
+    },
+    unlock_condition: '1/7晚 西御寺阴谋未阻止 + 偷听秘谋后未采取行动，阴谋得逞',
+    unlock_record: 'BAD_END_6·西御寺阴谋',
+    cg_visual: '1/7晚八十八町商业区，霓虹灯把商业区染成诡异斑斓。西御寺立于商业区高楼顶端俯视下方，西装革履嘴角挂着阴冷的笑。主角站在楼下仰望，手中紧握着未能送达的证据。背景里商业区灯火在他身后如星河坠落。焦点是西御寺俯视的胜利眼神与主角无力的绝望，压抑的阴谋得逞。',
+    is_hidden: false, priority: 60
+  },
+  {
+    cg_id: 'CG_BAD_007', cg_name: 'BAD_END_7·法律制裁', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 0, time_slot: '任意', location: '八十八町警署',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: '触法行为被举报，法律制裁结局'
+    },
+    unlock_condition: '触法行为（强闯私宅/猥亵/暴力等）被举报，法律制裁结局',
+    unlock_record: 'BAD_END_7·法律制裁',
+    cg_visual: '冬日下午八十八町警署法庭，冷白日光灯把法庭染成惨白。主角站在被告席上，法槌落下的瞬间回声在空旷法庭里回荡。法官严肃身影背光，陪审团席上是一排冷漠的剪影。窗外冬阳透过百叶窗投下条纹阴影。焦点是主角低头看向被告席木栏的那一瞬，压抑的法律制裁与自由剥夺。',
+    is_hidden: false, priority: 50
+  },
+  {
+    cg_id: 'CG_BAD_008', cg_name: 'BAD_END_8·时间终焉', cg_type: CG_TYPE.BAD_END,
+    heroine_id: 0,
+    trigger_condition: {
+      day: 17, time_slot: '深夜', location: '八十八町商业区',
+      affection_min: 0, heartbeat_min: 0, trust_min: 0,
+      relationship_stage: '任意',
+      flags_required: [],
+      event_trigger: '1/7深夜未达成任何结局条件，时间终结'
+    },
+    unlock_condition: '1/7深夜 day_count=17 结束时未达成任何女角True End条件，时间终焉',
+    unlock_record: 'BAD_END_8·时间终焉',
+    cg_visual: '1/7深夜八十八车站月台，空无一人。冬日深夜月光把空荡月台染成银白。主角独自站在月台中央，身后是没有女角送别的空荡长椅。最后一班列车的灯光在远方铁轨尽头亮起，缓缓驶来。焦点是主角望向空荡月台的那一瞬，压抑的孤独与时间终结的虚无宿命。',
+    is_hidden: false, priority: 40
+  }
+];
+
+/* ════════════════════════════════════════════════════════════
+   CG 分类统计与索引
+   ════════════════════════════════════════════════════════════ */
+const _cgByType = {
+  '主线':    CG_LIST.filter(cg => cg.cg_type === '主线'),
+  'H事件':   CG_LIST.filter(cg => cg.cg_type === 'H事件'),
+  '进阶H':   CG_LIST.filter(cg => cg.cg_type === '进阶H'),
+  '关键剧情': CG_LIST.filter(cg => cg.cg_type === '关键剧情'),
+  '隐藏':    CG_LIST.filter(cg => cg.cg_type === '隐藏'),
+  'BAD_END': CG_LIST.filter(cg => cg.cg_type === 'BAD_END')
+};
+
+const _hiddenCGs = CG_LIST.filter(cg => cg.is_hidden);
+const _totalCGs = CG_LIST.length;
+
+/* ── NSFW 门槛校验辅助 ── */
+function _checkNSFWThreshold(heroineAffection, heroineHeartbeat, heroineTrust, stage) {
+  const _th = NSFW_THRESHOLD[stage];
+  if (!_th) return false;
+  return heroineAffection >= _th.affection && heroineHeartbeat >= _th.heartbeat && heroineTrust >= _th.trust;
+}
+
+/* ── 当前可触发 CG 检索（按 day_count + time_slot） ── */
+const _availableCGs = CG_LIST.filter(cg => {
+  const _tc = cg.trigger_condition;
+  if (!_tc.day || _tc.day === 0) return false;
+  return _tc.day === _dayCount && (!_tc.time_slot || _tc.time_slot === _timeSlot);
+});
+%>
+
+[同级生2 · CG触发条件表 已加载]
+当前校验：day_count=<%= _dayCount %> / date=<%= _date %> / time_slot=<%= _timeSlot %> / 难度=<%= _diff %>
+CG总数：<%= _totalCGs %> 张（主线 <%= _cgByType['主线'].length %> + H事件 <%= _cgByType['H事件'].length %> + 进阶H <%= _cgByType['进阶H'].length %> + 关键剧情 <%= _cgByType['关键剧情'].length %> + 隐藏 <%= _cgByType['隐藏'].length %> + BAD_END <%= _cgByType['BAD_END'].length %>）
+隐藏CG数：<%= _hiddenCGs.length %> 张
+
+【CG分类索引】
+- 主线CG（CG_MAIN_001~019）：每女角1张True End，1/7告白日 + affection≥80 + 关键flag
+- H事件CG（CG_H_001~019）：每女角1张初H，NSFW硬门槛 初H(80/50/60)
+- 进阶H CG（CG_ADV_H_001~019）：每女角1张进阶H，NSFW硬门槛 进阶H(90/60/70)
+- 关键剧情CG（CG_KEY_001~010）：10张关键剧情CG，按日期触发
+- 隐藏CG（CG_HIDDEN_001~005）：5张隐藏CG，特殊条件解锁
+- BAD_END CG（CG_BAD_001~008）：8张坏结局CG，触发失败条件
+
+【NSFW硬门槛（affection/heartbeat/trust）】
+- 牵手：40/20/30
+- 拥抱：50/30/40
+- 亲吻：60/40/50
+- 初H：80/50/60
+- 进阶H：90/60/70
+
+【当前可触发CG（day=<%= _dayCount %> / time=<%= _timeSlot %>）】
+<%_ if (_availableCGs.length > 0) { _%>
+<%_ _availableCGs.forEach(cg => { _%>
+- <%= cg.cg_id %> <%= cg.cg_name %>（<%= cg.cg_type %>）| 解锁：<%= cg.unlock_condition %>
+<%_ }); _%>
+<%_ } else { _%>
+- 当前时段无固定日期触发CG（可能触发条件型CG或BAD_END）
+<%_ } _%>
+
+【执行规则】
+1. AI 必须在每次事件触发前，检查 CG_LIST 中是否有满足 trigger_condition 的 CG。
+2. 主线CG（CG_MAIN_001~019）仅在 day_count=17 且 affection≥80 且关键flag全部正确时触发。
+3. H事件CG 需先满足 NSFW_THRESHOLD.初H 硬门槛（80/50/60），且对应flag已设置。
+4. 进阶H CG 需先满足 NSFW_THRESHOLD.进阶H 硬门槛（90/60/70），且初H已完成。
+5. 关键剧情CG 按指定 day/time_slot/location 触发，触发后设置对应 flag_set。
+6. 隐藏CG 需特殊条件（日记全收集/变数屋全解锁/双身份揭示等），is_hidden=true。
+7. BAD_END CG 在失败条件触发时优先判定（priority 40-60），优先级低于主线CG(100)。
+8. 事件互斥时按 priority 越高越优先判定：真结局(100) > 主线(100) > 隐藏反告白(99) > 日记/变数屋(98) > 关键剧情(95) > H事件(90) > 进阶H(85) > BAD_END(40-60)。
+9. CG 解锁后写入 cg_gallery 表：cg_id / cg_name / cg_type / unlock_record / unlock_date。
+10. 难度修正（_DIFF）影响 NSFW 门槛：地狱难度下初H门槛提升至 90/60/70，进阶H提升至 95/70/80。

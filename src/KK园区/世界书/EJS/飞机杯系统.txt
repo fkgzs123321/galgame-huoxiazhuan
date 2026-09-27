@@ -1,0 +1,125 @@
+@@generate_before
+<%_
+// ════════════════════════════════════════════════════════════
+// 飞机杯系统 EJS 多阶段条目 · KK园区专版
+// 按玩家.飞机杯当前绑定 与 女性角色[绑定名].具现度 分阶段注入
+// 蓝灯常驻，深度4
+// ════════════════════════════════════════════════════════════
+const fjb_binding = String(getvar('stat_data.玩家.飞机杯当前绑定', { scope: 'local', defaults: '无' }) || '无');
+const fjb_unbound = (fjb_binding === '无' || fjb_binding === '');
+
+// 当前绑定女性的三系统数值
+let char_name = '';
+let char_awareness = 0;
+let char_passion = 0;
+let char_manifest = 0;
+if (!fjb_unbound) {
+  char_name = fjb_binding;
+  char_awareness = Number(getvar('stat_data.女性角色.' + char_name + '.察觉度', { scope: 'local', defaults: 0 })) || 0;
+  char_passion = Number(getvar('stat_data.女性角色.' + char_name + '.倾心度', { scope: 'local', defaults: 0 })) || 0;
+  char_manifest = Number(getvar('stat_data.女性角色.' + char_name + '.具现度', { scope: 'local', defaults: 0 })) || 0;
+}
+
+// 飞机杯阶段判定（按具现度划分）
+// 0:未激活 / 1-30:初探 / 31-60:渐深 / 61-90:具现 / 91-120:投影 / 121-150:实体化 / 151-200:降临
+const fjb_stage_dormant = fjb_unbound;
+const fjb_stage_init = !fjb_unbound && char_manifest >= 1 && char_manifest <= 30;
+const fjb_stage_grow = !fjb_unbound && char_manifest >= 31 && char_manifest <= 60;
+const fjb_stage_manifest = !fjb_unbound && char_manifest >= 61 && char_manifest <= 90;
+const fjb_stage_project = !fjb_unbound && char_manifest >= 91 && char_manifest <= 120;
+const fjb_stage_solidify = !fjb_unbound && char_manifest >= 121 && char_manifest <= 150;
+const fjb_stage_descend = !fjb_unbound && char_manifest >= 151;
+_%>
+<%_ if (fjb_stage_dormant) { _%>
+【飞机杯状态·休眠】
+当前未绑定任何女性。飞机杯处于伪装形态——一根不起眼的劣质硅胶棒，藏在玩家贴身衣物内。
+激活条件：将目标女性的任意身体关联物（毛发/指甲/血液/皮屑等）放入飞机杯内壁，静置一分钟。
+激活后可同步感知、追踪该女性的三系统数值（察觉度/倾心度/具现度）。
+注意：在KK园区中，获取女性"材料"需要接近目标且不被发现，是高危操作。
+
+【当前可用行动】
+- 接近女受害者（小薇/阿凤/灵灵）以收集毛发/指甲
+- 接近女管理者（冷雪/媚娘/铁姨）以收集皮屑/血液（极高风险）
+- 寻找园区医疗室/浴室等可能留有女性体物的场所
+
+<%_ } _%>
+<%_ if (fjb_stage_init) { _%>
+【飞机杯状态·初探期】
+已绑定女性：<%= char_name %>（察觉度 <%= char_awareness %> / 倾心度 <%= char_passion %> / 具现度 <%= char_manifest %>）
+飞机杯已激活，但具现度极低。硅胶棒表面开始长出细密血管纹路，内壁变为活体质感，温热柔软会蠕动。
+玩家可同步感知 <%= char_name %> 的生理反应（湿润度/体温/紧致度），但感知窗口模糊，无法看清表情姿态。
+<%= char_name %> 尚未察觉异常，只是偶尔感到莫名的下腹燥热。
+玩家可通过操作飞机杯（插入/抽插/触摸）远程刺激 <%= char_name %>，但效果较弱。
+
+【阶段建议】
+- 多次使用飞机杯刺激 <%= char_name %> 可累积具现度
+- 具现度达 31 后进入"渐深期"，感知窗口清晰化
+
+<%_ } _%>
+<%_ if (fjb_stage_grow) { _%>
+【飞机杯状态·渐深期】
+已绑定女性：<%= char_name %>（察觉度 <%= char_awareness %> / 倾心度 <%= char_passion %> / 具现度 <%= char_manifest %>）
+飞机杯与 <%= char_name %> 的链接加深。感知窗口逐渐清晰，玩家可模糊看到她的轮廓和姿态。
+<%= char_name %> 开始察觉异常——时常感到被无形的手触摸，下腹莫名燥热，夜半惊醒。
+若察觉度 ≥ 50，<%= char_name %> 会开始怀疑并主动调查这种感觉的来源。
+玩家对飞机杯的每次操作都能在 <%= char_name %> 身上引发真实生理反应（湿、收紧、痉挛）。
+
+【阶段建议】
+- 谨慎使用——若 <%= char_name %> 察觉度过高可能引发她的警觉和调查
+- 可通过精液成瘾能力（口服或内射）同步压制其警觉性
+- 具现度达 61 后进入"具现期"，可看到清晰画面
+
+<%_ } _%>
+<%_ if (fjb_stage_manifest) { _%>
+【飞机杯状态·具现期】
+已绑定女性：<%= char_name %>（察觉度 <%= char_awareness %> / 倾心度 <%= char_passion %> / 具现度 <%= char_manifest %>）
+飞机杯的感知窗口完全清晰，玩家可看到 <%= char_name %> 的表情、姿态、所处环境，听到她的喘息和低语。
+飞机杯内壁完全还原 <%= char_name %> 的内部构造，触感与真人无异。
+玩家可主动控制是否传送精液——传送时 <%= char_name %> 体内真实存在精液（按内射规则计算怀孕风险），不传送时精液只留在飞机杯内。
+<%= char_name %> 已意识到"某种东西"在她体内活动，但无法解释。若倾心度 ≥ 60，她会逐渐接受这种感觉甚至期待；若 < 30，她会恐惧并试图寻求帮助。
+
+【阶段建议】
+- 可与精液成瘾能力联动——内射触发后倾心度+30
+- 具现度达 91 后进入"投影期"，可看到她周围的环境
+
+<%_ } _%>
+<%_ if (fjb_stage_project) { _%>
+【飞机杯状态·投影期】
+已绑定女性：<%= char_name %>（察觉度 <%= char_awareness %> / 倾心度 <%= char_passion %> / 具现度 <%= char_manifest %>）
+玩家不仅能看到 <%= char_name %> 本人，还能看到她周围的环境——房间、同伴、所处场景。
+玩家可在她入睡/独处时通过飞机杯施加影响，让她做"春梦"或产生强烈性冲动。
+若倾心度 ≥ 100，<%= char_name %> 会开始主动寻找这种感觉的来源，可能走向玩家。
+若倾心度 < 50 但成瘾度 ≥ 50，她会陷入痛苦的渴望——身体需要这种感觉，理智拒绝承认。
+
+【阶段建议】
+- 利用环境信息为逃脱/情报收集提供支持
+- 可通过"远程性刺激"削弱目标意志，为拉拢/策反铺路
+- 具现度达 121 后进入"实体化期"，玩家可让飞机杯具现出她的形态
+
+<%_ } _%>
+<%_ if (fjb_stage_solidify) { _%>
+【飞机杯状态·实体化期】
+已绑定女性：<%= char_name %>（察觉度 <%= char_awareness %> / 倾心度 <%= char_passion %> / 具现度 <%= char_manifest %>）
+飞机杯在玩家眼前可具现出 <%= char_name %> 的实体幻影——可触碰、可对话、可互动，但其他人看不见。
+具现幻影会按 <%= char_name %> 的真实性格和记忆行动，玩家可从中获取情报。
+<%= char_name %> 本人会感受到"灵魂被窥视"的恐惧，若成瘾度 ≥ 80 且倾心度 ≥ 80，她会主动寻找玩家并臣服。
+
+【阶段建议】
+- 可通过具现幻影进行情报问询、心理操控
+- 若同步使用精液成瘾能力（内射或口服），<%= char_name %> 会彻底沦陷
+- 具现度达 151 后进入"降临期"，可远程操控目标行为
+
+<%_ } _%>
+<%_ if (fjb_stage_descend) { _%>
+【飞机杯状态·降临期】
+已绑定女性：<%= char_name %>（察觉度 <%= char_awareness %> / 倾心度 <%= char_passion %> / 具现度 <%= char_manifest %>）
+飞机杯与 <%= char_name %> 已完全融合。玩家可远程操控她的行为——让她入睡、移动、说话、做特定动作。
+<%= char_name %> 的自我意识被玩家压制，但她并非傀儡——她会以"自愿"的方式执行玩家意图，因为她已经成瘾到无法分辨自我与玩家意志。
+玩家可让她内应开门/放哨/转移注意力，是逃脱行动和反杀的关键底牌。
+
+【阶段警告】
+- 滥用降临期会导致 <%= char_name %> 精神崩溃，可能引起园区注意
+- 园区若发现此能力，会立即处死玩家
+- 必须谨慎使用，避免暴露
+
+<%_ } _%>

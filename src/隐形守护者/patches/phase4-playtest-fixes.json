@@ -1,0 +1,7 @@
+[
+  {"op":"add","path":"/entryManifest/扮演准则/防抉择剧透","value":{"path":"世界书/扮演准则/防抉择剧透.yaml","abstract":"禁止剧透正确选项与演戏真相","keywords":[]}},
+  {"op":"add","path":"/entryManifest/事件/序章BE执行范例","value":{"path":"世界书/事件/序章BE执行范例.yaml","abstract":"选错同轮BE+JSONPatch范例","keywords":["BE","重来"]}},
+  {"op":"add","path":"/entryManifest/MVU/[mvu_update]变量输出格式（额外模型）","value":{"path":"世界书/MVU/变量输出格式_额外模型.yaml","part":"output_format","abstract":"额外模型变量解析格式","keywords":[]}},
+  {"op":"add","path":"/entryManifest/数据库/前端面板说明","value":{"path":"世界书/数据库/前端面板说明.yaml","abstract":"数据库召回面板排查","keywords":["面板","召回"]}},
+  {"op":"replace","path":"/creator_notes","value":"必开：SP·数据库、【骰子系统】-自动更新、MVU、Zod；建议开启「使用额外模型解析」。导入后点「应用本卡SQL模板」→隔离=隐形守护者→模板=隐形守护者·骰子SQL_v4.3→启用条件模板。正则三条全开且顺序：召回面板→对AI隐藏→远楼层。数据库面板在用户发首条消息后才会出现。选错选项须同轮BE+重来提示；勿剧透正确答案。新聊跑「开局初始化SQL」。"}
+]

@@ -1,0 +1,11 @@
+{
+  "GH_NAME": "fkgzs123321",
+  "GH_PROJECT_NAME": "galgame-xueyue",
+  "BRANCH": "main",
+  "PROJECT_NAME": "血月七夜",
+  "CDN": "https://testingcf.jsdelivr.net/gh",
+  "UI_FILE": "index.html",
+  "CARD_LOADER": "src/狼人杀/正则/状态栏界面.html",
+  "LAST_COMMIT": "6c9b429",
+  "note": "血月七夜 UI 仓库。改面板（src/狼人杀/界面/状态栏.html）→ node _ui_repo/xueyue/push.cjs（复制+上传+回填 commit+重打包）。"
+}

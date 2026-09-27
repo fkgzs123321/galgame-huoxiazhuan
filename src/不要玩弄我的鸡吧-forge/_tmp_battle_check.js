@@ -1,0 +1,371 @@
+/* ===== 欲望都市同构 · 性爱战斗面板本地引擎（鸡吧适配版） ===== */
+/* 语义：她（使用者）每回合发动"榨取"（攻势），玩家（被榨取者）选择防守技能/道具/恢复；
+   玩家精力 ≤0 = 被榨干（败）；她快感 ≥100 = 她先失守（你胜）。 */
+
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;if(hasData(stat))return stat;if(hasData(source)&&(source.排班||source.状态||source.时间||source.女性角色))return source;return null}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){if(Array.isArray(v))v=v[0];v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function clamp(v,min,max){v=num(v,0);return Math.max(min,Math.min(max,v))}
+function obj(o){return(o&&typeof o==='object')?o:{}}
+
+var State={data:null,loading:true,selSkill:'',selItem:'',logs:[],resultText:'',finished:false,round:0,skillCd:{},theme:'light'};
+var YDS_THEMES=['light','dark','pink'];
+function setTheme(t){State.theme=t;try{localStorage.setItem('fjb_battle_theme',t)}catch(e){}var r=document.getElementById('bu-root');if(r)r.setAttribute('data-theme',t);if(typeof render==='function')render()}
+function curTheme(){var r=document.getElementById('bu-root');var t=r?r.getAttribute('data-theme'):'light';return YDS_THEMES.indexOf(t)<0?'light':t}
+
+/* ── 读 stat_data（兼容 {stat_data:{...}} 与直接内容）── */
+function readStatData(){
+  var stat=null;
+  try{var gv=pickHostFn('getVariables');if(gv){var vars=gv({type:'message',message_id:'latest'});if(vars&&typeof vars==='object'){stat=pickStatData(vars)}}}catch(e){}
+  if(!stat){try{var Mvu2=getMvu();if(Mvu2&&typeof Mvu2.getMvuData==='function'){var md=Mvu2.getMvuData({type:'message',message_id:'latest'});stat=pickStatData(md)}}catch(e){}}
+  if(!stat){try{var gv2=pickHostFn('getVariables');if(gv2){var v2=gv2({type:'message'});stat=pickStatData(v2)}}catch(e){}}
+  if(!stat){try{var gav=pickHostFn('getAllVariables');if(gav){var all=gav();stat=pickStatData(all)}}catch(e){}}
+  return stat;
+}
+
+/* ── 写回 stat_data：读完整表 → 改 stat_data → 写回完整表（TH replaceVariables 全替换语义）── */
+function writeStat(stat){
+  try{
+    var Mvu2=getMvu();
+    if(Mvu2&&typeof Mvu2.getMvuData==='function'&&typeof Mvu2.replaceMvuData==='function'){
+      var opt={type:'message',message_id:'latest'};
+      var full=Mvu2.getMvuData(opt);
+      if(full&&typeof full==='object'){
+        if(full.stat_data===undefined&&(full.排班!==undefined||full.状态!==undefined||full.女性角色!==undefined))full={stat_data:full};
+        full.stat_data=stat;
+        Mvu2.replaceMvuData(full,opt);
+        return;
+      }
+    }
+  }catch(e){}
+  try{
+    if(typeof getVariables==='function'&&typeof replaceVariables==='function'){
+      var vars=getVariables({type:'message',message_id:'latest'});
+      if(vars&&typeof vars==='object'){
+        if(vars.stat_data===undefined&&(vars.排班!==undefined||vars.状态!==undefined||vars.女性角色!==undefined))vars={stat_data:vars};
+        vars.stat_data=stat;
+        replaceVariables(vars,{type:'message',message_id:'latest'});
+        return;
+      }
+    }
+  }catch(e){}
+}
+
+/* ── 她攻势计算（对齐 世界书/世界观/战斗系统.yaml 公式）── */
+function herOffense(c){
+  c=obj(c);
+  var ab=obj(c.能力),nsfw=obj(c.NSFW),ms=obj(c.多维状态);
+  var off=num(ab.诱惑,0)*0.35+num(ab.欲望,0)*0.30+num(ab.技能等级,0)*0.25+(num(nsfw.敏感度,50)/100)*10;
+  var lub=num(nsfw.润滑度,50);
+  if(lub<30)off=off*0.85;
+  if(lub>=70)off=off*1.15;
+  var stage=String(ms.综合阶段||'');
+  if(stage.indexOf('C_')===0)off=off*1.2;
+  if(stage.indexOf('D_')===0)off=off*1.4;
+  var active=num((pickStatData(readStatData())||{}).隐藏层?.活跃使用人数,1);
+  if(active>1)off=off*(1+ (active-1)*0.25);
+  return Math.round(off*10)/10;
+}
+/* 她防守（快感上限随 持久 提升） */
+function herFastCap(c){return Math.round(100+num(obj(c.能力).持久,0)*0.5)}
+/* 玩家防守值上限 = 体力×1.2 */
+function playerDefCap(p){return Math.max(20,Math.round(num(obj(p).体力,80)*1.2))}
+
+/* ── 升级经验公式（对齐 技能树.yaml：100+等级×50，上限20）── */
+function gainExp(lv,exp,gain){
+  lv=num(lv,1);exp=num(exp,0);gain=num(gain,15);
+  exp+=gain;
+  var need=function(l){return 100+l*50};
+  while(lv<20&&exp>=need(lv)){exp-=need(lv);lv++}
+  return {等级:lv,经验:exp};
+}
+
+/* ── 初始化战斗（开战轮调用）── */
+function initBattle(stat,tgt){
+  var c=obj(stat.女性角色||{})[tgt];
+  var p=obj(stat.状态||{});
+  var pb=obj(stat.排班||{});
+  var defCap=playerDefCap(p);
+  pb.战斗={
+    回合:0,
+    主角防守值:defCap,主角防守值上限:defCap,
+    主角精力:num(p.精力,80),
+    她攻势值:herOffense(c),
+    她快感值:0,
+    主角BUFF:{},她BUFF:{}
+  };
+  pb.当前战斗目标=tgt;
+  pb.战斗状态='进行中';
+  stat.排班=pb;
+  if(!stat.隐藏层)stat.隐藏层={};
+  stat.隐藏层.当前使用者UID=tgt;
+  return pb;
+}
+
+/* ── 玩家技能效果（对齐 战斗系统.yaml 公式）── */
+function skillEff(k,lv){
+  lv=num(lv,1);
+  var o={};
+  switch(k){
+    case '冥想': o.offMul=Math.max(0.5,1-lv*0.008); o.cost='精力-2'; o.note='她攻势 ×'+(Math.max(0.5,1-lv*0.008)).toFixed(2)+'；感知她状态'; break;
+    case '意志': o.defAdd=lv*0.8; o.cost='理智-1'; o.note='防守值 +'+Math.round(lv*0.8)+'；射精阈值 +'+Math.round(lv*0.8)+'%'; break;
+    case '洞察': o.herDown=lv*0.5; o.cost='理智-1'; o.note='她攻势 -'+Math.round(lv*0.5)+'；看穿她攻势'; break;
+    case '伪装': o.offMul=Math.max(0.4,1-lv*0.006); o.cost='精力-1'; o.note='被榨取感知-30%，她攻势 ×'+(Math.max(0.4,1-lv*0.006)).toFixed(2); break;
+    case '恢复': o.heal=lv*1.2; o.cost='无'; o.note='回复防守值 +'+Math.round(lv*1.2)+'，精力 +2'; break;
+    case '锻炼': o.defAdd=lv*1.5; o.cost='体力-1'; o.note='防守值 +'+Math.round(lv*1.5); break;
+  }
+  return o;
+}
+var SKILL_CD={冥想:2,意志:1,洞察:2,伪装:1,恢复:3,锻炼:1};
+/* 玩家道具（对齐 道具与恢复系统.yaml） */
+var PLAYER_ITEM_EFF={
+  '营养餐':{energy:15,def:2,rounds:2,note:'精力+15，防守+2'},
+  '功能饮料':{energy:10,stam:5,note:'精力+10，体力+5'},
+  '维生素片':{sanity:10,def:5,note:'理智+10，防守+5'},
+  '安眠药':{stress:-15,offMul:0.9,rounds:2,note:'压力-15，她攻势-10%（2回合）'},
+  '高级补剂':{energy:25,def:10,note:'精力+25，防守+10'},
+  '特制药膳':{energy:20,stam:10,sanity:10,defCap:5,rounds:3,note:'全状态回复，防守上限+5'}
+};
+
+/* ── 回合结算（她榨取 vs 你防守）── */
+function doRound(){
+  var stat=State.data;
+  if(!stat)return;
+  var tgt=obj(stat.排班).当前战斗目标;
+  if(!tgt){return}
+  var c=obj(stat.女性角色||{})[tgt];
+  var p=obj(stat.状态||{});
+  var pb=obj(stat.排班);
+  var battle=obj(pb.战斗);
+  var off=herOffense(c);
+  var sk=State.selSkill,it=State.selItem;
+  var logLines=[];
+  // ── BUFF 递减 ──
+  var pbuffs=obj(battle.主角BUFF),hbuffs=obj(battle.她BUFF);
+  var offMul=1,defAdd=0;
+  for(var bk in pbuffs){var bo=pbuffs[bk];bo.剩余回合=num(bo.剩余回合,0)-1;if(bo.剩余回合<=0)delete pbuffs[bk]}
+  for(var bk2 in hbuffs){var ho=hbuffs[bk2];ho.剩余回合=num(ho.剩余回合,0)-1;if(ho.剩余回合<=0)delete hbuffs[bk2]}
+  // 玩家 BUFF 应用（安眠药 她攻势-10%）
+  if(hbuffs['安眠药']){offMul*=0.9}
+  // ── 玩家行动 ──
+  var expGain={};
+  if(it&&num(obj(p.物品栏)[it]||(obj(p.物品栏)[Object.keys(obj(p.物品栏)).find(function(k){return obj(p.物品栏)[k].名称===it})||{}]).数量,0)>=0){}
+  if(it){
+    // 物品栏可能是 record<编号,{名称,数量}> 或 record<名称,数量>，容错
+    var items=obj(p.物品栏),foundKey=null;
+    for(var ik in items){var iv=items[ik];if(typeof iv==='object'&&iv!==null){if(iv.名称===it||ik===it)foundKey=ik}else if(ik===it)foundKey=ik}
+    if(foundKey!==null){
+      var eff=PLAYER_ITEM_EFF[it];if(eff){
+        if(eff.energy)battle.主角精力=Math.min(200,num(battle.主角精力,0)+eff.energy);
+        if(eff.stam)p.体力=clamp(num(p.体力,0)+eff.stam,0,100);
+        if(eff.sanity)p.理智=clamp(num(p.理智,0)+eff.sanity,0,100);
+        if(eff.stress)p.压力=clamp(num(p.压力,0)+eff.stress,0,100);
+        if(eff.defAdd)battle.主角防守值=Math.min(num(battle.主角防守值上限,96),num(battle.主角防守值,0)+eff.defAdd);
+        if(eff.defCap)battle.主角防守值上限=num(battle.主角防守值上限,96)+eff.defCap;
+        if(eff.rounds)hbuffs['安眠药']={剩余回合:eff.rounds,效果值:10};
+        logLines.push('你使用道具『'+it+'』：'+eff.note);
+      }
+      // 数量 -1
+      var iv2=items[foundKey];
+      if(typeof iv2==='object'&&iv2!==null){iv2.数量=Math.max(0,num(iv2.数量,0)-1)}else{items[foundKey]=Math.max(0,num(iv2,0)-1)}
+    }
+  }else if(sk){
+    var lv=num(obj(obj(p.技能||{})[sk]).等级,1);
+    var eff=skillEff(sk,lv);
+    if(eff.offMul!==undefined)offMul*=eff.offMul;
+    if(eff.herDown!==undefined)off=Math.max(0,off-eff.herDown);
+    if(eff.defAdd!==undefined)defAdd+=eff.defAdd;
+    if(eff.heal!==undefined)battle.主角防守值=Math.min(num(battle.主角防守值上限,96),num(battle.主角防守值,0)+eff.heal);
+    if(sk==='恢复')battle.主角精力=Math.min(200,num(battle.主角精力,0)+2);
+    // 消耗
+    if(eff.cost==='精力-2')p.精力=Math.max(0,num(p.精力,0)-2);
+    if(eff.cost==='理智-1')p.理智=Math.max(0,num(p.理智,0)-1);
+    if(eff.cost==='精力-1')p.精力=Math.max(0,num(p.精力,0)-1);
+    if(eff.cost==='体力-1')p.体力=Math.max(0,num(p.体力,0)-1);
+    // 冷却
+    State.skillCd[sk]=SKILL_CD[sk]||1;
+    expGain[sk]=(expGain[sk]||0)+15;
+    logLines.push('你使用【'+sk+' Lv'+lv+'】：'+eff.note+'（'+eff.cost+'）');
+  }else{
+    logLines.push('你咬牙硬扛（被动承受）');
+  }
+  // ── 她榨取 ──
+  var dmg=Math.round(off*offMul*10)/10;
+  var defLoss=Math.max(0,Math.round((dmg-(defAdd))*10)/10);
+  battle.主角防守值=Math.max(0,Math.round((num(battle.主角防守值,0)-defLoss)*10)/10);
+  var energyLoss=Math.round(off*offMul*0.8*10)/10;
+  battle.主角精力=Math.max(0,Math.round((num(battle.主角精力,0)-energyLoss)*10)/10);
+  // 她快感累积（持久 抗性）
+  var persist=num(obj(c.能力).持久,0);
+  var fastGain=Math.round(off*offMul*0.6*(1-persist/100*0.5)*10)/10;
+  battle.她快感值=Math.min(herFastCap(c),Math.round((num(battle.她快感值,0)+fastGain)*10)/10);
+  logLines.push('她发动榨取：攻势 '+off+'（修正×'+offMul.toFixed(2)+'）→ 你防守值 -'+defLoss+'，精力 -'+energyLoss+'，她快感 +'+fastGain);
+  // 她经验
+  if(!stat.女性角色[tgt].成长)stat.女性角色[tgt].成长={};
+  stat.女性角色[tgt].成长.技能经验=num(stat.女性角色[tgt].成长.技能经验,0)+15;
+  // 回合推进
+  battle.回合=num(battle.回合,0)+1;
+  State.round=battle.回合;
+  // 技能经验写回
+  for(var ek in expGain){
+    if(!obj(p.技能)[ek])p.技能[ek]={等级:1,经验:0};
+    var g=gainExp(num(obj(p.技能[ek]).等级,1),num(obj(p.技能[ek]).经验,0),expGain[ek]);
+    p.技能[ek].等级=g.等级;p.技能[ek].经验=g.经验;
+  }
+  // 冷却递减
+  for(var ck in State.skillCd){if(State.skillCd[ck]>0)State.skillCd[ck]--}
+  // ── 胜负 ──
+  var youLose=num(battle.主角精力,0)<=0;
+  var youWin=num(battle.她快感值,0)>=herFastCap(c);
+  State.finished=youWin||youLose;
+  if(State.finished){
+    // 消耗写回（对齐 战斗系统.yaml / 变量更新规则）：精力/理智/怀疑值/堕落值
+    var _eLoss=Math.round(energyLoss);
+    var _sLoss=sk==='意志'||sk==='洞察'?1:0;
+    var _susGain=youLose?Math.max(1,Math.round(2*num(activeUsersMult(),1))):2;
+    var _corGain=youLose?Math.max(1,Math.round(1*num(activeUsersMult(),1))):1;
+    State._eLoss=_eLoss;State._sLoss=_sLoss;State._susGain=_susGain;State._corGain=_corGain;
+    p.精力=Math.max(0,num(battle.主角精力,0));
+    p.理智=clamp(num(p.理智,0)-_sLoss,0,100);
+    p.怀疑值=clamp(num(p.怀疑值,0)+_susGain,0,200);
+    p.堕落值=clamp(num(p.堕落值,0)+_corGain,0,200);
+    pb.战斗状态='已结算';
+    pb.当前战斗目标='';
+    stat.隐藏层.对抗结果=youWin?'你胜':'你败';
+    stat.隐藏层.当前使用者UID='';
+    if(!stat.使用阶段)stat.使用阶段={};
+    stat.使用阶段.今日使用=num(stat.使用阶段.今日使用,0)+1;
+    stat.使用阶段.总使用次数=num(stat.使用阶段.总使用次数,0)+1;
+    if(youWin){obj(c.多维状态).执念=clamp(num(obj(c.多维状态).执念,0)+2,0,100);obj(c.与玩家关系).熟悉度=clamp(num(obj(c.与玩家关系).熟悉度,0)+1,0,100)}
+    else{obj(c.与玩家关系).好感度=clamp(num(obj(c.与玩家关系).好感度,0)+2,0,100);obj(c.NSFW).假阴茎经验=obj(c.NSFW).假阴茎经验||{};obj(c.NSFW).假阴茎经验.总次数=num(obj(c.NSFW).假阴茎经验.总次数,0)+1;if(obj(p.技能).冥想){var g2=gainExp(num(obj(p.技能.冥想).等级,1),num(obj(p.技能.冥想).经验,0),15);p.技能.冥想.等级=g2.等级;p.技能.冥想.经验=g2.经验}}
+    State.resultText='【性爱战斗结算】目标='+tgt+'｜回合数='+battle.回合+'｜结果='+(youWin?'你胜（她先失守）':'你败（被榨干）')+'\n'
+      +'你方：防守值 '+num(battle.主角防守值,0)+'/'+num(battle.主角防守值上限,96)+' 精力 '+num(battle.主角精力,0)+' 技能['+(sk||'被动承受')+'] 道具['+(it||'无')+']\n'
+      +'她方：攻势='+off+' 快感='+num(battle.她快感值,0)+'/'+herFastCap(c)+' 使用模式['+esc(String(obj(c.使用习惯).偏好模式||'内置'))+'] 节奏['+esc(String(obj(c.使用习惯).使用风格||'未知'))+']\n'
+      +'消耗：精力-'+_eLoss+' 理智-'+_sLoss+' 怀疑+'+_susGain+' 堕落+'+_corGain+'\n'
+      +'经验：你['+(sk?sk+'+30':'无')+'] 她[技能等级+15]\n'
+      +'注：以上数值为结算块结果，AI 必须按此数值写回 stat_data 变量（唯一真源），勿自行估算或重算。';
+  }
+  State.selSkill='';State.selItem='';
+  writeStat(stat);
+  render();
+}
+
+/* 活跃使用人数倍率（多人榨取时怀疑/堕落增长） */
+function activeUsersMult(){
+  try{var st=readStatData();var h=st&&st.隐藏层;return Math.max(1,Math.min(3,1+(num(h&&h.活跃使用人数,1)-1)*0.5))}catch(e){return 1}
+}
+
+/* ── 渲染 ── */
+function render(){
+  var d=State.data;
+  var body=document.getElementById('bu-body');
+  var stateEl=document.getElementById('bu-state');
+  if(!body)return;
+  if(!d){body.innerHTML='<div class="bu-empty">读取 stat_data 中…<div class="dim">若持续空白，请确认 MVU 已初始化</div></div>';return}
+  var pb=obj(d.排班),tgt=pb.当前战斗目标||'',st=pb.战斗状态||'未开始';
+  if(stateEl){stateEl.textContent=(st==='进行中'?'⚔ 战斗进行中':(st==='已结算'?'✓ 已结算':'○ 未开始'));stateEl.className='bu-state '+esc(st)}
+  if(!tgt){body.innerHTML='<div class="bu-empty">当前无战斗目标<div class="dim">开战轮请先写 排班.当前战斗目标 = 她姓名</div></div>';return}
+  var c=obj(d.女性角色||{})[tgt];
+  var p=obj(d.状态||{});
+  var b=obj(pb.战斗);
+  var defCap=num(b.主角防守值上限,playerDefCap(p));
+  var defNow=num(b.主角防守值,defCap);
+  var enNow=num(b.主角精力,num(p.精力,80));
+  var fastNow=num(b.她快感值,0),fastCap=herFastCap(c);
+  var off=herOffense(c);
+  var hpPct=function(v,m){return Math.max(0,Math.min(100,m>0?(v/m*100):0))};
+  var html='';
+  // 她
+  html+='<div class="battle"><div class="battle-head"><span class="battle-name">'+esc(tgt)+'</span><span class="battle-tag">攻势 '+off+'</span><span class="battle-tag">'+esc(String(obj(c.多维状态).综合阶段||'A_理性期'))+'</span></div>'
+    +'<div class="hp-row"><span class="hp-label">快感值</span><div class="hp-track"><div class="hp-fill" style="width:'+hpPct(fastNow,fastCap)+'%;background:linear-gradient(90deg,#ff9ec4,#ff6fa5)"></div></div><span class="hp-num">'+fastNow+'/'+fastCap+'</span></div>'
+    +'<div class="battle-grid"><span>模式：'+esc(String(obj(c.使用习惯).偏好模式||'内置'))+'</span><span>风格：'+esc(String(obj(c.使用习惯).使用风格||'未知'))+'</span><span>敏感度：'+num(obj(c.NSFW).敏感度,50)+'</span><span>润滑度：'+num(obj(c.NSFW).润滑度,50)+'</span></div>'
+    +'<div class="voice-box"><span class="vl">她此刻的状态</span>'+esc(State.lastHerVoice||'（等待回合结算）')+'</div></div>';
+  // 你
+  html+='<div class="battle"><div class="battle-head"><span class="battle-name">你</span><span class="battle-tag">精力 '+enNow+'</span></div>'
+    +'<div class="hp-row"><span class="hp-label">防守值</span><div class="hp-track"><div class="hp-fill" style="width:'+hpPct(defNow,defCap)+'%;background:linear-gradient(90deg,#d63384,#b8327a)"></div></div><span class="hp-num">'+defNow+'/'+defCap+'</span></div>'
+    +'<div class="battle-grid"><span>体力：'+num(p.体力,80)+'</span><span>理智：'+num(p.理智,80)+'</span><span>压力：'+num(p.压力,10)+'</span></div></div>';
+  // 控制
+  if(st==='进行中'&&!State.finished){
+    html+='<div class="battle-ctrl"><div class="battle-ctrl-title">选择本回合行动（每回合 1 个技能 或 1 个道具）<span>第 '+State.round+' 回合</span></div>'
+      +'<div class="skill-desc">冥想=她攻势×(1-Lv×0.008)；意志=防守+Lv×0.8；洞察=她攻势-Lv×0.5；伪装=她攻势×(1-Lv×0.006)；恢复=防守+Lv×1.2+精力2；锻炼=防守+Lv×1.5</div>'
+      +'<div class="btn-row">';
+    var skObj=obj(p.技能);
+    var skillKeys=['冥想','意志','洞察','伪装','恢复','锻炼'];
+    for(var si=0;si<skillKeys.length;si++){
+      var skn=skillKeys[si],slv=num(obj(skObj[skn]).等级,1);
+      var cd=State.skillCd[skn]||0;
+      html+='<button class="battle-btn'+(State.selSkill===skn?' sel':'')+'" data-skill="'+skn+'" '+(cd>0?'disabled':'')+'>'+skn+' Lv'+slv+(cd>0?'<span class="cd">CD'+cd+'</span>':'')+'</button>';
+    }
+    html+='</div><div class="btn-row">';
+    var itemKeys=Object.keys(PLAYER_ITEM_EFF);
+    for(var ii=0;ii<itemKeys.length;ii++){
+      var ikn=itemKeys[ii];
+      html+='<button class="battle-btn alt'+(State.selItem===ikn?' sel':'')+'" data-item="'+ikn+'">'+ikn+'</button>';
+    }
+    html+='</div>'
+      +'<textarea class="action-input" id="action-input" placeholder="（可选）描写你本回合的抵抗/感受…（留空=纯面板计算）">'+esc(State.actionText||'')+'</textarea>'
+      +'<div class="btn-row"><button class="battle-btn primary" data-act="round">⏳ 坚持本回合（她榨取 + 你行动）</button></div></div>';
+  }
+  // 日志
+  if(State.logs.length)html+='<div class="battle-log">'+State.logs.map(function(l,i){return '<div class="log-line'+(i===State.logs.length-1?' new':'')+'">'+esc(l)+'</div>'}).join('')+'</div>';
+  // 结果
+  if(State.resultText)html+='<div class="result-box">'+esc(State.resultText)+'</div><div class="battle-ctrl"><div class="btn-row"><button class="battle-btn alt" data-act="copy-result">📋 复制结算块到输入框</button><button class="battle-btn" data-act="close">✕ 关闭</button></div></div>';
+  body.innerHTML=html;
+}
+
+/* ── 事件委托 ── */
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('button');
+  if(!btn)return;
+  var act=btn.getAttribute('data-act');
+  if(act==='theme'){var t=curTheme();var next=YDS_THEMES[(YDS_THEMES.indexOf(t)+1)%YDS_THEMES.length];setTheme(next);return}
+  if(act==='round'){var ta=document.getElementById('action-input');if(ta)State.actionText=ta.value;doRound();return}
+  if(act==='copy-result'&&State.resultText){
+    var ta2=document.getElementById('action-input');
+    if(ta2){ta2.value=(ta2.value?ta2.value+'\n':'')+State.resultText;ta2.focus();alert('已填入输入框，发送即可')}
+    return;
+  }
+  if(act==='close'){var bd=document.getElementById('bu-body');if(bd)bd.innerHTML='';State.finished=true;return}
+  var sk=btn.getAttribute('data-skill');
+  if(sk){State.selSkill=(State.selSkill===sk?'':sk);State.selItem='';render();return}
+  var it=btn.getAttribute('data-item');
+  if(it){State.selItem=(State.selItem===it?'':it);State.selSkill='';render();return}
+});
+
+/* ── 初始化 ── */
+(function init(){
+  var _retry=0,_timer=null;
+  function tryLoad(){
+    var st=readStatData();
+    if(st){
+      State.data=st;
+      State.loading=false;
+      var pb=obj(st.排班);
+      var tgt=pb.当前战斗目标||'';
+      var bs=pb.战斗状态||'未开始';
+      if(tgt&&bs==='进行中'&&(!pb.战斗||!pb.战斗.回合)){initBattle(st,tgt)}
+      if(tgt&&bs==='进行中'&&obj(pb.战斗).回合>0){State.round=num(obj(pb.战斗).回合,0)}
+      // 每回合从 stat 读她的"当前状态"作为 voice（若有）
+      if(tgt){var c=obj(st.女性角色||{})[tgt];var cs=obj(c.当前状态);State.lastHerVoice=cs&&(cs.乳头状态||cs.兴奋度!==undefined)?('兴奋度 '+num(cs.兴奋度,0)+' | 润滑度 '+num(cs.润滑度,0)+' | '+esc(String(cs.乳头状态||''))):''}
+      render();
+      return true;
+    }
+    if(_retry++<30){_timer=setTimeout(tryLoad,1000);var bd=document.getElementById('bu-body');if(bd)bd.innerHTML='<div class="bu-empty">读取 stat_data 中…<div class="dim">等待 MVU 初始化（'+_retry+'/30）</div></div>'}
+    else{var bd2=document.getElementById('bu-body');if(bd2)bd2.innerHTML='<div class="bu-empty">无法读取 stat_data<div class="dim">请确认卡已启用 MVU 变量框架</div></div>'}
+    return false;
+  }
+  tryLoad();
+})();

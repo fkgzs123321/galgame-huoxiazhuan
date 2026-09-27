@@ -1,0 +1,193 @@
+{
+  "瑞杏": {
+    "目录": "girl_01",
+    "立绘": [
+      {
+        "文件": "portrait_girl_01__gloomy.png",
+        "表情": "gloomy"
+      },
+      {
+        "文件": "portrait_girl_01__laugh1.png",
+        "表情": "laugh1"
+      },
+      {
+        "文件": "portrait_girl_01__special.png",
+        "表情": "special"
+      },
+      {
+        "文件": "portrait_girl_01__special2.png",
+        "表情": "special2"
+      }
+    ]
+  },
+  "叶云裳": {
+    "目录": "girl_02",
+    "立绘": [
+      {
+        "文件": "portrait_girl_02__gloomy2.png",
+        "表情": "gloomy2"
+      },
+      {
+        "文件": "portrait_girl_02__nervous1.png",
+        "表情": "nervous1"
+      },
+      {
+        "文件": "portrait_girl_02__nervous3.png",
+        "表情": "nervous3"
+      },
+      {
+        "文件": "portrait_girl_02__sick_close_eye.png",
+        "表情": "sick_close_eye"
+      },
+      {
+        "文件": "portrait_girl_02__special1.png",
+        "表情": "special1"
+      },
+      {
+        "文件": "portrait_girl_02__stick.png",
+        "表情": "stick"
+      }
+    ]
+  },
+  "上官萤": {
+    "目录": "girl_04",
+    "立绘": [
+      {
+        "文件": "portrait_girl_04__angry4.png",
+        "表情": "angry4"
+      },
+      {
+        "文件": "portrait_girl_04__close_eyes.png",
+        "表情": "close_eyes"
+      },
+      {
+        "文件": "portrait_girl_04__drumstick.png",
+        "表情": "drumstick"
+      },
+      {
+        "文件": "portrait_girl_04__nervous1.png",
+        "表情": "nervous1"
+      },
+      {
+        "文件": "portrait_girl_04__nervous2.png",
+        "表情": "nervous2"
+      },
+      {
+        "文件": "portrait_girl_04__nervous3.png",
+        "表情": "nervous3"
+      }
+    ]
+  },
+  "夏侯兰": {
+    "目录": "girl_05",
+    "立绘": [
+      {
+        "文件": "portrait_girl_05__brother1.png",
+        "表情": "brother1"
+      },
+      {
+        "文件": "portrait_girl_05__brother1_hurt.png",
+        "表情": "brother1_hurt"
+      },
+      {
+        "文件": "portrait_girl_05__laugh1.png",
+        "表情": "laugh1"
+      },
+      {
+        "文件": "portrait_girl_05__nervous2.png",
+        "表情": "nervous2"
+      },
+      {
+        "文件": "portrait_girl_05__shy1.png",
+        "表情": "shy1"
+      },
+      {
+        "文件": "portrait_girl_05__shy4.png",
+        "表情": "shy4"
+      }
+    ]
+  },
+  "郁竹": {
+    "目录": "girl_06",
+    "立绘": [
+      {
+        "文件": "portrait_girl_06__block.png",
+        "表情": "block"
+      },
+      {
+        "文件": "portrait_girl_06__gloomy2.png",
+        "表情": "gloomy2"
+      },
+      {
+        "文件": "portrait_girl_06__love.png",
+        "表情": "love"
+      },
+      {
+        "文件": "portrait_girl_06__nervous.png",
+        "表情": "nervous"
+      },
+      {
+        "文件": "portrait_girl_06__nervous2.png",
+        "表情": "nervous2"
+      },
+      {
+        "文件": "portrait_girl_06__soul.png",
+        "表情": "soul"
+      }
+    ]
+  },
+  "魏菊": {
+    "目录": "girl_07",
+    "立绘": [
+      {
+        "文件": "portrait_girl_07__angry2.png",
+        "表情": "angry2"
+      },
+      {
+        "文件": "portrait_girl_07__nervous1.png",
+        "表情": "nervous1"
+      },
+      {
+        "文件": "portrait_girl_07__normal.png",
+        "表情": "normal"
+      },
+      {
+        "文件": "portrait_girl_07__shy.png",
+        "表情": "shy"
+      },
+      {
+        "文件": "portrait_girl_07__shy2.png",
+        "表情": "shy2"
+      }
+    ]
+  },
+  "龙湘": {
+    "目录": "girl_08",
+    "立绘": [
+      {
+        "文件": "portrait_girl_08__close_eye_laugh.png",
+        "表情": "close_eye_laugh"
+      },
+      {
+        "文件": "portrait_girl_08__drunk.png",
+        "表情": "drunk"
+      },
+      {
+        "文件": "portrait_girl_08__gloomy2.png",
+        "表情": "gloomy2"
+      },
+      {
+        "文件": "portrait_girl_08__nervous3.png",
+        "表情": "nervous3"
+      },
+      {
+        "文件": "portrait_girl_08__normal.png",
+        "表情": "normal"
+      },
+      {
+        "文件": "portrait_girl_08__shock.png",
+        "表情": "shock"
+      }
+    ]
+  }
+}

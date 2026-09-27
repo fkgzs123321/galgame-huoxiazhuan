@@ -1,0 +1,74 @@
+﻿========================================================================
+【读】Condition  唯一 413 / 总 663
+【写】Switch     唯一 2654 / 总 8618
+【骰】Dice       唯一 324 / 总 377
+【提示】解锁条件 唯一 3 / 总 3
+
+★ 既被读又被写的 flag：156 个（闭环）
+★ 只被读（写端可能是 Switch 之外的入口）：257 个
+
+=== Switch 写入样例 ===
+  [resources__act2_2__zh__1]
+     "trainee5") local switch1_1_result = checkpointmanager.Switch("Battle_Result_001") if switch1_1_result == 1 then -- Show character runwai
+  [resources__act2_2__zh__1]
+     ("player") local switch1_2_result = checkpointmanager.Switch("A00002_01") if switch1_2_result == 1 then -- Show character ru
+  [resources__act2_2__zh__1]
+     ") end local switch1_3_result = checkpointmanager.Switch("A00003_01") if switch1_3_result == 1 then -- Show character ru
+  [resources__act2_2__zh__1]
+     ew, "view") local switch1_3_result = checkpointmanager.Switch("Battle_Result_000") if switch1_3_result == 1 then -- Set narrative custom di
+  [resources__act2_2__zh__1]
+     l-point")) local switch1_5_result = checkpointmanager.Switch("A00002_01") if switch1_5_result == 1 then -- Set character custom
+  [resources__act2_2__zh__1]
+     1) end local switch1_6_result = checkpointmanager.Switch("A00003_01") if switch1_6_result == 1 then -- Set character custom
+  [resources__act2_3_1__zh__1]
+     ew, "view") local switch1_1_result = checkpointmanager.Switch("Combat_Result_01") if switch1_1_result == 1 then statmodifymanager.Player("
+  [resources__act2_3_2__zh__1]
+     ew, "view") local switch1_1_result = checkpointmanager.Switch("Combat_Result_01") if switch1_1_result == 1 then -- Sound luamanager.Play
+  [resources__act2_3_3__zh__1]
+     ew, "view") local switch1_1_result = checkpointmanager.Switch("Combat_Result_01") if switch1_1_result == 1 then statmodifymanager.Player("
+  [resources__act2_3__zh__1]
+     iew, "out") local switch1_1_result = checkpointmanager.Switch("Combat_Result_02") if switch1_1_result == 1 then -- Show character runwai
+
+=== 解锁条件提示（玩家可见）top 30 ===
+  嘴力>32                                  1
+  ［修养］为［暴躁］以下                            1
+  ［道德］为［坏人］以下                            1
+
+=== Dice 判定项 top 15 ===
+  Ch_6_8_2_Break_01_001                  4
+  Section_01_Free_06_03_001              4
+  Back_Work_M_02_001                     2
+  Ch_0_4_002                             2
+  Ch_0_5_001                             2
+  Ch_0_5_002                             2
+  Ch_0_M_02_001                          2
+  Ch_0_M_03_02_001                       2
+  Ch_0_M_04_01_001                       2
+  Ch_1_1_1_001                           2
+  Ch_1_1_1_002                           2
+  Ch_1_1_001                             2
+  Ch_1_2_1_001                           2
+  Ch_2_2_2_001                           2
+  Ch_2_2_3_4_3_Break_01_01_01_001        2
+
+=== 读写交集样例 top 20 ===
+  Ch_0_M_03_02_01_001                            读2 写2
+  Ch_2_2_3_1_Travel_03_001                       读2 写2
+  Ch_2_2_5_001                                   读2 写2
+  Ch_2_4_2_001                                   读1 写1
+  Ch_2_4_2_002                                   读1 写1
+  Ch_2_4_2_003                                   读1 写1
+  Ch_2_4_2_004                                   读1 写1
+  Ch_2_4_2_005                                   读1 写1
+  Ch_2_4_2_Break_01_001                          读1 写1
+  Ch_2_4_2_Break_02_001                          读1 写2
+  Ch_2_4_2_Break_02_002                          读1 写2
+  Ch_2_4_3_Break_01_001                          读1 写1
+  Ch_2_4_3_Break_01_002                          读1 写1
+  Ch_2_4_5_1_Break_001                           读1 写1
+  Ch_3_1_2_3_Break_01_001                        读1 写1
+  Ch_3_1_2_3_Break_01_002                        读1 写1
+  Ch_3_1_7_6_Break_01_001                        读1 写1
+  Ch_3_3_1_2_001                                 读1 写1
+  Ch_3_3_2_1_Break_01_001                        读1 写1
+  Ch_3_3_2_1_Break_01_002                        读1 写1

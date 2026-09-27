@@ -1,0 +1,111 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 川尻信良 · 基础信息
+   ════════════════════════════════════════════════════════════
+   npc_id=N1 / 男配角 · 主角最知心朋友，洋子线核心推动者
+   互斥关系：无（不可攻略 NPC，作为剧情影响者存在）
+   底色：憨厚 — 从暗恋到告白到放弃再到成全，柔道部硬汉的柔情弧线
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 川尻信良_INFO = {
+  npc_id: 'N1',
+  name: '川尻信良',
+  romanization: 'Kawajiri Nobuyoshi',
+  age: 18,
+  gender: '男',
+  blood_type: 'A',
+  identity: '八十八学园三年生，主角柔道部好友，最知心朋友',
+  relationship: '主角柔道部损友，三年同班；暗恋南川洋子（N1→洋子线核心动力）',
+  home: '川尻家（八十八町住宅区，与父母同住，信良家是事件中转地）',
+  birthday: '05-22',
+  height: 175,
+  weight: 72,
+  cv_implied: '憨厚系少年声线，语调温吞但坚定，谈到洋子时声音会发紧',
+
+  appearance: {
+    hair: '黑色短发柔道部标准头，发质硬挺，常被汗水打湿贴在额头',
+    eyes: '细长丹凤眼，眼色深棕，眼神温厚老实，被洋子无视时会移开视线',
+    body: '柔道部训练出的敦实身材，肩背宽厚，手掌粗大有茧，腰腹结实',
+    feature: '右眉尾有一道淡疤（柔道练习摔伤）；笑起来会露出一对浅酒窝',
+    clothing_default: '校服穿得规规矩矩，领口扣到顶；柔道部训练日直接穿柔道服上学；12/23 起随身带一本卷边的诗集（情节道具，洋子线触发物）'
+  },
+
+  personality: {
+    mbti: 'ISFJ',
+    tags: ['憨厚柔道汉', '暗恋中的笨拙', '诗歌少年'],
+    public_face: '柔道部老好人，对所有同学都和气憨厚，人缘不错',
+    social_face: '在主角面前会卸下伪装吐槽心事，提到洋子时脸红口吃',
+    intimate_face: '心思细腻的诗歌爱好者，把暗恋写在诗集里从不示人'
+  },
+
+  preferences: {
+    like_food: ['咖喱饭', '香蕉', '牛奶', '妈妈做的炸猪排'],
+    hate_food: ['青椒', '生鱼片'],
+    hobby: ['柔道', '读诗', '收集运动饮料瓶', '看棒球转播'],
+    gift_pref: ['诗集', '运动饮料', '棒球周边', '手写便当'],
+    topic_pref: ['柔道比赛', '棒球赛事', '诗歌文学', '洋子（仅与主角私下聊）']
+  },
+
+  schedule_default: {
+    '早': '自宅（晨练跑步后冲凉早餐）',
+    '上午': '八十八学园（教室，常与主角同桌闲聊）',
+    '下午': '柔道部道场（社团训练，加练投技）',
+    '晚': '自宅或商业区（写诗 / 与主角约会聊天 / 偷偷去洋子回家路上"偶遇"）',
+    '深夜': '自宅房间（读诗集 / 偷偷写洋子相关的诗 / 翻看日记本）'
+  },
+
+  relations: {
+    mutual_exclusion: '无（不可攻略 NPC，作为剧情影响者存在，不触发锁链）',
+    family: '父母（普通家庭，父亲是上班族，母亲是家庭主妇；信良家是事件中转地，主角常借宿）',
+    friends: [
+      '主角（最知心朋友，三年同班 + 柔道部搭档，affection=20/trust=45 的损友关系）',
+      '柔道部全体部员（哥们儿关系）',
+      '南川洋子（暗恋对象，12/22 起进入"暗恋期"）'
+    ],
+    romantic_interest: '南川洋子（heroine_id=6，单恋；12/23 PM 白蛇池公园告白为洋子线关键节点）'
+  },
+
+  /* personality_stages 已迁移至「剧情线.txt」的 key_plot_nodes（含 flags/is_reversible/triggers_route 等扩展字段，单一来源，避免重复） */
+
+  function_in_plot: {
+    core_role: '洋子线核心推动者 — 12/23 告白失败是洋子线转向主角的关键契机',
+    sub_roles: [
+      '泉美线触发者 — 12/28 PM6:00 信良电话邀主角参加温泉旅行（筱原泉美线关键节点）',
+      '事件中转地 — 信良家是主角借宿 / 暂避 / 获取情报的中转站',
+      '日记本第 2 本触发者 — 12/29 信良把诗集和日记本第 2 本交给主角'
+    ],
+    triggers_female_routes: ['南川洋子线（heroine_id=6）', '筱原泉美线（heroine_id=12，12/28 温泉旅行）']
+  },
+
+  mutex: '无（不可攻略 NPC，无互斥；不影响任何女角互斥锁链）',
+
+  note: '信良是"暗恋—告白—放弃—成全"四阶段弧线的典型柔道汉；玩家选择扮演信良时，洋子线进入"告白成功可能"专属分支（详见剧情线.txt）。'
+};
+%>
+
+川尻信良 · 基础信息已加载。当前男配角 npc_id=N1，无互斥关系（不可攻略 NPC）。他是八十八学园三年生·柔道部主将，主角最知心朋友，暗恋南川洋子（12/23 白蛇池公园告白失败→12/29 放弃→12/30~1/7 成全）。功能定位：洋子线核心推动者 + 12/28 泉美线温泉旅行触发者 + 信良家事件中转地 + 日记本第 2 本触发者。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 川尻信良_INFO.name %>（<%- 川尻信良_INFO.age %>岁）
+- 身份: <%- 川尻信良_INFO.identity %>
+- 关系: <%- 川尻信良_INFO.relationship %>
+- 住所: <%- 川尻信良_INFO.home %>
+<%_ if (川尻信良_INFO.appearance) { _%>
+- 外貌: <%- [川尻信良_INFO.appearance.hair, 川尻信良_INFO.appearance.eyes, 川尻信良_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (川尻信良_INFO.personality) { _%>
+- 性格: <%- 川尻信良_INFO.personality.tags ? 川尻信良_INFO.personality.tags.join('、') : 川尻信良_INFO.personality.public_face %>
+<%_ if (川尻信良_INFO.personality.public_face) { _%>- 表面: <%- 川尻信良_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (川尻信良_INFO.personality.intimate_face) { _%>- 亲密面: <%- 川尻信良_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (川尻信良_INFO.preferences) { _%>- 喜好: <%- [(川尻信良_INFO.preferences.like_food || []).join('/'), '爱好：' + (川尻信良_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (川尻信良_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(川尻信良_INFO.relations) %>
+<%_ } _%>
+<%_ if (川尻信良_INFO.strategy) { _%>- 攻略要点: <%- 川尻信良_INFO.strategy.best_approach %>
+<%_ if (川尻信良_INFO.strategy.warning) { _%>- 警告: <%- 川尻信良_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

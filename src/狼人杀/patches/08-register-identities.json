@@ -1,0 +1,98 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/身份_狼",
+    "value": {
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "玩家狼身份块：狼队互认（不含名字）/夜议与围猎/夜忆对狼生效/白天伪装义务",
+      "contents": [
+        { "content": "@@if getvar('stat_data._玩家.身份', { defaults: '' }) === '狼'" },
+        { "file": "世界书/机制/身份_狼.yaml" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 60, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/身份_民",
+    "value": {
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "玩家民身份块：无信息血梦/入睡选择与同屋风险/纯推理社交/民悍跳合法",
+      "contents": [
+        { "content": "@@if getvar('stat_data._玩家.身份', { defaults: '' }) === '民'" },
+        { "file": "世界书/机制/身份_民.yaml" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 61, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/身份_铜镜",
+    "value": {
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "玩家持镜身份块：夜照一人绝对准/镜无反馈/持镜暴露风险/信息管理困境",
+      "contents": [
+        { "content": "@@if getvar('stat_data._玩家.身份', { defaults: '' }) === '铜镜'" },
+        { "file": "世界书/机制/身份_铜镜.yaml" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 62, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/身份_药囊",
+    "value": {
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "玩家持药身份块：毒药+麻沸散操作/双药一次性/投毒暴露面/生杀权",
+      "contents": [
+        { "content": "@@if getvar('stat_data._玩家.身份', { defaults: '' }) === '药囊'" },
+        { "file": "世界书/机制/身份_药囊.yaml" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 63, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/身份_银匕",
+    "value": {
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "玩家持匕身份块：随身搏命或留屋/以银代众的抉择/反杀权与代价",
+      "contents": [
+        { "content": "@@if getvar('stat_data._玩家.身份', { defaults: '' }) === '银匕'" },
+        { "file": "世界书/机制/身份_银匕.yaml" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 64, "role": "system" }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/机制/身份_草汁",
+    "value": {
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "玩家持汁身份块：涂门护一夜/存量有限/续采禁区/无反馈的守护",
+      "contents": [
+        { "content": "@@if getvar('stat_data._玩家.身份', { defaults: '' }) === '草汁'" },
+        { "file": "世界书/机制/身份_草汁.yaml" }
+      ],
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "at_depth", "depth": 0, "order": 65, "role": "system" }
+    }
+  }
+]

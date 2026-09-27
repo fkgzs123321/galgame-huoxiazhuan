@@ -1,0 +1,77 @@
+@@generate_before
+# [系统]玩家防御与对抗规则
+# enabled: true
+# 策略：constant（始终加载）
+
+<%
+var meditation = Number(getvar('stat_data.技能.冥想.等级', { scope: 'local', defaults: 1 })) || 1;
+var willpower = Number(getvar('stat_data.技能.意志.等级', { scope: 'local', defaults: 1 })) || 1;
+var disguise = Number(getvar('stat_data.技能.伪装.等级', { scope: 'local', defaults: 1 })) || 1;
+var insight = Number(getvar('stat_data.技能.洞察.等级', { scope: 'local', defaults: 1 })) || 1;
+var recovery = Number(getvar('stat_data.技能.恢复.等级', { scope: 'local', defaults: 1 })) || 1;
+var exercise = Number(getvar('stat_data.技能.锻炼.等级', { scope: 'local', defaults: 1 })) || 1;
+var sanity = Number(getvar('stat_data.状态.理智', { scope: 'local', defaults: 80 })) || 80;
+var energy = Number(getvar('stat_data.状态.精力', { scope: 'local', defaults: 80 })) || 80;
+// 当前阶段用于反制消耗
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', { scope: 'local', defaults: 1 })) || 1;
+%>
+【玩家防御与对抗规则 — 100级技能体系】
+
+玩家并非完全被动。6项技能各100级，每20级为一个能力阈值（100级5档制：1-20第1档/21-40第2档/41-60第3档/61-80第4档/81-100第5档）。以下按当前等级显示已解锁效果。
+
+■ 冥想 Lv.<%= meditation %> — 感知与控制（共5档·100级）
+┃<% if (meditation >= 1 && meditation <= 20) { %> 第1档·感知：可模糊感知"是否正在被使用"。感知范围<%=Math.round(meditation*2)%>m<% } %>
+┃<% if (meditation >= 21 && meditation <= 40) { %> 第2档·减缓：消耗减<%=Math.min(30, Math.round((meditation-20)*1.5))%>%，可粗估使用者人数（准确率<%=Math.min(80, 40+(meditation-20)*2)%>%）<% } %>
+┃<% if (meditation >= 41 && meditation <= 60) { %> 第3档·锁定：精准感知每次使用起止时间。中断成功率<%=Math.min(60, (meditation-40)*3)%>%<% } %>
+┃<% if (meditation >= 61 && meditation <= 80) { %> 第4档·阻断：可主动中断使用，sanity-<%=Math.max(3, 10-Math.floor((meditation-60)/5))%>，冷却<%=Math.max(2, 6-Math.floor((meditation-60)/10))%>轮<% } %>
+┃<% if (meditation >= 81) { %> 第5档·反制：完全免疫单次使用（冷却24h），可反感知使用者位置（精度<%=Math.max(5, 100-meditation)%>m）<% } %>
+
+■ 意志 Lv.<%= willpower %> — 抵抗与延时（共5档·100级）
+┃<% if (willpower >= 1 && willpower <= 20) { %> 第1档·耐受：射精阈值 +<%=Math.round(willpower*0.8)%>%（较不容易射）<% } %>
+┃<% if (willpower >= 21 && willpower <= 40) { %> 第2档·抵抗：射精阈值 +<%=20+Math.round((willpower-20)*1.2)%>%，可抵抗中等快感<% } %>
+┃<% if (willpower >= 41 && willpower <= 60) { %> 第3档·压制：射精阈值 +<%=44+Math.round((willpower-40)*1)%>%，可压制高潮冲动（sanity-<%=Math.max(3, 10-Math.floor((willpower-40)/10))%>）<% } %>
+┃<% if (willpower >= 61 && willpower <= 80) { %> 第4档·掌控：射精阈值 +<%=64+Math.round((willpower-60)*1)%>%，高潮时可自主选择射或不射<% } %>
+┃<% if (willpower >= 81) { %> 第5档·超凡：完全控制射精，不被任何刺激强制射精。被动理智消耗减<%=Math.min(60, Math.round(willpower*0.3))%>%<% } %>
+
+■ 伪装 Lv.<%= disguise %> — 隐藏与混淆（共5档·100级）
+┃<% if (disguise >= 1 && disguise <= 20) { %> 第1档·掩盖：日常表现正常，被发现概率 -<%=Math.round(disguise*1.5)%>%<% } %>
+┃<% if (disguise >= 21 && disguise <= 40) { %> 第2档·如常：被使用时上课/社交不漏馅，被发现概率再 -<%=Math.round((disguise-20)*2)%>%<% } %>
+┃<% if (disguise >= 41 && disguise <= 60) { %> 第3档·迷惑：可模拟"未被使用"状态，使用者感知{{user}}状态准确度降为<%=Math.max(20, 100-(disguise-40)*2)%>%<% } %>
+┃<% if (disguise >= 61 && disguise <= 80) { %> 第4档·隐匿：被使用时完全看不出异常（包括体检/体态观察）<% } %>
+┃<% if (disguise >= 81) { %> 第5档·消失：在使用者感知中"不存在"——她以为你没被用，即使正在用<% } %>
+
+■ 洞察 Lv.<%= insight %> — 侦查与反制（共5档·100级）
+┃<% if (insight >= 1 && insight <= 20) { %> 第1档·警觉：可感知周围<%=Math.round(insight*1.5)%>m内是否有使用者靠近<% } %>
+┃<% if (insight >= 21 && insight <= 40) { %> 第2档·识别：可识别使用者大致身份（体型习惯/偏好时间），准确率<%=Math.min(80, 30+(insight-20)*2.5)%>%<% } %>
+┃<% if (insight >= 41 && insight <= 60) { %> 第3档·定位：精准定位使用者位置（精度<%=Math.max(10, 50-(insight-40)*1)%>m），可追踪最近<%=Math.floor((insight-40)/10)+1%>次路径<% } %>
+┃<% if (insight >= 61 && insight <= 80) { %> 第4档·预判：可预判使用者下次可能的使用时间和地点（准确率<%=Math.min(80, 30+(insight-60)*2.5)%>%）<% } %>
+┃<% if (insight >= 81) { %> 第5档·真视：看穿灵体投影和人偶容器本质，可直接看到附着的使用者意识<% } %>
+
+■ 恢复 Lv.<%= recovery %> — 耐受力（共5档·100级）
+┃<% if (recovery >= 1 && recovery <= 20) { %> 第1档·自愈：被使用后精力恢复 +<%=Math.round(recovery*0.5)%>，被动日恢复 +<%=Math.floor(recovery/10)%><% } %>
+┃<% if (recovery >= 21 && recovery <= 40) { %> 第2档·耐受：精力消耗 -<%=Math.min(25, Math.round((recovery-20)*1.2))%>%，日恢复 +<%=Math.floor((recovery-20)/5)+4%><% } %>
+┃<% if (recovery >= 41 && recovery <= 60) { %> 第3档·强韧：精力消耗 -<%=Math.min(40, 25+Math.round((recovery-40)*0.8))%>%，可连续承受<%=Math.floor((recovery-40)/10)+2%>次使用<% } %>
+┃<% if (recovery >= 61 && recovery <= 80) { %> 第4档·再生：精力消耗 -<%=Math.min(55, 41+Math.round((recovery-60)*0.7))%>%，被使用中也可缓慢恢复精力（<%=Math.floor((recovery-60)/10)+1%>/轮）<% } %>
+┃<% if (recovery >= 81) { %> 第5档·不朽：精力消耗 -<%=55+Math.round((recovery-80)*1.2)%>%，使用后<%=Math.max(1, 5-Math.floor((recovery-80)/10))%>轮内恢复至80%<% } %>
+
+■ 锻炼 Lv.<%= exercise %> — 身体素质（共5档·100级）
+┃<% if (exercise >= 1 && exercise <= 20) { %> 第1档·基础：精力上限 +<%=Math.round(exercise*0.6)%>，挣脱概率 <%=Math.round(exercise*1.2)%>%<% } %>
+┃<% if (exercise >= 21 && exercise <= 40) { %> 第2档·强健：精力上限 +<%=15+Math.round((exercise-20)*0.8)%>，可短暂挣脱物理束缚（<%=Math.floor((exercise-20)/10)+2%>秒）<% } %>
+┃<% if (exercise >= 41 && exercise <= 60) { %> 第3档·敏捷：精力上限 +<%=31+Math.round((exercise-40)*0.9)%>，被使用时可小幅行动（<%=Math.floor((exercise-40)/20)+1%>次/轮）<% } %>
+┃<% if (exercise >= 61 && exercise <= 80) { %> 第4档·爆发：精力上限 +<%=49+Math.round((exercise-60)*1)%>，挣脱物理束缚概率 +<%=Math.min(80, (exercise-60)*2)%>%<% } %>
+┃<% if (exercise >= 81) { %> 第5档·钢铁：精力上限 +<%=69+Math.round((exercise-80)*1.5)%>，完全挣脱低级束缚，力量对抗优势<%=Math.min(90, (exercise-80)*3)%>%<% } %>
+
+■ 防御系数（当前生效）
+<% var defCoef = (meditation*0.015 + willpower*0.015 + disguise*0.01 + insight*0.01 + recovery*0.02 + exercise*0.01) / 6; %>
+┃ 总防御系数：<%= (defCoef*100).toFixed(1) %>%（使用概率 -<%=Math.round(defCoef*100)%>%）
+┃ 精力消耗减少：<%=Math.min(80, Math.round(recovery*0.3))%>%（恢复Lv.<%=recovery%>）
+┃ 理智消耗减少：<%=Math.min(60, Math.round(willpower*0.2))%>%（意志Lv.<%=willpower%>）
+
+■ 可用的反制行动（每20级解锁一档）
+<% if (meditation >= 21) { %>┃ 冥想反制：sanity -<%=Math.max(3, 15-Math.floor(meditation/10))%>，中断使用（成功率<%=Math.min(90, Math.round(meditation*0.5))%>%）<% } %>
+<% if (insight >= 21) { %>┃ 洞察追踪：sanity -<%=Math.max(2, 8-Math.floor(insight/20))%>，定位使用者位置<% } %>
+<% if (willpower >= 21) { %>┃ 意志压制：sanity -<%=Math.max(3, 10-Math.floor(willpower/15))%>，强行不射精<% } %>
+<% if (disguise >= 21) { %>┃ 伪装逃脱：energy -<%=Math.max(8, 20-Math.floor(disguise/10))%>，离开高危区域<% } %>
+<% if (recovery >= 21) { %>┃ 恢复休整：<%=Math.max(1, 3-Math.floor(recovery/40))%>小时，恢复 energy <%=20+Math.floor(recovery/5)%> + sanity <%=10+Math.floor(recovery/10)%><% } %>
+
+技能等级越高，反制消耗越低、成功率越高。

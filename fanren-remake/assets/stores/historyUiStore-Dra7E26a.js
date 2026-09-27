@@ -1,0 +1,1 @@
+import{t as e}from"./../react-BHeFgTA0.js";var t=e()(e=>({open:!1,openHistory:()=>e({open:!0}),closeHistory:()=>e({open:!1}),setOpen:t=>e({open:t})}));export{t};

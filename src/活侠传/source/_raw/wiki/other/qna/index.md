@@ -1,0 +1,30 @@
+﻿---
+title: 鳥熊問答集
+outline: [2, 3]
+aside: false
+sidebar: false
+borderless: false
+tags:
+    - 問答集
+---
+
+# {{ $frontmatter.title }}
+
+這裡整理鳥熊在Facebook等社群回答玩家的問題，由於問題繁雜，故主要以公開日進行分類。
+
+<br>
+
+雖然鳥熊不介意，但還是請各位不要太常私訊打擾鳥熊，畢竟大家都盼著遊戲更新。
+
+## 2024
+
+- [[問答集2024年8月]]
+- [[問答集2024年9月]]
+- [[問答集2024年10月]]
+- [[問答集2024年11月]]
+
+## 江湖軼聞錄
+
+[連結](https://docs.google.com/spreadsheets/d/1ZtmvgQqblKddvBsJF-5HRT5byotuNW7M4SwGBLFRoOQ/edit?usp=sharing)<br>
+
+這裡蒐集所有已公開的非正式資訊。<br>包含玩家分享的鳥熊私訊問答、原始鳥熊於粉專對網友透露的資訊、鳥熊訪談提及的內容。<br>開放共同編輯，請參考連結內說明。

@@ -1,0 +1,1 @@
+import{kt as e}from"./shenshiCapacity-B99PQdkI.js";function t(t){let n=Object.values(t).filter(t=>!e(t)),r=n.filter(e=>e.kind===`player`),i=n.filter(e=>e.kind!==`player`).reverse();return[...r,...i]}export{t};

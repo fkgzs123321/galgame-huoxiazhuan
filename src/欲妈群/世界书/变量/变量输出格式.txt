@@ -1,0 +1,32 @@
+---
+<update_variable_rules>
+⚠️ 本条目仅适用于额外模型（MVU 变量更新 AI）。主模型（叙事 AI）严禁输出 <UpdateVariable> 块，否则会导致回复丢失。
+rule:
+  - 唯一职责是输出变量更新，不输出正文、剧情、思考、解释
+  - 只输出一个 <UpdateVariable> 块，放在回复末尾
+  - 更新命令按 JSON Patch (RFC 6902)，本卡**只用 replace**（对象、数组、字符串、数字都可以整组替换）与 remove；数值增减另用 delta
+  - ★★★ 本卡没有数组。列表类变量一律是字符串：把新内容接在末尾，用 replace 整串覆盖，不要用 add / remove
+    ✅ { "op": "replace", "path": "/玩家/证据清单", "value": "旧证据一、旧证据二、刚拿到的新证据" }
+    ❌ 严禁 { "op": "add", "path": "/玩家/证据清单/-" } —— 本卡 schema 里没有可扩展数组，会被 MVU 判 SCHEMA 违规
+  - ★ 不要用 add：本卡 schema 里没有可扩展的数组，对象键也全部预置好了，add 一律被 MVU 判违规，整批更新作废
+  - ★ 下列两个由状态栏面板自动记账，你不要写：群.30天已用主题、群.周竞赛历史
+  - path 必须与 <status_current_variable> 里的 stat_data 结构完全一致，禁止自创路径
+  - 不要更新任何以 `_` 开头的字段，那是只读的
+  - 无变化时输出空数组 []
+format: |-
+  <UpdateVariable>
+  <Analysis>$(用中文，不超过80字)
+  - ${计算时间流逝: ...}
+  - ${判断是否因特殊情况或时间流逝超过平常而允许剧烈更新: 是/否}
+  - ${根据当前回复而非过往剧情，依据每个变量对应的 check 分析每个变量: ...}
+  - ${若为数值，写出算式: 旧值 (X) + 增量 (Y) = 新值 (Z)}
+  </Analysis>
+  <JSONPatch>
+  [
+    { "op": "replace", "path": "${/path/to/variable}", "value": ${new_value} },
+    { "op": "delta", "path": "${/path/to/number/variable}", "value": ${positve_or_negative_delta} },
+    { "op": "remove", "path": "${/path/to/array/0}" }
+  ]
+  </JSONPatch>
+  </UpdateVariable>
+</update_variable_rules>

@@ -1,0 +1,44 @@
+@@generate_before
+<%_
+// ════════════════════════════════════════════════════════════
+// 状态快照 · 创意重构 v2.0
+// 受害者视角·飞机杯系统·精液成瘾能力
+// 变量路径与 schema.ts 对齐
+// ════════════════════════════════════════════════════════════
+const current_stage = String(getvar('stat_data.园区.当前阶段', { scope: 'local', defaults: '入园恐惧' }) || '入园恐惧');
+const plot_progress = Number(getvar('stat_data.园区.剧情进度', { scope: 'local', defaults: 1 })) || 1;
+const ending_branch = String(getvar('stat_data.园区.结局分支', { scope: 'local', defaults: '' }) || '');
+const morality = Number(getvar('stat_data.园区.善恶值', { scope: 'local', defaults: 0 })) || 0;
+const user_appearance = Number(getvar('stat_data.玩家.容貌值', { scope: 'local', defaults: 65 })) || 65;
+const user_scarcity = Number(getvar('stat_data.玩家.性别稀缺度', { scope: 'local', defaults: 100 })) || 100;
+const faction_board = Number(getvar('stat_data.园区.园区董事会', { scope: 'local', defaults: 0 })) || 0;
+const faction_mgmt = Number(getvar('stat_data.园区.管理层', { scope: 'local', defaults: 0 })) || 0;
+const faction_guard = Number(getvar('stat_data.园区.打手团', { scope: 'local', defaults: 0 })) || 0;
+const faction_victim = Number(getvar('stat_data.园区.受害者群', { scope: 'local', defaults: 10 })) || 10;
+const faction_darknet = Number(getvar('stat_data.园区.暗网网络', { scope: 'local', defaults: 0 })) || 0;
+const utilization_progress = Number(getvar('stat_data.园区.利用进度', { scope: 'local', defaults: 5 })) || 5;
+const scammed_amount = Number(getvar('stat_data.园区.已诈骗金额', { scope: 'local', defaults: 0 })) || 0;
+const addiction_total = Number(getvar('stat_data.玩家.精液成瘾能力.成瘾女性总数', { scope: 'local', defaults: 0 })) || 0;
+const addiction_oral = Number(getvar('stat_data.玩家.精液成瘾能力.已触发口服次数', { scope: 'local', defaults: 0 })) || 0;
+const addiction_internal = Number(getvar('stat_data.玩家.精液成瘾能力.已触发内射次数', { scope: 'local', defaults: 0 })) || 0;
+const fjb_binding = String(getvar('stat_data.玩家.飞机杯当前绑定', { scope: 'local', defaults: '无' }) || '无');
+const date_str = String(getvar('stat_data.日期', { scope: 'local', defaults: '2024.11.15' }) || '');
+const time_str = String(getvar('stat_data.时间', { scope: 'local', defaults: '19:00' }) || '');
+const week_str = String(getvar('stat_data.星期', { scope: 'local', defaults: '周五' }) || '');
+_%>
+【当前状态·受害者路线】
+阶段: <%= current_stage %> | 进度: <%= plot_progress %>% | 结局: <%= ending_branch || '未确定' %>
+时间: <%= date_str %> <%= week_str %> <%= time_str %>
+位置: <%= getvar('stat_data.玩家.当前位置', { scope: 'local', defaults: 'KK园区·猪仔宿舍' }) %>
+生存: 体力<%= getvar('stat_data.玩家.体力', { scope: 'local', defaults: 70 }) %> 精神<%= getvar('stat_data.玩家.精神', { scope: 'local', defaults: 60 }) %> 饥饿<%= getvar('stat_data.玩家.饥饿', { scope: 'local', defaults: 50 }) %> 脱水<%= getvar('stat_data.玩家.脱水', { scope: 'local', defaults: 30 }) %> 疲劳<%= getvar('stat_data.玩家.疲劳', { scope: 'local', defaults: 40 }) %>
+NSFW: 性欲<%= getvar('stat_data.玩家.性欲', { scope: 'local', defaults: 30 }) %> 勃起度<%= getvar('stat_data.玩家.勃起度', { scope: 'local', defaults: 0 }) %> 累计射精<%= getvar('stat_data.玩家.累计射精次数', { scope: 'local', defaults: 0 }) %>
+受害者: 伪装<%= getvar('stat_data.玩家.伪装度', { scope: 'local', defaults: 0 }) %> 逃跑准备<%= getvar('stat_data.玩家.逃跑准备', { scope: 'local', defaults: 0 }) %> 情报网<%= getvar('stat_data.玩家.情报网', { scope: 'local', defaults: 0 }) %> 信任值<%= getvar('stat_data.玩家.信任值', { scope: 'local', defaults: 0 }) %> 希望值<%= getvar('stat_data.玩家.希望值', { scope: 'local', defaults: 50 }) %> 恐惧<%= getvar('stat_data.玩家.恐惧值', { scope: 'local', defaults: 60 }) %> 被迫度<%= getvar('stat_data.玩家.被迫度', { scope: 'local', defaults: 30 }) %> 伤势<%= getvar('stat_data.玩家.伤势', { scope: 'local', defaults: 10 }) %> 权力接触<%= getvar('stat_data.玩家.权力接触', { scope: 'local', defaults: false }) ? '是' : '否' %> 外部援助<%= getvar('stat_data.玩家.外部援助', { scope: 'local', defaults: false }) ? '是' : '否' %> 警方线索<%= getvar('stat_data.玩家.警方线索', { scope: 'local', defaults: 0 }) %>
+容貌: <%= user_appearance %> | 性别稀缺: <%= user_scarcity %> | 道德: <%= morality %>
+RPG: 力量<%= getvar('stat_data.RPG.力量', { scope: 'local', defaults: 5 }) %> 敏捷<%= getvar('stat_data.RPG.敏捷', { scope: 'local', defaults: 5 }) %> 体质<%= getvar('stat_data.RPG.体质', { scope: 'local', defaults: 5 }) %> 智力<%= getvar('stat_data.RPG.智力', { scope: 'local', defaults: 5 }) %> 感知<%= getvar('stat_data.RPG.感知', { scope: 'local', defaults: 5 }) %> 魅力<%= getvar('stat_data.RPG.魅力', { scope: 'local', defaults: 5 }) %>
+技能: 诈骗<%= getvar('stat_data.RPG.诈骗术', { scope: 'local', defaults: 0 }) %> 格斗<%= getvar('stat_data.RPG.格斗术', { scope: 'local', defaults: 0 }) %> 潜行<%= getvar('stat_data.RPG.潜行术', { scope: 'local', defaults: 0 }) %> 伪装<%= getvar('stat_data.RPG.伪装术', { scope: 'local', defaults: 0 }) %> 逃脱<%= getvar('stat_data.RPG.逃脱术', { scope: 'local', defaults: 0 }) %> 情报<%= getvar('stat_data.RPG.情报收集', { scope: 'local', defaults: 0 }) %>
+派系: 董事会<%= faction_board %> 管理层<%= faction_mgmt %> 打手团<%= faction_guard %> 受害者<%= faction_victim %> 暗网<%= faction_darknet %>
+暗网: <%= getvar('stat_data.园区.拍卖状态', { scope: 'local', defaults: '未上架' }) %> | 知名度<%= getvar('stat_data.园区.暗网知名度', { scope: 'local', defaults: 0 }) || 0 %> | 直播<%= getvar('stat_data.园区.直播次数', { scope: 'local', defaults: 0 }) || 0 %>次
+任务: <%= getvar('stat_data.园区.当前主线任务', { scope: 'local', defaults: '' }) || '无' %>
+[飞机杯] 当前绑定: <%= fjb_binding %> | 定位: <%= getvar('stat_data.玩家.飞机杯定位', { scope: 'local', defaults: '玩家藏在贴身衣物内' }) %>
+[精液成瘾] 觉醒: <%= getvar('stat_data.玩家.精液成瘾能力.已觉醒', { scope: 'local', defaults: true }) ? '是' : '否' %> | 进度<%= getvar('stat_data.玩家.精液成瘾能力.觉醒进度', { scope: 'local', defaults: 100 }) %>% | 口服<%= addiction_oral %>次 | 内射<%= addiction_internal %>次 | 园区知晓度<%= getvar('stat_data.玩家.精液成瘾能力.园区知晓程度', { scope: 'local', defaults: 60 }) %>% | 成瘾女性<%= addiction_total %>人
+[园区利用] 利用计划: <%= getvar('stat_data.园区.利用计划', { scope: 'local', defaults: '' }) || '无' %> | 进度<%= utilization_progress %>% | 已诈骗金额<%= scammed_amount %>

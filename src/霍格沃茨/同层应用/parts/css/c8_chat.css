@@ -1,0 +1,216 @@
+/* ============================================================
+   霍格沃茨 · 同层应用 主聊天界面（RPG 沉浸式）
+   ============================================================ */
+
+/* —— 场景横幅 —— */
+#hgw-chat-scene {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--hgw-r-md) var(--hgw-r-md) 0 0;
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(201, 162, 39, 0.12), transparent 55%),
+    linear-gradient(180deg, #16202e, #101a26);
+  border: 1px solid var(--hgw-gold-line);
+  border-bottom: none;
+  margin-top: 12px;
+}
+#hgw-chat-scene .sc-ico { font-size: 22px; }
+#hgw-chat-scene .sc-info { flex: 1; min-width: 0; }
+#hgw-chat-scene .sc-where { font-size: var(--hgw-fs-sm); font-weight: 700; color: var(--hgw-gold-bright); letter-spacing: 1px; }
+#hgw-chat-scene .sc-when { font-size: 10px; color: var(--hgw-text-faint); margin-top: 1px; }
+#hgw-chat-scene .sc-tags { display: flex; gap: 5px; flex-shrink: 0; }
+
+/* —— 对话对象卡 —— */
+#hgw-chat-target {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: none;
+}
+#hgw-chat-target .ct-ava {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #fff;
+  border: 2px solid var(--hgw-gold-dim);
+  background: linear-gradient(135deg, #2c3e50, #1a252f);
+}
+#hgw-chat-target .ct-info { flex: 1; min-width: 0; }
+#hgw-chat-target .ct-name { font-size: var(--hgw-fs-md); font-weight: 700; color: var(--hgw-text-bright); display: flex; align-items: center; gap: 6px; }
+#hgw-chat-target .ct-meta { font-size: 10px; color: var(--hgw-text-faint); margin-top: 1px; }
+#hgw-chat-target .ct-bars { display: flex; gap: 14px; margin-top: 6px; }
+#hgw-chat-target .ct-bar { flex: 1; min-width: 70px; }
+#hgw-chat-target .ct-bar .hgw-bar-label { font-size: 9px; margin-bottom: 2px; }
+#hgw-chat-target .ct-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
+
+/* —— 玩家状态条（聊天内嵌） —— */
+#hgw-chat-playerbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: none;
+  flex-wrap: wrap;
+}
+#hgw-chat-playerbar .pb-ava {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--hgw-gryffindor), #7a1f15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  border: 1px solid var(--hgw-gold-dim);
+}
+#hgw-chat-playerbar .pb-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--hgw-text-dim); }
+#hgw-chat-playerbar .pb-item .ic { font-size: 11px; }
+#hgw-chat-playerbar .pb-item .vl { color: var(--hgw-text-bright); font-weight: 700; font-variant-numeric: tabular-nums; }
+#hgw-chat-playerbar .pb-bars { display: flex; gap: 10px; flex: 1; min-width: 180px; }
+#hgw-chat-playerbar .pb-bar { flex: 1; }
+#hgw-chat-playerbar .pb-bar .hgw-bar-label { font-size: 9px; margin-bottom: 2px; }
+
+/* —— 消息流容器 —— */
+#hgw-chat-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.03), transparent 60%),
+    rgba(7, 11, 18, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: none;
+}
+
+/* —— RPG 消息气泡 —— */
+.hgw-cmsg { max-width: 88%; animation: hgw-view-in var(--hgw-dur-md) both; }
+.hgw-cmsg .cm-head { display: flex; align-items: center; gap: 6px; font-size: 10px; margin-bottom: 3px; }
+.hgw-cmsg .cm-head .cm-ava {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 10px;
+  background: #1a252f; border: 1px solid var(--hgw-gold-dim);
+}
+.hgw-cmsg .cm-head .cm-name { font-weight: 700; }
+.hgw-cmsg .cm-body {
+  padding: 10px 14px;
+  border-radius: var(--hgw-r-md);
+  font-size: var(--hgw-fs-md);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.hgw-cmsg.ai { align-self: flex-start; }
+.hgw-cmsg.ai .cm-body {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-top-left-radius: 4px;
+}
+.hgw-cmsg.ai .cm-name { color: var(--hgw-gold-bright); }
+.hgw-cmsg.user { align-self: flex-end; }
+.hgw-cmsg.user .cm-head { flex-direction: row-reverse; }
+.hgw-cmsg.user .cm-name { color: var(--hgw-text-dim); }
+.hgw-cmsg.user .cm-body {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0.08));
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-top-right-radius: 4px;
+}
+.hgw-cmsg.sys { align-self: center; max-width: 72%; }
+.hgw-cmsg.sys .cm-body {
+  background: rgba(127, 208, 168, 0.05);
+  border: 1px solid rgba(127, 208, 168, 0.2);
+  color: var(--hgw-ok);
+  font-size: var(--hgw-fs-xs);
+  text-align: center;
+}
+/* 学院色消息边 */
+.hgw-cmsg.ai.gry .cm-body { border-left: 3px solid var(--hgw-gryffindor); }
+.hgw-cmsg.ai.sly .cm-body { border-left: 3px solid var(--hgw-slytherin); }
+.hgw-cmsg.ai.rav .cm-body { border-left: 3px solid var(--hgw-ravenclaw); }
+.hgw-cmsg.ai.huf .cm-body { border-left: 3px solid var(--hgw-hufflepuff); }
+
+/* —— 结算块卡片 —— */
+.hgw-cmsg .cm-body .hgw-settle-card {
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: var(--hgw-r-sm);
+  background: rgba(127, 208, 168, 0.04);
+  border: 1px dashed rgba(127, 208, 168, 0.25);
+  font-size: 10px;
+  color: var(--hgw-ok);
+  font-family: Consolas, monospace;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.hgw-cmsg .cm-body .settle-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(127, 208, 168, 0.12);
+  color: var(--hgw-ok);
+  margin: 2px 0;
+}
+
+/* —— 快捷动作区 —— */
+#hgw-chat-quick {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(13, 20, 31, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: none;
+  flex-wrap: wrap;
+  align-items: center;
+}
+#hgw-chat-quick .qk-label { font-size: 10px; color: var(--hgw-text-faint); margin-right: 2px; }
+#hgw-chat-quick .hgw-btn { padding: 5px 12px; font-size: 11px; }
+
+/* —— 战斗内嵌条（聊天内） —— */
+#hgw-chat-duel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(226, 75, 74, 0.05);
+  border: 1px solid rgba(226, 75, 74, 0.2);
+  border-top: none;
+}
+#hgw-chat-duel .dd-name { font-size: 11px; font-weight: 700; color: var(--hgw-text-bright); white-space: nowrap; }
+#hgw-chat-duel .dd-bar { flex: 1; }
+#hgw-chat-duel .dd-vs { font-size: 10px; color: var(--hgw-gold-dim); font-weight: 700; }
+#hgw-chat-duel .dd-btn { flex-shrink: 0; }
+
+/* —— 欢迎横幅（首次） —— */
+.hgw-chat-welcome {
+  align-self: center;
+  max-width: 90%;
+  padding: 14px 18px;
+  border-radius: var(--hgw-r-lg);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.1), transparent 60%),
+    rgba(16, 26, 38, 0.9);
+  border: 1px solid var(--hgw-gold-line);
+  margin: 20px 0;
+}
+.hgw-chat-welcome .wl-title { font-family: var(--hgw-font-title); font-size: var(--hgw-fs-lg); color: var(--hgw-gold-bright); letter-spacing: 3px; margin-bottom: 8px; }
+.hgw-chat-welcome .wl-text { font-size: var(--hgw-fs-xs); color: var(--hgw-text-dim); line-height: 2; }
+.hgw-chat-welcome .wl-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }

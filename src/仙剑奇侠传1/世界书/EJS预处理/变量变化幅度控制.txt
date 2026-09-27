@@ -1,0 +1,150 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 变量变化幅度控制（单楼层变化校验器）
+   ════════════════════════════════════════════════════════════
+   职责：单楼层变量变化上限校验 / 禁止变化项保护 / 异常检测与警告输出
+   加载策略：由主调度控制器在变量更新前后加载，输出本轮变化校验摘要供 AI 决策
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明
+   define() 模式：注册 VALIDATE_CHANGE 全局常量，供主调度控制器/章节触发器/角色条目调用
+   变量路径（与 schema.ts 对齐）：
+     stat_data.主角.战斗状态.HP         主角 HP（0-9999）
+     stat_data.主角.战斗状态.MP         主角 MP（0-999）
+     stat_data.主角.资产.铜钱           铜钱（0-9999999）
+     stat_data.主角.属性.灵力           灵力（女娲血脉相关）
+     stat_data.主角.属性.武力           武力（物理攻击相关）
+     stat_data.角色关系.XXX.好感度      角色好感度（0-100）
+     stat_data.主角.属性.经验值         经验值（升级累计）
+     stat_data.本轮变化日志             本楼层变量变化记录数组（由脚本层写入）
+   日志条目结构：
+     { name: 'HP', path: 'stat_data.主角.战斗状态.HP', before: 100, after: 50, type: '受伤', reason: '遭遇蛇妖' }
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取 MVU 当前轮变化日志（由脚本层 incvar/setvar 写入） ─── */
+if (typeof _changeLog === 'undefined') var _changeLog = getvar('stat_data.本轮变化日志', { scope: 'local', defaults: [] }) || [];
+
+/* ════════════════════════════════════════════════════════════
+   一、变量变化幅度控制规则（VALIDATE_CHANGE）
+   ════════════════════════════════════════════════════════════ */
+const VALIDATE_CHANGE = {
+
+  /* ───── 1. 单楼层变化上限表 ───── */
+  limits: {
+    HP:      { 受伤: 100, 治疗: 500 },
+    MP:      { 消耗: 50,  恢复: 200 },
+    铜钱:    { 支出: 500, '收入·BOSS战利品': 5000 },
+    灵力:    { 修炼: 10,  觉醒: 50 },
+    武力:    { 升级: 5,   觉醒: 20 },
+    好感度:   { 关键事件: 10, 生死相许: 30 },
+    经验值:   { 普通战: 500, BOSS战: 5000 }
+  },
+
+  /* ───── 2. 禁止变化项（一律拒绝） ───── */
+  forbidden: {
+    '主角姓名':         '开局固定，不可修改',
+    '性别':             '开局固定，不可修改',
+    '年龄':             '开局固定，仅由剧情触发器自然增长',
+    '章节进度':         '仅由章节触发器修改（完成关键事件后推进）',
+    '已完成事件':       '不可逆，已完成事件不可撤销',
+    '已死亡角色状态':   '不可复活，除非触发复活事件'
+  },
+
+  /* ───── 3. 异常检测函数 ───── */
+  check: function (name, before, after, type) {
+    /* 禁止变化项直接拒绝 */
+    if (this.forbidden.hasOwnProperty(name)) {
+      return { ok: false, level: 'reject', msg: '【拒绝·禁止变化】' + name + ' 不可修改（' + this.forbidden[name] + '）' };
+    }
+    const rule = this.limits[name];
+    if (!rule) {
+      return { ok: true, level: 'skip', msg: '【跳过】' + name + ' 无明确限制规则' };
+    }
+    const diff = Number(after) - Number(before);
+    const abs  = Math.abs(diff);
+    let limit  = rule[type];
+    if (limit === undefined) {
+      /* 未指定事件类型，取该变量所有阈值中的最大值作为兜底 */
+      const vals = Object.keys(rule).map(function (k) { return rule[k]; });
+      limit = Math.max.apply(null, vals);
+    }
+    if (abs > limit) {
+      return { ok: false, level: 'warn', msg: '【警告·超限】' + name + ' 变化 ' + (diff > 0 ? '+' : '') + diff + '，阈值 ≤' + limit + '（事件：' + type + '）' };
+    }
+    return { ok: true, level: 'pass', msg: '【通过】' + name + ' 变化 ' + (diff > 0 ? '+' : '') + diff + '（阈值 ≤' + limit + '，' + type + '）' };
+  },
+
+  /* ───── 4. 批量校验（处理本轮变化日志） ───── */
+  validate: function (log) {
+    if (!Array.isArray(log) || log.length === 0) {
+      return { results: [], warns: [], rejects: [] };
+    }
+    const results = log.map(function (e) {
+      return VALIDATE_CHANGE.check(e.name, Number(e.before) || 0, Number(e.after) || 0, e.type);
+    });
+    const warns   = results.filter(function (r) { return !r.ok && r.level === 'warn'; });
+    const rejects = results.filter(function (r) { return !r.ok && r.level === 'reject'; });
+    return { results: results, warns: warns, rejects: rejects };
+  }
+};
+
+define('VALIDATE_CHANGE', VALIDATE_CHANGE);
+
+/* ─── 2. 执行本轮校验，生成摘要数据 ─── */
+const _validation = VALIDATE_CHANGE.validate(_changeLog);
+const _results     = _validation.results;
+const _warns       = _validation.warns;
+const _rejects     = _validation.rejects;
+%>
+
+<%_ // ───────── 本轮变化校验摘要（输出给 AI 使用） ───────── _%>
+【仙剑1·变量变化幅度控制 · 本轮校验摘要】
+
+■ 单楼层变化上限表
+- HP：≤100（受伤事件）/ ≤500（治疗事件）
+- MP：≤50（消耗）/ ≤200（恢复）
+- 铜钱：≤500（支出）/ ≤5000（收入·BOSS战利品）
+- 灵力：≤10（修炼）/ ≤50（觉醒）
+- 武力：≤5（升级）/ ≤20（觉醒）
+- 好感度：≤10（关键事件）/ ≤30（生死相许）
+- 经验值：≤500（普通战）/ ≤5000（BOSS战）
+
+■ 禁止变化项
+- 主角姓名、性别、年龄（开局固定）
+- 章节进度（仅由章节触发器修改）
+- 已完成事件（不可逆）
+- 已死亡角色状态（不可复活，除非触发复活事件）
+
+■ 本轮变化记录数：<%= _changeLog.length %>
+<% if (_changeLog.length === 0) { %>
+本轮无变量变化记录。
+<% } else { %>
+本轮变化明细：
+<% _results.forEach(function (r) { %>
+- <%= r.msg %>
+<% }); %>
+<% } %>
+
+<% if (_rejects.length > 0) { %>
+
+【拒绝·禁止变化项】检测到 <%= _rejects.length %> 项违规，AI 必须拒绝对应变化：
+<% _rejects.forEach(function (w) { %>
+!! <%= w.msg %>
+<% }); %>
+<% } %>
+
+<% if (_warns.length > 0) { %>
+
+【异常警告·超限】检测到 <%= _warns.length %> 项超限变化，AI 应拒绝或调整：
+<% _warns.forEach(function (w) { %>
+!! <%= w.msg %>
+<% }); %>
+<% } else if (_changeLog.length > 0 && _rejects.length === 0) { %>
+所有变化均在阈值范围内，校验通过。
+<% } %>
+
+■ 异常处理规则
+- 变化超过阈值时输出警告，AI 应拒绝或调整对应变化
+- 禁止变化项一律拒绝，AI 不得执行对应写入
+- 校验结果仅作参考，最终变量更新由额外模型在 <UpdateVariable> 块中执行
+
+[变量变化幅度控制摘要结束。AI 须严格遵守以上变化上限与禁止项规则；超限或禁止变化项不得写入 <UpdateVariable>。]

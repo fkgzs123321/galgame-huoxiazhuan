@@ -1,0 +1,240 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 10 - 12-31 周日 ═══
+   当日主题：跨年事件（身份感知重点日）
+   特殊事件：event_day10_new_year_eve_shrine / event_day10_new_year_eve_party / event_day10_diary_3_window / event_day10_diary_4_window
+   女角锁定：[13,14]
+   ★ 身份感知：每个身份有独立 day10 跨年场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家同行神宫参拜 + 鸣泽家跨年聚会 + 鸣泽家客厅交付日记3
+     P2 川尻信良 → 川尻家单独前往神宫 + 川尻家跨年（或与洋子共度） + 偶遇时交付日记3
+     P3 长冈芳树 → 长冈家单独前往神宫 + 长冈家跨年 + 偶遇时交付日记3
+     P4 西御寺有友 → 西御寺家豪宅单独前往神宫 + 西御寺家豪宅跨年 + 日记3不触发
+     P5 天道新干线 → 天道家单独前往神宫 + 天道家跨年（或与爱美共度） + 偶遇时交付日记3 + 爱美谢礼日记4★
+     P6 自定义 → 按玩家背景
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 10,
+  date: '12-31',
+  weekday: '周日',
+  chapter: '寒假核心',
+  theme: '跨年事件（身份感知独立场景）',
+  special_events: ['event_day10_new_year_eve_shrine', 'event_day10_new_year_eve_party', 'event_day10_diary_3_window', 'event_day10_diary_4_window'],
+  locked_heroines: [13, 14],
+  new_unlock: [],
+  weather_default: '雪',
+  notes: '神宫参拜；多女角可能聚齐；跨年雪；按身份独立跨年场景'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 当日开场场景（身份感知；IDENTITY_PROFILES 仅含 day1，day10 由本文件提供） */
+if (typeof _day10Scenes === 'undefined') var _day10Scenes = {
+  '原作主角': `${_playerName}在鸣泽家起床，唯与美佐子正在准备跨年事宜。寒假第十天，跨年夜。相沢诚今夜将与鸣泽家同行前往如月神宫参拜，随后在鸣泽家跨年聚会。跨年雪营造特殊氛围。`,
+  '川尻信良': `${_playerName}在川尻家起床，独自准备早餐。寒假第十天，跨年夜。信良将单独前往如月神宫参拜（非鸣泽家同行），随后在川尻家跨年。若洋子线推进充分，可能与南川洋子共度跨年。`,
+  '长冈芳树': `${_playerName}在长冈家起床，独自准备简单早餐。寒假第十天，跨年夜。芳树将单独前往如月神宫参拜，随后在长冈家跨年。偷拍器材收起，跨年夜独自度过。`,
+  '西御寺有友': `${_playerName}在西御寺家豪宅起床，佣人已备好早餐。寒假第十天，跨年夜。${_playerName}将单独前往如月神宫参拜，随后在西御寺家豪宅跨年（佣人伺候，财阀排场）。唯/美佐子不出现在西御寺家跨年场景。`,
+  '天道新干线': `${_playerName}在天道家起床，独自准备早餐。寒假第十天，跨年夜。${_playerName}将单独前往如月神宫参拜，随后在天道家跨年。若爱美线已解决，爱美可能来访共度跨年。同时爱美谢礼日记4 窗口期持续★。`,
+  '自定义': `${_playerName}在${_playerHome}起床，按背景描述安排跨年夜。将单独前往如月神宫参拜，随后在${_playerHome}跨年。跨年雪营造特殊氛围。`,
+  '未选择': '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+};
+if (typeof _openingScene === 'undefined') var _openingScene = _day10Scenes[_playerIdentity] || _day10Scenes['未选择'];
+
+/* event_day10_new_year_eve_shrine：神宫参拜（身份感知）
+   P1 鸣泽家同行；P2-P6 单独前往（按身份描写） */
+if (typeof _shrineDesc === 'undefined') var _shrineDesc = {
+  '原作主角': `晚/深夜时段如月神宫触发，跨年参拜事件。${_playerName}与鸣泽家同行（唯 row_id=1、美佐子 row_id=2 必出场）。多女角可能聚齐：
+  - 鸣泽唯（row_id=1）：必出场（鸣泽家同行）
+  - 鸣泽美佐子（row_id=2）：必出场（鸣泽家同行）
+  - 水野友美（row_id=8）：高概率出场（水野家同行，邻家关系）
+  - 舞岛可怜（row_id=3）：中概率出场（神宫偶遇）
+  - 田中美沙（row_id=10）：中概率出场（神宫偶遇）
+  各女角好感 +2（参拜加成）。神宫氛围装饰，跨年雪营造特殊氛围。`,
+  '川尻信良': `晚/深夜时段如月神宫触发，跨年参拜事件。${_playerName}单独前往${_playerHome}所在区域的如月神宫（非鸣泽家同行）。多女角可能聚齐：
+  - 鸣泽唯（row_id=1）：中概率出场（神宫偶遇，非家庭关系）
+  - 鸣泽美佐子（row_id=2）：低概率出场（神宫偶遇，非亲属）
+  - 水野友美（row_id=8）：中概率出场（神宫偶遇，非邻家关系）
+  - 南川洋子（row_id=6）：高概率出场（神宫偶遇★，若洋子线推进充分则同行）
+  - 舞岛可怜（row_id=3）：中概率出场（神宫偶遇）
+  - 田中美沙（row_id=10）：中概率出场（神宫偶遇）
+  各女角好感 +2（参拜加成）。神宫氛围装饰，跨年雪营造特殊氛围。`,
+  '长冈芳树': `晚/深夜时段如月神宫触发，跨年参拜事件。${_playerName}单独前往${_playerHome}所在区域的如月神宫（非鸣泽家同行）。多女角可能聚齐：
+  - 鸣泽唯（row_id=1）：中概率出场（神宫偶遇，非家庭关系）
+  - 鸣泽美佐子（row_id=2）：低概率出场（神宫偶遇，非亲属）
+  - 水野友美（row_id=8）：低概率出场（神宫偶遇，敌意关系，唯可能回避芳树）
+  - 舞岛可怜（row_id=3）：中概率出场（神宫偶遇）
+  - 田中美沙（row_id=10）：中概率出场（神宫偶遇）
+  各女角好感 +2（参拜加成）。神宫氛围装饰，跨年雪营造特殊氛围。`,
+  '西御寺有友': `晚/深夜时段如月神宫触发，跨年参拜事件。${_playerName}单独前往${_playerHome}所在区域的如月神宫（非鸣泽家同行，财阀独生子排场）。多女角可能聚齐：
+  - 鸣泽唯（row_id=1）：低概率出场（神宫偶遇，敌意关系，唯可能回避西御寺）
+  - 鸣泽美佐子（row_id=2）：低概率出场（神宫偶遇，非亲属）
+  - 水野友美（row_id=8）：低概率出场（神宫偶遇，非邻家）
+  - 舞岛可怜（row_id=3）：中概率出场（神宫偶遇）
+  - 田中美沙（row_id=10）：中概率出场（神宫偶遇）
+  各女角好感 +2（参拜加成）。神宫氛围装饰，跨年雪营造特殊氛围。`,
+  '天道新干线': `晚/深夜时段如月神宫触发，跨年参拜事件。${_playerName}单独前往${_playerHome}所在区域的如月神宫（非鸣泽家同行，教师身份）。多女角可能聚齐：
+  - 鸣泽唯（row_id=1）：中概率出场（神宫偶遇，师生关系）
+  - 鸣泽美佐子（row_id=2）：低概率出场（神宫偶遇，非亲属）
+  - 水野友美（row_id=8）：中概率出场（神宫偶遇，师生关系）
+  - 安田爱美（row_id=9）：高概率出场（神宫偶遇★，若爱美线已解决则同行）
+  - 舞岛可怜（row_id=3）：中概率出场（神宫偶遇）
+  - 田中美沙（row_id=10）：中概率出场（神宫偶遇）
+  各女角好感 +2（参拜加成）。神宫氛围装饰，跨年雪营造特殊氛围。`,
+  '自定义': `晚/深夜时段如月神宫触发，跨年参拜事件。${_playerName}单独前往${_playerHome}所在区域的如月神宫（非鸣泽家同行）。多女角可能聚齐：
+  - 鸣泽唯（row_id=1）：中概率出场（神宫偶遇，非家庭关系）
+  - 鸣泽美佐子（row_id=2）：低概率出场（神宫偶遇，非亲属）
+  - 水野友美（row_id=8）：中概率出场（神宫偶遇，非邻家关系）
+  - 舞岛可怜（row_id=3）：中概率出场（神宫偶遇）
+  - 田中美沙（row_id=10）：中概率出场（神宫偶遇）
+  各女角好感 +2（参拜加成）。神宫氛围装饰，跨年雪营造特殊氛围。`
+};
+
+/* event_day10_new_year_eve_party：跨年聚会（身份感知）
+   P1 鸣泽家跨年；P2-P6 按身份住所跨年 */
+if (typeof _partyDesc === 'undefined') var _partyDesc = {
+  '原作主角': `鸣泽家跨年聚会。深夜时段鸣泽家自宅触发，跨年聚会。前置条件：event_day10_new_year_eve_shrine 已触发。${_playerName}与唯/美佐子在鸣泽家共度跨年，聚会中可触发多女角特殊对话（若友美/可怜/美沙同行），铺垫后续女角线推进。`,
+  '川尻信良': `${_playerHome}跨年聚会。深夜时段${_playerHome}自宅触发，跨年聚会（川尻家，非鸣泽家）。前置条件：event_day10_new_year_eve_shrine 已触发。${_playerName}在川尻家跨年，若洋子同行则可共度（洋子线推进）；若神宫偶遇的女角跟随回川尻家，可继续互动。唯/美佐子不出现在川尻家跨年场景（非家庭关系）。`,
+  '长冈芳树': `${_playerHome}跨年聚会。深夜时段${_playerHome}自宅触发，跨年聚会（长冈家，非鸣泽家）。前置条件：event_day10_new_year_eve_shrine 已触发。${_playerName}在长冈家独自跨年（或与神宫偶遇的女角共度，若有）。唯/美佐子不出现在长冈家跨年场景。`,
+  '西御寺有友': `${_playerHome}跨年聚会。深夜时段${_playerHome}自宅触发，跨年聚会（西御寺家豪宅，非鸣泽家）。前置条件：event_day10_new_year_eve_shrine 已触发。${_playerName}在西御寺家豪宅跨年（佣人伺候，财阀排场），若神宫偶遇的女角跟随回豪宅可继续互动。唯/美佐子不出现在西御寺家跨年场景（非家庭关系）。`,
+  '天道新干线': `${_playerHome}跨年聚会。深夜时段${_playerHome}自宅触发，跨年聚会（天道家，非鸣泽家）。前置条件：event_day10_new_year_eve_shrine 已触发。${_playerName}在天道家跨年，若爱美同行则可共度（爱美线收尾）；若神宫偶遇的女角跟随回天道家可继续互动。唯/美佐子不出现在天道家跨年场景（非家庭关系）。`,
+  '自定义': `${_playerHome}跨年聚会。深夜时段${_playerHome}自宅触发，跨年聚会（玩家住所，非鸣泽家）。前置条件：event_day10_new_year_eve_shrine 已触发。${_playerName}在${_playerHome}跨年，若神宫偶遇的女角跟随回玩家住所可继续互动。唯/美佐子不出现在玩家住所跨年场景（非家庭关系）。`
+};
+
+/* event_day10_diary_3_window：唯交付日记本（身份感知）
+   P1 鸣泽家客厅交付；P2-P6 偶遇时交付；P4 不触发（敌意线） */
+if (typeof _diary3WindowDesc === 'undefined') var _diary3WindowDesc = {
+  '原作主角': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段鸣泽家客厅触发（跨年聚会前后）。前置条件同 Day 8。叙事提示：本日仍可触发唯交付日记本事件，跨年夜鸣泽家客厅场景尤为契合。`,
+  '川尻信良': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/商业区/学园附近/神宫偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（非家庭场景，神宫偶遇时交付尤为契合）。`,
+  '长冈芳树': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/商业区/学园附近/神宫偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（非家庭场景）。`,
+  '西御寺有友': `第3本·唯交付窗口期★本身份不触发：${_playerName}（西御寺本人）与唯为敌意线，唯不会主动向西御寺交付日记本。日记3 需通过其他身份线获取。`,
+  '天道新干线': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/学园附近/神宫偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（师生关系场景，神宫偶遇时交付尤为契合）。`,
+  '自定义': `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/商业区/学园附近/神宫偶遇时触发。前置条件同 Day 8。叙事提示：本日仍可触发唯在偶遇时主动交付日记本事件（非家庭场景）。`
+};
+
+/* event_day10_diary_4_window：爱美谢礼窗口（身份感知）
+   P5 特殊处理：玩家即天道，爱美向天道本人交付 */
+if (typeof _diary4WindowDesc === 'undefined') var _diary4WindowDesc = {
+  '原作主角': `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9。叙事提示：本日仍可触发爱美交付日记本事件。`,
+  '川尻信良': `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9。叙事提示：本日仍可触发爱美向${_playerName}交付日记本事件。`,
+  '长冈芳树': `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9。叙事提示：本日仍可触发爱美向${_playerName}交付日记本事件。`,
+  '西御寺有友': `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9。叙事提示：本日仍可触发爱美向${_playerName}交付日记本事件。`,
+  '天道新干线': `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9★。叙事提示：本日仍可触发爱美向${_playerName}（天道本人★）交付日记本事件——跨年夜爱美对天道的信任体现，是 P5 身份线的关键收尾。`,
+  '自定义': `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9。叙事提示：本日仍可触发爱美向${_playerName}交付日记本事件。`
+};
+
+if (typeof _shrineFinal === 'undefined') var _shrineFinal = _shrineDesc[_playerIdentity] || _shrineDesc['自定义'];
+if (typeof _partyFinal === 'undefined') var _partyFinal = _partyDesc[_playerIdentity] || _partyDesc['自定义'];
+if (typeof _diary3Final === 'undefined') var _diary3Final = _diary3WindowDesc[_playerIdentity] || _diary3WindowDesc['自定义'];
+if (typeof _diary4Final === 'undefined') var _diary4Final = _diary4WindowDesc[_playerIdentity] || _diary4WindowDesc['自定义'];
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: '鸣泽唯（row_id=1）：鸣泽家自宅全时段 + 神宫晚/深夜（义妹，跨年同行★）',
+    misako: '鸣泽美佐子（row_id=2）：鸣泽家自宅全时段 + 神宫晚/深夜（义母，跨年同行★）',
+    tomomi: '水野友美（row_id=8）：水野家上午 + 神宫晚/深夜（邻家，跨年同行）',
+    karen: '舞岛可怜（row_id=3）：神宫晚/深夜（偶遇）',
+    misa: '田中美沙（row_id=10）：神宫晚/深夜（偶遇）'
+  },
+  '川尻信良': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边 + 神宫晚/深夜（非家庭关系，偶遇概率低于 P1）`,
+    misako: `鸣泽美佐子（row_id=2）：${_playerHome}周边极少 + 神宫晚/深夜（非亲属，偶遇概率低）`,
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边 + 神宫晚/深夜（非邻家关系，偶遇）`,
+    yoko: '南川洋子（row_id=6）：神宫晚/深夜 + 川尻家跨年（洋子线核心★，若推进充分则同行共度）',
+    karen: '舞岛可怜（row_id=3）：神宫晚/深夜（偶遇）',
+    misa: '田中美沙（row_id=10）：神宫晚/深夜（偶遇）'
+  },
+  '长冈芳树': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边 + 神宫晚/深夜（非家庭关系，偶遇概率低，唯可能回避）`,
+    misako: `鸣泽美佐子（row_id=2）：${_playerHome}周边极少 + 神宫晚/深夜（非亲属，偶遇概率低）`,
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边 + 神宫晚/深夜（敌意关系★，偶遇概率低）`,
+    karen: '舞岛可怜（row_id=3）：神宫晚/深夜（偶遇）',
+    misa: '田中美沙（row_id=10）：神宫晚/深夜（偶遇）'
+  },
+  '西御寺有友': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边极少 + 神宫晚/深夜（敌意★，偶遇概率极低，唯回避西御寺）`,
+    misako: `鸣泽美佐子（row_id=2）：${_playerHome}周边极少 + 神宫晚/深夜（非亲属，偶遇概率低）`,
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边 + 神宫晚/深夜（非邻家，偶遇概率低）`,
+    miki: '加藤美纪（row_id=4）：神宫晚/深夜（敌意→信任，偶遇概率低）',
+    misuzu: '片桐美铃（row_id=11）：神宫晚/深夜（师生关系紧张，偶遇概率低）',
+    karen: '舞岛可怜（row_id=3）：神宫晚/深夜（偶遇）',
+    misa: '田中美沙（row_id=10）：神宫晚/深夜（偶遇）'
+  },
+  '天道新干线': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边 + 神宫晚/深夜（师生关系，偶遇）`,
+    misako: `鸣泽美佐子（row_id=2）：${_playerHome}周边极少 + 神宫晚/深夜（非亲属，偶遇概率低）`,
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边 + 神宫晚/深夜（师生关系，偶遇）`,
+    aimi: '安田爱美（row_id=9）：神宫晚/深夜 + 天道家跨年（爱美线核心★，若已解决则同行共度）',
+    misuzu: '片桐美铃（row_id=11）：神宫晚/深夜（同事关系，偶遇）',
+    karen: '舞岛可怜（row_id=3）：神宫晚/深夜（偶遇）',
+    misa: '田中美沙（row_id=10）：神宫晚/深夜（偶遇）'
+  },
+  '自定义': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边 + 神宫晚/深夜（非家庭关系，偶遇概率低于 P1）`,
+    misako: `鸣泽美佐子（row_id=2）：${_playerHome}周边极少 + 神宫晚/深夜（非亲属，偶遇概率低）`,
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边 + 神宫晚/深夜（非邻家关系，偶遇）`,
+    karen: '舞岛可怜（row_id=3）：神宫晚/深夜（偶遇）',
+    misa: '田中美沙（row_id=10）：神宫晚/深夜（偶遇）'
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+%>
+
+[Day 10 调度器已加载：12-31 周日，主题：跨年事件（身份感知独立场景）。
+本日特殊事件：event_day10_new_year_eve_shrine / event_day10_new_year_eve_party / event_day10_diary_3_window / event_day10_diary_4_window。
+本日锁定女角：[13,14]（永岛母女未登场）。
+本日新解锁：无。
+本日天气默认：雪（跨年雪）。
+本日备注：神宫参拜；多女角可能聚齐；跨年雪；按身份独立跨年场景。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _profile ? _profile.identity_desc : '未选择' %>
+★ 特殊角色：<%= _profile ? _profile.special_role : '未选择' %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+★ 当日开场：<%= _openingScene %>
+
+【当日事件详情】
+- event_day10_new_year_eve_shrine：如月神宫跨年参拜。<%= _shrineFinal %>
+- event_day10_new_year_eve_party：<%= _partyFinal %>
+- event_day10_diary_3_window：<%= _diary3Final %>
+- event_day10_diary_4_window：<%= _diary4Final %>
+
+【当日女角出现特殊规则】
+本日为跨年事件日，多女角聚齐关键节点。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% if (_heroineRule.karen) { %>- <%= _heroineRule.karen %><% } %>
+<% if (_heroineRule.misa) { %>- <%= _heroineRule.misa %><% } %>
+<% } %>
+- 野野村美里（row_id=12）：商业区上午/下午
+永岛母女（row_id=13,14）锁定，AI 不可让其出现。
+关键提示：跨年聚会是多女角好感同时推进的关键机会，建议把握。P1 鸣泽家同行；P2 可与洋子共度；P5 可与爱美共度；P3/P4/P6 按住所独立跨年。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼/鸣泽家跨年聚会/鸣泽家同行神宫参拜"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同（P2 洋子 / P3 友美美纪 / P4 唯美纪美铃 / P5 爱美美铃），AI 应聚焦身份对应的女角线推进。
+5. 跨年场景按身份住所切换：P1 鸣泽家 / P2 川尻家（可与洋子共度） / P3 长冈家 / P4 西御寺家豪宅 / P5 天道家（可与爱美共度） / P6 自定义住所。禁止 P2-P6 描写"鸣泽家跨年聚会"。
+6. 神宫参拜：P1 鸣泽家同行（唯/美佐子必出场）；P2-P6 单独前往（唯/美佐子仅偶遇，概率低于 P1）。P4 敌意线唯回避西御寺；P5 爱美高概率同行。]

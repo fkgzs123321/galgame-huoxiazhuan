@@ -1,0 +1,13 @@
+# 正则条目: 8状态栏对AI隐藏
+# id: yumq-regex-060-hide-statbar
+# disabled: false
+# placement: [2]
+# markdownOnly: false
+# promptOnly: true
+# runOnEdit: true
+# substituteRegex: 0
+
+=== findRegex ===
+<StatusPlaceHolderImpl/>
+
+=== replaceString ===

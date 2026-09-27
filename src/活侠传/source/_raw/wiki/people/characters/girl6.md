@@ -1,0 +1,308 @@
+﻿---
+title: 郁竹
+tags:
+    - 人物
+    - 可攻略女角
+    - 崆峒派
+    - 鐵拳門
+aside: false
+---
+
+# {{ $frontmatter.title }}
+
+::: info
+這個角色的劇情尚未完成，無法正常攻略！預計於2026/10/15的「崆峒神威」版本實裝。
+:::
+
+<ChTabs position="bottom">
+	<ChTab title="初識">
+		<ChMeet 
+			src='/images/characters/girl_6/normal.webp' 
+			nameTitle='裂骨魔'
+			nameMain='郁竹'
+			desc='崆峒派．鐵拳門當代的嫡傳女弟子。<br>身材嬌小，眼神兇惡的綠衣少女。<br>因為鍛冶手藝高明，頗負盛名，傳聞她力大無窮，能徒手掐碎旁人手骨，故而江湖人稱「裂骨魔」。'
+			:animation=true
+		/>
+	</ChTab>
+	<ChTab title="打扮後">
+		<ChMeet 
+			src='/images/characters/girl_6/special2.webp' 
+			nameTitle='裂骨魔'
+			nameMain='郁竹'
+			desc='如今等閒難見，郁竹穿得像個姑娘家的樣子。<br>這是珍而重之地收藏在箱底，唯一一件沒有褪色的鮮豔衣裳。<br>即令是逢年過節也不捨得穿，之所以戴著手套，是由於兩手盡是老繭傷疤，不願讓人看見的緣故。'
+			:animation=true
+		/>
+	</ChTab>
+	<ChTab title="瞇眼">
+		<Ch 
+			src='/images/characters/girl_6/angry1.webp' 
+			position='center'/>
+		<ChName
+			nameZh='瞇眼'
+			nameEn='Squint'/>
+	</ChTab>
+	<ChTab title="生氣">
+		<Ch 
+			src='/images/characters/girl_6/angry2.webp' 
+			position='center'/>
+		<ChName
+			nameZh='生氣'
+			nameEn='Angry'/>
+	</ChTab>
+	<ChTab title="微笑">
+		<Ch 
+			src='/images/characters/girl_6/laugh1.webp' 
+			position='center'/>
+		<ChName
+			nameZh='微笑'
+			nameEn='Smile'/>
+	</ChTab>
+	<ChTab title="大笑">
+		<Ch 
+			src='/images/characters/girl_6/laugh2.webp' 
+			position='center'/>
+		<ChName
+			nameZh='大笑'
+			nameEn='Laugh'/>
+	</ChTab>
+	<ChTab title="尷尬">
+		<Ch 
+			src='/images/characters/girl_6/nervous3.webp' 
+			position='center'/>
+		<ChName
+			nameZh='尷尬'
+			nameEn='Embarrassed'/>
+	</ChTab>
+	<ChTab title="驚嚇">
+		<Ch 
+			src='/images/characters/girl_6/nervous2.webp' 
+			position='center'/>
+		<ChName
+			nameZh='驚嚇'
+			nameEn='Frightened'/>
+	</ChTab>
+	<ChTab title="哭泣">
+		<Ch 
+			src='/images/characters/girl_6/sad.webp' 
+			position='center'/>
+		<ChName
+			nameZh='哭泣'
+			nameEn='Cry'/>
+	</ChTab>
+	<ChTab title="得意">
+		<Ch 
+			src='/images/characters/girl_6/shy.webp' 
+			position='center'/>
+		<ChName
+			nameZh='得意'
+			nameEn='Proud'/>
+	</ChTab>
+	<ChTab title="害羞">
+		<Ch 
+			src='/images/characters/girl_6/shy2.webp' 
+			position='center'/>
+		<ChName
+			nameZh='害羞'
+			nameEn='Shy'/>
+	</ChTab>
+	<ChTab title="靉靆">
+		<Ch 
+			src='/images/characters/girl_6/glasses.webp' 
+			position='center'/>
+		<ChName
+			nameZh='靉靆'
+			nameEn='Glasses'/>
+	</ChTab>
+</ChTabs>
+
+<br>
+
+<InfoList>
+	<Info title='角色資料' :open=true>
+		<table>
+			<ChTr>
+				<ChTd isTitle=true>
+					性別
+				</ChTd>
+				<ChTd>
+					女
+				</ChTd>
+			</ChTr>
+			<ChTr>
+                <ChTd isTitle=true>
+                    生日
+                </ChTd>
+                <ChTd>
+                    7/10
+                </ChTd>
+            </ChTr>
+			<ChTr>
+				<ChTd isTitle=true>
+					稱號
+				</ChTd>
+				<ChTd>
+					裂骨魔
+				</ChTd>
+			</ChTr>
+			<ChTr>
+				<ChTd isTitle=true position='center'>
+					關係
+				</ChTd>
+			</ChTr>
+			<ChTr>
+				<ChTd position='center'>
+					[[雷謙]] (掌門)
+				</ChTd>
+			</ChTr>
+			<ChTr>
+				<ChTd position='center'>
+					[[虞小梅]] (崆峒四姝)
+				</ChTd>
+			</ChTr>
+			<ChTr>
+				<ChTd position='center'>
+					[[夏侯蘭]] (崆峒四姝)
+				</ChTd>
+			</ChTr>
+			<ChTr>
+				<ChTd position='center'>
+					[[魏菊]] (崆峒四姝)
+				</ChTd>
+			</ChTr>
+		</table>
+	</Info>
+</InfoList>
+
+<br>
+
+[[崆峒派]]．鐵拳門當代掌門的嫡傳女弟子。
+
+<br>
+
+身材嬌小卻力大無窮的少女，江湖人稱裂骨魔。
+
+<br>
+
+專司冶煉鐵器，於機關巧術亦自小浸淫，每有靈感便廢寢忘食，對[[唐門]]與[[火炎山劍閣]]抱持對抗心。
+
+<br>
+
+眼神很糟糕是由於睡眠不足，外加眼疾(近視)的緣故。
+
+<div style="clear:both;"></div>
+
+## 列傳
+
+<Tabs>
+  <Tab title="列傳一">
+	由於眼力不好，經常瞇著眼睛瞧人，<br>
+	產生了無論對誰都目露凶光的惡劣印象，其實是位性情純良的姑娘。<br><br>
+	身為鐵拳門當代嫡傳女弟子，有權角逐將來掌派夫人之位的人選，<br>
+	按理應該備受尊崇，但實際上誰也不將這臭臉矮冬瓜當作一回事，<br>
+	鐵拳門似乎也已經放棄掙扎了，由著她窩居在大鐵鋪中敲敲打打，渾不似個大家閨秀。<br><br>
+	手頭愛用的鐵槌雖是凡物，但一雙貌不驚人的手套卻是價值連城的寶物，<br>
+	乃由天山「烏蠶絲」織就，水火不侵，刀槍不入。
+  </Tab>
+  <Tab title="列傳二">
+	因為生父濫賭而被賣到崆峒，身價五貫錢，<br>
+	那還是看她天生美人胚子、又是完璧之身的份上，才有這價。<br>
+	還道前途可期，怎料不知何時起，這丫頭就長不高了，令鐵拳門人大失所望。<br><br>
+	小竹本人對掌派夫人之位不抱期望，<br>
+	但旁人輕蔑眼光怎麼也無法習以為常，內心越是自卑，就越是逞強。<br><br>
+	內心深處羨煞了尋常人家的小娘子，<br>
+	能以蒲柳之姿，纖纖弱質，惹人見憐。<br>
+	可惜天不從人願，這姑娘看似嬌小玲瓏的身軀之中，<br>
+	蘊藏著無窮怪力，沒半分福態，體重卻是異於常人。<br><br>
+	唯一尚足慶幸的，便是買她作徒弟的老掌門，臨終之際將大鐵鋪留給了她，<br>
+	從此小竹一手包辦山中木工鐵器，有時鑄造農具，有時鍛打兵器，<br>
+	閒來無事，也自己琢磨機關巧術，<br>
+	每有靈感，便廢寢忘食，作不成掌派夫人也怡然自得。<br><br>
+	夢想是成為像魯班、歐冶子那樣的不世名匠。
+  </Tab>
+  <Tab title="列傳三">
+	力大無窮，是因幼時受小梅所蒙騙，吞服了靈藥「鐵鱗黑蟒血」的緣故。<br>
+	此後高燒一場，眼力大不如前，兼而體質豹變，不再長高長大，<br>
+	取而代之的是即使不練武功，力氣、體重也會與日俱增，<br>
+	再這樣下去，遲早變得力拔山兮氣蓋世，亦未可知。<br><br>
+	小竹嘴上雖然滿不在乎，其實對素未謀面的未來掌派人，抱持著一絲淡淡的期待。<br>
+	希望他會是好人；希望他會比任何人都重視自己；<br>
+	希望他武功蓋世，相形之下，自己會顯得可憐楚楚。<br><br>
+	抱著不切實際的想像，這位懷春少女日復一日磨練技藝，<br>
+	想為她將來夫君獻上綿薄之力。<br><br>
+	衣箱底下，珍而重之收藏著一件鮮豔衣裳，逢年過節也捨不得穿，<br>
+	之所以帶著手套，是由於兩手盡是老繭傷疤，不願讓人看見的緣故。
+  </Tab>
+  <Tab title="列傳四">
+	她朦朦朧朧的憧憬逐漸有了鮮明的模樣，看起來像你。<br>
+	就算眼力不好，唯獨你絕不會錯認。<br>
+	她記得你的輪廓，記得你的聲音，記得你走路的步伐，<br>
+	記得你身上淡淡藥香混雜著金鐵之氣的味道。<br><br>
+	你在她眼中，與任何人所見的相貌都不一樣，<br>
+	人生難得知己，志同道合，何其有幸？她眼力不好，恰能穿透軀殼而已。<br>
+	小竹的心意沒有細究，只是順其自然，你能見其本心，她也認得真實的你。<br><br>
+	含羞為君妝容，那身鮮豔的翠綠衣衫，除你之外，再無旁人得見。<br>
+	此外比起鐵匠、比起鑄劍，其實更喜歡製作玩具，<br>
+	已經是個適婚的姑娘了，對磨喝樂一類精緻人偶依然愛不釋手，<br>
+	只是怕玩壞，所以不敢擁有。
+  </Tab>
+</Tabs>
+
+## 裂骨魔
+
+-   看好了，這是一枚銅錢。(捏)
+-   曾把崆峒四秀的[[孟瞋]]的拳骨捏爛。
+-   會捏飯糰，但握力太強導致飯糰形成膏狀，吃起來口感挺玄幻的。~~不知為何二創歪成腋飯糰~~
+    -   小竹流秘傳包粽法：[連結](https://www.facebook.com/photo/?fbid=278679134685469&set=a.165167019370015)
+-   孩提時代曾送給前掌門按摩券作壽禮，而後傳給[[雷謙]]，兩人都不敢用。當[[趙活]]贏下季試時便送給他了。
+-   可能會因為善意不小心把[[趙活]]的肋骨弄斷。[^7]
+-   小竹害羞之下的全力反手巴掌萬一打實了，武林中沒有一個不死的。[^9]
+-   列傳三寫小竹吞了靈藥「鐵鱗黑蟒血」，但[[第三香]]贈送「龍象豹力子丹」時，[[夏侯蘭]]稱小竹當年是吞了「龍象豹力母丹」而有怪力，為何名稱不同，原因不明。
+-   [[夏侯蘭]]說她那神力，一半來自天生，一半得益於鐵拳門秘藥。即使是夏侯蘭武功也不敢硬抗，若不化勁被打實了，絕對會死。
+
+## 技藝
+
+-   技藝高超，打的寶劍連[[點蒼派]]都想求。[^1]
+-   造的最厲害的武器是虎戰車、火箭飛拳。未開放的內容中有更狠的武器。[^3]
+-   打造出壯士飛腕，經[[唐惟元|四師兄]]收購後賣給[[葉雲裳]]，後被雲裳用以惡作劇。
+-   小竹的段冶技能是頂尖的，[[趙活]]有巧思，但功底還遠遠比不上。[^10]
+-   愚人節DLC百萬趙活也是小竹開發的。[^8]
+
+## 用品
+
+-   因為崆峒小偷很多，小竹會在所有物上簽名。
+-   對槌子有講究，握柄必須特製，能承受她的握力。[^4]
+-   打扮後所戴著的黑手套是烏蠶絲所織，刀槍不入。戴手套是因為不想被看到傷疤。[^7]
+
+
+## 體型
+
+-   鳥熊強調又短又重。[^5]
+-   小竹只是長不高，但是營養滿好的，該長大的地方有長大。[^10]
+
+## 備註
+
+塗黑防劇透的部分是解包情報，v3206 版本無法正常玩到。
+
+-   鳥熊 FB 的介紹：[連結 1](https://www.facebook.com/photo.php?fbid=170987152121335&id=100076301525150&set=a.165167019370015)、[連結 2](https://www.facebook.com/photo.php?fbid=170987148788002&id=100076301525150&set=a.165167019370015)
+-   [[瑞杏]]為她慶生的影片：[【杏花仙絕無僅有的心血來潮】](https://www.youtube.com/watch?v=ZELq9yk-Z5U)
+-   是要下莫大決心，才會打扮起來的類型。[^7]
+-   就算生氣也不會揍人，不高興的時候會打鐵宣洩情緒。[^7]
+-   對於自己力氣太大感覺到自卑，雖然有過抱持少女憧憬的時期，不過事到如今也已經放棄掙扎了。[^7]
+-   因為生父濫賭而被賣到崆峒，非常討厭賭博，見[[趙活]]嗜賭會生氣。
+-   因為[[雷謙|雷掌門]]愛說鬼故事的關係，她很怕鬼。
+-   和[[虞小梅|小梅]]曾是好友，但因為當年被騙吃靈藥的關係，小竹仍在氣她。
+-   溫柔全肯定廢人養成機。[^2]
+-   根據<EndIcon no="11">結局 11</EndIcon>的對話，若無結緣，最後會收養一個孤兒，與[[虞小梅|小梅]]和好。
+-   <MarkdownWrapper>||坐船怕沉，跑去買了羊畏、皮革做成浮環，抱著不肯鬆開。過陣子不怕了，船頭船尾跑來跑去，興奮得不能自已。||</MarkdownWrapper>
+-   <MarkdownWrapper>||因結局兒女成群，一拳殺了老虎做虎鞭酒還不夠，在玩家間「竹球隊」一詞不脛而走。||</MarkdownWrapper>
+
+[^1]: 巴哈姆特－[【情報】關於龍湘屁股大小的答案+私聊鳥熊的對話訊息](https://forum.gamer.com.tw/C.php?bsn=73317&snA=2973&tnum=8)
+[^2]: [[問答集2024年10月#_2024-10-15|問答集2024-10-15]]，Part2。
+[^3]: 巴哈姆特 - [RE:【情報】鳥熊問答集](https://forum.gamer.com.tw/Co.php?bsn=73317&sn=12029)
+[^4]: Facebook－[原始鳥熊2023/6/22](https://www.facebook.com/obbstudio/posts/pfbid0z6pcw86rgZmFoA4oMnu9556bQ93fieMNrpSoXudrAC1k6HUWCGcNiS6H5NTiqWXXl)
+[^5]: Facebook－[原始鳥熊2024/2/5](https://www.facebook.com/obbstudio/posts/pfbid0345ukMDW1MtXHXFDAegFGKnPSZ6Ypq2gcoLq2TgEeskhyHQzGeEuywWRtu4nC5mpTl)
+[^6]: Facebook－[原始鳥熊2025/7/10](https://www.facebook.com/100076301525150/posts/pfbid02BbuAbiZiW8DFWeu9B7Sj6rRLgicFv9NjRodLxZ3TpF4pzmCYHqPhfmLpJHmS5kZol/)
+[^7]: Facebook－[原始鳥熊2022/8/19](https://www.facebook.com/obbstudio/posts/pfbid0246FXbC5B8Lw3bntZRDzFJbzVoFsugNQZDZct2UUuFzDCsC1E3j7qLDhFW891o2B1l)
+[^8]: Facebook－[原始鳥熊2023/4/1](https://www.facebook.com/obbstudio/posts/pfbid02Z6JwLbPrKD94Eic5z3FXr7HU4NXprWWxdhHhbW5ZtLeY3T4eRLabNmjRx763QPuyl)
+[^9]: Facebook－[原始鳥熊2023/11/3](https://www.facebook.com/obbstudio/posts/pfbid03362ZA6a9oemB9XKGuTnN7C1JNYAGvwkbEXmF367BzRZ1QbjivdKYeU7oe9NZDSMul)
+[^10]: dcinside.com(https://gall.dcinside.com/mgallery/board/view/?id=legendofmortal&no=91615&search_head=20&page=5)

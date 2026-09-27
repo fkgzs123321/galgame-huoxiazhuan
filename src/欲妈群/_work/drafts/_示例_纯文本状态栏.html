@@ -1,0 +1,97 @@
+```
+<style>
+.ymq{font-size:13px;line-height:1.6;color:#2b2b2b;background:#faf7f4;border:1px solid #e6ddd4;border-radius:8px;padding:10px 12px;font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+.ymq b{color:#8c3b3b}
+.ymq .hd{margin:8px 0 4px;padding:3px 8px;background:#f2e9e2;border-left:3px solid #b0756a;border-radius:3px;font-weight:600}
+.ymq .r{display:flex;flex-wrap:wrap;gap:10px}
+.ymq .r>span{background:#fff;border:1px solid #eee5dd;border-radius:5px;padding:1px 7px}
+.ymq .k{color:#9a8b80;margin-right:4px}
+</style>
+<body>
+<div class="ymq">
+
+  <div class="hd">欲妈群 · 时间</div>
+  <div class="r">
+    <span><i class="k">Day</i><b>{{format_message_variable::stat_data.元数据.日数}}</b></span>
+    <span><i class="k">时段</i>{{format_message_variable::stat_data.元数据.时段}}</span>
+    <span><i class="k">时</i>{{format_message_variable::stat_data.元数据.小时}}</span>
+    <span><i class="k">回合</i>{{format_message_variable::stat_data.元数据.回合}}</span>
+    <span><i class="k">难度</i>{{format_message_variable::stat_data.元数据.难度}}</span>
+    <span><i class="k">高考日</i>{{format_message_variable::stat_data.元数据.高考日}}</span>
+  </div>
+
+  <div class="hd">他</div>
+  <div class="r">
+    <span><i class="k">成绩</i><b>{{format_message_variable::stat_data.玩家.学业.成绩}}</b></span>
+    <span><i class="k">理智</i>{{format_message_variable::stat_data.玩家.心理.理智}}</span>
+    <span><i class="k">欲望</i>{{format_message_variable::stat_data.玩家.心理.欲望}}</span>
+    <span><i class="k">兴奋</i>{{format_message_variable::stat_data.玩家.心理.兴奋}}</span>
+    <span><i class="k">怀疑</i>{{format_message_variable::stat_data.玩家.心理.怀疑}}</span>
+    <span><i class="k">警觉度</i><b>{{format_message_variable::stat_data.玩家.警觉度}}</b></span>
+    <span><i class="k">体力</i>{{format_message_variable::stat_data.玩家.身体.体力}}</span>
+  </div>
+  <div class="r">
+    <span><i class="k">察觉·假阳具真相</i>{{format_message_variable::stat_data.玩家.察觉值.假阳具真相}}</span>
+    <span><i class="k">群存在</i>{{format_message_variable::stat_data.玩家.察觉值.群存在}}</span>
+    <span><i class="k">母亲欲望</i>{{format_message_variable::stat_data.玩家.察觉值.母亲欲望}}</span>
+    <span><i class="k">幻触</i>{{format_message_variable::stat_data.玩家.察觉值.幻触}}</span>
+  </div>
+
+  <div class="hd">郝佳期</div>
+  <div class="r">
+    <span><i class="k">阶段</i><b>{{format_message_variable::stat_data.郝佳期.阶段}}</b>/5</span>
+    <span><i class="k">进度</i>{{format_message_variable::stat_data.郝佳期.阶段进度}}</span>
+    <span><i class="k">Lv.</i>{{format_message_variable::stat_data.郝佳期.群等级}}</span>
+    <span><i class="k">积分</i>{{format_message_variable::stat_data.郝佳期.积分}}</span>
+    <span><i class="k">阶段起始日</i>{{format_message_variable::stat_data.郝佳期.阶段起始日}}</span>
+  </div>
+  <div class="r">
+    <span><i class="k">兴奋</i>{{format_message_variable::stat_data.郝佳期.心理.兴奋}}</span>
+    <span><i class="k">润滑</i>{{format_message_variable::stat_data.郝佳期.心理.润滑}}</span>
+    <span><i class="k">理智</i>{{format_message_variable::stat_data.郝佳期.心理.理智}}</span>
+    <span><i class="k">痴迷</i>{{format_message_variable::stat_data.郝佳期.心理.痴迷}}</span>
+    <span><i class="k">罪恶感</i>{{format_message_variable::stat_data.郝佳期.心理.罪恶感}}</span>
+    <span><i class="k">勇气</i>{{format_message_variable::stat_data.郝佳期.心理.勇气}}</span>
+    <span><i class="k">暴露恐惧</i>{{format_message_variable::stat_data.郝佳期.心理.暴露恐惧}}</span>
+    <span><i class="k">叛逆恐惧</i>{{format_message_variable::stat_data.郝佳期.关系.叛逆恐惧}}</span>
+  </div>
+  <div class="r">
+    <span><i class="k">后门进度</i>{{format_message_variable::stat_data.郝佳期.后门进度}}</span>
+    <span><i class="k">她此刻想法</i>{{format_message_variable::stat_data.郝佳期.心理.此刻想法}}</span>
+  </div>
+
+  <div class="hd">假阳具</div>
+  <div class="r">
+    <span><i class="k">持有者</i>{{format_message_variable::stat_data.假阳具.当前持有者}}</span>
+    <span><i class="k">起止</i>{{format_message_variable::stat_data.假阳具.持有起始日}}-{{format_message_variable::stat_data.假阳具.持有到期日}}</span>
+    <span><i class="k">强度</i>{{format_message_variable::stat_data.假阳具.共感强度}}</span>
+    <span><i class="k">今日</i>{{format_message_variable::stat_data.假阳具.今日使用}} 次</span>
+    <span><i class="k">借用</i>{{format_message_variable::stat_data.假阳具.借用者}}</span>
+  </div>
+
+  <div class="hd">群</div>
+  <div class="r">
+    <span><i class="k">今日主题</i>{{format_message_variable::stat_data.群.今日主题}}</span>
+    <span><i class="k">活跃度</i>{{format_message_variable::stat_data.群.活跃度}}</span>
+    <span><i class="k">暴露风险</i><b>{{format_message_variable::stat_data.群.暴露风险}}</b></span>
+    <span><i class="k">周冠军</i>{{format_message_variable::stat_data.群.周冠军UID}}</span>
+  </div>
+
+  <div class="hd">本轮判定（点脚本按钮跑，AI 只演）</div>
+  <div class="r">
+    <span><i class="k">行为</i>{{format_message_variable::stat_data.玩家._本轮判定.行为}}</span>
+    <span><i class="k">综合</i><b>{{format_message_variable::stat_data.玩家._本轮判定.综合}}</b></span>
+    <span><i class="k">警觉</i>{{format_message_variable::stat_data.玩家._本轮判定.警觉}}</span>
+    <span><i class="k">说明</i>{{format_message_variable::stat_data.玩家._本轮判定.说明}}</span>
+  </div>
+
+  <div class="hd">结局</div>
+  <div class="r">
+    <span><i class="k">已触发</i>{{format_message_variable::stat_data.阶段守卫.结局已触发}}</span>
+    <span><i class="k">类型</i>{{format_message_variable::stat_data.阶段守卫.结局类型}}</span>
+    <span><i class="k">锁定</i>{{format_message_variable::stat_data.阶段守卫.已锁定}}</span>
+  </div>
+
+</div>
+</body>
+```

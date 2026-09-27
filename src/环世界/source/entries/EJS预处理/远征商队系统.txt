@@ -1,0 +1,350 @@
+@@generate_before
+<%_
+/* 远征商队系统控制器
+   定义远征商队组建/旅行时间/遇袭判定/驮兽载重/口粮消耗/远程贸易/疲劳累积,
+   行为校验入口。与派系贸易系统(地面)、轨道贸易系统(太空)并列。 */
+
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+var p1Social = Number(getvar('stat_data.殖民者_主角.社交', { scope: 'local', defaults: 5 })) || 5;
+var p1Satiety = Number(getvar('stat_data.殖民者_主角.饱腹', { scope: 'local', defaults: 80 })) || 80;
+var p1Fatigue = Number(getvar('stat_data.殖民者_主角.疲劳', { scope: 'local', defaults: 20 })) || 20;
+var p1Pos = getvar('stat_data.殖民者_主角.位置', { scope: 'local', defaults: '营地中心' }) || '营地中心';
+var lastTradeDay = Number(getvar('stat_data.事件计时器.上次贸易日', { scope: 'local', defaults: 0 })) || 0;
+var a1Type = getvar('stat_data.动物_1.类型', { scope: 'local', defaults: '' }) || '';
+var a1Tame = Number(getvar('stat_data.动物_1.驯服度', { scope: 'local', defaults: 100 })) || 100;
+var a2Type = getvar('stat_data.动物_2.类型', { scope: 'local', defaults: '' }) || '';
+var a2Tame = Number(getvar('stat_data.动物_2.驯服度', { scope: 'local', defaults: 100 })) || 100;
+
+/* 商队类型表 CARAVAN_DB
+   字段: maxPeople(最大人数), speed(基础速度km/h), load(基础载重kg), food(口粮消耗N/h) */
+var CARAVAN_DB = {
+  '侦察队': { maxPeople: 3, speed: 5, load: 20, food: 0.3 },
+  '贸易队': { maxPeople: 5, speed: 4, load: 100, food: 0.5 },
+  '远征队': { maxPeople: 8, speed: 3.5, load: 200, food: 0.8 },
+  '大型商队': { maxPeople: 12, speed: 3, load: 500, food: 1.2 }
+};
+
+/* 地形速度修正表 TERRAIN_SPEED_DB
+   殖民地biome决定商队在该地形的速度修正系数 */
+var TERRAIN_SPEED_DB = {
+  '温带森林': 1.0, '沙漠': 0.9, '冻原': 0.7, '热带雨林': 0.8,
+  '极地': 0.6, '灌木丛': 1.1, '干草原': 1.0, '海洋': 0.3
+};
+
+/* 驮兽表 PACK_ANIMAL_DB
+   字段: load(载重kg/只), speedMod(速度修正km/h,按类型计一次), food(口粮N/h/只), tameReq(驯服要求) */
+var PACK_ANIMAL_DB = {
+  '马': { load: 80, speedMod: 0.5, food: 0.5, tameReq: 5 },
+  '驼羊': { load: 40, speedMod: 0.3, food: 0.3, tameReq: 3 },
+  '大象': { load: 200, speedMod: -0.5, food: 2, tameReq: 8 },
+  '狗': { load: 20, speedMod: 0.8, food: 0.4, tameReq: 4 }
+};
+
+var onExpedition = (p1Pos !== '营地中心');
+var terrainMod = TERRAIN_SPEED_DB[biome] || 1.0;
+var daysSinceTrade = gameDay - lastTradeDay;
+
+/* 旅行时间计算
+   distance(km), terrain(地形名), speed(基础速度km/h), load(当前载重kg), maxLoad(最大载重kg)
+   公式: distance / (speed × terrainMod × (1 - load/maxLoad × 0.3))
+   负重越接近上限速度越慢(最多减速30%) */
+function _travelTime(distance, terrain, speed, load, maxLoad) {
+  var dist = Number(distance) || 0;
+  var spd = Number(speed) || 1;
+  var tMod = TERRAIN_SPEED_DB[String(terrain)] || 1.0;
+  var ld = Math.max(0, Number(load) || 0);
+  var ml = Math.max(1, Number(maxLoad) || 1);
+  var loadRatio = Math.min(1, ld / ml);
+  var speedFactor = 1 - loadRatio * 0.3;
+  var effectiveSpeed = spd * tMod * speedFactor;
+  var time = effectiveSpeed > 0 ? dist / effectiveSpeed : 9999;
+  return Math.round(time * 100) / 100;
+}
+
+/* 商队有效速度(基础速度 + 驮兽速度加成,按动物类型计一次)
+   caravanType(商队类型), animals=[{type,count}]
+   返回: { base, animalBonus, effective } */
+function _caravanSpeed(caravanType, animals) {
+  var cfg = CARAVAN_DB[String(caravanType)] || CARAVAN_DB['贸易队'];
+  var base = Number(cfg.speed) || 4;
+  var seenTypes = {};
+  var bonus = 0;
+  if (animals) {
+    for (var i = 0; i < animals.length; i++) {
+      var t = String(animals[i].type);
+      var info = PACK_ANIMAL_DB[t];
+      if (info && !seenTypes[t]) {
+        bonus += info.speedMod;
+        seenTypes[t] = true;
+      }
+    }
+  }
+  return { base: base, animalBonus: bonus, effective: Math.round((base + bonus) * 100) / 100 };
+}
+
+/* 商队遇袭判定
+   seed(骰子种子), distance(km), factionRelation(派系关系值)
+   距离>10km时5%基础概率,派系敌对(关系<-10)+20% */
+function _caravanEncounter(seed, distance, factionRelation) {
+  var dist = Number(distance) || 0;
+  var rel = Number(factionRelation) || 0;
+  var baseProb = dist > 10 ? 5 : 0;
+  var hostile = rel < -10;
+  var totalProb = baseProb + (hostile ? 20 : 0);
+  totalProb = Math.max(0, Math.min(95, totalProb));
+  var check = _check(totalProb, String(seed), '困难');
+  return {
+    遇袭: (totalProb > 0 && check.result !== '失败' && check.result !== '大失败'),
+    概率: totalProb,
+    骰值: check.roll,
+    阈值: check.threshold,
+    派系敌对: hostile,
+    结果: check.result
+  };
+}
+
+/* 驮兽总载重计算
+   animals=[{type, count}, ...]
+   返回: 总载重kg */
+function _packAnimalLoad(animals) {
+  var total = 0;
+  if (!animals) { return 0; }
+  for (var i = 0; i < animals.length; i++) {
+    var a = animals[i];
+    var info = PACK_ANIMAL_DB[String(a.type)];
+    if (info) {
+      var count = Number(a.count) || 1;
+      total += info.load * count;
+    }
+  }
+  return total;
+}
+
+/* 口粮消耗计算
+   colonists(殖民者数), animals=[{type,count}], duration(h)
+   公式: colonists×0.5N/h + 各驮兽×各自消耗 */
+function _provisionConsumption(colonists, animals, duration) {
+  var col = Number(colonists) || 0;
+  var dur = Number(duration) || 0;
+  var total = col * 0.5 * dur;
+  if (animals) {
+    for (var i = 0; i < animals.length; i++) {
+      var info = PACK_ANIMAL_DB[String(animals[i].type)];
+      if (info) {
+        var count = Number(animals[i].count) || 1;
+        total += info.food * count * dur;
+      }
+    }
+  }
+  return Math.round(total * 100) / 100;
+}
+
+/* 组建商队
+   members(殖民者数或数组), animals=[{type,count,tame}], supplies={type,silver,food,distance,relation}
+   验证人数/载重/口粮/驯服度是否足够
+   返回: 组建结果(含有效速度/载重/旅行时间/口粮需求/问题列表) */
+function _caravanForm(members, animals, supplies) {
+  var sp = supplies || {};
+  var caravanType = sp.type || '贸易队';
+  var config = CARAVAN_DB[caravanType] || CARAVAN_DB['贸易队'];
+  var people = Array.isArray(members) ? members.length : (Number(members) || 0);
+  var packLoad = _packAnimalLoad(animals);
+  var totalCapacity = config.load + packLoad;
+  var cargoWeight = (Number(sp.food) || 0) * 0.5;
+  var distance = Number(sp.distance) || 0;
+  var spd = _caravanSpeed(caravanType, animals);
+  var travelTime = _travelTime(distance, biome, spd.effective, cargoWeight, totalCapacity);
+  var roundTrip = travelTime * 2;
+  var foodNeeded = _provisionConsumption(people, animals, roundTrip);
+  var issues = [];
+  if (people > config.maxPeople) { issues.push('超员(' + people + '>' + config.maxPeople + ')'); }
+  if (cargoWeight > totalCapacity) { issues.push('超载(' + cargoWeight.toFixed(1) + '>' + totalCapacity + ')'); }
+  if ((Number(sp.food) || 0) < foodNeeded) { issues.push('口粮不足(' + sp.food + '<' + foodNeeded + 'N)'); }
+  if (animals) {
+    for (var i = 0; i < animals.length; i++) {
+      var info = PACK_ANIMAL_DB[String(animals[i].type)];
+      if (info) {
+        var tame = Number(animals[i].tame) || 0;
+        if (tame < info.tameReq) { issues.push(animals[i].type + '驯服不足(' + tame + '<' + info.tameReq + ')'); }
+      }
+    }
+  }
+  return {
+    有效: issues.length === 0,
+    类型: caravanType,
+    人数: people,
+    最大人数: config.maxPeople,
+    基础速度: spd.base,
+    驮兽加成: spd.animalBonus,
+    有效速度: spd.effective,
+    载重容量: totalCapacity,
+    商队载重: config.load,
+    驮兽载重: packLoad,
+    货物重量: Math.round(cargoWeight * 100) / 100,
+    旅行时间: travelTime,
+    往返时间: roundTrip,
+    需要口粮: foodNeeded,
+    携带口粮: Number(sp.food) || 0,
+    贸易修正: _caravanTrade(p1Social, Number(sp.relation) || 0, gameDay),
+    问题: issues
+  };
+}
+
+/* 远程贸易成功率
+   skill(社交), factionRelation(派系关系), goods(商品标识用于种子)
+   公式: 社交×3 + 关系修正(关系值÷10取整)×5 + 50
+   返回: 成功率与加成明细 */
+function _caravanTrade(skill, factionRelation, goods) {
+  var skl = Number(skill) || 0;
+  var rel = Number(factionRelation) || 0;
+  var relMod = Math.floor(rel / 10);
+  var bonus = skl * 3 + relMod * 5;
+  var successRate = 50 + bonus;
+  successRate = Math.max(5, Math.min(95, successRate));
+  var check = _check(successRate, 'caravan_trade_' + String(goods), '普通');
+  return {
+    成功率: successRate,
+    加成: bonus,
+    社交贡献: skl * 3,
+    关系贡献: relMod * 5,
+    关系修正: relMod,
+    骰值: check.roll,
+    阈值: check.threshold,
+    结果: check.result,
+    成功: (check.result !== '失败' && check.result !== '大失败')
+  };
+}
+
+/* 疲劳累积
+   members(人数), duration(h), overload(是否超载)
+   每小时疲劳+2,负重超载额外+1/h */
+function _caravanFatigue(members, duration, overload) {
+  var dur = Number(duration) || 0;
+  var base = 2 * dur;
+  var extra = overload ? 1 * dur : 0;
+  var total = base + extra;
+  return {
+    疲劳值: total,
+    基础疲劳: base,
+    超载额外: extra,
+    人均: total
+  };
+}
+
+/* 演示: 组建贸易队(殖民者×3 + 马×2)前往城市邦联(关系+20), 距离30km, 银两500, 口粮20N */
+var demoAnimals = [{ type: '马', count: 2, tame: a1Tame }];
+var demoSupplies = { type: '贸易队', silver: 500, food: 20, distance: 30, relation: 20 };
+var demoForm = _caravanForm(3, demoAnimals, demoSupplies);
+var demoEncounter = _caravanEncounter('caravan_enc_' + gameDay, 30, 20);
+var demoFood = _provisionConsumption(3, demoAnimals, demoForm.往返时间);
+var demoFatigue = _caravanFatigue(3, demoForm.往返时间, false);
+var demoTrade = _caravanTrade(6, 20, gameDay);
+_%>
+<远征商队系统就绪>
+[当前远征商队状态]
+游戏日: <%= gameDay %> / 阶段: <%= phase %> / 殖民地银两: <%= silver %>
+地形: <%= biome %> (速度修正×<%= terrainMod %>) / 社交技能: <%= p1Social %>
+主角位置: <%= p1Pos %> → <%= onExpedition ? '远征中' : '在营地' %>
+主角饱腹: <%= p1Satiety %> / 主角疲劳: <%= p1Fatigue %>
+距上次贸易: <%= daysSinceTrade %>天
+
+[商队类型表 CARAVAN_DB]
+1. 侦察队: 最大3人 / 速度5km/h / 载重20kg / 口粮0.3N/h
+2. 贸易队: 最大5人 / 速度4km/h / 载重100kg / 口粮0.5N/h
+3. 远征队: 最大8人 / 速度3.5km/h / 载重200kg / 口粮0.8N/h
+4. 大型商队: 最大12人 / 速度3km/h / 载重500kg / 口粮1.2N/h
+
+[地形速度修正表 TERRAIN_SPEED_DB]
+温带森林×1.0 / 灌木丛×1.1 / 干草原×1.0 / 沙漠×0.9 / 热带雨林×0.8 / 冻原×0.7 / 极地×0.6 / 海洋×0.3
+当前殖民地地形: <%= biome %> → 速度修正×<%= terrainMod %>
+
+[驮兽表 PACK_ANIMAL_DB]
+1. 马: 载重80kg/只 / 速度+0.5km/h(按类型) / 口粮0.5N/h / 驯服要求5
+2. 驼羊: 载重40kg/只 / 速度+0.3km/h / 口粮0.3N/h / 驯服要求3
+3. 大象: 载重200kg/只 / 速度-0.5km/h / 口粮2N/h / 驯服要求8
+4. 狗: 载重20kg/只 / 速度+0.8km/h / 口粮0.4N/h / 驯服要求4
+注: 速度修正按动物类型计一次(非每只叠加),载重按只累加
+
+[殖民地驮兽]
+动物_1: <%= a1Type %> (驯服度<%= a1Tame %>) → <%= (PACK_ANIMAL_DB[a1Type] && a1Tame >= PACK_ANIMAL_DB[a1Type].tameReq) ? '可编入商队' : '需驯服' %>
+动物_2: <%= a2Type %> (驯服度<%= a2Tame %>) → <%= (PACK_ANIMAL_DB[a2Type] && a2Tame >= PACK_ANIMAL_DB[a2Type].tameReq) ? '可编入商队' : '需驯服' %>
+
+[远征商队规则]
+1. 旅行时间: _travelTime(distance, terrain, speed, load, maxLoad)
+   公式: distance / (speed × terrainMod × (1 - load/maxLoad × 0.3))
+   负重越接近上限速度越慢(最多减速30%),地形修正由biome决定
+   有效速度 = 商队基础速度 + 驮兽速度加成(按类型计一次)
+
+2. 遇袭判定: _caravanEncounter(seed, distance, factionRelation)
+   距离>10km时5%基础概率,派系敌对(关系<-10)+20%
+   检定: _check(总概率, seed, '困难')
+   演示(30km + 关系+20): 概率<%= demoEncounter.概率 %>% 骰值<%= demoEncounter.骰值 %> → <%= demoEncounter.遇袭 ? '遇袭!' : '安全' %>
+
+3. 驮兽载重: _packAnimalLoad(animals)
+   按只累加,马80kg/驼羊40kg/大象200kg/狗20kg
+
+4. 口粮消耗: _provisionConsumption(colonists, animals, duration)
+   公式: 殖民者×0.5N/h + 各驮兽×各自消耗
+   需按往返时间计算(去程+回程)
+
+5. 组建商队: _caravanForm(members, animals, supplies)
+   校验: 人数/载重/口粮/驯服度四项
+   演示(贸易队+殖民者3+马×2, 30km, 银两500, 口粮20N):
+   有效速度: <%= demoForm.有效速度 %>km/h (基础<%= demoForm.基础速度 %> + 驮兽<%= demoForm.驮兽加成 %>)
+   载重容量: <%= demoForm.载重容量 %>kg (商队<%= demoForm.商队载重 %> + 驮兽<%= demoForm.驮兽载重 %>)
+   货物重量: <%= demoForm.货物重量 %>kg
+   单程时间: <%= demoForm.旅行时间 %>h / 往返: <%= demoForm.往返时间 %>h
+   需要口粮: <%= demoForm.需要口粮 %>N (携带<%= demoForm.携带口粮 %>N)
+   组建结果: <%= demoForm.有效 ? '成功' : '失败' %><%_ if (demoForm.问题.length > 0) { _%> (问题: <%= demoForm.问题.join(' / ') %>)<%_ } _%>
+
+6. 远程贸易: _caravanTrade(skill, factionRelation, goods)
+   公式: 社交×3 + 关系修正(关系÷10取整)×5 + 50
+   演示(社交6 + 关系+20): 加成<%= demoTrade.加成 %>% (社交贡献<%= demoTrade.社交贡献 %> + 关系贡献<%= demoTrade.关系贡献 %>)
+   成功率: <%= demoTrade.成功率 %>% 骰值<%= demoTrade.骰值 %> → <%= demoTrade.结果 %>
+
+7. 疲劳累积: _caravanFatigue(members, duration, overload)
+   每小时疲劳+2,负重超载额外+1/h
+   演示(往返<%= demoForm.往返时间 %>h): 疲劳+<%= demoFatigue.疲劳值 %>
+
+[行为校验要求]
+远征商队行为必须输出行为校验块:
+<远征商队校验>
+行为名: [组建贸易商队/组建侦察队/组建远征队/组建大型商队]
+执行者: 殖民者_[名]
+技能等级: 社交=[N]
+目标: [前往XX贸易点/侦察XX区域/远征XX据点]
+输入: 殖民者×[N], [驮兽]×[N], 银两×[N], 口粮×[N]N
+输出: 商队速度[N]km/h, 载重[N]kg, 预计到达[N]h
+耗时: [N]h(单程/往返)
+判定: [成功/失败](口粮[充足/不足], 载重[未超/超载], 驯服[达标/不足])
+贸易修正: 社交[N]×3+关系[N]×5=[N]%加成
+</远征商队校验>
+
+[行为校验示范]
+组建贸易商队示例(殖民者×3 + 马×2, 前往城市邦联关系+20):
+<远征商队校验>
+行为名: 组建贸易商队
+执行者: 殖民者_主角
+技能等级: 社交=6
+目标: 前往城市邦联贸易点
+输入: 殖民者×3, 马×2, 银两×500, 口粮×20N
+输出: 商队速度4.5km/h, 载重160kg, 预计到达6.7h
+耗时: 6.7h(单程)
+判定: 成功(口粮充足, 载重未超, 驯服达标)
+贸易修正: 社交6×3+关系+10=28%加成
+</远征商队校验>
+
+[远征商队系统说明]
+本控制器为远征商队统一入口,所有商队组建/旅行/遇袭/口粮/远程贸易/疲劳必须经此判定。
+商队类型表(CARAVAN_DB)定义4类商队,各有最大人数/基础速度/基础载重/口粮消耗。
+地形速度修正表(TERRAIN_SPEED_DB)由殖民地biome决定,影响商队在该地形的行进速度。
+驮兽表(PACK_ANIMAL_DB)定义4种驮兽,载重按只累加,速度修正按类型计一次(非每只叠加)。
+旅行时间受负重影响(最多减速30%),遇袭概率随距离与派系关系变化。
+远程贸易成功率依赖DDL确定性骰子引擎(_check),公式为社交×3+关系修正×5+50。
+与派系贸易系统联动: 远程贸易沿用派系关系,关系<-10判定为敌对,遇袭概率+20%。
+与时间推进调度器联动: 旅行耗时与口粮消耗按游戏日累计,往返需双倍口粮。
+</远征商队系统就绪>
+[远征商队系统 · 系统控制器]

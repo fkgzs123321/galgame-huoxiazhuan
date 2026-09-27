@@ -1,0 +1,11 @@
+# ★占位符输出铁律（每条消息必须执行，优先级最高）
+# 每条消息【正文 content 末尾】必须输出 <StatusPlaceHolderImpl/>（一个占一行，不加任何修饰）：
+#   - 非对抗非双修时：只输出 <StatusPlaceHolderImpl/>
+#   - 决斗进行中/开战轮：先输出 <StatusPlaceHolderImpl/>，再单独一行输出 <BattleUI/>
+#   - 双修进行中/开始轮：先输出 <StatusPlaceHolderImpl/>，再单独一行输出 <LoveUI/>
+#   - 两者同时进行：<StatusPlaceHolderImpl/> 后依次 <BattleUI/>、<LoveUI/>
+# 严禁把占位符/界面标签输出到思维链（think/thinking/think_fox/reasoning）内部。
+# 漏输出 → 状态栏/战斗面板/双修面板停留在上一楼旧画面，视为重大失误。
+# 示例（对抗时）：
+# <StatusPlaceHolderImpl/>
+# <BattleUI/>

@@ -1,0 +1,17 @@
+{
+  "id": "a1b2c3d4-0008-4000-8000-000000000008",
+  "scriptName": "状态栏占位展开 - 将StatusPlaceHolderImpl标签替换为状态栏挂载点（载入中UI）",
+  "findRegex": "<StatusPlaceHolderImpl\\s*/?>",
+  "replaceString": "<div data-fjb-status-mount=\"1\" style=\"min-height:120px;display:flex;align-items:center;justify-content:center;color:#8b3a52;font-size:13px;font-family:system-ui,sans-serif\">✦ 状态栏加载中…</div>",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": false,
+  "substituteRegex": 1,
+  "minDepth": 0,
+  "maxDepth": null
+}

@@ -1,0 +1,130 @@
+<div style="text-align: center; margin: 10px 0;">
+<div style="display: inline-block; text-align: left;">
+  <details class="neko-complete" style="border: none; background: none;">
+    <summary style="
+      list-style: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      position: relative;
+      padding: 0;
+    ">
+      <!-- 圆形GIF头像 - 突出在左侧 -->
+      <span style="
+        display: inline-block;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2.5px solid rgba(70, 115, 175, 0.5);
+        box-shadow: 0 0 10px rgba(70, 115, 175, 0.25), 0 0 20px rgba(110, 150, 200, 0.15);
+        flex-shrink: 0;
+        z-index: 3;
+        position: relative;
+        animation: neko-happy 1.5s ease-in-out infinite;
+        background: #dae3f0;
+      ">
+        <img src="https://i.postimg.cc/DwFQBGk9/ezgif-201bf4672c1b72.gif" 
+          style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="喵~" />
+      </span>
+      <!-- 横条 - 比头像矮，约2/3高度 -->
+      <span style="
+        display: flex;
+        align-items: center;
+        height: 34px;
+        margin-left: -12px;
+        padding: 0 24px 0 22px;
+        background: linear-gradient(135deg, #e6edf5 0%, #cdd8ea 50%, #dae3f0 100%);
+        border: 1.5px solid rgba(80, 120, 180, 0.35);
+        border-radius: 0 17px 17px 0;
+        box-shadow: 
+          0 3px 15px rgba(80, 120, 180, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        position: relative;
+        z-index: 2;
+      ">
+        <span style="
+          flex: 1;
+          font-size: 0.9em;
+          font-weight: 600;
+          background: linear-gradient(90deg, #5a82b5, #3d6098, #4d75aa, #5a82b5);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: text-shimmer 3s linear infinite;
+        ">喵喵喵~ 变量完成了喵~</span>
+        <small style="color: #3d6098; font-size: 0.75em; opacity: 0.7;">
+          <span class="neko-toggle" data-close="展开喵 ▶" data-open="收起喵 ▼"></span>
+        </small>
+      </span>
+    </summary>
+    <div style="
+      max-height: 320px;
+      overflow-y: auto;
+      margin-left: 26px;
+      margin-top: 6px;
+      padding: 12px 20px;
+      color: #4a5568;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      background: linear-gradient(135deg, rgba(230, 237, 245, 0.6) 0%, rgba(205, 216, 234, 0.4) 100%);
+      border: 1.5px solid rgba(80, 120, 180, 0.25);
+      border-radius: 14px;
+      font-size: 0.9em;
+      box-shadow: 0 2px 10px rgba(80, 120, 180, 0.08);
+      max-width: 450px;
+    ">
+    $1
+    </div>
+  </details>
+</div>
+</div>
+
+<style>
+  .neko-complete summary::marker {
+    display: none;
+  }
+  .neko-complete[open] > div {
+    animation: neko-slide-in 0.4s ease forwards;
+  }
+  .neko-complete[open] .neko-toggle::after {
+    content: attr(data-open);
+  }
+  .neko-complete:not([open]) .neko-toggle::after {
+    content: attr(data-close);
+  }
+
+  @keyframes neko-happy {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-3px) rotate(-3deg);
+    }
+    75% {
+      transform: translateY(-3px) rotate(3deg);
+    }
+  }
+
+  @keyframes text-shimmer {
+    0% {
+      background-position: 0% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes neko-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

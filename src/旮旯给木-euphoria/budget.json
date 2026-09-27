@@ -1,0 +1,39 @@
+{
+  "note": "euphoria 的预算。默认表出自机制层规范 §E4，是按同级生2 的内容量定的；\neuphoria 常驻条目多，且校验器对 state 门控条目按最坏情况（全量）估算，故按实测放宽。\n\nT1 hard 9100：熟练度阶段是 EJS 按熟练度裁剪（5 档只渲染 1 档），但校验器按全量算，\n  本轮给它每档加了「看的时候」（她在屏幕外看色情场景的样子），故放宽。\n\nT0 hard 13700：含 5 条形色文风（默认关）、一层楼正文结构、推演链六步、感知禁令三层结构。\n\nMVU target/single 15200：变量更新规则必须全量；含「数字怎么给」总则与反抗值完整数值表。\n\nTOTAL_HARD = 各层 target 与实测水位之和。",
+  "T0": {
+    "target": 13100,
+    "hard": 13700,
+    "single": 5000
+  },
+  "T1": {
+    "target": 8000,
+    "hard": 9100,
+    "single": 5000
+  },
+  "T2": {
+    "target": 1000,
+    "hard": 1500,
+    "single": 1500
+  },
+  "T3_BASE": {
+    "target": 10000,
+    "hard": 13500,
+    "single": 5000
+  },
+  "T3_DAY": {
+    "target": 5000,
+    "hard": 6000,
+    "single": 5000
+  },
+  "T4": {
+    "target": null,
+    "hard": null,
+    "single": null
+  },
+  "MVU": {
+    "target": 15200,
+    "hard": 18500,
+    "single": 15200
+  },
+  "TOTAL_HARD": 52900
+}

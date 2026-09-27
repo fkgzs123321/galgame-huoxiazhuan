@@ -1,0 +1,15 @@
+{
+  "id": "fjb-female-stage-up-beautify",
+  "scriptName": "女性阶段轨迹美化",
+  "findRegex": "/<FemaleStageUp\\s+char=\"([^\"]+)\"\\s+from=\"([^\"]+)\"\\s+to=\"([^\"]+)\"\\s+template=\"([^\"]+)\"\\s+sanity=\"(\\d+)\"\\s*\\/>/g",
+  "replaceString": "<div class=\"fjb-femalestageup\" data-template=\"$4\" data-from=\"$2\" data-to=\"$3\"><div class=\"fjb-femalestageup-banner\"><span class=\"fjb-femalestageup-icon\">🌸</span> 女性阶段轨迹变化 <span class=\"fjb-femalestageup-icon\">🌸</span></div><div class=\"fjb-femalestageup-body\"><div class=\"fjb-femalestageup-char\">$1</div><div class=\"fjb-femalestageup-stage\"><span class=\"fjb-femalestageup-from\">$2</span><span class=\"fjb-femalestageup-arrow\">→</span><strong class=\"fjb-femalestageup-to\">$3</strong></div><div class=\"fjb-femalestageup-meta\"><span class=\"fjb-femalestageup-template\">模板 · $4</span><span class=\"fjb-femalestageup-sanity\">理智 · $5</span></div></div><div class=\"fjb-femalestageup-glow\"></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

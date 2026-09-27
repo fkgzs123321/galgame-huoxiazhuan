@@ -1,0 +1,155 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · 事件总控（分控层）
+   ════════════════════════════════════════════════════════════
+   关灯加载：enabled:false，由 D0 通过 getwi('[总控]事件') 调用
+   职责：
+   1. 按时间轴加载当前天数的事件
+   2. 按场景模式加载事件系统规则
+   3. 按阶段加载阶段相关事件触发器
+   4. 终局判定（第120天成绩出炉）
+   5. 加载RPG系统（环境/任务/金钱）
+   6. token优化：只加载当前场景必需的事件模块
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+// ===== 读取时间与场景状态 =====
+var _time = getvar('stat_data.时间', { scope: 'local', defaults: {} }) || {};
+var _stats = getvar('stat_data.状态', { scope: 'local', defaults: {} }) || {};
+var _useStage = getvar('stat_data.使用阶段', { scope: 'local', defaults: {} }) || {};
+var _academic = getvar('stat_data.学业', { scope: 'local', defaults: {} }) || {};
+var _hidden = getvar('stat_data.隐藏层', { scope: 'local', defaults: {} }) || {};
+
+var _day = Number(_time.天数) || 1;
+var _hour = Number(_time.小时) || 8;
+var _weekday = _time.星期 || '周一';
+var _money = Number(_stats.金钱) || 500;
+var _difficulty = _stats.难度 || '困难';
+var _stage = Number(_useStage.当前阶段) || 1;
+var _totalUses = Number(_useStage.总使用次数) || 0;
+var _suspicion = Number(_stats.怀疑值) || 0;
+var _corruption = Number(_stats.堕落值) || 0;
+var _score = Number(_academic.分数) || 75;
+var _examCountdown = Number(_academic.考试倒计时) || 7;
+
+// 9时段计算
+var _evtTimeSlot = '上午';
+if (_hour >= 5 && _hour < 7) _evtTimeSlot = '早晨';
+else if (_hour >= 7 && _hour < 8) _evtTimeSlot = '晨读';
+else if (_hour >= 8 && _hour < 12) _evtTimeSlot = '上午';
+else if (_hour >= 12 && _hour < 14) _evtTimeSlot = '中午';
+else if (_hour >= 14 && _hour < 17) _evtTimeSlot = '下午';
+else if (_hour >= 17 && _hour < 19) _evtTimeSlot = '傍晚';
+else if (_hour >= 19 && _hour < 22) _evtTimeSlot = '晚自习';
+else if (_hour >= 22 || _hour < 2) _evtTimeSlot = '夜里';
+else _evtTimeSlot = '半夜';
+
+// 场景模式识别（与 读取变量过滤 保持一致）
+var _evtSceneMode = '日常';
+var _isEvtNight = (_evtTimeSlot === '夜里' || _evtTimeSlot === '半夜');
+var _evtTodayUses = Number(_useStage.今日使用) || 0;
+var _evtActiveUsers = Number(getvar('stat_data.隐藏层.活跃使用人数', { scope: 'local', defaults: 0 })) || 0;
+if (_suspicion >= 150 || _totalUses >= 100 || _corruption >= 150) {
+  _evtSceneMode = '终局';
+} else if (_isEvtNight && _stage >= 1 && (_evtTodayUses > 0 || _evtActiveUsers > 0)) {
+  _evtSceneMode = '使用';
+} else if (_suspicion >= 70) {
+  _evtSceneMode = '调查';
+} else if ((_evtTimeSlot === '上午' || _evtTimeSlot === '下午') && _examCountdown <= 30 && _weekday !== '周六' && _weekday !== '周日') {
+  _evtSceneMode = '学业';
+} else if (_weekday === '周六' || _weekday === '周日' || _evtTimeSlot === '傍晚' || _evtTimeSlot === '晚自习') {
+  _evtSceneMode = '社交';
+} else if (_day === 1 && _totalUses === 0) {
+  _evtSceneMode = '开局';
+}
+
+// 考试日判定
+var _examType = '无';
+if (_day === 103) _examType = '高考';
+else if (_day === 30 || _day === 60 || _day === 90) _examType = '季考';
+else if (_day % 30 >= 28 && _day > 0) _examType = '月考';
+else if (_day % 7 === 3) _examType = '周考';
+
+// 终局判定
+var _isResultsDay = (_day >= 120);
+%>
+
+[event_total_control]
+【事件总控 · 场景调度】
+══════════════════════════════════════════════
+天数：第<%= _day %>天/120 | 时段：<%= _evtTimeSlot %> | 场景模式：<%= _evtSceneMode %>
+考试日：<%= _examType %> | 高考倒计时：<%= _examCountdown %>天
+<% if (_isResultsDay) { %>
+★ 终局判定窗口：成绩出炉日，触发结局判定
+<% } %>
+══════════════════════════════════════════════
+[/event_total_control]
+
+<%/* ─── 核心基础（每轮必加载，精简至1个） ─── */%>
+<%/* 注：变量更新规则已设为蓝灯常驻，本控制器不重复加载 */%>
+<%/* 注：玩家指令约束系统、综合防口胡、时间轴与事件系统 已由 D0 加载，本控制器不重复 */%>
+<%- await getwi('[mvu_plot]RPG环境系统') %>
+
+<%/* ─── RPG系统按场景/时段精准加载（去重+条件化） ─── */%>
+<% if (_evtSceneMode === '使用') { %>
+  <%/* 使用场景：女性技能升级公式（假阴茎使用时女性技能会升级） */%>
+  <%- await getwi('[mvu_plot]技能升级公式系统') %>
+<% } %>
+<% if (_evtSceneMode === '调查') { %>
+  <%/* 调查场景：技能对抗与发现机制（D0步骤9已加载，此处仅作场景标记，不重复getwi） */%>
+<% } %>
+<% if (_evtTimeSlot === '夜里' || _evtTimeSlot === '半夜') { %>
+  <%/* 夜间：回宿舍场景，加载居所系统 */%>
+  <%- await getwi('[mvu_plot]RPG居所系统') %>
+<% } %>
+<% if (_evtTimeSlot === '早晨' || _evtTimeSlot === '傍晚') { %>
+  <%/* 通勤时段：载具系统 */%>
+  <%- await getwi('[mvu_plot]RPG载具系统') %>
+<% } %>
+<% if (_evtSceneMode === '日常' || _evtSceneMode === '社交') { %>
+  <%/* 日常/社交：可能购物，加载金钱与资产系统 */%>
+  <%- await getwi('[mvu_plot]金钱与补给系统') %>
+  <%- await getwi('[mvu_plot]RPG资产系统') %>
+<% } %>
+<% if (_stage >= 2 && (_evtSceneMode === '日常' || _evtSceneMode === '社交')) { %>
+  <%/* 阶段≥2且日常/社交：制造系统（避免开局浪费） */%>
+  <%- await getwi('[mvu_plot]RPG制造系统') %>
+<% } %>
+<% if (_day % 7 === 0) { %>
+  <%/* 每7天加载一次规则变化系统（周更新） */%>
+  <%- await getwi('[mvu_plot]RPG规则变化系统') %>
+<% } %>
+
+<%/* ─── 按场景模式加载事件子模块（去重） ─── */%>
+<%/* 注：玩家_基础档案由 [总控]人物 加载，玩家指令约束系统由 D0 加载，此处不重复 */%>
+<% if (_evtSceneMode === '开局') { %>
+  <%/* 开局：加载行为菜单（阶段1规则已由[总控]阶段加载） */%>
+  <%- await getwi('[mvu_plot]玩家可用行为菜单') %>
+<% } else if (_evtSceneMode === '学业') { %>
+  <%/* 学业场景：加载RPG任务 */%>
+  <%- await getwi('[mvu_plot]玩家可用行为菜单') %>
+  <%- await getwi('[mvu_plot]RPG任务系统') %>
+<% } else if (_evtSceneMode === '社交') { %>
+  <%/* 社交场景：加载RPG任务 */%>
+  <%- await getwi('[mvu_plot]玩家可用行为菜单') %>
+  <%- await getwi('[mvu_plot]RPG任务系统') %>
+<% } else if (_evtSceneMode === '日常') { %>
+  <%/* 日常场景：加载行为菜单 */%>
+  <%- await getwi('[mvu_plot]玩家可用行为菜单') %>
+<% } %>
+
+<%/* ─── 终局判定（第120天成绩出炉） ─── */%>
+<% if (_isResultsDay) { %>
+  <%/* 终局分支与守卫规则（D0步骤6已加载，此处不重复getwi） */%>
+  <%- await getwi('[mvu_plot]终局分支触发') %>
+  <%- await getwi('[mvu_plot]终局分支触发器') %>
+<% } %>
+
+<%/* ─── 每日重置检查（时段从半夜切到早晨时触发） ─── */%>
+<% if (_evtTimeSlot === '早晨') { %>
+  <%- await getwi('[mvu_plot]每日重置') %>
+  <%- await getwi('[mvu_plot]多维状态每日演化') %>
+  <%- await getwi('[mvu_plot]定力成长系统') %>
+<% } %>
+
+<%/* ─── 变量更新规则（已设为蓝灯常驻，本控制器不重复加载） ─── */%>

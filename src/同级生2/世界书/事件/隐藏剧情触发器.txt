@@ -1,0 +1,774 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 事件 · 隐藏剧情触发器
+   ════════════════════════════════════════════════════════════
+   触发条件：贯穿全寒假（day 1-17，12-22 ~ 01-07）
+   事件类型：隐藏剧情 / 隐藏机制 / 关键事件 / 反派事件 / 隐藏女角
+   影响范围：日记本系统 / 变数屋 / 樱子死讯 / 美纪双身份 / 西御寺秘谋 / 樱子线解锁
+   关联调度器：寒假日程调度器/<dayXX>.txt（各日记/事件按日触发）
+   关联规则：全局规则总表.txt → DIFFICULTY_MODIFIERS / GLOBAL_IMPACT
+   关联flag：关键事件.yaml → 日记1~5 / 樱子死讯 / 美纪威胁事件 / 阴谋偷听
+   关联CG：CG触发条件表.txt → CG_HIDDEN_001~005 / CG_KEY_007 / CG_KEY_010
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ── 读取运行时全局变量（用于触发校验与难度修正） ── */
+const _diff = String(getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' })) || '普通';
+const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 1 })) || 1;
+const _date = String(getvar('stat_data.时间.当前日期', { scope: 'local', defaults: '12-22' })) || '12-22';
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' })) || '早';
+const _location = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '主角自宅客厅' })) || '主角自宅客厅';
+const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+const _mood = Number(getvar('stat_data.主角.心情', { scope: 'local', defaults: 70 })) || 0;
+
+/* ── 隐藏剧情 flag 读取（从 chatSheets chronicle 表的关键事件.yaml 同步）── */
+const _diary1 = Boolean(getvar('stat_data.隐藏.日记1', { scope: 'local', defaults: false }));
+const _diary2 = Boolean(getvar('stat_data.隐藏.日记2', { scope: 'local', defaults: false }));
+const _diary3 = Boolean(getvar('stat_data.隐藏.日记3', { scope: 'local', defaults: false }));
+const _diary4 = Boolean(getvar('stat_data.隐藏.日记4', { scope: 'local', defaults: false }));
+const _diary5 = Boolean(getvar('stat_data.隐藏.日记5', { scope: 'local', defaults: false }));
+const _sakurakoDeathNews = Boolean(getvar('stat_data.隐藏.樱子死讯', { scope: 'local', defaults: false }));
+const _mikiThreat = Boolean(getvar('stat_data.隐藏.美纪威胁事件', { scope: 'local', defaults: false }));
+const _mikiDualIdentity = Boolean(getvar('stat_data.隐藏.美纪双身份揭示', { scope: 'local', defaults: false }));
+const _conspiracyOverheard = Boolean(getvar('stat_data.隐藏.阴谋偷听', { scope: 'local', defaults: false }));
+const _sakurakoRouteUnlocked = Boolean(getvar('stat_data.隐藏.樱子线解锁', { scope: 'local', defaults: false }));
+const _variableShopVisits = Number(getvar('stat_data.隐藏.变数屋访问次数', { scope: 'local', defaults: 0 })) || 0;
+const _hospitalVisits = Number(getvar('stat_data.隐藏.医院访问次数', { scope: 'local', defaults: 0 })) || 0;
+const _diaryCollectedCount = [_diary1, _diary2, _diary3, _diary4, _diary5].filter(Boolean).length;
+const _diaryAllCollected = (_diaryCollectedCount === 5);
+const _variableShopAllUnlocked = (_variableShopVisits >= 10);
+
+/* 9.B.19: 毕业生外传彩蛋触发检测（齐藤澪/齐藤澪奈/铃木美穗/仁科/正树夏子 任一 affection>=50 + day>=14） */
+const _graduateSideStoryDone = Boolean(getvar('stat_data.隐藏.毕业生外传完成', { scope: 'local', defaults: false }));
+const _graduateNames = ['齐藤澪', '齐藤澪奈', '铃木美穗', '仁科', '正树夏子'];
+const _currentHidForGrad = getvar('stat_data.场景.当前女角名', { scope: 'local', defaults: '无' });
+const _graduateAffections = _graduateNames.map(function(name) {
+  if (name === _currentHidForGrad) {
+    return Number(getvar('stat_data.当前女角.好感度', { scope: 'local', defaults: 0 })) || 0;
+  }
+  return Number(getvar('stat_data.女角.' + name + '.好感度', { scope: 'local', defaults: 0 })) || 0;
+});
+const _graduateMaxAffection = _graduateAffections.length > 0 ? Math.max.apply(null, _graduateAffections) : 0;
+const _graduateSideStoryTriggerable = (_dayCount >= 14 && _graduateMaxAffection >= 50 && !_graduateSideStoryDone);
+
+/* ── 难度修正系数（引用 全局规则总表.txt → DIFFICULTY_MODIFIERS）──
+   轻松：查询消耗 ×0.5 / 日记获取提示明显 / 樱子线解锁门槛 3 次
+   普通：查询消耗 ×1.0 / 日记获取需满足条件 / 樱子线解锁门槛 5 次
+   挑战：查询消耗 ×1.5 / 日记获取条件严格 / 樱子线解锁门槛 7 次
+   地狱：查询消耗 ×2.0 / 日记获取条件苛刻 / 樱子线解锁门槛 10 次 */
+const _DIFF = {
+  '轻松': { shop_cost_mult: 0.5, sakurako_unlock_visits: 3,  diary_hint: '明显', note: '隐藏剧情休闲向，门槛降低' },
+  '普通': { shop_cost_mult: 1.0, sakurako_unlock_visits: 5,  diary_hint: '标准', note: '原作难度' },
+  '挑战': { shop_cost_mult: 1.5, sakurako_unlock_visits: 7,  diary_hint: '严格', note: '隐藏剧情门槛提升' },
+  '地狱': { shop_cost_mult: 2.0, sakurako_unlock_visits: 10, diary_hint: '苛刻', note: '隐藏剧情门槛大幅提升' }
+};
+const _dm = _DIFF[_diff] || _DIFF['普通'];
+const _shopCost = Math.round(100 * _dm.shop_cost_mult);
+
+/* ════════════════════════════════════════════════════════════
+   HIDDEN_PLOTS · 隐藏剧情触发器主对象
+   ════════════════════════════════════════════════════════════ */
+const HIDDEN_PLOTS = {
+
+  /* ════════════════════════════════════════════════════════════
+     一、日记本系统（5本日记，隐藏剧情主线）
+     ════════════════════════════════════════════════════════════ */
+  diary_system: {
+    plot_id: 'diary_system',
+    plot_name: '日记本系统',
+    plot_type: '隐藏剧情',
+    total_count: 5,
+    description: '散落在八十八町各处的5本神秘日记，记载着一段被遗忘的往事。在 SillyTavern 角色卡环境下，日记本系统的实际功能为：①剧情线索载体——每本日记的 content 字段是一段隐藏剧情文本，AI 读取后作为叙事素材融入对话；②隐藏剧情触发器——收集后触发对应 flag，解锁后续剧情分支；③真结局必要条件——5本全收集是杉本樱子线（隐藏真结局）的必要条件；④角色关系深化媒介——每本日记关联一位女角/NPC，收集过程本身就是角色互动剧情；⑤状态追踪——通过 MVU 变量 日记1~5/日记全收集 记录收集状态。',
+    function_in_card: {
+      is_not: '不是游戏存档功能（SillyTavern 角色卡无存档系统）',
+      is: [
+        '剧情线索载体：content 字段作为 AI 叙事素材',
+        '隐藏剧情触发器：flag 写入后解锁后续分支',
+        '真结局必要条件：5本全收集触发 CG_HIDDEN_002',
+        '角色互动媒介：每本日记关联一位女角/NPC',
+        '状态追踪：通过 MVU 变量持久化收集状态'
+      ]
+    },
+    completion_flag: '日记全收集',
+    completion_condition: '日记1 AND 日记2 AND 日记3 AND 日记4 AND 日记5',
+    completion_reward: {
+      cg_unlock: 'CG_HIDDEN_002',
+      story_hint: '解锁真结局线索（与樱子死讯、变数屋全解锁共同决定 CG_HIDDEN_005 真结局）',
+      final_event: '1/7深夜 樱子樱花树下隐藏反告白（需 樱子死讯 + 樱子 affection≥60）'
+    },
+    diaries: [
+      /* ── 第1本：开局获得 ── */
+      {
+        diary_id: 1,
+        name: '第1本·开局日记',
+        trigger_condition: {
+          day: 1,
+          date: '12-22',
+          time_slot: '早',
+          location: '主角自宅',
+          action: '检查书桌抽屉',
+          prerequisite: '无（开局自动可获得）'
+        },
+        flag: '日记1',
+        is_reversible: false,
+        is_optional: false,
+        content: '泛黄的日记本扉页写着"致读到这本日记的人"。第一页只有一行字："12月22日，我又回到了这个小镇。那个孩子，应该也长大了吧。"笔迹稚嫩，像是很久以前写的。最后一页被撕掉了，留下一道毛糙的边。',
+        hint: '美佐子曾在搬入时提过"你房间书桌抽屉里有上一任房客留下的东西"。',
+        difficulty_note: '所有难度下均可获得，是日记系统的起点'
+      },
+      /* ── 第2本：梦仙人还书 ── */
+      {
+        diary_id: 2,
+        name: '第2本·梦仙人还书',
+        trigger_condition: {
+          day_range: [2, 7],
+          date_range: '12-23 ~ 12-28',
+          time_slot: '任意',
+          location: '温泉乡占卜馆（梦仙人处）',
+          action: '帮川尻信良把书还给占卜婆婆',
+          prerequisite: 'has_met_川尻信良=true AND 川尻信良求助任务接受',
+          quest_chain: '川尻信良在某日午后拦住主角，说他借了梦仙人（占卜婆婆）一本书一直没还，但梦仙人脾气古怪他不敢单独去，拜托主角陪同'
+        },
+        flag: '日记2',
+        is_reversible: false,
+        is_optional: true,
+        content: '梦仙人接过书，浑浊的眼睛瞥了主角一眼，从柜台下抽出这本日记递给你："这本书里夹着你的缘分，拿去吧，年轻人。"翻开看，是另一段日记，字迹与第1本一致："12月23日，今天遇到了一个奇怪的人，他说能帮我找到那个孩子。"日记的夹页里还藏着一张褪色的照片，依稀能看出是市民医院的旧照。',
+        hint: '川尻信良是主角的同班同学，常出没于八十八学园或商业区便利店。任务需在 12-28 前完成。',
+        difficulty_note: '轻松难度下川尻信良会主动找上门；地狱难度下需主角主动在学园或便利店寻人且需 speech≥30 才能说服梦仙人'
+      },
+      /* ── 第3本：唯交付 ── */
+      {
+        diary_id: 3,
+        name: '第3本·唯交付',
+        trigger_condition: {
+          day_range: [15, 17],
+          date_range: '01-05 ~ 01-07',
+          time_slot: '晚',
+          location: '鸣泽家客厅',
+          action: '唯主动交给主角',
+          prerequisite: '鸣泽唯.affection≥50 AND 鸣泽唯.relationship_stage≥熟悉 AND 唯获救=true（唯已在88公园事件中被救出后才主动交付，作为信任的证明）',
+          heroine_id: 1,
+          heroine_name: '鸣泽唯'
+        },
+        flag: '日记3',
+        is_reversible: false,
+        is_optional: true,
+        content: '唯在某个夜晚红着脸把这本日记塞到你手里："这个……我在妈妈房间旧相册里找到的。觉得……哥哥应该看看。"日记里写着："12月25日，那个孩子今天收到了圣诞礼物，是个日记本。她的笑容像阳光。可惜我知道的太多了。"暗示日记作者与鸣泽家有某种关联。',
+        hint: '需唯线推进至熟悉阶段（affection≥50），且唯已在88公园事件中被救出（唯获救=true）；唯主动发起交付（非玩家索要）。',
+        difficulty_note: '轻松难度下 affection≥40 即可触发；地狱难度下需 affection≥60 且 trust≥40'
+      },
+      /* ── 第4本：爱美谢礼 ── */
+      {
+        diary_id: 4,
+        name: '第4本·爱美谢礼',
+        trigger_condition: {
+          day_range: [9, 14],
+          date_range: '12-30 ~ 01-03',
+          time_slot: '下午',
+          location: '保育园',
+          action: '爱美感谢礼物',
+          prerequisite: 'has_met_安田爱美=true AND 安田爱美.affection≥30 AND 爱美获救=true（天道爱美分支已完成）',
+          heroine_id: 9,
+          heroine_name: '安田爱美',
+          quest_chain: '需先完成 CG_KEY_009 天道爱美分支（12/29~30 保育园与天道新干线谈话，决定爱美命运）'
+        },
+        flag: '日记4',
+        is_reversible: false,
+        is_optional: true,
+        content: '爱美在保育园后院偷偷把这本日记塞给你，眼里闪着光："这是姐姐（指美佐子或护士姐姐）以前给我保管的，说等有个对我好的人出现就交给他。"日记写着："12月30日，今天那个孩子又来医院了。她的病越来越重，但她不肯告诉任何人。"这段日记暗示了樱子的病情。',
+        hint: '需先完成天道爱美救赎分支（爱美获救=true），爱美作为谢礼交付。',
+        difficulty_note: '所有难度下条件一致；但地狱难度下 爱美获救 的达成本身更难'
+      },
+      /* ── 第5本：电视台录影 ── */
+      {
+        diary_id: 5,
+        name: '第5本·电视台录影',
+        trigger_condition: {
+          day_range: [14, 16],
+          date_range: '01-04 ~ 01-06',
+          time_slot: '下午',
+          location: '电视台',
+          action: '舞岛可怜带主角去电视台录影',
+          prerequisite: 'has_met_舞岛可怜=true AND 舞岛可怜.affection≥40 AND 舞岛可怜.relationship_stage≥暧昧 AND karen_unmasked=true（卸妆后偶遇事件已触发）',
+          heroine_id: 3,
+          heroine_name: '舞岛可怜',
+          quest_chain: '需先完成 EV020 舞岛可怜卸妆后偶遇（12/30晚，关键反转点），之后可怜会邀主角去电视台'
+        },
+        flag: '日记5',
+        is_reversible: false,
+        is_optional: true,
+        content: '可怜在电视台休息室翻找东西时，从旧道具箱里翻出这本日记："咦，这个怎么在这里？给你吧，感觉跟你有点关系。"日记写着："1月4日，那个孩子上了电视。她笑得很好看，但只有我知道她在哭。"这段日记揭示了樱子曾上过电视台的往事，是樱子线的关键线索。',
+        hint: '需可怜线推进至暧昧阶段（affection≥40）且卸妆事件已触发。',
+        difficulty_note: '轻松难度下 affection≥30 即可；地狱难度下需 affection≥50 且需先完成可怜的某个支线'
+      }
+    ],
+    progress: _diaryCollectedCount + '/5',
+    is_completed: _diaryAllCollected,
+    next_step_when_completed: '1/7深夜前往市民医院樱花树下，触发 CG_HIDDEN_001 樱子隐藏反告白（需 樱子死讯 + 樱子 affection≥60）'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     二、变数屋（隐藏机制，每晚自宅上方）
+     ════════════════════════════════════════════════════════════ */
+  variable_shop: {
+    plot_id: 'variable_shop',
+    plot_name: '变数屋',
+    plot_type: '隐藏机制',
+    description: '每晚22:00后，主角自宅上方会出现一座只在深夜显现的"变数屋"入口。屋内有一位戴面具的店主，可查询任意女角的好感度/心跳/嫉妒/信任数值。每次查询消耗100日元（受难度修正）。累计查询10次后解锁"命运线"显示功能。',
+    trigger_condition: {
+      time_slot: '晚',
+      time_after: '22:00',
+      location: '主角自宅（上方）',
+      prerequisite: '无（任何夜晚均可访问）',
+      auto_trigger: false
+    },
+    cost_per_query: _shopCost,
+    currency: '日元',
+    difficulty_cost_note: '轻松 ×0.5（50日元）/ 普通 ×1.0（100日元）/ 挑战 ×1.5（150日元）/ 地狱 ×2.0（200日元）',
+    queries: [
+      {
+        query_id: 'affection',
+        name: '好感度查询',
+        cost: _shopCost,
+        description: '查询任意女角的当前 affection 值',
+        available: true
+      },
+      {
+        query_id: 'heartbeat',
+        name: '心动值查询',
+        cost: _shopCost,
+        description: '查询任意女角的当前 heartbeat 值',
+        available: true
+      },
+      {
+        query_id: 'jealousy',
+        name: '嫉妒值查询',
+        cost: _shopCost,
+        description: '查询任意女角的当前 jealousy 值',
+        available: true
+      },
+      {
+        query_id: 'trust',
+        name: '信任度查询',
+        cost: _shopCost,
+        description: '查询任意女角的当前 trust 值',
+        available: true
+      },
+      {
+        query_id: 'fate_line',
+        name: '命运线显示',
+        cost: 0,
+        description: '显示当前最接近 True End 的女角（隐藏功能，需累计查询10次后解锁）',
+        available: _variableShopVisits >= 10,
+        unlock_condition: '变数屋访问次数 >= 10',
+        reveal: '店主摘下面具的一角，指着命运罗盘上最亮的一根线："这根线连着的人，就是你命中注定的那个。"'
+      }
+    ],
+    hidden_feature: {
+      name: '命运线显示',
+      unlock_threshold: 10,
+      current_visits: _variableShopVisits,
+      is_unlocked: _variableShopAllUnlocked,
+      effect: '显示当前最接近 True End 的女角（按 affection+heartbeat+trust-trust 总分排序最高者）',
+      note: '命运线显示的是综合得分最高的女角，不一定是主角主动攻略的对象——这可能是隐藏女角樱子（若已解锁并推进）'
+    },
+    completion_flag: '变数屋全解锁',
+    completion_condition: '变数屋访问次数 >= 10 AND fate_line 已解锁',
+    completion_reward: {
+      cg_unlock: 'CG_HIDDEN_003',
+      story_hint: '变数屋全解锁是真结局（CG_HIDDEN_005）的必要条件之一'
+    },
+    current_visits: _variableShopVisits,
+    is_completed: _variableShopAllUnlocked,
+    shopkeeper_description: '店主戴着一个没有五官的白色面具，声音沙哑而温和："欢迎光临变数屋。在这里，你可以看见看不见的数字。但记住，命运的价格，每次100日元。"',
+    warning: '查询会消耗金钱，过度查询可能导致 savings 不足触发 BAD_END_4（修学旅行费不足）。建议优先攻略主线下间歇查询。'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     三、樱子"死讯"事件（关键事件，触发美佐子浴室洗背）
+     ════════════════════════════════════════════════════════════ */
+  樱子死讯: {
+    plot_id: '樱子死讯',
+    plot_name: '樱子"死讯"',
+    plot_type: '关键事件',
+    heroine_id: 20,
+    heroine_name: '杉本樱子',
+    description: '1月1日下午2点，主角若在88市民医院，护士会告知樱子"病情恶化已转入重症病房"。实际上樱子并未死亡（1/7反告白揭示真相）。此事件是美佐子浴室洗背事件的前置触发器。',
+    trigger_condition: {
+      day: 11,
+      date: '01-01',
+      time_slot: '下午',
+      specific_time: 'PM2:00',
+      location: '88市民医院',
+      prerequisite: '医院访问次数 >= 3（12/22~1/1 累计访问市民医院≥3次）',
+      auto_trigger: true
+    },
+    prerequisite_threshold: 3,
+    current_hospital_visits: _hospitalVisits,
+    is_triggerable: (_dayCount === 11 && _date === '01-01' && _timeSlot === '下午' && _hospitalVisits >= 3),
+    flag: '樱子死讯',
+    is_reversible: false,
+    is_optional: true,
+    branches: [
+      {
+        branch_id: 1,
+        name: '得知"死讯"',
+        condition: '主角在88市民医院 PM2:00 + 累计访问≥3次',
+        scene: '88市民医院护士站',
+        narrative: '你走进市民医院，护士站的护士看见你，神色一变，低声说："杉本樱子小姐……她的病情昨天夜里突然恶化，已经转入重症病房了。医生说……要有心理准备。"你愣在原地，走廊里消毒水的味道刺鼻。护士又说："她之前一直念叨着要见一个「读到日记的人」，但重症病房现在不允许探视。"你忽然想起日记本里那些稚嫩的字迹，心头一沉。樱子——那个你可能从未正式见过面的女孩，仿佛在某个你看不见的角落，安静地走向终点。'
+      },
+      {
+        branch_id: 2,
+        name: '未触发（条件未满足）',
+        condition: '主角不在医院 OR 累计访问<3次',
+        scene: '无',
+        narrative: '事件未触发。需在12/22~1/1期间累计访问市民医院≥3次，且1/1下午在医院。',
+        consequence: '此事件跳过，后续美佐子浴室洗背事件也不会触发。但1/7仍可见到樱子（若无死讯，反告白性质改变）。'
+      }
+    ],
+    consequences: {
+      variables: {
+        '主角.mood': -15,
+        '杉本樱子.affection': 5,
+        '杉本樱子.trust': 10
+      },
+      events: ['event_day11_樱子死讯'],
+      flag_set: '樱子死讯',
+      next_event: {
+        event_id: 'event_day11_misako_bath_washing',
+        trigger: '同日 PM11:00 鸣泽家浴室',
+        condition: '樱子死讯=true AND 鸣泽美佐子.affection≥30',
+        description: '美佐子在深夜发现主角因樱子"死讯"而失眠，主动来浴室帮主角洗背安慰——这是美佐子线的关键亲密事件，也是美佐子酒后场景的前置铺垫。'
+      }
+    },
+    truth_reveal: {
+      date: '01-07',
+      day: 17,
+      description: '1/7深夜 市民医院樱花树下，樱子活着出现，反向主角告白（CG_KEY_010 / CG_HIDDEN_001）。"死讯"是医院误诊+樱子刻意隐瞒，目的是想看看"读到日记的人"是否会为她难过。',
+      flag_required: '樱子死讯 AND 日记全收集 AND 杉本樱子.affection≥60',
+      cg_unlock: 'CG_HIDDEN_001（需5本日记全收集）'
+    },
+    is_completed: _sakurakoDeathNews
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     四、加藤美纪双身份揭示（隐藏剧情，美纪线转折点）
+     ════════════════════════════════════════════════════════════ */
+  miki_dual_identity: {
+    plot_id: 'miki_dual_identity',
+    plot_name: '加藤美纪双身份揭示',
+    plot_type: '隐藏剧情',
+    heroine_id: 4,
+    heroine_name: '加藤美纪',
+    description: '12月27日上午8点，主角在便利商店从长冈芳树处得知美纪的秘密：她的真实身份是"铃木裕子"，双身份设定。此事件是美纪线的转折点，主角可选择揭穿或保守秘密。后续会触发12/29美纪威胁事件与12/30深夜完整揭示。',
+    trigger_condition: {
+      day: 6,
+      date: '12-27',
+      time_slot: '上午',
+      specific_time: 'AM8:00',
+      location: '八十八町便利商店',
+      prerequisite: 'has_met_加藤美纪=true AND 长冈芳树线进行中（芳树已偷拍美纪）',
+      auto_trigger: false,
+      condition_detail: '主角需在12-27上午前往便利商店，且芳树线已推进至偷拍阶段'
+    },
+    flag: '美纪双身份揭示',
+    is_reversible: false,
+    is_optional: true,
+    prereq_flags: ['has_met_加藤美纪', '芳树偷拍美纪'],
+    branches: [
+      {
+        branch_id: 1,
+        name: '从芳树处得知真相',
+        condition: '主角在便利商店 AM8:00 + 芳树线推进中',
+        scene: '八十八町便利商店门口',
+        narrative: '清晨的便利商店门口，芳树叼着面包把你拉到一旁，眼神里闪着兴奋与算计："嘿，你知道那个加藤美纪吗？我查过了，' +
+          '她根本不叫加藤美纪。她的真名是铃木裕子——一年前转学过来时改了名。我把照片都拍下来了。"他晃了晃手里的偷拍照片，"怎么样，要不要用这个做点文章？"你心头一震，想起美纪那双总是藏着什么的眼睛，所有的疏离与神秘都有了解释。',
+        choices: [
+          {
+            option: '保守秘密，不告诉美纪',
+            consequences: {
+              variables: {
+                '加藤美纪.trust': 10,
+                '主角.mood': -5
+              },
+              flag_set: '美纪秘密保守',
+              next_event: '12/29晚 美纪威胁事件（美纪威胁事件 flag，CG_KEY_006）',
+              note: '主角选择保守秘密后，美纪会察觉主角知情但未揭穿，反而主动以主角秘密相威胁，形成张力'
+            },
+            narrative: '你沉默良久，把芳树推回去："这件事到此为止，别再提了。"芳树撇撇嘴走开。你知道美纪改名一定有她的理由——也许是为了逃避什么。你选择把这个秘密埋在心里，但从此看美纪的眼神变了，她也察觉到了这种变化。'
+          },
+          {
+            option: '当面揭穿美纪',
+            consequences: {
+              variables: {
+                '加藤美纪.affection': -10,
+                '加藤美纪.trust': -20,
+                '加藤美纪.jealousy': 10
+              },
+              flag_set: '美纪秘密揭穿',
+              next_event: '12/29晚 美纪威胁事件（美纪威胁事件 flag，CG_KEY_006，强化版）',
+              note: '揭穿会激怒美纪，威胁事件会升级；但若后续处理得当，可加速美纪线推进至 CG_HIDDEN_004'
+            },
+            narrative: '你在校园走廊拦住美纪，开门见山："我知道了，铃木裕子。"她整个人僵住，眼神瞬间冷下来，那种被扒光伪装的愤怒与恐惧交织："……是谁告诉你的？"她咬着牙，"好，既然你知道了——那我们做个交易。"'
+          }
+        ]
+      },
+      {
+        branch_id: 2,
+        name: '未触发（条件未满足）',
+        condition: '主角不在便利商店 OR 芳树线未推进',
+        scene: '无',
+        narrative: '事件未触发。需在12-27上午前往便利商店，且芳树线已推进至偷拍阶段。',
+        consequence: '此事件跳过，美纪线转折点延迟至12/29威胁事件自然触发。'
+      }
+    ],
+    consequences: {
+      variables: {
+        '加藤美纪.affection': 0,
+        '加藤美纪.trust': 5
+      },
+      events: ['event_day06_miki_identity_reveal'],
+      flag_set: '美纪双身份揭示',
+      next_event: {
+        event_id: 'CG_KEY_006',
+        trigger: '12/29晚 八十八学园',
+        condition: '美纪双身份揭示=true AND 加藤美纪.affection≥30',
+        description: '美纪以主角秘密相威胁，揭示其神秘身份（美纪威胁事件 flag）'
+      },
+      final_reveal: {
+        event_id: 'CG_HIDDEN_004',
+        trigger: '12/30深夜 八十八学园神秘地点',
+        condition: '美纪威胁事件=true AND 加藤美纪.affection≥60',
+        description: '揭示加藤美纪双重身份的完整真相（铃木裕子→加藤美纪的改名缘由、逃避的过去、真实感情）'
+      }
+    },
+    is_completed: _mikiDualIdentity,
+    difficulty_note: '轻松难度下芳树会主动找主角告知；地狱难度下需主角主动在便利商店蹲点且 observation≥50 才能从芳树言行中察觉端倪'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     五、西御寺与芳树秘谋（反派事件，唯线反派行动）
+     ════════════════════════════════════════════════════════════ */
+  west_temple_conspiracy: {
+    plot_id: 'west_temple_conspiracy',
+    plot_name: '西御寺与芳树秘谋',
+    plot_type: '反派事件',
+    heroine_id: 1,
+    heroine_name: '鸣泽唯（受影响女角）',
+    description: '1月2日，主角在长冈芳树家偷听到西御寺有友与芳树的阴谋对话。他们正密谋对付主角与唯——这是唯线的关键反派行动，直接关联唯的88公园救出事件（唯获救 flag）与西御寺对峙（西寺对峙 flag）。',
+    trigger_condition: {
+      day: 12,
+      date: '01-02',
+      time_slot: '晚',
+      location: '长冈芳树家',
+      prerequisite: 'has_met_西御寺有友=true AND has_met_长冈芳树=true AND 鸣泽唯.affection≥20',
+      auto_trigger: false,
+      condition_detail: '主角需在1/2晚前往芳树家附近（可借口送还物品或探望），偷听到二人的密谋对话'
+    },
+    flag: '阴谋偷听',
+    is_reversible: false,
+    is_optional: true,
+    antagonists: [
+      { name: '西御寺有友', role: '主谋', motive: '嫉妒主角与唯的关系，意图拆散' },
+      { name: '长冈芳树', role: '帮凶', motive: '被西御寺拉拢，配合偷拍与造谣' }
+    ],
+    target: {
+      heroine_id: 1,
+      heroine_name: '鸣泽唯',
+      danger: '西御寺计划在1/3~1/4间诱骗唯至88公园，制造主角"出轨"假象，使唯心碎离开',
+      consequence_if_unstopped: '1/4 唯获救=false → 唯被诱骗至88公园，遭遇危险；BAD_END 风险大幅提升'
+    },
+    branches: [
+      {
+        branch_id: 1,
+        name: '偷听到完整密谋',
+        condition: '主角在芳树家晚时段 + 唯 affection≥20',
+        scene: '长冈芳树家门外/窗下',
+        narrative: '你借着送还借书的理由来到芳树家，门虚掩着，里面传来两个人的低语。西御寺的声音阴冷："……1月3号晚上，把那个唯骗到88公园去。我已经安排好了人拍照，只要拍到她和陌生男人在一起的照片，那个' +
+          '转校生（指主角）就完了。"芳树的声音有些犹豫："这样会不会太过分？"西御寺冷笑："过分？他抢走了唯，这是他自找的。你也不想自己的偷拍事业曝光吧？"芳树沉默片刻："……好，我配合。"你屏住呼吸退出，心跳如鼓——必须在1/3之前告诉唯，或者想办法阻止。',
+        choices: [
+          {
+            option: '立即告诉唯真相',
+            consequences: {
+              variables: {
+                '鸣泽唯.affection': 15,
+                '鸣泽唯.trust': 20,
+                '鸣泽唯.jealousy': -5
+              },
+              flag_set: '唯警告',
+              next_event: '1/3~1/4 唯有所防备，88公园事件可避免（唯获救=true 前置）',
+              cg_unlock: null,
+              note: '唯会感激主角的信任，但也会因得知西御寺恶意而受伤'
+            },
+            narrative: '你连夜找到唯，把偷听到的阴谋原原本本告诉她。唯先是震惊，然后眼眶泛红："西御寺……他怎么能……"她握紧你的手，"谢谢你告诉我。我不会有事的。"她的眼神里第一次有了完全的信任。'
+          },
+          {
+            option: '独自去88公园阻止',
+            consequences: {
+              variables: {
+                '鸣泽唯.affection': 5,
+                '主角.mood': -10
+              },
+              flag_set: 'solo_prevent_conspiracy',
+              next_event: '1/3~1/4 88公园对峙事件（西寺对峙 前置）',
+              cg_unlock: 'CG_KEY_007',
+              note: '主角独自面对西御寺，风险较高但唯不会被牵扯；对峙事件需主角 strength≥40 或 speech≥50'
+            },
+            narrative: '你决定独自解决，不想让唯卷入。1/3晚你提前到88公园埋伏，等西御寺的人出现。这一夜的对峙将直接决定唯线的走向。'
+          },
+          {
+            option: '装作不知，继续观察',
+            consequences: {
+              variables: {
+                '鸣泽唯.affection': 0,
+                '鸣泽唯.jealousy': 10
+              },
+              flag_set: 'conspiracy_ignored',
+              next_event: '1/3~1/4 88公园事件照常发生（唯获救 需另寻途径达成）',
+              cg_unlock: null,
+              bad_ending_risk: '若未在1/4前补救，唯可能遭遇危险，BAD_END_5 嫉妒失控风险提升',
+              note: '装作不知会让阴谋推进，后续需付出更大代价才能救出唯'
+            },
+            narrative: '你犹豫了，决定先看看情况再说。但时间一天天过去，阴谋的车轮已经开始转动——1/3晚，唯收到了一条匿名短信。'
+          }
+        ]
+      },
+      {
+        branch_id: 2,
+        name: '未触发（条件未满足）',
+        condition: '主角不在芳树家 OR 唯 affection<20',
+        scene: '无',
+        narrative: '事件未触发。需在1/2晚前往芳树家，且唯 affection≥20。若未触发，1/3~1/4的88公园事件仍会发生，但主角无预警，救援唯的难度大幅提升。',
+        consequence: '阴谋偷听 未设置，后续 唯获救 的达成路径受限，唯线 True End 风险提升'
+      }
+    ],
+    consequences: {
+      variables: {
+        '主角.mood': -10,
+        '主角.willpower': 0
+      },
+      events: ['event_day12_west_temple_conspiracy'],
+      flag_set: '阴谋偷听',
+      next_event: {
+        event_id: 'CG_KEY_007',
+        trigger: '1/3~1/4 88公园',
+        condition: '阴谋偷听=true',
+        description: '西御寺与芳树秘谋事件（已记录于CG触发条件表）'
+      },
+      related_flags: ['西寺对峙', '唯获救', '唯警告'],
+      impact_on_true_end: '唯线 True End（CG_MAIN_001）要求 唯获救=true + 西寺对峙=true，本事件是二者的前置触发器'
+    },
+    is_completed: _conspiracyOverheard,
+    difficulty_note: '轻松难度下芳树会主动邀请主角来家（降低触发门槛）；地狱难度下需主角主动观察且 observation≥40 才能从芳树异常行为中察觉密谋'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     六、杉本樱子线解锁（隐藏女角，第20位可攻略女角）
+     ════════════════════════════════════════════════════════════ */
+  樱子线解锁: {
+    plot_id: '樱子线解锁',
+    plot_name: '杉本樱子线解锁',
+    plot_type: '隐藏女角',
+    heroine_id: 20,
+    heroine_name: '杉本樱子',
+    description: '杉本樱子是同级生2的第20位可攻略女角，隐藏在市民医院的重症病房。需在12/22~1/7期间累计访问市民医院达到难度对应次数（普通5次）才能解锁她的攻略路线。她是日记本系统、樱子死讯、真结局（CG_HIDDEN_005）的核心关联女角。',
+    trigger_condition: {
+      day_range: [1, 17],
+      date_range: '12-22 ~ 01-07',
+      time_slot: '任意',
+      location: '88市民医院',
+      prerequisite: '累计访问市民医院达到难度门槛',
+      auto_trigger: true,
+      threshold: _dm.sakurako_unlock_visits
+    },
+    current_hospital_visits: _hospitalVisits,
+    unlock_threshold: _dm.sakurako_unlock_visits,
+    is_unlocked: _sakurakoRouteUnlocked,
+    flag: '樱子线解锁',
+    is_reversible: false,
+    is_optional: true,
+    unlock_event: {
+      day: '累计访问达标后的下一次访问',
+      location: '88市民医院重症病房外走廊',
+      narrative: '当你第' + _dm.sakurako_unlock_visits + '次走进市民医院时，护士终于不再拦你："杉本小姐说想见你。她就在重症病房。"推开病房门，你看见一个瘦弱的女孩靠在床头，怀里抱着一本与日记本一模一样的本子。她抬起头，苍白的脸上浮现出一个虚弱的微笑："你终于来了……读到日记的人。我叫杉本樱子。"她的眼神里有一种超越年龄的沉静，仿佛已经看穿了一切。',
+      cg_unlock: 'cg_sakurako_first_meeting',
+      variables: {
+        '杉本樱子.affection': 10,
+        '杉本樱子.trust': 10,
+        '主角.mood': 5
+      }
+    },
+    route_details: {
+      heroine_id: 20,
+      heroine_name: '杉本樱子',
+      age: 17,
+      occupation: '市民医院重症患者',
+      personality: '沉静、通透、带有宿命感；知道自己时日无多，但不愿被同情',
+      romance_path: '解锁后可在每日任意时段前往市民医院探望樱子，推进她的好感度',
+      key_events: [
+        { event: '樱子线解锁', date: '访问达标后', flag: '樱子线解锁' },
+        { event: '樱子"死讯"', date: '1/1 PM2:00', flag: '樱子死讯', prerequisite: '樱子线解锁 + 累计访问≥3次' },
+        { event: '樱子反告白', date: '1/7下午', flag: 'CG_KEY_010', prerequisite: '樱子死讯' },
+        { event: '樱子隐藏反告白', date: '1/7深夜', flag: 'CG_HIDDEN_001', prerequisite: '樱子死讯 + 日记全收集 + 樱子 affection≥60' }
+      ],
+      true_end_condition: '樱子 affection≥60 + 日记全收集 + 樱子死讯 + 变数屋全解锁 → 触发 CG_HIDDEN_005 真结局',
+      note: '樱子是唯一一个不要求 savings≥50000 的女角——她的 True End 与日记本系统深度绑定，是真结局（CG_HIDDEN_005）的关键'
+    },
+    difficulty_thresholds: {
+      '轻松': 3,
+      '普通': 5,
+      '挑战': 7,
+      '地狱': 10
+    },
+    is_completed: _sakurakoRouteUnlocked,
+    meta_note: '樱子线解锁是隐藏女角系统，不影响其他19位女角的攻略。但若同时推进樱子线与其他女角线，需注意 jealousy 互斥——樱子的 jealousy 机制特殊：她因病情不会嫉妒其他女角（jealousy 锁定为0），但其他女角若得知主角频繁探望"重症病房的女孩"，可能产生复杂反应。'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     七、毕业生外传彩蛋（隐藏剧情·9.B.19·同级生1 联动彩蛋）
+     ════════════════════════════════════════════════════════════ */
+  graduate_side_story: {
+    plot_id: 'graduate_side_story',
+    plot_name: '毕业生外传彩蛋',
+    plot_type: '隐藏剧情',
+    description: '同级生1的5位毕业生女角（齐藤澪/齐藤澪奈/铃木美穗/仁科/正树夏子）集体回忆往事的彩蛋剧情。当主角与任一毕业生女角 affection≥50 且 day14+ 时，在88车站候车室黄昏时分触发。5位女角邀请主角加入"同级生同盟"，各 affection +5，解锁彩蛋 CG。',
+    trigger_condition: {
+      day_min: 14,
+      time_slot: '黄昏',
+      location: '88车站候车室',
+      prerequisite: '主角与 5 位毕业生女角（id=15,16,17,18,19）任一 affection >= 50',
+      auto_trigger: false,
+      heroine_ids: [15, 16, 17, 18, 19],
+      affection_min: 50
+    },
+    current_max_affection: _graduateMaxAffection,
+    is_triggerable: _graduateSideStoryTriggerable,
+    flag: '毕业生外传完成',
+    is_reversible: false,
+    is_optional: true,
+    heroines: [
+      { heroine_id: 15, heroine_name: '齐藤澪' },
+      { heroine_id: 16, heroine_name: '齐藤澪奈' },
+      { heroine_id: 17, heroine_name: '铃木美穗' },
+      { heroine_id: 18, heroine_name: '仁科' },
+      { heroine_id: 19, heroine_name: '正树夏子' }
+    ],
+    branches: [
+      {
+        branch_id: 1,
+        name: '触发毕业生回忆',
+        condition: 'day_count >= 14 AND 88车站候车室 AND 黄昏 AND 5 位毕业生女角任一 affection >= 50',
+        scene: '88车站候车室，黄昏时分',
+        narrative: '黄昏的88车站候车室，夕阳把长椅染成金色。你正等车时，5个熟悉的身影走了进来——齐藤澪、齐藤澪奈、铃木美穗、仁科、正树夏子。她们是同级生1时代的毕业生，如今各自有着不同的生活。澪先开口："好久不见啊，学弟。听说你这个寒假在88町闹出不小的动静？"澪奈笑着接话："我们几个老同学聊起了当年的事，突然觉得……你跟那时候的我们有点像。"美穗递过一张手写的邀请卡："我们成立了一个「同级生同盟」，专门纪念那些年在88町度过的青春。你要不要加入？"仁科和正树夏子对视一眼，眼中闪着温柔的光。',
+        choices: [
+          {
+            option: '加入同级生同盟',
+            consequences: {
+              variables: {
+                '齐藤澪.affection': 5,
+                '齐藤澪奈.affection': 5,
+                '铃木美穗.affection': 5,
+                '仁科.affection': 5,
+                '正树夏子.affection': 5,
+                '主角.mood': 10
+              },
+              flag_set: '毕业生外传完成',
+              cg_unlock: 'CG_HIDDEN_006_同级生同盟',
+              note: '5 位毕业生女角 affection 各 +5，解锁彩蛋 CG_HIDDEN_006。主角被授予"同盟荣誉成员"称号。'
+            },
+            narrative: '你微笑着接过邀请卡："我很荣幸。"5位毕业生女角同时露出笑容，澪拍了拍你的肩膀："欢迎加入，同盟的新成员。"夕阳下，6个人的影子在候车室的地板上拉得很长，像是一幅跨越时代的青春画卷。'
+          },
+          {
+            option: '婉拒邀请',
+            consequences: {
+              variables: {
+                '主角.mood': 5,
+                '齐藤澪.affection': 0,
+                '齐藤澪奈.affection': 0
+              },
+              flag_set: '毕业生外传完成',
+              cg_unlock: null,
+              note: '婉拒不会损失好感，但仍标记 毕业生外传完成=true（彩蛋已触发，不可重复）。'
+            },
+            narrative: '你婉言谢绝："谢谢你们的好意，但我现在还没准备好。"澪奈理解地点头："没关系，邀请一直有效。"5位毕业生女角各自向你道别，消失在黄昏的街头。'
+          }
+        ]
+      },
+      {
+        branch_id: 2,
+        name: '未触发（条件未满足）',
+        condition: 'day_count < 14 OR 5 位毕业生女角 affection 均 < 50',
+        scene: '无',
+        narrative: '事件未触发。需在 day14 后，且与 5 位毕业生女角（齐藤澪/齐藤澪奈/铃木美穗/仁科/正树夏子）任一 affection≥50 时，于黄昏在88车站候车室触发。',
+        consequence: '此事件跳过，无后续影响（彩蛋剧情，不影响主线）。'
+      }
+    ],
+    consequences: {
+      variables: {
+        '齐藤澪.affection': 5,
+        '齐藤澪奈.affection': 5,
+        '铃木美穗.affection': 5,
+        '仁科.affection': 5,
+        '正树夏子.affection': 5
+      },
+      events: ['event_graduate_side_story'],
+      flag_set: '毕业生外传完成',
+      cg_unlock: 'CG_HIDDEN_006_同级生同盟（彩蛋CG）'
+    },
+    is_completed: _graduateSideStoryDone,
+    meta_note: '毕业生外传彩蛋是同级生1与同级生2的联动剧情，5位毕业生女角（id=15,16,17,18,19）作为彩蛋角色登场。此剧情为隐藏彩蛋，不影响主线推进，但解锁后5位女角 affection 各 +5。'
+  }
+};
+
+/* ── 输出运行时校验信息（供 D0 控制器读取）── */
+const _diaryProgress = _diaryCollectedCount + '/5';
+const _shopProgress = _variableShopVisits + '/10';
+const _hospitalProgress = _hospitalVisits + '/' + _dm.sakurako_unlock_visits;
+const _hiddenCompletedCount = [
+  _diaryAllCollected,
+  _variableShopAllUnlocked,
+  _sakurakoDeathNews,
+  _mikiDualIdentity,
+  _conspiracyOverheard,
+  _sakurakoRouteUnlocked,
+  _graduateSideStoryDone
+].filter(Boolean).length;
+const _allHiddenCompleted = (_hiddenCompletedCount === 7);
+%>
+
+[同级生2 · 隐藏剧情触发器 已加载]
+当前日期：day_count=<%= _dayCount %> / date=<%= _date %> / time_slot=<%= _timeSlot %> / 难度=<%= _diff %>
+当前地点：<%= _location %>
+
+【隐藏剧情进度总览】（已完成 <%= _hiddenCompletedCount %>/7）
+1. 日记本系统：<%= _diaryProgress %>（日记1=<%= _diary1 ? '✓' : '✗' %> / 日记2=<%= _diary2 ? '✓' : '✗' %> / 日记3=<%= _diary3 ? '✓' : '✗' %> / 日记4=<%= _diary4 ? '✓' : '✗' %> / 日记5=<%= _diary5 ? '✓' : '✗' %>）<% if (_diaryAllCollected) { %> → 全收集！可触发 CG_HIDDEN_002<% } %>
+2. 变数屋：访问 <%= _shopProgress %> 次<% if (_variableShopAllUnlocked) { %> → 命运线已解锁！可触发 CG_HIDDEN_003<% } else { %>（命运线需10次解锁）<% } %> / 单次查询消耗 <%= _shopCost %> 日元
+3. 樱子"死讯"：<%= _sakurakoDeathNews ? '✓ 已知' : '✗ 未触发' %><% if (!_sakurakoDeathNews) { %>（1/1 PM2:00 市民医院，需累计访问≥3次，当前 <%= _hospitalVisits %> 次）<% } %>
+4. 美纪双身份揭示：<%= _mikiDualIdentity ? '✓ 已揭示' : '✗ 未触发' %><% if (!_mikiDualIdentity) { %>（12/27 AM8:00 便利商店，需芳树线推进中）<% } %>
+5. 西御寺与芳树秘谋：<%= _conspiracyOverheard ? '✓ 已偷听' : '✗ 未触发' %><% if (!_conspiracyOverheard) { %>（1/2 晚 芳树家，需唯 affection≥20）<% } %>
+6. 杉本樱子线解锁：<%= _sakurakoRouteUnlocked ? '✓ 已解锁' : '✗ 未解锁' %><% if (!_sakurakoRouteUnlocked) { %>（累计访问市民医院 <%= _hospitalProgress %> 次）<% } %>
+7. 毕业生外传彩蛋：<%= _graduateSideStoryDone ? '✓ 已完成' : '✗ 未触发' %><% if (!_graduateSideStoryDone) { %>（day14+ 88车站黄昏，需 5 位毕业生女角任一 affection≥50，当前最高 <%= _graduateMaxAffection %>）<% } %>
+
+【隐藏剧情清单】
+- plot_id：hidden_plots_trigger（共 7 个隐藏剧情）
+- 类型分布：隐藏剧情×3（日记本/美纪双身份/毕业生外传）/ 隐藏机制×1（变数屋）/ 关键事件×1（樱子死讯）/ 反派事件×1（西御寺秘谋）/ 隐藏女角×1（樱子线解锁）
+- 当前难度修正：查询消耗 ×<%= _dm.shop_cost_mult %>（<%= _shopCost %> 日元）/ 樱子线解锁门槛 <%= _dm.sakurako_unlock_visits %> 次 / 日记提示 <%= _dm.diary_hint %>
+
+【真结局（CG_HIDDEN_005）达成条件追踪】
+- 日记全收集：<%= _diaryAllCollected ? '✓' : '✗ (' + _diaryProgress + ')' %>
+- 樱子死讯：<%= _sakurakoDeathNews ? '✓' : '✗' %>
+- 变数屋全解锁：<%= _variableShopAllUnlocked ? '✓' : '✗ (' + _shopProgress + ')' %>
+- 全部达成：<%= _allHiddenCompleted ? '✓ 可在1/7深夜触发真结局' : '✗ 仍需推进' %>
+
+【执行规则】
+1. AI 必须在每日时段切换时检查 HIDDEN_PLOTS 各隐藏剧情的触发条件，满足则自动触发对应分支。
+2. 日记本系统：每本日记有独立的 day_range 与 prerequisite，AI 需在主角到达对应地点且满足条件时提示"发现了日记本"。
+3. 变数屋：仅在晚时段（22:00后）主角自宅可访问；每次查询扣减 money，累计10次解锁命运线；AI 需提示查询消耗。
+4. 樱子"死讯"：仅在1/1 PM2:00 + 市民医院 + 累计访问≥3次时触发；触发后立即设置 樱子死讯 flag，并在同日 PM11:00 检查美佐子浴室洗背事件。
+5. 美纪双身份：12/27 AM8:00 便利商店触发后，需注意12/29威胁事件（美纪威胁事件 flag）与12/30完整揭示（CG_HIDDEN_004）的衔接。
+6. 西御寺秘谋：1/2晚芳树家偷听后，必须提示玩家选择应对策略（告知唯/独自阻止/装作不知），选择直接影响1/3~1/4的88公园事件与唯线 True End。
+7. 樱子线解锁：累计访问达标后，下次访问市民医院触发解锁事件；解锁后樱子成为可攻略女角（heroine_id=20），可在每日任意时段探望。
+8. 隐藏剧情之间相互关联：日记本全收集 + 樱子死讯 + 变数屋全解锁 → 真结局（CG_HIDDEN_005）；美纪双身份 → 美纪线 CG_HIDDEN_004；西御寺秘谋 → 唯线 CG_MAIN_001。
+9. 难度修正：轻松难度门槛降低（查询半价/访问次数减少）；地狱难度门槛提升（查询加倍/访问次数翻倍/部分日记获取条件更严苛）。
+10. 所有隐藏剧情 flag 写入 stat_data.隐藏.* 命名空间，与 chatSheets chronicle 表的 flag_set 字段保持同步。
+11. 毕业生外传彩蛋：day14+ 88车站候车室黄昏时分，5 位毕业生女角（id=15,16,17,18,19）任一 affection≥50 时触发。触发后玩家选择加入同盟或婉拒，加入则 5 位女角 affection 各 +5 并解锁 CG_HIDDEN_006；婉拒不损失好感但仍标记 毕业生外传完成=true。此为彩蛋剧情，不影响主线。

@@ -1,0 +1,17 @@
+{
+  "id": "d2a1f001-0002-4000-8000-000000000014",
+  "scriptName": "超自然关键词检测·提示 AI 驳回为幻想",
+  "findRegex": "(读心|透视|瞬间移动|时间停止|意念控制|意念移物|魔法|咒语|法术|神灵|鬼魂|妖怪|灵异|附身|通灵|时间旅行|平行世界|预知未来|心灵感应|超能力|异能|超感知|超自然)",
+  "replaceString": "[检测到超自然关键词，AI 必须按防超自然准则将此描述驳回为 user 的幻想，引导 user 回到现实叙事]",
+  "trimStrings": [],
+  "placement": [
+    1
+  ],
+  "disabled": false,
+  "markdownOnly": false,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

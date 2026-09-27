@@ -1,0 +1,1176 @@
+project:
+  name: 同级生2
+  worldbookName: 同级生2
+  form: charactercard
+  mvu: true
+  avatar: 头像.png
+
+world:
+  overview: |
+    1995 年 elf 经典恋爱模拟《同级生2》改编卡。故事发生在八十八町，
+    主角是八十八学园三年生，寒假（12-22 ~ 01-07）期间与町内 14 位原作女角
+    + 重制版新增女角（齐藤姐妹/铃木美穗/仁科/正树夏子）展开多线恋爱攻略。
+    核心机制：每日 5 时段（早/上午/下午/晚/深夜）× 17 天 = 85 个时点，
+    每个时点按地点加载当日可能出现的 NPC 条目，EJS 调度器精准控制 token。
+    经济系统：打工赚钱（6 种工作）+ 强制三餐 + 礼物消费 + 储蓄目标（修学旅行费 5万）。
+    RPG 养成：6 维属性 + 3 副状态 + LCG 确定性骰子判定（工作/约会/学业/事件/经济）。
+    NSFW 重 H：参考系统哥的末日 bound_women 表，每位女角含 NSFW 字段
+    （衣着/暴露度/湿润度/皮肤痕迹/兴奋程度/精液残留/占有印记/H 经验/性癖偏好）。
+
+  regions:
+    - name: 自宅周边
+      scenes: [主角自宅, 鸣泽家(唯与美佐子), 水野家(友美), 信良家, 芳树家]
+      description: 主角住所附近，邻居住宅集中区
+    - name: 八十八学园
+      scenes: [校庭, 体育馆后, 弓箭练习场, 校舍走廊, 屋顶]
+      description: 主角就读学校，寒假期间部分开放
+    - name: 八十八町商业区
+      scenes: [88车站, 旅行代理店, 便利店, 咖啡店《憩》(美佐子经营), 88公园, 白蛇池公园]
+      description: 町内主要活动区域
+    - name: 八十八海岸
+      scenes: [海岸, 海水浴场, 灯塔]
+      description: 海边区域，重要约会点
+    - name: 温泉乡
+      scenes: [旅馆, 温泉, 如月神宫, 游园地, 电影院, 游乐中心, 才艺中心]
+      description: 篠原泉美温泉之旅+永岛佐知子线主要场景
+    - name: 88市民医院
+      scenes: [病栋, 美佐子病房, 樱子病房]
+      description: 美佐子线关键场景
+    - name: 保育园
+      scenes: [花园保育园, 安田爱美办公室]
+      description: 安田爱美线主要场景
+
+  factions:
+    - name: 主角团
+      description: 主角+唯+友美+信良+泉美+美佐子+美里等核心朋友圈
+      key_members: [主角, 鸣泽唯, 水野友美, 川尻信良, 筱原泉美]
+    - name: 西御寺财阀
+      description: 西御寺有友为主的对立势力，欲以财力夺取唯
+      key_members: [西御寺有友]
+    - name: 学园教师阵营
+      description: 片桐美铃(主角导师)+天道新干线(虐待狂教师)
+      key_members: [片桐美铃, 天道新干线]
+    - name: 八十八町女性网络
+      description: 14+ 位女角构成的复杂关系网，含嫉妒链/家族关系
+      key_members: [鸣泽唯, 鸣泽美佐子, 舞岛可怜, 永岛佐知子, 永岛久美子]
+
+characters:
+  # ── MVP 优先：鸣泽唯 + 鸣泽美佐子（核心母女线） ──
+  - name: 鸣泽唯
+    basic:
+      age: 18
+      gender: 女
+      blood_type: O
+      identity: 八十八学园三年生，主角义妹
+      relationship: 8岁起与主角同居一个屋檐下的义妹，对学校男生从不感兴趣
+    appearance:
+      - 黑色长发及腰，常以发带束起
+      - 校服外常套米色开衫
+      - 在家时常穿宽松T恤+短裙
+    personality:
+      base: 隐忍克制
+      stages:
+        - name: 客气期
+          main: [客气, 疏离]
+          accent: [好奇]
+          description: 日常客气相处，对主角保持兄妹距离
+        - name: 警觉期
+          main: [警觉, 试探]
+          accent: [依赖]
+          description: 西御寺开始介入后，唯对主角态度变化敏感
+        - name: 心动期
+          main: [心动, 害羞]
+          accent: [依赖]
+          description: 西御寺事件后，唯对主角产生明确情愫
+        - name: 亲密期
+          main: [温柔, 占有]
+          accent: [脆弱]
+          description: 深度羁绊建立，占有欲显现，愿意为主角奉献；90~100 子阶段：完全交付身心，主动索取，性方面觉醒
+    tri_faceted:
+      needed: true
+      facets:
+        - trigger: 与主角日常相处
+          mode: 客气的义妹，话不多但贴心
+        - trigger: 西御寺介入或主角与其他女角亲密
+          mode: 警觉的少女，嫉妒与不安浮现
+        - trigger: 与主角单独相处的深夜
+          mode: 渴望亲密的女孩，欲求与脆弱并存
+    nsfw: 重H，含衣着/暴露/湿润/兴奋/精液/占有/性癖偏好，含初吻/初H记忆
+
+  - name: 鸣泽美佐子
+    basic:
+      age: 38
+      gender: 女
+      blood_type: O
+      identity: 咖啡店《憩》老板娘，唯的亲生母亲
+      relationship: 主角的义母（前夫是主角的远房叔父），独力经营咖啡店
+    appearance:
+      - 栗色长发盘起或披肩
+      - 拥有 38 岁熟女的丰满身材
+      - 工作时穿黑色连衣裙+围裙
+    personality:
+      base: 干练温柔
+      stages:
+        - name: 关怀期
+          main: [关怀, 干练]
+          accent: [疲惫]
+          description: 经营咖啡店+照顾唯，对主角视如己出
+        - name: 醉酒期
+          main: [脆弱, 依赖]
+          accent: [欲求]
+          description: 12-26 起酒后场景，美佐子展现作为女人的脆弱
+        - name: 暧昧期
+          main: [暧昧, 试探]
+          accent: [愧疚]
+          description: 主角开始帮美佐子擦身/披衣，关系跨越母线
+        - name: 亲密期
+          main: [依赖, 顺从]
+          accent: [欲求]
+          description: 跨越禁忌，主动索取；90~100 子阶段：完全交付，但对女儿唯怀有愧疚，最终告白
+    tri_faceted:
+      needed: true
+      facets:
+        - trigger: 咖啡店经营时段
+          mode: 干练老板娘，待客周到
+        - trigger: 醉酒/浴室/深夜场景
+          mode: 脆弱女人，依赖主角
+        - trigger: 唯在场或被察觉时
+          mode: 愧疚母亲，刻意保持距离
+    nsfw: 重H，含酒后失态/浴室擦身/深夜客厅H等场景，含全套 NSFW 字段
+
+  # ── 其他原作女角（按 MVP 验证后批量填充） ──
+  - name: 舞岛可怜
+    basic:
+      age: 18
+      gender: 女
+      blood_type: A
+      identity: 八十八学园同级，人气No.1偶像歌手
+      relationship: 同级生，因工作忙碌很少到校
+    appearance: [金发碧眼，舞台装与校服反差大]
+    personality:
+      base: 高傲孤独
+      stages: [初识期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 加藤美纪
+    basic:
+      age: 18
+      gender: 女
+      blood_type: AB
+      identity: 八十八学园同级，神秘眼镜少女
+      relationship: 同级生，少与人交谈，戴厚重眼镜
+    appearance: [厚重黑框眼镜，遮住真面目]
+    personality:
+      base: 神秘内向
+      stages: [初识期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 筱原泉美
+    basic:
+      age: 18
+      gender: 女
+      blood_type: A
+      identity: 八十八学园同级，射箭部社长，筱原重工社长千金
+      relationship: 同级生，说话像男孩子，被主角当男性友人
+    appearance: [短发利落，运动装束，眼神锐利]
+    personality:
+      base: 豪爽男儿气
+      stages: [兄弟期, 暧昧期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 南川洋子
+    basic:
+      age: 18
+      gender: 女
+      blood_type: O
+      identity: 八十八学园最粗暴女孩，机车行女儿
+      relationship: 同级生，与主角从一年级起经常吵架
+    appearance: [机车皮衣，短发，眼神桀骜]
+    personality:
+      base: 桀骜泼辣
+      stages: [吵架期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 都筑梢江
+    basic:
+      age: 16
+      gender: 女
+      blood_type: B
+      identity: 八十八学园一年级生，主角学妹
+      relationship: 学妹，从以前就对主角很有兴趣
+    appearance: [双马尾，校服+长袜，古灵精怪表情]
+    personality:
+      base: 古灵精怪
+      stages: [跟踪期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 水野友美
+    basic:
+      age: 18
+      gender: 女
+      blood_type: A
+      identity: 八十八学园同级，住在主角家隔壁的青梅竹马
+      relationship: 青梅竹马，校内有名才女，喜欢读书和花卉
+    appearance: [黑色长发，文学少女气质，校服+发卡]
+    personality:
+      base: 文静温柔
+      stages: [青馥期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 安田爱美
+    basic:
+      age: 21
+      gender: 女
+      blood_type: O
+      identity: 花园保育园保母
+      relationship: 因过去不愉快回忆对男性抱有强烈猜疑心
+    appearance: [温柔系装扮，长裙+开衫，温和表情下隐藏戒备]
+    personality:
+      base: 戒备温柔
+      stages: [戒备期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 田中美沙
+    basic:
+      age: 20
+      gender: 女
+      blood_type: B
+      identity: 体育大学二年级生（《同级生1》女主）
+      relationship: 寒假到八十八町朋友家玩，与主角重逢
+    appearance: [运动系身材，短发，活力装扮]
+    personality:
+      base: 活力直率
+      stages: [重逢期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 片桐美铃
+    basic:
+      age: 25
+      gender: 女
+      blood_type: A
+      identity: 八十八学园美人教师，主角导师
+      relationship: 师生关系，能够温柔理智地了解学生
+    appearance: [职业套装，长发盘起，眼镜下温柔眼神]
+    personality:
+      base: 理智温柔
+      stages: [师长期, 暧昧期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 野野村美里
+    basic:
+      age: 21
+      gender: 女
+      blood_type: B
+      identity: 入梅兴业的导游小姐
+      relationship: 在旅行代理店偶遇，性格开朗以工作为傲
+    appearance: [导游制服，明亮笑容，时尚感强]
+    personality:
+      base: 开朗职业
+      stages: [偶遇期, 试探期, 心动期, 亲密期]
+    tri_faceted:
+      needed: true
+
+  - name: 永岛久美子
+    basic:
+      age: 14
+      gender: 女
+      identity: 走失小女孩，永岛佐知子的女儿
+      relationship: 01-01 主角在自宅收留，01-05 攻略完成
+    appearance: [短发，孩童体型，天真表情]
+    personality:
+      base: 天真依赖
+      stages: [迷路期, 信任期, 依赖期, 亲密期]
+    tri_faceted: { needed: false }
+
+  - name: 永岛佐知子
+    basic:
+      age: 32
+      gender: 女
+      identity: 久美子的母亲，单身母亲
+      relationship: 01-03 起接久美子回家，与主角相识
+    appearance: [成熟女性风韵，职业装，疲惫但坚强]
+    personality:
+      base: 坚强疲惫
+      stages: [感激期, 试探期, 心动期, 亲密期]
+    tri_faceted: { needed: true }
+
+  # ── 重制版新增女角（待资料补充） ──
+  - name: 齐藤澪
+    basic:
+      gender: 女
+      identity: 八十八学园同级，齐藤姐妹之一
+      relationship: 与姐妹互斥攻略（不能同时攻略）
+    appearance: [双胞胎设定]
+    personality:
+      base: 待补充
+      stages: [初识期, 心动期, 亲密期]
+    tri_faceted: { needed: false }
+    note: 重制版新增，资料待补充
+
+  - name: 齐藤澪奈
+    basic:
+      gender: 女
+      identity: 八十八学园同级，齐藤姐妹之一
+      relationship: 与姐妹互斥攻略
+    appearance: [双胞胎设定]
+    personality:
+      base: 待补充
+      stages: [初识期, 心动期, 亲密期]
+    tri_faceted: { needed: false }
+    note: 重制版新增，资料待补充
+
+  - name: 铃木美穗
+    basic:
+      gender: 女
+      identity: 待补充
+      relationship: 与田中美沙互斥攻略
+    personality:
+      base: 待补充
+      stages: [初识期, 心动期, 亲密期]
+    tri_faceted: { needed: false }
+    note: 重制版新增，资料待补充
+
+  - name: 仁科
+    basic:
+      gender: 女
+      identity: 待补充
+      relationship: 与正树夏子互斥攻略
+    personality:
+      base: 待补充
+      stages: [初识期, 心动期, 亲密期]
+    tri_faceted: { needed: false }
+    note: 重制版新增，资料待补充
+
+  - name: 正树夏子
+    basic:
+      gender: 女
+      identity: 待补充
+      relationship: 与仁科互斥攻略
+    personality:
+      base: 待补充
+      stages: [初识期, 心动期, 亲密期]
+    tri_faceted: { needed: false }
+    note: 重制版新增，资料待补充
+
+  # ── 主要男性 NPC（关系人，不可攻略但影响剧情） ──
+  - name: 川尻信良
+    type: NPC
+    function: 主角知心朋友，喜欢洋子，触发洋子线关键事件
+    appearance: [柔道服，憨厚表情]
+
+  - name: 长冈芳树
+    type: NPC
+    function: 偷拍问题儿童，八十八学园仅次于主角的问题儿童
+    appearance: [相机常备，猥琐表情]
+
+  - name: 西御寺有友
+    type: NPC
+    function: 西御寺财阀独生子，反派对手，欲夺取唯
+    appearance: [西装革履，傲慢表情]
+
+  - name: 天道新干线
+    type: NPC
+    function: 33岁虐待狂教师，与主角冲突不断
+    appearance: [教师制服，凶恶表情]
+
+style:
+  perspective: 第二人称（你）
+  tone: 口语化，带有青春感与肉感并存
+  mood: 温馨+情色
+  reference: 仿原作 elf 美少女游戏的青春日常笔触，H 场景借鉴系统哥的末日的细节密度
+
+entries:
+  # ── 世界观与扮演准则（before_char） ──
+  - name: 世界设定总纲
+    type: 世界观
+    path: 世界书/世界观/世界设定总纲.yaml
+  - name: 八十八町地点表
+    type: 世界观
+    path: 世界书/世界观/八十八町地点表.yaml
+  - name: 寒假事件总表
+    type: 世界观
+    path: 世界书/世界观/寒假事件总表.yaml
+  - name: 知识边界总纲
+    type: 世界观
+    path: 世界书/世界观/知识边界总纲.yaml
+  - name: 原作剧情桥段库
+    type: 世界观
+    path: 世界书/世界观/原作剧情桥段库.txt
+
+  - name: 防全知
+    type: 扮演准则
+    path: 世界书/扮演准则/防全知.txt
+  - name: 合理性审查
+    type: 扮演准则
+    path: 世界书/扮演准则/合理性审查.yaml
+  - name: 防绝望
+    type: 扮演准则
+    path: 世界书/扮演准则/防绝望.yaml
+  - name: 防神化
+    type: 扮演准则
+    path: 世界书/扮演准则/防神化.yaml
+  - name: 经济护栏
+    type: 扮演准则
+    path: 世界书/扮演准则/经济护栏.yaml
+  - name: 道德伦理
+    type: 扮演准则
+    path: 世界书/扮演准则/道德伦理.yaml
+  - name: 法律意识
+    type: 扮演准则
+    path: 世界书/扮演准则/法律意识.txt
+  - name: 防崩溃
+    type: 扮演准则
+    path: 世界书/扮演准则/防崩溃.yaml
+  - name: 防口胡
+    type: 扮演准则
+    path: 世界书/扮演准则/防口胡.txt
+  - name: 思维链
+    type: 扮演准则
+    path: 世界书/扮演准则/思维链.txt
+
+  - name: 关键事件时间线
+    type: 时间线
+    path: 世界书/时间线/关键事件.yaml
+
+  - name: 自宅周边
+    type: 地理
+    path: 世界书/地理/自宅周边.txt
+    part: region
+  - name: 八十八学园
+    type: 地理
+    path: 世界书/地理/八十八学园.txt
+    part: region
+  - name: 八十八町商业区
+    type: 地理
+    path: 世界书/地理/八十八町商业区.txt
+    part: region
+  - name: 八十八海岸
+    type: 地理
+    path: 世界书/地理/八十八海岸.txt
+    part: region
+  - name: 温泉乡
+    type: 地理
+    path: 世界书/地理/温泉乡.txt
+    part: region
+  - name: 88市民医院
+    type: 地理
+    path: 世界书/地理/88市民医院.txt
+    part: region
+  - name: 保育园
+    type: 地理
+    path: 世界书/地理/保育园.txt
+    part: region
+
+  # ── EJS 预处理（before_char） ──
+  - name: D0系统控制器
+    type: EJS预处理
+    path: 世界书/EJS预处理/D0系统控制器.txt
+  - name: 角色性格控制器
+    type: EJS预处理
+    path: 世界书/EJS预处理/角色性格控制器.txt
+  - name: 世界观场景控制器
+    type: EJS预处理
+    path: 世界书/EJS预处理/世界观场景控制器.txt
+  # 寒假日程调度器（17 个日期文件）作为子条目动态加载
+  - name: 寒假日程调度器
+    type: EJS预处理
+    path: 世界书/EJS预处理/寒假日程调度器/_公共时段.txt
+    note: 12-22 ~ 01-07 共 17 个日期文件，按 day_count 动态加载
+
+  # ── 角色与 NPC（after_char） ──
+  - name: 主角设定
+    type: 角色
+    path: 世界书/角色/主角设定.txt
+    part: basic
+  - name: 玩家画像
+    type: 角色
+    path: 世界书/角色/玩家画像.txt
+    part: other
+  # 鸣泽唯（row_id=1，义妹）
+  - name: 鸣泽唯_基础信息
+    type: 角色
+    path: 世界书/角色/鸣泽唯/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 鸣泽唯_性格调色盘
+    type: 角色
+    path: 世界书/角色/鸣泽唯/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 鸣泽唯_三面性
+    type: 角色
+    path: 世界书/角色/鸣泽唯/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 鸣泽美佐子（row_id=2，义母）
+  - name: 鸣泽美佐子_基础信息
+    type: 角色
+    path: 世界书/角色/鸣泽美佐子/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 鸣泽美佐子_性格调色盘
+    type: 角色
+    path: 世界书/角色/鸣泽美佐子/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 鸣泽美佐子_三面性
+    type: 角色
+    path: 世界书/角色/鸣泽美佐子/三面性.txt
+    part: tri_faceted
+    scope: specific
+  - name: 鸣泽美佐子_NSWF反差
+    type: 角色
+    path: 世界书/角色/鸣泽美佐子/NSFW反差.txt
+    part: nsfw
+    scope: specific
+  # 舞岛可怜（row_id=3，偶像）
+  - name: 舞岛可怜_基础信息
+    type: 角色
+    path: 世界书/角色/舞岛可怜/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 舞岛可怜_性格调色盘
+    type: 角色
+    path: 世界书/角色/舞岛可怜/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 舞岛可怜_三面性
+    type: 角色
+    path: 世界书/角色/舞岛可怜/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 加藤美纪（row_id=4，大小姐）
+  - name: 加藤美纪_基础信息
+    type: 角色
+    path: 世界书/角色/加藤美纪/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 加藤美纪_性格调色盘
+    type: 角色
+    path: 世界书/角色/加藤美纪/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 加藤美纪_三面性
+    type: 角色
+    path: 世界书/角色/加藤美纪/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 筱原泉美（row_id=5，文学少女，1.5倍敏感体质）
+  - name: 筱原泉美_基础信息
+    type: 角色
+    path: 世界书/角色/筱原泉美/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 筱原泉美_性格调色盘
+    type: 角色
+    path: 世界书/角色/筱原泉美/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 筱原泉美_三面性
+    type: 角色
+    path: 世界书/角色/筱原泉美/三面性.txt
+    part: tri_faceted
+    scope: specific
+  - name: 筱原泉美_NSWF反差
+    type: 角色
+    path: 世界书/角色/筱原泉美/NSFW反差.txt
+    part: nsfw
+    scope: specific
+  # 南川洋子（row_id=6，运动型）
+  - name: 南川洋子_基础信息
+    type: 角色
+    path: 世界书/角色/南川洋子/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 南川洋子_性格调色盘
+    type: 角色
+    path: 世界书/角色/南川洋子/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 南川洋子_三面性
+    type: 角色
+    path: 世界书/角色/南川洋子/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 都筑梢江（row_id=7，酒吧老板娘）
+  - name: 都筑梢江_基础信息
+    type: 角色
+    path: 世界书/角色/都筑梢江/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 都筑梢江_性格调色盘
+    type: 角色
+    path: 世界书/角色/都筑梢江/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 都筑梢江_三面性
+    type: 角色
+    path: 世界书/角色/都筑梢江/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 水野友美（row_id=8，青梅竹马）
+  - name: 水野友美_基础信息
+    type: 角色
+    path: 世界书/角色/水野友美/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 水野友美_性格调色盘
+    type: 角色
+    path: 世界书/角色/水野友美/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 水野友美_三面性
+    type: 角色
+    path: 世界书/角色/水野友美/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 安田爱美（row_id=9，护士）
+  - name: 安田爱美_基础信息
+    type: 角色
+    path: 世界书/角色/安田爱美/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 安田爱美_性格调色盘
+    type: 角色
+    path: 世界书/角色/安田爱美/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 安田爱美_三面性
+    type: 角色
+    path: 世界书/角色/安田爱美/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 田中美沙（row_id=10，邻家姐姐）
+  - name: 田中美沙_基础信息
+    type: 角色
+    path: 世界书/角色/田中美沙/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 田中美沙_性格调色盘
+    type: 角色
+    path: 世界书/角色/田中美沙/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 田中美沙_三面性
+    type: 角色
+    path: 世界书/角色/田中美沙/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 片桐美铃（row_id=11，女教师）
+  - name: 片桐美铃_基础信息
+    type: 角色
+    path: 世界书/角色/片桐美铃/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 片桐美铃_性格调色盘
+    type: 角色
+    path: 世界书/角色/片桐美铃/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 片桐美铃_三面性
+    type: 角色
+    path: 世界书/角色/片桐美铃/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 野野村美里（row_id=12，便利店店员）
+  - name: 野野村美里_基础信息
+    type: 角色
+    path: 世界书/角色/野野村美里/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 野野村美里_性格调色盘
+    type: 角色
+    path: 世界书/角色/野野村美里/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 野野村美里_三面性
+    type: 角色
+    path: 世界书/角色/野野村美里/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 永岛久美子（row_id=13，少妇人妻）
+  - name: 永岛久美子_基础信息
+    type: 角色
+    path: 世界书/角色/永岛久美子/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 永岛久美子_性格调色盘
+    type: 角色
+    path: 世界书/角色/永岛久美子/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 永岛久美子_三面性
+    type: 角色
+    path: 世界书/角色/永岛久美子/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 永岛佐知子（row_id=14，祖母型）
+  - name: 永岛佐知子_基础信息
+    type: 角色
+    path: 世界书/角色/永岛佐知子/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 永岛佐知子_性格调色盘
+    type: 角色
+    path: 世界书/角色/永岛佐知子/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 永岛佐知子_三面性
+    type: 角色
+    path: 世界书/角色/永岛佐知子/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 齐藤澪（row_id=15，重制版·姐姐）
+  - name: 齐藤澪_基础信息
+    type: 角色
+    path: 世界书/角色/齐藤澪/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 齐藤澪_性格调色盘
+    type: 角色
+    path: 世界书/角色/齐藤澪/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 齐藤澪_三面性
+    type: 角色
+    path: 世界书/角色/齐藤澪/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 齐藤澪奈（row_id=16，重制版·妹妹）
+  - name: 齐藤澪奈_基础信息
+    type: 角色
+    path: 世界书/角色/齐藤澪奈/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 齐藤澪奈_性格调色盘
+    type: 角色
+    path: 世界书/角色/齐藤澪奈/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 齐藤澪奈_三面性
+    type: 角色
+    path: 世界书/角色/齐藤澪奈/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 铃木美穗（row_id=17，重制版）
+  - name: 铃木美穗_基础信息
+    type: 角色
+    path: 世界书/角色/铃木美穗/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 铃木美穗_性格调色盘
+    type: 角色
+    path: 世界书/角色/铃木美穗/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 铃木美穗_三面性
+    type: 角色
+    path: 世界书/角色/铃木美穗/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 仁科（row_id=18，重制版）
+  - name: 仁科_基础信息
+    type: 角色
+    path: 世界书/角色/仁科/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 仁科_性格调色盘
+    type: 角色
+    path: 世界书/角色/仁科/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 仁科_三面性
+    type: 角色
+    path: 世界书/角色/仁科/三面性.txt
+    part: tri_faceted
+    scope: specific
+  # 正树夏子（row_id=19，重制版）
+  - name: 正树夏子_基础信息
+    type: 角色
+    path: 世界书/角色/正树夏子/基础信息.txt
+    part: basic
+    scope: specific
+  - name: 正树夏子_性格调色盘
+    type: 角色
+    path: 世界书/角色/正树夏子/性格调色盘.txt
+    part: personality
+    scope: specific
+  - name: 正树夏子_三面性
+    type: 角色
+    path: 世界书/角色/正树夏子/三面性.txt
+    part: tri_faceted
+    scope: specific
+
+  # ── 时间线（depth） ──
+  - name: 关键事件总表
+    type: 时间线
+    path: 世界书/时间线/关键事件.yaml
+    note: 单一真相源，含 32 个事件锚点 + 7 个死结局 + 5 个互斥组 + 章节切换条件
+
+  # NPC 条目（每位女角 + 4 位男性 NPC）
+  - name: 鸣泽唯
+    type: NPC
+    path: 世界书/NPC/鸣泽唯.yaml
+  - name: 鸣泽美佐子
+    type: NPC
+    path: 世界书/NPC/鸣泽美佐子.yaml
+  # ... 其他 NPC 条目
+
+  # ── 阶段指导（depth） ──
+  - name: 寒假前奏
+    type: 阶段指导
+    path: 世界书/阶段指导/寒假前奏.txt
+  - name: 寒假核心
+    type: 阶段指导
+    path: 世界书/阶段指导/寒假核心.txt
+  - name: 寒假尾声
+    type: 阶段指导
+    path: 世界书/阶段指导/寒假尾声.txt
+  - name: 结局阶段
+    type: 阶段指导
+    path: 世界书/阶段指导/结局阶段.txt
+
+  # ── 事件（depth） ──
+  - name: 圣诞夜
+    type: 事件
+    path: 世界书/事件/圣诞夜.txt
+    note: 12-25 触发，7 分支
+  - name: 跨年
+    type: 事件
+    path: 世界书/事件/跨年.txt
+    note: 01-01 触发，7 分支
+  - name: 元日
+    type: 事件
+    path: 世界书/事件/元日.txt
+    note: 01-02 触发，4 分支
+
+  # ── D0 指令（before_char，由 D0系统控制器 按 临时.scene_mode 动态加载） ──
+  - name: D0指令_打工模式
+    type: D0指令
+    path: 世界书/D0指令/打工模式.txt
+  - name: D0指令_约会模式
+    type: D0指令
+    path: 世界书/D0指令/约会模式.txt
+  - name: D0指令_上学模式
+    type: D0指令
+    path: 世界书/D0指令/上学模式.txt
+  - name: D0指令_事件模式
+    type: D0指令
+    path: 世界书/D0指令/事件模式.txt
+  - name: D0指令_休息模式
+    type: D0指令
+    path: 世界书/D0指令/休息模式.txt
+
+  # ── MVU（depth） ──
+  - name: 变量列表
+    type: MVU
+    path: 世界书/变量/变量列表.txt
+    part: variable_list
+  - name: 变量更新规则
+    type: MVU
+    path: 世界书/变量/变量更新规则.yaml
+    part: update_rules
+  - name: 变量输出格式
+    type: MVU
+    path: 世界书/变量/变量输出格式.txt
+    part: output_format
+  - name: initvar
+    type: MVU
+    path: 世界书/变量/initvar.yaml
+    part: initvar
+
+mvu:
+  structure: |
+    顶层结构：
+    ├── 时间
+    │   ├── current_date (12-22 ~ 01-07 字符串)
+    │   ├── weekday (星期)
+    │   ├── time_slot (早/上午/下午/晚/深夜)
+    │   ├── day_count (1-17 累计天数)
+    │   ├── season (冬)
+    │   └── chapter (寒假前奏/核心/尾声/结局)
+    ├── 场景
+    │   ├── current_location (当前地点)
+    │   ├── current_heroine_id (当前对话女角 ID)
+    │   └── scene_mode (约会/上学/打工/事件/休息)
+    ├── 主角
+    │   ├── charm (魅力 0-100)
+    │   ├── academic (学业 0-100)
+    │   ├── stamina (体力 0-100)
+    │   ├── money (金钱 ≥0)
+    │   ├── social (社交 0-100)
+    │   ├── sensitivity (敏感 0-100)
+    │   ├── fatigue (疲劳 0-100)
+    │   ├── mood (心情 0-100)
+    │   └── reputation (声誉 0-100)
+    ├── 临时
+    │   ├── last_event_id
+    │   ├── last_choice_result
+    │   ├── turn_actions_used
+    │   └── current_difficulty (轻松/普通/挑战/地狱)
+    └── 经济
+        ├── daily_income
+        ├── daily_expense
+        └── total_savings
+
+  variables:
+    - path: 时间.current_date
+      format: MM-DD
+      description: 当前游戏日期（12-22 ~ 01-07）
+    - path: 时间.weekday
+      enum: [周一, 周二, 周三, 周四, 周五, 周六, 周日]
+    - path: 时间.time_slot
+      enum: [早, 上午, 下午, 晚, 深夜]
+      description: 5 时段/天
+    - path: 时间.day_count
+      type: number
+      range: 1~17
+      description: 寒假累计天数（1=12-22, 17=01-07）
+    - path: 时间.season
+      enum: [冬]
+    - path: 时间.chapter
+      enum: [寒假前奏, 寒假核心, 寒假尾声, 结局]
+    - path: 场景.current_location
+      description: 当前地点（如：自宅/学园/咖啡店/海岸）
+    - path: 场景.current_heroine_id
+      type: number
+      description: 当前对话女角 ID（对应 important_npc 表 row_id）
+    - path: 场景.scene_mode
+      enum: [约会, 上学, 打工, 事件, 休息]
+    - path: 主角.charm
+      type: number
+      range: 0~100
+      check: 关键事件提升，每日自然衰减1点
+    - path: 主角.academic
+      type: number
+      range: 0~100
+      check: 学习行动提升，打工消耗学业
+    - path: 主角.stamina
+      type: number
+      range: 0~100
+      check: 休息/睡眠恢复，工作/约会消耗
+    - path: 主角.money
+      type: number
+      range: 0~
+      check: 工作获得，消费支出，DDL CHECK ≥0
+    - path: 主角.social
+      type: number
+      range: 0~100
+    - path: 主角.sensitivity
+      type: number
+      range: 0~100
+      description: 影响女角心动速度与 NSFW 场景细腻度
+    - path: 主角.fatigue
+      type: number
+      range: 0~100
+      check: 工作累积，休息恢复，≥80 强制休息
+    - path: 主角.mood
+      type: number
+      range: 0~100
+    - path: 主角.reputation
+      type: number
+      range: 0~100
+      description: 八十八町名声，影响女角初始好感
+    # 3 生存属性（关键真实机制）
+    - path: 主角.hunger
+      type: number
+      range: 0~100
+      description: 饥饿值（0=饱腹，100=饿死，每时段+10×难度倍率）
+    - path: 主角.thirst
+      type: number
+      range: 0~100
+      description: 口渴值（0=不渴，100=脱水，每时段+15×难度倍率）
+    - path: 主角.hygiene
+      type: number
+      range: 0~100
+      description: 清洁度（0=极脏，100=洁净，每日-20×难度倍率）
+    - path: 主角.sleep_quality
+      type: number
+      range: 0~100
+      description: 睡眠质量（影响次日恢复）
+    - path: 主角.savings
+      type: number
+      description: 储蓄（修学旅行费目标 50000）
+    - path: 主角.illegal_count
+      type: number
+      range: 0~3
+      description: 违法计数（≥3 触发 BAD_END_7）
+    - path: 主角.legal_warning
+      type: number
+      range: 0~2
+      description: 法律警告等级
+    # 当前女角对象（13 个字段，含 6 NSFW 动态状态）
+    - path: 当前女角.heroine_id
+      type: number
+      range: 0~19
+    - path: 当前女角.affection
+      type: number
+      range: -100~100
+      description: 好感度（-100仇视~+100亲密，10阶段自动分档）
+    - path: 当前女角.heartbeat
+      type: number
+      range: -100~100
+    - path: 当前女角.jealousy
+      type: number
+      range: -100~100
+    - path: 当前女角.trust
+      type: number
+      range: -100~100
+    - path: 当前女角.relationship_stage
+      enum: [仇视, 厌恶, 冷漠, 初识, 熟悉, 暧昧, 心动, 亲密, 攻略完成, 失恋]
+    - path: 当前女角.h_exp
+      type: number
+      range: 0~100
+    - path: 当前女角.clothing_state
+      type: string
+      description: 当前衣着状态
+    - path: 当前女角.exposure
+      enum: [无暴露, 轻度, 中度, 重度, 全裸, 半裸, N/A]
+    - path: 当前女角.wetness
+      enum: [干燥, 微润, 湿润, 极湿, 滴落, N/A]
+    - path: 当前女角.arousal_level
+      enum: [N/A, 平静, 微动, 兴奋, 高涨, 潮红, 失神]
+    - path: 当前女角.semen_residue
+      type: string
+    - path: 当前女角.body_sensitivity
+      type: number
+      range: 0~300
+      description: 全身敏感度倍率（100=常人，150=1.5倍）
+    # 技能系统（12 个，与 6 维基础属性正交）
+    - path: 技能.strength
+      type: number
+      range: 0~100
+      description: 力量（生疏0-29/入门30-49/熟练50-69/精通70-89/大师90-100）
+    - path: 技能.agility
+      type: number
+      range: 0~100
+      description: 敏捷
+    - path: 技能.intelligence
+      type: number
+      range: 0~100
+      description: 智力
+    - path: 技能.willpower
+      type: number
+      range: 0~100
+      description: 意志
+    - path: 技能.stealth
+      type: number
+      range: 0~100
+      description: 潜行
+    - path: 技能.speech
+      type: number
+      range: 0~100
+      description: 口才
+    - path: 技能.medical
+      type: number
+      range: 0~100
+      description: 医学
+    - path: 技能.cooking
+      type: number
+      range: 0~100
+      description: 烹饪
+    - path: 技能.art
+      type: number
+      range: 0~100
+      description: 艺术
+    - path: 技能.driving
+      type: number
+      range: 0~100
+      description: 驾驶（未成年初始0）
+    - path: 技能.fighting
+      type: number
+      range: 0~100
+      description: 格斗
+    - path: 技能.observation
+      type: number
+      range: 0~100
+      description: 观察
+    - path: 临时.last_event_id
+      type: string
+    - path: 临时.last_choice_result
+      description: 上轮选择的简短结果
+    - path: 临时.turn_actions_used
+      type: number
+      range: 0~5
+      description: 当日已用行动次数
+    - path: 临时.current_difficulty
+      enum: [轻松, 普通, 挑战, 地狱]
+      description: 当前难度档（影响骰子阈值/生存速率/单轮变化上限）
+    - path: 临时.expected_next_slot_idx
+      type: number
+      range: 1~5
+      description: 时间锁，预期下一时段序号
+    - path: 临时.consecutive_no_income_days
+      type: number
+      description: 连续无收入天数（≥3 触发 BAD_END_3）
+    - path: 临时.bad_ending_triggered
+      type: string
+      description: 已触发的死结局标识
+    - path: 经济.daily_income
+      type: number
+    - path: 经济.daily_expense
+      type: number
+    - path: 经济.total_savings
+      type: number
+      description: 累计储蓄，修学旅行费目标 50000
+
+ejs:
+  generate_before:
+    - name: current_difficulty
+      variable: 临时.current_difficulty
+    - name: day_count
+      variable: 时间.day_count
+    - name: time_slot
+      variable: 时间.time_slot
+    - name: current_location
+      variable: 场景.current_location
+    - name: current_heroine_id
+      variable: 场景.current_heroine_id
+    - name: scene_mode
+      variable: 场景.scene_mode
+  entries:
+    - name: D0系统控制器
+      complexity: 段落控制
+      condition: 按 scene_mode 切换系统提示
+    - name: 角色性格控制器
+      complexity: 条目显隐
+      condition: 按 current_heroine_id 加载对应 NPC 条目
+    - name: 世界观场景控制器
+      complexity: 段落控制
+      condition: 按 current_location + time_slot 加载场景描述
+    - name: 寒假日程调度器
+      complexity: 条目显隐
+      condition: 按 day_count 加载当日事件清单与可能出现 NPC
+      note: 17 个日期文件作为子条目，await getwi 动态注入
+    - name: 鸣泽唯_性格调色盘
+      complexity: 段落控制
+      stages:
+        - name: 客气期
+          condition: affection_唯 < 10
+        - name: 警觉期
+          condition: affection_唯 >= 10 && affection_唯 < 30
+        - name: 心动期
+          condition: affection_唯 >= 30 && affection_唯 < 60
+        - name: 亲密期
+          condition: affection_唯 >= 60
+
+first_messages:
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/0.txt
+    scene: 12月22日早晨，主角自宅客厅
+    opening_situation: |
+      寒假第一天。主角醒来下楼，听见厨房传来美佐子准备早餐的声音。
+      唯在客厅沙发上看电视，瞥了主角一眼说了声"早"。
+      美佐子从厨房探出头："今天开始放寒假了，但是不要整天窝在家里啊。
+      对了，今天要不要去咖啡店帮忙？或者去学园看看？"
+      主角的寒假冒险，从这一刻开始。

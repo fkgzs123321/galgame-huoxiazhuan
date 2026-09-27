@@ -1,0 +1,1172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "世界": {
+      "description": "世界",
+      "default": {},
+      "$ref": "#/$defs/__schema0"
+    },
+    "她": {
+      "description": "她",
+      "default": {},
+      "$ref": "#/$defs/__schema3"
+    },
+    "局面": {
+      "description": "局面",
+      "default": {},
+      "$ref": "#/$defs/__schema12"
+    },
+    "时间": {
+      "description": "时间",
+      "default": {},
+      "$ref": "#/$defs/__schema19"
+    },
+    "场景": {
+      "description": "场景",
+      "default": {},
+      "$ref": "#/$defs/__schema27"
+    },
+    "天赋": {
+      "description": "天赋",
+      "default": {},
+      "$ref": "#/$defs/__schema32"
+    },
+    "技能": {
+      "description": "技能",
+      "default": {},
+      "$ref": "#/$defs/__schema42"
+    },
+    "资源": {
+      "description": "资源",
+      "default": {},
+      "$ref": "#/$defs/__schema56"
+    },
+    "背包": {
+      "description": "背包",
+      "default": [],
+      "$ref": "#/$defs/__schema62"
+    },
+    "强化": {
+      "description": "强化",
+      "default": {},
+      "$ref": "#/$defs/__schema63"
+    },
+    "任务": {
+      "description": "任务",
+      "default": {},
+      "$ref": "#/$defs/__schema66"
+    },
+    "关系网": {
+      "description": "关系网",
+      "default": {},
+      "$ref": "#/$defs/__schema67"
+    },
+    "关系主体": {
+      "description": "关系主体",
+      "default": {},
+      "$ref": "#/$defs/__schema68"
+    },
+    "关系别名表": {
+      "description": "关系别名表",
+      "default": {},
+      "$ref": "#/$defs/__schema69"
+    },
+    "主角": {
+      "description": "主角",
+      "default": {},
+      "$ref": "#/$defs/__schema70"
+    },
+    "炼丹": {
+      "description": "炼丹",
+      "default": {},
+      "$ref": "#/$defs/__schema76"
+    },
+    "身体": {
+      "description": "身体",
+      "default": {},
+      "$ref": "#/$defs/__schema84"
+    },
+    "关系": {
+      "description": "关系",
+      "default": {},
+      "$ref": "#/$defs/__schema92"
+    },
+    "战斗临时": {
+      "description": "战斗临时",
+      "default": {},
+      "$ref": "#/$defs/__schema93"
+    },
+    "NSFW": {
+      "description": "NSFW",
+      "default": {},
+      "$ref": "#/$defs/__schema97"
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "type": "object",
+      "properties": {
+        "底座": {
+          "default": "yingxiong",
+          "description": "世界.底座",
+          "$ref": "#/$defs/__schema1"
+        },
+        "阶段": {
+          "default": "初入江湖",
+          "description": "世界.阶段",
+          "$ref": "#/$defs/__schema2"
+        }
+      }
+    },
+    "__schema1": {
+      "type": "string"
+    },
+    "__schema2": {
+      "type": "string"
+    },
+    "__schema3": {
+      "type": "object",
+      "properties": {
+        "人设": {
+          "default": "",
+          "description": "她.人设",
+          "$ref": "#/$defs/__schema4"
+        },
+        "情绪": {
+          "default": "好奇",
+          "description": "她.情绪",
+          "$ref": "#/$defs/__schema5"
+        },
+        "目的进度": {
+          "description": "她.目的进度",
+          "default": 0,
+          "$ref": "#/$defs/__schema6"
+        },
+        "已拿到": {
+          "description": "她.已拿到",
+          "default": 0,
+          "$ref": "#/$defs/__schema7"
+        },
+        "熟练度": {
+          "default": "新手",
+          "description": "她.熟练度",
+          "$ref": "#/$defs/__schema8"
+        },
+        "反抗值": {
+          "description": "她.反抗值",
+          "default": 100,
+          "$ref": "#/$defs/__schema9"
+        },
+        "已用手段": {
+          "description": "她.已用手段",
+          "default": [],
+          "$ref": "#/$defs/__schema10"
+        },
+        "世界的裂缝": {
+          "description": "她.世界的裂缝",
+          "default": 0,
+          "$ref": "#/$defs/__schema11"
+        }
+      }
+    },
+    "__schema4": {
+      "type": "string"
+    },
+    "__schema5": {
+      "type": "string"
+    },
+    "__schema6": {
+      "type": "number"
+    },
+    "__schema7": {
+      "type": "number"
+    },
+    "__schema8": {
+      "type": "string"
+    },
+    "__schema9": {
+      "type": "number"
+    },
+    "__schema10": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema11": {
+      "type": "number"
+    },
+    "__schema12": {
+      "type": "object",
+      "properties": {
+        "当前选项": {
+          "description": "局面.当前选项",
+          "default": {},
+          "$ref": "#/$defs/__schema13"
+        },
+        "她的倾向": {
+          "default": "",
+          "description": "局面.她的倾向",
+          "$ref": "#/$defs/__schema14"
+        },
+        "玩家拒绝": {
+          "default": "",
+          "description": "局面.玩家拒绝",
+          "$ref": "#/$defs/__schema15"
+        },
+        "判定结果": {
+          "description": "局面.判定结果",
+          "default": {},
+          "$ref": "#/$defs/__schema16"
+        },
+        "战斗结果": {
+          "description": "局面.战斗结果",
+          "default": {},
+          "$ref": "#/$defs/__schema17"
+        },
+        "骰子种子": {
+          "description": "局面.骰子种子",
+          "default": 20260916,
+          "$ref": "#/$defs/__schema18"
+        }
+      }
+    },
+    "__schema13": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema14": {
+      "type": "string"
+    },
+    "__schema15": {
+      "type": "string"
+    },
+    "__schema16": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema17": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema18": {
+      "type": "number"
+    },
+    "__schema19": {
+      "type": "object",
+      "properties": {
+        "体力": {
+          "description": "时间.体力",
+          "default": 100,
+          "$ref": "#/$defs/__schema20"
+        },
+        "行动点": {
+          "description": "时间.行动点",
+          "default": 3,
+          "$ref": "#/$defs/__schema21"
+        },
+        "记忆点上限": {
+          "description": "时间.记忆点上限",
+          "default": 0,
+          "$ref": "#/$defs/__schema22"
+        },
+        "岁数": {
+          "description": "时间.岁数",
+          "default": 14,
+          "$ref": "#/$defs/__schema23"
+        },
+        "月": {
+          "description": "时间.月",
+          "default": 1,
+          "$ref": "#/$defs/__schema24"
+        },
+        "日进度": {
+          "description": "时间.日进度",
+          "default": 0,
+          "$ref": "#/$defs/__schema25"
+        },
+        "耐心": {
+          "description": "时间.耐心",
+          "default": 24,
+          "$ref": "#/$defs/__schema26"
+        }
+      }
+    },
+    "__schema20": {
+      "type": "number"
+    },
+    "__schema21": {
+      "type": "number"
+    },
+    "__schema22": {
+      "type": "number"
+    },
+    "__schema23": {
+      "type": "number"
+    },
+    "__schema24": {
+      "type": "number"
+    },
+    "__schema25": {
+      "type": "number"
+    },
+    "__schema26": {
+      "type": "number"
+    },
+    "__schema27": {
+      "type": "object",
+      "properties": {
+        "当前地点": {
+          "default": "平安镇",
+          "description": "场景.当前地点",
+          "$ref": "#/$defs/__schema28"
+        },
+        "当前门派": {
+          "default": "无",
+          "description": "场景.当前门派",
+          "$ref": "#/$defs/__schema29"
+        },
+        "已叛门派": {
+          "description": "场景.已叛门派",
+          "default": [],
+          "$ref": "#/$defs/__schema30"
+        },
+        "当前女角": {
+          "default": "",
+          "description": "场景.当前女角",
+          "$ref": "#/$defs/__schema31"
+        }
+      }
+    },
+    "__schema28": {
+      "type": "string"
+    },
+    "__schema29": {
+      "type": "string"
+    },
+    "__schema30": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema31": {
+      "type": "string"
+    },
+    "__schema32": {
+      "type": "object",
+      "properties": {
+        "膂力": {
+          "description": "天赋.膂力",
+          "default": 20,
+          "$ref": "#/$defs/__schema33"
+        },
+        "敏捷": {
+          "description": "天赋.敏捷",
+          "default": 20,
+          "$ref": "#/$defs/__schema34"
+        },
+        "根骨": {
+          "description": "天赋.根骨",
+          "default": 20,
+          "$ref": "#/$defs/__schema35"
+        },
+        "悟性": {
+          "description": "天赋.悟性",
+          "default": 20,
+          "$ref": "#/$defs/__schema36"
+        },
+        "先天": {
+          "description": "天赋.先天",
+          "default": {},
+          "$ref": "#/$defs/__schema37"
+        }
+      }
+    },
+    "__schema33": {
+      "type": "number"
+    },
+    "__schema34": {
+      "type": "number"
+    },
+    "__schema35": {
+      "type": "number"
+    },
+    "__schema36": {
+      "type": "number"
+    },
+    "__schema37": {
+      "type": "object",
+      "properties": {
+        "膂力": {
+          "description": "先天.膂力",
+          "default": 20,
+          "$ref": "#/$defs/__schema38"
+        },
+        "敏捷": {
+          "description": "先天.敏捷",
+          "default": 20,
+          "$ref": "#/$defs/__schema39"
+        },
+        "根骨": {
+          "description": "先天.根骨",
+          "default": 20,
+          "$ref": "#/$defs/__schema40"
+        },
+        "悟性": {
+          "description": "先天.悟性",
+          "default": 20,
+          "$ref": "#/$defs/__schema41"
+        }
+      }
+    },
+    "__schema38": {
+      "type": "number"
+    },
+    "__schema39": {
+      "type": "number"
+    },
+    "__schema40": {
+      "type": "number"
+    },
+    "__schema41": {
+      "type": "number"
+    },
+    "__schema42": {
+      "type": "object",
+      "properties": {
+        "基本": {
+          "description": "技能.基本",
+          "default": {},
+          "$ref": "#/$defs/__schema43"
+        },
+        "门派": {
+          "description": "技能.门派",
+          "default": {},
+          "$ref": "#/$defs/__schema54"
+        },
+        "逍遥": {
+          "description": "技能.逍遥",
+          "default": {},
+          "$ref": "#/$defs/__schema55"
+        }
+      }
+    },
+    "__schema43": {
+      "type": "object",
+      "properties": {
+        "基本内功": {
+          "description": "基本.基本内功",
+          "default": 0,
+          "$ref": "#/$defs/__schema44"
+        },
+        "基本轻功": {
+          "description": "基本.基本轻功",
+          "default": 0,
+          "$ref": "#/$defs/__schema45"
+        },
+        "基本拳脚": {
+          "description": "基本.基本拳脚",
+          "default": 0,
+          "$ref": "#/$defs/__schema46"
+        },
+        "基本剑术": {
+          "description": "基本.基本剑术",
+          "default": 0,
+          "$ref": "#/$defs/__schema47"
+        },
+        "基本刀法": {
+          "description": "基本.基本刀法",
+          "default": 0,
+          "$ref": "#/$defs/__schema48"
+        },
+        "基本杖法": {
+          "description": "基本.基本杖法",
+          "default": 0,
+          "$ref": "#/$defs/__schema49"
+        },
+        "基本鞭法": {
+          "description": "基本.基本鞭法",
+          "default": 0,
+          "$ref": "#/$defs/__schema50"
+        },
+        "基本法术": {
+          "description": "基本.基本法术",
+          "default": 0,
+          "$ref": "#/$defs/__schema51"
+        },
+        "基本招架": {
+          "description": "基本.基本招架",
+          "default": 0,
+          "$ref": "#/$defs/__schema52"
+        },
+        "读书写字": {
+          "description": "基本.读书写字",
+          "default": 0,
+          "$ref": "#/$defs/__schema53"
+        }
+      }
+    },
+    "__schema44": {
+      "type": "number"
+    },
+    "__schema45": {
+      "type": "number"
+    },
+    "__schema46": {
+      "type": "number"
+    },
+    "__schema47": {
+      "type": "number"
+    },
+    "__schema48": {
+      "type": "number"
+    },
+    "__schema49": {
+      "type": "number"
+    },
+    "__schema50": {
+      "type": "number"
+    },
+    "__schema51": {
+      "type": "number"
+    },
+    "__schema52": {
+      "type": "number"
+    },
+    "__schema53": {
+      "type": "number"
+    },
+    "__schema54": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "技能名"
+      },
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "__schema55": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "技能名"
+      },
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "__schema56": {
+      "type": "object",
+      "properties": {
+        "潜能": {
+          "description": "资源.潜能",
+          "default": 100,
+          "$ref": "#/$defs/__schema57"
+        },
+        "经验": {
+          "description": "资源.经验",
+          "default": 0,
+          "$ref": "#/$defs/__schema58"
+        },
+        "金钱": {
+          "description": "资源.金钱",
+          "default": 100,
+          "$ref": "#/$defs/__schema59"
+        },
+        "食物": {
+          "description": "资源.食物",
+          "default": 100,
+          "$ref": "#/$defs/__schema60"
+        },
+        "饮水": {
+          "description": "资源.饮水",
+          "default": 100,
+          "$ref": "#/$defs/__schema61"
+        }
+      }
+    },
+    "__schema57": {
+      "type": "number"
+    },
+    "__schema58": {
+      "type": "number"
+    },
+    "__schema59": {
+      "type": "number"
+    },
+    "__schema60": {
+      "type": "number"
+    },
+    "__schema61": {
+      "type": "number"
+    },
+    "__schema62": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema63": {
+      "type": "object",
+      "properties": {
+        "装备": {
+          "description": "强化.装备",
+          "default": {},
+          "$ref": "#/$defs/__schema64"
+        },
+        "技能": {
+          "description": "强化.技能",
+          "default": {},
+          "$ref": "#/$defs/__schema65"
+        }
+      }
+    },
+    "__schema64": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema65": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema66": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema67": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema68": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema69": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "__schema70": {
+      "type": "object",
+      "properties": {
+        "名": {
+          "default": "",
+          "description": "主角.名",
+          "$ref": "#/$defs/__schema71"
+        },
+        "对她的了解": {
+          "description": "主角.对她的了解",
+          "default": 0,
+          "$ref": "#/$defs/__schema72"
+        },
+        "心性": {
+          "description": "主角.心性",
+          "default": 50,
+          "$ref": "#/$defs/__schema73"
+        },
+        "状态": {
+          "default": "在线",
+          "description": "主角.状态",
+          "$ref": "#/$defs/__schema74"
+        },
+        "$骰子种子": {
+          "description": "主角.$骰子种子",
+          "default": 20260915,
+          "$ref": "#/$defs/__schema75"
+        }
+      }
+    },
+    "__schema71": {
+      "type": "string"
+    },
+    "__schema72": {
+      "type": "number"
+    },
+    "__schema73": {
+      "type": "number"
+    },
+    "__schema74": {
+      "type": "string"
+    },
+    "__schema75": {
+      "type": "number"
+    },
+    "__schema76": {
+      "type": "object",
+      "properties": {
+        "在炼什么": {
+          "default": "",
+          "description": "炼丹.在炼什么",
+          "$ref": "#/$defs/__schema77"
+        },
+        "炉温": {
+          "description": "炼丹.炉温",
+          "default": 0,
+          "$ref": "#/$defs/__schema78"
+        },
+        "品质": {
+          "description": "炼丹.品质",
+          "default": 0,
+          "$ref": "#/$defs/__schema79"
+        },
+        "完成度": {
+          "description": "炼丹.完成度",
+          "default": 0,
+          "$ref": "#/$defs/__schema80"
+        },
+        "投入药材": {
+          "description": "炼丹.投入药材",
+          "default": 0,
+          "$ref": "#/$defs/__schema81"
+        },
+        "本周炼过": {
+          "description": "炼丹.本周炼过",
+          "default": false,
+          "$ref": "#/$defs/__schema82"
+        },
+        "上次产出": {
+          "default": "",
+          "description": "炼丹.上次产出",
+          "$ref": "#/$defs/__schema83"
+        }
+      }
+    },
+    "__schema77": {
+      "type": "string"
+    },
+    "__schema78": {
+      "type": "number"
+    },
+    "__schema79": {
+      "type": "number"
+    },
+    "__schema80": {
+      "type": "number"
+    },
+    "__schema81": {
+      "type": "number"
+    },
+    "__schema82": {
+      "type": "boolean"
+    },
+    "__schema83": {
+      "type": "string"
+    },
+    "__schema84": {
+      "type": "object",
+      "properties": {
+        "生命当前": {
+          "description": "身体.生命当前",
+          "default": 100,
+          "$ref": "#/$defs/__schema85"
+        },
+        "生命有效": {
+          "description": "身体.生命有效",
+          "default": 100,
+          "$ref": "#/$defs/__schema86"
+        },
+        "内力蓄存": {
+          "description": "身体.内力蓄存",
+          "default": 0,
+          "$ref": "#/$defs/__schema87"
+        },
+        "内力强度": {
+          "description": "身体.内力强度",
+          "default": 0,
+          "$ref": "#/$defs/__schema88"
+        },
+        "法力": {
+          "description": "身体.法力",
+          "default": 0,
+          "$ref": "#/$defs/__schema89"
+        },
+        "容貌": {
+          "description": "身体.容貌",
+          "default": 5,
+          "$ref": "#/$defs/__schema90"
+        },
+        "福缘": {
+          "description": "身体.福缘",
+          "default": 50,
+          "$ref": "#/$defs/__schema91"
+        }
+      }
+    },
+    "__schema85": {
+      "type": "number"
+    },
+    "__schema86": {
+      "type": "number"
+    },
+    "__schema87": {
+      "type": "number"
+    },
+    "__schema88": {
+      "type": "number"
+    },
+    "__schema89": {
+      "type": "number"
+    },
+    "__schema90": {
+      "type": "number"
+    },
+    "__schema91": {
+      "type": "number"
+    },
+    "__schema92": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "女角名"
+      },
+      "additionalProperties": {
+        "default": {},
+        "type": "object",
+        "properties": {
+          "好感度": {
+            "default": 0,
+            "type": "number"
+          },
+          "关系阶段": {
+            "default": "陌生",
+            "type": "string"
+          },
+          "已学自她": {
+            "default": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "__schema93": {
+      "type": "object",
+      "properties": {
+        "加力": {
+          "description": "战斗临时.加力",
+          "default": 0,
+          "$ref": "#/$defs/__schema94"
+        },
+        "呆若木鸡": {
+          "description": "战斗临时.呆若木鸡",
+          "default": 0,
+          "$ref": "#/$defs/__schema95"
+        },
+        "临时增益": {
+          "description": "战斗临时.临时增益",
+          "default": [],
+          "$ref": "#/$defs/__schema96"
+        }
+      }
+    },
+    "__schema94": {
+      "type": "number"
+    },
+    "__schema95": {
+      "type": "number"
+    },
+    "__schema96": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "__schema97": {
+      "type": "object",
+      "properties": {
+        "兴奋度": {
+          "description": "NSFW.兴奋度",
+          "default": 0,
+          "$ref": "#/$defs/__schema98"
+        },
+        "穿着": {
+          "description": "NSFW.穿着",
+          "default": {},
+          "$ref": "#/$defs/__schema99"
+        },
+        "身体": {
+          "description": "NSFW.身体",
+          "default": {},
+          "$ref": "#/$defs/__schema106"
+        },
+        "周期": {
+          "description": "NSFW.周期",
+          "default": {},
+          "$ref": "#/$defs/__schema128"
+        }
+      }
+    },
+    "__schema98": {
+      "type": "number"
+    },
+    "__schema99": {
+      "type": "object",
+      "properties": {
+        "外衫": {
+          "default": "",
+          "description": "穿着.外衫",
+          "$ref": "#/$defs/__schema100"
+        },
+        "下裳": {
+          "default": "",
+          "description": "穿着.下裳",
+          "$ref": "#/$defs/__schema101"
+        },
+        "里衣": {
+          "default": "",
+          "description": "穿着.里衣",
+          "$ref": "#/$defs/__schema102"
+        },
+        "布袜": {
+          "default": "",
+          "description": "穿着.布袜",
+          "$ref": "#/$defs/__schema103"
+        },
+        "鞋履": {
+          "default": "",
+          "description": "穿着.鞋履",
+          "$ref": "#/$defs/__schema104"
+        },
+        "佩饰": {
+          "default": "",
+          "description": "穿着.佩饰",
+          "$ref": "#/$defs/__schema105"
+        }
+      }
+    },
+    "__schema100": {
+      "type": "string"
+    },
+    "__schema101": {
+      "type": "string"
+    },
+    "__schema102": {
+      "type": "string"
+    },
+    "__schema103": {
+      "type": "string"
+    },
+    "__schema104": {
+      "type": "string"
+    },
+    "__schema105": {
+      "type": "string"
+    },
+    "__schema106": {
+      "type": "object",
+      "properties": {
+        "基线": {
+          "description": "身体.基线",
+          "default": {},
+          "$ref": "#/$defs/__schema107"
+        },
+        "即时": {
+          "description": "身体.即时",
+          "default": {},
+          "$ref": "#/$defs/__schema122"
+        }
+      }
+    },
+    "__schema107": {
+      "type": "object",
+      "properties": {
+        "身高体重": {
+          "default": "",
+          "description": "基线.身高体重",
+          "$ref": "#/$defs/__schema108"
+        },
+        "体态": {
+          "default": "",
+          "description": "基线.体态",
+          "$ref": "#/$defs/__schema109"
+        },
+        "常年特征": {
+          "default": "",
+          "description": "基线.常年特征",
+          "$ref": "#/$defs/__schema110"
+        },
+        "性情倾向": {
+          "default": "",
+          "description": "基线.性情倾向",
+          "$ref": "#/$defs/__schema111"
+        },
+        "经验": {
+          "default": "",
+          "description": "基线.经验",
+          "$ref": "#/$defs/__schema112"
+        },
+        "下体状态": {
+          "default": "",
+          "description": "基线.下体状态",
+          "$ref": "#/$defs/__schema113"
+        },
+        "后庭状态": {
+          "default": "",
+          "description": "基线.后庭状态",
+          "$ref": "#/$defs/__schema114"
+        },
+        "泌乳与体液": {
+          "default": "",
+          "description": "基线.泌乳与体液",
+          "$ref": "#/$defs/__schema115"
+        },
+        "淫语风格": {
+          "default": "",
+          "description": "基线.淫语风格",
+          "$ref": "#/$defs/__schema116"
+        },
+        "羞耻点": {
+          "default": "",
+          "description": "基线.羞耻点",
+          "$ref": "#/$defs/__schema117"
+        },
+        "调教值": {
+          "description": "基线.调教值",
+          "default": 0,
+          "$ref": "#/$defs/__schema118"
+        },
+        "性爱次数": {
+          "description": "基线.性爱次数",
+          "default": 0,
+          "$ref": "#/$defs/__schema119"
+        },
+        "最近性行为": {
+          "default": "",
+          "description": "基线.最近性行为",
+          "$ref": "#/$defs/__schema120"
+        },
+        "对主角的称呼": {
+          "default": "",
+          "description": "基线.对主角的称呼",
+          "$ref": "#/$defs/__schema121"
+        }
+      }
+    },
+    "__schema108": {
+      "type": "string"
+    },
+    "__schema109": {
+      "type": "string"
+    },
+    "__schema110": {
+      "type": "string"
+    },
+    "__schema111": {
+      "type": "string"
+    },
+    "__schema112": {
+      "type": "string"
+    },
+    "__schema113": {
+      "type": "string"
+    },
+    "__schema114": {
+      "type": "string"
+    },
+    "__schema115": {
+      "type": "string"
+    },
+    "__schema116": {
+      "type": "string"
+    },
+    "__schema117": {
+      "type": "string"
+    },
+    "__schema118": {
+      "type": "number"
+    },
+    "__schema119": {
+      "type": "number"
+    },
+    "__schema120": {
+      "type": "string"
+    },
+    "__schema121": {
+      "type": "string"
+    },
+    "__schema122": {
+      "type": "object",
+      "properties": {
+        "胸前": {
+          "default": "",
+          "description": "即时.胸前",
+          "$ref": "#/$defs/__schema123"
+        },
+        "下身": {
+          "default": "",
+          "description": "即时.下身",
+          "$ref": "#/$defs/__schema124"
+        },
+        "口": {
+          "default": "",
+          "description": "即时.口",
+          "$ref": "#/$defs/__schema125"
+        },
+        "后庭": {
+          "default": "",
+          "description": "即时.后庭",
+          "$ref": "#/$defs/__schema126"
+        },
+        "四肢与痕迹": {
+          "default": "",
+          "description": "即时.四肢与痕迹",
+          "$ref": "#/$defs/__schema127"
+        }
+      }
+    },
+    "__schema123": {
+      "type": "string"
+    },
+    "__schema124": {
+      "type": "string"
+    },
+    "__schema125": {
+      "type": "string"
+    },
+    "__schema126": {
+      "type": "string"
+    },
+    "__schema127": {
+      "type": "string"
+    },
+    "__schema128": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    }
+  }
+}

@@ -1,0 +1,172 @@
+- id: 对AI隐藏状态栏
+  name: 对AI隐藏状态栏
+  findRegex: <StatusPlaceHolderImpl/>
+  replaceString: ''
+  markdownOnly: false
+  promptOnly: true
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 0
+  disabled: false
+- id: 状态栏界面
+  name: 状态栏界面
+  findRegex: <StatusPlaceHolderImpl/>
+  replaceFile: ../source/html/状态栏.html
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 0
+  disabled: false
+- id: 对AI隐藏交涉面板
+  name: 对AI隐藏交涉面板
+  findRegex: <NegotiationPanel/>
+  replaceString: ''
+  markdownOnly: false
+  promptOnly: true
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 0
+  disabled: false
+- id: 交涉面板界面
+  name: 交涉面板界面
+  findRegex: <NegotiationPanel/>
+  replaceFile: ../source/html/交涉面板.html
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 0
+  disabled: false
+- id: 思维链清理
+  name: 思维链清理
+  findRegex: <op_thinking>[\s\S]*?<\/op_thinking>
+  replaceString: ''
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 隐藏UpdateTable
+  name: 隐藏UpdateTable
+  findRegex: <UpdateTable>[\s\S]*?<\/UpdateTable>
+  replaceString: ''
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 隐藏AI交涉数据块
+  name: 隐藏AI交涉数据块
+  findRegex: <negotiation_panel>[\s\S]*?<\/negotiation_panel>
+  replaceString: ''
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 美化小说评论系统
+  name: 美化小说评论系统
+  findRegex: <reader_comments>([\s\S]*?)<\/reader_comments>
+  replaceString: '<div style="margin:16px 0;padding:0;border:1px solid #2a2a3e;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);font-family:''PingFang SC'',''Microsoft YaHei'',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.4);"><div style="padding:12px 16px;background:linear-gradient(90deg,#e94560 0%,#c23152 100%);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">📖</span> 读者评论区 <span style="font-size:11px;opacity:0.8;font-weight:400;margin-left:auto;">仅主角可见</span></div><div style="padding:12px 16px;color:#c8c8d0;font-size:13px;line-height:1.8;white-space:pre-wrap;">$1</div></div>'
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 美化人设崩塌评价系统
+  name: 美化人设崩塌评价系统
+  findRegex: <evaluation_change>([\s\S]*?)<\/evaluation_change>
+  replaceString: '<div style="margin:16px 0;padding:0;border:1px solid #2a2a3e;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);font-family:''PingFang SC'',''Microsoft YaHei'',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.4);"><div style="padding:12px 16px;background:linear-gradient(90deg,#f39c12 0%,#e67e22 100%);color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">⚠️</span> 人设崩塌评价 <span style="font-size:11px;opacity:0.8;font-weight:400;margin-left:auto;">系统核心约束</span></div><div style="padding:12px 16px;color:#c8c8d0;font-size:13px;line-height:1.8;white-space:pre-wrap;">$1</div></div>'
+  markdownOnly: true
+  promptOnly: false
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+# ===== 防口胡/防超自然/防作弊正则（移植自同级生2） =====
+- id: 对AI隐藏UpdateVariable
+  name: 对AI隐藏UpdateVariable
+  findRegex: <UpdateVariable>[\s\S]*?<\/UpdateVariable>
+  replaceString: ''
+  markdownOnly: false
+  promptOnly: true
+  placement:
+    - 1
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 对AI隐藏UpdateTable块
+  name: 对AI隐藏UpdateTable块
+  findRegex: <UpdateTable>[\s\S]*?<\/UpdateTable>
+  replaceString: ''
+  markdownOnly: false
+  promptOnly: true
+  placement:
+    - 1
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 防数值口胡
+  name: 防数值口胡·禁止AI输出数值
+  findRegex: '(评价值|良知值|反抗力|觉醒度|理智值|怀疑度|绑定深度|清醒频率|财富值|好感度|心动值|嫉妒值|信任度|affection|heartbeat|jealousy|trust)\s*[=＝:]\s*-?\d+'
+  replaceString: '[数值由数据库管理，禁止 AI 在叙事中输出]'
+  markdownOnly: false
+  promptOnly: true
+  placement:
+    - 2
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false
+- id: 超自然关键词检测
+  name: 超自然关键词检测·提示AI驳回为幻想
+  findRegex: '(读心|透视|瞬间移动|时间停止|意念控制|意念移物|魔法|咒语|法术|神灵|鬼魂|妖怪|灵异|附身|通灵|时间旅行|平行世界|预知未来|心灵感应|超能力|异能|超感知|超自然|系统哥|金手指|随身空间|老爷爷|修仙|穿越重生)'
+  replaceString: '[检测到超自然关键词，AI 必须将此描述驳回为 user 的幻想，引导 user 回到现实叙事。本文题材为现代都市NTR，无超自然力量存在]'
+  markdownOnly: false
+  promptOnly: true
+  placement:
+    - 1
+  minDepth: null
+  maxDepth: null
+  runOnEdit: true
+  substituteRegex: 1
+  disabled: false

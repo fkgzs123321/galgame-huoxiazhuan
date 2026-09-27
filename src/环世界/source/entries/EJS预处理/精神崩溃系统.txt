@@ -1,0 +1,122 @@
+@@generate_before
+<%_
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var mood1 = Number(getvar('stat_data.殖民者_主角.心情', { scope: 'local', defaults: 50 })) || 50;
+var mood2 = Number(getvar('stat_data.殖民者_2.心情', { scope: 'local', defaults: 50 })) || 50;
+var mood3 = Number(getvar('stat_data.殖民者_3.心情', { scope: 'local', defaults: 50 })) || 50;
+var mood4 = Number(getvar('stat_data.殖民者_4.心情', { scope: 'local', defaults: 50 })) || 50;
+var mood5 = Number(getvar('stat_data.殖民者_5.心情', { scope: 'local', defaults: 50 })) || 50;
+
+function _breakdownRisk(mood) {
+  var m = Number(mood) || 0;
+  if (m < 10) { return { level: '重度', chance: 100, duration: 12 }; }
+  if (m < 15) { return { level: '中度', chance: 70, duration: 8 }; }
+  if (m < 20) { return { level: '轻度', chance: 30, duration: 4 }; }
+  return { level: '稳定', chance: 0, duration: 0 };
+}
+
+function _breakdownEvent(mood, seed) {
+  var m = Number(mood) || 0;
+  var roll = _lcgRoll(seed, 1, 100)[0];
+  if (m < 10) {
+    if (roll <= 20) { return { event: '自杀倾向', detail: '需制止,否则1轮自伤HP-30', action: '制止/隔离' }; }
+    if (roll <= 40) { return { event: '狂暴', detail: '攻击最近生物,持续3轮', action: '制服/躲避' }; }
+    if (roll <= 60) { return { event: '屠杀', detail: '杀动物,持续2轮', action: '隔离动物' }; }
+    if (roll <= 80) { return { event: '纵火', detail: '引燃3处建筑', action: '灭火/拘留' }; }
+    return { event: '破坏', detail: '损坏5件物品', action: '拘留/赔偿' };
+  }
+  if (m < 15) {
+    if (roll <= 30) { return { event: '辱骂', detail: '关系-5,心情-10', action: '安抚' }; }
+    if (roll <= 60) { return { event: '酗酒', detail: '消耗酒类,停工2轮', action: '限制酒类' }; }
+    if (roll <= 85) { return { event: '哭泣', detail: '停工1轮,心情-5', action: '安慰' }; }
+    return { event: '游荡', detail: '停工1轮,可能离开', action: '寻找/劝回' };
+  }
+  if (roll <= 50) { return { event: '哭泣', detail: '停工1轮,心情-5', action: '安慰' }; }
+  return { event: '游荡', detail: '停工1轮,可能离开', action: '寻找/劝回' };
+}
+
+function _inspirationCheck(mood, seed) {
+  var m = Number(mood) || 0;
+  if (m <= 85) { return { triggered: false, type: '无' }; }
+  var roll = _lcgRoll(seed, 1, 100)[0];
+  if (roll > 5) { return { triggered: false, type: '无' }; }
+  var typeRoll = _lcgRoll(seed + '_type', 1, 100)[0];
+  if (typeRoll <= 25) { return { triggered: true, type: '创作灵感', effect: '下次手工/艺术必出稀有+' }; }
+  if (typeRoll <= 50) { return { triggered: true, type: '艰难招募', effect: '招募率×2' }; }
+  if (typeRoll <= 70) { return { triggered: true, type: '狂热工作', effect: '8h速度×2' }; }
+  if (typeRoll <= 85) { return { triggered: true, type: '射击灵感', effect: '下次战斗命中+20%' }; }
+  return { triggered: true, type: '治愈灵感', effect: '治疗率+30%' };
+}
+
+var risk1 = _breakdownRisk(mood1);
+var risk2 = _breakdownRisk(mood2);
+var risk3 = _breakdownRisk(mood3);
+var risk4 = _breakdownRisk(mood4);
+var risk5 = _breakdownRisk(mood5);
+var event1 = _breakdownEvent(mood1, 'break1_' + gameDay + '_' + timeSlot);
+var inspire1 = _inspirationCheck(mood1, 'inspire1_' + gameDay + '_' + timeSlot);
+var inspire2 = _inspirationCheck(mood2, 'inspire2_' + gameDay + '_' + timeSlot);
+
+var colonists = [
+  { name: '主角', mood: mood1, risk: risk1 },
+  { name: '殖民者2', mood: mood2, risk: risk2 },
+  { name: '殖民者3', mood: mood3, risk: risk3 },
+  { name: '殖民者4', mood: mood4, risk: risk4 },
+  { name: '殖民者5', mood: mood5, risk: risk5 }
+];
+_%>
+<精神系统就绪>
+[当前精神状态]
+游戏日: <%= gameDay %> / 时段: <%= timeSlot %>
+
+<%_ for (var i = 0; i < colonists.length; i++) { var c = colonists[i]; _%>
+<%= c.name %>: 心情<%= c.mood %> → 风险<%= c.risk.level %>(<%= c.risk.chance %>%) 持续<%= c.risk.duration %>h
+<%_ } _%>
+
+[崩溃事件表]
+心情0-9 (必然崩溃): _lcgRoll(1-100)
+  1-20: 自杀倾向 (需制止,否则1轮自伤HP-30)
+  21-40: 狂暴 (攻击最近生物,3轮)
+  41-60: 屠杀 (杀动物,2轮)
+  61-80: 纵火 (引燃3处建筑)
+  81-100: 破坏 (损坏5件物品)
+当前主角事件: <%= event1.event %> - <%= event1.detail %> (应对:<%= event1.action %>)
+
+心情10-14 (70%崩溃): _lcgRoll(1-100)
+  1-30: 辱骂 (关系-5,心情-10)
+  31-60: 酗酒 (消耗酒类,停工2轮)
+  61-85: 哭泣 (停工1轮,心情-5)
+  86-100: 游荡 (停工1轮,可能离开)
+
+心情15-19 (30%崩溃): 均为轻度
+  哭泣 或 游荡 (停工1轮)
+
+[灵感触发表]
+触发条件: 心情>85时5%/轮 → _lcgRoll(1-100)
+  1-25: 创作灵感 (下次手工/艺术必出稀有+)
+  26-50: 艰难招募 (招募率×2)
+  51-70: 狂热工作 (8h速度×2)
+  71-85: 射击灵感 (下次战斗命中+20%)
+  86-100: 治愈灵感 (治疗率+30%)
+当前主角灵感: <%= inspire1.triggered ? inspire1.type + ' - ' + inspire1.effect : '未触发' %>
+当前殖民者2灵感: <%= inspire2.triggered ? inspire2.type + ' - ' + inspire2.effect : '未触发' %>
+
+[崩溃规则]
+1. 崩溃持续时间: 重度12h / 中度8h / 轻度4h
+2. 崩溃结束后心情恢复至30 (不会立即再次崩溃)
+3. 制止机制: 殖民者可花费1轮制服崩溃者 (需_check(格斗×3,seed,'普通'))
+4. 灵感应用: 灵感持续到下次相关行为触发后消失
+5. 概率检定: _checkBreakdown()已在时间推进调度器内计算崩溃概率和严重度
+6. 本控制器负责: 崩溃事件效果生成 + 灵感触发判定
+
+[行为校验要求]
+精神崩溃事件必须输出行为校验块:
+<精神崩溃校验>
+- 殖民者名称 / 当前心情 / 风险等级
+- 崩溃事件 (类型/效果/持续时间)
+- 灵感状态 (是否触发/类型/效果)
+- 应对措施 (制止/安抚/隔离)
+- 心情变化 (崩溃后恢复至30)
+</精神崩溃校验>
+</精神系统就绪>

@@ -1,0 +1,173 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 仁科 · 基础信息
+   ════════════════════════════════════════════════════════════
+   row_id=18 / 跨界客串自《同级生1 Remake》(2022) · 图书委员
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，于 2022 年同级生1 Remake 中重现
+   本次项目作为「跨界客串」福利配置，与同级生2 原作设定无直接关联
+   互斥关系：仁科正树（与正树夏子 row_id=19 互斥）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 仁科_INFO = {
+  heroine_id: 18,
+  name: '仁科',
+  romanization: 'Nishina',
+  age: 17,
+  blood_type: 'A',
+  identity: '八十八学园二年生，图书委员',
+  relationship: '主角学妹，初识为图书馆里寡言的图书委员',
+  home: '八十八町住宅区附近的老式书店楼上（与祖母同住）',
+  birthday: '11-03',
+  height: 156,
+  weight: 43,
+  three_size: 'B78-W55-H79',
+  cv_implied: '细弱文静系少女声线，语速慢，咬字轻',
+
+  appearance: {
+    hair: '黑色长直发及腰，常以发带束起或编松散麻花辫，鬓角碎发遮住半边脸',
+    eyes: '圆眼，眼色深棕，常戴圆框眼镜（读书时换凹透镜）',
+    body: '娇小纤细，皮肤偏白（常年在图书馆不见阳光），肩背微驼',
+    feature: '右手食指与中指有墨渍（常年写字留下）；左手腕戴一只老旧机械表（祖母传）',
+    clothing_default: '校服宽松穿法：毛衣配衬衫配百褶裙，配厚底乐福鞋与白色短袜；冬天配米色长款开衫与毛绒围巾'
+  },
+
+  // ═══ NSFW 身体测量数据（参考 SPV important_npc 表字段，30+ 字段全详细版）═══
+  // 18岁图书委员/文学少女：寡言观察者外壳 + 诗人内核，极敏感体质（与筱原泉美差异化）
+  body_measurements: {
+    // 身体基础测量（6 列）— 纤细文人型，常年不见阳光的苍白
+    cup_size: 'A',
+    bust_size: 78,
+    waist_size: 55,
+    hip_size: 79,
+    height: 156,
+    weight: 43,
+    // 胸部详细（6 列）— 纤细娇小，淡粉色（与筱原泉美粉嫩区分）
+    nipple_size: '小',
+    nipple_color: '淡粉',
+    areola_size: '小',
+    breast_shape: '小巧',
+    breast_sensitivity: 150,
+    lactation: '性欲起来后出奶',
+    // 腰部（2 列）— 纤细文人腰（与筱原泉美A4腰区分）
+    waist_shape: '纤细',
+    waist_sensitivity: 150,
+    // 手部（2 列）— 长年握笔的诗人的手，墨渍是身份印记
+    hand_desc: '纤细苍白，食指与中指常年沾墨渍（写字留下），左手腕戴老旧机械表',
+    nail_style: '剪短素净',
+    // 臀部（3 列）— 纤细身形的小巧（与筱原泉美圆润区分）
+    hip_shape: '小巧',
+    hip_sensitivity: 150,
+    anal_desc: '未开发',
+    // 下体详细（8 列）— 处女之身，极敏感虹吸体质（与筱原泉美差异化：稀疏毛/正常唇瓣）
+    pubic_hair: '稀疏',
+    labia_size: '正常',
+    labia_color: '淡粉',
+    vaginal_tightness: '极紧',
+    vaginal_special: '虹吸',
+    lubrication_level: '常年出水',
+    hymen_status: '完整',
+    fertility: '极易孕',
+    // 敏感度综合（3 列）— 内向诗人的智性敏感：文字即前戏（与筱原泉美敏感带差异化）
+    body_sensitivity: 150,
+    sensitive_zones: '手腕内侧,颈侧,锁骨,耳后,墨渍指节,发际线',
+    arousal_triggers: '诗句低吟,书页摩擦,钢笔字迹,墨水味,被理解,翻页声'
+  },
+
+  // ═══ 6 维属性 + 13 项技能（新增，0-100，档位：0-29 生疏 / 30-49 入门 / 50-69 熟练 / 70-89 精通 / 90-100 大师）═══
+  attributes_skills: {
+    // 6 维属性（与主角对齐：魅力/学业/体力/社交/敏感/声誉）
+    charm: 78,           // 魅力（外貌吸引力）
+    academic: 70,        // 学业（学习成绩）
+    physical: 55,        // 体力（体能/运动）
+    social: 55,          // 社交（交际能力）
+    perception: 75,      // 敏感（察言观色/直觉）
+    reputation: 55,      // 声誉（在校/社区名声）
+    // 13 项技能（与主角对齐）
+    strength: 30,        // 力量（物理对抗/搬运）
+    agility: 50,         // 敏捷（反应/逃跑）
+    intelligence: 75,    // 智力（解谜/计划）
+    will_skill: 60,      // 意志（抗压/抵抗诱惑）
+    stealth: 45,         // 潜行（暗中行动）
+    speech: 55,          // 口才（说服/调情）
+    medical: 20,         // 医学（诊疗/急救）
+    cooking: 30,         // 烹饪（料理）
+    art: 45,             // 艺术（审美/创作）
+    driving: 0,          // 驾驶（未成年通常 0）
+    fighting: 25,        // 格斗（防身）
+    observation: 70,     // 观察（情报收集）
+    romance_skill: 35    // 恋爱（约会/亲密推进）
+  },
+
+  personality: {
+    mbti: 'INFP',
+    tags: ['文静内向', '文学少女', '寡言但内心丰富'],
+    public_face: '图书馆角落的安静少女，几乎不与人交谈',
+    social_face: '谈书时眼睛会亮的图书委员，偶尔兴奋',
+    intimate_face: '丰富内心世界的诗人，渴望被倾听而非被看见'
+  },
+
+  preferences: {
+    like_food: ['红豆汤圆', '抹茶', '三明治', '热可可'],
+    hate_food: ['辛辣食物', '生鱼', '酒精'],
+    hobby: ['阅读（日本近现代文学为主）', '写诗', '收集旧书签', '观察路人写随笔', '水彩画'],
+    gift_pref: ['文学书（特别是中原中也、太宰治）', '复古书签', '墨水', '手账本', '热可可'],
+    topic_pref: ['文学（特别是诗）', '图书馆趣事', '老电影', '雨天', '关于主角的细节']
+  },
+
+  /* schedule_default 已迁移至「EJS预处理/寒假日程调度器/人物出现总表.txt」单一来源（D0系统控制器 getwi 加载，避免重复） */
+
+  relations: {
+    mutual_exclusion: '正树夏子（row_id=19）—— 仁科正树互斥（重制版新增）',
+    family: '祖母（开老式书店，独自抚养她长大）；父母（离婚后均不在身边，母亲偶尔寄明信片）',
+    friends: ['图书馆其他委员', '少数二年级同班同学', '书店常客老爷爷']
+  },
+
+  /* 9.B.10: 互斥触发条件细化 */
+  mutex_trigger: {
+    group_name: '仁科正树',
+    partner_id: 19,
+    partner_name: '正树夏子',
+    affection_threshold: 30,
+    stage_threshold: '熟悉',
+    flag_auto_set: '仁科正树互斥触发',
+    description: '与仁科 affection ≥ 30（达熟悉临界）即触发互斥；正树夏子锁定失恋（affection -30 / jealousy +20 / route_locked=1）',
+    narrative_hint: '触发后正树夏子会在校园广播中含蓄地表达失落（如播音时语气微颤、点歌"失恋之歌"等）；仁科并不知情，但偶尔会从图书馆窗户看到正树独自坐在广播室'
+  },
+
+  strategy: {
+    initial_affection: 0,
+    initial_heartbeat: 0,
+    initial_jealousy: 0,
+    initial_trust: 0,
+    best_approach: '在图书馆借书接触，以文学为话题切入（特别是诗）；展现对她写作的兴趣；安静地陪伴而非强势搭话；送文学书或复古书签',
+    warning: '与正树夏子同时推进会触发互斥锁；她寡言但内心丰富，强行搭话会让她躲进壳里；需要先建立"安静陪伴"的关系才能突破她的防线'
+  }
+};
+%>
+
+仁科 · 基础信息已加载。当前女角 row_id=18，互斥关系：仁科正树（攻略后正树夏子锁定失恋，row_id=19）。
+
+<%/* ─── 可读人设输出（速览/绿灯/控制器 getwi 共用，从 JS 对象动态生成，不重复维护） ─── */%>
+- 姓名: <%- 仁科_INFO.name %>（<%- 仁科_INFO.age %>岁）
+- 身份: <%- 仁科_INFO.identity %>
+- 关系: <%- 仁科_INFO.relationship %>
+- 住所: <%- 仁科_INFO.home %>
+<%_ if (仁科_INFO.appearance) { _%>
+- 外貌: <%- [仁科_INFO.appearance.hair, 仁科_INFO.appearance.eyes, 仁科_INFO.appearance.body].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (仁科_INFO.personality) { _%>
+- 性格: <%- 仁科_INFO.personality.tags ? 仁科_INFO.personality.tags.join('、') : 仁科_INFO.personality.public_face %>
+<%_ if (仁科_INFO.personality.public_face) { _%>- 表面: <%- 仁科_INFO.personality.public_face %>
+<%_ } _%>
+<%_ if (仁科_INFO.personality.intimate_face) { _%>- 亲密面: <%- 仁科_INFO.personality.intimate_face %>
+<%_ } _%>
+<%_ } _%>
+<%_ if (仁科_INFO.preferences) { _%>- 喜好: <%- [(仁科_INFO.preferences.like_food || []).join('/'), '爱好：' + (仁科_INFO.preferences.hobby || []).join('/')].filter(Boolean).join('；') %>
+<%_ } _%>
+<%_ if (仁科_INFO.relations) { _%>
+- 关系网: <%- JSON.stringify(仁科_INFO.relations) %>
+<%_ } _%>
+<%_ if (仁科_INFO.strategy) { _%>- 攻略要点: <%- 仁科_INFO.strategy.best_approach %>
+<%_ if (仁科_INFO.strategy.warning) { _%>- 警告: <%- 仁科_INFO.strategy.warning %>
+<%_ } _%><%_ } _%>

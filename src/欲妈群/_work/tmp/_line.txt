@@ -1,0 +1,2 @@
+  var ex=d.专属||{};
+  if(ex.竞技纪录!=null) s+="<div class=\"row\"><span class=\"k\">竞技纪录</span><span class=\"v\">"+num(ex.竞技纪录)+"</span></div>";

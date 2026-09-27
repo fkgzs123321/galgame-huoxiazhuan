@@ -1,0 +1,54 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 16 - 01-06 周六 ═══
+   当日主题：终章前奏，所有女角线收束
+   特殊事件：event_day16_final_preparation / event_day16_savings_check / event_day16_diary_5_window
+   女角锁定：[]
+*/%>
+
+<%
+const _dayInfo = {
+  day_count: 16,
+  date: '01-06',
+  weekday: '周六',
+  chapter: '寒假尾声',
+  theme: '终章前奏，所有女角线收束',
+  special_events: ['event_day16_final_preparation', 'event_day16_savings_check', 'event_day16_diary_5_window'],
+  locked_heroines: [],
+  new_unlock: [],
+  weather_default: '阴',
+  notes: '准备结局判定；储蓄检查；修学旅行结局前置'
+};
+%>
+
+[Day 16 调度器已加载：01-06 周六，主题：终章前奏，所有女角线收束。
+本日特殊事件：event_day16_final_preparation / event_day16_savings_check / event_day16_diary_5_window。
+本日锁定女角：无（全部女角已解锁）。
+本日新解锁：无。
+本日天气默认：阴。
+本日备注：准备结局判定；储蓄检查；修学旅行结局前置。
+
+【当日事件详情】
+- event_day16_final_preparation：所有女角线收束检查。全时段触发，检查所有女角线完成状态：
+  - 鸣泽唯（row_id=1）：检查西御寺事件是否解决，唯好感是否达标
+  - 鸣泽美佐子（row_id=2）：检查酒后事件是否触发，美佐子好感是否达标
+  - 水野友美（row_id=8）：检查友美线是否完成
+  - 舞岛可怜（row_id=3）：检查可怜线是否完成
+  - 筱原泉美（row_id=5）：检查温泉之旅是否完成
+  - 永岛久美子（row_id=13）：检查 is_completed 是否为 1
+  - 永岛佐知子（row_id=14）：检查佐知子好感是否达标
+  各女角线状态将影响 Day 17 结局判定。
+- event_day16_savings_check：储蓄进度检查。上午/下午时段自宅触发，检查主角储蓄（stat_data.主角.储蓄）。
+  - savings ≥ 50000 → 修学旅行结局前置开启，解锁修学旅行特殊对话
+  - savings < 50000 → 修学旅行结局关闭，仅能触发普通结局
+  建议本日前完成所有打工，确保储蓄达标。
+- event_day16_diary_5_window：第5本·电视台录影窗口期最后一天（01-04~01-06）。下午时段电视台触发。前置条件同 Day 14。叙事提示：本日为 日记5 获取窗口最后机会，逾期则日记本系统无法全收集。
+
+【当日女角出现特殊规则】
+本日为终章前奏，全部女角已解锁。当日可遭遇女角：
+- 鸣泽唯（row_id=1）：自宅早/晚
+- 鸣泽美佐子（row_id=2）：咖啡店全时段
+- 水野友美（row_id=8）：水野家上午/晚
+- 永岛久美子（row_id=13）：自宅上午/下午
+- 永岛佐知子（row_id=14）：88 市民医院上午/下午
+全部 19 位女角均可出现，建议本日完成所有未完成女角线收尾。
+关键提示：本日为结局判定准备日，所有女角线状态将定格。建议优先检查储蓄与关键女角完成度。]

@@ -1,0 +1,68 @@
+  /* ════════════════════════════════════════════════════════════
+     丹炉（炼丹的视觉）★ 纯 SVG，火焰跟炉温走，画危险线
+     ════════════════════════════════════════════════════════════ */
+  function 画丹炉(炉温, 态色) {
+    var w = Math.max(0, Math.min(1, 数(炉温) / 100));
+    var H = 168, W = 190, cx = W / 2;
+    // 火焰强度跟炉温走
+    var 焰 = 0.25 + w * 0.75;
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" width="' + W + '" height="' + H + '" class="yx-furnace">';
+    // 炉座
+    s += '<ellipse cx="' + cx + '" cy="148" rx="52" ry="9" fill="#0a0d14" stroke="#2a3346"/>';
+    // 炉身（三层，越上越窄）
+    s += '<path d="M' + (cx - 46) + " 148 L" + (cx - 34) + " 78 L" + (cx + 34) + " 78 L" + (cx + 46) + ' 148 Z" fill="#151b26" stroke="#2f3a4f" stroke-width="1.2"/>';
+    s += '<path d="M' + (cx - 34) + " 78 L" + (cx - 28) + " 50 L" + (cx + 28) + " 50 L" + (cx + 34) + ' 78 Z" fill="#1a2130" stroke="#2f3a4f"/>';
+    // 炉纹
+    s += '<path d="M' + (cx - 40) + " 112 L" + (cx + 40) + ' 112" stroke="#2a3346" stroke-width="1"/>';
+    // ★ 炉膛的光（亮度跟炉温走）
+    s += '<ellipse cx="' + cx + '" cy="104" rx="' + (20 + w * 8) + '" ry="' + (8 + w * 4) + '" fill="' + 态色 + '" opacity="' + (0.18 + w * 0.5) + '"/>';
+    // 火焰
+    for (var i = 0; i < 3; i++) {
+      var dx = (i - 1) * 13, h = (26 + i * 6) * 焰;
+      s += '<path d="M' + (cx + dx) + " 100 Q" + (cx + dx - 6) + " " + (100 - h * 0.6) + " " + (cx + dx) + " " + (100 - h)
+        + " Q" + (cx + dx + 6) + " " + (100 - h * 0.6) + " " + (cx + dx) + ' 100 Z"'
+        + ' fill="' + 态色 + '" opacity="' + (0.35 + w * 0.45) + '"/>';
+    }
+    // 炉口
+    s += '<ellipse cx="' + cx + '" cy="50" rx="30" ry="7" fill="#0d1119" stroke="#2f3a4f"/>';
+    // ★ 危险线（100）
+    var 线y = 148 - Math.min(148 - 12, w * (148 - 12));
+    s += '<line x1="' + (W - 34) + '" y1="' + 线y + '" x2="' + (W - 10) + '" y2="' + 线y + '" stroke="' + 态色 + '" stroke-width="2"/>';
+    s += '<text x="' + (W - 8) + '" y="' + (线y + 4) + '" text-anchor="end" fill="' + 态色 + '" font-size="9" opacity=".8">' + Math.round(数(炉温)) + '</text>';
+    // 刻度
+    for (var k = 0; k <= 4; k++) {
+      var yy = 148 - k * 34;
+      s += '<line x1="' + (W - 30) + '" y1="' + yy + '" x2="' + (W - 22) + '" y2="' + yy + '" stroke="#33405a" stroke-width="1"/>';
+      s += '<text x="' + (W - 18) + '" y="' + (yy + 3) + '" fill="#49536b" font-size="8">' + (k * 25) + "</text>";
+    }
+    s += "</svg>";
+    return s;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     穿着卡：每个部位带品质色 + 加成（原来只有一行字，下面大片空）
+     ════════════════════════════════════════════════════════════ */
+  function 画穿着() {
+    var 穿 = ((状态.NSFW || {}).穿着) || {};
+    var 槽s = ((D.物品 || {}).装备槽) || ["外衫", "下裳", "里衣", "布袜", "鞋履", "佩饰"];
+    var 件 = ((D.物品 || {}).示例) || [];
+    var H = '<div class="yx-slotgrid">';
+    槽s.forEach(function (槽) {
+      var 名 = String(穿[槽] || "");
+      var 参 = null;
+      for (var i = 0; i < 件.length; i++) if (件[i].名 === 名) 参 = 件[i];
+      var 品 = 名 ? 物品品级(名) : "q0", 色 = 名 ? 档色(品) : "var(--ln2)";
+      H += '<div class="yx-slot2" style="border-color:' + (名 ? 色 + "66" : "var(--ln)") + '">'
+        + '<span class="sn">' + E(槽) + "</span>"
+        + '<span class="sv" style="color:' + (名 ? 色 : "var(--t4)") + '">' + (名 ? E(名) : "空着") + "</span>"
+        + (参 && 参.加成 ? '<span class="sb">' + Object.keys(参.加成).map(function (k) { return k + "+" + 参.加成[k]; }).join(" ") + "</span>" : "")
+        + (名 ? '<span class="sq" style="color:' + 色 + '">' + 品名(品) + "</span>" : "")
+        + "</div>";
+    });
+    H += "</div>";
+    // 缺口提示
+    var 空 = 槽s.filter(function (s) { return !穿[s]; });
+    H += '<div class="yx-nt">' + (空.length ? "★ 还空着：" + 空.join(" / ") + "（找裁缝店或打铁铺）" : "六件齐全") + "</div>";
+    return H;
+  }
+

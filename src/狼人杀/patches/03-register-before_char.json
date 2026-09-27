@@ -1,0 +1,57 @@
+[
+  {
+    "op": "add",
+    "path": "/entryManifest/世界观/世界设定",
+    "value": {
+      "path": "世界书/世界观/世界设定.yaml",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "世界观总纲：现代世界唯一超自然=狼；血月七夜/银之审判/夜忆清零/双重封闭/人死物灭/胜负",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "before_character_definition", "order": 20 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/扮演准则/呈现方式",
+    "value": {
+      "path": "世界书/扮演准则/呈现方式.yaml",
+      "scope": "specific",
+      "rephrase": true,
+      "keywords": [],
+      "abstract": "叙事纪律+文风五律+落笔规矩+尺度递进：第二人称锁玩家/不写不在场/知情集边界/永不陈述昨夜",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "before_character_definition", "order": 21 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/时间线/血月秘史",
+    "value": {
+      "path": "世界书/时间线/血月秘史.yaml",
+      "part": "history",
+      "scope": "specific",
+      "keywords": [],
+      "abstract": "守狼巢家族秘史·银之审判由来·历代血月记录（含三年前缺页钩子）",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "before_character_definition", "order": 30 }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/entryManifest/地理/霞隐庄",
+    "value": {
+      "path": "世界书/地理/霞隐庄.yaml",
+      "part": "region",
+      "scope": "specific",
+      "keywords": ["霞隐庄"],
+      "abstract": "单一封闭空间：本馆+五场景（大堂晚餐厅/温泉区/客房走廊/审判台/后山林缘）+12独栋离屋声墙",
+      "enabled": true,
+      "strategy": { "type": "constant" },
+      "position": { "type": "before_character_definition", "order": 31 }
+    }
+  }
+]

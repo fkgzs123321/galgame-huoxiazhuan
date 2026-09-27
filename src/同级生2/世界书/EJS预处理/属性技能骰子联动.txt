@@ -1,0 +1,528 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 属性×技能×骰子联动机制（恋爱卡判定系统 · 单一来源）
+   ════════════════════════════════════════════════════════════
+   职责：定义"能力值 vs 要求值"对比判定机制，
+         作为恋爱卡所有行动判定的统一入口（非战斗判定）。
+
+   核心机制（重构：能力值 vs 要求值对比）：
+     1. 主角能力值 = 三层属性按女角偏好加权平均（0-100）
+     2. 女角要求值 = 基础要求 + 关系阶段修正 + 难度修正 + 女角特质修正
+     3. 差值 = 能力值 - 要求值
+     4. 成功率 = 50% + 差值（封顶 5%-95%）
+     5. 骰子值 = _r() × 100（0~99.99），成功条件 = 骰子值 < 成功率
+     6. 5 档分档基于差值（非随机偏移）：
+        diff ≥ 30  → 大成功（effect_mult 1.5）
+        10 ≤ diff < 30 → 成功（effect_mult 1.0）
+        -10 ≤ diff < 10 → 普通（effect_mult 0.5）
+        -30 ≤ diff < -10 → 失败（effect_mult 0）
+        diff < -30 → 大失败（effect_mult -0.5）
+
+   三层属性架构（缺一不可，互不正交）：
+     - 第1层 基础个人属性（属性系统.txt · PLAYER_STATS）
+       6维天赋：charm/academic/physical/social/perception/willpower
+     - 第2层 个人反应属性（个人反应属性.txt · PERSONALITY_TRAITS）
+       6维性格特质：gentleness/decisiveness/humor/cautiousness/extraversion/rationality
+     - 第3层 技能系统（MVU stat_data.技能.* 命名空间 / 全局规则总表.txt · SKILL_RULES）
+       12维可训练：strength/agility/intelligence/willpower/stealth/speech/
+                   medical/cooking/art/driving/romance/observation
+     - LCG 骰子引擎（LCG骰子/引擎.txt）：
+       提供 _r() 确定性随机函数（0~1），同种子同锚点同结果
+
+   引用关系：
+     - 全局规则总表.txt → DIFFICULTY_MODIFIERS / SKILL_RULES / RELATION_STAGES 数值来源
+     - 属性系统.txt → PLAYER_STATS 数值来源
+     - 个人反应属性.txt → PERSONALITY_TRAITS 数值来源
+     - 女角偏好系数表.txt → HEROINE_PREFERENCES 权重来源（本表引用，不重复定义）
+     - LCG骰子/引擎.txt → _r() 随机源
+     - 恋爱互动系统.txt → CONFESSION_SYSTEM 告白机制引用本表公式
+     - 角色性格控制器.txt → 读取本表 calcFinalResult 进行行动判定
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 读取三层属性变量（统一入口，安全转换） ─── */
+/* 移除所有兜底值，变量未初始化时返回 NaN，由 calcPlayerPower/calcHeroineRequirement 处理
+   原因：兜底值（如 _charm=50）会掩盖变量未更新的问题，导致骰子判定使用错误数值 */
+/* 第1层：基础个人属性（stat_data.主角.xxx） */
+var _charm       = Number(getvar('stat_data.主角.魅力',       { scope: 'local' }));
+var _academic    = Number(getvar('stat_data.主角.学业',    { scope: 'local' }));
+var _physical     = Number(getvar('stat_data.主角.体力',     { scope: 'local' }));
+var _social      = Number(getvar('stat_data.主角.社交',      { scope: 'local' }));
+var _perception = Number(getvar('stat_data.主角.敏感', { scope: 'local' }));
+var _willpower  = Number(getvar('stat_data.主角.声誉',  { scope: 'local' }));
+
+/* 第2层：个人反应属性（stat_data.性格.xxx） */
+var _gentleness    = Number(getvar('stat_data.性格.温柔',    { scope: 'local' }));
+var _decisiveness  = Number(getvar('stat_data.性格.果断',  { scope: 'local' }));
+var _humor         = Number(getvar('stat_data.性格.幽默',         { scope: 'local' }));
+var _cautiousness  = Number(getvar('stat_data.性格.谨慎',  { scope: 'local' }));
+var _extraversion  = Number(getvar('stat_data.性格.外向',  { scope: 'local' }));
+var _rationality   = Number(getvar('stat_data.性格.理性',   { scope: 'local' }));
+
+/* 第3层：技能系统（stat_data.技能.xxx，schema.ts 同时保留 fighting 与 romance） */
+var _strength      = Number(getvar('stat_data.技能.力量',      { scope: 'local' }));
+var _agility       = Number(getvar('stat_data.技能.敏捷',       { scope: 'local' }));
+var _intelligence  = Number(getvar('stat_data.技能.智力',  { scope: 'local' }));
+var _skill_willpower = Number(getvar('stat_data.技能.意志',     { scope: 'local' }));
+var _stealth       = Number(getvar('stat_data.技能.潜行',       { scope: 'local' }));
+var _speech        = Number(getvar('stat_data.技能.口才',        { scope: 'local' }));
+var _medical       = Number(getvar('stat_data.技能.医学',       { scope: 'local' }));
+var _cooking       = Number(getvar('stat_data.技能.烹饪',       { scope: 'local' }));
+var _art           = Number(getvar('stat_data.技能.艺术',           { scope: 'local' }));
+var _driving       = Number(getvar('stat_data.技能.驾驶',       { scope: 'local' }));
+/* romance 替代 fighting，但 schema.ts 同时保留两个字段，均读取 */
+var _fighting      = Number(getvar('stat_data.技能.格斗',      { scope: 'local' }));
+var _romance       = Number(getvar('stat_data.技能.恋爱',      { scope: 'local' }));
+var _observation   = Number(getvar('stat_data.技能.观察',   { scope: 'local' }));
+
+/* 当前女角名与难度（与 LCG 骰子引擎对齐）
+   修复 C2：原代码 var _hid = getvar('...当前女角名') 会把字符串赋给 _hid，
+   覆盖角色性格控制器(顺序13)设置的数字 _hid，导致 _hid * 7919 = NaN。
+   修复：_hid 已由角色性格控制器声明为数字，此处不重新赋值，仅做兜底 */
+if (typeof _hid === 'undefined') var _hid = 0;
+var _currentHeroineName = getvar('stat_data.场景.当前女角名', { scope: 'local' });
+var _difficulty   = getvar('stat_data.临时.当前难度',  { scope: 'local' });
+
+/* ════════════════════════════════════════════════════════════
+   一、动作类型定义（13 种 · 基础要求值 + 元信息）
+   ════════════════════════════════════════════════════════════ */
+this.ACTION_TYPES = {
+  confess:        { name: '告白',       base_req: 60, note: '1/7 告白日核心判定，需 affection≥60 AND relationship_stage≥心动' },
+  ask_date:       { name: '约会邀请',   base_req: 40, note: '需 relationship_stage≥熟悉' },
+  give_gift:      { name: '送礼',       base_req: 30, note: 'perception 高时礼物偏好判断更准；art 影响手工礼物加成' },
+  hold_hand:      { name: '牵手',       base_req: 50, note: '需 relationship_stage≥暧昧，强行牵手触发 fail_changes' },
+  kiss:           { name: '亲吻',       base_req: 55, note: '需 relationship_stage≥心动，强行亲吻触发 BAD_END_1 预警' },
+  first_h:        { name: '初H',        base_req: 70, note: '需 relationship_stage≥亲密 AND affection≥80 AND trust≥70，强行触发 BAD_END_1' },
+  advanced_h:     { name: '进阶H',      base_req: 75, note: '需 relationship_stage≥亲密 AND h_exp≥20' },
+  stealth_action: { name: '潜行行动',   base_req: 50, note: '违法行为，被发现触发 illegal_count+1 AND 关系暴跌' },
+  work:           { name: '打工',       base_req: 35, note: '家教需 academic≥50；体力≤20 强制休息无法打工' },
+  study:          { name: '学习',       base_req: 40, note: '学业提升，疲劳≥70 效率下降' },
+  train_skill:    { name: '训练技能',   base_req: 30, note: '技能熟练度提升，每日训练次数上限 5' },
+  crisis_response:{ name: '危机应对',   base_req: 55, note: '危机事件（偷窥被抓/西御寺威胁/违法被发现）的反应窗口' },
+  comfort_heroine:{ name: '安慰女角',   base_req: 45, note: '女角心情低落时的安慰行动，提升 mood AND affection' }
+};
+
+/* ════════════════════════════════════════════════════════════
+   二、关系阶段修正表（10 档 · 影响"要求值"）
+   阶段越亲密 → 要求值越低（越容易成功）
+   阶段越敌对 → 要求值越高（越难成功）
+   ════════════════════════════════════════════════════════════ */
+/* 关系阶段修正：参 阶段联动框架.txt.STAGE_FRAMEWORK[stage].ejs（避免重复） */
+/* 引用处使用 typeof 兜底：见 calcHeroineRequirement 与 JSON.stringify 输出 */
+
+/* getRelationStage(affection)
+   根据 affection 值映射到关系阶段名称。
+   单一来源：阶段联动框架.txt.STAGE_FRAMEWORK（10阶段新版，5负+5正）：
+     决裂(-100~-81) / 仇视(-80~-61) / 厌恶(-60~-41) / 冷漠(-40~-21) / 疏离(-20~-1)
+     初识(0~19) / 熟悉(20~39) / 暧昧(40~59) / 心动(60~79) / 亲密(80~100) */
+this.getRelationStage = function getRelationStage(affection) {
+  var _a = Number(affection) || 0;
+  if (_a <= -81) return '决裂';
+  if (_a <= -61) return '仇视';
+  if (_a <= -41) return '厌恶';
+  if (_a <= -21) return '冷漠';
+  if (_a <=  -1) return '疏离';
+  if (_a <=  19) return '初识';
+  if (_a <=  39) return '熟悉';
+  if (_a <=  59) return '暧昧';
+  if (_a <=  79) return '心动';
+  return '亲密';
+}
+
+/* ════════════════════════════════════════════════════════════
+   三、难度修正（要求值修正 · 4 档）
+   难度越高 → 要求值越高（越难成功）
+   与 全局规则总表.txt DIFFICULTY_MODIFIERS 对齐（引用 dice_threshold_mult 字段）
+   ════════════════════════════════════════════════════════════ */
+/* 难度修正表：参 全局规则总表.txt.DIFFICULTY_MODIFIERS（避免重复，本表只引用 dice_threshold_mult 字段） */
+/* 引用处使用 typeof 兜底：见 calcHeroineRequirement 与 JSON.stringify 输出 */
+
+/* ════════════════════════════════════════════════════════════
+   四、女角个人难度系数（每位女角的"难度"修正）
+   范围：-5（容易）到 +15（困难），加到要求值上
+   ════════════════════════════════════════════════════════════ */
+/* 20女角个人难度：参 女角偏好系数表.txt.HEROINE_PREFERENCES[row_id].difficulty_coefficient（避免重复） */
+this.HEROINE_DIFFICULTY = {};
+if (typeof HEROINE_PREFERENCES !== 'undefined' && HEROINE_PREFERENCES) {
+  /* 修复 C3：原代码 for (var _hid in HEROINE_PREFERENCES) 会覆盖角色性格控制器
+     声明的数字 _hid，导致后续 calcHeroineRequirement 等函数读取错误女角。
+     修复：循环变量改名为 _prefKey */
+  for (var _prefKey in HEROINE_PREFERENCES) {
+    if (HEROINE_PREFERENCES[_prefKey] && typeof HEROINE_PREFERENCES[_prefKey].difficulty_coefficient !== 'undefined') {
+      HEROINE_DIFFICULTY[_prefKey] = HEROINE_PREFERENCES[_prefKey].difficulty_coefficient;
+    }
+  }
+}
+
+/* getHeroineDifficulty(heroine_id)
+   返回女角个人难度系数（加到要求值上）。 */
+this.getHeroineDifficulty = function getHeroineDifficulty(heroine_id) {
+  var _id = Number(heroine_id) || 0;
+  return HEROINE_DIFFICULTY[_id] || 0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   五、女角偏好系数引用（从 女角偏好系数表.txt 加载）
+   本文件不重复定义偏好权重，仅提供读取入口与兜底。
+   ════════════════════════════════════════════════════════════ */
+/* DEFAULT_PREFERENCE：HEROINE_PREFERENCES 未加载时的兜底（等权重 → 简单平均） */
+this.DEFAULT_PREFERENCE = {
+  stat_weights:       { charm: 1, academic: 1, physical: 1, social: 1, perception: 1, willpower: 1 },
+  personality_weights:{ gentleness: 1, decisiveness: 1, humor: 1, cautiousness: 1, extraversion: 1, rationality: 1 },
+  skill_weights:      { strength: 1, agility: 1, intelligence: 1, willpower: 1, stealth: 1, speech: 1, medical: 1, cooking: 1, art: 1, driving: 1, fighting: 1, romance: 1, observation: 1 }
+};
+
+/* getHeroinePreference(heroine_id, action_type)
+   从 女角偏好系数表.txt 的 HEROINE_PREFERENCES 全局对象读取女角偏好权重。
+   返回 { stat_weights, personality_weights, skill_weights }。
+   若未加载或女角未定义，返回 DEFAULT_PREFERENCE（等权重兜底）。 */
+this.getHeroinePreference = function getHeroinePreference(heroine_id, action_type) {
+  var _id = Number(heroine_id) || 0;
+  if (typeof HEROINE_PREFERENCES === 'undefined') {
+    return DEFAULT_PREFERENCE;
+  }
+  var _prefs = HEROINE_PREFERENCES[_id];
+  if (!_prefs) {
+    return DEFAULT_PREFERENCE;
+  }
+  /* 优先按动作类型读取，回退到 default */
+  return _prefs[action_type] || _prefs.default || _prefs;
+}
+
+/* ════════════════════════════════════════════════════════════
+   六、主角能力值计算（按女角偏好加权平均，0-100）
+   calcPlayerPower(action_type, heroine_id)
+   - 读取三层属性，按女角偏好权重加权求和
+   - 标准化到 0-100（加权平均，非加成堆叠）
+   - 女角不同 → 权重不同 → 同一主角对女角能力值不同（差异化）
+   ════════════════════════════════════════════════════════════ */
+this.calcPlayerPower = function calcPlayerPower(action_type, heroine_id) {
+  var _actionType = action_type || 'confess';
+  var _hid_local  = Number(heroine_id) || 0;
+
+  /* 三层属性（复用顶层已读取的变量，避免重复 getvar） */
+  var _stats = {
+    charm: _charm, academic: _academic, physical: _physical,
+    social: _social, perception: _perception, willpower: _willpower
+  };
+  var _personality = {
+    gentleness: _gentleness, decisiveness: _decisiveness, humor: _humor,
+    cautiousness: _cautiousness, extraversion: _extraversion, rationality: _rationality
+  };
+  var _skills = {
+    strength: _strength, agility: _agility, intelligence: _intelligence,
+    willpower: _skill_willpower, stealth: _stealth, speech: _speech,
+    medical: _medical, cooking: _cooking, art: _art, driving: _driving,
+    fighting: _fighting, romance: _romance, observation: _observation
+  };
+
+  /* 读取女角偏好权重（详见 女角偏好系数表.txt） */
+  var _pref = getHeroinePreference(_hid_local, _actionType);
+  var _statW = _pref.stat_weights || {};
+  var _persW = _pref.personality_weights || {};
+  var _sklW = _pref.skill_weights || {};
+
+  /* 加权求和（权重为相对比例，绝对值不重要） */
+  var _weightedSum = 0;
+  var _weightTotal = 0;
+
+  /* 第1层 属性贡献 */
+  for (var _k in _stats) {
+    _weightedSum += _stats[_k] * (_statW[_k] || 0);
+    _weightTotal += _statW[_k] || 0;
+  }
+  /* 第2层 性格贡献 */
+  for (var _k in _personality) {
+    _weightedSum += _personality[_k] * (_persW[_k] || 0);
+    _weightTotal += _persW[_k] || 0;
+  }
+  /* 第3层 技能贡献 */
+  for (var _k in _skills) {
+    _weightedSum += _skills[_k] * (_sklW[_k] || 0);
+    _weightTotal += _sklW[_k] || 0;
+  }
+
+  /* 标准化到 0-100（加权平均） */
+  var _power = _weightTotal > 0 ? _weightedSum / _weightTotal : 50;
+  return Math.max(0, Math.min(100, _power));
+}
+
+/* ════════════════════════════════════════════════════════════
+   七、女角要求值计算（基础要求 + 阶段修正 + 难度修正 + 女角特质）
+   calcHeroineRequirement(action_type, heroine_id)
+   - 基础要求按动作类型（见 ACTION_TYPES.base_req）
+   - 关系阶段越亲密 → 要求值越低
+   - 难度越高 → 要求值越高
+   - 女角个人难度系数叠加
+   ════════════════════════════════════════════════════════════ */
+this.calcHeroineRequirement = function calcHeroineRequirement(action_type, heroine_id) {
+  var _actionType = action_type || 'confess';
+  var _hid_local  = Number(heroine_id) || 0;
+
+  /* 基础要求（按动作类型） */
+  var _actionInfo = ACTION_TYPES[_actionType];
+  if (!_actionInfo) {
+    return { value: 100, error: '未知动作类型: ' + _actionType };
+  }
+  var _req = Number(_actionInfo.base_req) || 50;
+
+  /* 关系阶段修正（仅在有女角时应用） */
+  var _stage = '初识';
+  var _stageMod = 0;
+  if (_hid_local > 0) {
+    var _affection = (_hid_local === _hid)
+      ? (Number(getvar('stat_data.当前女角.好感度', { scope: 'local', defaults: 0 })) || 0)
+      : (Number(getvar('stat_data.女角.' + _hid_local + '.好感度', { scope: 'local', defaults: 0 })) || 0);
+    _stage = getRelationStage(_affection);
+    _stageMod = 0;  /* RELATION_STAGES 仅提供 behavior 文本描述，无数值修正字段 */
+    _req += _stageMod;
+  }
+
+  /* 难度修正：dice_threshold_mult 是乘数（轻松0.8/普通1.0/挑战1.2/地狱2.0），用乘法而非加法 */
+  var _diffMod = (typeof DIFFICULTY_MODIFIERS !== 'undefined')
+    ? ((DIFFICULTY_MODIFIERS[_difficulty] || DIFFICULTY_MODIFIERS['普通'] || {}).dice_threshold_mult || 1)
+    : 1;
+  _req = Math.round(_req * _diffMod);
+
+  /* 女角个人特质修正 */
+  var _heroineDiff = getHeroineDifficulty(_hid_local);
+  _req += _heroineDiff;
+
+  return {
+    value: Math.max(0, Math.min(100, _req)),
+    base: _actionInfo.base_req,
+    stage: _stage,
+    stage_mod: _stageMod,
+    difficulty_mod: _diffMod,
+    heroine_diff: _heroineDiff
+  };
+}
+
+/* ════════════════════════════════════════════════════════════
+   八、5 档效果定义（确定性效果倍率 · 基于差值）
+   分档基于"能力值 - 要求值"的差值，非随机偏移。
+   ════════════════════════════════════════════════════════════ */
+this.TIER_EFFECTS = {
+  critical_success: {
+    key: 'critical_success',
+    label: '大成功',
+    diff_range: 'diff >= 30',
+    effect_mult: 1.5,
+    desc: '属性碾压，效果放大 1.5 倍',
+    examples: {
+      confess:    '告白完美成功，女角感动落泪，affection+10',
+      give_gift:  '礼物恰到好处，女角 affection+8 + heartbeat+5',
+      first_h:    '初H 完美，女角 affection+15 + trust+10'
+    }
+  },
+  success: {
+    key: 'success',
+    label: '成功',
+    diff_range: '10 <= diff < 30',
+    effect_mult: 1.0,
+    desc: '明显达标，标准效果',
+    examples: {
+      confess:    '告白成功，女角害羞答应，affection+5',
+      give_gift:  '礼物喜欢，女角 affection+5 + heartbeat+3',
+      first_h:    '初H 顺利完成，女角 affection+10 + trust+5'
+    }
+  },
+  normal: {
+    key: 'normal',
+    label: '普通',
+    diff_range: '-10 <= diff < 10',
+    effect_mult: 0.5,
+    desc: '势均力敌，效果减半',
+    examples: {
+      confess:    '告白犹豫，女角需要时间考虑，affection+2',
+      give_gift:  '礼物普通接受，女角 affection+2',
+      first_h:    '初H 生涩完成，女角 affection+5'
+    }
+  },
+  failure: {
+    key: 'failure',
+    label: '失败',
+    diff_range: '-30 <= diff < -10',
+    effect_mult: 0,
+    desc: '略逊一筹，无效果',
+    examples: {
+      confess:    '告白被婉拒，女角"我们还是做朋友吧"，affection-2',
+      give_gift:  '礼物被冷淡接受，女角 affection+0',
+      first_h:    '初H 失败，女角"今天状态不好"，affection-3'
+    }
+  },
+  critical_failure: {
+    key: 'critical_failure',
+    label: '大失败',
+    diff_range: 'diff < -30',
+    effect_mult: -0.5,
+    desc: '差距悬殊，触发负面效果',
+    examples: {
+      confess:    '告白被严厉拒绝，女角"别开玩笑了"，affection-10 + jealousy+5',
+      give_gift:  '礼物被讨厌，女角"你根本不了解我"，affection-5',
+      first_h:    '初H 严重失败，女角生气离开，affection-15 + trust-10'
+    }
+  }
+};
+
+/* classifyDiffResult(diff)
+   根据差值（能力值 - 要求值）判定结果分档。 */
+this.classifyDiffResult = function classifyDiffResult(diff) {
+  var _d = Number(diff) || 0;
+  if (_d >= 30)  return TIER_EFFECTS.critical_success;
+  if (_d >= 10)  return TIER_EFFECTS.success;
+  if (_d >= -10) return TIER_EFFECTS.normal;
+  if (_d >= -30) return TIER_EFFECTS.failure;
+  return TIER_EFFECTS.critical_failure;
+}
+
+/* ════════════════════════════════════════════════════════════
+   九、最终判定（能力值 vs 要求值对比 + LCG 骰子）
+   calcFinalResult(action_type, heroine_id)
+   任何恋爱事件判定的统一入口，返回完整结果对象。
+   - action_type：见 ACTION_TYPES 的 key
+   - heroine_id：当前对话女角 ID（0=无对话，仅用于日志）
+   注意：_r() 由 LCG骰子/引擎.txt 提供，本函数不重新实现骰子。
+   ════════════════════════════════════════════════════════════ */
+this.calcFinalResult = function calcFinalResult(action_type, heroine_id) {
+  var _actionType = action_type || 'confess';
+  var _hid_local  = Number(heroine_id) || 0;
+  var _actionInfo  = ACTION_TYPES[_actionType];
+  if (!_actionInfo) {
+    return { success: false, error: '未知动作类型: ' + _actionType, roll: -1, power: 0, requirement: 0 };
+  }
+
+  /* 1. 主角能力值（按女角偏好加权平均） */
+  var _power = calcPlayerPower(_actionType, _hid_local);
+
+  /* 2. 女角要求值（基础 + 阶段 + 难度 + 女角特质） */
+  var _reqObj = calcHeroineRequirement(_actionType, _hid_local);
+  var _req = _reqObj.value;
+
+  /* 3. 差值 = 能力值 - 要求值 */
+  var _diff = _power - _req;
+
+  /* 4. 成功率 = 50% + 差值（封顶 5%-95%） */
+  var _successRate = Math.max(5, Math.min(95, 50 + _diff));
+
+  /* 5. LCG 骰子（确定性随机，由 LCG骰子/引擎.txt 的 _r() 提供） */
+  var _diceRoll = _r() * 100;  /* 0~99.99 */
+  var _success = _diceRoll < _successRate;
+
+  /* 6. 5 档分档（基于差值，非随机偏移） */
+  var _tier = classifyDiffResult(_diff);
+
+  return {
+    action_type: _actionType,
+    action_name: _actionInfo.name,
+    heroine_id: _hid_local,
+    success: _success,
+    tier: _tier.key,
+    tier_label: _tier.label,
+    effect_mult: _tier.effect_mult,
+    tier_desc: _tier.desc,
+    power: Math.round(_power * 100) / 100,
+    requirement: Math.round(_req * 100) / 100,
+    diff: Math.round(_diff * 100) / 100,
+    success_rate: Math.round(_successRate * 100) / 100,
+    roll: Math.round(_diceRoll * 100) / 100,
+    breakdown: {
+      power_value: Math.round(_power * 100) / 100,
+      req_base: _reqObj.base,
+      req_stage: _reqObj.stage,
+      req_stage_mod: _reqObj.stage_mod,
+      req_difficulty_mod: _reqObj.difficulty_mod,
+      req_heroine_diff: _reqObj.heroine_diff,
+      tier_examples: _tier.examples
+    }
+  };
+}
+
+/* ════════════════════════════════════════════════════════════
+   十、联动示例（一个完整的告白判定演示）
+   ════════════════════════════════════════════════════════════ */
+/* 示例：1/7 告白日，向鸣泽唯（heroine_id=1）告白
+   假设：
+     主角属性: charm=70, social=60, perception=40, 其他=50
+     主角性格: gentleness=60, decisiveness=80, 其他=50
+     主角技能: romance=50, speech=40, observation=40
+     唯的偏好（详见 女角偏好系数表.txt）:
+       stat_weights: { charm:1.5, perception:1.2, social:0.8, ... }
+       personality_weights: { gentleness:1.5, decisiveness:1.0, ... }
+       skill_weights: { romance:1.3, speech:1.0, observation:1.0, ... }
+     唯当前 affection=75 → 关系阶段"亲密"（65<affection<=85）
+     难度: 普通
+
+   计算：
+     主角能力值 = 加权平均（详见 calcPlayerPower）
+       属性贡献: 70×1.5 + 60×0.8 + 40×1.2 + 50×0.5×3 = 105+48+48+75 = 276
+       性格贡献: 60×1.5 + 80×1.0 + 50×0.5×4 = 90+80+100 = 270
+       技能贡献: 50×1.3 + 40×1.0 + 40×1.0 + ... = 145
+       总权重 ≈ 11.2
+       能力值 = (276+270+145)/11.2 ≈ 61.7
+
+     女角要求值 = 基础60 + 关系阶段(亲密-30) + 难度(0) + 女角特质(唯+5) = 35
+
+     差值 = 61.7 - 35 = +26.7 → 成功档（10≤diff<30）
+     成功率 = 50 + 26.7 = 76.7%
+     骰子 = _r()×100 = 假设 0.45 → 45
+     45 < 76.7 → 成功
+
+     结果：success 档，effect_mult=1.0
+     告白成功，唯害羞答应，affection+5
+
+   返回对象示例：
+   {
+     action_type: 'confess',
+     action_name: '告白',
+     heroine_id: 1,
+     success: true,
+     tier: 'success',
+     tier_label: '成功',
+     effect_mult: 1.0,
+     power: 61.7,
+     requirement: 35,
+     diff: 26.7,
+     success_rate: 76.7,
+     roll: 45,
+     breakdown: { power_value: 61.7, req_base: 60, req_stage: '亲密',
+                  req_stage_mod: 0,  // 关系阶段无数值修正，仅提供行为文本描述
+                  req_difficulty_mod: 0, req_heroine_diff: 5 }
+   }
+*/
+var _demoConfessResult = null;  /* 仅作示例，不实际调用 */
+
+/* ════════════════════════════════════════════════════════════
+   十一、AI 使用规范（强制）
+   ════════════════════════════════════════════════════════════ */
+/* 1. 任何恋爱事件判定必须调用 calcFinalResult(action_type, heroine_id)
+   2. 5 档分档基于"能力值-要求值"的差值，必须使用 classifyDiffResult(diff)
+   3. 禁止重新实现骰子，必须复用 LCG骰子/引擎.txt 的 _r() 函数
+   4. 禁止在叙事中直接展示 JSON 数据、概率、档位、种子值等元数据
+   5. 大成功/大失败时需在叙事中体现特殊效果（参考 TIER_EFFECTS.examples）
+   6. 难度修正与 全局规则总表.txt DIFFICULTY_MODIFIERS 严格对齐
+   7. 女角偏好权重必须从 女角偏好系数表.txt 的 HEROINE_PREFERENCES 读取，AI 不可私自修改
+   8. 女角难度系数必须从 HEROINE_DIFFICULTY 表读取，AI 不可私自修改
+   9. 主角能力值按女角偏好加权平均（差异化判定），禁止使用统一权重
+*/
+%>
+
+[属性×技能×骰子联动机制已加载。本表为恋爱卡判定系统的统一入口，所有行动判定必须调用 calcFinalResult(action_type, heroine_id)。核心机制为"能力值 vs 要求值"对比：主角能力值按女角偏好加权平均，女角要求值按动作类型+关系阶段+难度+女角特质计算，5档分档基于差值（非随机偏移）。三层属性架构（基础属性+性格特质+技能系统）与 LCG 骰子引擎联动。AI 必须严格遵守上述判定公式与使用规范。]
+
+<%= JSON.stringify({
+  mechanism: 'power_vs_requirement',
+  layer_count: 3,
+  layer_1_stats: ['charm', 'academic', 'physical', 'social', 'perception', 'willpower'],
+  layer_2_personalities: ['gentleness', 'decisiveness', 'humor', 'cautiousness', 'extraversion', 'rationality'],
+  layer_3_skills: ['strength', 'agility', 'intelligence', 'willpower', 'stealth', 'speech', 'medical', 'cooking', 'art', 'driving', 'fighting', 'romance', 'observation'],
+  action_types_count: Object.keys(ACTION_TYPES).length,
+  action_types: Object.keys(ACTION_TYPES),
+  relation_stages: ['决裂','仇视','厌恶','冷漠','疏离','初识','熟悉','暧昧','心动','亲密'],  // 来源：getRelationStage() · 阶段联动框架.txt.STAGE_FRAMEWORK，无独立 RELATION_STAGE_MODIFIERS 表
+  difficulties: (typeof DIFFICULTY_MODIFIERS !== 'undefined') ? Object.keys(DIFFICULTY_MODIFIERS) : [],
+  heroine_difficulty_count: Object.keys(HEROINE_DIFFICULTY).length,
+  tier_count: Object.keys(TIER_EFFECTS).length,
+  tiers: Object.keys(TIER_EFFECTS),
+  formula_template: 'power = weighted_avg(stats, personality, skills, heroine_pref); requirement = base + stage_mod + difficulty_mod + heroine_diff; diff = power - requirement; success_rate = clamp(50 + diff, 5, 95); roll = _r()×100; success = roll < success_rate; tier = classifyDiffResult(diff)',
+  preference_source: '女角偏好系数表.txt (HEROINE_PREFERENCES)',
+  note: '属性×技能×骰子联动机制：能力值 vs 要求值对比机制。主角能力值按女角偏好加权平均（差异化判定），女角要求值按动作类型+关系阶段+难度+女角特质计算，5档分档基于差值（非随机偏移）。13种恋爱事件动作类型。'
+}, null, 2) %>

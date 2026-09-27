@@ -1,0 +1,60 @@
+@@generate_before
+<%_
+var colonistVal = Number(getvar('stat_data.殖民地.殖民者价值', { scope: 'local', defaults: 600 })) || 600;
+var buildingVal = Number(getvar('stat_data.殖民地.建筑价值', { scope: 'local', defaults: 0 })) || 0;
+var itemVal = Number(getvar('stat_data.殖民地.物资价值', { scope: 'local', defaults: 200 })) || 200;
+var animalVal = Number(getvar('stat_data.殖民地.动物价值', { scope: 'local', defaults: 0 })) || 0;
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var raidCooldown = Number(getvar('stat_data.殖民地.袭击冷却', { scope: 'local', defaults: 96 })) || 96;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+
+var totalWealth = colonistVal + buildingVal + itemVal + animalVal + silver;
+
+var storyMod;
+if (storyteller === '菲比') { storyMod = 0.8; }
+else if (storyteller === '兰迪') { storyMod = 1.2; }
+else { storyMod = 1.0; }
+
+var phaseMod;
+if (phase === '拓荒期') { phaseMod = 0.5; }
+else if (phase === '发展期') { phaseMod = 1.0; }
+else if (phase === '繁荣期') { phaseMod = 1.5; }
+else if (phase === '终局期') { phaseMod = 2.0; }
+else { phaseMod = 1.0; }
+
+var threatPoints = Math.round((totalWealth / 1000) * storyMod * phaseMod * 100) / 100;
+
+var slotHours = { '清晨': 3, '上午': 3, '中午': 2, '下午': 3, '傍晚': 3, '夜晚': 3, '深夜': 7 };
+var hours = slotHours[timeSlot] || 3;
+var newCooldown = Math.max(0, raidCooldown - hours);
+var cooldownReady = (newCooldown === 0);
+_%>
+<财富估值结果>
+[财富明细]
+殖民者价值: <%= colonistVal %>
+建筑价值: <%= buildingVal %>
+物资价值: <%= itemVal %>
+动物价值: <%= animalVal %>
+银两: <%= silver %>
+总财富: <%= totalWealth %>
+
+[威胁评估]
+故事讲述者: <%= storyteller %> (系数×<%= storyMod %>)
+殖民地阶段: <%= phase %> (系数×<%= phaseMod %>)
+威胁点数: <%= threatPoints %> = (财富<%= totalWealth %>÷1000) × <%= storyMod %> × <%= phaseMod %>
+
+[袭击冷却]
+当前冷却: <%= raidCooldown %>小时
+本时段消耗: -<%= hours %>小时
+冷却剩余: <%= newCooldown %>小时
+<%_ if (cooldownReady) { _%>
+冷却归零: 可触发袭击判定，请调用袭击触发器模块。
+<%_ } _%>
+
+[变更指令]
+stat_data.殖民地.财富总值 = <%= totalWealth %>
+stat_data.殖民地.威胁点数 = <%= threatPoints %>
+stat_data.殖民地.袭击冷却 = <%= newCooldown %>
+</财富估值结果>

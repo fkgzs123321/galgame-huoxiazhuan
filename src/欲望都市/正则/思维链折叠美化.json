@@ -1,0 +1,15 @@
+{
+  "id": "8ff7ac01-0001-4000-8000-000000000101",
+  "scriptName": "思维链折叠美化",
+  "findRegex": "/<think(?:ing|reasoning)?>([\\s\\S]*?)<\\/think(?:ing|reasoning)?>/gi",
+  "replaceString": "<details class=\"thinking-chain-detail\" style=\"margin:8px 0;border-left:3px solid #9b59b6;padding:4px 12px;background:rgba(155,89,182,0.05);border-radius:4px;\"><summary style=\"cursor:pointer;color:#9b59b6;font-size:0.85em;opacity:0.8;\">🧠 AI思维链（点击展开查看规则检查过程）</summary>\n\n$1\n\n</details>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

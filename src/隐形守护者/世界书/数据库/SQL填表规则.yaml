@@ -1,0 +1,37 @@
+名称: SQL填表规则
+类型: 数据库
+启用: true
+激活策略:
+  类型: 蓝灯
+  优先级: 96
+插入位置:
+  类型: 指定深度
+  角色: 系统
+  深度: 0
+  顺序: 104
+
+内容: |
+  【隐形守护者 · chatSheets v4.3 + 骰子 SQL】
+
+  模板：`隐形守护者·骰子SQL_v4.3`（基于 SQL_v4.3，增 **剧情状态表**、**角色属性表**、**肖途潜伏表**）。
+
+  **每轮 `<tableEdit>` 最低同步**
+  1. `global_state` — 1939 上海时间与地点
+  2. `plot_state` — 与 MVU `剧情.*` 一致（节点/BE/检查点）
+  3. `character_attr` — 感情线角色 情感值/信任度/关系阶段 与 MVU 一致
+  4. `xiaotu_cover` — 伪装、组织信任、武藤怀疑、暴露风险、行动级别
+  5. 在场 `important_npc` 更新；`chronicle` 新增 AM
+  6. **`check_suggestions`（检定建议表）已停用** — 每轮 **禁止** 任何 INSERT/UPDATE/DELETE；主线选项见《抉择唯一来源铁律》
+
+  **角色属性表**（分阶段人设，教程同款）
+  ```sql
+  UPDATE character_attr SET emotion=0, trust=37, relation_phase='序章怀疑' WHERE char_name='方敏';
+  ```
+  世界书 `方敏/分阶段-数据库条件.txt` 使用：
+  `<if cond="cell:角色属性表/方敏/信任度 <= 50">` …
+
+  **重要 NPC 表禁止写好感数字** — 情感/信任只在 `character_attr`。
+
+  **序章地点**：方家客厅、济仁大学图书馆、秘密基地、法租界街道
+
+  **序章 NPC**：方敏、方汉洲（登场时写入 important_npc + character_attr 方敏行）

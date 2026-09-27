@@ -1,0 +1,209 @@
+@@generate_before
+<%_
+var p1Name = getvar('stat_data.殖民者_主角.姓名', { scope: 'local', defaults: '' }) || '';
+var p1Cook = Number(getvar('stat_data.殖民者_主角.厨艺', { scope: 'local', defaults: 5 })) || 5;
+var p1Age = Number(getvar('stat_data.殖民者_主角.年龄', { scope: 'local', defaults: 25 })) || 25;
+var p1Pregnant = Number(getvar('stat_data.殖民者_主角.怀孕状态', { scope: 'local', defaults: 0 })) || 0;
+
+var p2Name = getvar('stat_data.殖民者_2.姓名', { scope: 'local', defaults: '' }) || '';
+var p2Cook = Number(getvar('stat_data.殖民者_2.厨艺', { scope: 'local', defaults: 5 })) || 5;
+
+var temperature = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var season = getvar('stat_data.殖民地.季节', { scope: 'local', defaults: '春' }) || '春';
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+
+var ROT_TEMP_DB = {
+  '极寒': 0.0,
+  '冰冻': 0.1,
+  '冷藏': 0.3,
+  '凉爽': 0.5,
+  '常温': 1.0,
+  '温暖': 1.5,
+  '炎热': 2.5,
+  '酷热': 4.0
+};
+
+function _tempRotCoeff(temp) {
+  var t = Number(temp) || 20;
+  if (t < -5) { return 0.0; }
+  if (t < 0) { return 0.1; }
+  if (t < 5) { return 0.3; }
+  if (t < 10) { return 0.5; }
+  if (t < 20) { return 1.0; }
+  if (t < 30) { return 1.5; }
+  if (t < 40) { return 2.5; }
+  return 4.0;
+}
+
+/* 公式以DDL骰子引擎为准，禁止本地修改 */
+function _cookTime(baseTime, cookSkill) {
+  var skl = Number(cookSkill) || 0;
+  var base = Number(baseTime) || 1;
+  return Math.round(base / (1 + skl * 0.1) * 100) / 100;
+}
+
+function _cookQuality(cookSkill, seed) {
+  var skl = Number(cookSkill) || 0;
+  var quality = '普通';
+  if (skl >= 18) { quality = '传奇'; }
+  else if (skl >= 13) { quality = '大师'; }
+  else if (skl >= 8) { quality = '优秀'; }
+  else if (skl >= 4) { quality = '良好'; }
+  else {
+    var failRate = Math.max(0, 40 - skl * 2);
+    var r = _check(skl * 5, seed, '普通');
+    if (r.result === '失败' || r.result === '大失败') {
+      return { 品质: '糟糕', 失败率: failRate, 检定: r };
+    }
+  }
+  return { 品质: quality, 失败率: 0 };
+}
+
+function _cookYieldMod(cookSkill) {
+  var skl = Number(cookSkill) || 0;
+  if (skl >= 20) { return 1.5; }
+  if (skl >= 15) { return 1.2; }
+  if (skl >= 10) { return 1.1; }
+  return 1.0;
+}
+
+/* 公式以DDL骰子引擎为准，禁止本地修改 */
+function _poisonRate(cookSkill) {
+  return Math.max(1, 20 - (Number(cookSkill) || 0) * 1.5);
+}
+
+function _rotProgress(daysStored, rotDays, temp) {
+  var ds = Number(daysStored) || 0;
+  var rd = Number(rotDays) || 1;
+  var coeff = _tempRotCoeff(temp);
+  var progress = (ds / rd) * 100 * coeff;
+  return Math.min(100, Math.round(progress * 100) / 100);
+}
+
+function _rotStage(progress) {
+  var p = Number(progress) || 0;
+  if (p >= 100) { return { 阶段: '完全腐烂', 营养修正: 0.0, 中毒附加: 100, 可食用: false }; }
+  if (p >= 81) { return { 阶段: '腐坏中', 营养修正: 0.7, 中毒附加: 15, 可食用: true }; }
+  if (p >= 51) { return { 阶段: '不太新鲜', 营养修正: 0.9, 中毒附加: 0, 可食用: true }; }
+  return { 阶段: '新鲜', 营养修正: 1.0, 中毒附加: 0, 可食用: true };
+}
+
+function _nutritionNeed(age, pregnant) {
+  var a = Number(age) || 20;
+  var need = 1.6;
+  if (a < 16) { need = 1.0; }
+  if (pregnant > 0 && pregnant <= 15) { need = 2.0; }
+  else if (pregnant > 15 && pregnant <= 30) { need = 2.2; }
+  else if (pregnant > 30) { need = 2.4; }
+  return need;
+}
+
+function _coldStorageTemp(wallType, coolerType, outsideTemp) {
+  var ot = Number(outsideTemp) || 20;
+  var base = ot;
+  if (wallType === '双层石墙') { base -= 8; }
+  if (coolerType === '风冷机') { base = Math.min(base, 5); base = Math.max(base, 0); }
+  else if (coolerType === '高级冷冻柜') { base = -10; }
+  return base;
+}
+
+function _foodTempComfort(temp) {
+  var t = Number(temp) || 20;
+  if (t >= 16 && t <= 26) { return { 舒适: true, 工作速度修正: 1.0, 健康损害: 0 }; }
+  var diff = 0;
+  var speed = 1.0;
+  var dmg = 0;
+  if (t < 16) { diff = 16 - t; }
+  else { diff = t - 26; }
+  speed = Math.max(0.5, 1.0 - diff * 0.03);
+  dmg = Math.round(diff * 0.5 * 100) / 100;
+  return { 舒适: false, 工作速度修正: speed, 健康损害: dmg };
+}
+
+var p1Need = _nutritionNeed(p1Age, p1Pregnant);
+var rotCoeff = _tempRotCoeff(temperature);
+var comfort = _foodTempComfort(temperature);
+_%>
+<烹饪系统就绪>
+[当前食物状态]
+温度: <%= temperature %>°C (腐烂系数:<%= rotCoeff %>)
+季节: <%= season %> 时段: <%= timeSlot %>
+银两: <%= silver %>
+
+殖民者厨艺:
+1. <%= p1Name %> - 厨艺:<%= p1Cook %> 年龄:<%= p1Age %> 孕期:<%= p1Pregnant %> 营养需求:<%= p1Need %>N/天
+2. <%= p2Name %> - 厨艺:<%= p2Cook %>
+舒适度: <%= comfort.舒适 ? '舒适' : '不适' %> 工作速度修正:×<%= comfort.工作速度修正 %> 健康损害:<%= comfort.健康损害 %>
+
+[烹饪规则]
+配方查询: 查FOOD_DB获取食材/营养/基础耗时/腐烂天数
+烹饪时间公式: 实际时间 = 基础时间 / (1 + 厨艺技能 × 0.1)
+  示例: <%= p1Name %>厨艺<%= p1Cook %> → 耗时系数×<%= _cookTime(1, p1Cook) %>
+
+品质判定(技能分级):
+  技能0-3: 糟糕/普通 (失败率 = max(0, 40 - skill×2)%)
+  技能4-7: 良好
+  技能8-12: 优秀
+  技能13-17: 大师
+  技能18-20: 传奇
+  示例: <%= p1Name %>厨艺<%= p1Cook %> → 品质:<%= _cookQuality(p1Cook, 'cook_demo').品质 %>
+
+产出修正: 技能≥10 ×1.1 / ≥15 ×1.2 / ≥20 ×1.5
+  <%= p1Name %>产出修正:×<%= _cookYieldMod(p1Cook) %>
+
+中毒概率: max(1, 20 - 厨艺技能 × 1.5)%
+  <%= p1Name %>中毒率:<%= _poisonRate(p1Cook) %>%
+
+营养值系统:
+  成年人(≥16岁): 1.6N/天
+  未成年人(<16岁): 1.0N/天
+  孕妇: 孕初期(1-15日)2.0N / 中期(16-30日)2.2N / 晚期(31日+)2.4N
+
+[腐烂规则]
+腐烂进度公式: 进度 = (存放天数 / 腐烂天数) × 100 × 温度系数
+  当前温度系数: <%= rotCoeff %> (查ROT_TEMP_DB)
+
+温度系数表:
+  <-5°C: 0.0 (冷冻不腐)
+  -5~0°C: 0.1
+  0~5°C: 0.3
+  5~10°C: 0.5
+  10~20°C: 1.0
+  20~30°C: 1.5
+  30~40°C: 2.5
+  >40°C: 4.0
+
+腐烂阶段:
+  0-50%: 新鲜 (营养×1.0, 无中毒)
+  51-80%: 不太新鲜 (营养×0.9, 无中毒)
+  81-99%: 腐坏中 (营养×0.7, 中毒+15%)
+  100%: 完全腐烂 (不可食用)
+
+冷库系统:
+  双层石墙隔热: -8°C
+  风冷机: 维持0~5°C (功耗200W)
+  高级冷冻柜: -10°C (功耗400W)
+  示例: 双层石墙+风冷机,外温<%= temperature %>°C → 冷库温度<%= _coldStorageTemp('双层石墙', '风冷机', temperature) %>°C
+
+[温度系统]
+舒适温度区间: 16-26°C
+偏离舒适区: 工作速度下降(每度-3%), 健康损害(每度+0.5)
+衣物保温修正: 根据衣物类型增加舒适区间(皮衣+5°C上限/防寒服+15°C上限)
+昼夜温差: 夜间温度通常-5°C(温带)~-10°C(沙漠)
+极端天气: 热浪(+15°C), 寒潮(-20°C), 火山冬天(-30°C且光照×0.2)
+
+[行为校验要求]
+烹饪行为必须输出行为校验块:
+  行为类型: 烹饪/屠宰/酿酒/采集/储存
+  执行者: 殖民者姓名
+  技能等级: 厨艺技能值
+  配方: 食物名称(查FOOD_DB获取营养/基础耗时/腐烂天数)
+  烹饪时间: _cookTime()计算结果
+  品质判定: _cookQuality()结果(糟糕/普通/良好/优秀/大师/传奇)
+  产出修正: _cookYieldMod()结果
+  中毒率: _poisonRate()计算
+  营养产出: 基础营养×产出修正
+  腐烂进度: _rotProgress()计算(如涉及储存)
+  腐烂阶段: _rotStage()判定
+</烹饪系统就绪>

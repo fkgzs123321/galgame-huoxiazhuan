@@ -1,0 +1,153 @@
+<!-- ============================================================
+     霍格沃茨 · 同层应用 骨架
+     ============================================================ -->
+<body>
+  <div id="hgw-app">
+    <!-- 背景装饰：星辉 + 月轮 + 城堡剪影 -->
+    <div id="hgw-bg-deco" aria-hidden="true">
+      <span class="star s1" style="left:8%;top:22%"></span>
+      <span class="star s2" style="left:18%;top:64%"></span>
+      <span class="star s3" style="left:32%;top:12%"></span>
+      <span class="star s4" style="left:44%;top:78%"></span>
+      <span class="star s5" style="left:57%;top:28%"></span>
+      <span class="star s1" style="left:63%;top:82%"></span>
+      <span class="star s2" style="left:72%;top:18%"></span>
+      <span class="star s3" style="left:81%;top:58%"></span>
+      <span class="star s4" style="left:90%;top:36%"></span>
+      <span class="star s5" style="left:26%;top:40%"></span>
+      <span class="star s1" style="left:68%;top:45%"></span>
+      <span class="star s2" style="left:38%;top:55%"></span>
+      <span class="star s3" style="left:5%;top:80%"></span>
+      <span class="star s4" style="left:93%;top:70%"></span>
+      <span class="star s5" style="left:50%;top:8%"></span>
+      <div class="moon"></div>
+      <svg class="castle-silhouette" viewBox="0 0 900 260" preserveAspectRatio="xMidYMax meet">
+        <g fill="#c9a227">
+          <rect x="60" y="120" width="60" height="140"/>
+          <rect x="100" y="90" width="40" height="170"/>
+          <polygon points="120,40 80,90 160,90"/>
+          <rect x="220" y="60" width="120" height="200"/>
+          <rect x="240" y="30" width="20" height="40"/>
+          <rect x="300" y="30" width="20" height="40"/>
+          <polygon points="280,10 235,60 325,60"/>
+          <rect x="380" y="100" width="50" height="160"/>
+          <rect x="410" y="70" width="30" height="190"/>
+          <polygon points="425,30 400,80 450,80"/>
+          <rect x="500" y="50" width="100" height="210"/>
+          <rect x="520" y="20" width="14" height="40"/>
+          <rect x="570" y="20" width="14" height="40"/>
+          <polygon points="550,0 515,50 585,50"/>
+          <rect x="640" y="110" width="50" height="150"/>
+          <rect x="670" y="80" width="28" height="180"/>
+          <polygon points="684,40 658,85 710,85"/>
+          <rect x="730" y="130" width="90" height="130"/>
+          <rect x="770" y="100" width="36" height="160"/>
+          <polygon points="788,55 758,100 818,100"/>
+          <!-- 塔尖旗 -->
+          <line x1="425" y1="30" x2="425" y2="8" stroke="#c9a227" stroke-width="2"/>
+          <polygon points="425,8 442,14 425,20" fill="#e8d48b"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 顶部栏 -->
+    <header id="hgw-topbar">
+      <div class="hgw-logo" id="hgw-logo">
+        <svg class="crest" viewBox="0 0 64 64">
+          <defs>
+            <linearGradient id="crestGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#e8d48b"/>
+              <stop offset="1" stop-color="#8a7430"/>
+            </linearGradient>
+          </defs>
+          <path d="M32 2 L58 12 V32 C58 48 47 58 32 62 C17 58 6 48 6 32 V12 Z" fill="none" stroke="url(#crestGold)" stroke-width="2.5"/>
+          <path d="M32 8 L52 16 V32 C52 45 43.5 53.5 32 57 C20.5 53.5 12 45 12 32 V16 Z" fill="#101a26" stroke="#c9a227" stroke-width="1.5"/>
+          <path d="M32 14 L45 20 V32 C45 41 39.5 47.5 32 50.5 C24.5 47.5 19 41 19 32 V20 Z" fill="rgba(201,162,39,0.15)" stroke="#8a7430" stroke-width="1"/>
+          <text x="32" y="36" text-anchor="middle" font-size="16" font-weight="bold" fill="#e8d48b" font-family="Georgia">H</text>
+        </svg>
+        <div>
+          <div class="title">霍格沃茨</div>
+          <div class="subtitle">HOGWARTS · 同层卡</div>
+        </div>
+      </div>
+      <div class="hgw-top-stats" id="hgw-top-stats">
+        <span class="hgw-top-stat" id="hgw-stat-time"><span class="ic">🕐</span><span class="lbl">时间</span><span class="val" id="hgw-top-time">--</span></span>
+        <span class="hgw-top-stat gold" id="hgw-stat-realm"><span class="ic">✦</span><span class="lbl">阶位</span><span class="val" id="hgw-top-realm">--</span></span>
+        <span class="hgw-top-stat" id="hgw-stat-hp"><span class="ic">🛡️</span><span class="lbl">魔力</span><span class="val" id="hgw-top-mp">--</span></span>
+        <span class="hgw-top-stat love" id="hgw-stat-love"><span class="ic">♥</span><span class="lbl">情欲</span><span class="val" id="hgw-top-lust">--</span></span>
+        <span class="hgw-top-stat magic" id="hgw-stat-wallet"><span class="ic">🪙</span><span class="lbl">金库</span><span class="val" id="hgw-top-gold">--</span></span>
+        <span class="hgw-top-stat" id="hgw-stat-day"><span class="ic">📅</span><span class="val" id="hgw-top-week">--</span></span>
+        <span id="hgw-genstate" class="idle"><span class="dot"></span><span id="hgw-genstate-txt">空闲</span></span>
+      </div>
+    </header>
+
+    <!-- 主体：左导航 + 内容 -->
+    <div id="hgw-main">
+      <nav id="hgw-nav">
+        <div class="nav-sec-title">主界面</div>
+        <div class="hgw-nav-item on" data-nav="story"><span class="ic">💬</span><span class="txt">聊天/剧情</span></div>
+        <div class="hgw-nav-item" data-nav="home"><span class="ic">🏰</span><span class="txt">城堡大厅</span></div>
+        <div class="hgw-nav-item" data-nav="status"><span class="ic">⚡</span><span class="txt">我的状态</span></div>
+        <div class="hgw-nav-item" data-nav="schedule"><span class="ic">🗓️</span><span class="txt">课表</span></div>
+        <div class="nav-sec-title">人物</div>
+        <div class="hgw-nav-item" data-nav="roster"><span class="ic">👥</span><span class="txt">女巫名录</span><span class="badge gold" id="hgw-nav-roster-count">0</span></div>
+        <div class="hgw-nav-item" data-nav="bonds"><span class="ic">🕸️</span><span class="txt">关系图谱</span></div>
+        <div class="nav-sec-title">玩法</div>
+        <div class="hgw-nav-item" data-nav="battle"><span class="ic">⚔️</span><span class="txt">决斗</span></div>
+        <div class="hgw-nav-item" data-nav="love"><span class="ic">♥</span><span class="txt">亲密</span></div>
+        <div class="hgw-nav-item" data-nav="brew"><span class="ic">🧪</span><span class="txt">炼药</span></div>
+        <div class="hgw-nav-item" data-nav="shop"><span class="ic">🏪</span><span class="txt">对角巷</span></div>
+        <div class="hgw-nav-item" data-nav="breakthrough"><span class="ic">💠</span><span class="txt">突破</span></div>
+        <div class="hgw-nav-item" data-nav="implant"><span class="ic">🧠</span><span class="txt">念头植入</span></div>
+        <div class="nav-sec-title">校园</div>
+        <div class="hgw-nav-item" data-nav="map"><span class="ic">🗺️</span><span class="txt">城堡地图</span></div>
+        <div class="hgw-nav-item" data-nav="library"><span class="ic">📚</span><span class="txt">图书馆图鉴</span></div>
+        <div class="hgw-nav-item" data-nav="quidditch"><span class="ic">🏟️</span><span class="txt">魁地奇</span></div>
+        <div class="hgw-nav-item" data-nav="divination"><span class="ic">🔮</span><span class="txt">占卜室</span></div>
+        <div class="hgw-nav-item" data-nav="forest"><span class="ic">🌲</span><span class="txt">禁林</span></div>
+        <div class="nav-sec-title">系统</div>
+        <div class="hgw-nav-item" data-nav="memory"><span class="ic">🧠</span><span class="txt">记忆</span></div>
+        <div class="hgw-nav-item" data-nav="variables"><span class="ic">🔢</span><span class="txt">变量</span></div>
+        <div class="hgw-nav-item" data-nav="evolution"><span class="ic">🌐</span><span class="txt">世界推演</span></div>
+        <div class="hgw-nav-item" data-nav="optimize"><span class="ic">✂️</span><span class="txt">正文优化</span></div>
+        <div class="hgw-nav-item" data-nav="ai"><span class="ic">🤖</span><span class="txt">AI 配置</span></div>
+        <div class="hgw-nav-item" data-nav="guide"><span class="ic">📖</span><span class="txt">世界全书</span></div>
+        <div class="hgw-nav-item" data-nav="help"><span class="ic">❓</span><span class="txt">帮助</span></div>
+        <div class="hgw-nav-item" data-nav="achievements"><span class="ic">🏆</span><span class="txt">成就</span></div>
+        <div class="hgw-nav-item" data-nav="stats"><span class="ic">📊</span><span class="txt">统计</span></div>
+        <div class="hgw-nav-item" data-nav="log"><span class="ic">📖</span><span class="txt">大事记</span></div>
+        <div class="hgw-nav-item" data-nav="save"><span class="ic">💾</span><span class="txt">存档</span></div>
+        <div class="hgw-nav-item" data-nav="settings"><span class="ic">⚙️</span><span class="txt">设置</span></div>
+
+        <div class="nav-footer">
+          <div class="hgw-nav-mini" id="hgw-nav-mini">
+            <div class="ava" id="hgw-nav-ava">🧙</div>
+            <div class="meta">
+              <div class="nm" id="hgw-nav-name">转学生</div>
+              <div class="lv" id="hgw-nav-lv">一年级 · 格兰芬多</div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main id="hgw-content">
+        <div id="hgw-view">
+          <div class="view-inner" id="hgw-view-inner"></div>
+        </div>
+        <div id="hgw-inputbar">
+          <textarea id="hgw-input" placeholder="输入你的行动…（回车发送 / Shift+回车换行）" rows="1"></textarea>
+          <div class="input-tools">
+            <button class="hgw-btn magic sm" id="hgw-btn-roll" title="投骰子">🎲 投骰</button>
+            <button class="hgw-btn ok" id="hgw-btn-send">发送 ⚡</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 模态容器 -->
+  <div id="hgw-modal-root"></div>
+  <!-- Toast 容器 -->
+  <div id="hgw-toasts"></div>
+</body>
+</html>

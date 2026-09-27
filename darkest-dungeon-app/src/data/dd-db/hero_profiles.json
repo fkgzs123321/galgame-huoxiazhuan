@@ -1,0 +1,24 @@
+{
+  "source": "暗黑地牢英雄人物志（手写整理，供角色页/原著指导/世界书使用）",
+  "version": "1.0.0",
+  "heroes": [
+    { "id": "crusader", "name": "十字军", "title": "流亡圣骑士", "archetype": "防御型前排", "backstory": "曾在圣战中高举旗帜的骑士，如今庄园成了他最后的圣战。信仰是他的铠甲，也是他的枷锁。", "tags": ["heavy", "religious", "frontline"], "signatureSkill": "smite", "flavor": "圣光在他手中燃烧——但它早已无法照亮他的眼睛。" },
+    { "id": "highwayman", "name": "匪徒", "title": "亡命枪手", "archetype": "高速输出", "backstory": "劫过道、杀过人、逃过命。他的过去像弹孔一样多，像火药一样烫。迪斯马斯是他另一个名字。", "tags": ["fast", "ranged", "versatile"], "signatureSkill": "pistol_shot", "flavor": "他数过自己枪膛里的子弹，就像数过自己犯下的罪。" },
+    { "id": "vestal", "name": "修女", "title": "殉道祭司", "archetype": "治疗核心", "backstory": "在修道院废墟中幸存的女祭司。她听见神的低语，也听见地牢的低语——两者越来越难分辨。", "tags": ["religious", "healer", "support"], "signatureSkill": "divine_comfort", "flavor": "她的祈祷让伤口愈合，却让心越来越冷。" },
+    { "id": "plague_doctor", "name": "瘟疫医生", "title": "理性医者", "archetype": "控制/持续伤害", "backstory": "戴着鸟嘴面具的医师，相信一切疾病都有解药——包括疯狂。她的实验笔记比墓志铭更厚。", "tags": ["scholar", "control", "dot"], "signatureSkill": "plague_grenade", "flavor": "她研究瘟疫，瘟疫也在研究她。" },
+    { "id": "hellion", "name": "蛮族女", "title": "北地狂战士", "archetype": "高伤前排", "backstory": "从北方冻原流亡而来的战士，战斗是她的母语，伤口是她的勋章。", "tags": ["frontline", "damage", "brutal"], "signatureSkill": "iron_swan", "flavor": "她咆哮着冲锋——大地为之震颤。" },
+    { "id": "leper", "name": "麻风", "title": "蒙面王", "archetype": "重装坦克", "backstory": "曾经的王，如今被麻风吞噬了面容。他戴着面具沉默前行，每一刀都沉重如王冠。", "tags": ["tank", "heavy", "damage"], "signatureSkill": "hew", "flavor": "王座已朽，剑仍锋利。" },
+    { "id": "bounty_hunter", "name": "赏金猎人", "title": "猎颅者", "archetype": "单点爆发", "backstory": "只认赏金不认人的猎手。他的钩索曾拖回无数头颅——也包括不该属于他的那个。", "tags": ["single_target", "mark", "professional"], "signatureSkill": "mark_for_death", "flavor": "目标只有两种：已死的，和将要死的。" },
+    { "id": "occultist", "name": "秘术师", "title": "渎神学者", "archetype": "高风险治疗/诅咒", "backstory": "研究禁忌知识的学者，与古神做交易。他的治疗可能挽救生命，也可能召来深渊。", "tags": ["eldritch", "healer", "chaos"], "signatureSkill": "wyrd_reconstruction", "flavor": "他每念一次咒语，就离人性远一步。" },
+    { "id": "grave_robber", "name": "盗墓贼", "title": "墓园夜行客", "archetype": "闪避刺客", "backstory": "在坟场长大的人，对死亡毫无敬畏——只有生意。她的匕首比月光更轻。", "tags": ["dodge", "assassin", "poison"], "signatureSkill": "pick_to_the_face", "flavor": "死人不会告发她，活人追不上她。" },
+    { "id": "jester", "name": "小丑", "title": "疯癫艺人", "archetype": "压力控制/流血", "backstory": "在宫廷里取悦贵族的小丑，如今只为疯狂演奏。他的刀与琴都见血。", "tags": ["stress_control", "bleed", "support"], "signatureSkill": "harvest", "flavor": "笑声比哭声更让人不安。" },
+    { "id": "arbalest", "name": "弩手", "title": "复仇射手", "archetype": "远程压制", "backstory": "家园被毁、亲人被掳的幸存者。她架起弩，把仇恨装进每一支箭。", "tags": ["ranged", "mark", "support"], "signatureSkill": "sniper_shot", "flavor": "她的箭从不问为什么——只问在哪。" },
+    { "id": "antiquarian", "name": "古董商", "title": "鉴宝师", "archetype": "辅助/寻宝", "backstory": "追逐稀有文物的商人，对金钱的嗅觉比狗灵敏。她的存在让队伍的战利品价值飙升——前提是活着回来。", "tags": ["support", "loot", "fragile"], "signatureSkill": "fortifying_vapours", "flavor": "每一件古董背后，都有一具更古老的尸体。" },
+    { "id": "abomination", "name": "憎恶", "title": "被诅咒的囚徒", "archetype": "变形者", "backstory": "体内封印着野兽的囚徒。愤怒时他会撕碎枷锁，变成憎恶之物——而他自己也害怕那个形态。", "tags": ["transform", "beast", "controversial"], "signatureSkill": "transform", "flavor": "笼中的野兽凝视着笼外的人——它们其实是同一个。" },
+    { "id": "flagellant", "name": "苦修者", "title": "痛楚信徒", "archetype": "自伤换力", "backstory": "相信痛苦是通往神性的道路。他越接近死亡，力量越强——也越疯狂。", "tags": ["self_harm", "heal", "stress"], "signatureSkill": "punish", "flavor": "他拥抱苦难，就像拥抱旧友。" },
+    { "id": "houndmaster", "name": "猎犬大师", "title": "人与犬", "archetype": "标记/反击", "backstory": "带着忠犬的猎手。狗是他唯一信任的同伴——因为在人群中，他看见的都是猎物。", "tags": ["mark", "dog", "versatile"], "signatureSkill": "hound_rush", "flavor": "狗嗅得出恐惧，他嗅得出谎言。" },
+    { "id": "shieldbreaker", "name": "破盾者", "title": "蛇影刺客", "archetype": "破甲刺客", "backstory": "来自异域的战士，以蛇为图腾。她专破铠甲与护盾——包括人心的那层。", "tags": ["armor_pierce", "nightmare", "fast"], "signatureSkill": "pierce", "flavor": "她看见的铠甲里，都藏着同一条蛇。" },
+    { "id": "man_at_arms", "name": "武装大师", "title": "老兵铁壁", "archetype": "守护者", "backstory": "身经百战的老兵，守护过王公，也守护过囚犯。他唯一的信念：站在最前面。", "tags": ["tank", "guard", "support"], "signatureSkill": "guard", "flavor": "他的盾上刻着所有他没能救下的人的名字。" },
+    { "id": "musketeer", "name": "火枪手", "title": "神射手", "archetype": "远程精准", "backstory": "训练有素的雇佣枪手，与弩手师出同门。她的火枪从不失手——失手的都死了。", "tags": ["ranged", "mark", "precision"], "signatureSkill": "aimed_shot", "flavor": "烟消火熄之后，只剩靶心。" }
+  ]
+}

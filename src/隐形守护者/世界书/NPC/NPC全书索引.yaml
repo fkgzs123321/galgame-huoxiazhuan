@@ -1,0 +1,18 @@
+名称: NPC全书索引
+类型: NPC
+启用: false
+激活策略:
+  类型: 绿灯
+  优先级: 40
+插入位置:
+  类型: 角色定义后
+  顺序: 199
+
+内容: |
+  【NPC 绿灯索引 · 勿开常亮】
+
+  运作档案（矩阵/MVU/章节铁律）由 **EJS（角色）** 按章节+关键词 `getwi` 注入。  
+  性格七维由同条件注入 `*-Persona`（灰灯）。  
+  文案源：`scripts/npc-catalog.mjs` → `世界书/NPC/*.yaml`。
+
+  维护：`gen-all-npcs.mjs` → `register-all-npcs.mjs` → `gen-ejs-npc-rules.mjs` → `apply-getwi-gates.mjs`。

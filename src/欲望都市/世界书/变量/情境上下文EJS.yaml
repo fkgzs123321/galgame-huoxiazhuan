@@ -1,0 +1,67 @@
+@@generate_before
+@@private
+<%_ const tgt = getvar('stat_data.排班.当前战斗目标', { defaults: '' }); _%>
+<%_ const st = getvar('stat_data.排班.战斗状态', { defaults: '未开始' }); _%>
+<%_ const sd = getvar('stat_data.时间.时段', { defaults: '' }); _%>
+<%_ const slotMap = { 上午: '上午场', 下午场: '下午场', 晚场: '晚场', 深夜: '深夜' }; _%>
+<%_ const curSlot = slotMap[sd] || ''; _%>
+<%_ const curPlayers = curSlot ? getvar('stat_data.排班.今日场次.' + curSlot + '.参与者', { defaults: '' }) : ''; _%>
+<%_ const curResult = curSlot ? getvar('stat_data.排班.今日场次.' + curSlot + '.结果', { defaults: '待定' }) : ''; _%>
+
+## 当前情境概览
+- 时间: <%- getvar('stat_data.时间.日期', { defaults: '' }) %> <%- getvar('stat_data.时间.星期', { defaults: '' }) %>（<%- sd %>）
+- 学业总分: <%- getvar('stat_data.玩家.学业总分', { defaults: 0 }) %>/750；体力 <%- getvar('stat_data.玩家.体力', { defaults: 0 }) %>；性欲 <%- getvar('stat_data.玩家.性欲', { defaults: 0 }) %>；勃起度 <%- getvar('stat_data.玩家.勃起度', { defaults: 0 }) %>
+- 今日战绩: 胜 <%- getvar('stat_data.玩家.今日胜场', { defaults: 0 }) %> / 败 <%- getvar('stat_data.玩家.今日败场', { defaults: 0 }) %>
+
+## 今日排班（24 小时全覆盖，★按当前时段高亮）
+- 上午场: <%- getvar('stat_data.排班.今日场次.上午场.参与者', { defaults: '（未排班）' }) %>（结果: <%- getvar('stat_data.排班.今日场次.上午场.结果', { defaults: '待定' }) %>）
+- 下午场: <%- getvar('stat_data.排班.今日场次.下午场.参与者', { defaults: '（未排班）' }) %>（结果: <%- getvar('stat_data.排班.今日场次.下午场.结果', { defaults: '待定' }) %>）
+- 晚场: <%- getvar('stat_data.排班.今日场次.晚场.参与者', { defaults: '（未排班）' }) %>（结果: <%- getvar('stat_data.排班.今日场次.晚场.结果', { defaults: '待定' }) %>）
+- 深夜: <%- getvar('stat_data.排班.今日场次.深夜.参与者', { defaults: '（未排班）' }) %>（结果: <%- getvar('stat_data.排班.今日场次.深夜.结果', { defaults: '待定' }) %>）
+
+<%_ // —— 角色名单归一化：单人=[tgt] / 多人=目标列表 / 日常=最近消息出现角色 —— _%>
+<%_ const ALL_NAMES = ['林汐瑶','苏晚晴','周语桐','陈雪梨','宋佳凝','白若薇','叶诗涵','何雨珊','陆芷晴','黎嘉欣','王朵朵','秦可心','石小婉','韩美娜','丽莎·伊万诺娃','沈若兰','李红梅','艾米丽·陈','赵雪晴','张慧娟','刘晶晶','唐婉清','林秀英','苏婉如','周桂香','陈淑芬','宋丽华','白秋月','叶春梅','何玉兰','陆青霞','黎桂芳','王金凤','秦淑珍','石巧云','金顺姬','娜塔莎·伊万诺娃','宋雅琴']; _%>
+<%_ const tlRaw = getvar('stat_data.排班.战斗.目标列表', { defaults: [] }) || []; _%>
+<%_ const tl = tlRaw.map(function(t){ return typeof t === 'string' ? t : (t && t.名) || ''; }).filter(Boolean); _%>
+<%_ var list = []; var listLabel = ''; _%>
+<%_ if (tgt && tgt !== '多人' && getvar('stat_data.女性角色.' + tgt, { defaults: null })) { _%>
+<%_   list = [tgt]; listLabel = '当前目标'; _%>
+<%_ } else if (tgt === '多人' && tl.length) { _%>
+<%_   list = tl.slice(0, 4); listLabel = '多人战斗目标'; _%>
+<%_ } else { _%>
+<%_   const recent = (typeof getChatMessages === 'function' ? (getChatMessages(-5) || []) : []).join('\n'); _%>
+<%_   list = ALL_NAMES.filter(function(n){ return recent.indexOf(n) >= 0; }).slice(0, 3); _%>
+<%_   listLabel = '在场角色'; _%>
+<%_ } _%>
+<%_ var detail = ''; _%>
+<%_ list.forEach(function(nm){ if (!getvar('stat_data.女性角色.' + nm, { defaults: null })) return; _%>
+<%_   var g = function(k){ return getvar('stat_data.女性角色.' + nm + '.' + k, { defaults: '' }); }; _%>
+<%_   detail += '\n## ' + listLabel + '：' + nm + '\n'; _%>
+<%_   detail += '- 身份: ' + g('身份') + '\n'; _%>
+<%_   detail += '- 省份: ' + g('省份') + '；方言: ' + g('方言') + '；关系: ' + g('关系') + '\n'; _%>
+<%_   detail += '- 特质: ' + g('特质') + '；缺陷: ' + g('缺陷') + '\n'; _%>
+<%_   detail += '- 缴械值: ' + (Number(getvar('stat_data.女性角色.' + nm + '.缴械值', { defaults: 0 })) || 0) + '/100；好感度: ' + (Number(getvar('stat_data.女性角色.' + nm + '.好感度', { defaults: 20 })) || 0) + '/100（社交线，与缴械无关）；压力值: ' + (Number(getvar('stat_data.女性角色.' + nm + '.压力值', { defaults: 50 })) || 0) + '/100（她自己的生活压力）\n'; _%>
+<%_   detail += '- 名器: ' + g('名器') + '；名器防御 ' + (Number(getvar('stat_data.女性角色.' + nm + '.名器防御', { defaults: 0 })) || 0) + '；能力值 忍' + (Number(getvar('stat_data.女性角色.' + nm + '.能力值.忍耐', { defaults: 0 })) || 0) + '/持' + (Number(getvar('stat_data.女性角色.' + nm + '.能力值.持久', { defaults: 0 })) || 0) + '/攻' + (Number(getvar('stat_data.女性角色.' + nm + '.能力值.反攻', { defaults: 0 })) || 0) + '\n'; _%>
+<%_   detail += '- 技能: ' + g('技能.名') + ' Lv' + (Number(getvar('stat_data.女性角色.' + nm + '.技能.等级', { defaults: 1 })) || 1) + '（经验 ' + (Number(getvar('stat_data.女性角色.' + nm + '.技能.经验', { defaults: 0 })) || 0) + '）' + (getvar('stat_data.女性角色.' + nm + '.技能.技能组', { defaults: null }) ? JSON.stringify(getvar('stat_data.女性角色.' + nm + '.技能.技能组')) : '') + '\n'; _%>
+<%_   detail += '- 欲望积压: ' + (Number(getvar('stat_data.女性角色.' + nm + '.欲望积压', { defaults: 0 })) || 0) + '/100；精神状态: ' + g('心理状态.精神状态') + '\n'; _%>
+<%_   detail += '- 身体: 胸' + g('身体状态.胸部.状态') + '/' + g('身体状态.胸部.乳头') + '；阴' + g('身体状态.阴道.状态') + '/' + g('身体状态.阴道.湿润度') + '；肛' + g('身体状态.肛门.状态') + '；肤' + g('身体状态.肌肤.状态') + '/' + g('身体状态.肌肤.体温') + '\n'; _%>
+<%_   detail += '- 心理: 欲' + (Number(getvar('stat_data.女性角色.' + nm + '.心理状态.欲望度', { defaults: 0 })) || 0) + ' 羞' + (Number(getvar('stat_data.女性角色.' + nm + '.心理状态.羞耻感', { defaults: 0 })) || 0) + ' 兴' + (Number(getvar('stat_data.女性角色.' + nm + '.心理状态.兴奋', { defaults: 0 })) || 0) + ' 期' + (Number(getvar('stat_data.女性角色.' + nm + '.心理状态.期待', { defaults: 0 })) || 0) + '\n'; _%>
+<%_   detail += '- 心声: ' + g('心声') + '\n'; _%>
+<%_ }); _%>
+<%_ if (!detail) { detail = '\n## 当前目标：无（自由剧情时段）\n'; } _%>
+<%- detail %>
+
+<%_ if (st === '进行中') { _%>
+## 战斗状态：进行中
+- ⚠ **开战轮铁律（最高优先级）**：本轮若刚开战，**必须同时更新变量**——`排班.战斗状态` = "进行中"、`排班.当前战斗目标` = 她名字（多人 = "多人" 且写全 `排班.战斗.目标列表` 每个参与者姓名）；**漏写目标 → 战斗面板卡在"目标缺失/同步中"无法显示战斗**，剧情无法推进！
+- 战斗由面板接管：本轮若刚开战（被拉入/玩家指令），描写 NSFW 过程到"插入"阶段为止（按她的私密档案写特色细节，不写结果/胜负/缴械变化），随后输出 <StatusPlaceHolderImpl/> + <BattleUI/>；已开战则每轮只叙事回合交互与她的反应，不判定胜负；胜负由面板结算，在结算后的下一楼层叙事
+- 数值由【战斗结算】块给出，AI 按块数值写回 stat_data（唯一真源），勿自行重算；消息末尾按占位符协议输出占位符
+<%_ } else if (curSlot && curPlayers && curPlayers !== '（暂无）' && curPlayers !== '（无俘虏）' && curResult === '待定') { _%>
+## ⚡ 当前时段触发：<%- sd %> —— 在线使用者：<%- curPlayers %>
+她们正在使用假阴茎，你被拉入！**本轮必须主动演出开战轮，不要等待玩家指令**：
+- 正文开头立即描写你突如其来的异样（热度/包裹/湿润/心跳加速/脑中模糊异样），<user> 视角不知是谁、不知是假阴茎（按【user 知情度】，禁止说出"假阴茎/玩具"等真相词汇）
+- 按在线使用者的私密档案写特色细节（名器/性偏好/反应/气味），**只推进到"插入"阶段为止**，不写结果/胜负/缴械变化
+- **必须更新变量**（开战铁律）：排班.战斗状态 = "进行中"、排班.当前战斗目标 = 在线使用者（多人时 = "多人" 并写全 排班.战斗.目标列表）——漏写目标面板无法显示战斗
+- 消息末尾输出 <StatusPlaceHolderImpl/> + <BattleUI/>（战斗面板弹出）
+- 战斗结束后按【战斗结算】块把本时段场次结果更新为 已胜/已败 + 是否参战 = true
+<%_ } _%>

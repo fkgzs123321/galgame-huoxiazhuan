@@ -1,0 +1,157 @@
+@@generate_before
+<%/* ═══ 同级生2 寒假 Day 12 - 01-02 周二 ═══
+   当日主题：久美子线深化（身份感知）
+   特殊事件：event_day12_kumiko_morning / event_day12_kumiko_afternoon_play / event_day12_diary_3_window / event_day12_diary_4_window / event_day12_west_temple_conspiracy
+   女角锁定：[14]
+   ★ 身份感知：调用 IDENTITY_PROFILES 常量，每个身份独立场景（用具体名字，不用"主角"）
+     P1 相沢诚 → 鸣泽家（唯交付日记本客厅，久美子暂住鸣泽家）
+     P2 川尻信良 → 川尻家（洋子线核心，久美子暂住川尻家，唯偶遇交付）
+     P3 长冈芳树 → 长冈家（友美敌意偷拍，久美子暂住长冈家，唯偶遇交付）
+     P4 西御寺有友 → 西御寺家豪宅（唯美纪敌意，久美子暂住豪宅，唯偶遇交付）
+     P5 天道新干线 → 天道家（爱美核心，久美子暂住天道家，唯偶遇交付）
+     P6 自定义 → 玩家住所（久美子暂住玩家住所，唯偶遇交付）
+   ★ 芳树家秘谋事件所有身份通用（与玩家身份无关）
+*/%>
+
+<%
+if (typeof _dayInfo === 'undefined') var _dayInfo = {
+  day_count: 12,
+  date: '01-02',
+  weekday: '周二',
+  chapter: '寒假尾声',
+  theme: '久美子线深化（身份感知独立场景）',
+  special_events: ['event_day12_kumiko_morning', 'event_day12_kumiko_afternoon_play', 'event_day12_diary_3_window', 'event_day12_diary_4_window', 'event_day12_west_temple_conspiracy'],
+  locked_heroines: [14],
+  new_unlock: [],
+  weather_default: '晴',
+  notes: '久美子好感推进；佐知子未登场'
+};
+
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取独立场景（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _playerHome === 'undefined') var _playerHome = _profile ? _profile.home : '玩家住所';
+if (typeof _playerIdentityDesc === 'undefined') var _playerIdentityDesc = _profile ? _profile.identity_desc : '未选择';
+if (typeof _playerSpecialRole === 'undefined') var _playerSpecialRole = _profile ? _profile.special_role : '未选择';
+if (typeof _dayN === 'undefined') var _dayN = _dayInfo.day_count;  // 当前天数 12
+if (typeof _dayScene === 'undefined') var _dayScene = _profile && _profile['day' + _dayN] ? _profile['day' + _dayN] : null;
+
+/* 女角出现规则（身份感知：每个身份解锁不同核心女角，保留 day01 对象结构） */
+if (typeof _heroineRules === 'undefined') var _heroineRules = {
+  '原作主角': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}早/晚（义妹同居）`,
+    misako: `鸣泽美佐子（row_id=2）：咖啡店上午/下午 + ${_playerHome}晚（义母）`,
+    tomomi: '水野友美（row_id=8）：水野家上午/晚（邻家青梅竹马）',
+    kumiko: `永岛久美子（row_id=13）：${_playerHome}全时段 + 外出下午（暂住${_playerHome}）`
+  },
+  '川尻信良': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（认识但不熟，非家庭关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：水野家附近/${_playerHome}周边偶遇（非邻家，陌生）`,
+    kumiko: `永岛久美子（row_id=13）：${_playerHome}全时段 + 外出下午（暂住${_playerHome}）`,
+    yoko: '南川洋子（row_id=6）：学园/商业区/机车行偶遇（同班同学，洋子线核心）★本日核心'
+  },
+  '长冈芳树': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（陌生，非家庭关系）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：水野家附近偷拍场景（敌意，谨慎潜行）★本日核心`,
+    miki: '加藤美纪（row_id=4）：学园/商业区偶遇（敌意）',
+    kumiko: `永岛久美子（row_id=13）：${_playerHome}全时段 + 外出下午（暂住${_playerHome}）`
+  },
+  '西御寺有友': {
+    yui: '鸣泽唯（row_id=1）：学园附近偶遇（敌意，禁止骚扰，仅远观）★本日核心',
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：水野家附近/${_playerHome}周边偶遇（非邻家，陌生）`,
+    miki: '加藤美纪（row_id=4）：商业区偶遇（敌意）',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（师生关系紧张）',
+    kumiko: `永岛久美子（row_id=13）：${_playerHome}全时段 + 外出下午（暂住${_playerHome}）`
+  },
+  '天道新干线': {
+    yui: `鸣泽唯（row_id=1）：学园附近偶遇（师生关系，陌生）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：学园附近偶遇（师生关系，陌生）`,
+    aimi: '安田爱美（row_id=9）：保育园偶遇（有特殊企图）★本日核心',
+    misuzu: '片桐美铃（row_id=11）：学园教师室偶遇（同事关系）',
+    kumiko: `永岛久美子（row_id=13）：${_playerHome}全时段 + 外出下午（暂住${_playerHome}）`
+  },
+  '自定义': {
+    yui: `鸣泽唯（row_id=1）：${_playerHome}周边/学园附近偶遇（陌生，按玩家背景调整）`,
+    misako: '鸣泽美佐子（row_id=2）：仅咖啡店《憩》上午/下午/晚可遇（咖啡店老板娘，非亲属）',
+    tomomi: `水野友美（row_id=8）：${_playerHome}周边偶遇（陌生，按玩家背景调整）`,
+    kumiko: `永岛久美子（row_id=13）：${_playerHome}全时段 + 外出下午（暂住${_playerHome}）`
+  },
+  '未选择': {
+    note: '玩家身份未初始化，等待玩家选择 P1-P6 后按对应身份描写开场场景。'
+  }
+};
+
+if (typeof _heroineRule === 'undefined') var _heroineRule = _heroineRules[_playerIdentity] || _heroineRules['未选择'];
+
+/* ─── 事件描述（身份感知，用具体名字；IDENTITY_PROFILES.day12 仅含 morning/afternoon/evening/diary_hint 4 字段，事件描述用本地 fallback 保证身份感知） ─── */
+
+/* event_day12_kumiko_morning：与久美子的早晨（玩家住所通用） */
+if (typeof _kumikoMorningDesc === 'undefined') var _kumikoMorningDesc = `早时段${_playerHome}触发，${_playerName}与久美子共度早晨。前置条件：event_day11_kumiko_stay 选择收留。久美子好感 +3。早餐场景铺垫，久美子逐渐适应${_playerHome}生活`;
+
+/* event_day12_kumiko_afternoon_play：带久美子外出（商业区/海岸通用） */
+if (typeof _kumikoPlayDesc === 'undefined') var _kumikoPlayDesc = `下午时段商业区/海岸触发，${_playerName}带久美子外出游玩。前置条件：event_day12_kumiko_morning 已触发。久美子好感 +4`;
+
+/* event_day12_diary_3_window：唯交付日记本（身份感知） */
+if (typeof _diary3Desc === 'undefined') var _diary3Desc = (_playerIdentity === '原作主角')
+  ? `第3本·唯交付窗口期持续（12-29~01-03）。晚时段鸣泽家客厅触发。前置条件同 Day 8。叙事提示：本日仍可触发唯交付日记本事件，唯在${_playerHome}客厅将日记本交给${_playerName}`
+  : `第3本·唯交付窗口期持续（12-29~01-03）。晚时段${_playerHome}周边/学园附近偶遇唯时交付（非家庭关系）。前置条件同 Day 8。叙事提示：本日仍可触发唯交付日记本事件（偶遇交付），${_playerName}在偶遇时从唯处接过日记本`;
+
+/* event_day12_diary_4_window：爱美谢礼（保育园通用） */
+if (typeof _diary4Desc === 'undefined') var _diary4Desc = `第4本·爱美谢礼窗口期持续（12-30~01-03）。下午时段保育园触发。前置条件同 Day 9。叙事提示：本日仍可触发爱美交付日记本事件，${_playerName}前往保育园时爱美交付日记本作为谢礼`;
+
+/* event_day12_west_temple_conspiracy：西御寺与芳树秘谋（长冈芳树家通用，与玩家身份无关） */
+if (typeof _conspiracyDesc === 'undefined') var _conspiracyDesc = `西御寺与芳树秘谋。晚时段长冈芳树家触发。前置条件：has_met_西御寺有友=true AND has_met_长冈芳树=true AND 鸣泽唯.affection≥20。${_playerName} mood -10，设置 阴谋偷听 flag。叙事提示：${_playerName}偷听到西御寺计划1/3~1/4诱骗唯至88公园，${_playerName}可选择告知唯/独自阻止/装作不知，直接影响唯线 True End 与 唯获救 达成路径`;
+%>
+
+[Day 12 调度器已加载：01-02 周二，主题：久美子线深化（身份感知独立场景）。
+本日特殊事件：event_day12_kumiko_morning / event_day12_kumiko_afternoon_play / event_day12_diary_3_window / event_day12_diary_4_window / event_day12_west_temple_conspiracy。
+本日锁定女角：[14]（永岛佐知子未登场）。
+本日新解锁：无。
+本日天气默认：晴。
+本日备注：久美子好感推进；佐知子未登场。
+
+★ 当前玩家身份：<%= _playerIdentity %>
+★ 玩家姓名：<%= _playerName %>
+★ 玩家住所：<%= _playerHome %>
+★ 身份描述：<%= _playerIdentityDesc %>
+★ 特殊角色：<%= _playerSpecialRole %>
+★ 核心女角焦点：<%= _profile && _profile.heroine_focus ? _profile.heroine_focus.join(' / ') : '未选择' %>
+
+【当日事件详情】
+- event_day12_kumiko_morning：与久美子的早晨。<%= _kumikoMorningDesc %>。
+- event_day12_kumiko_afternoon_play：带久美子外出。<%= _kumikoPlayDesc %>。
+  - 商业区路线：久美子购物场景，好感 +4
+  - 海岸路线：久美子散步场景，好感 +5（额外 +1）
+  外出过程中可触发久美子心声特殊对话，铺垫 Day 15 攻略完成。
+- event_day12_diary_3_window：<%= _diary3Desc %>。
+- event_day12_diary_4_window：<%= _diary4Desc %>。
+- event_day12_west_temple_conspiracy：<%= _conspiracyDesc %>。
+
+【当日女角出现特殊规则】
+本日为久美子线深化日，久美子为当日核心。当日可遭遇女角按身份解锁：
+<% if (_heroineRule.note) { %>
+- <%= _heroineRule.note %>
+<% } else { %>
+<% if (_heroineRule.yui) { %>- <%= _heroineRule.yui %><% } %>
+<% if (_heroineRule.misako) { %>- <%= _heroineRule.misako %><% } %>
+<% if (_heroineRule.tomomi) { %>- <%= _heroineRule.tomomi %><% } %>
+<% if (_heroineRule.kumiko) { %>- <%= _heroineRule.kumiko %><% } %>
+<% if (_heroineRule.yoko) { %>- <%= _heroineRule.yoko %><% } %>
+<% if (_heroineRule.miki) { %>- <%= _heroineRule.miki %><% } %>
+<% if (_heroineRule.aimi) { %>- <%= _heroineRule.aimi %><% } %>
+<% if (_heroineRule.misuzu) { %>- <%= _heroineRule.misuzu %><% } %>
+<% } %>
+永岛佐知子（row_id=14）锁定，AI 不可让其出现。
+关键提示：若 Day 11 未选择收留久美子，本日事件不触发，久美子线中断。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼/美佐子浴室洗背"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。
+4. 每个身份的核心女角焦点不同，AI 应聚焦身份对应的女角线推进。]

@@ -1,0 +1,1 @@
+import{c as e,p as t,u as n}from"./schemas/schemas-uUO5huJW.js";var r=`mortal-cave-custom-building.v1`,i=n({kind:e(r),name:t().min(1),description:t().min(1)});function a(e){return{kind:r,name:e.name.trim(),description:e.description.trim()}}function o(e){return i.parse(e)}function s(e){return o(JSON.parse(e.presetData))}export{s as n,o as r,a as t};

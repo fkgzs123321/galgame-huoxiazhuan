@@ -1,0 +1,961 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · 环世界</title>
+<style>
+/* === 色彩变量 · RimWorld 暖色调 === */
+:root{
+  --bg-0:#1a1410;--bg-1:#241a14;--bg-card:rgba(36,26,20,.88);
+  --c-text:#f5ebe0;--c-dim:#a89888;--c-border:rgba(217,119,6,.22);
+  --c-danger:#ef4444;--c-warn:#f59e0b;--c-orange:#db6d28;--c-safe:#10b981;--c-accent:#d97706;--c-blue:#3b82f6;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+html,body,div,span,p,a,ul,ol,li,table,tr,td,th,h1,h2,h3,h4,h5,h6,button,input,label,select,textarea{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5;-webkit-overflow-scrolling:touch}
+/* === 内联图标（替代 Font Awesome） === */
+.ic{font-size:var(--fs-sm);display:inline-block;line-height:1}
+/* === 状态栏容器 === */
+.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:10px 12px;margin:6px 0;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+/* === 顶部系统栏 === */
+.hd{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:8px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+.hd-t{font-size:var(--fs-md);font-weight:700;letter-spacing:.5px}
+.hd-sub{font-size:var(--fs-xs);color:var(--c-dim);width:100%;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:var(--fs-xs);padding:2px 8px;border-radius:10px;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.3);color:#fbbf24;white-space:nowrap}
+.pill.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35);color:var(--c-warn)}
+.pill.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:var(--c-danger)}
+.pill.safe{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);color:var(--c-safe)}
+.pill.blue{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.35);color:var(--c-blue)}
+.present{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.present.yes{background:var(--c-safe);box-shadow:0 0 4px rgba(16,185,129,.6)}
+.present.no{background:var(--c-danger);box-shadow:0 0 4px rgba(239,68,68,.6)}
+.rfr{background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:var(--fs-md);flex-shrink:0;transition:color .2s}
+.rfr:hover{color:var(--c-text)}
+.rfr.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* === 卡片 === */
+.card{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.card:last-child{margin-bottom:0}
+.card-t{font-size:var(--fs-sm);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.card-t .caret{margin-left:auto;transition:transform .3s ease;color:var(--c-dim);font-size:var(--fs-xs)}
+.card-t.expanded .caret{transform:rotate(90deg)}
+.card-t.colony{color:var(--c-accent)}
+.card-t.colonists{color:#fbbf24}
+.card-t.event{color:var(--c-blue)}
+/* === 折叠面板 === */
+details.block{background:var(--bg-card);border:1px solid var(--c-border);border-radius:8px;padding:0;margin-bottom:8px;overflow:hidden}
+details.block>summary{border-radius:8px}
+details.block[open]>summary{border-bottom:1px solid var(--c-border)}
+details.block>summary{font-size:var(--fs-sm);font-weight:700;padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;list-style:none}
+details.block>summary::-webkit-details-marker{display:none}
+details.block>summary::-marker{display:none}
+details.block[open]>summary .caret{transform:rotate(90deg)}
+details.block>summary .caret{margin-left:auto;transition:transform .2s}
+.block-body{padding:6px 10px 8px;display:block}
+/* === 网格 === */
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:6px}
+.kv{display:flex;flex-direction:column;gap:1px}
+.kv .k{font-size:var(--fs-xs);color:var(--c-dim)}
+.kv .v{font-size:var(--fs-sm);font-weight:600}
+.v.danger{color:var(--c-danger)}.v.warn{color:var(--c-warn)}.v.safe{color:var(--c-safe)}.v.neutral{color:var(--c-dim)}.v.accent{color:var(--c-accent)}.v.blue{color:var(--c-blue)}
+/* === 进度条 === */
+.bar{margin:5px 0}
+.bar-h{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--c-dim);margin-bottom:2px}
+.bar-h .bv{color:var(--c-text);font-weight:600}
+.bar-h .phase{font-size:10px;padding:0 5px;border-radius:6px;margin-left:4px}
+.bar-t{height:7px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar-f{height:100%;border-radius:4px;transition:width .5s ease;width:0}
+.bar-f.r{background:linear-gradient(90deg,#7f1d1d,var(--c-danger))}
+.bar-f.o{background:linear-gradient(90deg,#78350f,var(--c-orange))}
+.bar-f.y{background:linear-gradient(90deg,#78350f,var(--c-warn))}
+.bar-f.g{background:linear-gradient(90deg,#064e3b,var(--c-safe))}
+.bar-f.b{background:linear-gradient(90deg,#1e3a8a,var(--c-blue))}
+.bar-f.a{background:linear-gradient(90deg,#78350f,var(--c-accent))}
+/* === 标签 === */
+.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;border:1px solid;white-space:nowrap}
+.tag.danger{color:var(--c-danger);border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1)}
+.tag.warn{color:var(--c-warn);border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+.tag.safe{color:var(--c-safe);border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.tag.neutral{color:var(--c-dim);border-color:rgba(168,152,136,.4);background:rgba(168,152,136,.1)}
+.tag.accent{color:var(--c-accent);border-color:rgba(217,119,6,.4);background:rgba(217,119,6,.1)}
+.tag.blue{color:var(--c-blue);border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.1)}
+/* === 殖民者花名册网格 === */
+.roster{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.wcard{background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:6px;padding:5px 4px;text-align:center;min-width:0;cursor:pointer;transition:transform .2s,border-color .2s}
+.wcard:hover{transform:translateY(-2px);border-color:rgba(217,119,6,.5)}
+.wcard .wcard-h{display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:3px}
+.wcard .wn{font-size:var(--fs-xs);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wcard .ws{margin:3px 0}
+.wcard .wd{font-size:10px;color:var(--c-dim)}
+/* === 迷你进度条（殖民者卡片内） === */
+.mbar{display:flex;align-items:center;gap:3px;margin-top:3px}
+.mbar .ml{font-size:9px;color:var(--c-dim);width:12px;text-align:center;flex-shrink:0}
+.mbar .mbt{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.mbar .mbf{height:100%;border-radius:2px;transition:width .5s ease}
+/* === 列表 === */
+.list-item{background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:6px;padding:6px 8px;margin-bottom:5px}
+.list-item:last-child{margin-bottom:0}
+.list-row{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;font-size:var(--fs-xs)}
+.list-row .lr-k{color:var(--c-dim)}
+.list-row .lr-v{font-weight:600}
+.li-head{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.li-name{font-size:var(--fs-sm);font-weight:700}
+/* === 殖民地面板网格 === */
+.col-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px}
+.col-cell{background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:6px;padding:6px 8px}
+.col-cell .cc-icon{font-size:var(--fs-md);margin-bottom:3px}
+.col-cell .cc-val{font-size:var(--fs-sm);font-weight:700}
+.col-cell .cc-label{font-size:10px;color:var(--c-dim)}
+/* === 模态框 === */
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:flex-start;justify-content:center;z-index:9999;padding:12px;backdrop-filter:blur(2px);overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.modal{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;padding:14px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.modal-t{font-size:var(--fs-md);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.modal-close{margin-left:auto;background:transparent;border:1px solid var(--c-border);color:var(--c-dim);border-radius:5px;padding:2px 8px;cursor:pointer;font-size:var(--fs-sm)}
+.modal-close:hover{color:var(--c-text)}
+.modal-sec{margin-bottom:10px}
+.modal-sec-t{font-size:var(--fs-xs);color:var(--c-accent);font-weight:700;margin-bottom:4px;border-bottom:1px solid rgba(217,119,6,.2);padding-bottom:2px}
+.modal-sec-t.skill{color:#fbbf24;border-bottom-color:rgba(251,191,36,.2)}
+.modal-sec-t.hp{color:var(--c-danger);border-bottom-color:rgba(239,68,68,.2)}
+.modal-sec-t.nsfw{color:var(--c-accent);border-bottom-color:rgba(217,119,6,.2)}
+.nsfw-toggle{font-size:var(--fs-xs);color:var(--c-accent);cursor:pointer;padding:3px 8px;border:1px solid rgba(217,119,6,.3);border-radius:5px;background:rgba(217,119,6,.08);display:inline-block;margin-bottom:5px}
+.nsfw-toggle:hover{background:rgba(217,119,6,.15)}
+/* === 技能网格 === */
+.skill-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.skill-cell{background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:5px;padding:4px;text-align:center}
+.skill-cell .sn{font-size:10px;color:var(--c-dim)}
+.skill-cell .sv{font-size:var(--fs-sm);font-weight:700}
+/* === HP网格 === */
+.hp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.hp-cell{background:rgba(255,255,255,.03);border:1px solid var(--c-border);border-radius:5px;padding:4px}
+.hp-cell .hpn{font-size:10px;color:var(--c-dim);text-align:center}
+.hp-cell .hpb{height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:2px}
+.hp-cell .hpb-f{height:100%;border-radius:2px;transition:width .5s ease}
+/* === 加载状态 === */
+.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.error{text-align:center;padding:10px;color:var(--c-danger);font-size:var(--fs-xs);border:1px solid rgba(239,68,68,.3);border-radius:6px;background:rgba(239,68,68,.08);margin-top:6px}
+.hint{font-size:10px;color:var(--c-dim);margin-top:4px;text-align:center}
+/* === 响应式 === */
+@media(max-width:480px){
+  .roster{grid-template-columns:repeat(3,1fr)}
+  .g{grid-template-columns:repeat(2,1fr)}
+  .col-grid{grid-template-columns:repeat(2,1fr)}
+  .hd-t{font-size:var(--fs-sm)}
+  .modal{padding:10px;border-radius:8px;max-height:95vh}
+  .modal-sec{margin-bottom:8px}
+  .wcard{padding:4px 3px}
+  .wcard .wn{font-size:10px}
+  .list-item{padding:5px 6px}
+  .block-body{padding:5px 8px 6px}
+  details.block>summary{padding:6px 8px}
+  .skill-grid{grid-template-columns:repeat(2,1fr)}
+  .hp-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:360px){
+  .roster{grid-template-columns:repeat(2,1fr)}
+  .g{grid-template-columns:1fr}
+  .col-grid{grid-template-columns:1fr}
+  .hd{flex-direction:column;align-items:flex-start}
+  .hd-l{width:100%}
+  .modal{padding:8px}
+}
+/* 确保移动端可点击 */
+details.block>summary{min-height:36px;-webkit-tap-highlight-color:rgba(217,119,6,.1)}
+.wcard{min-height:44px}
+.modal-close{min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
+.rfr{min-width:36px;min-height:32px;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div id="sb-root">
+  <div class="loading" id="sb-loading"><span class="ic">⟳</span> 加载中...</div>
+  <div class="sb" id="sb-body" style="display:none"></div>
+</div>
+<div id="sb-modal"></div>
+<script type="application/json" id="mvu-stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* ============================================================
+ * 状态栏 · 环世界 · 原生JS + MVU
+ * 参考"系统哥的末日"：多层宿主查找 + 内联变量兜底
+ * ============================================================ */
+
+/* 多层宿主：iframe 内 Mvu/getVariables 等挂在 window/parent/top */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getExt(n){return pickHostValue(n)||null}
+function waitFor(n,timeout){timeout=timeout||5000;return new Promise(function(resolve){var start=Date.now();(function check(){var obj=getExt(n);if(obj)return resolve(obj);if(Date.now()-start>timeout)return resolve(null);setTimeout(check,100)})()})}
+var _lodash=pickHostValue('_');
+
+/* 从内联 JSON 宏读取 stat_data（首楼即可用，最强兜底） */
+function parseEmbeddedStat(){
+  var el=document.getElementById('mvu-stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{
+    var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'){
+      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+
+/* ============================================================
+ * MVU 变量读取
+ * 1. resolveMessageId() 4层策略精确定位当前消息 ID
+ * 2. readStatData() 同步调用 Mvu.getMvuData(getMessageOption())
+ * 3. bridge 机制：postMessage 跨框架请求数据作为异步兜底
+ * 4. waitForReadableStat() 在 render 前轮询等待数据就绪
+ * ============================================================ */
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+function parseMesId(v){var n=parseInt(v,10);return Number.isFinite(n)&&n>=0?n:-1}
+function resolveMessageIdFromIframeName(){
+  var fn=pickHostFn('getIframeName');
+  if(!fn)return -1;
+  try{
+    var name=String(fn()||'');
+    var m=/^TH-message--(\d+)--/.exec(name);
+    if(m)return parseMesId(m[1]);
+  }catch(e){}
+  return -1;
+}
+function resolveMessageIdFromDom(){
+  try{
+    var frame=window.frameElement;
+    if(frame&&frame.closest){
+      var mes=frame.closest('.mes');
+      if(mes){var id=parseMesId(mes.getAttribute('mesid'));if(id>=0)return id}
+    }
+    var el=frame;
+    while(el){
+      if(el.classList&&el.classList.contains('mes')){
+        var id2=parseMesId(el.getAttribute('mesid'));
+        if(id2>=0)return id2;
+      }
+      el=el.parentElement;
+    }
+    for(var i=0;i<TH_HOSTS.length;i++){
+      try{
+        var host=TH_HOSTS[i];
+        var host$=host.$||host.jQuery;
+        if(!host$||!frame)continue;
+        var $mes=host$(frame).closest('.mes');
+        if($mes&&$mes.length){
+          var id3=parseMesId($mes.attr('mesid'));
+          if(id3>=0)return id3;
+        }
+      }catch(e){}
+    }
+  }catch(e){}
+  return -1;
+}
+function resolveMessageId(){
+  var fromDom=resolveMessageIdFromDom();
+  if(fromDom>=0)return fromDom;
+  var fromName=resolveMessageIdFromIframeName();
+  if(fromName>=0)return fromName;
+  if(typeof window.message_id==='number'&&Number.isFinite(window.message_id)&&window.message_id>=0){
+    return window.message_id;
+  }
+  var fn=pickHostFn('getCurrentMessageId');
+  if(fn){
+    try{
+      var id=fn();
+      if(typeof id==='number'&&Number.isFinite(id)&&id>=0)return id;
+    }catch(e){}
+  }
+  return -1;
+}
+function getMessageOption(){
+  var messageId=resolveMessageId();
+  return {type:'message',message_id:messageId>=0?messageId:'latest'};
+}
+function hasMeaningfulStatData(stat){
+  return stat&&typeof stat==='object'&&!Array.isArray(stat)&&Object.keys(stat).length>0;
+}
+function pickStatData(source){
+  if(!source||typeof source!=='object')return null;
+  var stat=source.stat_data;
+  if(_lodash&&typeof _lodash.get==='function'){
+    try{stat=_lodash.get(source,'stat_data')}catch(e){}
+  }
+  return hasMeaningfulStatData(stat)?stat:null;
+}
+/* bridge 缓存 */
+var cachedStatFromBridge=null;
+var cachedBridgeMessageId=-1;
+/* 同步读取 stat_data：内联JSON(首楼兜底) -> MVU API -> getVariables -> bridge缓存 -> getAllVariables -> DEFAULT_STAT */
+function readStatData(){
+  /* 0. 内联 JSON 宏 (首楼兜底,首楼 initvar 初始值) - 同级生2模式，优先读取 */
+  var embedded=parseEmbeddedStat();
+  if(embedded)return deepMergeStat(DEFAULT_STAT,embedded);
+  var mesId=resolveMessageId();
+  var opt=getMessageOption();
+  /* 1. MVU API (含 message_id) */
+  var Mvu=getMvu();
+  try{
+    if(Mvu&&typeof Mvu.getMvuData==='function'){
+      var stat=pickStatData(Mvu.getMvuData(opt));
+      if(stat)return deepMergeStat(DEFAULT_STAT,stat);
+    }
+  }catch(e){}
+  /* 2. getVariables (含 message_id) */
+  try{
+    var getVariablesFn=pickHostFn('getVariables');
+    if(getVariablesFn){var s2=pickStatData(getVariablesFn(opt));if(s2)return deepMergeStat(DEFAULT_STAT,s2)}
+  }catch(e){}
+  /* 3. bridge 缓存 (跨 iframe 桥接) */
+  if(cachedStatFromBridge&&hasMeaningfulStatData(cachedStatFromBridge)&&
+     (cachedBridgeMessageId<0||mesId<0||cachedBridgeMessageId===mesId)){
+    return deepMergeStat(DEFAULT_STAT,cachedStatFromBridge);
+  }
+  /* 4. getAllVariables (最后宿主兜底) */
+  try{
+    var getAllVariablesFn=pickHostFn('getAllVariables');
+    if(getAllVariablesFn){var s3=pickStatData(getAllVariablesFn());if(s3)return deepMergeStat(DEFAULT_STAT,s3)}
+  }catch(e){}
+  /* 5. DEFAULT_STAT 常量兜底 */
+  return deepMergeStat(DEFAULT_STAT,{});
+}
+/* bridge 请求 */
+function requestStatFromBridge(){
+  var mesId=resolveMessageId();
+  var payload={type:'rw-mvu-stat-request',messageId:mesId};
+  for(var i=0;i<TH_HOSTS.length;i++){
+    try{TH_HOSTS[i].postMessage(payload,'*')}catch(e){}
+  }
+}
+/* 轮询等待可读 stat */
+function waitForReadableStat(timeoutMs){
+  timeoutMs=timeoutMs||8000;
+  var started=Date.now();
+  return new Promise(function(resolve){
+    (function check(){
+      var stat=readStatData();
+      if(hasMeaningfulStatData(stat))return resolve(stat);
+      if(Date.now()-started>=timeoutMs)return resolve(readStatData());
+      requestStatFromBridge();
+      setTimeout(check,180);
+    })();
+  });
+}
+
+/* ============================================================
+ * 首楼默认数据（与 initvar.yaml 对齐；姓名/类型字段含 UI 显示回退值）
+ * ============================================================ */
+var DEFAULT_STAT={
+  殖民地:{游戏日:1,时段:'清晨',累计小时:0,季节:'春',温度:20,天气:'晴',biome:'温带森林',故事讲述者:'卡桑德拉',阶段:'拓荒期',财富总值:800,殖民者价值:600,建筑价值:0,物资价值:200,动物价值:0,银两:800,威胁点数:0,袭击冷却:96,警戒等级:20,电力总发电:0,电力总需求:0,电力净额:0,蓄电池电量:0,蓄电池容量:0,飞船反应堆:0,飞船AI核心:0,飞船结构:0,污染源数量:0,净化设备数:0,信仰值:0,卫生条件:50,挖掘深度:0},
+  殖民者_主角:{姓名:'主角',性别:'男',年龄:25,外貌:'',位置:'营地中心',工作分配:'无',心情:50,饱腹:80,疲劳:20,娱乐:50,舒适度:50,美观度:50,银两:0,射击:5,格斗:5,社交:5,厨艺:5,建设:5,种植:5,畜牧:5,手工:5,艺术品:5,医疗:5,研究:5,采矿:5,头部:100,躯干:100,左臂:100,右臂:100,左腿:100,右腿:100,武器:'无',衣物:'布衣',护甲:'无',特质:'',特质系数:1.0,周期日:1,怀孕状态:0,精力值:100,NSFW敏感度:'{}',NSFW经验值:'{}',关系阶段:'初识',疾病:'无',疾病阶段:0,免疫力:0,卧床:0,健康:80,血量:100,手术次数:0},
+  殖民者_2:{姓名:'殖民者2',性别:'男',年龄:25,外貌:'',位置:'营地中心',工作分配:'无',心情:50,饱腹:80,疲劳:20,娱乐:50,舒适度:50,美观度:50,银两:0,射击:5,格斗:5,社交:5,厨艺:5,建设:5,种植:5,畜牧:5,手工:5,艺术品:5,医疗:5,研究:5,采矿:5,头部:100,躯干:100,左臂:100,右臂:100,左腿:100,右腿:100,武器:'无',衣物:'布衣',护甲:'无',特质:'',特质系数:1.0,周期日:1,怀孕状态:0,精力值:100,NSFW敏感度:'{}',NSFW经验值:'{}',关系阶段:'初识',疾病:'无',疾病阶段:0,免疫力:0,卧床:0,健康:80,血量:100,手术次数:0},
+  殖民者_3:{姓名:'殖民者3',性别:'男',年龄:25,外貌:'',位置:'营地中心',工作分配:'无',心情:50,饱腹:80,疲劳:20,娱乐:50,舒适度:50,美观度:50,银两:0,射击:5,格斗:5,社交:5,厨艺:5,建设:5,种植:5,畜牧:5,手工:5,艺术品:5,医疗:5,研究:5,采矿:5,头部:100,躯干:100,左臂:100,右臂:100,左腿:100,右腿:100,武器:'无',衣物:'布衣',护甲:'无',特质:'',特质系数:1.0,周期日:1,怀孕状态:0,精力值:100,NSFW敏感度:'{}',NSFW经验值:'{}',关系阶段:'初识',疾病:'无',疾病阶段:0,免疫力:0,卧床:0,健康:80,血量:100,手术次数:0},
+  殖民者_4:{姓名:'殖民者4',性别:'男',年龄:25,外貌:'',位置:'营地中心',工作分配:'无',心情:50,饱腹:80,疲劳:20,娱乐:50,舒适度:50,美观度:50,银两:0,射击:5,格斗:5,社交:5,厨艺:5,建设:5,种植:5,畜牧:5,手工:5,艺术品:5,医疗:5,研究:5,采矿:5,头部:100,躯干:100,左臂:100,右臂:100,左腿:100,右腿:100,武器:'无',衣物:'布衣',护甲:'无',特质:'',特质系数:1.0,周期日:1,怀孕状态:0,精力值:100,NSFW敏感度:'{}',NSFW经验值:'{}',关系阶段:'初识',疾病:'无',疾病阶段:0,免疫力:0,卧床:0,健康:80,血量:100,手术次数:0},
+  殖民者_5:{姓名:'殖民者5',性别:'男',年龄:25,外貌:'',位置:'营地中心',工作分配:'无',心情:50,饱腹:80,疲劳:20,娱乐:50,舒适度:50,美观度:50,银两:0,射击:5,格斗:5,社交:5,厨艺:5,建设:5,种植:5,畜牧:5,手工:5,艺术品:5,医疗:5,研究:5,采矿:5,头部:100,躯干:100,左臂:100,右臂:100,左腿:100,右腿:100,武器:'无',衣物:'布衣',护甲:'无',特质:'',特质系数:1.0,周期日:1,怀孕状态:0,精力值:100,NSFW敏感度:'{}',NSFW经验值:'{}',关系阶段:'初识',疾病:'无',疾病阶段:0,免疫力:0,卧床:0,健康:80,血量:100,手术次数:0},
+  奴隶_1:{姓名:'奴隶1',性别:'男',年龄:25,类型:'战俘',心情:30,饱腹:60,疲劳:50,健康:80,待遇:'普通',招募进度:0,工作分配:'搬运',位置:'营地'},
+  动物_1:{类型:'无',姓名:'',性别:'雄',年龄:1,健康:100,心情:50,驯服度:100,产物计时:0,训练等级:0,位置:'牧场',数量:0},
+  动物_2:{类型:'无',姓名:'',性别:'雄',年龄:1,健康:100,心情:50,驯服度:100,产物计时:0,训练等级:0,位置:'牧场',数量:0},
+  事件计时器:{上次袭击日:0,上次贸易日:0,上次疾病日:0,上次精神事件日:0,上次特殊事件日:0,上次陨石日:0,上次动物迁徙日:0,上次任务日:0,当前事件:'无',倒计时:0},
+  派系:{部落联盟:{关系:0},城市邦联:{关系:0},商人公会:{关系:15},海盗团:{关系:-40},机械教团:{关系:-50},帝国:{关系:-20},游牧部落:{关系:5},流亡者组织:{关系:-10}}
+};
+
+/* 深合并：用 src 覆盖 dst（递归），返回新对象 */
+function deepMergeStat(dst,src){
+  if(!src||typeof src!=='object')return dst;
+  var out={};
+  try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}
+  for(var k in src){
+    if(!Object.prototype.hasOwnProperty.call(src,k))continue;
+    var sv=src[k],dv=out[k];
+    if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){
+      out[k]=deepMergeStat(dv,sv);
+    }else{
+      out[k]=sv;
+    }
+  }
+  return out;
+}
+
+/* ============================================================
+ * 状态缓存
+ * ============================================================ */
+var State={
+  loading:true,
+  refreshing:false,
+  mvu:{},
+  selectedColonist:null,
+  _refreshing:false,
+  expanded:{colonists:true,colony:true,event:false},
+  nsfwOpen:false,
+  error:''
+};
+
+/* ============================================================
+ * 工具函数
+ * ============================================================ */
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function num(v,d){v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function barClass4(v){v=parseInt(v)||0;if(v>=80)return'g';if(v>=60)return'y';if(v>=30)return'o';return'r'}
+function barClassInv(v){v=parseInt(v)||0;if(v>=80)return'r';if(v>=60)return'o';if(v>=30)return'y';return'g'}
+function barClass20(v){v=parseInt(v)||0;var p=(v/20)*100;return barClass4(p)}
+function mvuObj(key){return(State.mvu&&State.mvu[key])||{}}
+
+/* 飞船进度（0-100）：反应堆3 + AI核心1 + 结构1 = 满分5 */
+function shipProgress(col){
+  var r=num(col.飞船反应堆,0);
+  var ai=num(col.飞船AI核心,0);
+  var st=num(col.飞船结构,0);
+  var total=r+ai+st;
+  return pct(total,5);
+}
+/* 温度颜色 */
+function tempColor(t){
+  t=num(t,20);
+  if(t<0)return'blue';
+  if(t<15)return'blue';
+  if(t<=30)return'safe';
+  if(t<=40)return'warn';
+  return'danger';
+}
+/* 天气图标 */
+function weatherIcon(w){
+  w=w||'晴';
+  if(w.indexOf('暴风雪')>=0)return'⚠';
+  if(w.indexOf('雪')>=0)return'❄';
+  if(w.indexOf('大雨')>=0)return'☔';
+  if(w.indexOf('雨')>=0)return'💧';
+  if(w.indexOf('雾')>=0)return'🌫';
+  if(w.indexOf('沙尘暴')>=0)return'💨';
+  if(w.indexOf('阴')>=0)return'☁';
+  return'☀';
+}
+/* 季节图标 */
+function seasonIcon(s){
+  s=s||'春';
+  if(s==='春')return'🍃';
+  if(s==='夏')return'☀';
+  if(s==='秋')return'🌳';
+  if(s==='冬')return'❄';
+  return'🍃';
+}
+/* 时段图标 */
+function timeIcon(ts){
+  ts=ts||'清晨';
+  if(ts.indexOf('深夜')>=0||ts.indexOf('夜晚')>=0)return'🌙';
+  if(ts.indexOf('傍晚')>=0)return'🌙';
+  if(ts.indexOf('清晨')>=0||ts.indexOf('上午')>=0)return'☀';
+  return'☀';
+}
+/* 警戒等级颜色 */
+function alertColor(v){
+  v=parseInt(v)||0;
+  if(v>=80)return'danger';
+  if(v>=60)return'warn';
+  if(v>=30)return'accent';
+  return'safe';
+}
+/* NSFW JSON 字段解析 */
+function parseNSFW(s){
+  if(!s||s==='{}'||s==='')return'';
+  try{
+    var obj=JSON.parse(s);
+    if(!obj||typeof obj!=='object')return'';
+    var keys=Object.keys(obj);
+    if(!keys.length)return'';
+    var parts=[];
+    for(var i=0;i<keys.length;i++){
+      parts.push(keys[i]+': '+obj[keys[i]]);
+    }
+    return parts.join('，');
+  }catch(e){return'';}
+}
+
+/* ============================================================
+ * 渲染辅助
+ * ============================================================ */
+function bar(label,val,extraPhase){
+  var v=num(val,0);
+  return '<div class="bar"><div class="bar-h"><span>'+label+(extraPhase||'')+'</span><span class="bv">'+v+'/100</span></div>'
+    +'<div class="bar-t"><div class="bar-f '+barClass4(v)+'" style="width:'+pct(v,100)+'%"></div></div></div>';
+}
+function barInv(label,val){
+  var v=num(val,0);
+  return '<div class="bar"><div class="bar-h"><span>'+label+'</span><span class="bv">'+v+'/100</span></div>'
+    +'<div class="bar-t"><div class="bar-f '+barClassInv(v)+'" style="width:'+pct(v,100)+'%"></div></div></div>';
+}
+function kv(k,v,cls){return '<div class="kv"><span class="k">'+k+'</span><span class="v'+(cls?' '+cls:'')+'">'+esc(v)+'</span></div>'}
+function cardTitle(cls,icon,text,key,extra){
+  var open=State.expanded[key]?' open':'';
+  return '<details class="block"'+open+' data-key="'+key+'"><summary class="card-t '+cls+'"><span class="ic">'+icon+'</span> '+text+(extra||'')+'<span class="caret">▸</span></summary><div class="block-body">';
+}
+
+/* 殖民者键名与标签 */
+var COLONIST_KEYS=['殖民者_主角','殖民者_2','殖民者_3','殖民者_4','殖民者_5'];
+var COLONIST_LABELS=['主角','殖民者2','殖民者3','殖民者4','殖民者5'];
+var SKILL_LIST=['射击','格斗','社交','厨艺','建设','种植','畜牧','手工','艺术品','医疗','研究','采矿'];
+var BODY_PARTS=['头部','躯干','左臂','右臂','左腿','右腿'];
+
+/* ============================================================
+ * 1. 顶部系统栏
+ * ============================================================ */
+function renderSystemBar(){
+  var col=mvuObj('殖民地');
+  var day=num(col.游戏日,1);
+  var ts=col.时段||'清晨';
+  var silver=num(col.银两,0);
+  var threat=num(col.威胁点数,0);
+  var temp=num(col.温度,20);
+  var weather=col.天气||'晴';
+  var season=col.季节||'春';
+  var phase=col.阶段||'拓荒期';
+  var storyteller=col.故事讲述者||'卡桑德拉';
+  var biome=col.biome||'温带森林';
+  var shipP=shipProgress(col);
+  var alertLv=num(col.警戒等级,20);
+  var raidCool=num(col.袭击冷却,96);
+  var phaseCls=phase==='终局期'?'danger':(phase==='繁荣期'?'safe':(phase==='发展期'?'warn':''));
+  var raidCls=raidCool<=12?'danger':(raidCool<=24?'warn':'safe');
+  return '<div class="hd"><div class="hd-l">'
+    +'<span class="hd-t"><span class="ic">📦</span> 环世界</span>'
+    +'<span class="pill '+phaseCls+'">'+esc(phase)+'</span>'
+    +'<span class="pill"><span class="ic">'+timeIcon(ts)+'</span> 第'+day+'天 · '+esc(ts)+'</span>'
+    +'<span class="pill"><span class="ic">💰</span> 银两 '+silver+'</span>'
+    +'<span class="pill '+(threat>=50?'danger':(threat>=20?'warn':'safe'))+'"><span class="ic">🎯</span> 威胁 '+threat+'</span>'
+    +'<span class="pill blue"><span class="ic">🌡</span> '+temp+'°C</span>'
+    +'<span class="pill"><span class="ic">'+weatherIcon(weather)+'</span> '+esc(weather)+'</span>'
+    +'<span class="pill"><span class="ic">'+seasonIcon(season)+'</span> '+esc(season)+'</span>'
+    +'<span class="pill '+(raidCool<=12?'danger':'')+'"><span class="ic">🛡</span> 袭击冷却 '+raidCool+'h</span>'
+    +'<div class="hd-sub"><span class="ic">📖</span> '+esc(storyteller)+' · '+esc(biome)+'</div>'
+    +'</div>'
+    +'<button class="rfr'+(State.refreshing?' spinning':'')+'" data-act="refresh" title="刷新数据"><span class="ic">⟳</span></button>'
+  +'</div>'
+  +'<div class="bar"><div class="bar-h"><span>飞船进度 <span class="phase tag accent">'+shipP.toFixed(0)+'%</span></span><span class="bv">反应堆'+num(col.飞船反应堆,0)+'/3 · AI核心'+num(col.飞船AI核心,0)+'/1 · 结构'+num(col.飞船结构,0)+'/1</span></div><div class="bar-t"><div class="bar-f a" style="width:'+shipP+'%"></div></div></div>'
+  +'<div class="bar"><div class="bar-h"><span>警戒等级</span><span class="bv">'+alertLv+'/100</span></div><div class="bar-t"><div class="bar-f '+barClass4(alertLv)+'" style="width:'+pct(alertLv,100)+'%"></div></div></div>';
+}
+
+/* ============================================================
+ * 2. 殖民者面板（5列网格）
+ * ============================================================ */
+function getColonistList(){
+  var out=[];
+  for(var i=0;i<COLONIST_KEYS.length;i++){
+    var key=COLONIST_KEYS[i];
+    var c=mvuObj(key);
+    var name=c.姓名||COLONIST_LABELS[i];
+    var mood=num(c.心情,50);
+    var hunger=num(c.饱腹,80);
+    var fatigue=num(c.疲劳,20);
+    var fun=num(c.娱乐,50);
+    /* 判断倒下：任意身体部位HP<=0 */
+    var downed=false;
+    for(var j=0;j<BODY_PARTS.length;j++){
+      if(num(c[BODY_PARTS[j]],100)<=0){downed=true;break}
+    }
+    out.push({key:key,idx:i,name:name,mood:mood,hunger:hunger,fatigue:fatigue,fun:fun,downed:downed,data:c});
+  }
+  return out;
+}
+function renderColonists(){
+  var list=getColonistList();
+  window._sbColonists=list;
+  var cards='';
+  list.forEach(function(c,idx){
+    cards+='<div class="wcard" data-act="colonist" data-idx="'+idx+'">'
+      +'<div class="wcard-h"><span class="present '+(c.downed?'no':'yes')+'"></span><span class="wn" title="'+esc(c.name)+'">'+esc(c.name)+'</span></div>'
+      +'<div class="mbar"><span class="ml">心</span><div class="mbt"><div class="mbf '+barClass4(c.mood)+'" style="width:'+pct(c.mood,100)+'%"></div></div></div>'
+      +'<div class="mbar"><span class="ml">饱</span><div class="mbt"><div class="mbf '+barClass4(c.hunger)+'" style="width:'+pct(c.hunger,100)+'%"></div></div></div>'
+      +'<div class="mbar"><span class="ml">疲</span><div class="mbt"><div class="mbf '+barClassInv(c.fatigue)+'" style="width:'+pct(c.fatigue,100)+'%"></div></div></div>'
+      +'<div class="mbar"><span class="ml">娱</span><div class="mbt"><div class="mbf '+barClass4(c.fun)+'" style="width:'+pct(c.fun,100)+'%"></div></div></div>'
+      +'</div>';
+  });
+  var body='<div class="roster">'+cards+'</div><div class="hint">点击卡片查看详情</div>';
+  return cardTitle('colonists','👥','殖民者（'+list.length+'）','colonists')+body+'</div></details>';
+}
+
+/* ============================================================
+ * 3. 殖民地面板
+ * ============================================================ */
+function renderColony(){
+  var col=mvuObj('殖民地');
+  var wealth=num(col.财富总值,800);
+  var colVal=num(col.殖民者价值,600);
+  var bldVal=num(col.建筑价值,0);
+  var matVal=num(col.物资价值,200);
+  var animVal=num(col.动物价值,0);
+  var powerGen=num(col.电力总发电,0);
+  var powerNeed=num(col.电力总需求,0);
+  var powerNet=num(col.电力净额,0);
+  var batCur=num(col.蓄电池电量,0);
+  var batMax=num(col.蓄电池容量,0);
+  var powerCls=powerNet<0?'danger':(powerNet===0?'warn':'safe');
+  var batPct=batMax>0?pct(batCur,batMax):0;
+  var researchSum=0;
+  for(var i=0;i<COLONIST_KEYS.length;i++){researchSum+=num(mvuObj(COLONIST_KEYS[i]).研究,0)}
+  /* 动物数量 */
+  var animalCount=0;
+  var animal1=mvuObj('动物_1');
+  if(animal1&&animal1.类型&&animal1.类型!=='无')animalCount++;
+  var animal2=mvuObj('动物_2');
+  if(animal2&&animal2.类型&&animal2.类型!=='无')animalCount++;
+  /* 奴隶数量 */
+  var slaveCount=0;
+  var slave=mvuObj('奴隶_1');
+  if(slave&&slave.姓名)slaveCount=1;
+  var body='<div class="col-grid">'
+    +'<div class="col-cell"><div class="cc-icon" style="color:var(--c-accent)"><span class="ic">💰</span></div><div class="cc-val">'+wealth+'</div><div class="cc-label">财富总值</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:#fbbf24"><span class="ic">👤</span></div><div class="cc-val">'+colVal+'</div><div class="cc-label">殖民者价值</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:var(--c-warn)"><span class="ic">🏠</span></div><div class="cc-val">'+bldVal+'</div><div class="cc-label">建筑价值</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:var(--c-safe)"><span class="ic">📦</span></div><div class="cc-val">'+matVal+'</div><div class="cc-label">物资价值</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:var(--c-blue)"><span class="ic">🐾</span></div><div class="cc-val">'+animVal+'</div><div class="cc-label">动物价值</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:#a78bfa"><span class="ic">🧪</span></div><div class="cc-val">'+researchSum+'/100</div><div class="cc-label">研究能力</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:var(--c-blue)"><span class="ic">🐾</span></div><div class="cc-val">'+animalCount+'</div><div class="cc-label">动物数量</div></div>'
+    +'<div class="col-cell"><div class="cc-icon" style="color:var(--c-orange)"><span class="ic">🧍</span></div><div class="cc-val">'+slaveCount+'</div><div class="cc-label">奴隶数量</div></div>'
+    +'</div>'
+    +'<div style="margin-top:6px"><div class="g">'
+    +kv('电力发电',powerGen+'W','safe')+kv('电力需求',powerNeed+'W','warn')
+    +kv('电力净额',powerNet+'W',powerCls)+kv('蓄电池',batCur+'/'+batMax,powerCls)
+    +kv('累计小时',num(col.累计小时,0),'neutral')
+    +kv('污染源',num(col.污染源数量,0),num(col.污染源数量,0)>0?'warn':'safe')
+    +kv('净化设备',num(col.净化设备数,0),'blue')
+    +kv('信仰值',num(col.信仰值,50),'accent')
+    +kv('卫生条件',num(col.卫生条件,50)+'%',num(col.卫生条件,50)>=60?'safe':(num(col.卫生条件,50)>=30?'warn':'danger'))
+    +'</div>'
+    +'<div class="bar"><div class="bar-h"><span>蓄电池</span><span class="bv">'+batCur+'/'+batMax+'</span></div><div class="bar-t"><div class="bar-f '+(batPct>=60?'g':(batPct>=30?'y':'r'))+'" style="width:'+batPct+'%"></div></div></div>'
+    +'</div>';
+  return cardTitle('colony','🏠','殖民地','colony')+body+'</div></details>';
+}
+
+/* ============================================================
+ * 动物详情面板
+ * ============================================================ */
+function renderAnimals(){
+  var ANIMAL_KEYS=['动物_1','动物_2'];
+  var list=[];
+  for(var i=0;i<ANIMAL_KEYS.length;i++){
+    var a=mvuObj(ANIMAL_KEYS[i]);
+    if(a&&a.类型&&a.类型!=='无'){
+      list.push({key:ANIMAL_KEYS[i],data:a});
+    }
+  }
+  if(list.length===0)return '';
+  var body='';
+  for(var j=0;j<list.length;j++){
+    var an=list[j].data;
+    var hpVal=num(an.健康,100);
+    var moodVal=num(an.心情,50);
+    var tameVal=num(an.驯服度,100);
+    var nameStr=an.姓名?esc(an.姓名):esc(an.类型);
+    body+='<div class="list-item">'
+      +'<div class="li-head">'
+      +'<span class="ic" style="color:var(--c-blue)">🐾</span>'
+      +'<span class="li-name">'+nameStr+' <span style="opacity:.6;font-size:.85em">'+esc(an.类型)+'</span></span>'
+      +'<span class="tag neutral">'+esc(an.性别)+'</span>'
+      +'<span class="tag neutral">'+esc(an.位置)+'</span>'
+      +'</div>'
+      +'<div class="li-stats">'
+      +'<div class="g">'
+      +kv('健康',hpVal,hpVal>=60?'safe':(hpVal>=30?'warn':'danger'))
+      +kv('心情',moodVal,moodVal>=60?'safe':(moodVal>=30?'warn':'danger'))
+      +kv('驯服度',tameVal,tameVal>=80?'safe':(tameVal>=50?'warn':'danger'))
+      +kv('年龄',num(an.年龄,1),'neutral')
+      +kv('训练等级',num(an.训练等级,0)+'/3','blue')
+      +kv('产物计时',num(an.产物计时,0)+'h','accent')
+      +kv('数量',num(an.数量,0),'neutral')
+      +'</div>'
+      +'</div>'
+      +'<div class="bar"><div class="bar-h"><span>健康</span><span class="bv">'+hpVal+'</span></div><div class="bar-t"><div class="bar-f '+(hpVal>=60?'g':(hpVal>=30?'y':'r'))+'" style="width:'+hpVal+'%"></div></div></div>'
+      +'<div class="bar"><div class="bar-h"><span>驯服度</span><span class="bv">'+tameVal+'</span></div><div class="bar-t"><div class="bar-f '+(tameVal>=80?'g':(tameVal>=50?'y':'r'))+'" style="width:'+tameVal+'%"></div></div></div>'
+      +'</div>';
+  }
+  return cardTitle('animals','🐾','动物','animals')+body+'</div></details>';
+}
+
+/* ============================================================
+ * 派系关系面板
+ * ============================================================ */
+function renderFactions(){
+  var facObj=mvuObj('派系');
+  if(!facObj)return '';
+  var FACTION_NAMES=['部落联盟','城市邦联','商人公会','海盗团','机械教团','帝国','游牧部落','流亡者组织'];
+  var body='<div class="list-item" style="flex-direction:column">';
+  for(var i=0;i<FACTION_NAMES.length;i++){
+    var name=FACTION_NAMES[i];
+    var f=facObj[name];
+    if(!f)continue;
+    var rel=num(f.关系,0);
+    var tier;
+    var tierCls;
+    if(rel<=-50){tier='仇恨';tierCls='danger'}
+    else if(rel<=-10){tier='敌对';tierCls='danger'}
+    else if(rel<10){tier='中立';tierCls='neutral'}
+    else if(rel<50){tier='友好';tierCls='safe'}
+    else{tier='盟友';tierCls='safe'}
+    body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)">'
+      +'<span style="font-size:.9em">'+esc(name)+'</span>'
+      +'<span><span class="tag '+tierCls+'">'+tier+'</span> <span style="color:'+(rel>=0?'var(--c-safe)':'var(--c-danger)')+';font-weight:bold">'+(rel>=0?'+':'')+rel+'</span></span>'
+      +'</div>';
+  }
+  body+='</div>';
+  return cardTitle('factions','⚔','派系关系','factions')+body+'</div></details>';
+}
+
+/* ============================================================
+ * 4. 事件提示
+ * ============================================================ */
+function renderEvent(){
+  var ev=mvuObj('事件计时器');
+  var cur=ev.当前事件||'无';
+  var raidDay=num(ev.上次袭击日,0);
+  var tradeDay=num(ev.上次贸易日,0);
+  var diseaseDay=num(ev.上次疾病日,0);
+  var mentalDay=num(ev.上次精神事件日,0);
+  var specialDay=num(ev.上次特殊事件日,0);
+  var meteorDay=num(ev.上次陨石日,0);
+  var migrateDay=num(ev.上次动物迁徙日,0);
+  var col=mvuObj('殖民地');
+  var raidCool=num(col.袭击冷却,96);
+  var curCls=cur==='无'?'safe':'danger';
+  var body='<div class="g" style="margin-bottom:6px">'
+    +kv('当前事件','',cur==='无'?'<span class="tag safe">无</span>':'<span class="tag danger">'+esc(cur)+'</span>')
+    +kv('袭击冷却',raidCool+'h',raidCool<=12?'danger':(raidCool<=24?'warn':'safe'))
+    +'</div>'
+    +'<div class="g">'
+    +kv('上次袭击',raidDay+'天前',raidDay>0?'warn':'neutral')
+    +kv('上次贸易',tradeDay+'天前',tradeDay>0?'neutral':'safe')
+    +kv('上次疾病',diseaseDay+'天前',diseaseDay>0?'warn':'safe')
+    +kv('上次精神事件',mentalDay+'天前',mentalDay>0?'warn':'safe')
+    +kv('上次特殊事件',specialDay+'天前',specialDay>0?'accent':'neutral')
+    +kv('上次陨石',meteorDay+'天前',meteorDay>0?'accent':'neutral')
+    +kv('上次迁徙',migrateDay+'天前',migrateDay>0?'blue':'neutral')
+    +'</div>';
+  if(cur!=='无'){
+    body='<div class="list-item" style="border-color:rgba(239,68,68,.4)"><div class="li-head"><span class="ic" style="color:var(--c-danger)">⚠</span><span class="li-name" style="color:var(--c-danger)">'+esc(cur)+'</span></div></div>'+body;
+  }
+  return cardTitle('event','🔔','事件提示','event')+body+'</div></details>';
+}
+
+/* ============================================================
+ * 殖民者详情模态框
+ * ============================================================ */
+function renderModal(){
+  var el=document.getElementById('sb-modal');
+  if(!State.selectedColonist){el.innerHTML='';return}
+  var c=State.selectedColonist.data||{};
+  var name=State.selectedColonist.name||'——';
+  var downed=State.selectedColonist.downed;
+  var skillHtml='';
+  for(var i=0;i<SKILL_LIST.length;i++){
+    var sk=SKILL_LIST[i];
+    var sv=num(c[sk],0);
+    skillHtml+='<div class="skill-cell"><div class="sn">'+sk+'</div><div class="sv '+barClass20(sv)+'" style="color:'+(sv>=15?'var(--c-safe)':(sv>=10?'var(--c-warn)':(sv>=5?'var(--c-dim)':'var(--c-danger)')))+'">'+sv+'/20</div></div>';
+  }
+  var hpHtml='';
+  for(var j=0;j<BODY_PARTS.length;j++){
+    var bp=BODY_PARTS[j];
+    var hp=num(c[bp],100);
+    hpHtml+='<div class="hp-cell"><div class="hpn">'+bp+'</div><div class="hpb"><div class="hpb-f '+barClass4(hp)+'" style="width:'+pct(hp,100)+'%"></div></div><div style="font-size:10px;text-align:center;color:'+(hp>=60?'var(--c-safe)':(hp>=30?'var(--c-warn)':'var(--c-danger)))+'">'+hp+'</div></div>';
+  }
+  /* NSFW */
+  var preg=num(c.怀孕状态,0);
+  var sens=parseNSFW(c.NSFW敏感度);
+  var exp=parseNSFW(c.NSFW经验值);
+  var nsfwHtml='<div class="g">'
+    +kv('怀孕状态',preg>0?preg+'天':'无',preg>0?'warn':'neutral')
+    +kv('NSFW敏感度',sens||'无','accent')
+    +kv('NSFW经验值',exp||'无','accent')
+    +'</div>';
+  var rel=c.关系阶段||'初识';
+  var relCls=rel==='亲密'||rel==='恋爱'?'safe':(rel==='敌对'||rel==='决裂'?'danger':(rel==='暧昧'?'accent':'neutral'));
+  el.innerHTML='<div class="modal-mask" data-act="modal-close"><div class="modal" data-stop="1">'
+    +'<div class="modal-t"><span class="ic" style="color:var(--c-accent)">👤</span><span>'+esc(name)+'</span><span class="present '+(downed?'no':'yes')+'"></span><span class="tag '+(downed?'danger':'safe')+'">'+(downed?'倒下':'活跃')+'</span><button class="modal-close" data-act="modal-close"><span class="ic">✕</span></button></div>'
+    +'<div class="modal-sec"><div class="modal-sec-t">基础信息</div><div class="g">'
+      +kv('性别',c.性别||'男')+kv('年龄',c.年龄||25)+kv('位置',c.位置||'——')
+      +kv('工作分配',c.工作分配||'无')+kv('关系阶段','', '<span class="tag '+relCls+'">'+esc(rel)+'</span>')
+      +kv('银两',num(c.银两,0),'accent')+kv('周期日',num(c.周期日,1))
+    +'</div></div>'
+    +'<div class="modal-sec"><div class="modal-sec-t">状态</div>'
+      +bar('心情',num(c.心情,50))+bar('饱腹',num(c.饱腹,80))+barInv('疲劳',num(c.疲劳,20))
+      +bar('娱乐',num(c.娱乐,50))+bar('舒适度',num(c.舒适度,50))+bar('美观度',num(c.美观度,50))
+      +bar('精力值',num(c.精力值,100))
+    +'</div>'
+    +'<div class="modal-sec"><div class="modal-sec-t skill">技能（12项）</div><div class="skill-grid">'+skillHtml+'</div></div>'
+    +'<div class="modal-sec"><div class="modal-sec-t hp">身体部位HP</div><div class="hp-grid">'+hpHtml+'</div></div>'
+    +'<div class="modal-sec"><div class="modal-sec-t hp">医疗状态</div><div class="g">'
+      +kv('健康',num(c.健康,80),num(c.健康,80)>=60?'safe':(num(c.健康,80)>=30?'warn':'danger'))
+      +kv('血量',num(c.血量,100),num(c.血量,100)>=60?'safe':(num(c.血量,100)>=30?'warn':'danger'))
+      +kv('疾病',c.疾病||'无',(c.疾病&&c.疾病!=='无')?'warn':'safe')
+      +kv('疾病阶段',num(c.疾病阶段,0)+'/5',num(c.疾病阶段,0)>=3?'warn':'neutral')
+      +kv('免疫力',num(c.免疫力,0)+'%',num(c.免疫力,0)>=60?'safe':(num(c.免疫力,0)>=30?'warn':'danger'))
+      +kv('卧床',num(c.卧床,0)?'是':'否',num(c.卧床,0)?'warn':'safe')
+      +kv('手术次数',num(c.手术次数,0),'neutral')
+    +'</div></div>'
+    +'<div class="modal-sec"><div class="modal-sec-t">装备</div><div class="g">'
+      +kv('武器',c.武器||'无','warn')+kv('衣物',c.衣物||'无')+kv('护甲',c.护甲||'无','blue')
+    +'</div></div>'
+    +'<div class="modal-sec"><div class="modal-sec-t">特质</div><div class="g">'
+      +kv('特质',c.特质||'无','accent')+kv('特质系数',num(c.特质系数,1.0).toFixed(1),'accent')
+    +'</div></div>'
+    +(c.外貌?'<div class="modal-sec"><div class="modal-sec-t">外貌</div><div style="font-size:var(--fs-xs);line-height:1.4;color:var(--c-dim)">'+esc(c.外貌)+'</div></div>':'')
+    +'<div class="modal-sec"><div class="modal-sec-t nsfw">NSFW状态 <span class="nsfw-toggle" data-act="nsfw-toggle">'+(State.nsfwOpen?'隐藏':'显示')+'</span></div>'+(State.nsfwOpen?nsfwHtml:'')+'</div>'
+  +'</div></div>';
+}
+
+/* ============================================================
+ * 主渲染
+ * ============================================================ */
+function render(){
+  var loadingEl=document.getElementById('sb-loading');
+  var bodyEl=document.getElementById('sb-body');
+  if(!bodyEl)return;
+  if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}
+  loadingEl.style.display='none';
+  bodyEl.style.display='';
+  var html=renderSystemBar()+renderColonists()+renderColony()+renderAnimals()+renderFactions()+renderEvent();
+  if(State.error){html+='<div class="error"><span class="ic">⚠</span> '+esc(State.error)+'</div>'}
+  bodyEl.innerHTML=html;
+  renderModal();
+}
+
+/* ============================================================
+ * refresh
+ * ============================================================ */
+function refresh(){
+  if(State._refreshing)return;
+  State._refreshing=true;State.refreshing=true;
+  try{
+    var stat=readStatData();
+    if(hasData(stat)){State.mvu=stat;State.loading=false}
+    render();
+  }catch(e){State.loading=false;State.error=String(e);render()}
+  waitForReadableStat(8000).then(function(realStat){
+    try{
+      if(hasData(realStat)){State.mvu=realStat;State.loading=false}
+      State.loading=false;State._refreshing=false;State.refreshing=false;
+      render();requestStatFromBridge();
+    }catch(e){State.loading=false;State._refreshing=false;State.refreshing=false;State.error=String(e);render()}
+  });
+}
+
+/* ============================================================
+ * 事件委托 + 初始化
+ * ============================================================ */
+function bindEvents(){
+  var root=document.getElementById('sb-root');
+  root.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.tagName==='DETAILS'){
+      var key=t.getAttribute('data-key');
+      if(key){State.expanded[key]=t.hasAttribute('open')}
+    }
+  },true);
+  root.addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(!t)return;
+    var act=t.getAttribute('data-act');
+    if(act==='refresh'){refresh()}
+    else if(act==='colonist'){
+      var idx=parseInt(t.getAttribute('data-idx'));
+      var list=window._sbColonists||[];
+      State.selectedColonist=list[idx]||null;
+      State.nsfwOpen=false;
+      renderModal();
+    }
+  });
+  var modal=document.getElementById('sb-modal');
+  modal.addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');
+    if(!t)return;
+    var act=t.getAttribute('data-act');
+    if(act==='modal-close'){State.selectedColonist=null;renderModal()}
+    else if(act==='nsfw-toggle'){State.nsfwOpen=!State.nsfwOpen;renderModal()}
+  });
+}
+
+function init(){
+  bindEvents();
+  var autoRefresh=function(){setTimeout(refresh,800)};
+  try{
+    if(typeof eventOn==='function'){
+      eventOn('GENERATION_ENDED',autoRefresh);
+      eventOn('MESSAGE_EDITED',autoRefresh);
+    }
+  }catch(e){}
+  try{
+    var Mvu=getMvu();
+    if(Mvu&&Mvu.events&&Mvu.events.VARIABLE_UPDATE_ENDED&&typeof eventOn==='function'){
+      eventOn(Mvu.events.VARIABLE_UPDATE_ENDED,autoRefresh);
+    }
+  }catch(e){}
+  try{
+    var tavernEvents=pickHostValue('tavern_events');
+    if(tavernEvents&&typeof eventOn==='function'){
+      if(tavernEvents.MESSAGE_UPDATED)eventOn(tavernEvents.MESSAGE_UPDATED,autoRefresh);
+      if(tavernEvents.MESSAGE_RECEIVED)eventOn(tavernEvents.MESSAGE_RECEIVED,autoRefresh);
+    }
+  }catch(e){}
+  /* mag_variable_update_ended 事件 */
+  try{
+    if(typeof eventOn==='function'){
+      eventOn('mag_variable_update_ended',autoRefresh);
+    }
+  }catch(e){}
+  window.addEventListener('message',function(e){
+    try{
+      var data=e.data;
+      if(data&&data.type==='rw-mvu-stat-data'&&data.stat_data){
+        var mesId=resolveMessageId();
+        if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;
+        if(hasMeaningfulStatData(data.stat_data)){
+          cachedStatFromBridge=data.stat_data;
+          cachedBridgeMessageId=typeof data.messageId==='number'?data.messageId:mesId;
+          State.mvu=deepMergeStat(DEFAULT_STAT,data.stat_data);
+          State.loading=false;
+          render();
+        }
+        return;
+      }
+      var t=(data&&data.type)||data||'';
+      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0||t.indexOf('variable_update')>=0))autoRefresh();
+    }catch(x){}
+  });
+  var embedded=parseEmbeddedStat();
+  if(embedded){
+    cachedStatFromBridge=embedded;
+    cachedBridgeMessageId=resolveMessageId();
+  }
+  requestStatFromBridge();
+  refresh();
+  /* 异步等待 Mvu 初始化完成后再刷新一次（满足 dynamic_js 验证要求，不阻塞首楼显示） */
+  try{
+    var waitFn=pickHostFn('waitGlobalInitialized');
+    if(typeof waitFn==='function'){
+      Promise.resolve(waitFn('Mvu')).then(function(){ setTimeout(refresh, 200); }).catch(function(){});
+    }else{
+      waitFor('Mvu', 5000).then(function(mvu){ if(mvu) setTimeout(refresh, 200); });
+    }
+  }catch(e){}
+}
+
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init)}
+else{init()}
+</script>
+</body>
+</html>
+```

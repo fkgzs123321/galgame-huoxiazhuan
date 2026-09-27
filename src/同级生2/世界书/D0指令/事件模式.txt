@@ -1,0 +1,165 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · D0指令 · 事件模式
+   ════════════════════════════════════════════════════════════
+   职责：当 场景模式='事件' 时加载，定义该模式的系统提示与规则
+   由D0系统控制器（按 临时.场景模式）加载
+   引用全局规则总表：SURVIVAL_RULES / DIFFICULTY_MODIFIERS / BAD_ENDINGS / MUTEX_RELATIONS / GLOBAL_IMPACT
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const EVENT_MODE = {
+  mode_name: '事件',
+  time_cost: '1时段（任意时段，由事件定义）',
+  turn_actions_cost: 1,
+  allowed_actions: [
+    '参与主线事件（推进核心剧情：西御寺阴谋/修学旅行/结局判定）',
+    '参与角色专属事件（如唯的噩梦/美佐子醉酒/可怜舞台后台）',
+    '参与季节性事件（圣诞夜12-24/跨年12-31/元日01-01）',
+    '参与随机事件（按 LCG 骰子档位触发）',
+    '在事件中做出选择（每个选择有不同后果）',
+    '事件中与 NPC 对话/互动（按事件定义的女角列表）'
+  ],
+  forbidden_actions: [
+    '跳过强制触发的事件（如 day01_morning_home）',
+    '强行参与未解锁的事件（需满足解锁条件）',
+    '在事件中违法（偷窥/暴力，触发 BAD_END_1/2/7）',
+    '重复触发已完成的事件（events.is_completed=1）',
+    '凭空让未在事件定义中的女角出现'
+  ],
+  event_types: [
+    {
+      type: '主线',
+      triggers: '按 时间.天数 与 关键事件时间线 自动触发',
+      examples: '西御寺事件链(day05+)/修学旅行筹备/结局判定(day17)',
+      bad_ending_risk: 'BAD_END_6_西御寺阴谋（未在12-29前解决）',
+      note: '主线推进，影响章节切换'
+    },
+    {
+      type: '角色专属',
+      triggers: '按女角好感度/关系档位触发',
+      examples: '唯的噩梦(好感度≥30)/美佐子醉酒(12-26起)/可怜舞台后台(好感度≥40)',
+      bad_ending_risk: 'BAD_END_5_嫉妒杀戮（嫉妒值≥100）',
+      note: '推进女角攻略线'
+    },
+    {
+      type: '季节性',
+      triggers: '按 时间.当前日期 固定触发',
+      examples: '圣诞夜(12-24)/跨年(12-31)/元日(01-01)/情人节(02-14 不在寒假内)',
+      bad_ending_risk: '无直接死结局，但影响后续好感',
+      note: '特殊节日，好感度 加成 ×1.5'
+    },
+    {
+      type: '随机',
+      triggers: '按 LCG 骰子档位（gray/green/blue/purple/gold）触发',
+      examples: '天气突变/偶遇同学/街头表演/交通事故',
+      bad_ending_risk: '无',
+      note: '随机性事件，可能获得 bonus 或 penalty'
+    }
+  ],
+  variable_changes: {
+    fatigue: '按事件定义（基础 +5~15，激烈事件 +20）',
+    mood: '按事件定义（正面事件 +5~15，负面事件 -5~20）',
+    hunger: '+10/时段（引用 SURVIVAL_RULES.hunger.auto_increment_per_slot=10，除非事件含用餐）',
+    thirst: '+15/时段（引用 SURVIVAL_RULES.thirst.auto_increment_per_slot=15，除非事件含饮料）',
+    money: '按事件定义（奖励 +500~5000 / 惩罚 -500~3000 / 中性 0）',
+    affection: '按事件定义（正面 +5~15 / 负面 -10~30 / 中性 0）',
+    skill_gain: '按事件定义（如侦探事件 观察 +3 / 战斗事件 格斗 +2）'
+  },
+  difficulty_modifiers: {
+    '轻松': '正面事件概率提升，奖励 ×1.2，惩罚 ×0.8（DIFFICULTY_MODIFIERS.money_mult=1.2 应用到奖励）',
+    '普通': '事件触发概率基准，奖励 ×1.0，惩罚 ×1.0（基准值）',
+    '挑战': '负面事件概率提升，奖励 ×0.8，惩罚 ×1.2（DIFFICULTY_MODIFIERS.decrease_mult=1.2 加剧惩罚）',
+    '地狱': '死结局事件概率显著提升，奖励 ×0.6，惩罚 ×1.5（jealousy_gain_mult=2.5 加剧女角嫉妒）'
+  },
+  special_triggers: [
+    '事件完成后解锁后续事件链（events.is_completed=1 后，next_event_id 自动激活）',
+    '部分事件有 BAD_END 风险（按 BAD_ENDINGS 表判定，如 BAD_END_1_报警/BAD_END_2_学园开除）',
+    '互斥事件（引用 MUTEX_RELATIONS）：攻略齐藤澪后齐藤澪奈锁定失恋',
+    '全局影响事件（引用 GLOBAL_IMPACT）：攻略某人达亲密 → 其他女角 嫉妒值 +5',
+    '季节性事件强制触发：圣诞夜(12-24 晚)/跨年(12-31 深夜)/元日(01-01 早)',
+    'LCG 骰子档位为 gold → 触发稀有事件（如捡到钱包/偶遇明星/特殊 CG 解锁）',
+    '主角.饥饿≥90 → 强制触发"晕倒送医"事件，取消当前事件',
+    '主角.疲劳≥80 → 强制触发"过劳晕倒"事件，取消当前事件'
+  ],
+  system_prompt: `[事件模式 · 系统提示模板]
+你正在生成同级生2 事件场景的叙事。请按以下结构生成：
+
+【事件背景】描写事件的触发背景：
+- 主线事件：交代当前章节进度（寒假前奏/核心/尾声/结局）与主线推进点
+- 角色专属事件：交代女角当前关系档位与事件触发条件
+- 季节性事件：描写节日氛围（圣诞树/新年钟声/初诣神社）
+- 随机事件：描写意外场景（天气突变/偶遇/街头事件）
+
+【事件场景】详细描写事件发生地点与环境：
+- 12-24 圣诞夜：鸣泽家客厅圣诞树/咖啡店《憩》派对/教堂
+- 12-31 跨年：八十八海岸观海/神社参拜/鸣泽家守岁
+- 01-01 元日：神社初诣/鸣泽家新年料理/八十八町初日
+- 角色专属：按女角基础信息.yaml 的 location 字段
+突出 1995 年日本冬日节庆气息。
+
+【NPC 登场】按事件定义的女角列表安排 NPC 出场（禁止凭空让其他女角出现）：
+- 衣着：按女角基础信息.yaml 的 appearance（节日可能换装）
+- 表情：按当前 关系阶段 与事件情绪决定
+- 对话：按女角性格调色盘的 阶段.main 与 accent
+
+【选项与后果】为玩家提供 2-4 个选择，每个选择对应不同后果：
+- 选项必须显式标注后果提示（如"[选择 A：答应唯的请求 → 唯好感 +10，美佐子嫉妒 +5]"）
+- 部分选项需技能判定（如"说服"需 口才≥50，按 SKILL_RULES.nsfw_skill_gates）
+- 部分选项有 BAD_END 风险（如强行接触 → 关系破裂/报警）
+
+【事件结算】事件结束后结算变量变化：
+- 正面事件：好感度/心情/技能 提升，可能获得 bonus 金钱
+- 负面事件：好感度/心情 下降，可能扣除金钱
+- 关键事件：可能触发章节切换/死结局/攻略完成
+
+【输出格式】生成 200-400 字叙事段落，第一人称（"我"的视角）。变量更新由额外模型处理，禁止输出 <UpdateVariable> 块。叙事结束后按顺序输出：
+<StatusPlaceHolderImpl/>
+<BattleUI/>
+<UpdateTable>
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '事件·<title>', '<纪要200-600字，含事件type/地点location/女角heroine_id/描述desc/选择choice/完成状态>');
+INSERT INTO chronicle (code_index, time_span, summary, chronicle_text) VALUES ('<AM+4位序号>', '<MM-DD HH:MM ~ MM-DD HH:MM>', '事件行动·<location>', '<纪要200-600字，含地点/行动描述/疲劳fatigue变化/心情mood变化/金钱money变化>');
+</UpdateTable>
+
+请严格遵守 BAD_ENDINGS（死结局触发条件）与 MUTEX_RELATIONS（互斥攻略锁定）。禁止让玩家跳过强制事件。`
+};
+%>
+
+[D0指令 · 事件模式已加载]
+mode_name: <%= EVENT_MODE.mode_name %>
+time_cost: <%= EVENT_MODE.time_cost %>
+turn_actions_cost: <%= EVENT_MODE.turn_actions_cost %>（每楼层 30 分钟，本时段楼层数 = 本时段累计楼层数）
+
+【允许行动】
+<% EVENT_MODE.allowed_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【禁止行动】
+<% EVENT_MODE.forbidden_actions.forEach(a => { %>- <%= a %>
+<% }); %>
+
+【事件类型】
+<% EVENT_MODE.event_types.forEach(t => { %>- <%= t.type %>：触发=<%= t.triggers %>，示例=<%= t.examples %>，风险=<%= t.bad_ending_risk %>，<%= t.note %>
+<% }); %>
+
+【变量变化规则（引用全局规则总表）】
+- 疲劳: <%= EVENT_MODE.variable_changes.fatigue %>
+- 心情: <%= EVENT_MODE.variable_changes.mood %>
+- 饥饿: <%= EVENT_MODE.variable_changes.hunger %>
+- 口渴: <%= EVENT_MODE.variable_changes.thirst %>
+- 现金: <%= EVENT_MODE.variable_changes.money %>
+- 好感度: <%= EVENT_MODE.variable_changes.affection %>
+- 技能加成: <%= EVENT_MODE.variable_changes.skill_gain %>
+
+【难度修正（引用 DIFFICULTY_MODIFIERS）】
+<% Object.keys(EVENT_MODE.difficulty_modifiers).forEach(d => { %>- <%= d %>：<%= EVENT_MODE.difficulty_modifiers[d] %>
+<% }); %>
+
+【特殊事件触发】
+<% EVENT_MODE.special_triggers.forEach(t => { %>- <%= t %>
+<% }); %>
+
+【系统提示模板】
+<%= EVENT_MODE.system_prompt %>
+
+[事件模式规则输出完毕。AI 必须按上述系统提示生成叙事，并严格执行事件触发条件与互斥锁定。]

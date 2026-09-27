@@ -1,0 +1,225 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 齐藤澪奈 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=16 / 女角 · 跨界客串自《同级生1 Remake》(2022)
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，2022 年 Remake 重现
+   本次项目作为「跨界客串」福利配置，与同级生2 原作设定无直接关联
+   核心弧线：校园偶遇—田径部交往—身份揭示—互斥临界—好感推进—恋人成立（六阶段）
+   互斥关系：齐藤姐妹（攻略妹妹后姐姐澪锁定仇视，row_id=15）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 齐藤澪奈_STORYLINE = {
+  heroine_id: 16,
+  name: '齐藤澪奈',
+  core_position: {
+    role: '田径部学妹线核心女角 — 元气少女外壳下的脆弱内核（被偏爱的渴望）',
+    archetype: '运动系元气学妹的成全者弧线 — 崇拜姐姐暗自较劲的妹妹',
+    function: '通过"校园偶遇→田径部陪伴→身份揭示（姐姐是学生会副会长）→互斥临界→好感推进→恋人成立"的六阶段弧线，呈现一个表面元气、实则渴望被偏爱而非被选择的女孩；与姐姐澪构成齐藤姐妹互斥组',
+    plot_weight: 'high — 独立女角线 + 与姐姐澪线（heroine_id=15）构成互斥组，玩家二选一'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: '全天',
+      location: '—（未登场）',
+      event: '寒假第一天锁定',
+      description: '12/22 寒假第一天，齐藤澪奈未登场；根据人物出现总表 DATE_OVERRIDES day=1 locked 列表，id=16 被锁定。玩家此日无法遇见澪奈',
+      triggers_route: '无 — 角色尚未登场',
+      is_reversible: true,
+      flags: ['flag_mizuna_locked_day1'],
+      note: '★ 锁定状态 — 12/23 起解锁'
+    },
+    {
+      date: '12-23',
+      time_slot: '上午/下午',
+      location: '八十八学园',
+      event: '校园开放日初遇',
+      description: '12/23 校园开放日，澪奈在八十八学园田径部训练场出现；主角可在上午或下午时段于学园内偶遇正在训练的澪奈。初识为自来熟的元气少女，主动搭话，聊田径/棒球/偶像话题可大幅提升好感',
+      triggers_route: '齐藤澪奈线 — 开启"校园初遇"前置剧情',
+      is_reversible: true,
+      flags: ['flag_mizuna_first_meet', 'flag_mizuna_route_awareness'],
+      note: '★ 线路开启条件 — 首次相遇后澪奈线进入可攻略状态'
+    },
+    {
+      date: '12-24',
+      time_slot: '上午/下午',
+      location: '八十八学园 / 八十八町商业区',
+      event: '平安夜前日常交往',
+      description: '12/24 平安夜前夕，澪奈仍在学园田径部训练（备赛春季大会）；主角可陪伴训练、送运动饮料/草莓相关甜品；话题切入田径比赛/校园八卦/偶像明星可加深关系。此阶段澪奈开始主动找主角聊天',
+      triggers_route: '齐藤澪奈线 — 进入"日常交往"阶段',
+      is_reversible: true,
+      flags: ['flag_mizuna_daily_interaction']
+    },
+    {
+      date: '12-25',
+      time_slot: '上午/下午',
+      location: '八十八学园',
+      event: '圣诞夜校园互动',
+      description: '12/25 圣诞夜，澪奈独自在学园训练（父母海外工作、姐姐忙学生会事务）；主角若选择陪伴澪奈度过圣诞夜，可触发"孤独学妹"特殊对话，澪奈透露对姐姐的崇拜与暗自较劲',
+      triggers_route: '齐藤澪奈线 — 触发"姐姐情结"伏笔',
+      is_reversible: true,
+      flags: ['flag_mizuna_christmas_event', 'flag_mizuna_sister_complex_hint'],
+      note: '★ 伏笔节点 — 首次揭示澪奈对姐姐澪的复杂情感（崇拜+较劲）'
+    },
+    {
+      date: '12-26 ~ 12-27',
+      time_slot: '上午/下午',
+      location: '八十八学园田径部',
+      event: '田径部训练陪伴期',
+      description: '12/26~27 澪奈备赛春季大会短跑项目（100米/200米）；主角持续陪伴训练可触发"起跑姿势指导""肌肉按摩""运动后拉伸"等亲密互动事件；澪奈开始对主角产生依赖感，affection 逐步接近 30',
+      triggers_route: '齐藤澪奈线 — 进入"好感积累"阶段',
+      is_reversible: true,
+      flags: ['flag_mizuna_training_companion', 'flag_mizuna_affection_rising']
+    },
+    {
+      date: '12-28',
+      time_slot: '上午/下午',
+      location: '八十八学园',
+      event: '姐姐澪首次介入',
+      description: '12/28 澪奈与主角在学园互动时，姐姐齐藤澪（学生会副会长，heroine_id=15）首次出现并观察二人；澪以"完美副会长"姿态公事公办地寒暄，但眼神带审视。此事件为互斥伏笔',
+      triggers_route: '齐藤澪奈线 — 触发"姐姐介入"伏笔 / 齐藤澪线 — 间接开启',
+      is_reversible: true,
+      flags: ['flag_mizuna_sister_intervention_1', 'flag_saito_mio_awareness'],
+      note: '★ 双线伏笔 — 同时为澪奈线和澪线埋下种子'
+    },
+    {
+      date: '12-29 ~ 12-30',
+      time_slot: '上午/下午',
+      location: '八十八学园 / 八十八町商业区',
+      event: '关系深化关键期',
+      description: '12/29~30 澪奈与主角关系进入深化期；主角若送运动护具/偶像周边/可爱发圈等偏好礼物，并陪伴参加模拟测试赛，澪奈 affection 可突破 40；澪奈开始流露"被偏爱"的渴望，暗示"不想被当成姐姐的替代品"',
+      triggers_route: '齐藤澪奈线 — 进入"暧昧临界"前阶段',
+      is_reversible: true,
+      flags: ['flag_mizuna_deepening', 'flag_mizuna_favor_craving']
+    },
+    {
+      date: '12-31',
+      time_slot: '上午/下午',
+      location: '八十八学园 / 神宫（跨年参拜）',
+      event: '跨年事件 — 互斥临界点',
+      description: '12/31 跨年神宫参拜，澪奈可能邀请主角同行；若主角选择与澪奈跨年，affection 将接近或达到 50（互斥触发阈值）；此时姐姐澪若察觉妹妹与主角的亲密，会以"完美副会长"姿态冷待主角，私下激烈质问妹妹',
+      triggers_route: '齐藤澪奈线 — 进入"互斥临界"阶段 / 齐藤澪线 — 若未触发互斥则仍可推进',
+      is_reversible: false,
+      flags: ['flag_mizuna_newyear_event', 'flag_mizuna_mutex_threshold'],
+      note: '★ 关键节点 — affection ≥ 50 即触发齐藤姐妹互斥（见 mutex_trigger）'
+    },
+    {
+      date: '01-01 ~ 01-03',
+      time_slot: '上午/下午',
+      location: '八十八学园 / 八十八町住宅区',
+      event: '元日期 — 互斥触发与身份揭示',
+      description: '01/01~03 元日期间，若澪奈 affection ≥ 50，正式触发齐藤姐妹互斥：姐姐澪锁定仇视（affection -50 / jealousy +30 / route_locked=1）；澪奈内心矛盾剧烈（崇拜姐姐却又怕被比较）。此时主角必须做出独占性选择 — 明确选择澪奈则线路锁定，摇摆不定则澪奈线崩盘',
+      triggers_route: '齐藤澪奈线 — 进入"恋人成立"阶段（若选择正确）/ 齐藤澪线 — 永久锁定（route_locked=1）',
+      is_reversible: false,
+      flags: ['flag_mizuna_mutex_triggered', 'flag_saito_mio_route_locked', 'flag_mizuna_identity_reveal'],
+      note: '★ 不可逆 flag — 互斥一旦触发，姐姐澪线永久锁定仇视；澪奈身份揭示（姐姐是学生会副会长）完成'
+    },
+    {
+      date: '01-04 ~ 01-06',
+      time_slot: '上午/下午',
+      location: '八十八学园 / 八十八町住宅区',
+      event: '恋人成立期 — 终章前奏',
+      description: '01/04~06 互斥触发后，若主角明确选择澪奈，二人进入恋人成立期；澪奈卸下元气外壳，展现"怕被比较的脆弱女孩"内核；主角需持续陪伴、肯定她的独特价值（而非与姐姐比较）；affection 持续提升向 60 逼近',
+      triggers_route: '齐藤澪奈线 — 进入"Good End 判定"前阶段',
+      is_reversible: true,
+      flags: ['flag_mizuna_lover_established', 'flag_mizuna_endgame_approach']
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '八十八学园 / 主角自宅',
+      event: '寒假最后一天 — 最终判定',
+      description: '01/07 深夜触发结局判定：若澪奈 affection ≥ 60 且互斥已触发（姐姐澪线锁定）、恋人成立，达成 Good End — 澪奈×主角恋人关系确立；若 affection 40~59，达成 Normal End — 澪奈暧昧未决，开放结局；若 affection < 40 或主角摇摆伤害澪奈，达成 Bad End — 澪奈退出，被田径部前辈攻略或独身',
+      triggers_route: '齐藤澪奈线 — 最终结局判定',
+      is_reversible: false,
+      flags: ['flag_mizuna_final_judgment'],
+      note: '★ 最终判定 — affection ≥ 60 达成 Good End'
+    }
+  ],
+
+  triggered_routes: {
+    '齐藤澪奈线（heroine_id=16，自身）': {
+      role: 'core — 自身线路',
+      trigger_nodes: ['12-23 校园初遇', '12-25 圣诞夜姐姐情结伏笔', '12-28 姐姐澪首次介入', '12-31 跨年互斥临界', '01-01~03 互斥触发与身份揭示', '01-07 最终判定'],
+      impact: '澪奈线是"校园偶遇→田径部交往→身份揭示→互斥临界→好感推进→恋人成立"六阶段弧线；关键转折在 12/31 跨年事件（affection ≥ 50 触发互斥）和 01/01~03 身份揭示（姐姐澪锁定仇视）'
+    },
+    '齐藤澪线（heroine_id=15，互斥对象）': {
+      role: 'mutex — 互斥锁定',
+      trigger_nodes: ['12-28 姐姐澪首次介入', '12-31 跨年互斥临界', '01-01~03 互斥触发'],
+      impact: '若澪奈 affection ≥ 50 触发互斥，姐姐澪线永久锁定（affection -50 / jealousy +30 / route_locked=1）；玩家无法同时攻略齐藤姐妹，必须二选一'
+    },
+    '都筑梢江线（heroine_id=7，间接关联）': {
+      role: 'indirect — 低年级朋友圈',
+      trigger_nodes: ['12-23 起八十八学园可遇'],
+      impact: '都筑梢江同为低年级学生，与澪奈是朋友关系；若主角同时推进梢江线，澪奈可能产生轻微嫉妒（jealousy +5~10），但不构成硬互斥'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'lover — 学妹→恋人',
+      detail: '初识为自来熟的元气少女；通过田径部陪伴逐步建立依赖；affection ≥ 50 触发互斥后需主角独占性选择；最终达成恋人关系（Good End）'
+    },
+    '齐藤澪（姐姐）': {
+      type: 'sister + mutex — 姐姐 / 互斥对象（heroine_id=15）',
+      detail: '学生会副会长，三年生；澪奈表面崇拜姐姐实则暗自较劲；与姐姐同住（八十八町住宅区）；攻略澪奈 affection ≥ 50 触发互斥，姐姐澪锁定仇视（affection -50 / jealousy +30 / route_locked=1）'
+    },
+    '父母': {
+      type: 'family — 常驻海外',
+      detail: '父母常驻海外工作，姐妹二人独居；这是澪奈孤独感与对姐姐依赖的根源'
+    },
+    '都筑梢江': {
+      type: 'friend — 低年级朋友（heroine_id=7）',
+      detail: '同为低年级学生，与澪奈是朋友；同时推进梢江线会引发澪奈轻微嫉妒（jealousy +5~10）'
+    },
+    '田径部成员': {
+      type: 'comrade — 部员关系',
+      detail: '田径部短距离组（100米/200米）部员；部员是澪奈的日常陪伴和情报源；备赛春季大会是核心活动'
+    },
+    '一年级同班同学': {
+      type: 'classmate — 同学关系',
+      detail: '一年级同班同学，澪奈的校园社交圈'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_mizuna_first_meet',
+      trigger: '12-23 上午/下午 八十八学园校园开放日初遇',
+      effect: '澪奈线正式开启，进入可攻略状态',
+      reversibility: '可逆 — 首次相遇后持续互动才能维持线路'
+    },
+    {
+      flag: 'flag_mizuna_mutex_triggered',
+      trigger: '12-31~01-03 跨年/元日期 affection ≥ 50',
+      effect: '齐藤姐妹互斥正式触发；姐姐澪锁定仇视（affection -50 / jealousy +30 / route_locked=1）；澪奈身份揭示完成（姐姐是学生会副会长）',
+      reversibility: '不可逆 — 一旦触发，姐姐澪线永久锁定仇视，无法回退'
+    },
+    {
+      flag: 'flag_saito_mio_route_locked',
+      trigger: '齐藤姐妹互斥触发后自动设置',
+      effect: '姐姐齐藤澪线（heroine_id=15）永久锁定，route_locked=1；玩家无法再攻略澪',
+      reversibility: '不可逆 — 互斥触发的必然结果'
+    },
+    {
+      flag: 'flag_mizuna_lover_established',
+      trigger: '01-04~01-06 互斥触发后主角明确选择澪奈',
+      effect: '澪奈×主角恋人关系成立；进入 Good End 判定前阶段',
+      reversibility: '可逆 — 若主角后续伤害澪奈（如提姐姐优点 / 摇摆不定），恋人关系可崩盘'
+    },
+    {
+      flag: 'flag_mizuna_final_judgment',
+      trigger: '01-07 深夜最终判定',
+      effect: '根据 affection 数值得出最终结局：≥60 Good End / 40~59 Normal End / <40 Bad End',
+      reversibility: '不可逆 — 寒假结束，线路收束'
+    }
+  ],
+
+  summary: '齐藤澪奈的剧情线是"校园偶遇→田径部交往→身份揭示→互斥临界→好感推进→恋人成立"六阶段弧线，核心功能是呈现一个表面元气、实则渴望被偏爱而非被选择的运动系学妹。关键转折在 12/31 跨年事件（affection ≥ 50 触发齐藤姐妹互斥）和 01/01~03 身份揭示（姐姐澪锁定仇视、route_locked=1）。与姐姐齐藤澪（heroine_id=15）构成互斥组，玩家二选一。01/07 深夜最终判定：affection ≥ 60 达成 Good End。'
+};
+%>
+
+齐藤澪奈 · 剧情线已加载。核心定位：田径部学妹线（heroine_id=16）— 六阶段弧线（校园偶遇→田径部交往→身份揭示→互斥临界→好感推进→恋人成立）。12/22 锁定未登场，12/23 起八十八学园上午/下午可遇。关键节点：12/25 圣诞夜姐姐情结伏笔、12/28 姐姐澪首次介入、12/31 跨年互斥临界（affection ≥ 50）、01/01~03 互斥触发与身份揭示（姐姐澪 route_locked=1）、01/07 最终判定（affection ≥ 60 Good End）。互斥关系：齐藤姐妹（攻略妹妹后姐姐澪锁定仇视，row_id=15）。不可逆 flag：flag_mizuna_mutex_triggered（互斥触发）、flag_saito_mio_route_locked（姐姐线锁定）、flag_mizuna_final_judgment（最终判定）。

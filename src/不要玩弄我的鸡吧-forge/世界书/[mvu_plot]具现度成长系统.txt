@@ -1,0 +1,165 @@
+@@generate_before
+# [变量更新]具现度成长与阶段进化
+# 关键词触发：具现度、阶段进化、use_stage等
+# 激活策略：选择触发
+# 5阶段体系·exp+day双触发
+
+<%
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var total_uses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var energy = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) || 80;
+var willpower = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+%>
+
+[具现度成长与阶段进化——完整系统·5阶段]
+
+---
+I. 使用阶段（use_stage）总览（共5阶段）
+---
+
+使用阶段是假阴茎"进化"的核心指标，共5级。
+升级条件只需：总经验值 ≥ 阶段阈值
+
+阶段 | 对应描写     | 经验值阈值   | 累计经验 | 该阶段核心特征
+-----|-------------|-------------|---------|---------------
+1    | 初级玩具    | 0-30        | ≥0      | 普通硅胶假阴茎，物理形态
+2    | 等比复刻    | 30-100      | ≥30     | 真人精确复刻版，智能功能
+3    | 灵体投影    | 100-200     | ≥100    | 透明发光灵体，可变形分裂
+4    | 人偶容器    | 200-350     | ≥200    | 上半身仿真人偶，听觉解锁
+5    | 实体化共生  | 350+        | ≥350    | 完全实体化，情绪共鸣，终局前置
+
+阶段5进入：exp ≥ 350 且 day ≥ 102，触发终局判定（与疑心度≥150配合）
+
+---
+II. 阶段阈值详情表
+---
+
+阈值数组：[0, 30, 100, 200, 350]
+- 索引0用作哨兵值：从stage 1升级到stage 2需要exp ≥ 30
+- stage N需要exp ≥ exp_thresholds[N]
+
+当前值：
+  当前阶段：第<%= stage %>/5档
+  总使用次数：<%= total_uses %>
+  当前阶段阈值下限：<%= [0, 30, 100, 200, 350][stage-1] || 0 %>
+  下一阶段阈值：<%= [30, 100, 200, 350, 350][stage-1] || 350 %>
+
+[注意] 阶段5进入条件：exp≥350 且 day≥102，达成后触发终局前置判定。
+
+---
+III. 阶段进度条（stage_progress）
+---
+
+stage_progress 是介于0-100之间的百分比，表示"当前阶段走了多少进度"。
+
+计算公式：
+  current_threshold = exp_thresholds[current-1]     (当前阶段的起始经验)
+  next_threshold = exp_thresholds[current]           (下一阶段的起始经验)
+  stage_progress = (exp - current_threshold) / (next_threshold - current_threshold) × 100
+
+示例：exp=55，current=2
+  current_threshold = 30
+  next_threshold = 100
+  stage_progress = (55-30)/(100-30) × 100 ≈ 36%
+
+---
+IV. 升级触发与副作用
+---
+
+当 exp 跨越阈值且 day ≥ day_thresholds[current] 时（在每次使用后检测）：
+  if (exp >= exp_thresholds[current] && day >= day_thresholds[current] && current < 5) {
+    // 注：实际晋升还需满足附加条件，详见 [mvu_plot]阶段晋升系统.txt（持有者已使用/3+人传播+执念≥30/6+人传播+C沉沦/10+人传播+D疯狂+怀疑值≥60）
+    current += 1
+    stage_progress = 0
+    events.push({type:"stage_up", from:current-1, to:current, day, hour})
+    【美化标记·强制】必须在叙事正文末尾输出:
+      <StageUp from="<current-1>" to="<current>" name="<阶段名>" desc="<一句话描述>"/>
+      阶段名: 1=初级玩具 / 2=等比复刻 / 3=灵体投影 / 4=人偶容器 / 5=实体化共生
+    升级副作用（叙事参考）：
+    if (current === 3) {
+      // 物理假阴茎→灵体：使用者看到假阴茎逐渐透明化然后消失，空中浮现发光体
+      // {{user}} 角度：某次被使用时感觉"不一样了"——更暖、更灵活、更贴合
+    }
+    if (current === 4) {
+      // 灵体→人偶：灵体逐渐凝聚出人形，从下肢开始向上构建
+      // {{user}} 角度：开始"听到"碎语——那个声音在叫你的名字
+    }
+  }
+
+---
+V. 升级对各项属性的影响（5阶段）
+---
+
+每次升级（stage++）触发以下调整：
+- 基础消耗 baseDrain: 随阶段增加（见精力消耗计算）
+- 传播倾向：所有女性使用者的 tendency += 0.05 × 新stage
+- 定力判定难度：阻挡概率获得 -0.02 × 新stage 的隐式修正
+- 疑心度增长速率：每次被使用的疑心度增长 += newStage × 0.1
+
+阶段性影响对照：
+
+stage | baseDrain | 传播倾向加成 | 隐式阻挡修正 | 疑心度增长加成
+------|-----------|-------------|-------------|--------------
+1     | 6         | 0           | 0           | 0
+2     | 12        | +0.10       | -0.04       | +0.2
+3     | 20        | +0.15       | -0.06       | +0.3
+4     | 30        | +0.20       | -0.08       | +0.4
+5     | 50        | +0.25       | -0.10       | +0.5
+
+---
+VI. 女性独立阶段轨迹（阶段轨迹）
+---
+
+每位女性使用者有自己的 /女性角色/{uid}/阶段轨迹.当前阶段（1-5）
+它和全局 使用阶段.当前阶段 是独立的——女性个人的"沉迷程度"。
+
+【升级判定】（每次该女性使用后执行）
+  P(升级) = base_prob × (1 - sanity/200) × max(0.2, 1 - willpower.level × 0.004) × 性格修正
+
+其中：
+  base_prob = 0.15（固定基础值）
+  (1 - sanity/200) 范围：sanity=200时→0, sanity=0时→1
+    即 {{user}} 精神越差，女性越容易沉迷
+  max(0.2, 1 - willpower.level × 0.004)
+    willpower=1: 1-0.004=0.996 → 几乎无削减
+    willpower=100: 1-0.4=0.6 → 60% of base
+    即 user意志力越强，女性越不容易沉迷（你抵抗了，她的体验变差）
+  性格修正（人格修正）:
+    纯真: 0.5、御姐: 1.2、辣妹: 1.5、运动: 0.8、文静: 0.6、熟女: 1.3、萝莉: 0.3
+
+  硬上限: 女性的 阶段轨迹.当前阶段 ≤ global use_stage.current
+
+【女性阶段对游戏的影响】
+- 女性阶段越高 → 她的使用能力越强 → 每次使用消耗你更多精力
+- 女性阶段越高 → 她越不隐藏 → 更容易被其他女性发现/传播
+- 女性阶段 ≥4: 她可能会主动教别人使用
+- 女性阶段 =5: 彻底沉沦——可能触发"某人崩坏"结局
+
+---
+VII. 阶段进化与终局的关系（5阶段对齐）
+---
+
+- use_stage.current >= 4 是真相结局的触发条件之一
+- use_stage.current >= 3 是坠落结局的触发条件之一
+- use_stage.current <= 2 是健康结局的准入条件
+- use_stage.current >= 4 + 传播链 >=8 → endings['真相揭示'] = true
+- total_uses >= 100 → 终局前置（与疑心度≥150配合判定具体分支）
+
+阶段进化的速度控制：
+- 建议AI控制在每4-6天升1级（自然节奏）
+- 如果user频繁被多名使用者使用，加速至每2-3天1级
+- 如果user积极防御（高冥想/高意志），可能放慢至每7-8天1级
+- 一般需要游戏内30-50天到达终局
+
+---
+VIII. 阶段封锁规则（AI不得违反）
+---
+
+- AI不得跳过阶段（例如直接从阶段1跳到阶段3）
+- AI不得在total_uses未达标时提升use_stage.current
+- AI不得提升女性的阶段轨迹超过use_stage.current
+- AI不得在{{user}}定力判定阻挡后强行让{{user}}射精（除非使用者使用edging模式且强制释放）
+- AI不得在一次使用后让{{user}}的total_uses增加超过实际使用人数
+- AI不得在升级阶段时缺失对应的阶段描写加载

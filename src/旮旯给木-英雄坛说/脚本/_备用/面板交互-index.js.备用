@@ -1,0 +1,164 @@
+// ════════════════════════════════════════════════════════════
+// 面板交互（酒馆助手脚本）
+//
+// ★ 为什么要单独一个脚本（2026-09-17 踩出来的）：
+//   面板的 HTML + CSS + JS 都在 CDN 的 index.html 里，靠楼层正则的
+//   `$('body').load(URL)` 载进来。**HTML 里的 <script> 在酒馆楼层里不保证按预期执行** ——
+//   实测现象：**面板画出来了（渲染跑了），但所有按钮点了没反应（事件没绑上）**。
+//   也就是：那段 script 跑到一半就断了，后面的 addEventListener 全没执行。
+//
+// ★ 这个脚本的作用：**只做一件事 —— 兜底绑事件**。
+//   它跑在酒馆助手脚本环境里（一定会执行），监听 document 上的点击，
+//   把所有面板元素的动作接住。渲染仍然由 CDN 里那段负责，两边互不依赖。
+//
+// ★ 委托的好处：**面板重绘多少次都不用重绑**。
+// ════════════════════════════════════════════════════════════
+
+(function () {
+  if (window.__YX_兜底__) return;
+  window.__YX_兜底__ = 1;
+
+  // ── 工具：读当前楼层的 stat_data ──
+  function 拿状态() {
+    try {
+      var v = (typeof getVariables === 'function')
+        ? getVariables({ type: 'message', message_id: 'latest' })
+        : {};
+      return (v && v.stat_data) || {};
+    } catch (e) { return {}; }
+  }
+  function 写状态(改) {
+    try {
+      var v = getVariables({ type: 'message', message_id: 'latest' }) || {};
+      var sd = v.stat_data || {};
+      改(sd);
+      v.stat_data = sd;
+      replaceVariables({ type: 'message', message_id: 'latest' }, v);
+      return true;
+    } catch (e) {
+      console.error('[面板交互] 写变量失败：', e);
+      return false;
+    }
+  }
+  // ── 工具：让 AI 写一段（搭话 / 心思 / 推演 / 回顾）──
+  function 求AI(指令) {
+    var 标 = document.getElementById('yx-aista');
+    if (标) { 标.className = 'yx-aista on'; 标.textContent = '正在写…'; }
+    try {
+      if (typeof generate !== 'function') {
+        if (标) { 标.className = 'yx-aista wn'; 标.textContent = '这儿没有生成入口，这一段只能你自己写'; }
+        return;
+      }
+      Promise.resolve(generate({ user_input: 指令, should_stream: true }))
+        .then(function () {
+          if (标) { 标.className = 'yx-aista ok'; 标.textContent = '写好了，在上一条回复里'; }
+        })
+        .catch(function (e) {
+          if (标) { 标.className = 'yx-aista wn'; 标.textContent = '没写出来：' + (e && e.message ? e.message : e); }
+        });
+    } catch (e) {
+      if (标) { 标.className = 'yx-aista wn'; 标.textContent = '没写出来：' + (e && e.message ? e.message : e); }
+    }
+  }
+
+  // ── 选人（开局）──
+  var 她序 = ['温砚', '丰娆', '舒晏', '唐响', '沈眠', '莫漾', '纪清', '郁灼'];
+  var 已选 = '';
+
+  function 点卡(名) {
+    已选 = 名;
+    var 全 = document.querySelectorAll('#gg4-list .c, [data-她]');
+    for (var i = 0; i < 全.length; i++) {
+      var el = 全[i];
+      if (el.getAttribute('data-她') === 名) el.classList.add('on');
+      else el.classList.remove('on');
+    }
+    var 提 = document.getElementById('gg4-pick');
+    if (提) 提.textContent = '已选 ' + 名 + '，点确认就进她的那一局。';
+    var 按 = document.getElementById('gg4-ok');
+    if (按) 按.textContent = '确认「' + 名 + '」，开始';
+  }
+
+  function 确认选人() {
+    if (!已选) {
+      var 提0 = document.getElementById('gg4-pick');
+      if (提0) 提0.textContent = '先点一张卡。';
+      return;
+    }
+    var 按 = document.getElementById('gg4-ok');
+    if (按) 按.textContent = '正在开局…';
+    var 成 = 写状态(function (sd) {
+      sd.她 = sd.她 || {};
+      sd.她.人设 = 已选;
+      sd.她.目的进度 = 0;
+    });
+    var 序 = 她序.indexOf(已选);
+    var swipe = 2 + (序 < 0 ? 0 : 序);
+    var 提示 = function (话) { var p = document.getElementById('gg4-pick'); if (p) p.textContent = 话; };
+    if (!成) { 提示('变量没写进去 —— 看一眼 Console'); return; }
+    try {
+      setChatMessages([{ message_id: 0, swipe_id: swipe }]);
+      提示('已确认「' + 已选 + '」。往上滑一层就是她的开局。');
+    } catch (e) {
+      提示('变量写进了（她：' + 已选 + '），切层失败：' + (e && e.message ? e.message : e) + '。手动切到那一段即可。');
+    }
+  }
+
+  // ── 全局点击委托 ──
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (!t || !t.closest) return;
+
+    // ① 选人卡片
+    var 卡 = t.closest('[data-她]');
+    if (卡) { 点卡(卡.getAttribute('data-她')); return; }
+
+    // ② 选人确认
+    if (t.closest('#gg4-ok')) { 确认选人(); return; }
+
+    // ③ 页签
+    var 签 = t.closest('.yx-tb button[data-p]');
+    if (签) {
+      var 名 = 签.getAttribute('data-p');
+      // 交给面板自己那套（如果它在）——它不在时用这里的最小实现
+      if (typeof window.__YX_换页 === 'function') { window.__YX_换页(名); return; }
+      // 最小实现：只切高亮，内容由面板自己重画（面板没跑就只能切高亮）
+      var 全签 = document.querySelectorAll('.yx-tb button[data-p]');
+      for (var i = 0; i < 全签.length; i++) {
+        if (全签[i].getAttribute('data-p') === 名) 全签[i].classList.add('on');
+        else 全签[i].classList.remove('on');
+      }
+      return;
+    }
+
+    // ④ 搭话
+    var 搭 = t.closest('[data-搭话]');
+    if (搭) { 求AI('【面板·搭话】<user> 主动去找「' + 搭.getAttribute('data-搭话') + '」说话。写这一段正文：他怎么被找到的、他当下的反应、两人的对话。'); return; }
+
+    // ⑤ 二次请求类
+    var ai = t.closest('[data-ai]');
+    if (ai) {
+      var k = ai.getAttribute('data-ai');
+      var 说 = { 心思: '【面板·她的心思】按她当前的人设写一段她此刻在想什么。', 回顾: '【面板·回顾】把到目前发生的事按时间顺序回顾一遍。', 推演: '【面板·推演】不落子，先推演这一步会变成什么样。' };
+      求AI(说[k] || '【面板】按当前局面写一段。');
+      return;
+    }
+
+    // ⑥ 其他单点交互（战斗 / 炼丹 / 强化 / 装备 / 行囊 …）
+    //    这些都依赖面板自己那套函数；面板 script 没跑时给一句明确提示，
+    //    而不是「点了没反应」——静默失败是最难查的。
+    var 其 = t.closest('[data-foe],[data-op],[data-dan],[data-y],[data-挑],[data-开打],[data-出招],[data-门],[data-place],[data-sk],[data-skk],[data-skenh],[data-tg],[data-slot],[data-i],[data-n],[data-f]');
+    if (其) {
+      if (typeof window.__YX_兜底提示__ !== 'function') {
+        console.warn('[面板交互] 面板脚本未初始化，这个按钮的动作跑不了。元素：', 其);
+      }
+      var 标2 = document.getElementById('yx-aista') || document.createElement('div');
+      if (!标2.parentNode) { 标2.id = 'yx-aista'; 标2.className = 'yx-aista'; document.body.appendChild(标2); }
+      标2.className = 'yx-aista wn';
+      标2.textContent = '面板脚本没跑起来 —— 这个按钮的动作接不上（详情见 Console）';
+      return;
+    }
+  }, true);   // ★ 捕获阶段：先于任何后绑的处理器，保证接得住
+
+  console.log('[面板交互] 兜底委托已注册');
+})();

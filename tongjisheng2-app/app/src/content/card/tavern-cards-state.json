@@ -1,0 +1,3732 @@
+{
+  "projectName": "同级生2",
+  "worldbookName": "同级生2",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "unknown": {
+      "全局规则总表": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        },
+        "display_index": 0,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\全局规则总表.txt"
+      },
+      "全局规则-NSFW身体规则": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        },
+        "display_index": 1,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\全局规则-NSFW身体规则.txt"
+      },
+      "全局规则-技能系统": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        },
+        "display_index": 2,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\全局规则-技能系统.txt"
+      },
+      "固定物品效果表": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        },
+        "display_index": 3,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\固定物品效果表.txt"
+      },
+      "阶段联动框架": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        },
+        "display_index": 4,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\阶段联动框架.txt"
+      },
+      "角色性格控制器": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 13
+        },
+        "display_index": 5,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\角色性格控制器.txt"
+      },
+      "D0系统控制器": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 14
+        },
+        "display_index": 6,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\D0系统控制器.txt"
+      },
+      "主动事件触发器": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 14
+        },
+        "display_index": 7,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\主动事件触发器.txt"
+      },
+      "世界观场景控制器": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 15
+        },
+        "display_index": 8,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\世界观场景控制器.txt"
+      },
+      "LCG骰子引擎": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 16
+        },
+        "display_index": 9,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\LCG骰子引擎.txt"
+      },
+      "表格模板JSON": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 16
+        },
+        "display_index": 10,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\表格模板JSON.yaml"
+      },
+      "恋爱互动系统": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 17
+        },
+        "display_index": 11,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\恋爱互动系统.txt"
+      },
+      "属性系统": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 18
+        },
+        "display_index": 12,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\属性系统.txt"
+      },
+      "个人反应属性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 19
+        },
+        "display_index": 13,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\个人反应属性.txt"
+      },
+      "女角偏好系数表": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        },
+        "display_index": 14,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\女角偏好系数表.txt"
+      },
+      "属性技能骰子联动": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        },
+        "display_index": 15,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\属性技能骰子联动.txt"
+      },
+      "变量变化幅度控制": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        },
+        "display_index": 16,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\变量变化幅度控制.txt"
+      },
+      "时间触发器": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        },
+        "display_index": 17,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\时间触发器.txt"
+      },
+      "防口胡机制": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        },
+        "display_index": 18,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防口胡机制.txt"
+      },
+      "时间线剧情索引库": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 27
+        },
+        "display_index": 19,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\时间线剧情索引库.txt"
+      },
+      "人物出现总表": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        },
+        "display_index": 20,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\人物出现总表.txt"
+      },
+      "公共时段": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        },
+        "display_index": 21,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\公共时段.txt"
+      },
+      "day01_1222": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        },
+        "display_index": 22,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day01_1222.txt"
+      },
+      "day02_1223": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        },
+        "display_index": 23,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day02_1223.txt"
+      },
+      "day03_1224": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 24
+        },
+        "display_index": 24,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day03_1224.txt"
+      },
+      "day04_1225": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 25
+        },
+        "display_index": 25,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day04_1225.txt"
+      },
+      "day05_1226": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 26
+        },
+        "display_index": 26,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day05_1226.txt"
+      },
+      "day06_1227": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 27
+        },
+        "display_index": 27,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day06_1227.txt"
+      },
+      "day07_1228": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 28
+        },
+        "display_index": 28,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day07_1228.txt"
+      },
+      "day08_1229": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 29
+        },
+        "display_index": 29,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day08_1229.txt"
+      },
+      "day09_1230": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        },
+        "display_index": 30,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day09_1230.txt"
+      },
+      "day10_1231": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 31
+        },
+        "display_index": 31,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day10_1231.txt"
+      },
+      "day11_0101": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 32
+        },
+        "display_index": 32,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day11_0101.txt"
+      },
+      "day12_0102": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 33
+        },
+        "display_index": 33,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day12_0102.txt"
+      },
+      "day13_0103": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 34
+        },
+        "display_index": 34,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day13_0103.txt"
+      },
+      "day14_0104": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 35
+        },
+        "display_index": 35,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day14_0104.txt"
+      },
+      "day15_0105": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 36
+        },
+        "display_index": 36,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day15_0105.txt"
+      },
+      "day16_0106": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 37
+        },
+        "display_index": 37,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day16_0106.txt"
+      },
+      "day17_0107": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 38
+        },
+        "display_index": 38,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\day17_0107.txt"
+      },
+      "防口胡": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 40,
+          "role": "system",
+          "depth": 2
+        },
+        "display_index": 39,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防口胡.txt"
+      },
+      "防神化": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 41,
+          "role": "system",
+          "depth": 3
+        },
+        "display_index": 40,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防神化.txt"
+      },
+      "防绝望": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 42,
+          "role": "system",
+          "depth": 3
+        },
+        "display_index": 41,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防绝望.txt"
+      },
+      "防全知": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 43,
+          "role": "system",
+          "depth": 3
+        },
+        "display_index": 42,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防全知.txt"
+      },
+      "防崩溃": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 44,
+          "role": "system",
+          "depth": 2
+        },
+        "display_index": 43,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防崩溃.txt"
+      },
+      "防超自然": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 45,
+          "role": "system",
+          "depth": 2
+        },
+        "display_index": 44,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\防超自然.txt"
+      },
+      "道德伦理": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 46,
+          "role": "system",
+          "depth": 2
+        },
+        "display_index": 45,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\道德伦理.txt"
+      },
+      "法律意识": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 47,
+          "role": "system",
+          "depth": 3
+        },
+        "display_index": 46,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\法律意识.txt"
+      },
+      "经济护栏": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 48,
+          "role": "system",
+          "depth": 3
+        },
+        "display_index": 47,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\经济护栏.txt"
+      },
+      "合理性审查": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 49,
+          "role": "system",
+          "depth": 3
+        },
+        "display_index": 48,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\合理性审查.txt"
+      },
+      "思维链": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 49,
+          "role": "system",
+          "depth": 4
+        },
+        "display_index": 49,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\思维链.txt"
+      },
+      "[initvar]": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        },
+        "display_index": 50,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\[initvar].yaml"
+      },
+      "变量列表": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 51
+        },
+        "display_index": 51,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\变量列表.txt"
+      },
+      "[mvu_update]变量输出格式": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 52,
+          "role": "system",
+          "depth": 4
+        },
+        "display_index": 52,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\[mvu_update]变量输出格式.txt"
+      },
+      "核心铁律": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 270,
+          "role": "system",
+          "depth": 1
+        },
+        "display_index": 53,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\核心铁律.txt"
+      },
+      "[mvu_plot]输出格式": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 271,
+          "role": "system",
+          "depth": 1
+        },
+        "display_index": 54,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\[mvu_plot]输出格式.txt"
+      },
+      "[mvu_update]变量输出格式（额外模型）": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 272,
+          "role": "system",
+          "depth": 1
+        },
+        "display_index": 55,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\[mvu_update]变量输出格式（额外模型）.txt"
+      },
+      "[mvu_update]变量更新规则": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 53,
+          "role": "system",
+          "depth": 4
+        },
+        "display_index": 56,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\[mvu_update]变量更新规则.txt"
+      },
+      "关键事件总表": {
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 60
+        },
+        "display_index": 57,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\关键事件总表.yaml"
+      },
+      "寒假前奏": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 70
+        },
+        "display_index": 58,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\寒假前奏.txt"
+      },
+      "寒假核心": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 71
+        },
+        "display_index": 59,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\寒假核心.txt"
+      },
+      "寒假尾声": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 72
+        },
+        "display_index": 60,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\寒假尾声.txt"
+      },
+      "结局阶段": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 73
+        },
+        "display_index": 61,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\结局阶段.txt"
+      },
+      "自宅周边": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 80
+        },
+        "display_index": 62,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\自宅周边.txt"
+      },
+      "八十八学园": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 81
+        },
+        "display_index": 63,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\八十八学园.txt"
+      },
+      "八十八町商业区": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 82
+        },
+        "display_index": 64,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\八十八町商业区.txt"
+      },
+      "八十八海岸": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 83
+        },
+        "display_index": 65,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\八十八海岸.txt"
+      },
+      "温泉乡": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 84
+        },
+        "display_index": 66,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\温泉乡.txt"
+      },
+      "88市民医院": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 85
+        },
+        "display_index": 67,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\88市民医院.txt"
+      },
+      "保育园": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 86
+        },
+        "display_index": 68,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\保育园.txt"
+      },
+      "D0指令_打工模式": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 90
+        },
+        "display_index": 69,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\D0指令_打工模式.txt"
+      },
+      "D0指令_约会模式": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 91
+        },
+        "display_index": 70,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\D0指令_约会模式.txt"
+      },
+      "D0指令_上学模式": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 92
+        },
+        "display_index": 71,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\D0指令_上学模式.txt"
+      },
+      "D0指令_事件模式": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 93
+        },
+        "display_index": 72,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\D0指令_事件模式.txt"
+      },
+      "D0指令_休息模式": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 94
+        },
+        "display_index": 73,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\D0指令_休息模式.txt"
+      },
+      "圣诞夜": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "display_index": 74,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\圣诞夜.txt"
+      },
+      "跨年": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 101
+        },
+        "display_index": 75,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\跨年.txt"
+      },
+      "元日": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 102
+        },
+        "display_index": 76,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\元日.txt"
+      },
+      "CG触发条件表": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 103
+        },
+        "display_index": 77,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\CG触发条件表.txt"
+      },
+      "隐藏剧情触发器": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 104
+        },
+        "display_index": 78,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\隐藏剧情触发器.txt"
+      },
+      "结局分支矩阵": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 105
+        },
+        "display_index": 79,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\结局分支矩阵.txt"
+      },
+      "破产结局机制": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 106
+        },
+        "display_index": 80,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\破产结局机制.txt"
+      },
+      "主角设定": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 110
+        },
+        "display_index": 81,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\主角设定.txt"
+      },
+      "玩家画像": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 111
+        },
+        "display_index": 82,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\玩家画像.txt"
+      },
+      "鸣泽唯_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "display_index": 83,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽唯_基础信息.txt"
+      },
+      "鸣泽唯_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 121
+        },
+        "display_index": 84,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽唯_性格调色盘.txt"
+      },
+      "鸣泽唯_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 122
+        },
+        "display_index": 85,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽唯_三面性.txt"
+      },
+      "鸣泽唯_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 123
+        },
+        "display_index": 86,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽唯_NSFW反差.txt"
+      },
+      "鸣泽美佐子_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 124
+        },
+        "display_index": 87,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽美佐子_基础信息.txt"
+      },
+      "鸣泽美佐子_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 125
+        },
+        "display_index": 88,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽美佐子_性格调色盘.txt"
+      },
+      "鸣泽美佐子_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 126
+        },
+        "display_index": 89,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽美佐子_三面性.txt"
+      },
+      "鸣泽美佐子_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 127
+        },
+        "display_index": 90,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽美佐子_NSFW反差.txt"
+      },
+      "舞岛可怜_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 128
+        },
+        "display_index": 91,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\舞岛可怜_基础信息.txt"
+      },
+      "舞岛可怜_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 129
+        },
+        "display_index": 92,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\舞岛可怜_性格调色盘.txt"
+      },
+      "舞岛可怜_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 130
+        },
+        "display_index": 93,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\舞岛可怜_三面性.txt"
+      },
+      "舞岛可怜_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 131
+        },
+        "display_index": 94,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\舞岛可怜_NSFW反差.txt"
+      },
+      "加藤美纪_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 132
+        },
+        "display_index": 95,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\加藤美纪_基础信息.txt"
+      },
+      "加藤美纪_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 133
+        },
+        "display_index": 96,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\加藤美纪_性格调色盘.txt"
+      },
+      "加藤美纪_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 134
+        },
+        "display_index": 97,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\加藤美纪_三面性.txt"
+      },
+      "加藤美纪_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 135
+        },
+        "display_index": 98,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\加藤美纪_NSFW反差.txt"
+      },
+      "筱原泉美_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 136
+        },
+        "display_index": 99,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\筱原泉美_基础信息.txt"
+      },
+      "筱原泉美_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 137
+        },
+        "display_index": 100,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\筱原泉美_性格调色盘.txt"
+      },
+      "筱原泉美_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 138
+        },
+        "display_index": 101,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\筱原泉美_三面性.txt"
+      },
+      "筱原泉美_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 139
+        },
+        "display_index": 102,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\筱原泉美_NSFW反差.txt"
+      },
+      "南川洋子_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 140
+        },
+        "display_index": 103,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\南川洋子_基础信息.txt"
+      },
+      "南川洋子_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 141
+        },
+        "display_index": 104,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\南川洋子_性格调色盘.txt"
+      },
+      "南川洋子_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 142
+        },
+        "display_index": 105,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\南川洋子_三面性.txt"
+      },
+      "南川洋子_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 143
+        },
+        "display_index": 106,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\南川洋子_NSFW反差.txt"
+      },
+      "都筑梢江_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 144
+        },
+        "display_index": 107,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\都筑梢江_基础信息.txt"
+      },
+      "都筑梢江_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 145
+        },
+        "display_index": 108,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\都筑梢江_性格调色盘.txt"
+      },
+      "都筑梢江_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 146
+        },
+        "display_index": 109,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\都筑梢江_三面性.txt"
+      },
+      "都筑梢江_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 147
+        },
+        "display_index": 110,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\都筑梢江_NSFW反差.txt"
+      },
+      "水野友美_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 148
+        },
+        "display_index": 111,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\水野友美_基础信息.txt"
+      },
+      "水野友美_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 149
+        },
+        "display_index": 112,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\水野友美_性格调色盘.txt"
+      },
+      "水野友美_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 150
+        },
+        "display_index": 113,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\水野友美_三面性.txt"
+      },
+      "水野友美_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 151
+        },
+        "display_index": 114,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\水野友美_NSFW反差.txt"
+      },
+      "安田爱美_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 152
+        },
+        "display_index": 115,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\安田爱美_基础信息.txt"
+      },
+      "安田爱美_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 153
+        },
+        "display_index": 116,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\安田爱美_性格调色盘.txt"
+      },
+      "安田爱美_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 154
+        },
+        "display_index": 117,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\安田爱美_三面性.txt"
+      },
+      "安田爱美_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 155
+        },
+        "display_index": 118,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\安田爱美_NSFW反差.txt"
+      },
+      "田中美沙_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 156
+        },
+        "display_index": 119,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\田中美沙_基础信息.txt"
+      },
+      "田中美沙_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 157
+        },
+        "display_index": 120,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\田中美沙_性格调色盘.txt"
+      },
+      "田中美沙_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 158
+        },
+        "display_index": 121,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\田中美沙_三面性.txt"
+      },
+      "田中美沙_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 159
+        },
+        "display_index": 122,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\田中美沙_NSFW反差.txt"
+      },
+      "片桐美铃_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 160
+        },
+        "display_index": 123,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\片桐美铃_基础信息.txt"
+      },
+      "片桐美铃_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 161
+        },
+        "display_index": 124,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\片桐美铃_性格调色盘.txt"
+      },
+      "片桐美铃_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 162
+        },
+        "display_index": 125,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\片桐美铃_三面性.txt"
+      },
+      "片桐美铃_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 163
+        },
+        "display_index": 126,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\片桐美铃_NSFW反差.txt"
+      },
+      "野野村美里_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 164
+        },
+        "display_index": 127,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\野野村美里_基础信息.txt"
+      },
+      "野野村美里_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 165
+        },
+        "display_index": 128,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\野野村美里_性格调色盘.txt"
+      },
+      "野野村美里_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 166
+        },
+        "display_index": 129,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\野野村美里_三面性.txt"
+      },
+      "野野村美里_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 167
+        },
+        "display_index": 130,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\野野村美里_NSFW反差.txt"
+      },
+      "永岛久美子_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 168
+        },
+        "display_index": 131,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛久美子_基础信息.txt"
+      },
+      "永岛久美子_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 169
+        },
+        "display_index": 132,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛久美子_性格调色盘.txt"
+      },
+      "永岛久美子_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 170
+        },
+        "display_index": 133,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛久美子_三面性.txt"
+      },
+      "永岛久美子_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 171
+        },
+        "display_index": 134,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛久美子_NSFW反差.txt"
+      },
+      "永岛佐知子_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 172
+        },
+        "display_index": 135,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛佐知子_基础信息.txt"
+      },
+      "永岛佐知子_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 173
+        },
+        "display_index": 136,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛佐知子_性格调色盘.txt"
+      },
+      "永岛佐知子_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 174
+        },
+        "display_index": 137,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛佐知子_三面性.txt"
+      },
+      "永岛佐知子_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 175
+        },
+        "display_index": 138,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛佐知子_NSFW反差.txt"
+      },
+      "齐藤澪_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 176
+        },
+        "display_index": 139,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪_基础信息.txt"
+      },
+      "齐藤澪_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 177
+        },
+        "display_index": 140,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪_性格调色盘.txt"
+      },
+      "齐藤澪_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 178
+        },
+        "display_index": 141,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪_三面性.txt"
+      },
+      "齐藤澪_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 179
+        },
+        "display_index": 142,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪_NSFW反差.txt"
+      },
+      "齐藤澪奈_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 180
+        },
+        "display_index": 143,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪奈_基础信息.txt"
+      },
+      "齐藤澪奈_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 181
+        },
+        "display_index": 144,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪奈_性格调色盘.txt"
+      },
+      "齐藤澪奈_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 182
+        },
+        "display_index": 145,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪奈_三面性.txt"
+      },
+      "齐藤澪奈_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 183
+        },
+        "display_index": 146,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪奈_NSFW反差.txt"
+      },
+      "铃木美穗_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 184
+        },
+        "display_index": 147,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\铃木美穗_基础信息.txt"
+      },
+      "铃木美穗_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 185
+        },
+        "display_index": 148,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\铃木美穗_性格调色盘.txt"
+      },
+      "铃木美穗_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 186
+        },
+        "display_index": 149,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\铃木美穗_三面性.txt"
+      },
+      "铃木美穗_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 187
+        },
+        "display_index": 150,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\铃木美穗_NSFW反差.txt"
+      },
+      "仁科_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 188
+        },
+        "display_index": 151,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\仁科_基础信息.txt"
+      },
+      "仁科_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 189
+        },
+        "display_index": 152,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\仁科_性格调色盘.txt"
+      },
+      "仁科_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 190
+        },
+        "display_index": 153,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\仁科_三面性.txt"
+      },
+      "仁科_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 191
+        },
+        "display_index": 154,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\仁科_NSFW反差.txt"
+      },
+      "正树夏子_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 192
+        },
+        "display_index": 155,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\正树夏子_基础信息.txt"
+      },
+      "正树夏子_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 193
+        },
+        "display_index": 156,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\正树夏子_性格调色盘.txt"
+      },
+      "正树夏子_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 194
+        },
+        "display_index": 157,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\正树夏子_三面性.txt"
+      },
+      "正树夏子_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 195
+        },
+        "display_index": 158,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\正树夏子_NSFW反差.txt"
+      },
+      "杉本樱子_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 196
+        },
+        "display_index": 159,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\杉本樱子_基础信息.txt"
+      },
+      "杉本樱子_性格调色盘": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 197
+        },
+        "display_index": 160,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\杉本樱子_性格调色盘.txt"
+      },
+      "杉本樱子_三面性": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 198
+        },
+        "display_index": 161,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\杉本樱子_三面性.txt"
+      },
+      "杉本樱子_NSFW反差": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 199
+        },
+        "display_index": 162,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\杉本樱子_NSFW反差.txt"
+      },
+      "鸣泽唯_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 250
+        },
+        "display_index": 163,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽唯_剧情线.txt"
+      },
+      "鸣泽美佐子_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 251
+        },
+        "display_index": 164,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\鸣泽美佐子_剧情线.txt"
+      },
+      "舞岛可怜_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 252
+        },
+        "display_index": 165,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\舞岛可怜_剧情线.txt"
+      },
+      "加藤美纪_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 253
+        },
+        "display_index": 166,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\加藤美纪_剧情线.txt"
+      },
+      "筱原泉美_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 254
+        },
+        "display_index": 167,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\筱原泉美_剧情线.txt"
+      },
+      "南川洋子_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 255
+        },
+        "display_index": 168,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\南川洋子_剧情线.txt"
+      },
+      "都筑梢江_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 256
+        },
+        "display_index": 169,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\都筑梢江_剧情线.txt"
+      },
+      "水野友美_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 257
+        },
+        "display_index": 170,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\水野友美_剧情线.txt"
+      },
+      "安田爱美_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 258
+        },
+        "display_index": 171,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\安田爱美_剧情线.txt"
+      },
+      "田中美沙_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 259
+        },
+        "display_index": 172,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\田中美沙_剧情线.txt"
+      },
+      "片桐美铃_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 260
+        },
+        "display_index": 173,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\片桐美铃_剧情线.txt"
+      },
+      "野野村美里_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 261
+        },
+        "display_index": 174,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\野野村美里_剧情线.txt"
+      },
+      "永岛久美子_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 262
+        },
+        "display_index": 175,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛久美子_剧情线.txt"
+      },
+      "永岛佐知子_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 263
+        },
+        "display_index": 176,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\永岛佐知子_剧情线.txt"
+      },
+      "齐藤澪_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 264
+        },
+        "display_index": 177,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪_剧情线.txt"
+      },
+      "齐藤澪奈_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 265
+        },
+        "display_index": 178,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\齐藤澪奈_剧情线.txt"
+      },
+      "铃木美穗_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 266
+        },
+        "display_index": 179,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\铃木美穗_剧情线.txt"
+      },
+      "仁科_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 267
+        },
+        "display_index": 180,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\仁科_剧情线.txt"
+      },
+      "正树夏子_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 268
+        },
+        "display_index": 181,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\正树夏子_剧情线.txt"
+      },
+      "杉本樱子_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 269
+        },
+        "display_index": 182,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\杉本樱子_剧情线.txt"
+      },
+      "川尻信良_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 200
+        },
+        "display_index": 183,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\川尻信良_基础信息.txt"
+      },
+      "川尻信良_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 201
+        },
+        "display_index": 184,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\川尻信良_剧情线.txt"
+      },
+      "长冈芳树_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 202
+        },
+        "display_index": 185,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\长冈芳树_基础信息.txt"
+      },
+      "长冈芳树_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 203
+        },
+        "display_index": 186,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\长冈芳树_剧情线.txt"
+      },
+      "西御寺有友_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 204
+        },
+        "display_index": 187,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\西御寺有友_基础信息.txt"
+      },
+      "西御寺有友_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 205
+        },
+        "display_index": 188,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\西御寺有友_剧情线.txt"
+      },
+      "天道新干线_基础信息": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 206
+        },
+        "display_index": 189,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\天道新干线_基础信息.txt"
+      },
+      "天道新干线_剧情线": {
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 207
+        },
+        "display_index": 190,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        },
+        "keywords": [],
+        "path": "世界书\\天道新干线_剧情线.txt"
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [],
+    "after_char": [],
+    "depth": []
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "",
+  "first_messages": [
+    "开场白\\0.txt"
+  ],
+  "creator": "",
+  "creator_notes": "同级生2 恋爱模拟 - 20位女角 + 13维技能 + 17天寒假 + EJS+MVU+SPV数据库 + 4档难度 + 6种可扮演男性(P1~P6)",
+  "version": "1.0",
+  "create_date": "",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "id": "b3f2a1c4-0001-4000-8000-000000000001",
+          "enabled": true,
+          "type": "script",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": true
+              },
+              {
+                "name": "重演楼层",
+                "visible": true
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": true
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": true
+              }
+            ]
+          },
+          "data": {},
+          "script_file": "脚本\\MVU.txt"
+        },
+        "SP·数据库": {
+          "id": "b3f2a1c4-0002-4000-8000-000000000002",
+          "enabled": true,
+          "type": "script",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\SP·数据库.txt"
+        },
+        "LCG骰子系统": {
+          "id": "b3f2a1c4-0003-4000-8000-000000000003",
+          "enabled": true,
+          "type": "script",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\LCG骰子系统.txt"
+        },
+        "Zod结构": {
+          "id": "b3f2a1c4-0004-4000-8000-000000000004",
+          "enabled": true,
+          "type": "script",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\Zod结构.txt"
+        },
+        "表格模板注入器": {
+          "id": "b3f2a1c4-0005-4000-8000-000000000005",
+          "enabled": true,
+          "type": "script",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\表格模板注入器.txt"
+        }
+      },
+      "variables": {}
+    },
+    "talkativeness": "0.5",
+    "fav": false,
+    "world": "同级生2",
+    "depth_prompt": {
+      "prompt": "",
+      "depth": 4,
+      "role": "system"
+    }
+  },
+  "regex_scripts": {
+    "状态栏": {
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "substituteRegex": 0,
+      "maxDepth": 2,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "replace_file": "正则\\状态栏.txt"
+    },
+    "对AI隐藏状态栏占位符": {
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": false,
+      "promptOnly": true
+    },
+    "对AI隐藏变量更新": {
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/<UpdateVariable>[\\s\\S]*?<\\/UpdateVariable>/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": false,
+      "promptOnly": true
+    },
+    "对AI隐藏思维链": {
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/<thought>([\\s\\S]*?)<\\/thought>/gi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": false,
+      "promptOnly": true
+    },
+    "对AI隐藏UpdateTable块": {
+      "id": "a1b2c3d4-0005-4000-8000-000000000005",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/<UpdateTable>[\\s\\S]*?<\\/UpdateTable>/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": false,
+      "promptOnly": true
+    },
+    "防数值口胡·禁止AI输出关系值数字": {
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/(好感度|心动值|嫉妒值|信任度|affection|heartbeat|jealousy|trust)\\s*[=＝:]\\s*-?\\d+/gi",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "replace_file": "正则\\防数值口胡·禁止AI输出关系值数字.txt"
+    },
+    "超自然关键词检测·提示AI驳回为幻想": {
+      "id": "a1b2c3d4-0007-4000-8000-000000000007",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/(读心|透视|瞬间移动|时间停止|意念控制|意念移物|魔法|咒语|法术|神灵|鬼魂|妖怪|灵异|附身|通灵|时间旅行|平行世界|预知未来|心灵感应|超能力|异能|超感知|超自然)/gi",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "replace_file": "正则\\超自然关键词检测·提示AI驳回为幻想.txt"
+    },
+    "变量折叠显示": {
+      "id": "a1b2c3d4-0008-4000-8000-000000000008",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/<UpdateVariable>([\\s\\S]*?)<\\/UpdateVariable>/gsi",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "replace_file": "正则\\变量折叠显示.txt"
+    },
+    "数据库更新折叠显示": {
+      "id": "a1b2c3d4-0009-4000-8000-000000000009",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/<UpdateTable>([\\s\\S]*?)<\\/UpdateTable>/gsi",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "substituteRegex": 0,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "replace_file": "正则\\数据库更新折叠显示.txt"
+    }
+  },
+  "avatar": "avatar.png",
+  "initvar_overrides": {
+    "开场白\\0.txt": "开场白\\initvar\\0.yaml"
+  }
+}

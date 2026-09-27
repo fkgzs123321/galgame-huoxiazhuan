@@ -1,0 +1,61 @@
+[
+  {
+    "type": "script",
+    "enabled": true,
+    "name": "MVU",
+    "id": "c49bbe9e-c1ae-4e54-bd7d-e9e7f9006efe",
+    "content": "import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js';",
+    "info": "",
+    "button": {
+      "enabled": true,
+      "buttons": [
+        {
+          "name": "重新处理变量",
+          "visible": true
+        },
+        {
+          "name": "重新读取初始变量",
+          "visible": true
+        },
+        {
+          "name": "快照楼层",
+          "visible": false
+        },
+        {
+          "name": "重演楼层",
+          "visible": false
+        },
+        {
+          "name": "重试额外模型解析",
+          "visible": false
+        },
+        {
+          "name": "清除旧楼层变量",
+          "visible": true
+        }
+      ]
+    },
+    "data": {},
+    "export_with": {
+      "data": true,
+      "button": true
+    }
+  },
+  {
+    "type": "script",
+    "enabled": true,
+    "name": "ZOD",
+    "id": "f1f19db3-516c-4144-8994-66680789bca7",
+    "content": "import { registerMvuSchema } from 'https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/util/mvu_zod.js';\n\n// --- 复用组件定义 ---\n\n// 1. 技能详细结构 (保留兼容性补丁)\nconst skillInfoSchema = z.record(\n  z.string().describe('技能名'),\n  z.object({\n    type: z.enum(['主动', '被动']).describe('类型').prefault('主动'),\n    tag: z.enum(['攻击', '治疗', '增益', '减益', '控制', '其他']).describe('标签').prefault('攻击'),\n    val: z.string().describe('效果详情 (必须精确, 如: \"DMG -15%\", \"Heal 20% Max HP\")').prefault('N/A')\n  })\n).or(z.array(z.any()).transform(() => ({}))).prefault({});\n\n// 2. 特质详细结构 (保留兼容性补丁)\nconst traitInfoSchema = z.record(\n  z.string().describe('特质名'),\n  z.object({\n    desc: z.string().describe('具体效果(如: +20%压力)').prefault('Unknown Effect')\n  })\n).or(z.array(z.any()).transform(() => ({}))).prefault({});\n\n// 3. 饰品详细结构 (保留兼容性补丁)\nconst trinketInfoSchema = z.record(\n  z.string().describe('饰品名'),\n  z.object({\n    desc: z.string().describe('装备效果').prefault('Unknown Effect')\n  })\n).or(z.array(z.any()).transform(() => ({}))).prefault({});\n\n// 4. 战斗属性 (移除 catch，让错误暴露出来)\nconst statsSchema = z.object({\n  atk: z.coerce.number().describe('攻击'),\n  def: z.coerce.number().describe('防御%'),\n  hit: z.coerce.number().describe('命中%'),\n  crit: z.coerce.number().describe('暴击%'),\n  prec: z.coerce.number().describe('精准'),\n  spd: z.coerce.number().describe('速度'),\n  dodge: z.coerce.number().describe('闪避%')\n}).catchall(z.any()).prefault({});\n\n// 5. 装备\nconst equipmentSchema = z.object({\n  weapon: z.coerce.number().prefault(1),\n  armor: z.coerce.number().prefault(1),\n  trinkets: trinketInfoSchema\n}).prefault({});\n\n// 6. 外观\nconst appearanceSchema = z.object({\n  outfit: z.string().describe('当前服装').prefault('Default Gear'),\n  body: z.string().describe('身材特征').prefault('Average'),\n  pose: z.string().describe('当前姿势').prefault('Standing')\n}).prefault({});\n\n// 7. 设施详细结构\n// 兼容逻辑：如果原本是字符串(如\"unbuilt\")，自动转换为 { level: 0, desc: \"unbuilt\" }\nconst facilityDetailSchema = z.object({\n  level: z.coerce.number().catch(1).prefault(1),\n  desc: z.string().describe('当前外观/运营状态').prefault('正常运营')\n}).or(z.string().transform(str => ({ level: 0, desc: str })));\n\n// --- 主 Schema ---\nexport const schema = z.object({\n  world: z.object({\n    week: z.coerce.number().prefault(1),\n    status: z.string().prefault('平静'),\n    exploration: z.record(\n      z.enum(['weald', 'warrens', 'cove', 'ruins', 'courtyard', 'farmstead', 'darkest_dungeon']),\n      z.coerce.number().min(0).max(100).transform(v => _.clamp(v, 0, 100)) // 探索度如果出错应该报错\n    ).prefault({})\n  }).prefault({}),\n\n  resource: z.object({\n    // 移除 catch，金币出错必须报警\n    gold: z.coerce.number().min(0).prefault(0),\n    shards: z.coerce.number().min(0).prefault(0)\n  }).prefault({}),\n\n// 【核心修改】设施现在是完全开放的结构，且兼容旧数据的字符串格式\n  facility: z.record(\n    z.string().describe('设施名称'), \n    facilityDetailSchema\n  ).prefault({}),\n\n  heir: z.object({\n    name: z.string(),\n    title: z.string(),\n    location: z.string(),\n    mission: z.string(),\n    class: z.string().describe('职业').prefault('Heir'),\n    level: z.coerce.number().prefault(1),\n    stats: statsSchema,\n    hp: z.object({ \n        current: z.coerce.number(), // HP出错必须报警\n        max: z.coerce.number() \n    }).prefault({}),\n    stress: z.coerce.number().transform(v => _.clamp(v, 0, 200)).prefault(0),\n    mental_state: z.string().prefault('Normal'),\n    conditions: z.array(z.string()).prefault([]),\n    skills: skillInfoSchema,\n    traits: traitInfoSchema,\n    equipment: equipmentSchema,\n    appearance: appearanceSchema\n  }).prefault({}),\n\n  roster: z.record(z.string().describe('女英雄姓名 (仅限女性)'), z.object({\n    class: z.string().describe('职业').prefault('Adventurer'),\n    race: z.string().describe('种族').prefault('Human'),\n    level: z.coerce.number().describe('等级').prefault(0),\n    \n    stats: statsSchema,\n    hp: z.object({ \n        current: z.coerce.number(), \n        max: z.coerce.number() \n    }).prefault({}),\n    stress: z.coerce.number().transform(v => _.clamp(v, 0, 200)).prefault(0),\n    mental_state: z.string().prefault('Normal'),\n    conditions: z.array(z.string()).describe('负面状态').prefault([]),\n    \n    skills: skillInfoSchema,\n    traits: traitInfoSchema,\n    equipment: equipmentSchema,\n    \n    appearance: appearanceSchema,\n    narrative: z.object({\n      thought: z.string().describe('内心想法').prefault('...'),\n      action: z.string().describe('当前行为').prefault('Idle')\n    }).prefault({}),\n\n    affection: z.coerce.number().transform(v => _.clamp(v, 0, 10)).prefault(0),\n    relationship: z.string().prefault('Stranger')\n  })).prefault({}),\n\n  inventory: z.object({\n    // 【保留】这里必须保留 catch(0)，因为 AI 移除物品时会导致字段消失/undefined，需要自动归零\n    consumables: z.record(\n        z.enum(['food', 'torch', 'blood', 'invitation']), \n        z.coerce.number().min(0).catch(0)\n    ).prefault({}),\n    \n    trophies: z.record(z.string(), z.object({\n      desc: z.string(),\n      effect: z.string()\n    })).prefault({}),\n    \n    // 【保留】同上\n    gifts: z.record(\n        z.enum(['flower', 'necklace', 'ring']), \n        z.coerce.number().min(0).catch(0)\n    ).prefault({})\n  }).prefault({}),\n\n  expedition: z.object({\n    state: z.enum(['征战', '休息']).prefault('休息'),\n    location: z.string().prefault('None'),\n    team: z.record(z.string(), z.string()).prefault({}),\n    goal: z.string().prefault('None'),\n    supplies: z.record(z.string(), z.coerce.number().catch(0)).prefault({}),\n    farmstead_light: z.string().prefault('Default')\n  }).prefault({})\n});\n\n$(() => {\n  registerMvuSchema(schema);\n})",
+    "info": "增加部分物品被ai错误删除的自动修复。\n增加对于建筑的功能扩展。",
+    "button": {
+      "enabled": true,
+      "buttons": []
+    },
+    "data": {},
+    "export_with": {
+      "data": true,
+      "button": true
+    }
+  }
+]

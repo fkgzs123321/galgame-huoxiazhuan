@@ -1,0 +1,4639 @@
+{
+  "projectName": "隐形守护者",
+  "worldbookName": "隐形守护者",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "EJS预处理": {
+      "EJS变量定义片段": {
+        "path": "世界书/EJS/EJS变量定义片段.txt",
+        "keywords": [],
+        "abstract": "EJS补充变量片段",
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        },
+        "uid": 0
+      },
+      "剧情注入路由": {
+        "path": "世界书/EJS/剧情注入路由.yaml",
+        "keywords": [],
+        "abstract": "EJS按章节路由，分拆条目已关",
+        "enabled": false,
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        },
+        "uid": 1
+      },
+      "EJS预处理": {
+        "path": "世界书/EJS/EJS预处理.txt",
+        "keywords": [],
+        "abstract": "EJS全局变量：章节/节点/派生门闩",
+        "uid": 2,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        }
+      },
+      "EJS（规则）动态控制器": {
+        "path": "世界书/EJS/EJS（规则）动态控制器.txt",
+        "abstract": "getwi 开局SQL/正则/面板说明（可选灰灯）",
+        "keywords": [],
+        "uid": 80,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 25
+        }
+      },
+      "EJS（剧情）动态控制器": {
+        "path": "世界书/EJS/EJS（剧情）动态控制器.txt",
+        "abstract": "is_prologue/is_chapter1 时 getwi 写死表+分节点剧本",
+        "keywords": [],
+        "uid": 81,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 70
+        }
+      },
+      "EJS（角色）动态控制器": {
+        "path": "世界书/EJS/EJS（角色）动态控制器.txt",
+        "abstract": "getwi Persona+NPC绿灯档案+方敏/方汉洲/庄晓曼调色盘",
+        "keywords": [],
+        "uid": 82,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 55
+        }
+      }
+    },
+    "世界观": {
+      "能力档位说明": {
+        "path": "世界书/世界观/能力档位说明.yaml",
+        "keywords": [
+          "能力",
+          "档位"
+        ],
+        "abstract": "肖途能力0-10数值说明",
+        "enabled": true,
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        },
+        "uid": 6
+      },
+      "世界设定": {
+        "path": "世界书/世界观/世界设定.yaml",
+        "keywords": [],
+        "abstract": "1937-1945上海谍战背景与四大结局",
+        "uid": 7,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        }
+      },
+      "角色能力矩阵": {
+        "path": "世界书/世界观/角色能力矩阵.yaml",
+        "keywords": [
+          "能力",
+          "矩阵"
+        ],
+        "abstract": "全员八维能力0-10矩阵与对比铁律",
+        "uid": 8,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        }
+      },
+      "特工能力边界": {
+        "path": "世界书/世界观/特工能力边界.yaml",
+        "keywords": [
+          "能力",
+          "伪装",
+          "口胡"
+        ],
+        "abstract": "肖途能力硬上限、行动级别、情感信任分工",
+        "uid": 9,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 23
+        }
+      }
+    },
+    "扮演准则": {
+      "潜伏悬疑正文铁律": {
+        "path": "世界书/扮演准则/潜伏悬疑正文铁律.yaml",
+        "keywords": [
+          "悬疑",
+          "潜伏",
+          "暗示",
+          "文风"
+        ],
+        "abstract": "正文零暗示、限知悬疑文风；破绽即死",
+        "uid": 86,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 29
+        }
+      },
+      "叙事末尾必选格式": {
+        "path": "世界书/扮演准则/叙事末尾必选格式.yaml",
+        "keywords": [
+          "请选择",
+          "StatusPlaceHolder"
+        ],
+        "abstract": "每轮末尾必选请选择与状态栏占位",
+        "uid": 91,
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 27
+        }
+      },
+      "抉择唯一来源铁律": {
+        "path": "世界书/扮演准则/抉择唯一来源铁律.yaml",
+        "keywords": [
+          "选项",
+          "检定建议",
+          "预设"
+        ],
+        "abstract": "主线选项仅叙事末请选择，停用检定建议表",
+        "uid": 87,
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 28
+        }
+      },
+      "防抉择剧透": {
+        "path": "世界书/扮演准则/防抉择剧透.yaml",
+        "keywords": [],
+        "abstract": "禁止剧透正确选项与演戏真相",
+        "enabled": true,
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        },
+        "uid": 10
+      },
+      "扮演准则": {
+        "path": "世界书/扮演准则/扮演准则.yaml",
+        "keywords": [],
+        "abstract": "全局扮演准则",
+        "uid": 11,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 31
+        }
+      },
+      "防谍战口胡": {
+        "path": "世界书/扮演准则/防谍战口胡.yaml",
+        "keywords": [
+          "口胡",
+          "能力"
+        ],
+        "abstract": "谍战防口胡清单与自检",
+        "uid": 12,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 32
+        }
+      },
+      "抉择呈现规范": {
+        "path": "世界书/扮演准则/抉择呈现规范.yaml",
+        "keywords": [
+          "抉择",
+          "选项"
+        ],
+        "abstract": "关键节点选项呈现格式",
+        "uid": 13,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 33
+        }
+      },
+      "死亡结局处理": {
+        "path": "世界书/扮演准则/死亡结局处理.yaml",
+        "keywords": [
+          "死亡",
+          "BE",
+          "结局"
+        ],
+        "abstract": "BE触发与重来规则",
+        "uid": 14,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 34
+        }
+      }
+    },
+    "时间线": {
+      "主线章节表": {
+        "path": "世界书/时间线/主线章节表.yaml",
+        "part": "plot",
+        "keywords": [
+          "章节",
+          "路线"
+        ],
+        "abstract": "章节与路线分叉表",
+        "uid": 15,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        }
+      }
+    },
+    "地理": {},
+    "角色": {
+      "方敏-基础信息": {
+        "path": "世界书/角色/方敏/基础信息.yaml",
+        "part": "basic",
+        "keywords": [
+          "方敏",
+          "敏敏"
+        ],
+        "abstract": "方敏基础档案",
+        "enabled": true,
+        "position": {
+          "type": "after_character_definition",
+          "order": 50
+        },
+        "uid": 16
+      },
+      "方敏-调色盘": {
+        "path": "世界书/角色/方敏/调色盘.yaml",
+        "part": "personality",
+        "keywords": [
+          "方敏"
+        ],
+        "abstract": "方敏EJS序章至三章调色",
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 51
+        },
+        "uid": 17
+      },
+      "方敏-分阶段-数据库条件": {
+        "path": "世界书/角色/方敏/分阶段-数据库条件.txt",
+        "part": "personality",
+        "keywords": [
+          "方敏"
+        ],
+        "abstract": "方敏数据库if cell分阶段",
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 52
+        },
+        "uid": 18
+      },
+      "肖途-基础信息": {
+        "path": "世界书/角色/肖途/基础信息.yaml",
+        "part": "basic",
+        "keywords": [
+          "肖途",
+          "胡蜂"
+        ],
+        "abstract": "肖途基础档案",
+        "uid": 19,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 53
+        }
+      },
+      "肖途-三面性": {
+        "path": "世界书/角色/肖途/三面性.yaml",
+        "part": "tri_faceted",
+        "keywords": [
+          "肖途",
+          "伪装"
+        ],
+        "abstract": "肖途三面面具",
+        "uid": 20,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 54
+        }
+      },
+      "肖途-行为基调": {
+        "path": "世界书/角色/肖途/行为基调.yaml",
+        "part": "personality",
+        "keywords": [
+          "肖途"
+        ],
+        "abstract": "肖途性格底色",
+        "uid": 21,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 55
+        }
+      },
+      "方汉洲-基础信息": {
+        "path": "世界书/角色/方汉洲/基础信息.yaml",
+        "part": "basic",
+        "keywords": [
+          "方汉洲",
+          "老师",
+          "春风"
+        ],
+        "abstract": "恩师春风档案",
+        "uid": 83,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 116
+        }
+      },
+      "方汉洲-调色盘·序章": {
+        "path": "世界书/角色/方汉洲/调色盘/序章.yaml",
+        "part": "personality",
+        "keywords": [
+          "方汉洲",
+          "老师"
+        ],
+        "abstract": "方汉洲序章语气EJS",
+        "uid": 84,
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "方汉洲",
+            "老师",
+            "春风"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 118
+        }
+      },
+      "肖途-Persona": {
+        "path": "世界书/角色/肖途/Persona.yaml",
+        "part": "personality",
+        "abstract": "肖途七维Persona",
+        "keywords": [
+          "肖途"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1215
+      },
+      "方敏-Persona": {
+        "path": "世界书/角色/方敏/Persona.yaml",
+        "part": "personality",
+        "abstract": "方敏七维Persona",
+        "keywords": [
+          "方敏"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1216
+      },
+      "方汉洲-Persona": {
+        "path": "世界书/角色/方汉洲/Persona.yaml",
+        "part": "personality",
+        "abstract": "方汉洲七维Persona",
+        "keywords": [
+          "方汉洲",
+          "老师"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1217
+      },
+      "武藤志雄-Persona": {
+        "path": "世界书/角色/武藤志雄/Persona.yaml",
+        "part": "personality",
+        "abstract": "武藤志雄七维Persona",
+        "keywords": [
+          "武藤志雄"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1218
+      },
+      "武藤纯子-Persona": {
+        "path": "世界书/角色/武藤纯子/Persona.yaml",
+        "part": "personality",
+        "abstract": "武藤纯子七维Persona",
+        "keywords": [
+          "武藤纯子",
+          "纯子"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1219
+      },
+      "庄晓曼-Persona": {
+        "path": "世界书/角色/庄晓曼/Persona.yaml",
+        "part": "personality",
+        "abstract": "庄晓曼七维Persona",
+        "keywords": [
+          "庄晓曼",
+          "晓曼",
+          "夜总会",
+          "舞女",
+          "大上海"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1305
+      },
+      "陆望舒-Persona": {
+        "path": "世界书/角色/陆望舒/Persona.yaml",
+        "part": "personality",
+        "abstract": "陆望舒七维Persona",
+        "keywords": [
+          "陆望舒",
+          "望舒"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1306
+      },
+      "董旺成-Persona": {
+        "path": "世界书/角色/董旺成/Persona.yaml",
+        "part": "personality",
+        "abstract": "董旺成七维Persona",
+        "keywords": [
+          "董旺成",
+          "第二号",
+          "化肥厂",
+          "大成化肥"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1307
+      },
+      "孙正清-Persona": {
+        "path": "世界书/角色/孙正清/Persona.yaml",
+        "part": "personality",
+        "abstract": "孙正清七维Persona",
+        "keywords": [
+          "孙正清",
+          "古城",
+          "图书馆"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1308
+      },
+      "高源-Persona": {
+        "path": "世界书/角色/高源/Persona.yaml",
+        "part": "personality",
+        "abstract": "高源七维Persona",
+        "keywords": [
+          "高源",
+          "上线",
+          "银狐"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1309
+      },
+      "冯一贤-Persona": {
+        "path": "世界书/角色/冯一贤/Persona.yaml",
+        "part": "personality",
+        "abstract": "冯一贤七维Persona",
+        "keywords": [
+          "冯一贤",
+          "一贤"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1310
+      },
+      "浅野博文-Persona": {
+        "path": "世界书/角色/浅野博文/Persona.yaml",
+        "part": "personality",
+        "abstract": "浅野博文七维Persona",
+        "keywords": [
+          "浅野",
+          "浅野博文",
+          "特高课"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1311
+      },
+      "胡一彪-Persona": {
+        "path": "世界书/角色/胡一彪/Persona.yaml",
+        "part": "personality",
+        "abstract": "胡一彪七维Persona",
+        "keywords": [
+          "胡一彪",
+          "一彪"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1312
+      },
+      "顾君如-Persona": {
+        "path": "世界书/角色/顾君如/Persona.yaml",
+        "part": "personality",
+        "abstract": "顾君如七维Persona",
+        "keywords": [
+          "顾君如",
+          "君如"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1313
+      },
+      "徐先生-Persona": {
+        "path": "世界书/角色/徐先生/Persona.yaml",
+        "part": "personality",
+        "abstract": "徐先生七维Persona",
+        "keywords": [
+          "徐先生",
+          "兴荣帮",
+          "帮主"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1314
+      },
+      "郑西海-Persona": {
+        "path": "世界书/角色/郑西海/Persona.yaml",
+        "part": "personality",
+        "abstract": "郑西海七维Persona",
+        "keywords": [
+          "郑西海",
+          "郑局长",
+          "军统"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1315
+      },
+      "蒋旭之-Persona": {
+        "path": "世界书/角色/蒋旭之/Persona.yaml",
+        "part": "personality",
+        "abstract": "蒋旭之七维Persona",
+        "keywords": [
+          "蒋旭之",
+          "通讯社",
+          "社长"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1316
+      },
+      "赵忠义-Persona": {
+        "path": "世界书/角色/赵忠义/Persona.yaml",
+        "part": "personality",
+        "abstract": "赵忠义七维Persona",
+        "keywords": [
+          "赵忠义",
+          "忠义"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1317
+      },
+      "李峰-Persona": {
+        "path": "世界书/角色/李峰/Persona.yaml",
+        "part": "personality",
+        "abstract": "李峰七维Persona",
+        "keywords": [
+          "李峰",
+          "特务科",
+          "科长"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1318
+      },
+      "黄老板-Persona": {
+        "path": "世界书/角色/黄老板/Persona.yaml",
+        "part": "personality",
+        "abstract": "黄老板七维Persona",
+        "keywords": [
+          "黄老板",
+          "澳门",
+          "龙老板"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1319
+      },
+      "楚娘-Persona": {
+        "path": "世界书/角色/楚娘/Persona.yaml",
+        "part": "personality",
+        "abstract": "楚娘七维Persona",
+        "keywords": [
+          "楚娘",
+          "楚记",
+          "棺材铺"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1320
+      },
+      "丁力犀-Persona": {
+        "path": "世界书/角色/丁力犀/Persona.yaml",
+        "part": "personality",
+        "abstract": "丁力犀七维Persona",
+        "keywords": [
+          "丁力犀",
+          "力犀"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1321
+      },
+      "Persona全书索引": {
+        "path": "世界书/角色/Persona全书索引.yaml",
+        "abstract": "Persona灰灯索引（勿开常亮）",
+        "keywords": [
+          "Persona",
+          "画像"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1322
+      },
+      "庄晓曼-基础信息": {
+        "path": "世界书/角色/庄晓曼/基础信息.yaml",
+        "part": "basic",
+        "abstract": "庄晓曼摘要卡",
+        "keywords": [
+          "庄晓曼",
+          "晓曼"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 53
+        },
+        "uid": 1500
+      },
+      "武藤纯子-基础信息": {
+        "path": "世界书/角色/武藤纯子/基础信息.yaml",
+        "part": "basic",
+        "abstract": "武藤纯子摘要卡",
+        "keywords": [
+          "武藤纯子",
+          "纯子"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 53
+        },
+        "uid": 1501
+      },
+      "陆望舒-基础信息": {
+        "path": "世界书/角色/陆望舒/基础信息.yaml",
+        "part": "basic",
+        "abstract": "陆望舒摘要卡",
+        "keywords": [
+          "陆望舒",
+          "望舒"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 53
+        },
+        "uid": 1502
+      },
+      "庄晓曼-调色盘": {
+        "path": "世界书/角色/庄晓曼/调色盘.yaml",
+        "part": "personality",
+        "abstract": "庄晓曼分场景调色",
+        "keywords": [
+          "庄晓曼",
+          "晓曼"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 54
+        },
+        "uid": 1503
+      }
+    },
+    "NPC": {
+      "方敏": {
+        "path": "世界书/NPC/方敏.yaml",
+        "abstract": "第三号；序章信任门闩",
+        "keywords": [
+          "方敏",
+          "敏敏"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "方敏",
+            "敏敏"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1400
+      },
+      "方汉洲": {
+        "path": "世界书/NPC/方汉洲.yaml",
+        "abstract": "恩师春风；苦肉计与假死",
+        "keywords": [
+          "方汉洲",
+          "春风",
+          "老师",
+          "方老师"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "方汉洲",
+            "春风",
+            "老师",
+            "方老师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1401
+      },
+      "武藤志雄": {
+        "path": "世界书/NPC/武藤志雄.yaml",
+        "abstract": "领事公馆；怀疑度核心",
+        "keywords": [
+          "武藤志雄",
+          "武藤",
+          "领事",
+          "公馆"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "武藤志雄",
+            "武藤",
+            "领事",
+            "公馆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1402
+      },
+      "武藤纯子": {
+        "path": "世界书/NPC/武藤纯子.yaml",
+        "abstract": "扶桑线；情感非战斗",
+        "keywords": [
+          "武藤纯子",
+          "纯子"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "武藤纯子",
+            "纯子"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1403
+      },
+      "冯一贤": {
+        "path": "世界书/NPC/冯一贤.yaml",
+        "abstract": "公馆干事；心理恐怖",
+        "keywords": [
+          "冯一贤",
+          "一贤"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "冯一贤",
+            "一贤"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1404
+      },
+      "蒋旭之": {
+        "path": "世界书/NPC/蒋旭之.yaml",
+        "abstract": "通讯社社长；掩护雇主",
+        "keywords": [
+          "蒋旭之",
+          "通讯社",
+          "社长"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "蒋旭之",
+            "通讯社",
+            "社长"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1405
+      },
+      "董旺成": {
+        "path": "世界书/NPC/董旺成.yaml",
+        "abstract": "地下党第二号",
+        "keywords": [
+          "董旺成",
+          "第二号",
+          "化肥厂",
+          "大成化肥"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "董旺成",
+            "第二号",
+            "化肥厂",
+            "大成化肥"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1406
+      },
+      "赵忠义": {
+        "path": "世界书/NPC/赵忠义.yaml",
+        "abstract": "汪伪基层；可叛节点",
+        "keywords": [
+          "赵忠义",
+          "忠义"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "赵忠义",
+            "忠义"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1407
+      },
+      "李峰": {
+        "path": "世界书/NPC/李峰.yaml",
+        "abstract": "特务科长；庄晓曼名义上级",
+        "keywords": [
+          "李峰",
+          "特务科",
+          "科长"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "李峰",
+            "特务科",
+            "科长"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1408
+      },
+      "庄晓曼": {
+        "path": "世界书/NPC/庄晓曼.yaml",
+        "abstract": "汪伪情报员/军统卧底",
+        "keywords": [
+          "庄晓曼",
+          "晓曼",
+          "夜总会",
+          "舞女",
+          "大上海"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "庄晓曼",
+            "晓曼",
+            "夜总会",
+            "舞女",
+            "大上海"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1409
+      },
+      "高源": {
+        "path": "世界书/NPC/高源.yaml",
+        "abstract": "表面上线；军统银狐",
+        "keywords": [
+          "高源",
+          "上线",
+          "银狐"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "高源",
+            "上线",
+            "银狐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1410
+      },
+      "孙正清": {
+        "path": "世界书/NPC/孙正清.yaml",
+        "abstract": "古城；背叛线",
+        "keywords": [
+          "孙正清",
+          "古城",
+          "图书馆"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "孙正清",
+            "古城",
+            "图书馆"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1411
+      },
+      "胡一彪": {
+        "path": "世界书/NPC/胡一彪.yaml",
+        "abstract": "汪伪行动队长",
+        "keywords": [
+          "胡一彪",
+          "一彪"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "胡一彪",
+            "一彪"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1412
+      },
+      "顾君如": {
+        "path": "世界书/NPC/顾君如.yaml",
+        "abstract": "汪伪情报员；道德困境",
+        "keywords": [
+          "顾君如",
+          "君如"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "顾君如",
+            "君如"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1413
+      },
+      "陆望舒": {
+        "path": "世界书/NPC/陆望舒.yaml",
+        "abstract": "红色芳华；记者妻子",
+        "keywords": [
+          "陆望舒",
+          "望舒"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "陆望舒",
+            "望舒"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1414
+      },
+      "徐先生": {
+        "path": "世界书/NPC/徐先生.yaml",
+        "abstract": "兴荣帮帮主",
+        "keywords": [
+          "徐先生",
+          "兴荣帮",
+          "帮主"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "徐先生",
+            "兴荣帮",
+            "帮主"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1415
+      },
+      "楚娘": {
+        "path": "世界书/NPC/楚娘.yaml",
+        "abstract": "楚记棺材铺；联络点",
+        "keywords": [
+          "楚娘",
+          "楚记",
+          "棺材铺"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "楚娘",
+            "楚记",
+            "棺材铺"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1416
+      },
+      "丁力犀": {
+        "path": "世界书/NPC/丁力犀.yaml",
+        "abstract": "兴荣帮打手",
+        "keywords": [
+          "丁力犀",
+          "力犀"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "丁力犀",
+            "力犀"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1417
+      },
+      "黄老板": {
+        "path": "世界书/NPC/黄老板.yaml",
+        "abstract": "澳门地方势力",
+        "keywords": [
+          "黄老板",
+          "澳门",
+          "龙老板"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "黄老板",
+            "澳门",
+            "龙老板"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1418
+      },
+      "浅野博文": {
+        "path": "世界书/NPC/浅野博文.yaml",
+        "abstract": "特高课；第五章分叉",
+        "keywords": [
+          "浅野",
+          "浅野博文",
+          "特高课"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "浅野",
+            "浅野博文",
+            "特高课"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1419
+      },
+      "郑西海": {
+        "path": "世界书/NPC/郑西海.yaml",
+        "abstract": "军统副局长；美丽线义父",
+        "keywords": [
+          "郑西海",
+          "郑局长",
+          "军统"
+        ],
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "郑西海",
+            "郑局长",
+            "军统"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 120
+        },
+        "uid": 1420
+      },
+      "NPC全书索引": {
+        "path": "世界书/NPC/NPC全书索引.yaml",
+        "abstract": "NPC绿灯索引（勿开常亮）",
+        "keywords": [
+          "NPC",
+          "运作档案"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "after_character_definition",
+          "order": 199
+        },
+        "uid": 1421
+      }
+    },
+    "阶段指导": {
+      "阶段指导": {
+        "path": "世界书/阶段指导/阶段指导.txt",
+        "keywords": [],
+        "abstract": "死亡/第一章主持；序章见序章主持灰灯",
+        "uid": 24,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 70
+        }
+      },
+      "序章主持": {
+        "path": "世界书/阶段指导/序章主持.yaml",
+        "keywords": [
+          "序章",
+          "主持"
+        ],
+        "abstract": "序章GM清单；仅 EJS is_prologue getwi",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 69
+        },
+        "uid": 85
+      },
+      "第二章主持": {
+        "path": "世界书/阶段指导/第二章主持.yaml",
+        "abstract": "第二章主持",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1332
+      },
+      "第三章主持": {
+        "path": "世界书/阶段指导/第三章主持.yaml",
+        "abstract": "第三章主持",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1426
+      }
+    },
+    "事件": {
+      "序章BE执行范例": {
+        "path": "世界书/事件/序章BE执行范例.yaml",
+        "keywords": [
+          "BE",
+          "重来"
+        ],
+        "abstract": "序章灰灯；EJS is_prologue 时 getwi",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 80
+        },
+        "uid": 25
+      },
+      "序章选项识别与一致性铁律": {
+        "path": "世界书/事件/序章/序章选项识别与一致性铁律.yaml",
+        "keywords": [
+          "选项识别",
+          "P1-B"
+        ],
+        "abstract": "以用户点选判ID；叙事与JSON同分支；P1辩解必BE",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 76
+        },
+        "uid": 90
+      },
+      "序章写死机读表": {
+        "path": "世界书/事件/序章/序章写死机读表.yaml",
+        "keywords": [
+          "写死",
+          "机读"
+        ],
+        "abstract": "序章十二选机读表；回复前必对表",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 1,
+          "order": 78
+        },
+        "uid": 88
+      },
+      "序章非法节点熔断": {
+        "path": "世界书/事件/序章/序章非法节点熔断.yaml",
+        "keywords": [
+          "熔断",
+          "非法"
+        ],
+        "abstract": "无图书馆接头却序章-4时强制补BE或重来",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 77
+        },
+        "uid": 89
+      },
+      "序章BE后禁止续玩": {
+        "path": "世界书/事件/序章/序章BE后禁止续玩.yaml",
+        "keywords": [
+          "BE",
+          "旅馆",
+          "好梦还乡"
+        ],
+        "abstract": "序章选错同楼BE；已死亡禁续玩；P3-B禁图书馆",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 1,
+          "order": 79
+        },
+        "uid": 87
+      },
+      "序章节点推进铁律": {
+        "path": "世界书/事件/序章/序章节点推进铁律.yaml",
+        "keywords": [
+          "序章"
+        ],
+        "abstract": "序章禁止跳戏与同轮推进",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 81
+        },
+        "uid": 26
+      },
+      "序章当前节点选项·常亮": {
+        "path": "世界书/事件/序章/序章当前节点选项·常亮.yaml",
+        "keywords": [
+          "请选择",
+          "序章选项"
+        ],
+        "abstract": "序章蓝灯常亮·本楼末尾必须照抄的AB选项",
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 67
+        },
+        "uid": 92
+      },
+      "序章-1-方汉洲当面对质": {
+        "path": "世界书/事件/序章/序章-1-方汉洲当面对质.yaml",
+        "keywords": [
+          "序章",
+          "方汉洲"
+        ],
+        "abstract": "序章-1台词镜头选项",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 82
+        },
+        "uid": 27
+      },
+      "序章-2-方敏追问": {
+        "path": "世界书/事件/序章/序章-2-方敏追问.yaml",
+        "keywords": [
+          "序章",
+          "方敏"
+        ],
+        "abstract": "序章-2方敏门外追问",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 84
+        },
+        "uid": 29
+      },
+      "序章-3-去向选择": {
+        "path": "世界书/事件/序章/序章-3-去向选择.yaml",
+        "keywords": [
+          "序章",
+          "图书馆"
+        ],
+        "abstract": "序章-3图书馆旅馆酒馆",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 85
+        },
+        "uid": 30
+      },
+      "序章-4-图书馆等待": {
+        "path": "世界书/事件/序章/序章-4-图书馆等待.yaml",
+        "keywords": [
+          "序章",
+          "图书馆"
+        ],
+        "abstract": "序章-4图书馆等老师",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 86
+        },
+        "uid": 31
+      },
+      "序章-5-秘密基地": {
+        "path": "世界书/事件/序章/序章-5-秘密基地.yaml",
+        "keywords": [
+          "序章",
+          "基地"
+        ],
+        "abstract": "序章-5入党与任务简报",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 87
+        },
+        "uid": 41
+      },
+      "序章抉择全书-写死表": {
+        "path": "世界书/事件/序章/序章抉择全书-写死表.yaml",
+        "keywords": [
+          "序章",
+          "P1",
+          "写死"
+        ],
+        "abstract": "序章全选项叙事与JSON写死",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 88
+        },
+        "uid": 42
+      },
+      "结局谱系": {
+        "path": "世界书/事件/结局谱系.yaml",
+        "keywords": [
+          "结局",
+          "BE"
+        ],
+        "abstract": "四大主线与序章BE等结局ID",
+        "uid": 43,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结局",
+            "BE"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 89
+        }
+      },
+      "抉择校验表": {
+        "path": "世界书/事件/抉择校验表.yaml",
+        "keywords": [
+          "抉择",
+          "选项",
+          "校验"
+        ],
+        "abstract": "选项→结果写死表，序章全节点",
+        "uid": 44,
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "抉择",
+            "选项",
+            "校验"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 90
+        }
+      },
+      "序章-事件": {
+        "path": "世界书/事件/序章.yaml",
+        "keywords": [
+          "序章"
+        ],
+        "abstract": "序章总览；分节点剧本见序章-*条目",
+        "uid": 45,
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "序章"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 91
+        }
+      },
+      "第一章-太阳之影": {
+        "path": "世界书/事件/第一章.yaml",
+        "keywords": [
+          "第一章",
+          "太阳之影",
+          "武藤"
+        ],
+        "abstract": "第一章节点链总览",
+        "uid": 46,
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "第一章",
+            "太阳之影",
+            "武藤"
+          ]
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 92
+        }
+      },
+      "第一章主持": {
+        "path": "世界书/阶段指导/第一章主持.yaml",
+        "keywords": [
+          "第一章",
+          "主持"
+        ],
+        "abstract": "第一章GM清单；EJS is_chapter1 getwi",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 68
+        },
+        "uid": 93
+      },
+      "第一章抉择全书-写死表": {
+        "path": "世界书/事件/第一章/第一章抉择全书-写死表.yaml",
+        "keywords": [
+          "第一章",
+          "写死",
+          "C1"
+        ],
+        "abstract": "第一章全选项叙事与JSON",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 93
+        },
+        "uid": 94
+      },
+      "第一章写死机读表": {
+        "path": "世界书/事件/第一章/第一章写死机读表.yaml",
+        "keywords": [
+          "第一章",
+          "机读"
+        ],
+        "abstract": "第一章十五选机读表",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 1,
+          "order": 94
+        },
+        "uid": 95
+      },
+      "第一章选项识别与一致性铁律": {
+        "path": "世界书/事件/第一章/第一章选项识别与一致性铁律.yaml",
+        "keywords": [
+          "第一章",
+          "选项识别"
+        ],
+        "abstract": "第一章选项ID识别铁律",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 95
+        },
+        "uid": 96
+      },
+      "第一章节点推进铁律": {
+        "path": "世界书/事件/第一章/第一章节点推进铁律.yaml",
+        "keywords": [
+          "第一章"
+        ],
+        "abstract": "第一章禁止跳戏",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 96
+        },
+        "uid": 97
+      },
+      "第一章BE执行范例": {
+        "path": "世界书/事件/第一章/第一章BE执行范例.yaml",
+        "keywords": [
+          "第一章",
+          "BE"
+        ],
+        "abstract": "第一章BE JSON范例",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 97
+        },
+        "uid": 98
+      },
+      "第一章BE后禁止续玩": {
+        "path": "世界书/事件/第一章/第一章BE后禁止续玩.yaml",
+        "keywords": [
+          "第一章",
+          "BE"
+        ],
+        "abstract": "第一章BE后禁续玩",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 1,
+          "order": 98
+        },
+        "uid": 99
+      },
+      "第一章当前节点选项·常亮": {
+        "path": "世界书/事件/第一章/第一章当前节点选项·常亮.yaml",
+        "keywords": [
+          "第一章",
+          "请选择"
+        ],
+        "abstract": "第一章branches常亮",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 65
+        },
+        "uid": 100
+      },
+      "第一章-1-发布会举手": {
+        "path": "世界书/事件/第一章/第一章-1-发布会举手.yaml",
+        "keywords": [
+          "第一章",
+          "举手"
+        ],
+        "abstract": "第一章-1记者会",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 101
+      },
+      "第一章-10-方老师枪指": {
+        "path": "世界书/事件/第一章/第一章-10-方老师枪指.yaml",
+        "keywords": [
+          "第一章",
+          "方汉洲",
+          "枪"
+        ],
+        "abstract": "第一章-10方老师假死",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 100
+        },
+        "uid": 102
+      },
+      "第一章非法节点熔断": {
+        "path": "世界书/事件/第一章/第一章非法节点熔断.yaml",
+        "abstract": "第一章节点超前于检查点熔断",
+        "keywords": [
+          "第一章",
+          "熔断"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1201
+      },
+      "第一章-2-战争看法": {
+        "path": "世界书/事件/第一章/第一章-2-战争看法.yaml",
+        "abstract": "第一章-2",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1202
+      },
+      "第一章-3-领事质问": {
+        "path": "世界书/事件/第一章/第一章-3-领事质问.yaml",
+        "abstract": "第一章-3",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1203
+      },
+      "第一章-4-潜伏名单": {
+        "path": "世界书/事件/第一章/第一章-4-潜伏名单.yaml",
+        "abstract": "第一章-4",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1204
+      },
+      "第一章-5-陪纯子": {
+        "path": "世界书/事件/第一章/第一章-5-陪纯子.yaml",
+        "abstract": "第一章-5",
+        "keywords": [
+          "第一章",
+          "纯子"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1205
+      },
+      "第一章-6-纯子问话": {
+        "path": "世界书/事件/第一章/第一章-6-纯子问话.yaml",
+        "abstract": "第一章-6",
+        "keywords": [
+          "第一章",
+          "纯子"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1206
+      },
+      "第一章-7-遇见方敏": {
+        "path": "世界书/事件/第一章/第一章-7-遇见方敏.yaml",
+        "abstract": "第一章-7",
+        "keywords": [
+          "第一章",
+          "方敏"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1207
+      },
+      "第一章-8-三百元": {
+        "path": "世界书/事件/第一章/第一章-8-三百元.yaml",
+        "abstract": "第一章-8",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1208
+      },
+      "第一章-9-来过方家": {
+        "path": "世界书/事件/第一章/第一章-9-来过方家.yaml",
+        "abstract": "第一章-9",
+        "keywords": [
+          "第一章",
+          "方家"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1209
+      },
+      "第一章-11-第一次": {
+        "path": "世界书/事件/第一章/第一章-11-第一次.yaml",
+        "abstract": "第一章-11",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1210
+      },
+      "第一章-12-学生放出来": {
+        "path": "世界书/事件/第一章/第一章-12-学生放出来.yaml",
+        "abstract": "第一章-12",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1211
+      },
+      "第一章-13-了解同学": {
+        "path": "世界书/事件/第一章/第一章-13-了解同学.yaml",
+        "abstract": "第一章-13",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1212
+      },
+      "第一章-14-邀请抗日": {
+        "path": "世界书/事件/第一章/第一章-14-邀请抗日.yaml",
+        "abstract": "第一章-14",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1213
+      },
+      "第一章-15-叛徒信": {
+        "path": "世界书/事件/第一章/第一章-15-叛徒信.yaml",
+        "abstract": "第一章-15",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1214
+      },
+      "第一章-0-章首": {
+        "path": "世界书/事件/第一章/第一章-0-章首.yaml",
+        "abstract": "第一章-0",
+        "keywords": [
+          "第一章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1200
+      },
+      "第二章非法节点熔断": {
+        "path": "世界书/事件/第二章/第二章非法节点熔断.yaml",
+        "abstract": "第二章节点超前熔断",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1300
+      },
+      "第二章抉择全书-写死表": {
+        "path": "世界书/事件/第二章/第二章抉择全书-写死表.yaml",
+        "abstract": "第二章写死表",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1301
+      },
+      "第二章写死机读表": {
+        "path": "世界书/事件/第二章/第二章写死机读表.yaml",
+        "abstract": "第二章机读表",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1302
+      },
+      "第二章当前节点选项·常亮": {
+        "path": "世界书/事件/第二章/第二章当前节点选项·常亮.yaml",
+        "abstract": "第二章常亮选项",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1303
+      },
+      "第二章选项识别与一致性铁律": {
+        "path": "世界书/事件/第二章/第二章选项识别与一致性铁律.yaml",
+        "abstract": "第二章识别铁律",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1304
+      },
+      "第二章节点推进铁律": {
+        "path": "世界书/事件/第二章/第二章节点推进铁律.yaml",
+        "abstract": "第二章推进铁律",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1305
+      },
+      "第二章BE执行范例": {
+        "path": "世界书/事件/第二章/第二章BE执行范例.yaml",
+        "abstract": "第二章BE范例",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1306
+      },
+      "第二章BE后禁止续玩": {
+        "path": "世界书/事件/第二章/第二章BE后禁止续玩.yaml",
+        "abstract": "第二章BE后禁玩",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1307
+      },
+      "第二章-狩猎者": {
+        "path": "世界书/事件/第二章.yaml",
+        "abstract": "第二章节点链",
+        "keywords": [
+          "第二章",
+          "狩猎者"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1308
+      },
+      "第二章-0-章首": {
+        "path": "世界书/事件/第二章/第二章-0-章首.yaml",
+        "abstract": "第二章-0-章首",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1309
+      },
+      "第二章-1-李峰开场": {
+        "path": "世界书/事件/第二章/第二章-1-李峰开场.yaml",
+        "abstract": "第二章-1-李峰开场",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1310
+      },
+      "第二章-10-毙了我": {
+        "path": "世界书/事件/第二章/第二章-10-毙了我.yaml",
+        "abstract": "第二章-10-毙了我",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1311
+      },
+      "第二章-11-放过": {
+        "path": "世界书/事件/第二章/第二章-11-放过.yaml",
+        "abstract": "第二章-11-放过",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1312
+      },
+      "第二章-12-闪身": {
+        "path": "世界书/事件/第二章/第二章-12-闪身.yaml",
+        "abstract": "第二章-12-闪身",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1313
+      },
+      "第二章-13-李峰问": {
+        "path": "世界书/事件/第二章/第二章-13-李峰问.yaml",
+        "abstract": "第二章-13-李峰问",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1314
+      },
+      "第二章-14-自保共荣": {
+        "path": "世界书/事件/第二章/第二章-14-自保共荣.yaml",
+        "abstract": "第二章-14-自保共荣",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1315
+      },
+      "第二章-15-握手": {
+        "path": "世界书/事件/第二章/第二章-15-握手.yaml",
+        "abstract": "第二章-15-握手",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1316
+      },
+      "第二章-16-据实": {
+        "path": "世界书/事件/第二章/第二章-16-据实.yaml",
+        "abstract": "第二章-16-据实",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1317
+      },
+      "第二章-17-情报": {
+        "path": "世界书/事件/第二章/第二章-17-情报.yaml",
+        "abstract": "第二章-17-情报",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1318
+      },
+      "第二章-18-介意": {
+        "path": "世界书/事件/第二章/第二章-18-介意.yaml",
+        "abstract": "第二章-18-介意",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1319
+      },
+      "第二章-19-武藤": {
+        "path": "世界书/事件/第二章/第二章-19-武藤.yaml",
+        "abstract": "第二章-19-武藤",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1320
+      },
+      "第二章-2-胡一彪": {
+        "path": "世界书/事件/第二章/第二章-2-胡一彪.yaml",
+        "abstract": "第二章-2-胡一彪",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1321
+      },
+      "第二章-20-故人泪": {
+        "path": "世界书/事件/第二章/第二章-20-故人泪.yaml",
+        "abstract": "第二章-20-故人泪",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1322
+      },
+      "第二章-21-有几滴": {
+        "path": "世界书/事件/第二章/第二章-21-有几滴.yaml",
+        "abstract": "第二章-21-有几滴",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1323
+      },
+      "第二章-22-倒酒": {
+        "path": "世界书/事件/第二章/第二章-22-倒酒.yaml",
+        "abstract": "第二章-22-倒酒",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1324
+      },
+      "第二章-3-顾君如": {
+        "path": "世界书/事件/第二章/第二章-3-顾君如.yaml",
+        "abstract": "第二章-3-顾君如",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1325
+      },
+      "第二章-4-搭话": {
+        "path": "世界书/事件/第二章/第二章-4-搭话.yaml",
+        "abstract": "第二章-4-搭话",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1326
+      },
+      "第二章-5-宴会分支": {
+        "path": "世界书/事件/第二章/第二章-5-宴会分支.yaml",
+        "abstract": "第二章-5-宴会分支",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1327
+      },
+      "第二章-6-跟上": {
+        "path": "世界书/事件/第二章/第二章-6-跟上.yaml",
+        "abstract": "第二章-6-跟上",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1328
+      },
+      "第二章-7-射杀吴": {
+        "path": "世界书/事件/第二章/第二章-7-射杀吴.yaml",
+        "abstract": "第二章-7-射杀吴",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1329
+      },
+      "第二章-8-射杀顾": {
+        "path": "世界书/事件/第二章/第二章-8-射杀顾.yaml",
+        "abstract": "第二章-8-射杀顾",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1330
+      },
+      "第二章-9-答应": {
+        "path": "世界书/事件/第二章/第二章-9-答应.yaml",
+        "abstract": "第二章-9-答应",
+        "keywords": [
+          "第二章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1331
+      },
+      "第三章非法节点熔断": {
+        "path": "世界书/事件/第三章/第三章非法节点熔断.yaml",
+        "abstract": "第三章节点超前熔断",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1400
+      },
+      "第三章抉择全书-写死表": {
+        "path": "世界书/事件/第三章/第三章抉择全书-写死表.yaml",
+        "abstract": "第三章写死表",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1401
+      },
+      "第三章写死机读表": {
+        "path": "世界书/事件/第三章/第三章写死机读表.yaml",
+        "abstract": "第三章机读表",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1402
+      },
+      "第三章当前节点选项·常亮": {
+        "path": "世界书/事件/第三章/第三章当前节点选项·常亮.yaml",
+        "abstract": "第三章常亮选项",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1403
+      },
+      "第三章选项识别与一致性铁律": {
+        "path": "世界书/事件/第三章/第三章选项识别与一致性铁律.yaml",
+        "abstract": "第三章识别铁律",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1404
+      },
+      "第三章节点推进铁律": {
+        "path": "世界书/事件/第三章/第三章节点推进铁律.yaml",
+        "abstract": "第三章推进铁律",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1405
+      },
+      "第三章BE执行范例": {
+        "path": "世界书/事件/第三章/第三章BE执行范例.yaml",
+        "abstract": "第三章BE范例",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1406
+      },
+      "第三章BE后禁止续玩": {
+        "path": "世界书/事件/第三章/第三章BE后禁止续玩.yaml",
+        "abstract": "第三章BE后禁玩",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1407
+      },
+      "第三章-生死途": {
+        "path": "世界书/事件/第三章.yaml",
+        "abstract": "第三章节点链",
+        "keywords": [
+          "第三章",
+          "生死途"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1408
+      },
+      "第三章-0-澳门商团接头": {
+        "path": "世界书/事件/第三章/第三章-0-澳门商团接头.yaml",
+        "abstract": "第三章-0-澳门商团接头",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1409
+      },
+      "第三章-1-庄晓曼试探": {
+        "path": "世界书/事件/第三章/第三章-1-庄晓曼试探.yaml",
+        "abstract": "第三章-1-庄晓曼试探",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1410
+      },
+      "第三章-10-商贸团安全": {
+        "path": "世界书/事件/第三章/第三章-10-商贸团安全.yaml",
+        "abstract": "第三章-10-商贸团安全",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1411
+      },
+      "第三章-11-犯人日本人": {
+        "path": "世界书/事件/第三章/第三章-11-犯人日本人.yaml",
+        "abstract": "第三章-11-犯人日本人",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1412
+      },
+      "第三章-12-利用胡一彪": {
+        "path": "世界书/事件/第三章/第三章-12-利用胡一彪.yaml",
+        "abstract": "第三章-12-利用胡一彪",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1413
+      },
+      "第三章-13-捞一笔": {
+        "path": "世界书/事件/第三章/第三章-13-捞一笔.yaml",
+        "abstract": "第三章-13-捞一笔",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1414
+      },
+      "第三章-14-绑架对象": {
+        "path": "世界书/事件/第三章/第三章-14-绑架对象.yaml",
+        "abstract": "第三章-14-绑架对象",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1415
+      },
+      "第三章-15-武藤追问": {
+        "path": "世界书/事件/第三章/第三章-15-武藤追问.yaml",
+        "abstract": "第三章-15-武藤追问",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1416
+      },
+      "第三章-16-章末通关": {
+        "path": "世界书/事件/第三章/第三章-16-章末通关.yaml",
+        "abstract": "第三章-16-章末通关",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1417
+      },
+      "第三章-2-是否承认": {
+        "path": "世界书/事件/第三章/第三章-2-是否承认.yaml",
+        "abstract": "第三章-2-是否承认",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1418
+      },
+      "第三章-3-是否交底": {
+        "path": "世界书/事件/第三章/第三章-3-是否交底.yaml",
+        "abstract": "第三章-3-是否交底",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1419
+      },
+      "第三章-4-叫住或开枪": {
+        "path": "世界书/事件/第三章/第三章-4-叫住或开枪.yaml",
+        "abstract": "第三章-4-叫住或开枪",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1420
+      },
+      "第三章-5-对接人儿子": {
+        "path": "世界书/事件/第三章/第三章-5-对接人儿子.yaml",
+        "abstract": "第三章-5-对接人儿子",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1421
+      },
+      "第三章-6-舞会三选一": {
+        "path": "世界书/事件/第三章/第三章-6-舞会三选一.yaml",
+        "abstract": "第三章-6-舞会三选一",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1422
+      },
+      "第三章-7-锄奸计划": {
+        "path": "世界书/事件/第三章/第三章-7-锄奸计划.yaml",
+        "abstract": "第三章-7-锄奸计划",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1423
+      },
+      "第三章-8-杀方敏或万全": {
+        "path": "世界书/事件/第三章/第三章-8-杀方敏或万全.yaml",
+        "abstract": "第三章-8-杀方敏或万全",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1424
+      },
+      "第三章-9-欺辱方敏": {
+        "path": "世界书/事件/第三章/第三章-9-欺辱方敏.yaml",
+        "abstract": "第三章-9-欺辱方敏",
+        "keywords": [
+          "第三章"
+        ],
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 99
+        },
+        "uid": 1425
+      }
+    },
+    "MVU": {
+      "[mvu_update]变量输出格式（额外模型）": {
+        "path": "世界书/MVU/变量输出格式_额外模型.yaml",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "额外模型变量解析格式",
+        "enabled": true,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 110
+        },
+        "uid": 47
+      },
+      "[mvu_update]判定公式总表": {
+        "path": "世界书/MVU/判定公式总表.yaml",
+        "part": "update_rules",
+        "keywords": [],
+        "abstract": "暴露风险/行动级别/对抗差公式",
+        "uid": 48,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 111
+        }
+      },
+      "[mvu_update]变量输出格式": {
+        "path": "世界书/变量/变量输出格式.txt",
+        "part": "output_format",
+        "keywords": [],
+        "abstract": "主模型 UpdateVariable 格式（默认关；请开额外模型+「[mvu_update]变量输出格式（额外模型）」）",
+        "uid": 49,
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 112
+        }
+      },
+      "变量列表": {
+        "path": "世界书/变量/变量列表.txt",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "MVU变量列表",
+        "uid": 50,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 120
+        }
+      },
+      "变量与注入规划": {
+        "path": "世界书/MVU/变量与注入规划.yaml",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "四层门控·变量·前端同步说明",
+        "uid": 52,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 95
+        }
+      },
+      "[mvu_update]变量更新规则": {
+        "path": "世界书/变量/变量更新规则.yaml",
+        "part": "update_rules",
+        "keywords": [],
+        "abstract": "MVU变量更新规则",
+        "uid": 51,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 130
+        }
+      },
+      "[InitVar]请勿打开": {
+        "path": "世界书/变量/initvar.yaml",
+        "part": "initvar",
+        "keywords": [],
+        "abstract": "MVU初始变量",
+        "uid": 52,
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 140
+        }
+      },
+      "数值尺度与写死选项对照": {
+        "path": "世界书/MVU/数值尺度与写死选项对照.yaml",
+        "part": "variable_list",
+        "keywords": [],
+        "abstract": "关系尺度·写死选项数值对照",
+        "uid": 59,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 94
+        }
+      }
+    },
+    "数据库": {
+      "插件栈与分工": {
+        "path": "世界书/数据库/插件栈与分工.yaml",
+        "keywords": [],
+        "abstract": "SP·数据库+骰子+MVU+EJS四层分工",
+        "enabled": true,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 100
+        },
+        "uid": 53
+      },
+      "开局初始化SQL": {
+        "path": "世界书/数据库/开局初始化SQL.yaml",
+        "keywords": [
+          "开局",
+          "初始化"
+        ],
+        "abstract": "1939序章方家SQL初始化",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 101
+        },
+        "uid": 54
+      },
+      "SQL填表规则": {
+        "path": "世界书/数据库/SQL填表规则.yaml",
+        "keywords": [],
+        "abstract": "tableEdit与角色属性表同步",
+        "enabled": true,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 102
+        },
+        "uid": 55
+      },
+      "条件模板说明": {
+        "path": "世界书/数据库/条件模板说明.yaml",
+        "keywords": [],
+        "abstract": "启用if cell条件模板",
+        "enabled": true,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 103
+        },
+        "uid": 56
+      },
+      "前端面板说明": {
+        "path": "世界书/数据库/前端面板说明.yaml",
+        "keywords": [
+          "面板",
+          "召回"
+        ],
+        "abstract": "数据库召回面板排查",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 104
+        },
+        "uid": 57
+      },
+      "全局正则导入说明": {
+        "path": "世界书/数据库/全局正则导入说明.yaml",
+        "keywords": [
+          "全局正则",
+          "配套正则1"
+        ],
+        "abstract": "数据库召回三条全局正则导入顺序",
+        "enabled": false,
+        "position": {
+          "type": "at_depth",
+          "role": "system",
+          "depth": 0,
+          "order": 105
+        },
+        "uid": 58
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [
+      "EJS预处理",
+      "世界观",
+      "扮演准则",
+      "时间线",
+      "地理"
+    ],
+    "after_char": [
+      "角色",
+      "NPC"
+    ],
+    "depth": [
+      "阶段指导",
+      "事件",
+      "数据库",
+      "MVU"
+    ]
+  },
+  "strategyThresholds": {
+    "EJS预处理": "Infinity",
+    "世界观": "Infinity",
+    "扮演准则": "Infinity",
+    "时间线": {
+      "history": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "plot": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "地理": {
+      "region": {
+        "threshold": 4,
+        "required": false
+      },
+      "scene": {
+        "threshold": 4,
+        "required": false
+      },
+      "faction": {
+        "threshold": 4,
+        "required": false
+      }
+    },
+    "角色": {
+      "basic": {
+        "threshold": 5,
+        "required": true
+      },
+      "personality": {
+        "threshold": 2,
+        "required": true
+      },
+      "tri_faceted": {
+        "threshold": 2,
+        "required": false
+      },
+      "other": {
+        "threshold": 2,
+        "required": false
+      }
+    },
+    "NPC": 0,
+    "阶段指导": "Infinity",
+    "事件": 0,
+    "MVU": {
+      "initvar": {
+        "threshold": null,
+        "required": false
+      },
+      "output_format": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "update_rules": {
+        "threshold": "Infinity",
+        "required": false
+      },
+      "variable_list": {
+        "threshold": "Infinity",
+        "required": false
+      }
+    },
+    "数据库": "Infinity"
+  },
+  "partOrder": {
+    "角色": [
+      "basic",
+      "personality",
+      "tri_faceted",
+      "other"
+    ],
+    "地理": [
+      "region",
+      "scene",
+      "faction"
+    ],
+    "MVU": [
+      "variable_list",
+      "update_rules",
+      "output_format",
+      "initvar"
+    ],
+    "时间线": [
+      "history",
+      "plot"
+    ]
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "你就是肖途，代号「胡蜂」。在汪伪与日特之间潜伏，选错即死，走向红色芳华、扶桑安魂曲、美丽新世界或丧钟为谁而鸣。严格复刻《隐形守护者》原作。",
+  "first_messages": [
+    "开场白.txt"
+  ],
+  "creator": "",
+  "creator_notes": "必开：MVU+Zod+SP·数据库+序章写死强制；酒馆勾选「使用额外模型解析」。世界书：开「[mvu_update]变量输出格式（额外模型）」、关「[mvu_update]变量输出格式」。BE 楼 <yxsh_be>+branches；正则：数据库1→2→远楼层→BE→行动选项→状态栏。",
+  "version": "1.0",
+  "create_date": "2026-06-01T01:27:42.041Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本/MVU.txt",
+          "enabled": true,
+          "id": "d0311ca6-5e9a-498e-a777-f74dc4dc6b12",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": false
+              }
+            ]
+          },
+          "data": {}
+        },
+        "序章写死强制": {
+          "type": "script",
+          "script_file": "脚本/序章写死强制/index.ts",
+          "enabled": true,
+          "id": "a8f3c2e1-4b5d-9e2a-8c7f-1d0e6f5a4b3c",
+          "info": "12选写死；AI 漏写时自动补全 branches 供行动选项渲染",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "第一章写死强制": {
+          "type": "script",
+          "script_file": "脚本/第一章写死强制/index.ts",
+          "enabled": true,
+          "id": "b9e4d3f2-6c6e-0f3b-9d8e-2e1f7a6b5c4d",
+          "info": "第一章十五选写死；自动补 branches",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "Zod": {
+          "type": "script",
+          "script_file": "脚本/Zod.txt",
+          "enabled": true,
+          "id": "5b3b09af-35e3-4149-a0f7-2f08776ed6a1",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "SP·数据库": {
+          "type": "script",
+          "script_file": "脚本/SP·数据库.txt",
+          "enabled": true,
+          "id": "f5160a6d-ee87-4fa5-b7ed-0dfe74f1e5c1",
+          "info": "shujuku@spv3.9.8.1；自动应用内嵌隐形守护者·骰子SQL_v4.3+条件模板",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {
+            "bootstrapVersion": 1,
+            "templatePresetName": "隐形守护者·骰子SQL_v4.3",
+            "chatSheetsTemplate": {
+              "mate": {
+                "type": "chatSheets",
+                "version": 2,
+                "updateConfigUiSentinel": -1,
+                "globalInjectionConfig": {
+                  "readableEntryPlacement": {
+                    "position": "before_character_definition",
+                    "depth": 2,
+                    "order": 99981
+                  },
+                  "wrapperPlacement": {
+                    "position": "before_character_definition",
+                    "depth": 2,
+                    "order": 99980
+                  }
+                }
+              },
+              "sheet_global_data": {
+                "uid": "sheet_global_data",
+                "name": "全局数据表",
+                "sourceData": {
+                  "note": "记录当前世界的核心状态。全表只有一行，不增不删。\n\n【列定义】\n列1=row_id（仅允许为 1）\n列2=当前详细地点 current_location\n列3=当前次要地区 current_minor_region\n列4=当前主要地区 current_major_region\n列5=上轮场景时间 prev_scene_time（可 NULL）\n列6=经过的时间 elapsed_time\n列7=当前时间 cur_time\n\n【地点层级】\n从小到大：详细地点 < 次要地区 < 主要地区\n示例：御苑（详细）< 新宿区（次要）< 东京都（主要）\n\n【地点填写规则】\n每个字段只写该层级名称，不带前缀。\n对：当前详细地点填 \"御苑\"\n错：当前详细地点填 \"东京-新宿区-御苑\"\n\n【时间格式】\n当前时间、上轮场景时间：\"YYYY-MM-DD HH:MM\"\n经过的时间：\"{数值}{单位}\"，多单位直接连写，不加空格。\n单位示例：[年,月,周,天,小时,分]\n示例：\"3小时20分\" | \"2天\" | \"3年6月\"\n公式：当前时间 = 上轮场景时间 + 经过的时间\n\n【位置同步提示】\n- 全局数据表中的各级地点需要与世界地图点表、地图元素表、主角表、重要角色表中位置相关信息保持一致",
+                  "initNode": "插入唯一的一行，1939年上海序章。\nSQL示例: INSERT INTO global_state (row_id, current_location, current_minor_region, current_major_region, prev_scene_time, elapsed_time, cur_time) VALUES (1, '方家客厅', '法租界', '上海', NULL, '0分', '1939-03-15 14:00');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "每轮都要更新：上轮场景时间、经过的时间、当前时间。位置有变就更新对应地点字段。current_location、current_minor_region、current_major_region、elapsed_time、cur_time 均 NOT NULL，不能写成 NULL 或空串。cur_time / prev_scene_time 必须严格是 'YYYY-MM-DD HH:MM' 格式。\nSQL示例(纯时间推进): UPDATE global_state SET prev_scene_time = '2024-04-01 09:00', elapsed_time = '3小时20分', cur_time = '2024-04-01 12:20' WHERE row_id = 1;\nSQL示例(含位置变动): UPDATE global_state SET current_location = '御苑', current_minor_region = '新宿区', current_major_region = '东京都', prev_scene_time = '2024-04-01 12:20', elapsed_time = '1小时', cur_time = '2024-04-01 13:20' WHERE row_id = 1;",
+                  "insertNode": "禁止。",
+                  "ddl": "CREATE TABLE global_state ( -- 全局数据表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  current_location TEXT NOT NULL, -- 当前详细地点\n  current_minor_region TEXT NOT NULL, -- 当前次要地区\n  current_major_region TEXT NOT NULL, -- 当前主要地区\n  prev_scene_time TEXT CHECK(prev_scene_time IS NULL OR prev_scene_time GLOB '????-??-?? ??:??'), -- 上轮场景时间\n  elapsed_time TEXT NOT NULL, -- 经过的时间\n  cur_time TEXT NOT NULL CHECK(cur_time GLOB '????-??-?? ??:??') -- 当前时间\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "当前详细地点",
+                    "当前次要地区",
+                    "当前主要地区",
+                    "上轮场景时间",
+                    "经过的时间",
+                    "当前时间"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 1
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "全局数据表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "全局数据表-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "before_character_definition",
+                    "depth": 2,
+                    "order": 99981
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "before_character_definition",
+                    "depth": 2,
+                    "order": 99982
+                  }
+                },
+                "orderNo": 0
+              },
+              "sheet_world_map": {
+                "uid": "sheet_world_map",
+                "name": "世界地图点",
+                "sourceData": {
+                  "note": "记录当前主要地区内的所有次要地区和详细地点。列顺序从小到大：详细地点 → 次要地区 → 主要地区。\n\n【列定义】\n列1=row_id\n列2=详细地点 location_name（全表唯一，作为其他表引用地点的基准）\n列3=次要地区 minor_region\n列4=主要地区 major_region\n列5=地点类型 location_type\n列6=环境描述 environment_desc（≤60 字）\n列7=重要度 importance\n列8=探索状态 exploration_status\n\n【地点填写规则】\n每个字段只写该层级名称，不带前缀。\n对：详细地点填 \"御苑\"，次要地区填 \"新宿区\"，主要地区填 \"东京都\"\n错：详细地点填 \"东京-新宿区-御苑\" 或 \"新宿区-御苑\"\n\n【主键判定（判断 insert 还是 update）】\n收到一个地点时，先在本表查同名的 \"详细地点\"：\n- 查不到 → insert 新行\n- 查到了 → update 该行对应字段\n\n【约束】\n- 禁止删除任何已存在的地点，主要地区切换时只更新字段，不 DELETE\n- 主要地区应与全局数据表.当前主要地区一致\n- 详细地点名全表唯一，作为其他表引用地点的基准\n- 建议总条数 ≤20；其他表提到的地点尽量先在本表存在\n\n【字段取值】\n地点类型示例：[住宅,学校,遗迹,地牢,交通,特殊,商业,医疗,行政,野外]\n重要度：[核心,重要,普通]\n探索状态：[未探索,部分探索,已探索]\n环境描述：一句话描述，建议 ≤60 字",
+                  "initNode": "为当前主要地区至少插入 3 条详细地点，优先是主角和重要角色近期会用到的。\nSQL示例: INSERT INTO world_map_points (row_id, location_name, minor_region, major_region, location_type, environment_desc, importance, exploration_status) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM world_map_points), '御苑', '新宿区', '东京都', '野外', '城市中心的大型公园，树木繁茂', '重要', '部分探索');",
+                  "deleteNode": "禁止。任何情况下都不得 DELETE，包括主要地区切换、地点废弃、表项超限等。需要清理时改用 UPDATE 修改字段即可。",
+                  "updateNode": "已存在的行，字段值变化时更新：探索状态、重要度、环境描述、类型。\nSQL示例(探索推进): UPDATE world_map_points SET exploration_status = '已探索', environment_desc = '树木繁茂，发现隐藏神社' WHERE location_name = '御苑';\nSQL示例(重要度调整): UPDATE world_map_points SET importance = '核心' WHERE location_name = '御苑';",
+                  "insertNode": "表中没有同名详细地点时，新增一行。常见触发：主角到达新地点、NPC 提到新地点、剧情揭示新区域、其他表需要引用新地点。\nSQL示例: INSERT INTO world_map_points (row_id, location_name, minor_region, major_region, location_type, environment_desc, importance, exploration_status) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM world_map_points), '新宿车站', '新宿区', '东京都', '交通', '繁忙的地下换乘枢纽，人流密集', '普通', '已探索');",
+                  "ddl": "CREATE TABLE world_map_points ( -- 世界地图点\n  row_id INTEGER PRIMARY KEY, -- 行号\n  location_name TEXT NOT NULL UNIQUE, -- 详细地点\n  minor_region TEXT NOT NULL, -- 次要地区\n  major_region TEXT NOT NULL, -- 主要地区\n  location_type TEXT NOT NULL, -- 地点类型\n  environment_desc TEXT NOT NULL CHECK(LENGTH(environment_desc) <= 60), -- 环境描述\n  importance TEXT NOT NULL CHECK(importance IN ('核心', '重要', '普通')), -- 重要度\n  exploration_status TEXT NOT NULL CHECK(exploration_status IN ('未探索', '部分探索', '已探索')) -- 探索状态\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "详细地点",
+                    "次要地区",
+                    "主要地区",
+                    "地点类型",
+                    "环境描述",
+                    "重要度",
+                    "探索状态"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 1
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "世界地图点",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "世界地图点-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 1
+              },
+              "sheet_map_elements": {
+                "uid": "sheet_map_elements",
+                "name": "地图元素表",
+                "sourceData": {
+                  "note": "记录当前次要地区里可以交互的非重要元素。\n\n【列定义】\n列1=row_id\n列2=元素名称 element_name（全表唯一）\n列3=元素类型 element_type\n列4=所在地点 location_name（对应世界地图点表.详细地点）\n列5=元素描述 element_desc（≤40 字）\n列6=状态 status_text\n列7=交互选项 interaction_options（英文逗号分隔，不能为空）\n\n【只录入这四类，其他一律不录】\n1) 剧情物品：直接推动剧情的信物、线索、文件、钥匙。\n2) 威胁：会造成伤害或阻碍的敌对生物、陷阱、危险地形。\n3) 龙套：有交互功能的一次性无名 NPC（如警卫、店员）。若多次出场并拿到名字，移到重要角色表。\n4) 地标：地点独有的视觉锚点或核心机制（如巨大雕像、密道开关）。每个详细地点最多 1 个。\n\n【两问筛选（新增前自问）】\n1) 离开此地后，这东西还有剧情价值吗？\n2) 现在是否必须通过它交互？\n两问都是 \"否\" → 不要录入。\n\n【主键判定（判断 insert 还是 update）】\n收到一个元素时，先按 \"元素名称\" 查本表：\n- 查不到 → insert 新行\n- 查到了 → update 该行字段（例如状态、位置）\n\n【条数建议】\n每个详细地点 ≤5 条，全表 ≤30 条。接近上限时优先删除不满足四类定义或重复的。\n\n【所在地点规则】\n优先填写世界地图点表已有的 \"详细地点\"；若还没补进世界地图点表，至少保持地点名一致，后续再同步补录。\n\n【字段取值】\n元素类型：[剧情物品,威胁,龙套,地标]\n元素描述：一句话， ≤40 字\n状态：当前状态的简短描述\n交互选项：用英文逗号分隔，每项 ≤4 字、总数 ≤3 个",
+                  "initNode": "按四类定义生成元素，每个地点 0-5 条，全表建议 ≤30 条。四类之外的杂物不录。\nSQL示例: INSERT INTO map_elements (row_id, element_name, element_type, location_name, element_desc, status_text, interaction_options) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM map_elements), '破损钥匙卡', '剧情物品', '旧校舍', '能开门的旧卡', '边角烧焦', '检查,拾取');",
+                  "deleteNode": "允许删除：实体被销毁/拾取/失效、离开当前次要地区、龙套升格为重要角色、或需要腾出条数时（优先删不符合四类或可替代的）。\nSQL示例: DELETE FROM map_elements WHERE element_name = '破损钥匙卡';",
+                  "updateNode": "已存在的元素，状态或描述发生变化时更新。interaction_options 不能更新为空串。\nSQL示例: UPDATE map_elements SET status_text = '已被拾取', interaction_options = '检查' WHERE element_name = '破损钥匙卡';",
+                  "insertNode": "元素名称不在表里时，新增一行。若涉及新地点名，建议同步补进世界地图点表。\nSQL示例: INSERT INTO map_elements (row_id, element_name, element_type, location_name, element_desc, status_text, interaction_options) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM map_elements), '巡逻警卫', '龙套', '校门口', '临时封锁入口', '来回巡视', '询问,观察');",
+                  "ddl": "CREATE TABLE map_elements ( -- 地图元素表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  element_name TEXT NOT NULL UNIQUE, -- 元素名称\n  element_type TEXT NOT NULL CHECK(element_type IN ('剧情物品', '威胁', '龙套', '地标')), -- 元素类型\n  location_name TEXT NOT NULL, -- 所在地点\n  element_desc TEXT NOT NULL CHECK(LENGTH(element_desc) <= 40), -- 元素描述\n  status_text TEXT NOT NULL, -- 状态\n  interaction_options TEXT NOT NULL CHECK(TRIM(interaction_options) <> '') -- 交互选项\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "元素名称",
+                    "元素类型",
+                    "所在地点",
+                    "元素描述",
+                    "状态",
+                    "交互选项"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 1
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "地图元素表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "地图元素表-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 2
+              },
+              "sheet_factions": {
+                "uid": "sheet_factions",
+                "name": "势力",
+                "sourceData": {
+                  "note": "记录对剧情有实质影响的势力、组织、阵营。\n\n【列定义】\n列1=row_id\n列2=名称 faction_name（全表唯一）\n列3=描述 description（≤60 字）\n列4=领袖 leader（可 NULL）\n列5=关系 relations_text（可 NULL，格式 \"对象:关系词; 对象:关系词\"）\n列6=据点 headquarters（可 NULL）\n\n【准入（满足任一即可）】\n- 和主线相关\n- 和主角有互动\n- 有多名成员或控制区域\n- 会多次出现\n一次性提到的背景组织、没影响力的小团体不录。\n\n【主键判定（判断 insert 还是 update）】\n按 \"名称\" 查本表：\n- 查不到 → insert 新行\n- 查到了 → update 该行\n\n【条数建议】\n总数 ≤8 条。\n\n【字段格式】\n描述：一句话说清楚势力性质， ≤60 字。\n据点：势力总部或主要驻地。\n关系：用 \"{对象}:{关系词}\" 表达。\n- 对象可以是另一个势力名，也可以是重要角色名\n- 同一对象多个关系词用逗号分隔\n- 不同对象之间用分号分隔\n- 关系词从 [同盟,敌对,中立,竞争,合作] 里挑\n示例：\"主角:敌对; 商会:同盟\" | \"主角:敌对,竞争; 商会:同盟\"",
+                  "initNode": "为已登场的重要势力各插入一条。\nSQL示例: INSERT INTO factions (row_id, faction_name, description, leader, relations_text, headquarters) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM factions), '夜鸦会', '控制黑市情报网的地下组织', '鸦首', '主角:中立', '旧港仓区');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "已存在的势力，描述、领袖、关系、据点发生变化时更新。\nSQL示例: UPDATE factions SET relations_text = '主角:敌对; 商会:同盟', leader = '新鸦首' WHERE faction_name = '夜鸦会';",
+                  "insertNode": "名称不在表里的新重要势力，新增一条。\nSQL示例: INSERT INTO factions (row_id, faction_name, description, leader, relations_text, headquarters) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM factions), '圣钟学院', '管理超常研究的学术机构', '理事长', '主角:合作', '中央校区');",
+                  "ddl": "CREATE TABLE factions ( -- 势力\n  row_id INTEGER PRIMARY KEY, -- 行号\n  faction_name TEXT NOT NULL UNIQUE, -- 名称\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 60), -- 描述\n  leader TEXT, -- 领袖\n  relations_text TEXT, -- 关系\n  headquarters TEXT -- 据点\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "名称",
+                    "描述",
+                    "领袖",
+                    "关系",
+                    "据点"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 1
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "势力",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "势力-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 3
+              },
+              "sheet_protagonist": {
+                "uid": "sheet_protagonist",
+                "name": "主角信息",
+                "sourceData": {
+                  "note": "记录主角的核心身份信息。全表只有一行，不增不删。\n\n【列定义】\n列1=row_id（仅允许为 1）\n列2=姓名 name\n列3=性别 gender\n列4=年龄 age\n列5=外貌特征 appearance（≤60 字）\n列6=身份 identity_text（≤40 字）\n列7=自身状态 self_status（默认 '正常'）\n列8=所在地点 location_name\n列9=基础属性 base_attributes\n列10=特有属性 special_attributes（可 NULL）\n列11=资源数据 resources_text（可 NULL）\n\n【所在地点】\n优先填世界地图点表里已有的某个 \"详细地点\"。只写地点名，不带层级前缀。\n对：\"{{user}}公寓\" | \"御苑\"\n错：\"东京-{{user}}公寓-卫生间\" | \"新宿区-御苑\"\n位置变化时，全局数据表的地点字段也应一起更新。\n\n【外貌特征】\n一句话，含身高、体型等关键外观， ≤60 字。普通衣物写在这里，只有特殊装备才进装备表。\n\n【身份】\n逗号分隔的身份或头衔， ≤40 字。示例：\"学生,魔法少女\"\n\n【自身状态】\n逗号分隔的状态标签，类型可选 [生理,负面,正面,情绪,伤病]。\n默认填 \"正常\"；有异常时去掉 \"正常\" 再写异常。\n示例：\"正常\" | \"饥饿,疲劳\" | \"中毒,轻伤\"\n\n<属性规则>\n基础属性：\"{名称}:{数值}\"，数值 [5,95]，用分号分隔多组。\n示例：\"力量:55; 敏捷:31; 体质:51; 智力:59; 感知:60; 魅力:65\"\n\n特有属性：角色的特殊能力或技能，体现世界观特色。\n格式同上，数值 [0,100]，代表成功概率。\n示例：\"爆裂魔法:85; 时间回溯:70; 超电磁炮:90\"\n\n属性标尺：5-14 能力缺失 | 15-41 弱项 | 42-59 平均 | 60-77 精英 | 78-86 极限 | 87-95 破格。\n数值呈长尾分布，大多数集中在 42-59，87+ 极稀有。\n数值依据角色身份背景生成，受当前状态影响（如重伤 → 5-14；肾上腺素 → 78-86）。\n</属性规则>\n\n【资源数据】\n\"{资源名}:{数值}\"，多组用分号分隔。\n示例：\"金币:250; 行动点:3\"",
+                  "initNode": "插入唯一的一行，填入主角各字段。base_attributes 与 special_attributes 必须依据 Note 中的 <属性规则> 生成，不要套用固定属性名或固定数值；无特有属性时 special_attributes 写 NULL。\nSQL示例: INSERT INTO protagonist_info (row_id, name, gender, age, appearance, identity_text, self_status, location_name, base_attributes, special_attributes, resources_text) VALUES (1, '横山司', '男', 17, '身高150cm，短发黑瞳，学生制服', '学生,侦探', '正常', '御苑', '基础属性字符串', '特有属性字符串', '金币:250; 行动点:3');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "已存在的这一行，字段值变化时更新：年龄、外貌、身份、状态、位置、属性、资源。位置变化时建议同步补世界地图点表。self_status、location_name、appearance、identity_text、base_attributes、name、gender、age 均 NOT NULL，不能写成 NULL 或空串。base_attributes 与 special_attributes 必须依据 Note 中的 <属性规则> 生成，不要套用固定属性名或固定数值；无特有属性时 special_attributes 写 NULL。\nSQL示例(状态变化): UPDATE protagonist_info SET self_status = '疲劳,轻伤', location_name = '御苑' WHERE row_id = 1;\nSQL示例(属性变化): UPDATE protagonist_info SET base_attributes = '基础属性字符串', special_attributes = '特有属性字符串' WHERE row_id = 1;\nSQL示例(资源变化): UPDATE protagonist_info SET resources_text = '金币:180; 行动点:2' WHERE row_id = 1;",
+                  "insertNode": "禁止。",
+                  "ddl": "CREATE TABLE protagonist_info ( -- 主角信息\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  name TEXT NOT NULL, -- 姓名\n  gender TEXT NOT NULL, -- 性别\n  age INTEGER NOT NULL CHECK(age >= 0), -- 年龄\n  appearance TEXT NOT NULL CHECK(LENGTH(appearance) <= 60), -- 外貌特征\n  identity_text TEXT NOT NULL CHECK(LENGTH(identity_text) <= 40), -- 身份\n  self_status TEXT NOT NULL DEFAULT '正常', -- 自身状态\n  location_name TEXT NOT NULL, -- 所在地点\n  base_attributes TEXT NOT NULL, -- 基础属性\n  special_attributes TEXT, -- 特有属性\n  resources_text TEXT -- 资源数据\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "姓名",
+                    "性别",
+                    "年龄",
+                    "外貌特征",
+                    "身份",
+                    "自身状态",
+                    "所在地点",
+                    "基础属性",
+                    "特有属性",
+                    "资源数据"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 1
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "主角信息",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "主角信息-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 4
+              },
+              "sheet_important_npc": {
+                "uid": "sheet_important_npc",
+                "name": "重要角色表",
+                "sourceData": {
+                  "note": "记录对剧情有重要影响的关键 NPC。\n\n【列定义】\n列1=row_id\n列2=姓名 name（全表唯一）\n列3=性别 gender\n列4=年龄 age\n列5=一句话介绍 brief_intro（≤30 字）\n列6=外貌特征 appearance（≤60 字）\n列7=身份 identity_text（≤40 字）\n列8=基础属性 base_attributes\n列9=特有属性 special_attributes（可 NULL）\n列10=所在地点 location_name\n列11=在场状态 presence_status（在场/离场）\n列12=人际关系 relations_text（可 NULL）\n列13=交互选项 interaction_options（在场时必填，离场时可 NULL）\n列14=过往经历 past_experience（≤600 字）\n\n【准入（满足任一即可）】\n- 和主线直接相关\n- 和主角有深度互动\n- 拥有独特能力\n- 会多次出现\n- 有明确姓名\n一次性路人、龙套、纯功能性 NPC 不录（龙套放地图元素表）。\n\n【主键判定（判断 insert 还是 update）】\n按 \"姓名\" 查本表：\n- 查不到 → insert 新行\n- 查到了 → update 该行字段\n\n【条数建议】\n条数 ≤20 条。接近上限时优先删除长期没互动且无剧情作用的角色。\n\n【禁止事项】\n不生成好感度、亲密度、信任值等量化情感数值。\n\n【字段格式】\n一句话介绍：概括角色身份背景，不带主观评价，建议 ≤30 字。\n外貌特征：含身高体型等关键外观，建议 ≤60 字。普通衣物写这里，特殊装备进装备表。\n身份：职业或头衔，建议 ≤40 字。\n过往经历：背景和关键事件，剧情推进时增量补充，建议 ≤600 字，超过就压缩。\n\n【所在地点】\n优先填世界地图点表已有的 \"详细地点\"。只写地点名。\n对：\"{{user}}公寓\" | \"御苑\"\n错：\"东京-{{user}}公寓-卫生间\" | \"新宿区-御苑\"\n\n【在场状态】\n- 在场：角色位于当前场景或能立即交互\n- 离场：角色不在当前场景\n次要地区切换时建议重估一次。\n\n【人际关系】\n格式：\"{角色名}:{关系词}\"\n- 同一角色多个关系词用逗号分隔\n- 不同角色用分号分隔\n- 关系词简短，如 [恋人,挚友,师徒,敌对,队友]，建议 ≤6 字\n只记录对剧情有重大影响的核心关系。\n示例：\"主角:挚友; 艾莉丝:恋人\" | \"高松灯:同学,队友; 角色B:仇人\"\n\n【交互选项】\n英文逗号分隔，每项简短，建议每项 ≤8 字、总数 ≤3 个。\n仅 \"在场\" 的角色填写；离场时留空。\n示例：\"告别,邀约\"\n\n<属性规则>\n基础属性：\"{名称}:{数值}\"，数值 [5,95]，分号分隔多组。\n示例：\"力量:55; 敏捷:31; 体质:51; 智力:59; 感知:60; 魅力:65\"\n\n特有属性：角色特殊能力或技能。格式同上，数值 [0,100]，代表成功概率。\n示例：\"爆裂魔法:85; 时间回溯:70; 超电磁炮:90\"\n\n属性标尺：5-14 能力缺失 | 15-41 弱项 | 42-59 平均 | 60-77 精英 | 78-86 极限 | 87-95 破格。\n长尾分布，多数集中在 42-59，87+ 极稀有。受身份背景生成、受当前状态修正（重伤 → 5-14；肾上腺素 → 78-86）。\n</属性规则>",
+                  "initNode": "为符合准入的重要角色各插入一条，按 DDL 列顺序填全 13 个业务列。base_attributes 与 special_attributes 必须依据 Note 中的 <属性规则> 生成，不要套用固定属性名或固定数值；无特有属性时 special_attributes 写 NULL。\nSQL示例: INSERT INTO important_npc (row_id, name, gender, age, brief_intro, appearance, identity_text, base_attributes, special_attributes, location_name, presence_status, relations_text, interaction_options, past_experience) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM important_npc), '艾莉丝', '女', 20, '冰术研究员，主角同学', '银发蓝眼，身高163cm，穿白外套', '研究员', '基础属性字符串', '特有属性字符串', '御苑', '在场', '主角:挚友', '交谈,邀约,告别', '曾在学院档案室任职，与主角在一年前相识。');",
+                  "deleteNode": "允许删除：条数超标、角色退场过久且没剧情作用、需要清理边缘角色时。\nSQL示例: DELETE FROM important_npc WHERE name = '过气配角';",
+                  "updateNode": "已存在的角色，字段值变化时更新：外貌、身份、属性、位置、在场状态、人际关系、重大经历。过往经历字数接近上限时压缩重写。presence_status='离场' 时 interaction_options 可为 NULL；='在场' 时 interaction_options 必须是非空字符串。base_attributes 与 special_attributes 必须依据 Note 中的 <属性规则> 生成，不要套用固定属性名或固定数值；无特有属性时 special_attributes 写 NULL。\nSQL示例(进入场景): UPDATE important_npc SET location_name = '御苑', presence_status = '在场', interaction_options = '交谈,告别' WHERE name = '艾莉丝';\nSQL示例(离开场景): UPDATE important_npc SET presence_status = '离场', interaction_options = NULL WHERE name = '艾莉丝';\nSQL示例(关系/属性变化): UPDATE important_npc SET relations_text = '主角:恋人', base_attributes = '基础属性字符串', special_attributes = '特有属性字符串' WHERE name = '艾莉丝';",
+                  "insertNode": "姓名不在表里的新重要角色，新增一条。base_attributes 与 special_attributes 必须依据 Note 中的 <属性规则> 生成，不要套用固定属性名或固定数值；无特有属性时 special_attributes 写 NULL。\nSQL示例: INSERT INTO important_npc (row_id, name, gender, age, brief_intro, appearance, identity_text, base_attributes, special_attributes, location_name, presence_status, relations_text, interaction_options, past_experience) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM important_npc), '神谷真', '男', 32, '地下情报贩子', '身高180cm，黑西装，左眼有疤', '情报商', '基础属性字符串', '特有属性字符串', '旧港仓区', '离场', '主角:中立', NULL, '长期向多方出售消息，与夜鸦会有合作关系。');",
+                  "ddl": "CREATE TABLE important_npc ( -- 重要角色表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  name TEXT NOT NULL UNIQUE, -- 姓名\n  gender TEXT NOT NULL, -- 性别\n  age INTEGER NOT NULL CHECK(age >= 0), -- 年龄\n  brief_intro TEXT NOT NULL CHECK(LENGTH(brief_intro) <= 30), -- 一句话介绍\n  appearance TEXT NOT NULL CHECK(LENGTH(appearance) <= 60), -- 外貌特征\n  identity_text TEXT NOT NULL CHECK(LENGTH(identity_text) <= 40), -- 身份\n  base_attributes TEXT NOT NULL, -- 基础属性\n  special_attributes TEXT, -- 特有属性\n  location_name TEXT NOT NULL, -- 所在地点\n  presence_status TEXT NOT NULL CHECK(presence_status IN ('在场', '离场')), -- 在场状态\n  relations_text TEXT, -- 人际关系\n  interaction_options TEXT CHECK(presence_status = '离场' OR (interaction_options IS NOT NULL AND LENGTH(TRIM(interaction_options)) > 0)), -- 交互选项\n  past_experience TEXT NOT NULL CHECK(LENGTH(past_experience) <= 600) -- 过往经历\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "姓名",
+                    "性别",
+                    "年龄",
+                    "一句话介绍",
+                    "外貌特征",
+                    "身份",
+                    "基础属性",
+                    "特有属性",
+                    "所在地点",
+                    "在场状态",
+                    "人际关系",
+                    "交互选项",
+                    "过往经历"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 1
+                },
+                "exportConfig": {
+                  "enabled": true,
+                  "splitByRow": true,
+                  "entryName": "重要角色表",
+                  "entryType": "keyword",
+                  "keywords": "姓名",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": true,
+                  "extraIndexEntryName": "重要角色表-索引",
+                  "extraIndexColumns": [
+                    "姓名",
+                    "一句话介绍"
+                  ],
+                  "extraIndexColumnModes": {
+                    "姓名": "both",
+                    "一句话介绍": "index_only"
+                  },
+                  "extraIndexInjectionTemplate": "以下为已经登场过的角色：\n<已登场角色>\n$1\n</已登场角色>",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 10000,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 10000,
+                    "order": 8000
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 10000,
+                    "order": 99983
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 10000,
+                    "order": 99984
+                  }
+                },
+                "orderNo": 5
+              },
+              "sheet_inventory": {
+                "uid": "sheet_inventory",
+                "name": "物品表",
+                "sourceData": {
+                  "note": "记录主角拥有的非装备类物品。\n\n【列定义】\n列1=row_id\n列2=物品名称 item_name（全表唯一，≤10 字）\n列3=类型 item_type\n列4=数量 quantity（非负整数）\n列5=品质 quality\n列6=描述 description（≤60 字）\n\n【收录范围】\n装备类进装备表。货币（金/银/铜币、银子、灵石等）和点数（行动点、积分）不进本表，写在主角的资源数据里。\n\n【主键判定（判断 insert 还是 update）】\n按 \"物品名称\" 查本表：\n- 查不到 → insert 新行\n- 查到了 → update（通常是数量或描述变化）\n可堆叠物品绝对不要新建重复行。任务物品、唯一物品数量一般固定为 1。\n\n【条数和命名】\n条数 ≤20 条。物品名称 ≤10 字。\n\n【字段取值】\n类型：自由文本，按世界观填写；常用示例有 消耗品、材料、任务物品、道具、功法、坐骑、载具、芯片、药剂。\n数量：非负整数。耗尽后可以是 0。\n品质：[普通,优秀,稀有,史诗,传说,神话]\n描述：一句话含外观、效果、用途，字数 ≤60 字",
+                  "initNode": "按设定添加主角初始携带的物品。\nSQL示例: INSERT INTO inventory (row_id, item_name, item_type, quantity, quality, description) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM inventory), '小型治疗药水', '消耗品', 3, '普通', '饮用后少量回复体力的红色药水');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "已存在的物品，数量或描述变化时更新。可堆叠物品只改 quantity，不新建行。耗尽后 quantity 可以是 0。\nSQL示例(使用消耗): UPDATE inventory SET quantity = quantity - 1 WHERE item_name = '小型治疗药水';\nSQL示例(获取堆叠): UPDATE inventory SET quantity = quantity + 2 WHERE item_name = '小型治疗药水';",
+                  "insertNode": "物品名称不在表里时，新增一条。可堆叠物品绝对不要新建重复行。\nSQL示例: INSERT INTO inventory (row_id, item_name, item_type, quantity, quality, description) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM inventory), '古老的铁钥匙', '任务物品', 1, '优秀', '锈迹斑斑的铁钥匙，据说能打开某扇门');",
+                  "ddl": "CREATE TABLE inventory ( -- 物品表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  item_name TEXT NOT NULL UNIQUE CHECK(LENGTH(item_name) <= 10), -- 物品名称\n  item_type TEXT NOT NULL, -- 类型\n  quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity >= 0), -- 数量\n  quality TEXT NOT NULL CHECK(quality IN ('普通', '优秀', '稀有', '史诗', '传说', '神话')), -- 品质\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 60) -- 描述\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "物品名称",
+                    "类型",
+                    "数量",
+                    "品质",
+                    "描述"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "物品表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "物品表-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 6
+              },
+              "sheet_equipment": {
+                "uid": "sheet_equipment",
+                "name": "装备表",
+                "sourceData": {
+                  "note": "记录主角拥有的所有装备。\n\n【列定义】\n列1=row_id\n列2=装备名称 equipment_name（全表唯一，≤12 字）\n列3=类型 equipment_type\n列4=品质 quality\n列5=状态 status_text（已装备/闲置）\n列6=描述 description（≤40 字）\n\n【收录范围】\n主角拥有的可穿戴、可持用、可装备物都可进入本表。工具类、消耗品、材料也可按实际用途放入物品表。\n\n【拆分规则】\n每件装备单独一行，不合并。\n错：\"狐裘大衣与长裙\" → 对：拆成 \"狐裘大衣\"、\"长裙\" 两行。\n错：\"耳环和项链\" → 对：拆成 \"耳环\"、\"项链\" 两行。\n\n【状态处理】\n- 已装备：主角当前穿戴中\n- 闲置：卸下但仍拥有\n卸下 → 状态改为 \"闲置\"，保留在表。\n丢弃 → 从表里删除这行。\n\n【主键判定（判断 insert 还是 update）】\n按 \"装备名称\" 查本表：\n- 查不到 → insert 新行\n- 查到了 → update（常见是状态、描述变化）\n\n【条数和命名】\n建议 ≤15 条。装备名称简短好读，建议 ≤12 字。\n\n【字段取值】\n类型：自由文本，按世界观填写；常用示例有 武器、护具、衣物、饰品、法宝、义体、载具、神器。\n品质：[普通,优秀,稀有,史诗,传说,神话]\n状态：[已装备,闲置]\n描述：一句话含外观、效果、穿戴部位， ≤40 字",
+                  "initNode": "按设定添加主角的初始装备。\nSQL示例: INSERT INTO equipment (row_id, equipment_name, equipment_type, quality, status_text, description) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM equipment), '校服', '衣物', '普通', '已装备', '标准款深蓝色校服，穿在身上');",
+                  "deleteNode": "允许删除：装备丢弃、损毁、转移所有权、或需要清理无效装备时。\nSQL示例: DELETE FROM equipment WHERE equipment_name = '破损短剑';",
+                  "updateNode": "已存在的装备，状态或描述变化时更新。\nSQL示例(卸下): UPDATE equipment SET status_text = '闲置' WHERE equipment_name = '校服';\nSQL示例(装备): UPDATE equipment SET status_text = '已装备' WHERE equipment_name = '魔法长袍';",
+                  "insertNode": "装备名称不在表里时，新增一条。\nSQL示例: INSERT INTO equipment (row_id, equipment_name, equipment_type, quality, status_text, description) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM equipment), '魔法长袍', '衣物', '稀有', '闲置', '附魔银丝刺绣，提升魔力亲和');",
+                  "ddl": "CREATE TABLE equipment ( -- 装备表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  equipment_name TEXT NOT NULL UNIQUE, -- 装备名称\n  equipment_type TEXT NOT NULL, -- 类型\n  quality TEXT NOT NULL CHECK(quality IN ('普通', '优秀', '稀有', '史诗', '传说', '神话')), -- 品质\n  status_text TEXT NOT NULL CHECK(status_text IN ('已装备', '闲置')), -- 状态\n  description TEXT NOT NULL CHECK(LENGTH(description) <= 40) -- 描述\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "装备名称",
+                    "类型",
+                    "品质",
+                    "状态",
+                    "描述"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "装备表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "装备表-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 7
+              },
+              "sheet_quests": {
+                "uid": "sheet_quests",
+                "name": "任务表",
+                "sourceData": {
+                  "note": "记录主角当前承接的所有任务。\n\n【列定义】\n列1=row_id\n列2=名称 quest_name（全表唯一）\n列3=类型 quest_type\n列4=优先级 priority_level\n列5=目标 target_desc（≤100 字）\n列6=进度（%） progress_text（只允许 '0%'~'100%'，必须带百分号）\n列7=状态标签 status_tag（[进行中,已完成,已失败,已放弃] 之一，禁止带百分号）\n列8=来源 source_text（可 NULL）\n列9=奖励 reward_text（可 NULL）\n\n【准入】\n收录：主线任务、支线任务、悬赏通缉、委托请求。\n不收：单轮就能完成的小动作、世界观设定信息、没明确目标的事项。\n判断标准：有明确完成目标 且 需要跨越 2 轮以上交互。\n\n【主键判定（判断 insert 还是 update）】\n按 \"名称\" 查本表：\n- 查不到 → insert 新行\n- 查到了 → update（常见是进度、状态变化）\n\n【字段取值】\n类型：[主线,支线,日常]\n优先级：[紧急,重要,普通]\n目标：一句话写完成条件，≤100 字。\n\n进度（%）：必须是 \"{整数}%\" 格式，整数范围 0-100，必须带百分号。\n对：\"0%\" | \"50%\" | \"60%\" | \"100%\"\n错：\"马上完成\" | \"已完成一半\" | \"接近完成\" | \"50\"（缺百分号）\n\n状态标签：必须从 [进行中,已完成,已失败,已放弃] 选一个。\n对：\"进行中\" | \"已完成\" | \"已失败\" | \"已放弃\"\n错：任何带百分号或带数字的写法，比如 \"25%\"、\"进行中50%\"\n\n重要：进度（%）和状态标签是两列，百分号只能出现在进度（%）列，状态列绝不能有百分号。",
+                  "initNode": "如有初始任务则插入。\nSQL示例: INSERT INTO quests (row_id, quest_name, quest_type, priority_level, target_desc, progress_text, status_tag, source_text, reward_text) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM quests), '调查失踪事件', '主线', '重要', '找到失踪同学的下落并查清原因', '0%', '进行中', '班主任', '真相与 500 金币');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "已存在的任务，进度或状态变化时更新。progress_text 永远是 '{整数}%' 格式（如 '25%'、'50%'、'100%'），status_tag 永远是 [进行中,已完成,已失败,已放弃] 之一，两列绝不混用百分号。\nSQL示例(推进): UPDATE quests SET progress_text = '50%', status_tag = '进行中' WHERE quest_name = '调查失踪事件';\nSQL示例(完成): UPDATE quests SET progress_text = '100%', status_tag = '已完成' WHERE quest_name = '调查失踪事件';\nSQL示例(失败): UPDATE quests SET status_tag = '已失败' WHERE quest_name = '调查失踪事件';",
+                  "insertNode": "名称不在表里的新任务，新增一条。\nSQL示例: INSERT INTO quests (row_id, quest_name, quest_type, priority_level, target_desc, progress_text, status_tag, source_text, reward_text) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM quests), '采购药材', '支线', '普通', '从市集买齐治疗药草三份', '0%', '进行中', '诊所老板', '100 金币');",
+                  "ddl": "CREATE TABLE quests ( -- 任务表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  quest_name TEXT NOT NULL UNIQUE, -- 名称\n  quest_type TEXT NOT NULL CHECK(quest_type IN ('主线', '支线', '日常')), -- 类型\n  priority_level TEXT NOT NULL CHECK(priority_level IN ('紧急', '重要', '普通')), -- 优先级\n  target_desc TEXT NOT NULL CHECK(LENGTH(target_desc) <= 100), -- 目标\n  progress_text TEXT NOT NULL CHECK(progress_text = '0%' OR progress_text GLOB '[1-9]%' OR progress_text GLOB '[1-9][0-9]%' OR progress_text = '100%'), -- 进度（%）\n  status_tag TEXT NOT NULL CHECK(status_tag IN ('进行中', '已完成', '已失败', '已放弃')), -- 状态标签\n  source_text TEXT, -- 来源\n  reward_text TEXT -- 奖励\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "名称",
+                    "类型",
+                    "优先级",
+                    "目标",
+                    "进度（%）",
+                    "状态标签",
+                    "来源",
+                    "奖励"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "任务表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "任务表-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99990
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99991
+                  }
+                },
+                "orderNo": 8
+              },
+              "sheet_summary": {
+                "uid": "sheet_summary",
+                "name": "纪要表",
+                "sourceData": {
+                  "note": "轮次日志。每轮交互结束后立刻插入一条新记录。\n\n【列定义】\n列1=row_id\n列2=编码索引 code_index（AM0001 起递增，全表唯一）\n列3=时间跨度 time_span（'YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM'）\n列4=概览 summary（≤30 字）\n列5=纪要 chronicle_text（200-600 字）\n\n【编码索引】\n格式 AMXXXX，XXXX 从 0001 开始递增。\n\n【时间跨度】\n本轮事件的时间范围，格式 \"{起始时间} ~ {结束时间}\"，时间格式 YYYY-MM-DD HH:MM。\n\n【概览】\n一句话概括本轮纪要内容，客观陈述，不加主观判断或推测，不包含纪要里没写的信息。必须 ≤30 字。\n\n【纪要】\n第三方视角客观记录本轮事件，只写正文明确发生的事实，不补充没出现的情节。\n必须 200-600 字，结尾不总结、不升华。\n行文生活化、直白，基调积极向上。避免公文式措辞（例如 \"A 与 B 就某话题达成协议\"、\"A 确立了某计划\"）。\n保留角色情感细节，去掉支配欲、占有欲的描写。\n如果上下文包含多轮交互，合并成一条记录。\n允许写：主要事件、涉及角色、角色动作、物品交互、物品全名、物品得失、位置变化、地点全名、状态变化、新发现、伏笔、暗号、重要情报、任务目标。\n禁止写：极端情绪、夸张、比喻、升华、支配欲、掌控欲。",
+                  "initNode": "插入 AM0001 记录，记录初始场景和角色状态。\nSQL示例: INSERT INTO chronicle (row_id, code_index, time_span, summary, chronicle_text) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM chronicle), 'AM0001', '2024-04-01 09:00 ~ 2024-04-01 09:30', '御苑初遇并约定继续调查。', '清晨的御苑笼罩在薄雾中，主角按约定抵达公园入口。艾莉丝已经等在那里，手里拿着一本旧档案。两人沿着林荫道慢慢走，艾莉丝提到最近有三名同学接连失踪，档案里的照片让她想起学院地下室的旧研究项目。主角仔细听完，把几处关键地点记在脑中，打算下课后去查证。临走前两人约定第二天放学在图书馆继续讨论。艾莉丝提醒主角别把事情告诉太多人，以免线索被夜鸦会提前处理。主角把档案袋收好，决定先回学校确认失踪名单，随后赶回教室。');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "禁止。",
+                  "insertNode": "每轮交互结束后插入一条新记录，编码索引递增（AM0001→AM0002→AM0003…）。summary 必须 ≤30 字；chronicle_text 必须 ≥200 且 ≤600 字符；time_span 严格遵循 'YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM' 格式，中间一个空格、一个波浪号、一个空格。\nSQL示例: INSERT INTO chronicle (row_id, code_index, time_span, summary, chronicle_text) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM chronicle), 'AM0002', '2024-04-01 12:20 ~ 2024-04-01 13:20', '档案室发现失踪线索。', '中午下课后主角直奔学院旧楼。艾莉丝已经用借来的钥匙打开档案室侧门，两人轻声走进去。灰尘在光束中飘浮，一排排铁皮柜挤在墙边。艾莉丝按日期翻查，很快在 1998 年的档案夹里找到三张熟悉的面孔，正是这周失踪的三名同学的父辈照片。主角把照片拍下来，注意到档案右下角有一枚褪色徽章，形状和夜鸦会标志吻合。两人听见走廊传来脚步声，立刻把档案放回原处，从侧门撤离。离开旧楼后，主角把新线索记入随身笔记，决定晚上再查夜鸦会的活动地点。');",
+                  "ddl": "CREATE TABLE chronicle ( -- 纪要表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  code_index TEXT NOT NULL UNIQUE CHECK(code_index GLOB 'AM[0-9][0-9][0-9][0-9]'), -- 编码索引\n  time_span TEXT NOT NULL CHECK(time_span GLOB '????-??-?? ??:?? ~ ????-??-?? ??:??'), -- 时间跨度\n  summary TEXT NOT NULL CHECK(LENGTH(summary) <= 30), -- 概览\n  chronicle_text TEXT NOT NULL CHECK(LENGTH(chronicle_text) >= 200 AND LENGTH(chronicle_text) <= 600) -- 纪要\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "编码索引",
+                    "时间跨度",
+                    "概览",
+                    "纪要"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": true,
+                  "splitByRow": true,
+                  "entryName": "纪要",
+                  "entryType": "keyword",
+                  "keywords": "编码索引",
+                  "preventRecursion": true,
+                  "injectionTemplate": "<记忆回溯>\n$1\n</记忆回溯>",
+                  "extraIndexEnabled": true,
+                  "extraIndexEntryName": "纪要索引",
+                  "extraIndexColumns": [
+                    "概览",
+                    "编码索引"
+                  ],
+                  "extraIndexColumnModes": {
+                    "概览": "index_only",
+                    "编码索引": "both"
+                  },
+                  "extraIndexInjectionTemplate": "<已发生的事件概览>\n$1\n</已发生的事件概览>",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 999,
+                    "order": 10000
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 1000,
+                    "order": 10010
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 9999,
+                    "order": 99987
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 9999,
+                    "order": 99988
+                  }
+                },
+                "orderNo": 9
+              },
+              "sheet_check_suggestions": {
+                "uid": "sheet_check_suggestions",
+                "name": "检定建议表",
+                "sourceData": {
+                  "note": "【已停用 · 隐形守护者】\n本表不得作为主线选项菜单。玩家选项唯一来源：assistant 叙事末 <branches>（见《抉择唯一来源铁律》）+ 玩家发送 A./B./C. 原文；BE 后删楼重发选项原文。\n每轮 <tableEdit> 与 init 均禁止写入 check_suggestions。\n骰子仅当正文明确要求属性检定时使用 DSL；勿生成 1~5 编号平行建议，勿在 display_text 写结局名/BE/推荐。\n表结构保留仅供插件兼容，行内容可为空或历史残留，模型须忽略。",
+                  "initNode": "禁止。不得对 check_suggestions 执行 INSERT。开局亦勿写入。",
+                  "deleteNode": "禁止。",
+                  "updateNode": "禁止。每轮 <tableEdit> 不得包含 check_suggestions 的任何 SQL。",
+                  "insertNode": "禁止。",
+                  "ddl": "CREATE TABLE check_suggestions ( -- 检定建议表\n  row_id INTEGER PRIMARY KEY CHECK(row_id BETWEEN 1 AND 5), -- 行号，仅允许 1-5\n  display_text TEXT NOT NULL CHECK(TRIM(display_text) <> ''), -- 展示文本\n  dice_command TEXT NOT NULL CHECK(TRIM(dice_command) <> '') -- 骰子命令\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "展示文本",
+                    "骰子命令"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": -1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "检定建议表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "extraIndexEntryName": "检定建议表-索引",
+                  "extraIndexColumns": [],
+                  "extraIndexColumnModes": {},
+                  "extraIndexInjectionTemplate": "",
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10020
+                  },
+                  "extraIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10030
+                  },
+                  "fixedEntryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99992
+                  },
+                  "fixedIndexPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 99993
+                  },
+                  "injectIntoWorldbook": false
+                },
+                "orderNo": 10
+              },
+              "sheet_plot_state": {
+                "uid": "sheet_plot_state",
+                "name": "剧情状态表",
+                "sourceData": {
+                  "note": "记录《隐形守护者》主线进度（单行）。与 MVU stat_data.剧情 每轮同步。\n\n【列定义】\n列1=row_id（仅允许为1）\n列2=当前章节 chapter\n列3=当前节点 node_id（与《抉择校验表》一致，如序章-1）\n列4=序章完成 prologue_done（是/否）\n列5=已死亡 is_dead（是/否）\n列6=结局分支 ending_branch（空或标准结局名）\n列7=检查点 checkpoint\n\n【禁止】AI 不得擅自跳关；节点变更须对应用户选项与《抉择校验表》。",
+                  "initNode": "游戏初始化时插入唯一一行。\nSQL示例: INSERT INTO plot_state (row_id, chapter, node_id, prologue_done, is_dead, ending_branch, checkpoint) VALUES (1, '序章', '序章-1', '否', '否', '', '序章-1');",
+                  "deleteNode": "禁止。",
+                  "updateNode": "每轮剧情推进或用户抉择后更新。BE 时 is_dead=是 并写 ending_branch。\nSQL示例: UPDATE plot_state SET node_id = '序章-2', checkpoint = '序章-2' WHERE row_id = 1;\nSQL示例(BE): UPDATE plot_state SET is_dead = '是', ending_branch = '新的征程', node_id = '序章-1' WHERE row_id = 1;",
+                  "insertNode": "禁止。",
+                  "ddl": "CREATE TABLE plot_state ( -- 剧情状态表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号\n  chapter TEXT NOT NULL, -- 当前章节\n  node_id TEXT NOT NULL, -- 当前节点\n  prologue_done TEXT NOT NULL CHECK(prologue_done IN ('是', '否')), -- 序章完成\n  is_dead TEXT NOT NULL CHECK(is_dead IN ('是', '否')), -- 已死亡\n  ending_branch TEXT, -- 结局分支\n  checkpoint TEXT NOT NULL -- 检查点\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "当前章节",
+                    "当前节点",
+                    "序章完成",
+                    "已死亡",
+                    "结局分支",
+                    "检查点"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": 1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "剧情状态表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10020
+                  }
+                },
+                "orderNo": 20
+              },
+              "sheet_character_attr": {
+                "uid": "sheet_character_attr",
+                "name": "角色属性表",
+                "sourceData": {
+                  "note": "分阶段人设用表。每行一角色。情感值=态度（-10~+10）；信任度=交底门闩（0~50，方敏≥35可交底）。与 MVU 对user.* 每轮同步。\n\n【列定义】\n列1=row_id\n列2=角色名 char_name（唯一）\n列3=情感值 emotion（-10~10）\n列4=信任度 trust（0~50）\n列5=关系阶段 relation_phase（序章怀疑|序章至三章|第四章互信|美丽世界线|丧钟线）\n\n【条件模板】世界书用 cell:角色属性表/方敏/情感值 等，须 SP·数据库 勾选「启用条件模板」。",
+                  "initNode": "游戏初始化时插入序章相关角色。\nSQL示例: INSERT INTO character_attr (row_id, char_name, emotion, trust, relation_phase) VALUES (1, '方敏', 0, 35, '序章怀疑'), (2, '庄晓曼', 0, 20, '序章至三章'), (3, '武藤纯子', 0, 15, '序章至三章'), (4, '陆望舒', 0, 40, '序章至三章');",
+                  "deleteNode": "禁止删除已登场核心角色行。",
+                  "updateNode": "情感/信任/阶段变化时更新对应行。须与 MVU JSONPatch 同轮一致。\nSQL示例: UPDATE character_attr SET emotion = emotion + 1, trust = trust + 2 WHERE char_name = '方敏';\nSQL示例: UPDATE character_attr SET relation_phase = '第四章互信' WHERE char_name = '方敏';",
+                  "insertNode": "新重要感情线/NPC 登场且需分阶段人设时添加。\nSQL示例: INSERT INTO character_attr (row_id, char_name, emotion, trust, relation_phase) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM character_attr), '武藤志雄', 0, 10, '序章至三章');",
+                  "ddl": "CREATE TABLE character_attr ( -- 角色属性表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  char_name TEXT NOT NULL UNIQUE, -- 角色名\n  emotion INTEGER NOT NULL DEFAULT 0 CHECK(emotion BETWEEN -100 AND 100), -- 情感值\n  trust INTEGER NOT NULL DEFAULT 35 CHECK(trust BETWEEN 0 AND 100), -- 信任度\n  relation_phase TEXT NOT NULL CHECK(relation_phase IN ('序章怀疑', '序章至三章', '第四章互信', '美丽世界线', '丧钟线')) -- 关系阶段\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "角色名",
+                    "情感值",
+                    "信任度",
+                    "关系阶段"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": 1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "角色属性表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10021
+                  }
+                },
+                "orderNo": 21
+              },
+              "sheet_xiaotu_cover": {
+                "uid": "sheet_xiaotu_cover",
+                "name": "肖途潜伏表",
+                "sourceData": {
+                  "note": "肖途单行状态，与 MVU 肖途/敌方 同步。暴露风险为派生文案：低/中/高/极高。\n\n【列】row_id=1；伪装完整度；组织信任度；武藤怀疑度；暴露风险；允许行动级别(1-4)",
+                  "initNode": "INSERT INTO xiaotu_cover (row_id, disguise, org_trust, wuteng_doubt, exposure_risk, action_level) VALUES (1, 72, 70, 3, '低', 1);",
+                  "deleteNode": "禁止。",
+                  "updateNode": "数值变化时更新。序章禁止提高武藤怀疑度。\nSQL示例: UPDATE xiaotu_cover SET disguise = 68, exposure_risk = '中' WHERE row_id = 1;",
+                  "insertNode": "禁止。",
+                  "ddl": "CREATE TABLE xiaotu_cover ( -- 肖途潜伏表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号\n  disguise INTEGER NOT NULL CHECK(disguise BETWEEN 0 AND 100), -- 伪装完整度\n  org_trust INTEGER NOT NULL CHECK(org_trust BETWEEN 0 AND 100), -- 组织信任度\n  wuteng_doubt INTEGER NOT NULL CHECK(wuteng_doubt BETWEEN 0 AND 100), -- 武藤怀疑度\n  exposure_risk TEXT NOT NULL CHECK(exposure_risk IN ('低', '中', '高', '极高')), -- 暴露风险\n  action_level INTEGER NOT NULL CHECK(action_level BETWEEN 1 AND 4) -- 允许行动级别\n);"
+                },
+                "content": [
+                  [
+                    "row_id",
+                    "伪装完整度",
+                    "组织信任度",
+                    "武藤怀疑度",
+                    "暴露风险",
+                    "允许行动级别"
+                  ]
+                ],
+                "updateConfig": {
+                  "uiSentinel": -1,
+                  "contextDepth": -1,
+                  "updateFrequency": 1,
+                  "batchSize": -1,
+                  "skipFloors": -1,
+                  "groupId": 2
+                },
+                "exportConfig": {
+                  "enabled": false,
+                  "splitByRow": false,
+                  "entryName": "肖途潜伏表",
+                  "entryType": "constant",
+                  "keywords": "",
+                  "preventRecursion": true,
+                  "injectionTemplate": "",
+                  "extraIndexEnabled": false,
+                  "entryPlacement": {
+                    "position": "at_depth_as_system",
+                    "depth": 2,
+                    "order": 10022
+                  }
+                },
+                "orderNo": 22
+              }
+            }
+          }
+        },
+        "【骰子系统】-自动更新": {
+          "type": "script",
+          "script_file": "脚本/【骰子系统】-自动更新.txt",
+          "enabled": true,
+          "id": "00b230f8-c5ff-446a-b78f-822bcd2e879f",
+          "info": "感谢a佬开源\n以九颜二改为基础进行三改\n@kousakayou",
+          "button": {
+            "enabled": false,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "第二章写死强制": {
+          "type": "script",
+          "script_file": "脚本/第二章写死强制/index.ts",
+          "enabled": true,
+          "id": "c0d5e4f3-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
+          "info": "第二章二十三选写死；自动补 branches",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "第三章写死强制": {
+          "type": "script",
+          "script_file": "脚本/第三章写死强制/index.ts",
+          "enabled": true,
+          "id": "d1e2f3a4-b5c6-7d8e-9f0a-1b2c3d4e5f6a",
+          "info": "第三章二十七选写死；自保/共荣圈暗线；自动补 branches",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        }
+      },
+      "variables": {}
+    },
+    "talkativeness": "0.5",
+    "fav": false,
+    "depth_prompt": {
+      "prompt": "",
+      "depth": 4,
+      "role": "system"
+    }
+  },
+  "regex_scripts": {
+    "新·星河璀璨数据库召回配套正则1": {
+      "id": "71a8f8a8-9a1e-46e6-ac16-e50dca43892c",
+      "findRegex": "/以下是用户([\\s\\S]*)$/m",
+      "replaceString": "```html\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\" />\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n<title>剧情上下文面板</title>\n<style>\n:root {--bg-color: #24221f;--border-color: #36332e;--text-main: #c1b9ad;--text-dim: #9e978e;--text-mute: #645e55;--accent: #7d4940;--bg-hover: #2a2824;--bg-stats: #211f1c;}\nbody.theme-silk {--bg-color: #f4f1eb;--border-color: #e0dacb;--text-main: #4a453f;--text-dim: #6e675e;--text-mute: #9e978e;--accent: #8a6b5e;--bg-hover: #ebe7de;--bg-stats: #f9f8f5;}\n*{margin:0;padding:0;box-sizing:border-box}\nbody{font-family:'Noto Serif SC','Source Han Serif CN','Songti SC',serif;background:transparent;padding:12px;margin:0;color:var(--text-main);transition:background-color 0.6s ease;}\n.context-panel{width:100%;background-color:var(--bg-color);background-image:url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E\");border-radius:2px;border:1px solid var(--border-color);overflow:hidden;position:relative;transition:all 0.6s ease;}\n.panel-content-inner{padding:0;max-height:600px;overflow-y:auto}\n.seal{display:inline-block;border:1px solid var(--accent);color:var(--accent);font-size:12px;padding:1px 4px;margin-right:10px;border-radius:1px;opacity:0.8;font-weight:normal;letter-spacing:1px;line-height:1;transition:all 0.6s ease;}\n.section-header{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border-color);position:relative;cursor:default;transition:all 0.6s ease;}\n.section-title{font-size:14px;letter-spacing:2px;color:var(--text-main);opacity:0.9;transition:color 0.6s ease;}\n.action-group {margin-left:auto; display:flex; gap:12px;}\n.action-btn {font-size:11px; color:var(--text-mute); border:1px solid transparent; padding:2px 6px; cursor:pointer; transition:all 0.3s ease; letter-spacing:1px; user-select:none;}\n.action-btn:hover {color:var(--text-main); border-color:var(--border-color);}\n.action-btn.active {color:var(--accent); border-color:var(--accent);}\n.user-input-content{padding:20px;color:var(--text-main);font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word;position:relative;border-bottom:1px solid var(--border-color);transition:all 0.6s ease;}\n.recall-section .section-header, .supplement-section .section-header{cursor:pointer;}\n.recall-section .section-header:hover, .supplement-section .section-header:hover{background-color:var(--bg-hover)}\n.badge{margin-left:12px;font-size:11px;color:var(--text-mute);letter-spacing:1px;transition:color 0.6s ease;}\n.toggle-arrow{color:var(--text-mute);font-size:10px;transition:all 0.3s ease;margin-left:auto}\n.collapsed .toggle-arrow{transform:rotate(-90deg)}\n.collapsed .list-container{display:none}\n.list-container{padding:16px 20px;border-bottom:1px solid var(--border-color);transition:all 0.6s ease;}\n.item-box{margin-bottom:24px;position:relative;padding-left:16px;animation:fadeIn 0.4s ease forwards}\n.item-box::before{content:'';position:absolute;left:0;top:4px;bottom:0;width:1px;background-color:var(--border-color);transition:all 0.6s ease;}\n.item-box:last-child{margin-bottom:8px}\n.item-header{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}\n.item-id{color:var(--text-mute);font-size:11px;letter-spacing:1px;font-family:'Courier New',Courier,monospace;transition:color 0.6s ease;}\n.item-title{color:var(--text-main);font-size:13px;letter-spacing:1px;transition:color 0.6s ease;}\n.item-body{color:var(--text-dim);font-size:13px;line-height:1.9;white-space:pre-wrap;word-break:break-word;transition:color 0.6s ease;}\n.item-source{font-size:11px;color:var(--text-mute);margin-top:8px;font-style:italic;transition:color 0.6s ease;}\n.tag-label{display:inline-block;font-size:11px;color:var(--text-dim);border:1px solid var(--border-color);padding:2px 6px;margin-right:8px;transition:all 0.6s ease;}\n.stats-section{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background-color:var(--bg-stats);transition:all 0.6s ease;}\n.stats-item{display:flex;align-items:center;gap:8px;color:var(--text-mute);font-size:11px;letter-spacing:1px}\n.stats-value{color:var(--text-dim)}\n.loading-text{padding:30px;text-align:center;color:var(--text-mute);font-size:13px;letter-spacing:2px;animation:breathe 3s infinite ease-in-out}\n.memory-layout { display: flex; flex-direction: row; gap: 16px; align-items: flex-start; }\n.memory-sidebar { flex: 0 0 140px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }\n.memory-content-area { flex: 1; min-height: 120px; position: relative; }\n.memory-btn { padding: 6px 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-dim); cursor: pointer; border-radius: 2px; font-size: 11px; text-align: center; transition: all 0.3s ease; user-select: none; }\n.memory-btn:hover { color: var(--text-main); border-color: var(--text-mute); background: var(--bg-hover); }\n.memory-btn.active { color: var(--accent); border-color: var(--accent); background: var(--bg-hover); font-weight: bold; }\n.memory-detail { display: none; animation: fadeIn 0.4s ease forwards; }\n.memory-detail.active { display: block; }\n@media (max-width: 480px) { .memory-layout { flex-direction: column; } .memory-sidebar { flex: 1; width: 100%; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); } .memory-content-area { border-top: 1px solid var(--border-color); padding-top: 16px; width: 100%; } }\n@keyframes breathe{0%,100%{opacity:0.4}50%{opacity:1}}\n.error-message{padding:20px;color:var(--accent);font-size:13px;border-left:1px solid var(--accent);margin:10px 0}\n.panel-content-inner::-webkit-scrollbar{width:4px}\n.panel-content-inner::-webkit-scrollbar-track{background:transparent}\n.panel-content-inner::-webkit-scrollbar-thumb{background:var(--border-color)}\n.panel-content-inner::-webkit-scrollbar-thumb:hover{background:var(--text-mute)}\n@keyframes fadeIn{from{opacity:0}to{opacity:1}}\n</style>\n</head>\n<body>\n<script type=\"text/plain\" id=\"rawData\">$1</script>\n<div class=\"context-panel expanded\" id=\"contextPanel\">\n<div class=\"panel-content-inner\">\n<div class=\"user-input-section\">\n<div class=\"section-header\">\n<span class=\"seal\">录</span><span class=\"section-title\">当归</span>\n<div class=\"action-group\">\n<span class=\"action-btn\" id=\"themeBtn\" onclick=\"toggleTheme()\">[ 素纱 ]</span>\n<span class=\"action-btn\" id=\"copyBtn\" onclick=\"copyUserInput()\">[ 抄录 ]</span>\n</div>\n</div>\n<div class=\"user-input-content\" id=\"userInputContent\"></div>\n</div>\n<div class=\"recall-section collapsed\" id=\"recallSection\">\n<div class=\"section-header\" onclick=\"toggleSection('recallSection')\">\n<span class=\"seal\">忆</span><span class=\"section-title\">流转</span>\n<span class=\"badge\" id=\"memoryBadge\">参阅 -</span>\n<span class=\"toggle-arrow\">▼</span>\n</div>\n<div class=\"list-container\" id=\"memoryList\"><div class=\"loading-text\">静候回音...</div></div>\n</div>\n<div class=\"supplement-section collapsed\" id=\"supplementSection\">\n<div class=\"section-header\" onclick=\"toggleSection('supplementSection')\">\n<span class=\"seal\">注</span><span class=\"section-title\">旁支</span>\n<span class=\"badge\" id=\"supplementBadge\">拾遗 -</span>\n<span class=\"toggle-arrow\">▼</span>\n</div>\n<div class=\"list-container\" id=\"supplementList\"></div>\n</div>\n<div class=\"stats-section\">\n<div class=\"stats-item\"><span>残篇</span><span class=\"stats-value\" id=\"statsMemory\">-</span></div>\n<div class=\"stats-item\"><span>拾遗</span><span class=\"stats-value\" id=\"statsSupplement\">-</span></div>\n<div class=\"stats-item\"><span>流年</span><span class=\"stats-value\" id=\"statsTime\">-</span></div>\n</div>\n</div>\n</div>\n<script>\n(function(){\nvar startTime=Date.now();\ntry {if(localStorage.getItem('wabi-theme') === 'silk') {document.body.classList.add('theme-silk');setTimeout(function(){ document.getElementById('themeBtn').textContent = '[ 墨纸 ]'; }, 50);}} catch(e) {}\nwindow.toggleTheme = function() {var body = document.body;var btn = document.getElementById('themeBtn');if (body.classList.contains('theme-silk')) {body.classList.remove('theme-silk');btn.textContent = '[ 素纱 ]';try{ localStorage.setItem('wabi-theme', 'ink'); }catch(e){}} else {body.classList.add('theme-silk');btn.textContent = '[ 墨纸 ]';try{ localStorage.setItem('wabi-theme', 'silk'); }catch(e){}}};\nwindow.copyUserInput = function() {var contentEl = document.getElementById('userInputContent');var btn = document.getElementById('copyBtn');if (!contentEl || !btn) return;var textToCopy = contentEl.innerText || contentEl.textContent;if (textToCopy === '无声...') return;function showFeedback(text, isSuccess) {btn.textContent = text;if(isSuccess) btn.classList.add('active');setTimeout(function() { btn.textContent = '[ 抄录 ]'; btn.classList.remove('active'); }, 2000);}function fallbackCopy() {try {var textArea = document.createElement(\"textarea\");textArea.value = textToCopy;textArea.style.position = \"fixed\";document.body.appendChild(textArea);textArea.focus();textArea.select();var successful = document.execCommand('copy');document.body.removeChild(textArea);if (successful) showFeedback('[ 已录 ]', true);else showFeedback('[ 失败 ]', false);} catch (err) {showFeedback('[ 阻断 ]', false);}}if (navigator.clipboard && window.isSecureContext) {navigator.clipboard.writeText(textToCopy).then(function(){ showFeedback('[ 已录 ]', true); }).catch(function(){ fallbackCopy(); });} else {fallbackCopy();}};\nvar rawDataEl=document.getElementById(\"rawData\");if(!rawDataEl)return;var rawContent=rawDataEl.textContent||\"\";\nfunction parseUserInput(content){var match=content.match(/<本轮用户输入>([\\s\\S]*?)<\\/本轮用户输入>/);return match?match[1].replace(/^\\s+|\\s+$/g,''):'';}\nfunction parseRecallContent(content){var match=content.match(/<recall>([\\s\\S]*?)<\\/recall>/);return match?match[1].replace(/^\\s+|\\s+$/g,''):'';}\nfunction parseSupplementContent(content){var match=content.match(/<supplement>([\\s\\S]*?)<\\/supplement>/);return match?match[1].replace(/^\\s+|\\s+$/g,''):'';}\nvar rawUserInput=parseUserInput(rawContent);var rawAmList=parseRecallContent(rawContent);var rawSupplement=parseSupplementContent(rawContent);\nfunction toggleSection(id){var section=document.getElementById(id);if(section)section.classList.toggle('collapsed');updateIframeHeight();}\nwindow.toggleSection=toggleSection;\nfunction updateIframeHeight(){setTimeout(function(){var bodyHeight=document.body.scrollHeight;if(window.parent&&window.parent!==window) window.parent.postMessage({type:'resizeIframe',height:bodyHeight},'*');},50);}\nfunction escapeHtml(text){var div=document.createElement('div');div.textContent=text;return div.innerHTML;}\nfunction parseAmCodes(raw){var result=[];var matches=raw.match(/AM\\d+/gi);if(matches){for(var i=0;i<matches.length;i++){result.push(matches[i].toUpperCase());}}return result;}\nfunction extractAmTitle(raw,amCode){var pattern=amCode+'[（\\\\(]([^）\\\\)]+)[）\\\\)]';var match=raw.match(new RegExp(pattern));return match?match[1].trim():'';}\nfunction parseSupplementItems(raw){var lines=raw.split('\\n');var items=[];var currentItem=null;for(var i=0;i<lines.length;i++){var line=lines[i];var tagMatch=line.match(/^\\s*-\\s*\\[([^\\]]+)\\]\\s*(.*)/);if(tagMatch){if(currentItem)items.push(currentItem);currentItem={tag:tagMatch[1].trim(),content:tagMatch[2].trim()};}else if(currentItem&&line.trim()){currentItem.content+='\\n'+line.trim();}}if(currentItem)items.push(currentItem);return items;}\nfunction getAutoCardAPI(){if(typeof parent!=='undefined'&&parent.AutoCardUpdaterAPI) return parent.AutoCardUpdaterAPI;if(window.AutoCardUpdaterAPI) return window.AutoCardUpdaterAPI;return null;}\nfunction findMemoryInTable(tables,amCode,tableName){for(var uid in tables){var sheet=tables[uid];if(!sheet||!sheet.name||!sheet.content)continue;if(sheet.name!==tableName)continue;if(sheet.content.length<2)continue;var headers=sheet.content[0];var rows=sheet.content.slice(1);var codeIndex=headers.indexOf('编码索引');var summaryIndex=headers.indexOf('纪要');var titleIndex=headers.indexOf('标题');if(codeIndex===-1)continue;for(var i=0;i<rows.length;i++){var row=rows[i];if(!row||row.length<=codeIndex)continue;var codeValue=String(row[codeIndex]||'').trim().toUpperCase();if(codeValue===amCode.toUpperCase()){return{code:amCode,title:titleIndex!==-1&&row.length>titleIndex?String(row[titleIndex]||'').trim():'',content:summaryIndex!==-1&&row.length>summaryIndex?String(row[summaryIndex]||'').trim():'',source:tableName,rowIndex:i+1};}}}return null;}\nfunction renderMemoryItem(entry,amTitle){var title=amTitle||entry.title||'无名';var content=entry.content||'（形如白纸）';var source=entry.source||'未知';return '<div class=\"item-box\" style=\"margin-bottom:0;\"><div class=\"item-header\"><span class=\"item-id\">'+escapeHtml(entry.code)+'</span><span class=\"item-title\">'+escapeHtml(title)+'</span></div><div class=\"item-body\">'+escapeHtml(content)+'</div><div class=\"item-source\">来自：'+escapeHtml(source)+' · 卷'+entry.rowIndex+'</div></div>';}\nfunction renderSupplementItem(item){return '<div class=\"item-box\"><div class=\"item-header\"><span class=\"tag-label\">'+escapeHtml(item.tag)+'</span></div><div class=\"item-body\">'+escapeHtml(item.content)+'</div></div>';}\nfunction initUserInput(){var container=document.getElementById('userInputContent');var trimmed=rawUserInput.replace(/^\\s+|\\s+$/g,'');container.innerHTML=trimmed?escapeHtml(trimmed):'<span style=\"color:var(--text-mute);font-style:italic;\">无声...</span>';}\nasync function loadMemories(){var container=document.getElementById('memoryList');var badge=document.getElementById('memoryBadge');var statsMemory=document.getElementById('statsMemory');var amCodes=parseAmCodes(rawAmList);if(badge)badge.textContent='参阅 '+amCodes.length;if(amCodes.length===0){if(container)container.innerHTML='<div style=\"color:var(--text-mute);text-align:center;padding:30px;letter-spacing:1px;\">此刻尚无记忆泛起涟漪</div>';if(statsMemory)statsMemory.textContent='0';updateIframeHeight();return;}var api=getAutoCardAPI();var tables=null;var foundCount=0;if(api){try{if(api.refreshDataAndWorldbook) await api.refreshDataAndWorldbook();var jsonData=api.exportTableAsJson();if(jsonData) tables=typeof jsonData==='string'?JSON.parse(jsonData):jsonData;}catch(err){ console.error(err); }}var html='<div class=\"memory-layout\"><div class=\"memory-sidebar\" id=\"memSidebar\"></div><div class=\"memory-content-area\" id=\"memContentArea\"></div></div>';if(container)container.innerHTML=html;var sidebar=document.getElementById('memSidebar');var contentArea=document.getElementById('memContentArea');if(!sidebar||!contentArea) return;var sidebarHtml='';var contentHtml='';for(var i=0;i<amCodes.length;i++){var amCode=amCodes[i];var amTitle=extractAmTitle(rawAmList,amCode);var entry=null;if(tables){entry=findMemoryInTable(tables,amCode,'纪要表') || findMemoryInTable(tables,amCode,'总结表');}else{entry={ code:amCode, title:amTitle||'断联残影', content:'此为无数据连接时的残篇。若要窥见真容，需确保与星河璀璨数据库的枢纽连通。', source:'未知档案', rowIndex: 1 };}if(tables&&entry) foundCount++;else if(!tables) foundCount++;var btnClass = i===0 ? 'memory-btn active' : 'memory-btn';sidebarHtml += '<div class=\"'+btnClass+'\" onclick=\"switchMemory('+i+')\" id=\"btn-mem-'+i+'\">'+escapeHtml(amCode)+'</div>';var detailClass = i===0 ? 'memory-detail active' : 'memory-detail';contentHtml += '<div class=\"'+detailClass+'\" id=\"detail-mem-'+i+'\">';if(tables&&!entry){contentHtml += '<div class=\"item-box\" style=\"margin-bottom:0;\"><div class=\"item-header\"><span class=\"item-id\">'+escapeHtml(amCode)+'</span><span class=\"item-title\" style=\"color:var(--accent)\">散佚</span></div><div class=\"item-body\" style=\"color:var(--text-mute)\">未曾在此处留下印记。</div></div>';}else{contentHtml += renderMemoryItem(entry, amTitle);}contentHtml += '</div>';}sidebar.innerHTML=sidebarHtml;contentArea.innerHTML=contentHtml;if(statsMemory)statsMemory.textContent=foundCount+' / '+amCodes.length;window.switchMemory = function(idx){for(var j=0;j<amCodes.length;j++){var b=document.getElementById('btn-mem-'+j);var c=document.getElementById('detail-mem-'+j);if(b)b.classList.remove('active');if(c)c.classList.remove('active');}var ab=document.getElementById('btn-mem-'+idx);var ac=document.getElementById('detail-mem-'+idx);if(ab)ab.classList.add('active');if(ac)ac.classList.add('active');updateIframeHeight();};updateIframeHeight();}\nfunction loadSupplements(){var container=document.getElementById('supplementList');var badge=document.getElementById('supplementBadge');var statsSupplement=document.getElementById('statsSupplement');var items=parseSupplementItems(rawSupplement);if(badge)badge.textContent='拾遗 '+items.length;if(statsSupplement)statsSupplement.textContent=items.length;if(items.length===0){if(container)container.innerHTML='<div style=\"color:var(--text-mute);text-align:center;padding:30px;letter-spacing:1px;\">无旁支线索</div>';return;}var html='';for(var i=0;i<items.length;i++) html+=renderSupplementItem(items[i]);if(container)container.innerHTML=html;}\nfunction updateLoadTime(){var statsTime=document.getElementById('statsTime');if(statsTime) statsTime.textContent=(Date.now()-startTime)+' 瞬';}\ninitUserInput();loadSupplements();updateIframeHeight();setTimeout(function(){loadMemories();updateLoadTime();},300);\n})();\n</script>\n</body>\n</html>\n```",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "星河璀璨数据库召回配套正则2": {
+      "id": "eeffbfe4-a561-4e00-8435-a9f351e879dd",
+      "findRegex": "/以下是用户[\\s\\S]*$/m",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": 2,
+      "maxDepth": null
+    },
+    "[隐藏][不发送]远楼层消息": {
+      "id": "b6ed2e9c-d985-4739-858f-05a7c8ef4d59",
+      "disabled": false,
+      "runOnEdit": true,
+      "findRegex": "/.*/s",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "substituteRegex": 0,
+      "minDepth": 5,
+      "maxDepth": null,
+      "markdownOnly": false,
+      "promptOnly": true
+    },
+    "对AI隐藏状态栏": {
+      "id": "a1b2c3d4-e5f6-4a6a-8ebb-bd8a3b7f671f",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "对AI隐藏行动选项": {
+      "id": "f1a2b3c4-d5e6-4789-a012-3456789abcde",
+      "findRegex": "/<branches>[\\s\\S]*?<\\/branches>/gm",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "对AI隐藏BE结局": {
+      "id": "e7f8a9b0-c1d2-4e3f-a4b5-678901234567",
+      "findRegex": "/<yxsh_be>[\\s\\S]*?<\\/yxsh_be>/gm",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "BE结局框": {
+      "id": "f8a9b0c1-d2e3-4f4a-b5c6-789012345678",
+      "findRegex": "<yxsh_be>\\s*([\\s\\S]*?)\\s*</yxsh_be>",
+      "replace_file": "正则/BE结局框.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "行动选项": {
+      "id": "a2b3c4d5-e6f7-4890-b123-456789abcdef",
+      "findRegex": "<branches>\\s*([\\s\\S]*?)\\s*</branches>",
+      "replace_file": "正则/行动选项.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "状态栏界面": {
+      "id": "b2c3d4e5-f6a7-4057-8964-3192b7903acc",
+      "findRegex": "<StatusPlaceHolderImpl\\/>",
+      "replace_file": "正则/界面/状态栏.html",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "对AI隐藏变量更新": {
+      "id": "c3d4e5f6-a7b8-4450-ac1f-0bfe1d6a4f64",
+      "findRegex": "/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "变量更新中美化": {
+      "id": "d4e5f6a7-b8c9-46bf-8a69-602d64bbde22",
+      "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+      "replace_file": "正则/变量更新中美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "变量更新美化": {
+      "id": "e5f6a7b8-c9d0-4929-871f-43d110e5ec76",
+      "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+      "replace_file": "正则/变量更新美化.html",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    }
+  }
+}

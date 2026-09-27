@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "id": "example_trinket",
+      "name": "示例护符",
+      "rarity": "rare",
+      "price": 10000,
+      "limit": 1,
+      "originDungeon": "",
+      "heroClassRequirements": [],
+      "buffs": ["TB_DMG_B_2"]
+    }
+  ],
+  "rarities": []
+}

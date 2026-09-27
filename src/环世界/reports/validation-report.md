@@ -1,0 +1,136 @@
+# Validation Report: 环世界
+
+- Project: project_mrelijzg_7336ef8c
+- Generated at: 2026-07-13T01:32:03.811Z
+- OK: yes
+- Errors: 0
+- Warnings: 67
+- Infos: 58
+
+## Issues
+
+- [warning] plan.acceptance.missing: plan.md 建议包含验收标准 section
+- [warning] plan.verification.missing: plan.md 建议包含验证记录 section
+- [warning] card.field.should_be_worldbook (card.personality): card.personality 属于人设/背景类内容，建议迁移到世界书条目
+- [warning] card.field.should_be_worldbook (card.scenario): card.scenario 属于人设/背景类内容，建议迁移到世界书条目
+- [warning] card.field.should_be_worldbook (card.creator_notes): card.creator_notes 属于人设/背景类内容，建议迁移到世界书条目
+- [info] worldbook.entry.abstract_missing (worldbook.entries.0.abstract): 条目 ejs-level0 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.0.sourceRefs): 二创/复合项目条目 ejs-level0 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.1.abstract): 条目 ejs-time 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.1.sourceRefs): 二创/复合项目条目 ejs-time 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.2.abstract): 条目 ejs-wealth 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.2.sourceRefs): 二创/复合项目条目 ejs-wealth 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.3.abstract): 条目 ejs-raid 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.3.sourceRefs): 二创/复合项目条目 ejs-raid 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.4.abstract): 条目 ejs-dice 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.4.sourceRefs): 二创/复合项目条目 ejs-dice 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.5.abstract): 条目 db-animal 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.5.sourceRefs): 二创/复合项目条目 db-animal 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.6.abstract): 条目 db-food 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.6.sourceRefs): 二创/复合项目条目 db-food 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.7.abstract): 条目 db-building 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.7.sourceRefs): 二创/复合项目条目 db-building 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.8.abstract): 条目 db-weapon 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.8.sourceRefs): 二创/复合项目条目 db-weapon 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.9.abstract): 条目 db-armor 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.9.sourceRefs): 二创/复合项目条目 db-armor 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.10.abstract): 条目 db-crop 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.10.sourceRefs): 二创/复合项目条目 db-crop 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.11.abstract): 条目 db-med 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.11.sourceRefs): 二创/复合项目条目 db-med 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.12.abstract): 条目 db-material 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.12.sourceRefs): 二创/复合项目条目 db-material 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.13.abstract): 条目 db-ammo 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.13.sourceRefs): 二创/复合项目条目 db-ammo 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.14.abstract): 条目 db-mechanoid 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.14.sourceRefs): 二创/复合项目条目 db-mechanoid 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.15.abstract): 条目 db-art 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.15.sourceRefs): 二创/复合项目条目 db-art 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.16.abstract): 条目 sys-combat 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.16.sourceRefs): 二创/复合项目条目 sys-combat 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.17.abstract): 条目 sys-tech 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.17.sourceRefs): 二创/复合项目条目 sys-tech 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.18.abstract): 条目 sys-farm 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.18.sourceRefs): 二创/复合项目条目 sys-farm 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.19.abstract): 条目 sys-cook 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.19.sourceRefs): 二创/复合项目条目 sys-cook 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.20.abstract): 条目 sys-power 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.20.sourceRefs): 二创/复合项目条目 sys-power 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.21.abstract): 条目 sys-build 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.21.sourceRefs): 二创/复合项目条目 sys-build 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.22.abstract): 条目 sys-faction 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.22.sourceRefs): 二创/复合项目条目 sys-faction 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.23.abstract): 条目 sys-mental 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.23.sourceRefs): 二创/复合项目条目 sys-mental 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.24.abstract): 条目 sys-event 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.24.sourceRefs): 二创/复合项目条目 sys-event 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.25.abstract): 条目 sys-disease 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.25.sourceRefs): 二创/复合项目条目 sys-disease 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.26.abstract): 条目 sys-craft 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.26.sourceRefs): 二创/复合项目条目 sys-craft 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.27.abstract): 条目 sys-work 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.27.sourceRefs): 二创/复合项目条目 sys-work 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.28.abstract): 条目 sys-quest 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.28.sourceRefs): 二创/复合项目条目 sys-quest 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.29.abstract): 条目 sys-orbital 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.29.sourceRefs): 二创/复合项目条目 sys-orbital 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.30.abstract): 条目 sys-pollution 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.30.sourceRefs): 二创/复合项目条目 sys-pollution 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.31.abstract): 条目 sys-addiction 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.31.sourceRefs): 二创/复合项目条目 sys-addiction 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.32.abstract): 条目 sys-ending 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.32.sourceRefs): 二创/复合项目条目 sys-ending 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.33.abstract): 条目 sys-weather 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.33.sourceRefs): 二创/复合项目条目 sys-weather 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.34.abstract): 条目 sys-social 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.34.sourceRefs): 二创/复合项目条目 sys-social 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.35.abstract): 条目 sys-growth 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.35.sourceRefs): 二创/复合项目条目 sys-growth 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.36.abstract): 条目 sys-aesthetic 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.36.sourceRefs): 二创/复合项目条目 sys-aesthetic 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.37.abstract): 条目 sys-mining 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.37.sourceRefs): 二创/复合项目条目 sys-mining 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.38.abstract): 条目 sys-surgery 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.38.sourceRefs): 二创/复合项目条目 sys-surgery 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.39.abstract): 条目 sys-education 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.39.sourceRefs): 二创/复合项目条目 sys-education 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.40.abstract): 条目 sys-corpse 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.40.sourceRefs): 二创/复合项目条目 sys-corpse 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.41.abstract): 条目 sys-fire 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.41.sourceRefs): 二创/复合项目条目 sys-fire 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.42.abstract): 条目 sys-temperature 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.42.sourceRefs): 二创/复合项目条目 sys-temperature 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.43.abstract): 条目 sys-caravan 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.43.sourceRefs): 二创/复合项目条目 sys-caravan 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.44.abstract): 条目 sys-bug 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.44.sourceRefs): 二创/复合项目条目 sys-bug 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.45.abstract): 条目 sys-archaeology 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.45.sourceRefs): 二创/复合项目条目 sys-archaeology 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.46.abstract): 条目 nar-storyteller 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.46.sourceRefs): 二创/复合项目条目 nar-storyteller 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.47.abstract): 条目 nar-phase 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.47.sourceRefs): 二创/复合项目条目 nar-phase 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.48.abstract): 条目 nar-biome 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.48.sourceRefs): 二创/复合项目条目 nar-biome 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.49.abstract): 条目 nar-fixedmap 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.49.sourceRefs): 二创/复合项目条目 nar-fixedmap 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.50.abstract): 条目 nar-event 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.50.sourceRefs): 二创/复合项目条目 nar-event 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.51.abstract): 条目 nar-faction 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.51.sourceRefs): 二创/复合项目条目 nar-faction 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.52.abstract): 条目 char-preset 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.52.sourceRefs): 二创/复合项目条目 char-preset 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.53.abstract): 条目 char-nsfw 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.53.sourceRefs): 二创/复合项目条目 char-nsfw 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.54.abstract): 条目 char-relation 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.54.sourceRefs): 二创/复合项目条目 char-relation 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.55.abstract): 条目 char-cycle 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.55.sourceRefs): 二创/复合项目条目 char-cycle 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.56.abstract): 条目 char-slave 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.56.sourceRefs): 二创/复合项目条目 char-slave 建议记录 sourceRefs
+- [info] worldbook.entry.abstract_missing (worldbook.entries.57.abstract): 条目 char-cyber 建议填写 abstract，便于断点续写
+- [warning] worldbook.entry.source_refs_missing (worldbook.entries.57.sourceRefs): 二创/复合项目条目 char-cyber 建议记录 sourceRefs
+- [warning] html.dynamic_js.mvu_wait_missing: dynamic_js 状态栏读取 MVU 时建议先 waitGlobalInitialized('Mvu')
+- [warning] regex.frontend.system_tag (regex.scripts.1.findRegex): regex scripts.1 使用了 MVU 系统标签，可能干扰变量更新
+- [warning] regex.frontend.system_tag (regex.scripts.3.findRegex): regex scripts.3 使用了 MVU 系统标签，可能干扰变量更新
+- [warning] tavern_helper.external_url_allowed (tavernHelper.scripts.0): Tavern Helper script sp_database 显式允许外链，请确认 plan.md 已记录来源与风险

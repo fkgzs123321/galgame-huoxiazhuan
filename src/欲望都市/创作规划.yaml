@@ -1,0 +1,885 @@
+project:
+  name: 欲望都市
+  worldbookName: 欲望都市
+  form: charactercard
+  mvu: true
+  ui_mode: frontend    # 内联 HTML：常驻状态栏（主视图+每名女性详情页，含 NSFW 身体数据）+ 战斗面板（正则注入，不走 CDN）
+
+card_meta:
+  description: |
+    【欲望都市】虚构成人向角色扮演卡（18+）。
+    京市人大附中高三精英班。你从广西小城插班而来，目标是考上清华（700 分线，730 全国状元）。
+    班里 15 名女生、7 位女老师，小区里住着 15 位陪读妈妈，加上你的妈妈，共 38 名女性，
+    各自握着一枚"假阴茎"，而所有假阴茎都秘密链接着你一个人：每次被使用，真实感受同步；
+    你必须对抗，否则被缴械会掉成绩。校园日常与隐秘对抗双线并行：
+    白天上课、晚自习、考试；全天 24 小时 4 时段必打排班（上午=妈妈+没课老师、下午场=放学后全体、晚场=学生为主、深夜=全体）。
+    量化战斗（防守值/缴械值）、技能树、五阶段沉沦、俘虏结局，全部由 MVU 变量实时驱动，
+    状态栏为内联前端（正则注入，不走 CDN）。全虚构、纯文字、无真实人物。
+  creator_notes: |
+    使用说明：
+    1. 在 SillyTavern 中导入 欲望都市.json（角色卡），需启用酒馆助手（Tavern Helper）插件与 MVU 运行环境。
+    2. 开场白 0 为普通开局；1/2/3 为进阶开局（分别预设林秀英/苏晚晴/沈若兰已被俘虏）。
+    3. 战斗协议：主模型只负责叙事并输出 <updatevariable> 块，由 MVU 脚本解析变量；公式见世界书【战斗系统】。
+    4. 状态栏由正则【状态栏界面】注入内联前端，若界面未显示请确认该正则已启用。
+    5. Zod 脚本由卡内 schema.ts 重建，推荐在支持 MVU/Zod 的酒馆助手环境下运行。
+
+world:
+  overview: |
+    京市（北京），人大附中高三精英班。15 名 18 岁女生 + 7 名女老师，皆来自全国各地，
+    语言/习俗/特征/爱好千人千面，各有缺陷。15 位陪读妈妈随女儿来京，住在学校附近小区。
+    存在一套"假阴茎网络"：38 名女性（15 学生 + 7 老师 + 15 妈妈 + 主角妈妈）各持一枚
+    自己的假阴茎，所有假阴茎都链接同一个人，<user>。双方互不知情。女性们把假阴茎当作
+    唯一的欲望消解工具（高三学业压力、教学指标压力、熟女焦虑全部转化为性欲，只能靠假阴茎
+    释放）。每次被使用，<user> 真实感受同步；<user> 必须对抗，否则被缴械会掉成绩。
+    目标是考上清华（700 分线，730 全国状元），当前成绩中等二本（约 520 分）。
+  regions:
+    - name: 人大附中
+      scenes: [精英班教室, 自习室, 图书馆, 操场, 教学楼走廊, 教师办公室]
+      description: 京市顶尖高中，高三精英班 15 女 + 7 师
+    - name: 陪读小区
+      scenes: [小区花园, 单元楼, 妈妈们的聚会点, 菜市场]
+      description: 学校旁小区，陪读妈妈们聚居，白天在此使用假阴茎
+    - name: 主角家
+      scenes: [客厅, 卧室, 书桌, 卫生间]
+      description: 主角与妈妈在京的租住屋
+  factions:
+    - name: 假阴茎网络
+      description: 38 根假阴茎全部链接 <user>，真实触觉同步；同一时间 <user> 只对抗一人
+      key_members: [38 名女性]
+
+# 每个角色条目（38 人统一模板，创作阶段每人按此字段写全，千人千面靠差异化取值）：
+#   basic: 姓名/年龄/身份/家乡/方言
+#   外观: 逐部位详细描写模板（每人差异化取值，写实）。胸/阴道/肛门三大件=重点部位，在完整描写基础上再加深一层（生理反应/敏感细节/被碰反馈），其余部位同样完整详细描写，不简述：
+#     - 身材: 身高/体重/体型/体态
+#     - 胸部[重点]: 罩杯/胸型/大小/乳晕(大小颜色)/乳头(大小形状)/手感/敏感反应(充血/硬挺/一碰就立/玩捏反应)/衣物映衬
+#     - 阴道[重点]: 毛发(无/稀疏/浓密,颜色)/颜色粉嫩度/大小阴唇(大小形状颜色)/紧致度/名器/水分(量稠拉丝)/处女与处女膜/易孕与否/阴蒂敏感带/常年潮湿与否
+#     - 肛门[重点]: 颜色深浅/褶皱细密/毛发/紧致度/括约肌(力量/收缩反应)/敏感度/肉感/被碰反应
+#     - 腰部: 线条/马甲线/腰窝/敏感反应
+#     - 手部: 手指/指甲/保养习惯/手部小动作
+#     - 臀部: 形状/手感/反应
+#     - 大腿: 线条/肤质/内侧/触感
+#     - 其他: 颈/锁骨/耳/脚/背等按人差异化完整描写
+#   性格: 三面性（人前/独处/私密时）
+#   气味: 写实体香（如 茉莉混汗味/墨香/海风咸味/奶香/洗衣粉味等，随情绪/出汗变化）
+#   分泌物: 写实体液特征（量/稠度/气味/颜色/拉丝状态/特殊时期变化）
+#   性偏好: 床上偏好（敏感带/喜欢的节奏/体位偏好/高潮表现/羞点）
+#   名器: 写实/古典雅称，写实描述内里构造（紧窄/深浅/褶皱/润泽/温度），不用夸张或恶搞命名
+#   战斗档案（每人必填，数值差异化）：名器防御值 X/10 + 能力值{忍耐,持久,反攻}各1-10 + 技能名（独有机制+具体数值）
+#   技能: 每人独有技能（名+独有机制），格式：效果描述 + 触发条件 + 具体数值（力度/间隔/次数上限/叠加/冷却/命中率），不许雷同套话
+#   特质: 身体特征/习惯/环境细节
+#   缺陷: 可利用的心理或生理弱点（数值化：如 体力-2/怕痒-3）
+#   5 阶段行为: 按缴械值 0-19/20-39/40-59/60-79/80-99 五段，各段行为/言语/身体反应（EJS 段落控制）
+#   NSFW语料: 方言荤话/口癖/叫床习惯差异化
+# ============ 量化战斗公式（写入 世界书/世界观/战斗系统.yaml） ============
+# 战斗面板为"防守值血条"模式：每名女性有防守值（上限由档案导出），主角每回合攻击削减，清零 = 她败北
+#   她的防守值上限 = 20 + 名器防御值×2 + (忍耐/持久/反攻最高值)×1.5（约 30~55，战斗档案直接写死）
+#   每回合：你的攻击力 A = Σ(本场使用技能效果值) + 状态修正(体力/性欲/勃起度折算0-5) + d10
+#           她本回合减伤 = 名器防御值 + (本回合能力值/5) + 欲望积压修正 + d10
+#           伤害 = A - 减伤（下限0），扣除防守值
+#   欲望积压修正: 积压≥60 → 减伤-2；积压≥80 → 减伤-4（拒战越久越容易败）
+#   4 回合内防守值清零 → 你胜：缴械值 +（越快赢越多：1回合清+5/2回合+4/3回合+3/4回合+2），随机科目+1~5
+#   4 回合未清零 → 按剩余防守值判定：剩<30% 算平，缴械值+1；剩≥30% 你败，缴械值-（1~3），随机科目-（1~5）
+# 缴械值 100 → 俘虏（永久）。每回合数值由额外模型结算后写入结果块，面板按结果块更新。
+# ============ 主角七技能数值表（写入 世界书/世界观/技能树.yaml，Lv1-10，每场使用+10~20经验，满100升级） ============
+# 螺旋: 效果值=Lv×1.5（每回合给对方叠加麻痒点，麻痒≥5 触发失神1回合）
+# 颗粒: 效果值=Lv×1（刺激加深，对方减伤-1/回合）
+# 敏感度加倍: 对方敏感度×（1+Lv×0.1），Lv10=×2（配合麻痒类效果翻倍）
+# 硬度翻倍: 效果值=Lv×1.2（对方"研磨/挤压"类减伤减半）
+# 热量翻倍: 效果值=Lv×1.5（对寒系名器雪窦/寒玉/雪润效果×2；对方过热失神概率+10%）
+# 次数翻倍: 连击次数×（1+Lv×0.2），连击触发她"失神"判定
+# 频率翻倍: 频率=Lv×10次/分，超过她"承受阈值"时每回合她减伤-1
+characters:
+  - name: 林汐瑶
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 重庆
+    flavor: 川渝话/火辣直爽/体育生
+    nsfw: 名器-一线天(入口极窄紧致) / 技能-绞紧(反攻) / 特质-紧身运动衣 / 缺陷-怕痒、耐力差
+  - name: 苏晚晴
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 浙江杭州
+    flavor: 吴语/江南才女/学霸
+    nsfw: 名器-玉壶春(温润饱满多汁) / 技能-绵延(持久) / 特质-书法社/书卷气 / 缺陷-体力差、经期腹痛
+  - name: 周语桐
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 湖南长沙
+    flavor: 塑普/湘妹子泼辣/爱嗦粉
+    nsfw: 名器-蝴蝶宫(肉褶如蝶翼) / 技能-吞吐(反攻) / 特质-辣妹子/急性子 / 缺陷-急躁、爱面子
+  - name: 陈雪梨
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 黑龙江哈尔滨
+    flavor: 东北话/东北大妞/怕热
+    nsfw: 名器-温汤(内里温热潮湿) / 技能-沉静(忍耐) / 特质-冬天穿很少 / 缺陷-嘴硬心软、贪杯
+  - name: 宋佳凝
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学(班长) }
+    hometown: 山东青岛
+    flavor: 山东话/齐鲁闺女/大高个
+    nsfw: 名器-重峦叠嶂(内壁皱褶层层) / 技能-磐石(忍耐) / 特质-班长威严/自律 / 缺陷-太正经、放不开
+  - name: 白若薇
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 陕西西安
+    flavor: 关中腔/考古迷/爱吃凉皮
+    nsfw: 名器-幽谷(深邃入得深) / 技能-静水(忍耐) / 特质-古籍控/安静 / 缺陷-怕黑、保守
+  - name: 叶诗涵
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 福建厦门
+    flavor: 闽南语/茶艺社/海风味
+    nsfw: 名器-九曲回廊(内部多段收缩) / 技能-吸嘬(反攻) / 特质-茶艺/闽南歌 / 缺陷-晕船、怕海
+  - name: 何雨珊
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 云南昆明
+    flavor: 云南话/植物迷/花茶
+    nsfw: 名器-步步莲花(瓣状肉纹) / 技能-悠长(持久) / 特质-花房/爱笑 / 缺陷-慢热、花粉季咳
+  - name: 陆芷晴
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 广西桂林
+    flavor: 桂柳话/唱山歌/社恐
+    nsfw: 名器-玉涡(浅而涡纹敏感) / 技能-缠丝(持久) / 特质-壮锦/山歌 / 缺陷-害羞、社恐
+  - name: 黎嘉欣
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 广东广州
+    flavor: 粤语/早茶/煲汤
+    nsfw: 名器-三弦锁阴(三处收缩绞紧) / 技能-研磨(反攻) / 特质-煲汤/广东胃 / 缺陷-怕热、急躁
+  - name: 王朵朵
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 河南郑州
+    flavor: 河南话/朴实/内向
+    nsfw: 名器-倒悬葫芦(上窄下宽) / 技能-深纳(持久) / 特质-中原面食 / 缺陷-自卑、不敢出声
+  - name: 秦可心
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 天津
+    flavor: 天津话/相声迷/碎嘴子
+    nsfw: 名器-双宫(罕见双腔) / 技能-交替(反攻) / 特质-相声/煎饼果子 / 缺陷-易紧张、嘴碎
+  - name: 石小婉
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 安徽黄山
+    flavor: 徽语/徽墨/体弱
+    nsfw: 名器-柳叶(窄薄嫩敏感) / 技能-颤磨(反攻) / 特质-徽墨/安静 / 缺陷-体寒、易病
+  - name: 韩美娜
+    basic: { age: 18, gender: 女, identity: 高三精英班学生, relationship: 同班同学 }
+    hometown: 吉林延边
+    flavor: 朝鲜语+东北话/长鼓舞/洁癖
+    nsfw: 名器-泉眼(多水易湿) / 技能-收放(忍耐) / 特质-辣白菜/能歌善舞 / 缺陷-固执、洁癖
+  - name: 丽莎·伊万诺娃
+    basic: { age: 18, gender: 女, identity: 高三精英班学生(俄籍), relationship: 同班同学 }
+    hometown: 俄罗斯莫斯科
+    flavor: 俄语+英语+中文/金发洋妞/怕热
+    nsfw: 名器-雪窦(内里偏凉遇热极敏感) / 技能-寒凝(忍耐) / 特质-白皮蓝眼/高挑 / 缺陷-成语用错、怕热
+  - name: 沈若兰
+    basic: { age: 35, gender: 女, identity: 语文老师, relationship: 任课老师 }
+    hometown: 江苏苏州
+    flavor: 吴侬软语/旗袍/评弹
+    nsfw: 名器-花径(窄浅敏感) / 技能-软语(持久) / 特质-古典韵/旗袍 / 缺陷-洁癖、紧张手抖
+  - name: 李红梅
+    basic: { age: 42, gender: 女, identity: 数学老师/班主任, relationship: 班主任 }
+    hometown: 河北石家庄
+    flavor: 河北话/班主任威严
+    nsfw: 名器-琥珀(紧致绵密) / 技能-恒定(忍耐) / 特质-威严/一丝不苟 / 缺陷-失眠、焦虑
+  - name: 艾米丽·陈
+    basic: { age: 30, gender: 女, identity: 英语老师(美籍华裔), relationship: 任课老师 }
+    hometown: 美国加州
+    flavor: 美式英语+中文/自由奔放
+    nsfw: 名器-热泉(常年湿热水量足) / 技能-奔涌(反攻) / 特质-美式热情/牛仔裤 / 缺陷-怕蟑螂、厨房灾难
+  - name: 赵雪晴
+    basic: { age: 33, gender: 女, identity: 物理老师, relationship: 任课老师 }
+    hometown: 辽宁大连
+    flavor: 东北话/运动型/大嗓门
+    nsfw: 名器-曲径(窄长蜿蜒紧致) / 技能-起伏(反攻) / 特质-晨跑/小麦色 / 缺陷-恐高、嗓门大
+  - name: 张慧娟
+    basic: { age: 39, gender: 女, identity: 化学老师, relationship: 任课老师 }
+    hometown: 山西太原
+    flavor: 山西话/实验狂/老花眼
+    nsfw: 名器-丹唇(入口紧致内里湿热) / 技能-渐润(持久) / 特质-白大褂/护目镜 / 缺陷-老花眼、恋醋
+  - name: 刘晶晶
+    basic: { age: 31, gender: 女, identity: 生物老师, relationship: 任课老师 }
+    hometown: 江西南昌
+    flavor: 赣语/解剖迷/迷信
+    nsfw: 名器-蝉翼(壁薄如翼触感加倍) / 技能-共振(反攻) / 特质-标本收藏/手稳 / 缺陷-怕血、迷信
+  - name: 唐婉清
+    basic: { age: 45, gender: 女, identity: 历史老师, relationship: 任课老师 }
+    hometown: 安徽合肥
+    flavor: 江淮官话/汉服迷/老派
+    nsfw: 名器-古井(深紧干涩久旷) / 技能-干磨(持久) / 特质-汉服/茶道 / 缺陷-固执、老派
+  - name: 林秀英
+    basic: { age: 42, gender: 女, identity: 陪读妈妈(汐瑶母), relationship: 同学的妈妈 }
+    hometown: 重庆
+    flavor: 重庆话/火锅店老板娘/泼辣
+    nsfw: 名器-熟桃(饱满丰腴软糯) / 技能-热挤(反攻) / 特质-泼辣/麻利 / 缺陷-性急、膝盖风湿
+  - name: 苏婉如
+    basic: { age: 41, gender: 女, identity: 陪读妈妈(晚晴母), relationship: 同学的妈妈 }
+    hometown: 浙江杭州
+    flavor: 吴语/茶艺师/温柔
+    nsfw: 名器-软玉(温润细腻柔软) / 技能-软磨(持久) / 特质-温婉/茶香 / 缺陷-多愁善感、体弱
+  - name: 周桂香
+    basic: { age: 44, gender: 女, identity: 陪读妈妈(语桐母), relationship: 同学的妈妈 }
+    hometown: 湖南长沙
+    flavor: 塑普/剁椒鱼头店老板娘
+    nsfw: 名器-火口(灼热紧窄敏感) / 技能-急火(反攻) / 特质-堂客泼辣/厨艺好 / 缺陷-高血压、爱唠叨
+  - name: 陈淑芬
+    basic: { age: 46, gender: 女, identity: 陪读妈妈(雪梨母), relationship: 同学的妈妈 }
+    hometown: 黑龙江哈尔滨
+    flavor: 东北话/国企退休会计
+    nsfw: 名器-寒玉(温润偏凉久旷复紧) / 技能-久守(忍耐) / 特质-豪爽大妈/算盘精 / 缺陷-贪杯、膝盖旧伤
+  - name: 宋丽华
+    basic: { age: 43, gender: 女, identity: 陪读妈妈(佳凝母), relationship: 同学的妈妈 }
+    hometown: 山东青岛
+    flavor: 山东话/海鲜摊老板娘
+    nsfw: 名器-蚌肉(外紧内软多汁) / 技能-潮汐(持久) / 特质-热情好客/大嗓门 / 缺陷-爱八卦、怕胖节食
+  - name: 白秋月
+    basic: { age: 45, gender: 女, identity: 陪读妈妈(若薇母), relationship: 同学的妈妈 }
+    hometown: 陕西西安
+    flavor: 关中腔/剪纸非遗传承人
+    nsfw: 名器-细纹(纹理细密触感灵敏) / 技能-细作(持久) / 特质-手巧/剪纸 / 缺陷-腰伤、守旧
+  - name: 叶春梅
+    basic: { age: 42, gender: 女, identity: 陪读妈妈(诗涵母), relationship: 同学的妈妈 }
+    hometown: 福建厦门
+    flavor: 闽南语/海鲜餐厅主厨
+    nsfw: 名器-春潮(湿润绵滑水量足) / 技能-湿滑(忍耐) / 特质-闽南阿嬷/温柔 / 缺陷-晕船、拜妈祖
+  - name: 何玉兰
+    basic: { age: 43, gender: 女, identity: 陪读妈妈(雨珊母), relationship: 同学的妈妈 }
+    hometown: 云南昆明
+    flavor: 云南话/花农
+    nsfw: 名器-含苞(紧致未开收缩力强) / 技能-收缩(反攻) / 特质-爱花/民歌 / 缺陷-花粉过敏、腰疼
+  - name: 陆青霞
+    basic: { age: 44, gender: 女, identity: 陪读妈妈(芷晴母), relationship: 同学的妈妈 }
+    hometown: 广西桂林
+    flavor: 桂柳话/导游/爱唱山歌
+    nsfw: 名器-蜿蜒(深长弯绕内壁起伏) / 技能-吟唱(持久) / 特质-山歌/健谈 / 缺陷-晕机、嗓门大
+  - name: 黎桂芳
+    basic: { age: 45, gender: 女, identity: 陪读妈妈(嘉欣母), relationship: 同学的妈妈 }
+    hometown: 广东广州
+    flavor: 粤语/茶楼点心师傅
+    nsfw: 名器-薄嫩(壁薄嫩滑敏感) / 技能-绵密(持久) / 特质-煲汤高手/节俭 / 缺陷-怕冷、过于节俭
+  - name: 王金凤
+    basic: { age: 43, gender: 女, identity: 陪读妈妈(朵朵母), relationship: 同学的妈妈 }
+    hometown: 河南郑州
+    flavor: 河南话/面馆老板娘
+    nsfw: 名器-绵长(深而绵密包裹紧) / 技能-揉压(反攻) / 特质-能干朴实/和面功夫 / 缺陷-腰肌劳损、嗓门大
+  - name: 秦淑珍
+    basic: { age: 46, gender: 女, identity: 陪读妈妈(可心母), relationship: 同学的妈妈 }
+    hometown: 天津
+    flavor: 天津话/相声园子跑堂
+    nsfw: 名器-幽径(窄深紧致) / 技能-絮语(持久) / 特质-天津卫嘴子/热心 / 缺陷-糖尿病、贪嘴
+  - name: 石巧云
+    basic: { age: 44, gender: 女, identity: 陪读妈妈(小婉母), relationship: 同学的妈妈 }
+    hometown: 安徽黄山
+    flavor: 徽语/徽菜馆厨师
+    nsfw: 名器-绒软(内壁细绒般软) / 技能-绒磨(反攻) / 特质-能干/徽菜 / 缺陷-肩周炎、保守
+  - name: 金顺姬
+    basic: { age: 43, gender: 女, identity: 陪读妈妈(美娜母,朝鲜族), relationship: 同学的妈妈 }
+    hometown: 吉林延边
+    flavor: 朝鲜语+东北话/辣白菜作坊
+    nsfw: 名器-玉瓷(紧致光滑收放有力) / 技能-严整(忍耐) / 特质-能歌善舞/爱美 / 缺陷-固执、面子重
+  - name: 娜塔莎·伊万诺娃
+    basic: { age: 41, gender: 女, identity: 陪读妈妈(丽莎母,俄籍), relationship: 同学的妈妈 }
+    hometown: 俄罗斯莫斯科
+    flavor: 俄语+英语/金发美人
+    nsfw: 名器-雪润(润泽微凉遇热敏感) / 技能-冰守(忍耐) / 特质-冷艳/白肤 / 缺陷-暴脾气、怕热
+  - name: 宋雅琴
+    basic: { age: 42, gender: 女, identity: 主角妈妈, relationship: <user>的母亲 }
+    hometown: 南方小城(广西)
+    flavor: 桂柳话/服装厂质检员/节俭焦虑
+    nsfw: 名器-不展开(仅机制建档,不写性细节) / 技能-不展开 / 特质-爱子心切/手工好 / 缺陷-腰椎病、多梦
+  - name: 主角
+    basic: { age: 18, gender: 男, identity: 高三精英班插班生, relationship: <user> }
+    flavor: 跟随妈妈从广西来京 / 成绩中等二本约520分 / 目标清华700分、全国状元730分
+    nsfw: 七技能：螺旋/颗粒/敏感度加倍/硬度翻倍/热量翻倍/次数翻倍/频率翻倍（Lv1-10，等级提升倍率增加）
+
+# ============ 身材×性格 差异化分配表（创作阶段按此定档，人物条目据此展开） ============
+# 身材谱系：特胖/丰满丰腴/微胖/匀称/纤细/纸片极瘦/高挑/娇小/巨乳/贫乳/大骨架/肉感
+# 性格谱系：御姐/熟女/萝莉/元气/冰山/傲娇/病娇/腹黑/天然呆/毒舌/软萌/文静/大姐头/泼辣/端庄
+# 反差担当：外表与私密面强烈反差的角色，是战斗与俘虏剧情的高光位
+body_personality:
+  # ， 学生 15 人 ，
+  - name: 林汐瑶
+    body: 高挑健美 满C 运动型
+    personality: 火辣直爽 假小子元气 嘴硬心软
+  - name: 苏晚晴
+    body: 纤细文弱 B 白净
+    personality: 冰山学霸 高冷御姐 反差-私下放浪
+  - name: 周语桐
+    body: 娇小丰润 微胖 D 肉感
+    personality: 泼辣急性子 毒舌湘妹子
+  - name: 陈雪梨
+    body: 高挑丰满 E 微胖界美人
+    personality: 豪爽大姐头 御姐 热心肠
+  - name: 宋佳凝
+    body: 大高个 匀称 C 挺拔
+    personality: 正经自律班长 反差-隐藏闷骚玩很大
+  - name: 白若薇
+    body: 特别显瘦 纸片人 A 苍白
+    personality: 文静内向 知识型腹黑 电波系
+  - name: 叶诗涵
+    body: 匀称娇小 B 软软糯糯
+    personality: 温柔软萌 萝莉 治愈系
+  - name: 何雨珊
+    body: 匀称微肉 B+ 圆润
+    personality: 治愈系元气 爱笑 慢热
+  - name: 陆芷晴
+    body: 娇小纤细 A- 玲珑
+    personality: 社恐软妹 萝莉 反差-唱山歌时判若两人
+  - name: 黎嘉欣
+    body: 匀称 C 干净利落
+    personality: 娇蛮大小姐 急性子 怕热
+  - name: 王朵朵
+    body: 特别肥胖 软肉多 D 中原面食养出的白胖
+    personality: 自卑内向 反差-身体极端敏感 一碰就软
+  - name: 秦可心
+    body: 微胖圆润 C 奶膘
+    personality: 相声碎嘴 乐观担当 反差-隐藏病娇电波独占欲
+  - name: 石小婉
+    body: 特别瘦弱 纸片 A 病弱
+    personality: 病弱萝莉 安静 惹人怜
+  - name: 韩美娜
+    body: 匀称曼妙 C+ 舞者身段
+    personality: 洁癖傲娇 能歌善舞 要面子
+  - name: 丽莎·伊万诺娃
+    body: 特别高挑178 巨乳F 白皮金发
+    personality: 天然呆直球 中文学得七扭八歪 反差-身材与纯真
+  # ， 老师 7 人 ，
+  - name: 沈若兰
+    body: 匀称窈窕 旗袍S曲线 C+
+    personality: 古典御姐 吴侬软语 端庄
+  - name: 李红梅
+    body: 微胖丰腴 D 中年发福
+    personality: 严厉班主任 熟女御姐 反差-久旷欲求不满
+  - name: 艾米丽·陈
+    body: 火辣健美 D 加州古铜
+    personality: 自由奔放御姐 美式热情
+  - name: 赵雪晴
+    body: 高挑运动 小麦 C 大长腿
+    personality: 大嗓门元气 运动御姐
+  - name: 张慧娟
+    body: 匀称微瘦 B 白大褂
+    personality: 严谨学者 呆萌理科女
+  - name: 刘晶晶
+    body: 娇小丰满 C 娃娃脸
+    personality: 冷静腹黑 知性 解剖迷
+  - name: 唐婉清
+    body: 清瘦挺拔 A/B 汉服仙气
+    personality: 老派端庄御姐 反差-守旧外表火热内心
+  # ， 妈妈 15 人 ，
+  - name: 林秀英
+    body: 丰腴肉感 D 火锅店养出
+    personality: 泼辣老板娘 熟女御姐 麻利
+  - name: 苏婉如
+    body: 纤细柔美 C 江南水乡
+    personality: 温婉贤惠 柔声细语
+  - name: 周桂香
+    body: 特别肥胖 丰乳肥臀 E 胖美妇
+    personality: 泼辣堂客 热心肠 嘴快
+  - name: 陈淑芬
+    body: 丰满发福 D 东北大姨
+    personality: 豪爽大妈 御姐 算盘精
+  - name: 宋丽华
+    body: 壮实丰满 D 海边晒出健康色
+    personality: 热情豪爽 大嗓门 爱八卦
+  - name: 白秋月
+    body: 清瘦 A/B 手艺人细瘦
+    personality: 温婉守旧 贤妻良母
+  - name: 叶春梅
+    body: 圆润 C+ 厨房烟火气
+    personality: 温柔闽南阿嬷 好说话
+  - name: 何玉兰
+    body: 匀称 B 常年劳作结实
+    personality: 民歌开朗 朴实大方
+  - name: 陆青霞
+    body: 健朗匀称 C 导游晒痕
+    personality: 健谈开朗 自来熟
+  - name: 黎桂芳
+    body: 微胖 D 富态 点心养人
+    personality: 节俭朴实 精打细算
+  - name: 王金凤
+    body: 壮实大骨架 D 和面练出
+    personality: 能干朴实 劳动女性
+  - name: 秦淑珍
+    body: 圆润 C+ 天津卫养出
+    personality: 热心碎嘴 碎碎念
+  - name: 石巧云
+    body: 匀称 B 围裙下藏好身段
+    personality: 能干保守 话不多
+  - name: 金顺姬
+    body: 丰润 C+ 爱美保养好
+    personality: 傲娇要面子 朝鲜族大姨
+  - name: 娜塔莎·伊万诺娃
+    body: 高挑丰满 F 金发冷艳
+    personality: 俄式御姐 暴脾气 反差-护女心切
+  - name: 宋雅琴
+    body: 清瘦 B 操劳憔悴
+    personality: 节俭焦虑 慈母 唠叨
+  # 极端分布保证：特胖×2(王朵朵/周桂香)、极瘦×3(白若薇/石小婉/唐婉清)、巨乳×2(丽莎/娜塔莎)
+  # 反差担当×6：苏晚晴/宋佳凝/王朵朵/秦可心/李红梅/唐婉清
+  # 性格谱系覆盖：御姐7 熟女6 萝莉4 元气4 傲娇3 腹黑2 病娇1 天然呆1 端庄3 泼辣5
+
+style:
+  perspective: 第三人称
+  tone: 具体直白、生活化、有地方烟火气
+  mood: 压力与欲望交织，明暗双线（校园日常 vs 秘密对抗）
+  reference: 参考卡（假阴茎通用系统）的直白写实风格
+
+entries:
+  # ── 常驻核心 ──
+  - name: 世界设定
+    type: 世界观
+    path: 世界书/世界观/世界设定.yaml
+  - name: 扮演准则
+    type: 扮演准则
+    path: 世界书/扮演准则/扮演准则.yaml
+  - name: 假阴茎网络规则
+    type: 世界观
+    path: 世界书/世界观/假阴茎网络规则.yaml
+    purpose: 38 杯链接同一人、真实触觉同步、谁自由谁可用（24小时）、可多人同时在线、反侦察
+  - name: 排班规则
+    type: 世界观
+    path: 世界书/世界观/排班规则.yaml
+    purpose: 全天 24 小时 4 时段排班（上午=妈妈+没课老师/下午场=放学后全体/晚场=学生为主/深夜=全体），必打，拒战=欲望积压下次更强
+  - name: 战斗系统
+    type: 世界观
+    path: 世界书/世界观/战斗系统.yaml
+    purpose: 战斗面板流程、多轮互动、结果块格式、胜负判定
+  - name: 道具与恢复系统
+    type: 世界观
+    path: 世界书/世界观/道具与恢复系统.yaml
+    purpose: 双方道具栏(各自变量层)、BUFF/DEBUFF持续回合、玩家/她方恢复技能
+  - name: 技能树
+    type: 世界观
+    path: 世界书/世界观/技能树.yaml
+    purpose: 主角七技能、经验公式、等级倍率、她方技能体系
+  - name: 缴械值阶段指导
+    type: 阶段指导
+    path: 世界书/阶段指导/缴械值阶段指导.yaml
+    purpose: 5 阶段(0-19/20-39/40-59/60-79/80-99)+100俘虏，EJS 段落控制；已关灯（可选模板，内容与角色阶段行为重叠）
+  - name: 俘虏结局
+    type: 阶段指导
+    path: 世界书/阶段指导/俘虏结局.yaml
+    purpose: 100 值触发：爱上你/欲望依赖/心理臣服/资源归你/现实线；已关灯，由阶段调度在缴械>=100 时 getwi 拉取
+  - name: "[mvu_plot]阶段调度"
+    type: 阶段指导
+    path: 世界书/阶段指导/阶段调度.yaml
+    purpose: 蓝灯常驻 @@generate_before：按 排班.当前战斗目标 getwi 拉取 {目标}_私密档案 与 {目标}_阶段行为 → (缴械>=100)俘虏结局；无目标输出自由时段提示
+  - name: 学业规则
+    type: 世界观
+    path: 世界书/世界观/学业规则.yaml
+    purpose: 750 分体系、700 清华线、730 状元、赢+1~5/输-1~5、其他因素不变分
+  - name: 名录总表
+    type: 角色
+    path: 世界书/角色/名录总表.yaml
+    part: basic
+    scope: common
+    purpose: 38 人常驻速览（名字/省份/身份/名器/缺陷一句话）
+  # ── 38 角色独立条目 ──
+  # 注：分层加载（tavern-cards 规范：5+ 角色写速览 catalog + 角色条目 keys=名字）：
+  #   ① 名录总表（蓝灯速览）：38 人索引（学生/老师/妈妈，含母女关联），AI 认识所有人
+  #   ② 基础信息（绿灯 keys=角色名）：聊天提到谁，谁的基础(性格/外貌)加载，群像场景档案充足
+  #   ③ 私密档案（关灯）：由 [mvu_plot]阶段调度 getwi 按当前战斗目标拉取（NSFW 只在深度场景）
+  #   ④ 阶段行为（EJS 段落控制,关灯）：由阶段调度 getwi 拉取当前目标
+  #   路径为 世界书/角色/{名字}/{基础|私密|阶段}.yaml
+  #   选择性扫描=聊天消息；蓝灯(速览/世界观)注入提示词不入聊天，不触发 keys=名字（tavern-cards 标准组合）
+  - name: 林汐瑶_角色条目
+    type: 角色
+    path: 世界书/角色/林汐瑶.yaml
+    part: other
+    scope: specific
+    keywords: [林汐瑶]
+  - name: 苏晚晴_角色条目
+    type: 角色
+    path: 世界书/角色/苏晚晴.yaml
+    part: other
+    scope: specific
+    keywords: [苏晚晴]
+  - name: 周语桐_角色条目
+    type: 角色
+    path: 世界书/角色/周语桐.yaml
+    part: other
+    scope: specific
+    keywords: [周语桐]
+  - name: 陈雪梨_角色条目
+    type: 角色
+    path: 世界书/角色/陈雪梨.yaml
+    part: other
+    scope: specific
+    keywords: [陈雪梨]
+  - name: 宋佳凝_角色条目
+    type: 角色
+    path: 世界书/角色/宋佳凝.yaml
+    part: other
+    scope: specific
+    keywords: [宋佳凝]
+  - name: 白若薇_角色条目
+    type: 角色
+    path: 世界书/角色/白若薇.yaml
+    part: other
+    scope: specific
+    keywords: [白若薇]
+  - name: 叶诗涵_角色条目
+    type: 角色
+    path: 世界书/角色/叶诗涵.yaml
+    part: other
+    scope: specific
+    keywords: [叶诗涵]
+  - name: 何雨珊_角色条目
+    type: 角色
+    path: 世界书/角色/何雨珊.yaml
+    part: other
+    scope: specific
+    keywords: [何雨珊]
+  - name: 陆芷晴_角色条目
+    type: 角色
+    path: 世界书/角色/陆芷晴.yaml
+    part: other
+    scope: specific
+    keywords: [陆芷晴]
+  - name: 黎嘉欣_角色条目
+    type: 角色
+    path: 世界书/角色/黎嘉欣.yaml
+    part: other
+    scope: specific
+    keywords: [黎嘉欣]
+  - name: 王朵朵_角色条目
+    type: 角色
+    path: 世界书/角色/王朵朵.yaml
+    part: other
+    scope: specific
+    keywords: [王朵朵]
+  - name: 秦可心_角色条目
+    type: 角色
+    path: 世界书/角色/秦可心.yaml
+    part: other
+    scope: specific
+    keywords: [秦可心]
+  - name: 石小婉_角色条目
+    type: 角色
+    path: 世界书/角色/石小婉.yaml
+    part: other
+    scope: specific
+    keywords: [石小婉]
+  - name: 韩美娜_角色条目
+    type: 角色
+    path: 世界书/角色/韩美娜.yaml
+    part: other
+    scope: specific
+    keywords: [韩美娜]
+  - name: 丽莎_角色条目
+    type: 角色
+    path: 世界书/角色/丽莎.yaml
+    part: other
+    scope: specific
+    keywords: [丽莎, 伊万诺娃]
+  - name: 沈若兰_角色条目
+    type: 角色
+    path: 世界书/角色/沈若兰.yaml
+    part: other
+    scope: specific
+    keywords: [沈若兰]
+  - name: 李红梅_角色条目
+    type: 角色
+    path: 世界书/角色/李红梅.yaml
+    part: other
+    scope: specific
+    keywords: [李红梅]
+  - name: 艾米丽_角色条目
+    type: 角色
+    path: 世界书/角色/艾米丽.yaml
+    part: other
+    scope: specific
+    keywords: [艾米丽]
+  - name: 赵雪晴_角色条目
+    type: 角色
+    path: 世界书/角色/赵雪晴.yaml
+    part: other
+    scope: specific
+    keywords: [赵雪晴]
+  - name: 张慧娟_角色条目
+    type: 角色
+    path: 世界书/角色/张慧娟.yaml
+    part: other
+    scope: specific
+    keywords: [张慧娟]
+  - name: 刘晶晶_角色条目
+    type: 角色
+    path: 世界书/角色/刘晶晶.yaml
+    part: other
+    scope: specific
+    keywords: [刘晶晶]
+  - name: 唐婉清_角色条目
+    type: 角色
+    path: 世界书/角色/唐婉清.yaml
+    part: other
+    scope: specific
+    keywords: [唐婉清]
+  - name: 林秀英_角色条目
+    type: 角色
+    path: 世界书/角色/林秀英.yaml
+    part: other
+    scope: specific
+    keywords: [林秀英]
+  - name: 苏婉如_角色条目
+    type: 角色
+    path: 世界书/角色/苏婉如.yaml
+    part: other
+    scope: specific
+    keywords: [苏婉如]
+  - name: 周桂香_角色条目
+    type: 角色
+    path: 世界书/角色/周桂香.yaml
+    part: other
+    scope: specific
+    keywords: [周桂香]
+  - name: 陈淑芬_角色条目
+    type: 角色
+    path: 世界书/角色/陈淑芬.yaml
+    part: other
+    scope: specific
+    keywords: [陈淑芬]
+  - name: 宋丽华_角色条目
+    type: 角色
+    path: 世界书/角色/宋丽华.yaml
+    part: other
+    scope: specific
+    keywords: [宋丽华]
+  - name: 白秋月_角色条目
+    type: 角色
+    path: 世界书/角色/白秋月.yaml
+    part: other
+    scope: specific
+    keywords: [白秋月]
+  - name: 叶春梅_角色条目
+    type: 角色
+    path: 世界书/角色/叶春梅.yaml
+    part: other
+    scope: specific
+    keywords: [叶春梅]
+  - name: 何玉兰_角色条目
+    type: 角色
+    path: 世界书/角色/何玉兰.yaml
+    part: other
+    scope: specific
+    keywords: [何玉兰]
+  - name: 陆青霞_角色条目
+    type: 角色
+    path: 世界书/角色/陆青霞.yaml
+    part: other
+    scope: specific
+    keywords: [陆青霞]
+  - name: 黎桂芳_角色条目
+    type: 角色
+    path: 世界书/角色/黎桂芳.yaml
+    part: other
+    scope: specific
+    keywords: [黎桂芳]
+  - name: 王金凤_角色条目
+    type: 角色
+    path: 世界书/角色/王金凤.yaml
+    part: other
+    scope: specific
+    keywords: [王金凤]
+  - name: 秦淑珍_角色条目
+    type: 角色
+    path: 世界书/角色/秦淑珍.yaml
+    part: other
+    scope: specific
+    keywords: [秦淑珍]
+  - name: 石巧云_角色条目
+    type: 角色
+    path: 世界书/角色/石巧云.yaml
+    part: other
+    scope: specific
+    keywords: [石巧云]
+  - name: 金顺姬_角色条目
+    type: 角色
+    path: 世界书/角色/金顺姬.yaml
+    part: other
+    scope: specific
+    keywords: [金顺姬]
+  - name: 娜塔莎_角色条目
+    type: 角色
+    path: 世界书/角色/娜塔莎.yaml
+    part: other
+    scope: specific
+    keywords: [娜塔莎]
+  - name: 宋雅琴_角色条目
+    type: 角色
+    path: 世界书/角色/宋雅琴.yaml
+    part: other
+    scope: specific
+    keywords: [宋雅琴, 妈妈]
+  # ── MVU 与双模型协议 ──
+  - name: "[mvu_plot]叙事输出规范"
+    type: MVU
+    path: 世界书/变量/叙事输出规范.yaml
+    part: output_format
+    purpose: 主模型只叙事；末尾输出状态栏占位符；战斗进行中不叙胜负
+  - name: "[mvu_plot]思维链强制输出"
+    type: MVU
+    path: 世界书/变量/思维链强制输出.yaml
+    part: output_format
+    purpose: 纯关灯可选模板，默认不注入；想要时手动启用条目或复制 <thinking_chain> 内部纯指令到模型预设思维链（配套正则可折叠显示/对AI隐藏）
+  - name: "[mvu_update]变量更新规则"
+    type: MVU
+    path: 世界书/变量/变量更新规则.yaml
+    part: update_rules
+    purpose: JSONPatch 协议、战斗结算公式、缴械值/成绩/技能经验/她的升级
+  - name: "[mvu_update]变量字典与范围"
+    type: MVU
+    path: 世界书/变量/变量字典与范围.yaml
+    part: variable_list
+    purpose: 全部字段路径、范围、示例
+  - name: "[InitVar]初始变量"
+    type: MVU
+    path: 世界书/变量/initvar.yaml
+    part: initvar
+    purpose: 38 角色初始建档（普通开局）
+  - name: "[mvu_plot]情境上下文EJS"
+    type: MVU
+    path: 世界书/变量/情境上下文EJS.yaml
+    part: output_format
+    purpose: @@generate_before 生成当前目标/战斗/阶段概览
+  - name: "[mvu_update]主模型变量更新模式(备用)"
+    type: MVU
+    path: 世界书/变量/主模型变量更新模式.yaml
+    part: update_rules
+    purpose: 备用：主模型自更新模式
+
+mvu:
+  structure: |
+    ├── 时间 {日期, 星期, 时段}
+    ├── 玩家 {学业总分, 各科{语文,数学,英语,物理,化学,生物}, 技能{螺旋/颗粒/敏感度加倍/硬度翻倍/热量翻倍/次数翻倍/频率翻倍 各{等级,经验}}, 体力, 性欲, 勃起度, 今日胜场, 今日败场, 累计缴械, 累计被缴械}
+    ├── 排班 {今日场次[{时段, 参与者, 结果, 是否参战}], 当前战斗目标, 战斗状态}
+    └── 女性角色 {名字: {身份, 省份, 方言, 关系, 缴械值0-100, 缴械次数, 战斗次数, 胜场, 败场, 名器, 技能{名,等级,经验}, 能力值{忍耐,持久,反攻}, 特质, 缺陷, 欲望积压0-100, 是否俘虏, 俘虏日期, 今日已使用, 服装, 身体状态{胸部/阴道/肛门/嘴/肌肤/大腿/臀部}, 心理状态{欲望度/羞耻感/兴奋/期待/精神状态}, 心声}}
+  variables:
+    - path: 时间.日期
+      format: YYYY年M月D日
+    - path: 时间.星期
+    - path: 时间.时段
+      enum: [上午, 下午场, 晚场, 深夜]
+    - path: 玩家.学业总分
+      type: number
+      range: 0~750
+      check: 只受战斗输赢影响：赢随机科目+1~5，输随机科目-1~5，其他因素不变分
+    - path: 玩家.各科
+      type: object
+      fields: { 语文: number, 数学: number, 英语: number, 物理: number, 化学: number, 生物: number }
+    - path: 玩家.技能
+      type: object
+      fields: { 螺旋: {等级:number,经验:number}, 颗粒: {...}, 敏感度加倍: {...}, 硬度翻倍: {...}, 热量翻倍: {...}, 次数翻倍: {...}, 频率翻倍: {...} }
+      check: 本场使用该技能后结算经验（按对抗强度），经验满升级（Lv1-10）
+    - path: 玩家.体力
+      type: number
+      range: 0~100
+    - path: 玩家.性欲
+      type: number
+      range: 0~100
+    - path: 玩家.勃起度
+      type: number
+      range: 0~100
+    - path: 玩家.今日胜场
+      type: number
+    - path: 玩家.今日败场
+      type: number
+    - path: 玩家.累计缴械
+      type: number
+    - path: 玩家.累计被缴械
+      type: number
+    - path: 排班.今日场次
+      type: z.array
+      fields: { 时段: string, 参与者: string, 结果: string, 是否参战: bool }
+    - path: 排班.当前战斗目标
+      type: string
+    - path: 排班.战斗状态
+      enum: [未开始, 进行中, 已结算]
+    - path: 女性角色.{名字}.缴械值
+      type: number
+      range: 0~100
+      check: 每场战斗按公式+1~5；100 触发俘虏（永久）
+    - path: 女性角色.{名字}.缴械次数
+      type: number
+    - path: 女性角色.{名字}.战斗次数
+      type: number
+    - path: 女性角色.{名字}.胜场
+      type: number
+    - path: 女性角色.{名字}.败场
+      type: number
+    - path: 女性角色.{名字}.技能.等级
+      type: number
+      check: 她赢了升级（她方技能体系，参考玩家技能）
+    - path: 女性角色.{名字}.能力值
+      type: object
+      fields: { 忍耐: number, 持久: number, 反攻: number }
+    - path: 女性角色.{名字}.欲望积压
+      type: number
+      range: 0~100
+      check: 拒战则积压+，下次战斗她更强
+    - path: 女性角色.{名字}.是否俘虏
+      type: boolean
+    - path: 女性角色.{名字}.俘虏日期
+      type: string
+    - path: 女性角色.{名字}.今日已使用
+      type: boolean
+    - path: 女性角色.{名字}.服装
+      type: object
+    - path: 女性角色.{名字}.身体状态
+      type: object
+      fields: { 胸部: {状态,乳头,敏感度}, 阴道: {状态,湿润度,敏感度}, 肛门: {状态}, 嘴: {状态}, 肌肤: {状态,体温}, 大腿: {状态}, 臀部: {状态} }
+    - path: 女性角色.{名字}.心理状态
+      type: object
+      fields: { 欲望度: number, 羞耻感: number, 兴奋: number, 期待: number, 精神状态: string }
+    - path: 女性角色.{名字}.心声
+      type: string
+
+ejs:
+  # 关灯规范（2026-08-06）：所有涉及 EJS 的条目默认关灯（enabled:false），
+  # 运行时由 [mvu_plot]阶段调度 @@generate_before 按 排班.当前战斗目标 getwi 精准拉取一份；
+  # 情境上下文EJS 为每轮必需的单份数据快照，保留蓝灯。
+  entries:
+    - name: 缴械值阶段指导
+      complexity: 段落控制
+      stages:
+        - name: 阶段一(0-19)
+          condition: "getvar('stat_data.排班.当前战斗目标', { defaults: '' }) && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) <= 19"
+        - name: 阶段二(20-39)
+          condition: "getvar('stat_data.排班.当前战斗目标', { defaults: '' }) && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) >= 20 && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) <= 39"
+        - name: 阶段三(40-59)
+          condition: "getvar('stat_data.排班.当前战斗目标', { defaults: '' }) && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) >= 40 && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) <= 59"
+        - name: 阶段四(60-79)
+          condition: "getvar('stat_data.排班.当前战斗目标', { defaults: '' }) && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) >= 60 && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) <= 79"
+        - name: 阶段五(80-99)
+          condition: "getvar('stat_data.排班.当前战斗目标', { defaults: '' }) && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) >= 80 && Number(getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 })) <= 99"
+    - name: 俘虏结局
+      complexity: 条目显隐
+      condition: "getvar('stat_data.女性角色.' + getvar('stat_data.排班.当前战斗目标', { defaults: '' }) + '.缴械值', { defaults: 0 }) >= 100"
+    - name: 林汐瑶_角色条目
+      complexity: 段落控制
+      stages: 同缴械值 5 阶段（每人条目内嵌 5 段行为，条件按本人缴械值）
+    - name: 苏晚晴_角色条目
+      complexity: 段落控制
+      stages: 同缴械值 5 阶段
+    # ……其余 36 角色条目同模式，条件均为 getvar(女性角色.本人.缴械值) 分段
+
+first_messages:
+  - format: 叙事式
+    word_count: 600~800
+    output_path: 开场白/0.txt
+    scene: 开学第一天的早晨，人大附中校门口
+    opening_situation: |
+      开学第一天，妈妈陪着你挤在人潮里走向校门。你从广西小城转来京市，
+      插班进入高三精英班。成绩中等二本的你，望着头顶"人大附中"的烫金校牌，
+      心里清楚这是妈妈把全部积蓄都押在你身上的一搏。教室里有十五个女生，
+      七位老师……没有人知道，你们之间隔着一条隐秘的线。
+    initvar_override: 开场白/initvar/0.yaml
+  - format: 叙事式
+    word_count: 600~800
+    output_path: 开场白/1.txt
+    scene: 开学第一周，下午场开始前的教室
+    opening_situation: 进阶开局：已有一名女性被俘虏（缴械值=100）。她暗中调换座位靠近你，看你的眼神带着异样的温度，只有你知道她已经完全属于你。分支：俘虏者是妈妈（林秀英）。
+    initvar_override: 开场白/initvar/1.yaml
+  - format: 叙事式
+    word_count: 600~800
+    output_path: 开场白/2.txt
+    scene: 开学第一周，晚自习结束后的走廊
+    opening_situation: 进阶开局：已有一名女性被俘虏（缴械值=100）。她在放学后拦住你，心跳声清晰可闻，把宿舍钥匙塞进你手心。分支：俘虏者是女儿（苏晚晴）。
+    initvar_override: 开场白/initvar/2.yaml
+  - format: 叙事式
+    word_count: 600~800
+    output_path: 开场白/3.txt
+    scene: 开学第一周，教师办公室门口
+    opening_situation: 进阶开局：已有一名女性被俘虏（缴械值=100）。她借讲题的名义把你留在办公室，反锁了门，抽屉里放着一枚洗得发亮的假阴茎。分支：俘虏者是老师（沈若兰）。
+    initvar_override: 开场白/initvar/3.yaml

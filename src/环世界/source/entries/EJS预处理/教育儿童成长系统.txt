@@ -1,0 +1,224 @@
+@@generate_before
+<%_
+/* 教育儿童成长系统 - 殖民者后代从出生到成年的成长机制 */
+
+var GROWTH_STAGE_DB = {
+  '婴儿': {年龄范围: [0, 3],  技能学习率: 0.1, 心情修正: -5, 食物需求: 2, 睡眠时间: 14, 可从事工作: '无',       特质觉醒概率: 0.10},
+  '幼儿': {年龄范围: [4, 6],  技能学习率: 0.3, 心情修正: 0,  食物需求: 3, 睡眠时间: 12, 可从事工作: '简单家务', 特质觉醒概率: 0.25},
+  '儿童': {年龄范围: [7, 10], 技能学习率: 0.5, 心情修正: 5,  食物需求: 4, 睡眠时间: 10, 可从事工作: '基础劳动', 特质觉醒概率: 0.35},
+  '少年': {年龄范围: [11, 14],技能学习率: 0.8, 心情修正: 0,  食物需求: 5, 睡眠时间: 9,  可从事工作: '一般工作', 特质觉醒概率: 0.20},
+  '青年': {年龄范围: [15, 18],技能学习率: 1.0, 心情修正: -3, 食物需求: 5, 睡眠时间: 8,  可从事工作: '全部工作', 特质觉醒概率: 0.10}
+};
+
+var EDUCATION_DB = {
+  '学徒制':   {技能成长加成: 1.5, 心情影响: -5,  耗时: 8,  成功率: 0.70, 副作用: '疲劳增加',   适用年龄: [7, 18]},
+  '课堂教育': {技能成长加成: 1.2, 心情影响: 0,   耗时: 6,  成功率: 0.85, 副作用: '无',         适用年龄: [4, 14]},
+  '劳动实践': {技能成长加成: 1.0, 心情影响: -10, 耗时: 10, 成功率: 0.60, 副作用: '疲劳显著',   适用年龄: [10, 18]},
+  '艺术培养': {技能成长加成: 1.8, 心情影响: 8,   耗时: 4,  成功率: 0.50, 副作用: '心情波动',   适用年龄: [4, 18]},
+  '战斗训练': {技能成长加成: 1.3, 心情影响: -8,  耗时: 6,  成功率: 0.65, 副作用: '受伤风险',   适用年龄: [11, 18]},
+  '社交培养': {技能成长加成: 1.1, 心情影响: 5,   耗时: 3,  成功率: 0.80, 副作用: '无',         适用年龄: [4, 18]}
+};
+
+var TRAIT_AWAKEN_DB = {
+  '早慧': {觉醒年龄: 3, 效果: '学习速度+20%',   技能修正: 1.20, 心情影响: 3,  特殊能力: '提前1年进入下一阶段'},
+  '好奇': {觉醒年龄: 4, 效果: '研究技能+30%',   技能修正: 1.30, 心情影响: 2,  特殊能力: '可探索未知区域'},
+  '顽皮': {觉醒年龄: 4, 效果: '运动技能+15%',   技能修正: 1.15, 心情影响: -3, 特殊能力: '可触发恶作剧事件'},
+  '安静': {觉醒年龄: 5, 效果: '专注度+25%',     技能修正: 1.25, 心情影响: 1,  特殊能力: '学习效率不受噪音影响'},
+  '好动': {觉醒年龄: 4, 效果: '体力+20%',       技能修正: 1.20, 心情影响: 2,  特殊能力: '疲劳累积减半'},
+  '敏感': {觉醒年龄: 5, 效果: '社交感知+30%',   技能修正: 1.30, 心情影响: -5, 特殊能力: '可感知他人情绪'},
+  '坚韧': {觉醒年龄: 6, 效果: '抗压力+25%',     技能修正: 1.25, 心情影响: 5,  特殊能力: '心情下限锁定30'},
+  '天才': {觉醒年龄: 5, 效果: '全技能+15%',     技能修正: 1.50, 心情影响: -8, 特殊能力: '可跨阶段学习'}
+};
+
+var INHERIT_SKILL_DB = {
+  '射击':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '格斗':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '社交':   {继承率: 0.5, 变异范围: [-2, 3], 上限: 10, 下限: 0},
+  '厨艺':   {继承率: 0.3, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '建设':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '种植':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '畜牧':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '手工':   {继承率: 0.3, 变异范围: [-2, 3], 上限: 10, 下限: 0},
+  '艺术品': {继承率: 0.3, 变异范围: [-3, 3], 上限: 10, 下限: 0},
+  '医疗':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0},
+  '研究':   {继承率: 0.5, 变异范围: [-2, 3], 上限: 10, 下限: 0},
+  '采矿':   {继承率: 0.4, 变异范围: [-2, 2], 上限: 8,  下限: 0}
+};
+
+var INHERIT_SKILL_LIST = ['射击','格斗','社交','厨艺','建设','种植','畜牧','手工','艺术品','医疗','研究','采矿'];
+
+function _growthStage(age){
+  var a = Number(age) || 0;
+  if(a <= 3) return '婴儿';
+  if(a <= 6) return '幼儿';
+  if(a <= 10) return '儿童';
+  if(a <= 14) return '少年';
+  if(a <= 18) return '青年';
+  return '成年';
+}
+
+function _learnSkill(skill, education, age){
+  var stage = _growthStage(age);
+  var stageDb = GROWTH_STAGE_DB[stage] || GROWTH_STAGE_DB['婴儿'];
+  var eduDb = EDUCATION_DB[education] || EDUCATION_DB['课堂教育'];
+  var baseGain = 5 * stageDb.技能学习率 * eduDb.技能成长加成;
+  var roll = _lcgRoll('learnSkill_' + skill + '_' + age, 1, 100)[0];
+  var success = (roll <= eduDb.成功率 * 100);
+  var gain = success ? Math.round(baseGain) : Math.round(baseGain * 0.3);
+  return {
+    skill: skill,
+    stage: stage,
+    education: education,
+    success: success,
+    gain: gain,
+    learnRate: stageDb.技能学习率,
+    bonus: eduDb.技能成长加成,
+    detail: success ? '学习成功 +' + gain + '经验' : '学习失败 +' + gain + '经验'
+  };
+}
+
+function _traitAwaken(age, mood){
+  var stage = _growthStage(age);
+  var stageDb = GROWTH_STAGE_DB[stage] || GROWTH_STAGE_DB['婴儿'];
+  var awakenChance = stageDb.特质觉醒概率;
+  var moodBonus = 1.0;
+  if(mood > 80) moodBonus = 1.3;
+  else if(mood > 60) moodBonus = 1.1;
+  else if(mood < 30) moodBonus = 0.5;
+  var finalChance = awakenChance * moodBonus;
+  var roll = _lcgRoll('traitAwaken_' + age + '_' + mood, 1, 100)[0] / 100;
+  if(roll > finalChance) return { triggered: false, trait: '无', detail: '未觉醒 (概率' + Math.round(finalChance * 100) + '%)' };
+  var available = [];
+  for(var k in TRAIT_AWAKEN_DB){
+    if(TRAIT_AWAKEN_DB[k].觉醒年龄 <= age) available.push(k);
+  }
+  if(available.length === 0) return { triggered: false, trait: '无', detail: '无可用特质' };
+  var idx = _lcgRoll('traitSelect_' + age, 0, available.length - 1)[0];
+  var selected = available[idx];
+  var traitDb = TRAIT_AWAKEN_DB[selected];
+  return {
+    triggered: true,
+    trait: selected,
+    effect: traitDb.效果,
+    skillMod: traitDb.技能修正,
+    moodEffect: traitDb.心情影响,
+    ability: traitDb.特殊能力,
+    detail: '觉醒特质[' + selected + ']: ' + traitDb.效果 + ' / ' + traitDb.特殊能力
+  };
+}
+
+function _inheritSkill(parent1Skill, parent2Skill){
+  var result = {};
+  for(var i = 0; i < INHERIT_SKILL_LIST.length; i++){
+    var sk = INHERIT_SKILL_LIST[i];
+    var db = INHERIT_SKILL_DB[sk];
+    var p1 = Number(getvar('stat_data.' + parent1Skill + '.' + sk, {scope:'local',defaults:5})) || 5;
+    var p2 = Number(getvar('stat_data.' + parent2Skill + '.' + sk, {scope:'local',defaults:5})) || 5;
+    var avg = (p1 + p2) / 2;
+    var inherited = avg * db.继承率;
+    var variance = _lcgRoll('inherit_' + sk + '_' + parent1Skill + '_' + parent2Skill, db.变异范围[0], db.变异范围[1])[0];
+    var final = Math.round(inherited + variance);
+    if(final > db.上限) final = db.上限;
+    if(final < db.下限) final = db.下限;
+    result[sk] = final;
+  }
+  return result;
+}
+
+function _childhoodEffect(stage, education){
+  var stageDb = GROWTH_STAGE_DB[stage] || GROWTH_STAGE_DB['儿童'];
+  var eduDb = EDUCATION_DB[education] || EDUCATION_DB['课堂教育'];
+  var moodEffect = stageDb.心情修正 + eduDb.心情影响;
+  var fatigueGain = Math.round(eduDb.耗时 * 2);
+  return {
+    moodEffect: moodEffect,
+    workAllowed: stageDb.可从事工作,
+    fatigueGain: fatigueGain,
+    foodNeed: stageDb.食物需求,
+    sleepTime: stageDb.睡眠时间,
+    detail: '阶段[' + stage + ']教育[' + education + ']: 心情' + (moodEffect >= 0 ? '+' : '') + moodEffect + ' / 疲劳+' + fatigueGain + ' / 食物需求' + stageDb.食物需求 + ' / 睡眠' + stageDb.睡眠时间 + 'h'
+  };
+}
+
+function _educationMood(education){
+  var eduDb = EDUCATION_DB[education] || EDUCATION_DB['课堂教育'];
+  return {
+    moodChange: eduDb.心情影响,
+    detail: eduDb.心情影响 >= 0 ? '心情+' + eduDb.心情影响 : '心情' + eduDb.心情影响
+  };
+}
+
+function _comingOfAge(skills, traits){
+  var total = 0;
+  var count = 0;
+  for(var k in skills){
+    total += Number(skills[k]) || 0;
+    count++;
+  }
+  var avg = count > 0 ? total / count : 0;
+  var traitCount = traits.length;
+  var ready = avg >= 5;
+  var bonusTraits = traitCount >= 2;
+  var finalBonus = 1.0;
+  if(ready && bonusTraits) finalBonus = 1.3;
+  else if(ready) finalBonus = 1.15;
+  return {
+    avgSkill: Number(avg.toFixed(1)),
+    traitCount: traitCount,
+    ready: ready,
+    bonus: finalBonus,
+    detail: '成年判定: 平均技能' + avg.toFixed(1) + ' / 特质' + traitCount + '个 / ' + (ready ? '达标' : '不达标') + ' / 成长系数×' + finalBonus
+  };
+}
+_%>
+
+<教育成长校验>
+[教育成长校验]
+当前年龄: <%= Number(getvar('stat_data.殖民者_主角.年龄', {scope:'local',defaults:25})) || 25 %>
+当前心情: <%= Number(getvar('stat_data.殖民者_主角.心情', {scope:'local',defaults:50})) || 50 %>
+当前饱腹: <%= Number(getvar('stat_data.殖民者_主角.饱腹', {scope:'local',defaults:80})) || 80 %>
+成长阶段: <%= _growthStage(Number(getvar('stat_data.殖民者_主角.年龄', {scope:'local',defaults:25})) || 25) %>
+阶段数据: <%= JSON.stringify(GROWTH_STAGE_DB[_growthStage(Number(getvar('stat_data.殖民者_主角.年龄', {scope:'local',defaults:25})) || 25)] || GROWTH_STAGE_DB['成年']) %>
+技能学习示例: <%= JSON.stringify(_learnSkill('射击', '学徒制', 12)) %>
+特质觉醒示例: <%= JSON.stringify(_traitAwaken(8, 65)) %>
+技能继承示例: <%= JSON.stringify(_inheritSkill('殖民者_主角', '殖民者_2')) %>
+童年影响示例: <%= JSON.stringify(_childhoodEffect('儿童', '课堂教育')) %>
+教育心情示例: <%= JSON.stringify(_educationMood('艺术培养')) %>
+成年判定示例: <%= JSON.stringify(_comingOfAge({射击: 6, 格斗: 5, 社交: 7}, ['好奇', '坚韧'])) %>
+</教育成长校验>
+
+[教育儿童成长系统 · 系统控制器]
+## 成长阶段表（查GROWTH_STAGE_DB）
+5个阶段，含年龄范围/技能学习率/心情修正/食物需求/睡眠时间/可从事工作/特质觉醒概率
+婴儿(0-3岁/学习率0.1/心情-5/食物2/睡眠14h/无工作/觉醒10%) | 幼儿(4-6岁/学习率0.3/心情0/食物3/睡眠12h/简单家务/觉醒25%) | 儿童(7-10岁/学习率0.5/心情+5/食物4/睡眠10h/基础劳动/觉醒35%) | 少年(11-14岁/学习率0.8/心情0/食物5/睡眠9h/一般工作/觉醒20%) | 青年(15-18岁/学习率1.0/心情-3/食物5/睡眠8h/全部工作/觉醒10%)
+
+## 教育方式表（查EDUCATION_DB）
+6种教育方式，含技能成长加成/心情影响/耗时/成功率/副作用/适用年龄
+学徒制(加成1.5/心情-5/耗时8h/成功率70%/疲劳增加/7-18岁) | 课堂教育(加成1.2/心情0/耗时6h/成功率85%/无副作用/4-14岁) | 劳动实践(加成1.0/心情-10/耗时10h/成功率60%/疲劳显著/10-18岁) | 艺术培养(加成1.8/心情+8/耗时4h/成功率50%/心情波动/4-18岁) | 战斗训练(加成1.3/心情-8/耗时6h/成功率65%/受伤风险/11-18岁) | 社交培养(加成1.1/心情+5/耗时3h/成功率80%/无副作用/4-18岁)
+
+## 特质觉醒表（查TRAIT_AWAKEN_DB）
+8种儿童特质，含觉醒年龄/效果/技能修正/心情影响/特殊能力
+早慧(3岁/学习速度+20%/修正1.20/心情+3/提前1年进入下一阶段) | 好奇(4岁/研究技能+30%/修正1.30/心情+2/可探索未知区域) | 顽皮(4岁/运动技能+15%/修正1.15/心情-3/可触发恶作剧事件) | 安静(5岁/专注度+25%/修正1.25/心情+1/学习效率不受噪音影响) | 好动(4岁/体力+20%/修正1.20/心情+2/疲劳累积减半) | 敏感(5岁/社交感知+30%/修正1.30/心情-5/可感知他人情绪) | 坚韧(6岁/抗压力+25%/修正1.25/心情+5/心情下限锁定30) | 天才(5岁/全技能+15%/修正1.50/心情-8/可跨阶段学习)
+
+## 技能继承表（查INHERIT_SKILL_DB）
+12技能继承规则，父母技能平均值×继承率±变异范围，受上下限约束
+射击(继承率0.4/变异±2/上限8) | 格斗(继承率0.4/变异±2/上限8) | 社交(继承率0.5/变异-2~+3/上限10) | 厨艺(继承率0.3/变异±2/上限8) | 建设(继承率0.4/变异±2/上限8) | 种植(继承率0.4/变异±2/上限8) | 畜牧(继承率0.4/变异±2/上限8) | 手工(继承率0.3/变异-2~+3/上限10) | 艺术品(继承率0.3/变异±3/上限10) | 医疗(继承率0.4/变异±2/上限8) | 研究(继承率0.5/变异-2~+3/上限10) | 采矿(继承率0.4/变异±2/上限8)
+
+## 教育规则
+- **技能学习**：基础经验5 × 阶段学习率 × 教育加成，成功率决定全经验或30%经验
+- **特质觉醒**：每阶段有觉醒概率，心情>80概率×1.3 / 心情>60概率×1.1 / 心情<30概率×0.5，仅可觉醒年龄≤当前年龄的特质
+- **技能继承**：新生儿童年技能 = (父技能+母技能)/2 × 继承率 + 变异值，受上下限约束
+- **童年影响**：心情修正 = 阶段心情修正 + 教育心情影响，疲劳 +教育耗时×2，受阶段食物需求和睡眠时间约束
+- **教育心情**：艺术培养(+8)/社交培养(+5)为正向，劳动实践(-10)/战斗训练(-8)为负向
+- **成年判定**：18岁且平均技能≥5为达标，达标+特质≥2个则成长系数×1.3，仅达标则×1.15
+- **教育适用年龄**：课堂教育仅4-14岁可用，学徒制7岁起，劳动实践/战斗训练10-11岁起
+
+## 叙事要求
+- 婴儿阶段须描写对父母的依赖和基本生理需求
+- 幼儿阶段须描写初次尝试简单家务的笨拙与成长
+- 儿童阶段须描写好奇心驱动的学习和基础劳动的参与
+- 少年阶段须描写技能成长和自我意识的觉醒
+- 青年阶段须描写面临成年责任的挣扎与准备
+- 特质觉醒时须描写显现的过程和对日常行为的影响
+- 教育失败时须描写受挫感和情绪反应
+- 成年判定时须描写从孩童到成人的心理转变

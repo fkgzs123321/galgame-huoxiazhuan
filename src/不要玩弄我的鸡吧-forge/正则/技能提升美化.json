@@ -1,0 +1,15 @@
+{
+  "id": "fjb-skill-up-beautify",
+  "scriptName": "技能提升美化",
+  "findRegex": "/<SkillUp\\s+skill=\"([^\"]+)\"\\s+level=\"(\\d+)→(\\d+)\"\\s*(?:exp=\"(\\d+)\"\\s*)?(?:tier=\"([^\"]+)\"\\s*)?\\/>/g",
+  "replaceString": "<div class=\"fjb-skillup\"><div class=\"fjb-skillup-icon\">⚡</div><div class=\"fjb-skillup-body\"><div class=\"fjb-skillup-title\">技能提升 · $1</div><div class=\"fjb-skillup-delta\">Lv.$2 → <strong>Lv.$3</strong></div><div class=\"fjb-skillup-tier\">$5</div></div><div class=\"fjb-skillup-glow\"></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

@@ -1,0 +1,124 @@
+  world:
+    week: 1
+    status: 庄园及周边区域已被腐败力量扭曲，充满怪物与邪教徒。
+    exploration:
+      weald: 0
+      warrens: 0
+      cove: 0
+      ruins: 0
+      courtyard: 0
+      farmstead: 0
+      darkest_dungeon: 0
+  resource:
+    gold: 5000
+    shards: 0
+  facility:
+    # --- 基础城镇设施 ---
+    stagecoach:
+      level: 1
+      desc: "马车定期往返，输送新鲜血液"
+    blacksmith:
+      level: 1
+      desc: "炉火日夜不息，敲打声回荡"
+    guild:
+      level: 1
+      desc: "教官正在训练新兵"
+    sanitarium:
+      level: 1
+      desc: "病房里传出压抑的呻吟"
+    tavern:
+      level: 1
+      desc: "喧闹的赌徒与醉鬼聚集地"
+    abbey:
+      level: 1
+      desc: "肃穆的祈祷声抚慰人心"
+    survivalist:
+      level: 1
+      desc: "野外生存专家的露营地"
+    nomad_wagon:
+      level: 1
+      desc: "出售神秘饰品的吉普赛马车"
+    graveyard:
+      level: 1
+      desc: "埋葬着逝去的英雄，气氛阴冷"
+    # --- 欧若拉/建设区 (DLC特殊建筑) ---
+    bank:
+      level: 0
+      desc: "未修复"
+    mill:
+      level: 0
+      desc: "未建造"
+    cartographer:
+      level: 0
+      desc: "未建造"
+    granary:
+      level: 0
+      desc: "未建造"
+    puppet_theatre:
+      level: 0
+      desc: "未建造"
+    sanguine_vintners:
+      level: 0
+      desc: "未建造"
+    # (玩家后续新增的自定义建筑将使用中文Key，如“温泉”)
+  heir:
+    name: {{user}}
+    title: 庄园继承人
+    location: 哈姆雷特小镇
+    mission: 清理庄园，揭开先祖秘密，关闭传送门。
+    class: 继承人
+    level: 1
+    stats:
+      atk: 5
+      def: 0
+      hit: 80
+      crit: 5
+      prec: 0
+      spd: 5
+      dodge: 5
+    hp:
+      current: 20
+      max: 20
+    stress: 0
+    mental_state: Normal
+    conditions: []
+    skills:
+    skills:
+      弱点射击:
+        type: 主动
+        tag: 攻击
+        val: 远距单体, DMG +25%, CRIT +5%
+      指挥:
+        type: 主动
+        tag: 增益
+        val: 友方全体 ACC +10 (3 rds)
+    traits:
+      继承人的决心:
+        desc: 进行压力判定时，美德的概率提升至50%
+    equipment:
+      weapon: 1
+      armor: 1
+      trinkets: {}
+    appearance:
+      outfit: 贵族长礼服
+      body: 正常
+      pose: 站立
+  roster: {}
+  inventory:
+    consumables:
+      food: 0
+      torch: 0
+      blood: 0
+      invitation: 0
+    trophies: {}
+    gifts:
+      flower: 0
+      necklace: 0
+      ring: 0
+  expedition:
+    state: 休息
+    location: 无
+    team: {}
+    goal: 无
+    supplies: {}
+    farmstead_light: 苍白常态

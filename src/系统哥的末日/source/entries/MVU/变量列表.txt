@@ -1,0 +1,125 @@
+@@generate_before
+<%
+// ═══════════════════════════════════════
+// 变量列表 - 按游戏阶段输出变量快照
+// 输出至 <variable_snapshot> 块供主模型读取
+// ═══════════════════════════════════════
+
+var phase = getvar('stat_data.系统变量.游戏阶段', { scope: 'local', defaults: '日常轮' });
+var chapter = Number(getvar('stat_data.系统变量.当前章节', { scope: 'local', defaults: 1 })) || 1;
+var day = Number(getvar('stat_data.系统变量.天数', { scope: 'local', defaults: 1 })) || 1;
+var timeslot = getvar('stat_data.系统变量.时段', { scope: 'local', defaults: '上午' });
+
+// 反派林天状态
+var pname = getvar('stat_data.反派状态.姓名', { scope: 'local', defaults: '林天' });
+var pgrade = getvar('stat_data.反派状态.财富等级', { scope: 'local', defaults: 'A9' });
+var pwealth = Number(getvar('stat_data.反派状态.财富值', { scope: 'local', defaults: 500000000 })) || 0;
+var ptot = Number(getvar('stat_data.反派状态.绑定名额总数', { scope: 'local', defaults: 10 })) || 0;
+var pbind = Number(getvar('stat_data.反派状态.已绑定数', { scope: 'local', defaults: 8 })) || 0;
+var prest = Number(getvar('stat_data.反派状态.剩余名额', { scope: 'local', defaults: 2 })) || 0;
+var psys = getvar('stat_data.反派状态.系统状态', { scope: 'local', defaults: '活跃' });
+var peval = Number(getvar('stat_data.反派状态.评价值', { scope: 'local', defaults: 80 })) || 80;
+var ptrend = getvar('stat_data.反派状态.评价趋势', { scope: 'local', defaults: '稳定' });
+var ploc = getvar('stat_data.反派状态.当前位置', { scope: 'local', defaults: '林天私人会所' });
+var pmood = getvar('stat_data.反派状态.心情', { scope: 'local', defaults: '玩味' });
+
+// user状态
+var uname = getvar('stat_data.user状态.姓名', { scope: 'local', defaults: '你' });
+var ugrade = getvar('stat_data.user状态.财富等级', { scope: 'local', defaults: 'A8' });
+var uwealth = Number(getvar('stat_data.user状态.财富值', { scope: 'local', defaults: 80000000 })) || 0;
+var upsych = getvar('stat_data.user状态.心理状态', { scope: 'local', defaults: '震惊' });
+var ususp = Number(getvar('stat_data.user状态.怀疑度', { scope: 'local', defaults: 20 })) || 20;
+var urebel = Number(getvar('stat_data.user状态.反抗力', { scope: 'local', defaults: 30 })) || 30;
+var uloc = getvar('stat_data.user状态.当前位置', { scope: 'local', defaults: '家中' });
+var urel = getvar('stat_data.user状态.与妻子关系', { scope: 'local', defaults: '疏远' });
+
+// 交涉状态
+var negoOn = getvar('stat_data.交涉状态.交涉进行中', { scope: 'local', defaults: false });
+var negoTarget = getvar('stat_data.交涉状态.交涉对象', { scope: 'local', defaults: '' });
+var negoRound = Number(getvar('stat_data.交涉状态.交涉回合', { scope: 'local', defaults: 0 })) || 0;
+var negoAct = getvar('stat_data.交涉状态.交涉幕次', { scope: 'local', defaults: '结束' });
+var uqs = Number(getvar('stat_data.交涉状态.user气势', { scope: 'local', defaults: 50 })) || 50;
+var ukc = Number(getvar('stat_data.交涉状态.user口才', { scope: 'local', defaults: 50 })) || 50;
+var uqb = Number(getvar('stat_data.交涉状态.user情报', { scope: 'local', defaults: 30 })) || 30;
+var upst = Number(getvar('stat_data.交涉状态.user地位', { scope: 'local', defaults: 60 })) || 60;
+var oqs = Number(getvar('stat_data.交涉状态.对手气势', { scope: 'local', defaults: 60 })) || 60;
+var okc = Number(getvar('stat_data.交涉状态.对手口才', { scope: 'local', defaults: 60 })) || 60;
+var oqb = Number(getvar('stat_data.交涉状态.对手情报', { scope: 'local', defaults: 70 })) || 70;
+var opst = Number(getvar('stat_data.交涉状态.对手地位', { scope: 'local', defaults: 70 })) || 70;
+var uCons = Number(getvar('stat_data.交涉状态.user共识分', { scope: 'local', defaults: 0 })) || 0;
+var oCons = Number(getvar('stat_data.交涉状态.对手共识分', { scope: 'local', defaults: 0 })) || 0;
+
+// 评价值
+var evalScore = peval;
+var evalTrend = ptrend;
+
+// 评论系统
+var commentTrend = getvar('stat_data.评论系统.评论倾向', { scope: 'local', defaults: '中性' });
+var hotComment = getvar('stat_data.评论系统.热门评论', { scope: 'local', defaults: '' });
+
+// 绑定花名册（已绑定，输出完整详情）
+var women = ['陈雪华','林雅芝','王秀兰','赵敏','孙莉','周慧敏','吴琼','郑秀','苏婉','沈梦瑶'];
+var rosterLines = women.map(k => {
+  var n = getvar(stat_data.绑定花名册.${k}.姓名, { scope: 'local', defaults: '' });
+  if (!n) return '';
+  var st = getvar(stat_data.绑定花名册.${k}.状态, { scope: 'local', defaults: '已绑定' });
+  var dp = Number(getvar(stat_data.绑定花名册.${k}.绑定深度, { scope: 'local', defaults: 0 })) || 0;
+  var order = getvar(stat_data.绑定花名册.${k}.绑定顺序, { scope: 'local', defaults: '' });
+  var grade = getvar(stat_data.绑定花名册.${k}.绑定等级, { scope: 'local', defaults: '' });
+  var identity = getvar(stat_data.绑定花名册.${k}.身份, { scope: 'local', defaults: '' });
+  var familyRel = getvar(stat_data.绑定花名册.${k}.家庭关系, { scope: 'local', defaults: '' });
+  var origPartner = getvar(stat_data.绑定花名册.${k}.原伴侣, { scope: 'local', defaults: '无' });
+  var children = getvar(stat_data.绑定花名册.${k}.子女信息, { scope: 'local', defaults: '无' });
+  var sanity = getvar(stat_data.绑定花名册.${k}.清醒频率, { scope: 'local', defaults: '' });
+  var lucid = getvar(stat_data.绑定花名册.${k}.上次清醒瞬间, { scope: 'local', defaults: '' });
+  var playType = getvar(stat_data.绑定花名册.${k}.NTR玩法类型, { scope: 'local', defaults: '' });
+  var marks = getvar(stat_data.绑定花名册.${k}.占有印记, { scope: 'local', defaults: '' });
+  var cup = getvar(stat_data.绑定花名册.${k}.罩杯, { scope: 'local', defaults: '' });
+  var bust = Number(getvar(stat_data.绑定花名册.${k}.胸围, { scope: 'local', defaults: 0 })) || 0;
+  var waist3d = Number(getvar(stat_data.绑定花名册.${k}.腰围, { scope: 'local', defaults: 0 })) || 0;
+  var hip = Number(getvar(stat_data.绑定花名册.${k}.臀围, { scope: 'local', defaults: 0 })) || 0;
+  var height = Number(getvar(stat_data.绑定花名册.${k}.身高, { scope: 'local', defaults: 0 })) || 0;
+  var weight = Number(getvar(stat_data.绑定花名册.${k}.体重, { scope: 'local', defaults: 0 })) || 0;
+  var line = - ${k}:${n}(${st},深度${dp});
+  if (identity) line +=  | ${identity};
+  if (familyRel) line +=  | ${familyRel};
+  if (origPartner && origPartner !== '无') line +=  | 原配:${origPartner};
+  if (children && children !== '无') line +=  | 子女:${children};
+  if (sanity !== '') line +=  | 清醒${sanity};
+  if (lucid) line +=  | 上次清醒:${lucid};
+  if (playType) line +=  | 玩法:${playType};
+  if (marks) line +=  | 印记:${marks};
+  if (cup || bust || height) line +=  | 三维:${cup}/${bust}-${waist3d}-${hip}/${height}cm/${weight}kg;
+  return line;
+}).filter(Boolean);
+var roster = rosterLines.join('\n');
+%>
+<variable_snapshot>
+[系统状态]
+- 章节<%= chapter %> · 第<%= day %>天 · <%= timeslot %> · 阶段<%= phase %>
+
+[主角林天]
+- 财富<%= pgrade %>（<%= pwealth.toLocaleString() %>元）· 绑定<%= pbind %>/<%= ptot %>（剩余<%= prest %>）
+- 系统状态<%= psys %> · 评价值<%= evalScore %>（<%= evalTrend %>）· 心情<%= pmood %>
+- 当前位置<%= ploc %>
+
+[{{user}}]
+- 财富<%= ugrade %>（<%= uwealth.toLocaleString() %>元）· 心理<%= upsych %>
+- 怀疑度<%= ususp %> · 反抗意识<%= urebel %> · 与妻子<%= urel %> · 位置<%= uloc %>
+
+<% if (negoOn) { %>
+[交涉进行中]
+- 对手<%= negoTarget %> · 第<%= negoRound %>回合 · 幕次<%= negoAct %>
+- {{user}}: 气势<%= uqs %> 口才<%= ukc %> 情报<%= uqb %> 地位<%= upst %> 共识分<%= uCons %>
+- 对手: 气势<%= oqs %> 口才<%= okc %> 情报<%= oqb %> 地位<%= opst %> 共识分<%= oCons %>
+<% } %>
+
+[绑定花名册]
+<%= roster %>
+
+[评论系统]
+- 倾向<%= commentTrend %>
+<% if (hotComment) { %>
+- 热门评论: <%= hotComment %>
+<% } %>
+</variable_snapshot>

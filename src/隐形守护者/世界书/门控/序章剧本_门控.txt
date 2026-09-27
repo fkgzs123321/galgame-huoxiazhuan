@@ -1,0 +1,4 @@
+@@generate_before
+<% if (is_prologue) { %>
+<%# 已迁移至《EJS（剧情）动态控制器》：is_prologue 全程 getwi 准则包，勿重复开启本门控 %>
+<% } %>

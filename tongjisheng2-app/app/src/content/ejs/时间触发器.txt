@@ -1,0 +1,317 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 时间触发器（Date / Slot / Date+Slot 三类）
+   ════════════════════════════════════════════════════════════
+   职责：
+   1. 定义日期触发事件（按 day_count 触发，如 1/1 元日、12/25 圣诞夜）
+   2. 定义时段触发事件（每时段固定触发，如早晨起床、深夜睡眠）
+   3. 定义日期+时段组合触发（如 1/6 AM2:00 唯/美佐子初H选择）
+   4. 提供 checkTriggers 校验函数，供 D0 系统控制器调用
+   5. 所有触发器与全局规则总表（TIME_LOCATION_RULES / BAD_ENDINGS）对齐
+   ════════════════════════════════════════════════════════════
+   使用方式：
+   - 由 ST-Prompt-Template 扩展自动加载（关灯由扩展处理：@@generate_before + 启用:false）
+   - define() 模式：文件中定义 DATE_TRIGGERS / SLOT_TRIGGERS / DATE_SLOT_TRIGGERS 常量
+     与 checkTriggers() 函数，输出统计摘要给 AI 参考
+   - AI 根据摘要中列出的触发器自行应用规则（forced=true 必须执行，forced=false 需满足 condition）
+   - flag_set 字段表示触发后写入的标记名
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ───────── 一、日期触发事件（按 day_count 触发） ───────── */
+const DATE_TRIGGERS = {
+  // 1/1 元日（day=11）
+  11: {
+    triggers: [
+      {
+        trigger_id: 'new_year_day',
+        time_slot: '早',
+        event: '元日参拜',
+        location: '神社',
+        forced: true,
+        description: '1/1 早晨神社参拜，可能偶遇女角',
+        heroines_likely: [1, 2, 3, 6, 9]
+      },
+      {
+        trigger_id: '樱子死讯',
+        time_slot: '下午',
+        time: '14:00',
+        event: '樱子死讯',
+        location: '市民医院',
+        forced: false,
+        condition: { hospital_visits_min: 3 },
+        description: '1/1 PM2:00 市民医院，护士告知樱子病情恶化',
+        flag_set: '樱子死讯'
+      },
+      {
+        trigger_id: 'misako_bath',
+        time_slot: '深夜',
+        time: '23:00',
+        event: '美佐子浴室洗背',
+        location: '自宅',
+        forced: false,
+        condition: { flag_required: '樱子死讯' },
+        description: '1/1 PM11:00 美佐子浴室洗背事件',
+        flag_set: '美佐子浴室事件'
+      }
+    ]
+  },
+
+  // 12/25 圣诞夜（day=4）
+  4: {
+    triggers: [
+      {
+        trigger_id: 'christmas_eve',
+        time_slot: '晚',
+        event: '圣诞夜',
+        forced: true,
+        description: '12/25 圣诞夜事件',
+        flag_set: '圣诞夜事件'
+      }
+    ]
+  },
+
+  // 12/31 跨年（day=10）
+  10: {
+    triggers: [
+      {
+        trigger_id: 'new_year_eve',
+        time_slot: '深夜',
+        event: '跨年',
+        forced: true,
+        description: '12/31 跨年事件'
+      }
+    ]
+  },
+
+  // 1/7 告白日（day=17）
+  17: {
+    triggers: [
+      {
+        trigger_id: 'confession_day',
+        time_slot: '晚',
+        time: '20:00~23:00',
+        event: '告白日',
+        location: '屋上',
+        forced: true,
+        description: '1/7 PM8:00~11:00 告白日判定',
+        triggers_ending: true
+      }
+    ]
+  }
+};
+
+/* ───────── 二、时段触发事件（每时段固定触发） ───────── */
+const SLOT_TRIGGERS = {
+  // 早（6:00~9:00）
+  '早': {
+    triggers: [
+      {
+        trigger_id: 'morning_wake',
+        event: '早晨起床',
+        forced: true,
+        description: '每日早晨起床，校验睡眠质量/饥饿/心情',
+        effect: { sleep_quality_check: true, hunger_increase: 5, mood_update: true }
+      },
+      {
+        trigger_id: 'morning_breakfast',
+        event: '早餐',
+        forced: false,
+        condition: { money_min: 300 },
+        description: '吃早餐降低饥饿，需花费300日元',
+        effect: { hunger: -20, money: -300, mood: +3 }
+      }
+    ]
+  },
+
+  // 晚（17:00~22:00）
+  '晚': {
+    triggers: [
+      {
+        trigger_id: 'evening_dinner',
+        event: '晚餐',
+        forced: false,
+        condition: { money_min: 500 },
+        description: '吃晚餐降低饥饿，需花费500日元',
+        effect: { hunger: -25, money: -500, mood: +2 }
+      },
+      {
+        trigger_id: 'variable_shop_open',
+        event: '变数屋开放',
+        forced: false,
+        condition: { time: '22:00+', location: '自宅上方' },
+        description: '每晚22:00后变数屋入口出现',
+        flag_check: '变数屋已访问'
+      }
+    ]
+  },
+
+  // 深夜（22:00~06:00）
+  '深夜': {
+    triggers: [
+      {
+        trigger_id: 'sleep_time',
+        event: '睡眠时间',
+        forced: false,
+        description: '深夜建议睡眠（不强制）。若 fatigue≥80 则强制休息，否则可继续活动。不睡眠时次日疲劳+10',
+        effect: { sleep_recovery: true, fatigue: -30, sleep_quality_update: true }
+      }
+    ]
+  }
+};
+
+/* ───────── 三、日期+时段/地点组合触发 ───────── */
+/* 修复：键格式统一为 `${day}_${time_slot}`，支持 location 在 condition 中检查 */
+const DATE_SLOT_TRIGGERS = {
+  // 1/6 深夜 客厅（唯/美佐子初H选择）
+  '16_深夜': {
+    triggers: [
+      {
+        trigger_id: 'narisawa_first_h_choice',
+        time: '02:00',
+        event: '唯/美佐子初H选择',
+        location: '客厅',
+        forced: false,
+        condition: { affection_min: 80, flag_required: '樱子死讯', location: '客厅' },
+        description: '1/6 AM2:00 客厅，选择"我好喜欢唯"或"我好喜欢美佐子"',
+        flag_set: '唯初H完成 OR 美佐子初H完成'
+      }
+    ]
+  },
+
+  // 1/1 下午 自宅 痛打西御寺
+  '11_下午': {
+    triggers: [
+      {
+        trigger_id: '西寺对峙',
+        time_slot: '下午',
+        event: '西御寺对峙',
+        location: '自宅',
+        forced: false,
+        condition: { heroine_id: 1, affection_min: 60 },
+        description: '1/1 PM 自宅痛打西御寺，唯线True End必要条件',
+        flag_set: '西寺对峙'
+      }
+    ]
+  }
+};
+
+/* ───────── 四、条件校验辅助函数 ───────── */
+function checkCondition(condition, ctx) {
+  if (!condition) return true;
+  ctx = ctx || {};
+
+  const _flags = ctx.flags || {};
+  const _money = Number(ctx.money) || 0;
+  const _affection = Number(ctx.affection) || 0;
+  const _heroineId = Number(ctx.heroine_id) || 0;
+  const _hospitalVisits = Number(ctx.hospital_visits) || 0;
+  const _location = ctx.location || '';
+  const _time = ctx.time || '';
+
+  // hospital_visits_min：市民医院累计访问次数下限
+  if (typeof condition.hospital_visits_min === 'number') {
+    if (_hospitalVisits < condition.hospital_visits_min) return false;
+  }
+
+  // flag_required：必须已持有的标记
+  if (condition.flag_required) {
+    if (!_flags[condition.flag_required]) return false;
+  }
+
+  // affection_min：当前女角好感下限
+  if (typeof condition.affection_min === 'number') {
+    if (_affection < condition.affection_min) return false;
+  }
+
+  // money_min：金钱下限
+  if (typeof condition.money_min === 'number') {
+    if (_money < condition.money_min) return false;
+  }
+
+  // heroine_id：限定女角
+  if (typeof condition.heroine_id === 'number') {
+    if (_heroineId !== condition.heroine_id) return false;
+  }
+
+  // location：限定地点（支持字符串与数组）
+  if (condition.location) {
+    if (Array.isArray(condition.location)) {
+      if (!condition.location.includes(_location)) return false;
+    } else if (_location !== condition.location) {
+      return false;
+    }
+  }
+
+  // time：限定时间（支持 "22:00+" 前缀匹配表示 ≥22:00）
+  if (condition.time) {
+    if (condition.time.endsWith('+')) {
+      const _threshold = condition.time.slice(0, -1);
+      if (_time < _threshold) return false;
+    } else if (_time !== condition.time) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/* ───────── 五、触发器主校验函数 ───────── */
+function checkTriggers(day_count, time_slot, location, flags, extraCtx) {
+  const _triggers = [];
+  const _ctx = Object.assign({ flags, location }, extraCtx || {});
+
+  // 1. 日期触发
+  if (DATE_TRIGGERS[day_count]) {
+    DATE_TRIGGERS[day_count].triggers.forEach(t => {
+      if (!t.time_slot || t.time_slot === time_slot) {
+        if (!t.condition || checkCondition(t.condition, _ctx)) {
+          _triggers.push(t);
+        }
+      }
+    });
+  }
+
+  // 2. 时段触发
+  if (SLOT_TRIGGERS[time_slot]) {
+    SLOT_TRIGGERS[time_slot].triggers.forEach(t => {
+      if (!t.condition || checkCondition(t.condition, _ctx)) {
+        _triggers.push(t);
+      }
+    });
+  }
+
+  // 3. 日期+时段组合触发
+  const _dateSlotKey = `${day_count}_${time_slot}`;
+  if (DATE_SLOT_TRIGGERS[_dateSlotKey]) {
+    DATE_SLOT_TRIGGERS[_dateSlotKey].triggers.forEach(t => {
+      if (!t.condition || checkCondition(t.condition, _ctx)) {
+        _triggers.push(t);
+      }
+    });
+  }
+
+  return _triggers;
+}
+%>
+
+[时间触发器已加载。三类触发器（DATE_TRIGGERS / SLOT_TRIGGERS / DATE_SLOT_TRIGGERS）已就绪，调用 checkTriggers(day_count, time_slot, location, flags, extraCtx) 获取当前可触发列表。extraCtx 可选，传入 { money, affection, heroine_id, hospital_visits, time } 以支持条件校验。forced=true 必须执行。]
+
+<%= JSON.stringify({
+  date_trigger_count: Object.values(DATE_TRIGGERS).reduce((sum, d) => sum + d.triggers.length, 0),
+  slot_trigger_count: Object.values(SLOT_TRIGGERS).reduce((sum, s) => sum + s.triggers.length, 0),
+  date_slot_trigger_count: Object.values(DATE_SLOT_TRIGGERS).reduce((sum, ds) => sum + ds.triggers.length, 0),
+  total_trigger_count:
+    Object.values(DATE_TRIGGERS).reduce((sum, d) => sum + d.triggers.length, 0) +
+    Object.values(SLOT_TRIGGERS).reduce((sum, s) => sum + s.triggers.length, 0) +
+    Object.values(DATE_SLOT_TRIGGERS).reduce((sum, ds) => sum + ds.triggers.length, 0),
+  date_trigger_keys: Object.keys(DATE_TRIGGERS),
+  slot_trigger_keys: Object.keys(SLOT_TRIGGERS),
+  date_slot_trigger_keys: Object.keys(DATE_SLOT_TRIGGERS),
+  forced_triggers:
+    [
+      ...Object.values(DATE_TRIGGERS).flatMap(d => d.triggers),
+      ...Object.values(SLOT_TRIGGERS).flatMap(s => s.triggers),
+      ...Object.values(DATE_SLOT_TRIGGERS).flatMap(ds => ds.triggers)
+    ].filter(t => t.forced).map(t => t.trigger_id)
+}, null, 2) %>

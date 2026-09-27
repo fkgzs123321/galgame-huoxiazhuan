@@ -1,0 +1,7 @@
+{
+  "id": "example-mod",
+  "name": "示例英雄Mod",
+  "version": "1.0.0",
+  "author": "玩家",
+  "description": "一个最小示例 Mod，添加一名自定义英雄与一件饰品。"
+}

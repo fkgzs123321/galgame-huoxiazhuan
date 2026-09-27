@@ -1,0 +1,77 @@
+{
+  "roster": [
+    {
+      "classId": "man_at_arms",
+      "name": "Barristan"
+    },
+    {
+      "classId": "crusader",
+      "name": "Reynauld"
+    },
+    {
+      "classId": "highwayman",
+      "name": "Dismas"
+    },
+    {
+      "classId": "vestal",
+      "name": "Junia"
+    },
+    {
+      "classId": "plague_doctor",
+      "name": "Paracelsus"
+    },
+    {
+      "classId": "hellion",
+      "name": "Boudica"
+    },
+    {
+      "classId": "grave_robber",
+      "name": "Audrey"
+    },
+    {
+      "classId": "occultist",
+      "name": "Alhazred"
+    },
+    {
+      "classId": "leper",
+      "name": "Baldwin"
+    },
+    {
+      "classId": "bounty_hunter",
+      "name": "Tardif"
+    },
+    {
+      "classId": "jester",
+      "name": "Sarmenti"
+    },
+    {
+      "classId": "houndmaster",
+      "name": "Willam"
+    },
+    {
+      "classId": "flagellant",
+      "name": "Damian"
+    },
+    {
+      "classId": "abomination",
+      "name": "Bigby"
+    },
+    {
+      "classId": "antiquarian",
+      "name": "Josephine"
+    },
+    {
+      "classId": "musketeer",
+      "name": "Margaret"
+    },
+    {
+      "classId": "arbalest",
+      "name": "Missandei"
+    },
+    {
+      "classId": "antiquarian",
+      "name": "Josephine"
+    }
+  ],
+  "source": "scripts/starting_roster.darkest"
+}

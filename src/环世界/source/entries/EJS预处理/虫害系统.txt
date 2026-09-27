@@ -1,0 +1,108 @@
+@@generate_before
+<%_
+/* 虫害系统 - 地下巢穴虫害侵扰，威胁山洞基地 */
+var BUG_DB = {
+  '巨蛛': { HP: 80, 伤害: 12, 护甲: 0.2, 速度: 1.2, 产物: '虫胶×2+虫肉×3', 威胁等级: 2 },
+  '蜈蚣': { HP: 200, 伤害: 25, 护甲: 0.5, 速度: 0.5, 产物: '虫胶×5+虫肉×8', 威胁等级: 4 },
+  '火甲虫': { HP: 120, 伤害: 18, 护甲: 0.3, 速度: 0.8, 产物: '虫胶×3+虫肉×5', 威胁等级: 3, 特殊: '喷火' },
+  '蝎虫': { HP: 60, 伤害: 8, 护甲: 0.1, 速度: 1.5, 产物: '虫胶×1+虫肉×2', 威胁等级: 1, 特殊: '毒刺' },
+  '虫后': { HP: 500, 伤害: 35, 护甲: 0.6, 速度: 0.3, 产物: '虫胶×10+虫肉×15+虫核×1', 威胁等级: 5, 特殊: '产卵' }
+};
+
+function _bugTrigger(depth, biome, gameDay, seed) {
+  var d = Number(depth) || 0;
+  var gd = Number(gameDay) || 1;
+  var depthFactor = Math.min(1.0, d / 20);
+  var biomeMod;
+  if (biome === '沙漠') { biomeMod = 1.3; }
+  else if (biome === '冻原') { biomeMod = 1.2; }
+  else if (biome === '温带森林') { biomeMod = 0.8; }
+  else { biomeMod = 1.0; }
+  var dayFactor = Math.min(1.5, 1 + gd / 60);
+  var triggerChance = depthFactor * biomeMod * dayFactor * 15;
+  var roll = _lcgRoll(seed + '_bug', 1, 100)[0];
+  var triggered = roll < triggerChance;
+  return { 触发概率: Math.round(triggerChance), 骰值: roll, 触发: triggered };
+}
+
+function _bugIntensity(gameDay, threatLevel, seed) {
+  var gd = Number(gameDay) || 1;
+  var base = Math.floor(gd / 10) + 1;
+  var threat = Number(threatLevel) || 0;
+  var count = base + Math.floor(threat / 20) + Math.floor(_lcgRoll(seed + '_bugcount', 1, 100)[0] / 20);
+  count = Math.max(3, Math.min(30, count));
+  var bugTypes = [];
+  if (gd < 20) { bugTypes = ['蝎虫', '巨蛛']; }
+  else if (gd < 40) { bugTypes = ['蝎虫', '巨蛛', '火甲虫']; }
+  else if (gd < 60) { bugTypes = ['巨蛛', '火甲虫', '蜈蚣']; }
+  else { bugTypes = ['巨蛛', '火甲虫', '蜈蚣', '虫后']; }
+  return { 虫群数量: count, 可选虫类: bugTypes, 威胁等级: base };
+}
+
+function _bugCombatMod(bugType, weaponType) {
+  var fireBonus = weaponType === '火焰' ? 1.5 : 1.0;
+  var slashBonus = weaponType === '切割' ? 1.2 : 1.0;
+  var bug = BUG_DB[bugType] || BUG_DB['巨蛛'];
+  var effectiveDamage = bug.伤害 * fireBonus;
+  return { 虫类: bugType, 火焰加成: fireBonus, 切割加成: slashBonus, 有效伤害: effectiveDamage };
+}
+
+/* 运行时计算 */
+var _bugDepth = Number(getvar('stat_data.殖民地.挖掘深度', {scope:'local',defaults:0})) || 0;
+var _bugBiome = getvar('stat_data.殖民地.biome', {scope:'local',defaults:'温带森林'}) || '温带森林';
+var _bugGameDay = Number(getvar('stat_data.殖民地.游戏日', {scope:'local',defaults:1})) || 1;
+var _bugThreat = Number(getvar('stat_data.殖民地.威胁点数', {scope:'local',defaults:0})) || 0;
+var _bugSeed = 'bug_d' + _bugGameDay + '_' + _bugDepth;
+var _bugTriggerResult = _bugTrigger(_bugDepth, _bugBiome, _bugGameDay, _bugSeed);
+var _bugIntensityResult = _bugIntensity(_bugGameDay, _bugThreat, _bugSeed);
+var _bugFireMod = _bugCombatMod('巨蛛', '火焰');
+var _bugSlashMod = _bugCombatMod('巨蛛', '切割');
+_%>
+
+<虫害系统 · 系统控制器>
+## 虫害数据库（查BUG_DB）
+| 虫类 | HP | 伤害 | 护甲 | 速度 | 产物 | 威胁等级 | 特殊 |
+|------|-----|------|------|------|------|---------|------|
+| 巨蛛 | 80 | 12 | 0.2 | 1.2 | 虫胶×2+虫肉×3 | 2 | — |
+| 蜈蚣 | 200 | 25 | 0.5 | 0.5 | 虫胶×5+虫肉×8 | 4 | — |
+| 火甲虫 | 120 | 18 | 0.3 | 0.8 | 虫胶×3+虫肉×5 | 3 | 喷火 |
+| 蝎虫 | 60 | 8 | 0.1 | 1.5 | 虫胶×1+虫肉×2 | 1 | 毒刺 |
+| 虫后 | 500 | 35 | 0.6 | 0.3 | 虫胶×10+虫肉×15+虫核×1 | 5 | 产卵 |
+
+## 触发条件
+- 深度因子: min(1.0, 挖掘深度/20)，越深越容易触发
+- biome修正: 沙漠×1.3 / 冻原×1.2 / 温带森林×0.8 / 其他×1.0
+- 游戏日因子: min(1.5, 1 + 游戏日/60)，越后期越频繁
+- 触发概率 = 深度因子 × biome修正 × 游戏日因子 × 15%
+- LCG骰值 < 触发概率 → 触发虫害
+
+## 虫害强度
+- 基础数量 = floor(游戏日/10) + 1
+- 附加 = floor(威胁等级/20) + floor(LCG骰/20)
+- 数量限制: 最少3只，最多30只
+- 虫类选择（按游戏日）:
+  - 0-19天: 蝎虫、巨蛛
+  - 20-39天: 蝎虫、巨蛛、火甲虫
+  - 40-59天: 巨蛛、火甲虫、蜈蚣
+  - 60天+: 巨蛛、火甲虫、蜈蚣、虫后
+
+## 战斗修正
+- 火焰武器: 对虫类伤害×1.5
+- 切割武器: 伤害×1.2
+- 其他武器: 无加成
+- 虫后需集火优先击杀，否则持续产卵补充虫群
+
+## 叙事要求
+- 虫害从地下巢穴涌出，描写墙壁裂缝、地面震颤、虫群涌动
+- 山洞基地挖掘越深，虫害触发概率越高
+- 虫后出现时须描写巢穴核心、虫卵孵化场
+- 火焰武器对虫群有显著效果，叙事中体现燃烧甲壳的焦臭
+- 毒刺蝎虫的毒液须描写中毒症状（麻痹/持续伤害）
+- 火甲虫喷火须引燃周围可燃物（联动火灾系统）
+
+<虫害行为校验>
+触发条件: [深度<%= _bugDepth %> / biome<%= _bugBiome %> / 游戏日<%= _bugGameDay %>]
+虫群规模: [<%= _bugIntensityResult.虫群数量 %>] [<%= _bugIntensityResult.可选虫类.join('、') %>]
+威胁等级: [<%= _bugIntensityResult.威胁等级 %>]
+战斗修正: [火焰<%= _bugFireMod.火焰加成 %> / 切割<%= _bugSlashMod.切割加成 %>]
+</虫害行为校验>

@@ -1,0 +1,147 @@
+@@generate_before
+<%_
+/* 建筑系统控制器 P1-13
+   读取殖民者建设技能，输出建筑规则与行为校验要求 */
+
+/* 公式以DDL骰子引擎为准，禁止本地修改 */
+/* 建造耗时公式: 实际时间 = 基础耗时 / (1 + 建设技能 x 0.08) */
+function _buildTime(baseTime, skill) {
+  var skl = Number(skill) || 0;
+  var actual = baseTime / (1 + skl * 0.08);
+  return Math.round(actual * 100) / 100;
+}
+
+/* 品质判定: 根据技能等级返回HP修正与品质等级 (与制作系统_qualityCheck分离,避免同名混淆) */
+function _buildQuality(skill) {
+  var skl = Number(skill) || 0;
+  if (skl <= 3) {
+    return { grade: '糟糕', hpMod: 0.8, note: '糟糕品质' };
+  }
+  if (skl <= 7) {
+    return { grade: '普通', hpMod: 1.0, note: '普通品质' };
+  }
+  if (skl <= 10) {
+    return { grade: '良好', hpMod: 1.1, note: '良好品质' };
+  }
+  if (skl <= 13) {
+    return { grade: '优秀', hpMod: 1.2, note: '优秀品质' };
+  }
+  if (skl <= 16) {
+    return { grade: '大师', hpMod: 1.3, note: '大师品质' };
+  }
+  return { grade: '传奇', hpMod: 1.5, note: '传奇品质' };
+}
+
+/* 维修规则: 维修速度 = 1 + 建设技能 x 0.05, 恢复HP = 建设技能 x 2 */
+function _repairRule(skill) {
+  var skl = Number(skill) || 0;
+  var repairSpeed = 1 + skl * 0.05;
+  var repairHP = skl * 2;
+  return {
+    修理速度: Math.round(repairSpeed * 100) / 100,
+    恢复HP: repairHP,
+    材料消耗: '原建筑材料 x 25%'
+  };
+}
+
+/* 拆除回收: 拆除速度 = 1 + 建设技能 x 0.08, 回收率 = min(75, 25 + 建设技能 x 2.5) */
+function _demolishRule(skill) {
+  var skl = Number(skill) || 0;
+  var recovery = Math.min(75, 25 + skl * 2.5);
+  return {
+    拆除速度: Math.round((1 + skl * 0.08) * 100) / 100,
+    回收率: Math.round(recovery * 100) / 100
+  };
+}
+
+/* 建筑分类表 - 与BUILDING_DB子表1:1对齐 */
+function _buildingCategories() {
+  return [
+    { name: '结构类', items: '木墙 / 石墙 / 钢墙 / 木门 / 自动门' },
+    { name: '居住类', items: '简易床 / 标准床 / 皇家床 / 双人床' },
+    { name: '生产类', items: '屠宰台 / 手工台 / 裁缝台(手) / 裁缝台(电) / 锻造台(手) / 锻造台(电) / 石匠台 / 炉灶(燃) / 炉灶(电) / 研磨台' },
+    { name: '研究类', items: '基础研究台 / 高科技研究台 / 多维研究台' },
+    { name: '电力类', items: '太阳能板 / 风力涡轮机 / 地热发电机 / 蓄电池 / 电缆 / 开关' },
+    { name: '温控类', items: '篝火 / 暖风机 / 冷气机' },
+    { name: '防御类', items: '沙袋 / 迷你炮塔 / 自动炮塔 / 迫击炮 / 陷阱(尖刺) / 陷阱(夹兽) / 监视塔' },
+    { name: '飞船类', items: '飞船反应堆 / 飞船AI核心 / 飞船结构' },
+    { name: '存储类', items: '露天堆放 / 木箱 / 仓库 / 冷库 / 军械库' },
+    { name: '医疗类', items: '医疗床 / 手术台' },
+    { name: '娱乐类', items: '棋盘 / 电视 / 弹珠台' },
+    { name: '农业类', items: '种植区 / 温室 / 水培台 / 太阳灯' },
+    { name: '监狱类', items: '监狱门 / 监狱床' },
+    { name: '通讯类', items: '通讯台' },
+    { name: '功能类', items: '墓地 / 焚化炉 / 太空舱(休眠) / 水井 / 水管系统' }
+  ];
+}
+
+var buildMain = Number(getvar('stat_data.殖民者_主角.建设', { scope: 'local', defaults: 5 })) || 5;
+var build2 = Number(getvar('stat_data.殖民者_2.建设', { scope: 'local', defaults: 5 })) || 5;
+var build3 = Number(getvar('stat_data.殖民者_3.建设', { scope: 'local', defaults: 5 })) || 5;
+var build4 = Number(getvar('stat_data.殖民者_4.建设', { scope: 'local', defaults: 5 })) || 5;
+var build5 = Number(getvar('stat_data.殖民者_5.建设', { scope: 'local', defaults: 5 })) || 5;
+
+var mainQuality = _buildQuality(buildMain);
+var mainTimeMod = Math.round((1 + buildMain * 0.08) * 100) / 100;
+var mainRepair = _repairRule(buildMain);
+var mainDemolish = _demolishRule(buildMain);
+var categories = _buildingCategories();
+var sampleTime = _buildTime(2.0, buildMain);
+_%>
+<建筑系统就绪>
+[当前建筑状态]
+殖民者建设技能:
+- 主角: <%= buildMain %>级 (品质:<%= mainQuality.grade %> HP修正:x<%= mainQuality.hpMod %>)
+- 殖民者2: <%= build2 %>级
+- 殖民者3: <%= build3 %>级
+- 殖民者4: <%= build4 %>级
+- 殖民者5: <%= build5 %>级
+
+[建造耗时公式]
+实际时间 = 基础耗时 / (1 + 建设技能 x 0.08)
+主角当前耗时修正: x<%= mainTimeMod %>
+示例: 基础耗时2.0h -> 实际<%= sampleTime %>h
+
+[品质判定]
+技能0-3: HP x 0.8 (糟糕) - 失败率较高
+技能4-7: HP x 1.0 (普通) - 正常品质
+技能8-10: HP x 1.1 (良好) - 品质提升
+技能11-13: HP x 1.2 (优秀) - 优秀建造
+技能14-16: HP x 1.3 (大师) - 高品质建造
+技能17+: HP x 1.5 (传奇) - 顶级建造
+主角当前品质: <%= mainQuality.grade %> (HP修正x<%= mainQuality.hpMod %>)
+
+[建筑分类]
+<%_ for (var i = 0; i < categories.length; i++) { _%>
+<%= categories[i].name %>: <%= categories[i].items %>
+<%_ } _%>
+详细数据查BUILDING_DB (HP/材料/建造耗时/技能要求/耗电/美观等14子表)
+
+[建筑数值表 BUILDING_DB]
+表名: BUILDING_DB (由数值表_建筑.txt提供，14子表55条目)
+子表: Struct结构/Housing居住/Production生产/Research研究/Power电力/Climate温控/Defense防御/Ship飞船/Storage存储/Medical医疗/Recreation娱乐/Agriculture农业/Prison监狱/Communication通讯
+附属函数: _buildMod(skill) - 建造修正(速度/优秀率/失败率)
+
+[维修规则]
+维修速度 = 1 + 建设技能 x 0.05
+恢复HP = 建设技能 x 2 / 次
+材料消耗 = 原建筑材料 x 25%
+主角维修: 速度x<%= mainRepair.修理速度 %> 恢复<%= mainRepair.恢复HP %>HP/次
+
+[拆除回收]
+拆除速度 = 1 + 建设技能 x 0.08
+回收率 = min(75, 25 + 建设技能 x 2.5) %
+主角拆除: 速度x<%= mainDemolish.拆除速度 %> 回收率<%= mainDemolish.回收率 %>%
+
+[行为校验要求]
+建造行为必须输出行为校验块:
+- 行为类型: 建造/维修/拆除
+- 执行者: 殖民者姓名
+- 技能等级: 建设技能值
+- 目标建筑: 建筑名称 (查BUILDING_DB)
+- 输入材料: 材料清单
+- 耗时: 基础耗时 / (1 + 技能x0.08) = 实际h
+- 品质: 糟糕/普通/良好/优秀/大师/传奇
+- HP: 基础HP x 品质修正
+- 耗电: 建筑耗电(如有)
+</建筑系统就绪>

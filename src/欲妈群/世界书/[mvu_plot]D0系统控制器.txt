@@ -1,0 +1,149 @@
+@@generate_before
+<%/* D0系统控制器·蓝灯总控入口（order 0）
+   职责：读MVU变量→时间轴推进→getwi[总控]人物/[总控]NSFW（按场景拉角色剧情线/NSW档案）→输出合法性清单
+   蓝灯常驻：规则系统（防口胡/共感假阳具/欲妈群规则/世界观/阶段晋升/总控阶段/D20/剧情与事件/玩家指令约束/控制中心）
+   MVU 3条常驻；角色基础信息/调色盘 24条 蓝灯+@@if 场景显隐；关灯：NSW档案/独立剧情线/initvar */%>
+
+<%
+/* ─── 读取MVU变量（仅读取不计算，用于输出合法性清单） ─── */
+var _meta = getvar('stat_data.元数据', { scope: 'local', defaults: {} }) || {};
+var _player = getvar('stat_data.玩家', { scope: 'local', defaults: {} }) || {};
+var _hjq = getvar('stat_data.郝佳期', { scope: 'local', defaults: {} }) || {};
+var _dildo = getvar('stat_data.假阳具', { scope: 'local', defaults: {} }) || {};
+var _group = getvar('stat_data.群', { scope: 'local', defaults: {} }) || {};
+var _guard = getvar('stat_data.阶段守卫', { scope: 'local', defaults: {} }) || {};
+var _settings = getvar('stat_data.设置', { scope: 'local', defaults: {} }) || {};
+
+// 元数据
+var _day = Number(_meta.日数) || 1;
+var _hour = Number(_meta.小时) || 14;
+var _timeslot = _meta.时段 || '下午';
+var _phase = Number(_hjq.阶段) || 1;
+var _turn = Number(_meta.回合) || 0;
+var _difficulty = _meta.难度 || '普通';
+
+// 玩家
+var _pSanity = Number(_player?.心理?.理智) || 90;
+var _pSusp = Number(_player?.心理?.怀疑) || 5;
+var _pConf = Number(_player?.心理?.困惑) || 10;
+var _pArous = Number(_player?.心理?.兴奋) || 0;
+var _pAwareDildo = Number(_player?.察觉值?.假阳具真相) || 0;
+var _pAwareGroup = Number(_player?.察觉值?.群存在) || 0;
+var _pAwareDesire = Number(_player?.察觉值?.母亲欲望) || 0;
+var _pAwarePhantom = Number(_player?.察觉值?.幻触) || 5;
+var _pInsight = Number(_player?.技能?.洞察) || 10;
+var _pWill = Number(_player?.技能?.意志) || 15;
+var _pTodayErect = Number(_player?.今日?.勃起次数) || 0;
+var _pTodayEjac = Number(_player?.今日?.射精次数) || 0;
+var _pTodayPhantom = Number(_player?.今日?.幻触次数) || 0;
+
+// 郝佳期
+var _hPhase = Number(_hjq.阶段) || 1;
+var _hProgress = Number(_hjq.阶段进度) || 0;
+var _hArous = Number(_hjq?.心理?.兴奋) || 0;
+var _hLub = Number(_hjq?.心理?.润滑) || 0;
+var _hObsess = Number(_hjq?.心理?.痴迷) || 0;
+var _hGuilt = Number(_hjq?.心理?.罪恶感) || 0;
+var _hFearExp = Number(_hjq?.心理?.暴露恐惧) || 0;
+var _hLevel = Number(_hjq.群等级) || 1;
+var _hPoints = Number(_hjq.积分) || 0;
+var _hStealthTouch = Number(_hjq?.统计?.偷抚次数) || 0;
+var _hInducedEjac = Number(_hjq?.统计?.诱导射精) || 0;
+var _hDildoUse = Number(_hjq?.统计?.假阳具使用) || 0;
+var _hExposure = Number(_hjq?.统计?.暴露次数) || 0;
+
+// 假阳具
+var _dBound = _dildo.绑定目标 || '{{user}}';
+var _dReson = Number(_dildo.共感强度) || 100;
+var _dUsesToday = Number(_dildo.今日使用) || 0;
+var _dLastUse = Number(_dildo.上次使用时) || -12;
+var _dActive = _dildo.是否激活 !== false;
+
+// 群
+var _gActivity = Number(_group.活跃度) || 78;
+var _gOnline = Number(_group.在线数) || 8;
+var _gTheme = _group.今日主题 || '不吵醒儿子的情况下让他射精';
+var _gContestActive = _group.竞赛进行中 !== false;
+
+// 阶段守卫
+var _endTriggered = _guard.结局已触发 === true;
+var _endType = _guard.结局类型 || null;
+var _phaseLocked = _guard.已锁定 === true;
+
+// 时段映射
+var _slotMap = {
+  '早晨': '早晨(5-7)', '上午': '上午(7-12)', '中午': '中午(12-14)',
+  '下午': '下午(14-17)', '傍晚': '傍晚(17-19)', '夜晚': '夜里(19-22)',
+  '半夜': '半夜(22-5)'
+};
+var _slotLabel = _slotMap[_timeslot] || _timeslot;
+%>
+
+<%/* ─── 6. 初始化校验 ─── */%>
+<% if (!_meta || !_meta.日数) { %>
+[初始化警告·D0检测到变量未初始化]
+stat_data 未找到。请确保 [InitVar]请勿打开 已正确加载。
+若此警告持续出现，请检查 ST-Prompt-Template 插件的 invert_enabled 选项是否启用。
+<% } %>
+
+<%/* ─── 7. 时间轴推进（每轮固定推进1小时，由D0直接执行，不调用时间轴条目） ─── */%>
+<%
+var _newHour = _hour + 1;
+var _newDay = _day;
+var _newTimeslot = _timeslot;
+if (_newHour >= 24) { _newHour = 0; _newDay = _day + 1; }
+if (_newHour >= 5 && _newHour < 7) _newTimeslot = '早晨';
+else if (_newHour >= 7 && _newHour < 12) _newTimeslot = '上午';
+else if (_newHour >= 12 && _newHour < 14) _newTimeslot = '中午';
+else if (_newHour >= 14 && _newHour < 17) _newTimeslot = '下午';
+else if (_newHour >= 17 && _newHour < 19) _newTimeslot = '傍晚';
+else if (_newHour >= 19 && _newHour < 22) _newTimeslot = '夜晚';
+else _newTimeslot = '半夜';
+var _newTurn = _turn + 1;
+
+// 跨日重置：每日0:00重置今日数据
+var _isDailyReset = (_newHour === 0) || (_newDay !== _day);
+%>
+
+<% if (_isDailyReset) { %>
+[每日重置信号] 新的一天开始（Day <%= _newDay %>）。额外模型会自动重置今日数据（勃起/射精/幻触/假阳具/偷抚/群消息次数归零），并将 `stat_data.群.今日主题` 清空为""（触发[欲妈群规则]主题库注入，供D20随机抽取新主题，详见[欲妈群规则]4.2节）。主模型无需处理变量重置，只需在叙事中体现新的一天。
+<% } %>
+
+<%/* ─── 7.5 高考倒计时：输出剩余天数 + 里程碑信号（详见[高考倒计时系统]） ─── */%>
+<% var _examDay = Number(_meta.高考日) || 100; var _remain = Math.max(0, _examDay - _newDay); %>
+[高考倒计时] Day <%= _newDay %> · 距高考 **<%= _remain %> 天**（高考日=Day <%= _examDay %>）<% if (_remain > 0 && _newDay % 10 === 0) { %> · ★里程碑日：今日为第<%= _newDay %>天冲刺节点，妈妈们"以备考为名"行为升级，暴露风险+<%= Math.min(5 + Math.floor(_newDay / 20), 15) %>%<% } %><% if (_remain === 0) { %> · ★高考日已到：触发终局判定（见[高考倒计时系统]第三节）<% } %>
+
+<%/* ─── 8. 调用人物总控（getwi，内部按场景加载角色独立剧情线；基础信息/调色盘/玩家档案已蓝灯） ─── */%>
+<%- await getwi('[总控]人物') %>
+
+<%/* ─── 9. 调用NSFW总控（getwi，内部按场景加载NSFW档案） ─── */%>
+<%- await getwi('[总控]NSFW') %>
+
+<%/* ─── 10-13. 事件/剧情/阶段总控、玩家指令约束 已蓝灯常驻，无需 getwi ─── */%>
+
+<%/* ─── 14. 输出当前轮合法性清单给AI（仅汇总展示，不重复计算） ─── */%>
+
+════════ 当前轮状态速览（完整变量见变量列表/状态栏，此处仅摘要）════════
+【时间】Day <%- _newDay %> <%- String(_newHour).padStart(2,'0') %>:00 <%- _slotMap[_newTimeslot] %> · 回合<%- _newTurn %> ｜ 难度<%- _difficulty %> ｜ 距高考<%- _remain %>天
+【玩家】理智<%- _pSanity %>/怀疑<%- _pSusp %>/困惑<%- _pConf %>/兴奋<%- _pArous %> ｜ 察觉:真相<%- _pAwareDildo %>% 群<%- _pAwareGroup %>% 欲望<%- _pAwareDesire %>% 幻触<%- _pAwarePhantom %>%
+【郝佳期】阶段<%- _hPhase %>(<%- _hProgress %>%) Lv.<%- _hLevel %> 积分<%- _hPoints %> ｜ 兴奋<%- _hArous %>/痴迷<%- _hObsess %>/罪恶<%- _hGuilt %>/惧<%- _hFearExp %>
+【假阳具】绑定<%- _dBound %> 强度<%- _dReson %>% 今日<%- _dUsesToday %>次<%- _dildo.借用者 ? (' ｜ ★借用中:' + _dildo.借用者) : '' %>
+【群】活跃<%- _gActivity %>% 在线<%- _gOnline %>/<%- _group.成员数 || 12 %> 主题"<%- _gTheme %>" <%- _gContestActive ? '竞赛中' : '已结束' %>
+【阶段守卫】结局:<%- _endTriggered ? '是(' + _endType + ')' : '否' %> 锁定:<%- _phaseLocked ? '是' : '否' %>
+【成员速查】
+<% var _md = _group.成员详情 || {}; var _mdArr = Object.values(_md).filter(function(m){return m && m.姓名;}); _mdArr.forEach(function(m){ %>
+- <%- m.姓名 %>(阶段<%- m.阶段 %>·罪<%- m.罪恶感 %>)
+<% }); %>
+
+════════════════ 调度指令 ════════════════
+[调度1·时间推进] 已推进至 Day <%- _newDay %> <%- String(_newHour).padStart(2,'0') %>:00。变量更新由额外模型自动处理，主模型只需在叙事中体现时间流逝，严禁输出变量更新格式。
+<% if (_isDailyReset) { %>
+[调度2·每日重置] 见上方"每日重置信号"
+<% } %>
+[调度3·共感描写] 本轮若妈妈使用假阳具（含借用者），必须双向描写：使用者感受 + 源头（{{user}}）反应
+[调度4·阶段判定] 本轮结束时检查阶段晋升条件，满足则触发<phase_up>
+[调度5·群消息] 群聊内容必须包裹在<group_msg>标签内
+[调度6·竞赛通知] 竞赛主题刷新必须包裹在<contest_notify>标签内
+[调度7·思维链] 必须先输出<thinking>思维链，再输出正文
+[调度8·状态栏] 正文末尾输出 <StatusPlaceHolderImpl/> 占位符（状态栏由正则替换为HTML界面，AI不得手写）
+[调度9·变量块] 主模型严禁输出 <UpdateVariable> 块，变量更新由额外模型自动处理══════════════════════════════════════════════════════════

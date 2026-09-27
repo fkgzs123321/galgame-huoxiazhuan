@@ -1,0 +1,706 @@
+﻿============================================================================
+### Mortal.Story.StatModifyManager :: Awake   RVA=15831
+  IL_3DD8  ldarg.0       
+  IL_3DD9  call          PlayerStatManagerData::get_Instance
+  IL_3DDE  stfld         FIELD _gameStatManager
+  IL_3DE3  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: GetDisplayTime   RVA=15844
+  IL_3DE5  ldc.r4        0.5
+  IL_3DEA  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: Character   RVA=15852
+  IL_3DF8  ldarg.1       
+  IL_3DF9  ldloca.s      local(0x0000)
+  IL_3DFB  call          METHODSPEC#23
+  IL_3E00  brfalse.s     15943
+  IL_3E02  ldarg.0       
+  IL_3E03  ldstr         "修改好感度 {0}, 數值: {1}"
+  IL_3E08  ldarg.1       
+  IL_3E09  ldarg.2       
+  IL_3E0A  box           System.Int32
+  IL_3E0F  call          String::Format
+  IL_3E14  call          Mortal.Story.StatModifyManager::LogMessage
+  IL_3E19  ldarg.0       
+  IL_3E1A  ldfld         FIELD _gameStatManager
+  IL_3E1F  callvirt      PlayerStatManagerData::get_Relationships
+  IL_3E24  ldloc.0       
+  IL_3E25  callvirt      RelationshipData::Get
+  IL_3E2A  stloc.1       
+  IL_3E2B  ldloc.1       
+  IL_3E2C  ldarg.2       
+  IL_3E2D  callvirt      RelationshipStat::AddValue
+  IL_3E32  ldarg.3       
+  IL_3E33  ldc.i4.1      
+  IL_3E34  bne.un.s      15943
+  IL_3E36  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_3E3B  ldloc.1       
+  IL_3E3C  callvirt      RelationshipStat::get_Icon
+  IL_3E41  ldarg.2       
+  IL_3E42  callvirt      Mortal.Story.StoryMainUI::DisplayRelationshipModification
+  IL_3E47  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: Player   RVA=15944
+  IL_3E54  ldarg.1       
+  IL_3E55  ldloca.s      local(0x0000)
+  IL_3E57  call          METHODSPEC#20
+  IL_3E5C  brfalse       16160
+  IL_3E61  ldarg.2       
+  IL_3E62  stloc.1       
+  IL_3E63  ldarg.0       
+  IL_3E64  ldfld         FIELD _gameStatManager
+  IL_3E69  callvirt      PlayerStatManagerData::get_Stats
+  IL_3E6E  ldloc.0       
+  IL_3E6F  callvirt      PlayerStatData::Get
+  IL_3E74  stloc.2       
+  IL_3E75  ldarg.3       
+  IL_3E76  brfalse.s     16099
+  IL_3E78  ldarg.3       
+  IL_3E79  ldstr         "center"
+  IL_3E7E  call          String::op_Equality
+  IL_3E83  brtrue.s      16020
+  IL_3E85  ldarg.3       
+  IL_3E86  ldstr         "mental"
+  IL_3E8B  call          String::op_Equality
+  IL_3E90  brtrue.s      16069
+  IL_3E92  br.s          16099
+  IL_3E94  ldarg.0       
+  IL_3E95  ldfld         FIELD _statCenterValue
+  IL_3E9A  ldloc.2       
+  IL_3E9B  callvirt      GameStat::get_FinalValue
+  IL_3EA0  sub           
+  IL_3EA1  stloc.3       
+  IL_3EA2  ldloc.3       
+  IL_3EA3  brtrue.s      16041
+  IL_3EA5  ldc.i4.0      
+  IL_3EA6  stloc.1       
+  IL_3EA7  br.s          16099
+  IL_3EA9  ldloc.3       
+  IL_3EAA  call          Mathf::Abs
+  IL_3EAF  ldarg.2       
+  IL_3EB0  call          Mathf::Min
+  IL_3EB5  call          Mathf::Abs
+  IL_3EBA  ldarg.0       
+  IL_3EBB  ldloc.3       
+  IL_3EBC  call          Mortal.Story.StatModifyManager::Sign
+  IL_3EC1  mul           
+  IL_3EC2  stloc.1       
+  IL_3EC3  br.s          16099
+  IL_3EC5  ldarg.0       
+  IL_3EC6  ldfld         FIELD _gameStatManager
+  IL_3ECB  callvirt      PlayerStatManagerData::get_Stats
+  IL_3ED0  ldc.i4.6      
+  IL_3ED1  callvirt      PlayerStatData::Get
+  IL_3ED6  callvirt      GameStat::get_FinalValue
+  IL_3EDB  ldc.i4.s      20
+  IL_3EDD  bgt.s         16099
+  IL_3EDF  ldloc.1       
+  IL_3EE0  ldc.i4.1      
+  IL_3EE1  sub           
+  IL_3EE2  stloc.1       
+  IL_3EE3  ldarg.s       argument(0x0004)
+  IL_3EE5  ldc.i4.1      
+  IL_3EE6  bne.un.s      16119
+  IL_3EE8  ldloc.1       
+  IL_3EE9  brfalse.s     16119
+  IL_3EEB  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_3EF0  ldloc.2       
+  IL_3EF1  ldloc.1       
+  IL_3EF2  callvirt      Mortal.Story.StoryMainUI::DisplayStatModification
+  IL_3EF7  ldarg.0       
+  IL_3EF8  ldstr         "修改 {0}, 數值: {1}"
+  IL_3EFD  ldarg.1       
+  IL_3EFE  ldloc.1       
+  IL_3EFF  box           System.Int32
+  IL_3F04  call          String::Format
+  IL_3F09  call          Mortal.Story.StatModifyManager::LogMessage
+  IL_3F0E  ldarg.0       
+  IL_3F0F  ldfld         FIELD _gameStatManager
+  IL_3F14  callvirt      PlayerStatManagerData::get_Stats
+  IL_3F19  ldloc.0       
+  IL_3F1A  ldloc.1       
+  IL_3F1B  callvirt      PlayerStatData::Add
+  IL_3F20  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: SetPlayer   RVA=16164
+  IL_3F30  ldarg.1       
+  IL_3F31  ldloca.s      local(0x0000)
+  IL_3F33  call          METHODSPEC#20
+  IL_3F38  brfalse.s     16226
+  IL_3F3A  ldarg.0       
+  IL_3F3B  ldstr         "設定 {0}, 數值: {1}"
+  IL_3F40  ldarg.1       
+  IL_3F41  ldarg.2       
+  IL_3F42  box           System.Int32
+  IL_3F47  call          String::Format
+  IL_3F4C  call          Mortal.Story.StatModifyManager::LogMessage
+  IL_3F51  call          PlayerStatManagerData::get_Instance
+  IL_3F56  callvirt      PlayerStatManagerData::get_Stats
+  IL_3F5B  ldloc.0       
+  IL_3F5C  ldarg.2       
+  IL_3F5D  callvirt      PlayerStatData::Set
+  IL_3F62  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: SetCharacter   RVA=16228
+  IL_3F70  ldarg.1       
+  IL_3F71  ldloca.s      local(0x0000)
+  IL_3F73  call          METHODSPEC#23
+  IL_3F78  brfalse.s     16290
+  IL_3F7A  ldarg.0       
+  IL_3F7B  ldstr         "設定 {0}, 數值: {1}"
+  IL_3F80  ldarg.1       
+  IL_3F81  ldarg.2       
+  IL_3F82  box           System.Int32
+  IL_3F87  call          String::Format
+  IL_3F8C  call          Mortal.Story.StatModifyManager::LogMessage
+  IL_3F91  call          PlayerStatManagerData::get_Instance
+  IL_3F96  callvirt      PlayerStatManagerData::get_Relationships
+  IL_3F9B  ldloc.0       
+  IL_3F9C  ldarg.2       
+  IL_3F9D  callvirt      RelationshipData::Set
+  IL_3FA2  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: UpdateSetPlayerStat   RVA=16292
+  IL_3FB0  ldarg.1       
+  IL_3FB1  ldloca.s      local(0x0000)
+  IL_3FB3  call          METHODSPEC#20
+  IL_3FB8  brfalse.s     16353
+  IL_3FBA  ldarg.0       
+  IL_3FBB  ldfld         FIELD _gameStatManager
+  IL_3FC0  callvirt      PlayerStatManagerData::get_Stats
+  IL_3FC5  ldloc.0       
+  IL_3FC6  callvirt      PlayerStatData::Get
+  IL_3FCB  stloc.1       
+  IL_3FCC  ldarg.2       
+  IL_3FCD  ldloc.1       
+  IL_3FCE  callvirt      GameStat::get_FinalValue
+  IL_3FD3  sub           
+  IL_3FD4  stloc.2       
+  IL_3FD5  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_3FDA  ldloc.1       
+  IL_3FDB  ldloc.2       
+  IL_3FDC  callvirt      Mortal.Story.StoryMainUI::DisplayStatModification
+  IL_3FE1  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: Mission   RVA=16354
+  IL_3FE3  call          MissionManagerData::get_Instance
+  IL_3FE8  ldarg.1       
+  IL_3FE9  ldarg.2       
+  IL_3FEA  callvirt      MissionManagerData::SetKey
+  IL_3FEF  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: IsTriggerSubMission   RVA=16368
+  IL_3FF1  call          MissionManagerData::get_Instance
+  IL_3FF6  ldarg.1       
+  IL_3FF7  ldarg.2       
+  IL_3FF8  ldc.i4.1      
+  IL_3FF9  ceq           
+  IL_3FFB  callvirt      MissionManagerData::SetIsTriggerSubMission
+  IL_4000  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddBook   RVA=16385
+  IL_4002  call          ItemDatabase::get_Instance
+  IL_4007  ldc.i4.1      
+  IL_4008  ldarg.1       
+  IL_4009  ldarg.2       
+  IL_400A  callvirt      ItemDatabase::AddItem
+  IL_400F  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddMisc   RVA=16400
+  IL_4011  call          ItemDatabase::get_Instance
+  IL_4016  ldc.i4.2      
+  IL_4017  ldarg.1       
+  IL_4018  ldarg.2       
+  IL_4019  callvirt      ItemDatabase::AddItem
+  IL_401E  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddSpecial   RVA=16415
+  IL_4020  call          ItemDatabase::get_Instance
+  IL_4025  ldc.i4.3      
+  IL_4026  ldarg.1       
+  IL_4027  ldarg.2       
+  IL_4028  callvirt      ItemDatabase::AddItem
+  IL_402D  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: RemoveBook   RVA=16430
+  IL_402F  call          ItemDatabase::get_Instance
+  IL_4034  ldc.i4.1      
+  IL_4035  ldarg.1       
+  IL_4036  callvirt      ItemDatabase::RemoveItem
+  IL_403B  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: RemoveMisc   RVA=16444
+  IL_403D  call          ItemDatabase::get_Instance
+  IL_4042  ldc.i4.2      
+  IL_4043  ldarg.1       
+  IL_4044  callvirt      ItemDatabase::RemoveItem
+  IL_4049  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: RemoveSpecial   RVA=16458
+  IL_404B  call          ItemDatabase::get_Instance
+  IL_4050  ldc.i4.3      
+  IL_4051  ldarg.1       
+  IL_4052  callvirt      ItemDatabase::RemoveItem
+  IL_4057  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: SetFlag   RVA=16472
+  IL_4059  call          MissionManagerData::get_Instance
+  IL_405E  ldarg.1       
+  IL_405F  ldarg.2       
+  IL_4060  callvirt      MissionManagerData::SetFlag
+  IL_4065  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddFlag   RVA=16486
+  IL_4067  call          MissionManagerData::get_Instance
+  IL_406C  ldarg.1       
+  IL_406D  ldarg.2       
+  IL_406E  callvirt      MissionManagerData::AddFlag
+  IL_4073  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: ModifyEnemyId   RVA=16500
+  IL_4075  call          PlayerStatManagerData::get_Instance
+  IL_407A  callvirt      PlayerStatManagerData::get_EnemyTeam
+  IL_407F  ldarg.1       
+  IL_4080  callvirt      BattleTeamData::SetCurrentTeam
+  IL_4085  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: ModifyEnemyPeople   RVA=16520
+  IL_4094  ldarg.0       
+  IL_4095  ldfld         FIELD _gameStatManager
+  IL_409A  callvirt      PlayerStatManagerData::get_EnemyTeam
+  IL_409F  ldarg.1       
+  IL_40A0  callvirt      BattleTeamData::Get
+  IL_40A5  stloc.0       
+  IL_40A6  ldloc.0       
+  IL_40A7  ldnull        
+  IL_40A8  call          Object::op_Inequality
+  IL_40AD  brfalse.s     16588
+  IL_40AF  ldloc.0       
+  IL_40B0  callvirt      BattleTeamStat::get_People
+  IL_40B5  ldarg.2       
+  IL_40B6  ldc.i4.1      
+  IL_40B7  callvirt      GameStat::AddValue
+  IL_40BC  ldarg.3       
+  IL_40BD  ldc.i4.1      
+  IL_40BE  bne.un.s      16588
+  IL_40C0  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_40C5  ldarg.1       
+  IL_40C6  ldarg.2       
+  IL_40C7  callvirt      Mortal.Story.StoryMainUI::DisplayModifyEnemyPeopleMessage
+  IL_40CC  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: UpdateShopFlag   RVA=16592
+  IL_40DC  ldc.i4        1000
+  IL_40E1  stloc.0       
+  IL_40E2  ldarg.0       
+  IL_40E3  ldfld         FIELD _shopFlag
+  IL_40E8  ldfld         FlagData::State
+  IL_40ED  ldloc.0       
+  IL_40EE  blt.s         16714
+  IL_40F0  ldarg.0       
+  IL_40F1  ldfld         FIELD _shopFlag
+  IL_40F6  ldfld         FlagData::State
+  IL_40FB  ldloc.0       
+  IL_40FC  div           
+  IL_40FD  conv.r4       
+  IL_40FE  call          Mathf::Floor
+  IL_4103  call          Mathf::RoundToInt
+  IL_4108  stloc.1       
+  IL_4109  ldarg.0       
+  IL_410A  ldfld         FIELD _gameStatManager
+  IL_410F  callvirt      PlayerStatManagerData::get_Relationships
+  IL_4114  ldc.i4.4      
+  IL_4115  callvirt      RelationshipData::Get
+  IL_411A  stloc.2       
+  IL_411B  ldloc.2       
+  IL_411C  ldloc.1       
+  IL_411D  callvirt      RelationshipStat::AddValue
+  IL_4122  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_4127  ldloc.2       
+  IL_4128  callvirt      RelationshipStat::get_Icon
+  IL_412D  ldloc.1       
+  IL_412E  callvirt      Mortal.Story.StoryMainUI::DisplayRelationshipModification
+  IL_4133  ldloc.0       
+  IL_4134  ldloc.1       
+  IL_4135  mul           
+  IL_4136  stloc.3       
+  IL_4137  ldarg.0       
+  IL_4138  ldfld         FIELD _shopFlag
+  IL_413D  dup           
+  IL_413E  ldfld         FlagData::State
+  IL_4143  ldloc.3       
+  IL_4144  sub           
+  IL_4145  stfld         FlagData::State
+  IL_414A  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: ModifyEnemyTeam   RVA=16716
+  IL_4158  ldarg.0       
+  IL_4159  ldfld         FIELD _gameStatManager
+  IL_415E  callvirt      PlayerStatManagerData::get_EnemyTeam
+  IL_4163  ldarg.1       
+  IL_4164  callvirt      BattleTeamData::Get
+  IL_4169  stloc.0       
+  IL_416A  ldloc.0       
+  IL_416B  ldnull        
+  IL_416C  call          Object::op_Inequality
+  IL_4171  brfalse.s     16784
+  IL_4173  ldloc.0       
+  IL_4174  callvirt      BattleTeamStat::get_Team
+  IL_4179  ldarg.2       
+  IL_417A  ldc.i4.1      
+  IL_417B  callvirt      GameStat::AddValue
+  IL_4180  ldarg.3       
+  IL_4181  ldc.i4.1      
+  IL_4182  bne.un.s      16784
+  IL_4184  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_4189  ldarg.1       
+  IL_418A  ldarg.2       
+  IL_418B  callvirt      Mortal.Story.StoryMainUI::DisplayModifyEnemyTeamMessage
+  IL_4190  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: ModifyEnemyLevel   RVA=16788
+  IL_41A0  ldarg.0       
+  IL_41A1  ldfld         FIELD _gameStatManager
+  IL_41A6  callvirt      PlayerStatManagerData::get_EnemyTeam
+  IL_41AB  ldarg.1       
+  IL_41AC  callvirt      BattleTeamData::Get
+  IL_41B1  stloc.0       
+  IL_41B2  ldloc.0       
+  IL_41B3  ldnull        
+  IL_41B4  call          Object::op_Inequality
+  IL_41B9  brfalse.s     16840
+  IL_41BB  ldloc.0       
+  IL_41BC  callvirt      BattleTeamStat::get_Level
+  IL_41C1  ldarg.2       
+  IL_41C2  ldc.i4.1      
+  IL_41C3  callvirt      GameStat::AddValue
+  IL_41C8  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddDeadLib   RVA=16841
+  IL_41CA  call          LibrarySystem::get_Instance
+  IL_41CF  callvirt      LibrarySystem::get_Dead
+  IL_41D4  ldarg.1       
+  IL_41D5  callvirt      LibraryItemCollection::Add
+  IL_41DA  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddEndGameLib   RVA=16859
+  IL_41DC  call          LibrarySystem::get_Instance
+  IL_41E1  callvirt      LibrarySystem::get_EndGame
+  IL_41E6  ldarg.1       
+  IL_41E7  callvirt      LibraryItemCollection::Add
+  IL_41EC  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddAchievementLib   RVA=16877
+  IL_41EE  ldc.i4.0      
+  IL_41EF  newobj        .<>c__DisplayClass3_0::.ctor
+  IL_41F4  dup           
+  IL_41F5  ldarg.1       
+  IL_41F6  stfld         FIELD id
+  IL_41FB  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: GetModifyString   RVA=16892
+  IL_4208  ldstr         ""
+  IL_420D  stloc.0       
+  IL_420E  ldarg.3       
+  IL_420F  call          Mathf::Abs
+  IL_4214  stloc.1       
+  IL_4215  ldarg.3       
+  IL_4216  ldc.i4.0      
+  IL_4217  bgt.s         16940
+  IL_4219  ldstr         "-"
+  IL_421E  ldloca.s      local(0x0001)
+  IL_4220  call          Int32::ToString
+  IL_4225  call          String::Concat
+  IL_422A  br.s          16957
+  IL_422C  ldstr         "+"
+  IL_4231  ldloca.s      local(0x0001)
+  IL_4233  call          Int32::ToString
+  IL_4238  call          String::Concat
+  IL_423D  stloc.2       
+  IL_423E  call          LocalizationManager::get_Instance
+  IL_4243  stloc.3       
+  IL_4244  ldarg.1       
+  IL_4245  brfalse       17366
+  IL_424A  ldarg.1       
+  IL_424B  ldstr         "char"
+  IL_4250  call          String::op_Equality
+  IL_4255  brtrue.s      17068
+  IL_4257  ldarg.1       
+  IL_4258  ldstr         "stat"
+  IL_425D  call          String::op_Equality
+  IL_4262  brtrue        17157
+  IL_4267  ldarg.1       
+  IL_4268  ldstr         "enemy-people"
+  IL_426D  call          String::op_Equality
+  IL_4272  brtrue        17196
+  IL_4277  ldarg.1       
+  IL_4278  ldstr         "enemy-team"
+  IL_427D  call          String::op_Equality
+  IL_4282  brtrue        17282
+  IL_4287  ldarg.1       
+  IL_4288  ldstr         "story"
+  IL_428D  call          String::op_Equality
+  IL_4292  brtrue        17366
+  IL_4297  ldarg.1       
+  IL_4298  ldstr         "mission"
+  IL_429D  call          String::op_Equality
+  IL_42A2  brtrue        17366
+  IL_42A7  br            17366
+  IL_42AC  ldloc.3       
+  IL_42AD  callvirt      LocalizationManager::get_LocaleResolver
+  IL_42B2  ldstr         "Character/"
+  IL_42B7  ldarg.2       
+  IL_42B8  call          String::Concat
+  IL_42BD  callvirt      ILocaleResolver::GetString
+  IL_42C2  stloc.s       local(0x0004)
+  IL_42C4  ldloc.3       
+  IL_42C5  callvirt      LocalizationManager::get_LocaleResolver
+  IL_42CA  ldstr         "PlayerStat/relationship"
+  IL_42CF  callvirt      ILocaleResolver::GetString
+  IL_42D4  stloc.s       local(0x0005)
+  IL_42D6  ldc.i4.5      
+  IL_42D7  newarr        System.String
+  IL_42DC  dup           
+  IL_42DD  ldc.i4.0      
+  IL_42DE  ldloc.s       local(0x0004)
+  IL_42E0  stelem.ref    
+  IL_42E1  dup           
+  IL_42E2  ldc.i4.1      
+  IL_42E3  ldstr         " "
+  IL_42E8  stelem.ref    
+  IL_42E9  dup           
+  IL_42EA  ldc.i4.2      
+  IL_42EB  ldloc.s       local(0x0005)
+  IL_42ED  stelem.ref    
+  IL_42EE  dup           
+  IL_42EF  ldc.i4.3      
+  IL_42F0  ldstr         " "
+  IL_42F5  stelem.ref    
+  IL_42F6  dup           
+  IL_42F7  ldc.i4.4      
+  IL_42F8  ldloc.2       
+  IL_42F9  stelem.ref    
+  IL_42FA  call          String::Concat
+  IL_42FF  stloc.0       
+  IL_4300  br            17366
+  IL_4305  ldloc.3       
+  IL_4306  callvirt      LocalizationManager::get_LocaleResolver
+  IL_430B  ldstr         "PlayerStat/"
+  IL_4310  ldarg.2       
+  IL_4311  call          String::Concat
+  IL_4316  callvirt      ILocaleResolver::GetString
+  IL_431B  ldstr         " "
+  IL_4320  ldloc.2       
+  IL_4321  call          String::Concat
+  IL_4326  stloc.0       
+  IL_4327  br            17366
+  IL_432C  ldloc.3       
+  IL_432D  callvirt      LocalizationManager::get_LocaleResolver
+  IL_4332  ldstr         "EnemyTeam/"
+  IL_4337  ldarg.2       
+  IL_4338  call          String::Concat
+  IL_433D  callvirt      ILocaleResolver::GetString
+  IL_4342  stloc.s       local(0x0006)
+  IL_4344  ldloc.3       
+  IL_4345  callvirt      LocalizationManager::get_LocaleResolver
+  IL_434A  ldstr         "PlayerStat/battle-people"
+  IL_434F  callvirt      ILocaleResolver::GetString
+  IL_4354  stloc.s       local(0x0007)
+  IL_4356  ldc.i4.5      
+  IL_4357  newarr        System.String
+  IL_435C  dup           
+  IL_435D  ldc.i4.0      
+  IL_435E  ldloc.s       local(0x0006)
+  IL_4360  stelem.ref    
+  IL_4361  dup           
+  IL_4362  ldc.i4.1      
+  IL_4363  ldstr         " "
+  IL_4368  stelem.ref    
+  IL_4369  dup           
+  IL_436A  ldc.i4.2      
+  IL_436B  ldloc.s       local(0x0007)
+  IL_436D  stelem.ref    
+  IL_436E  dup           
+  IL_436F  ldc.i4.3      
+  IL_4370  ldstr         " "
+  IL_4375  stelem.ref    
+  IL_4376  dup           
+  IL_4377  ldc.i4.4      
+  IL_4378  ldloc.2       
+  IL_4379  stelem.ref    
+  IL_437A  call          String::Concat
+  IL_437F  stloc.0       
+  IL_4380  br.s          17366
+  IL_4382  ldloc.3       
+  IL_4383  callvirt      LocalizationManager::get_LocaleResolver
+  IL_4388  ldstr         "EnemyTeam/"
+  IL_438D  ldarg.2       
+  IL_438E  call          String::Concat
+  IL_4393  callvirt      ILocaleResolver::GetString
+  IL_4398  stloc.s       local(0x0008)
+  IL_439A  ldloc.3       
+  IL_439B  callvirt      LocalizationManager::get_LocaleResolver
+  IL_43A0  ldstr         "PlayerStat/team"
+  IL_43A5  callvirt      ILocaleResolver::GetString
+  IL_43AA  stloc.s       local(0x0009)
+  IL_43AC  ldc.i4.5      
+  IL_43AD  newarr        System.String
+  IL_43B2  dup           
+  IL_43B3  ldc.i4.0      
+  IL_43B4  ldloc.s       local(0x0008)
+  IL_43B6  stelem.ref    
+  IL_43B7  dup           
+  IL_43B8  ldc.i4.1      
+  IL_43B9  ldstr         " "
+  IL_43BE  stelem.ref    
+  IL_43BF  dup           
+  IL_43C0  ldc.i4.2      
+  IL_43C1  ldloc.s       local(0x0009)
+  IL_43C3  stelem.ref    
+  IL_43C4  dup           
+  IL_43C5  ldc.i4.3      
+  IL_43C6  ldstr         " "
+  IL_43CB  stelem.ref    
+  IL_43CC  dup           
+  IL_43CD  ldc.i4.4      
+  IL_43CE  ldloc.2       
+  IL_43CF  stelem.ref    
+  IL_43D0  call          String::Concat
+  IL_43D5  stloc.0       
+  IL_43D6  ldloc.0       
+  IL_43D7  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: ResetTalkFlag   RVA=17368
+  IL_43D9  ldarg.0       
+  IL_43DA  ldfld         FIELD _talkOptionFlag
+  IL_43DF  callvirt      FlagCollectionData::ResetData
+  IL_43E4  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddTalent   RVA=17381
+  IL_43E6  ldarg.0       
+  IL_43E7  ldarg.1       
+  IL_43E8  ldarg.2       
+  IL_43E9  ldc.i4.0      
+  IL_43EA  call          Mortal.Story.StatModifyManager::ModifyTalent
+  IL_43EF  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: UpdateAssetStatus   RVA=17392
+  IL_43F1  call          PlayerStatManagerData::get_Instance
+  IL_43F6  callvirt      PlayerStatManagerData::ExecuteFacilityModify
+  IL_43FB  call          PlayerStatManagerData::get_Instance
+  IL_4400  callvirt      PlayerStatManagerData::ExecuteSectionModify
+  IL_4405  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: ModifyTalent   RVA=17416
+  IL_4414  ldarg.0       
+  IL_4415  ldfld         FIELD _gameStatManager
+  IL_441A  callvirt      PlayerStatManagerData::get_Talents
+  IL_441F  ldarg.1       
+  IL_4420  callvirt      PlayerTalentDataCollection::Get
+  IL_4425  stloc.0       
+  IL_4426  ldloc.0       
+  IL_4427  ldnull        
+  IL_4428  call          Object::op_Inequality
+  IL_442D  brfalse.s     17560
+  IL_442F  ldloc.0       
+  IL_4430  callvirt      PlayerTalentData::get_Level
+  IL_4435  stloc.1       
+  IL_4436  ldarg.3       
+  IL_4437  brfalse.s     17470
+  IL_4439  ldloc.1       
+  IL_443A  ldc.i4.m1     
+  IL_443B  mul           
+  IL_443C  starg.s       argument(0x0002)
+  IL_443E  ldloc.0       
+  IL_443F  ldarg.2       
+  IL_4440  callvirt      PlayerTalentData::AddLevel
+  IL_4445  call          Mortal.Story.StoryCharacter::get_Instance
+  IL_444A  ldloc.0       
+  IL_444B  callvirt      PlayerTalentData::GetIdKey
+  IL_4450  ldloc.1       
+  IL_4451  ldarg.2       
+  IL_4452  ldloc.0       
+  IL_4453  callvirt      PlayerTalentData::IsMaxLevel
+  IL_4458  callvirt      Mortal.Story.StoryMainUI::DisplayTalentMessage
+  IL_445D  ldloc.0       
+  IL_445E  callvirt      PlayerTalentData::HasLowLevelTalent
+  IL_4463  brfalse.s     17560
+  IL_4465  ldloc.0       
+  IL_4466  callvirt      PlayerTalentData::get_LowLevelTalent
+  IL_446B  stloc.2       
+  IL_446C  ldc.i4.0      
+  IL_446D  stloc.3       
+  IL_446E  br.s          17554
+  IL_4470  ldloc.2       
+  IL_4471  ldloc.3       
+  IL_4472  ldelem.ref    
+  IL_4473  stloc.s       local(0x0004)
+  IL_4475  ldloc.s       local(0x0004)
+  IL_4477  callvirt      PlayerTalentData::get_Level
+  IL_447C  ldc.i4.0      
+  IL_447D  ble.s         17550
+  IL_447F  ldarg.0       
+  IL_4480  ldloc.s       local(0x0004)
+  IL_4482  callvirt      PlayerTalentData::get_Id
+  IL_4487  ldc.i4.0      
+  IL_4488  ldc.i4.1      
+  IL_4489  call          Mortal.Story.StatModifyManager::ModifyTalent
+  IL_448E  ldloc.3       
+  IL_448F  ldc.i4.1      
+  IL_4490  add           
+  IL_4491  stloc.3       
+  IL_4492  ldloc.3       
+  IL_4493  ldloc.2       
+  IL_4494  ldlen         
+  IL_4495  conv.i4       
+  IL_4496  blt.s         17520
+  IL_4498  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: AddStory   RVA=17564
+  IL_44A8  newobj        .<AddAchievementLib>d__29::.ctor
+  IL_44AD  stloc.0       
+  IL_44AE  ldloc.0       
+  IL_44AF  ldarg.1       
+  IL_44B0  stfld         FIELD key
+  IL_44B5  ldarg.0       
+  IL_44B6  ldfld         FIELD _gameStatManager
+  IL_44BB  callvirt      PlayerStatManagerData::get_StoryKeyList
+  IL_44C0  ldloc.0       
+  IL_44C1  ldftn         .<>c__DisplayClass35_0::<AddStory>b__0
+  IL_44C7  newobj        ?::.ctor
+  IL_44CC  callvirt      ?::Exists
+  IL_44D1  brtrue.s      17641
+  IL_44D3  ldarg.0       
+  IL_44D4  ldfld         FIELD _gameStatManager
+  IL_44D9  callvirt      PlayerStatManagerData::get_StoryKeyList
+  IL_44DE  ldloc.0       
+  IL_44DF  ldfld         FIELD key
+  IL_44E4  callvirt      ?::Add
+  IL_44E9  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: LogMessage   RVA=17642
+  IL_44EB  ldarg.0       
+  IL_44EC  ldfld         FIELD _debug
+  IL_44F1  brfalse.s     17667
+  IL_44F3  ldstr         "[StatModifyManager]"
+  IL_44F8  ldarg.1       
+  IL_44F9  call          String::Concat
+  IL_44FE  call          Debug::Log
+  IL_4503  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: Sign   RVA=17668
+  IL_4505  ldarg.1       
+  IL_4506  ldc.i4.0      
+  IL_4507  bge.s         17675
+  IL_4509  ldc.i4.m1     
+  IL_450A  ret           
+  IL_450B  ldc.i4.1      
+  IL_450C  ret           
+============================================================================
+### Mortal.Story.StatModifyManager :: .ctor   RVA=17677
+  IL_450E  ldarg.0       
+  IL_450F  ldc.i4.s      50
+  IL_4511  stfld         FIELD _statCenterValue
+  IL_4516  ldarg.0       
+  IL_4517  call          MonoBehaviour::.ctor
+  IL_451C  ret           

@@ -1,0 +1,223 @@
+@@generate_before
+# [mvu_plot]RPG雷达系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.技能.洞察 / stat_data.环境 / stat_data.雷达
+
+<%
+// ===== 读取洞察技能等级 =====
+var insightLevel = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var insightExp = Number(getvar('stat_data.技能.洞察.经验', {scope:'local', defaults:0})) || 0;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+
+// ===== 当前位置 =====
+var currentLocation = getvar('stat_data.环境.位置', {scope:'local', defaults:'高三2班教室'}) || '高三2班教室';
+var currentZone = getvar('stat_data.环境.区域', {scope:'local', defaults:'教学楼'}) || '教学楼';
+var weather = getvar('stat_data.环境.天气', {scope:'local', defaults:'多云'}) || '多云';
+
+// ===== 洞察等级 → 雷达档位（与玩家档案5档制对齐）=====
+// 第1档 Lv.1-20 / 第2档 Lv.21-40 / 第3档 Lv.41-60 / 第4档 Lv.61-80 / 第5档 Lv.81-100
+var radarTier;
+if (insightLevel >= 81) radarTier = 5;
+else if (insightLevel >= 61) radarTier = 4;
+else if (insightLevel >= 41) radarTier = 3;
+else if (insightLevel >= 21) radarTier = 2;
+else radarTier = 1;
+
+// ===== 雷达档位 → 感知范围（半径）=====
+// 第1档：10米内强信号 / 第2档：30米内中信号 / 第3档：50米内弱信号 / 第4档：80米 / 第5档：120米
+var radarRange = [0, 10, 30, 50, 80, 120][radarTier];
+
+// ===== 雾天修正：范围-30% =====
+if (weather === '雾') {
+  radarRange = Math.round(radarRange * 0.7);
+}
+
+
+// ===== 洞察档位 → 感知精度 =====
+// 第1档：仅识别人数和大致方向（"那边有人"）
+// 第2档：识别身份类型（学生/老师/陌生人）和大致距离
+// 第3档：识别具体身份（已知NPC）和精确距离、行为状态
+// 第4档：识别意图（如"行色匆匆""神色异常"）+ 微表情捕捉
+// 第5档：识别威胁等级 + 心理状态推测 + 信号追溯
+var precisionDesc = [
+  '',
+  '模糊：仅感知人数/大致方位',
+  '初阶：识别身份类型（学生/老师/陌生人）+ 大致距离',
+  '精准：识别具体身份（已知NPC）+ 精确距离 + 行为状态',
+  '锁定：识别意图 + 微表情 + 异常行为模式',
+  '双向：识别威胁等级 + 心理状态推测 + 信号追溯（可主动建立连接）'
+][radarTier];
+
+// ===== 信号类型分类 =====
+// 人员：学生 / 老师 / 陌生人 / 已知NPC
+// 物品：关键道具（如假阴茎相关线索、女生遗失物、可疑包裹）
+// 载具：自行车/电动车/校车/外来车辆
+// 建筑：进入/离开/异常声响/灯光变化
+
+// ===== 威胁等级 =====
+// 无害：普通学生/老师日常活动
+// 可疑：行为反常（如女生在课间独自去卫生间、深夜外出）
+// 敌对：明确对{{user}}不利（如有人跟踪、监视）
+// 极高：直接威胁生命/暴露风险（如发现{{user}}藏匿物品）
+// 未知：无法判定（信号过弱/超出认知）
+
+// ===== 已知信号列表 =====
+var _rawSignals = getvar('stat_data.雷达.信号', {scope:'local', defaults:[]}) || [];
+var signals = Array.isArray(_rawSignals) ? _rawSignals : (function(){ var a=[]; if(_rawSignals && typeof _rawSignals==='object'){ for(var k in _rawSignals){ if(Object.prototype.hasOwnProperty.call(_rawSignals,k)) a.push(_rawSignals[k]); } } return a; })();
+
+// ===== 当前场景预设信号（参考时段和位置生成）=====
+// 这些只是模板，AI 应根据当前 NPC 状态、剧情阶段动态生成真实信号
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var timeSlot;
+if (hour >= 5 && hour < 7) timeSlot = '早晨';
+else if (hour >= 7 && hour < 8) timeSlot = '晨读';
+else if (hour >= 8 && hour < 12) timeSlot = '上午';
+else if (hour >= 12 && hour < 14) timeSlot = '中午';
+else if (hour >= 14 && hour < 17) timeSlot = '下午';
+else if (hour >= 17 && hour < 19) timeSlot = '傍晚';
+else if (hour >= 19 && hour < 22) timeSlot = '晚自习';
+else if (hour >= 22 || hour < 2) timeSlot = '夜里';
+else timeSlot = '半夜';
+%>
+
+<radar>
+【RPG雷达感知系统 - AI内部参考，严禁外露】
+
+---
+■ 当前雷达状态
+---
+洞察技能：Lv.<%= insightLevel %>（经验 <%= insightExp %>）
+雷达档位：第 <%= radarTier %> 档（共5档）
+感知半径：<%= radarRange %> 米<% if (weather === '雾') { %>（雾天修正 -30%）<% } %>
+感知精度：<%= precisionDesc %>
+当前位置：<%= currentLocation %>（<%= currentZone %>）
+当前时段：<%= timeSlot %>
+
+---
+■ 信号强度判定表
+---
+| 距离 | 信号强度 | 所需档位 |
+|------|---------|---------|
+| 0-10米 | 强 | 任意档位 |
+| 10-30米 | 中 | 任意档位 |
+| 30-50米 | 弱 | 任意档位 |
+| 50-80米 | 极弱 | 第4档+ |
+| 80-120米 | 残影 | 第5档 |
+
+档位说明：
+- 第1档（Lv.1-20）：仅识别人数和方位（"那边有人"），无具体身份
+- 第2档（Lv.21-40）：识别身份类型（学生/老师/陌生人），大致距离
+- 第3档（Lv.41-60）：识别具体身份（已知NPC）、精确距离、行为状态
+- 第4档（Lv.61-80）：识别意图、微表情、异常行为模式、预判行为
+- 第5档（Lv.81-100）：识别威胁等级、心理状态推测、信号追溯（主动建立连接）
+
+---
+■ 信号类型
+---
+1. 人员信号（signal_person_xxx）
+   - 学生：身份/班级/当前状态（上课/课间/独行/结伴）
+   - 老师：科目/职务/是否巡视
+   - 陌生人：外来人员（需警觉，校园封闭管理）
+   - 已知NPC：可直接识别姓名+心理状态（第3档+）
+2. 物品信号（signal_item_xxx）
+   - 关键道具：假阴茎相关线索（仅在 stage>=3 且 insight>=30 时可能感知）
+   - 遗失物：女生遗失的物品（可作为调查线索）
+   - 可疑包裹：来源不明的包裹/书包
+3. 载具信号（signal_vehicle_xxx）
+   - 自行车/电动车/校车/外来车辆
+4. 建筑信号（signal_building_xxx）
+   - 异常声响/灯光变化/门窗状态
+
+---
+■ 威胁等级判定
+---
+| 等级 | 描述 | 触发条件 |
+|------|------|---------|
+| 无害 | 日常活动 | 普通学生/老师正常行为 |
+| 可疑 | 行为反常 | 女生独自出入异常地点、深夜外出、神色慌张 |
+| 敌对 | 明确对{{user}}不利 | 跟踪监视、刻意接近、试探询问 |
+| 极高 | 直接威胁 | 发现{{user}}藏匿物品、即将暴露 |
+| 未知 | 无法判定 | 信号过弱/超出认知/初次遭遇 |
+
+---
+■ 当前扫描到的信号（参考模板，AI 应根据剧情动态生成）
+---
+<% if (signals.length === 0) { %>
+（暂无已知信号，AI 应根据当前位置/时段/NPC 状态动态生成）
+<% } else { %>
+<% signals.forEach(function(s) { %>
+- <%= s.编号 || s.id || '' %> [<%= s.类型 || s.type || '' %>] <%= s.描述 || s.desc || '' %> | 强度:<%= s.强度 || s.strength || '' %> | 距离:<%= s.距离 || s.distance || '' %>米 | 威胁:<%= s.威胁 || s.threat || '' %>
+<% }); %>
+<% } %>
+
+---
+■ 雷达扫描规则
+---
+1. 每轮根据当前位置和洞察等级扫描周围：
+   - 扫描半径 = 雷达档位对应范围（雾天-30%）
+   - 范围内的人员/物品/载具/建筑均生成信号
+   - 信号强度由距离决定
+2. 信号编号使用 signal001 起的稳定编号：
+   - signal001-signal099：人员信号
+   - signal101-signal199：物品信号
+   - signal201-signal299：载具信号
+   - signal301-signal399：建筑信号
+   - 编号稳定不重用，离开范围后标记为"已离开"
+3. 信号存储字段：
+   - stat_data.雷达.信号 = [{id, type, desc, strength, distance, threat, location, detected_at_day, detected_at_hour}]
+   - 信号保留 3 天后自动清理
+   - 同一目标多次扫描只更新 distance/strength/threat，不新建 id
+4. 雷达更新时机：
+   - 每轮默认扫描一次（{{user}} 进入新位置或时段变化时强制扫描）
+   - 玩家主动"观察四周"指令 → 立即扫描
+   - {{user}} 移动到新位置 → 立即扫描
+5. 洞察档位不足时的信号模糊化：
+   - 第1档：仅显示"前方有人影"（不显示具体身份）
+   - 第2档：显示"高三女生"（不显示具体是谁）
+   - 第3档：显示"林婉清"（具体NPC身份）
+   - 第4档：显示"林婉清，神色紧张，行色匆匆"
+   - 第5档：显示"林婉清，神色紧张，疑似刚从卫生间出来，手上似有异物"
+
+---
+■ 雷达与剧情联动
+---
+1. 假阴茎相关信号（仅 stage>=3 且 insight>=30 时感知）：
+   - 女生携带可疑物品（书包鼓囊、衣物异常）
+   - 女生独自去隐蔽地点（卫生间隔间超过15分钟、空教室）
+   - 女生在 {{user}} 附近徘徊（使用前观察目标）
+   - 女生神色异常（脸红、腿软、走姿异常，使用后状态）
+2. 信号作为线索触发调查：
+   - {{user}} 通过雷达积累"异常信号" → 疑心度+1/次
+   - 同一NPC连续3次出现可疑信号 → {{user}} 自动记录（疑心度+5）
+   - 第4档+ 可主动"聚焦"某信号获取更详细信息（消耗1时段）
+3. 雷达失败情况：
+   - 第1档无法识别假阴茎相关信号（仅感知到人）
+   - 女性隐匿技能高于洞察等级时，信号会被屏蔽
+   - 阶段<3 时即使察觉异常也只会归因为"巧合"
+4. 信号叙事转化（严禁元术语）：
+   - 信号001[学生]：转化为"经过走廊时，余光扫到一个女生匆匆闪进卫生间"
+   - 强度强 → "就在你旁边，看得一清二楚"
+   - 强度弱 → "远处似乎有个身影，看不真切"
+   - 威胁敌对 → "对方眼神似乎一直跟着你"
+5. 雷达扫描写入规则：
+   - 每轮扫描结果由变量 AI 自动 patch：
+     - stat_data.雷达.信号 = [新信号数组]
+     - stat_data.雷达.最后扫描日 = day
+     - stat_data.雷达.最后扫描时 = hour
+   - 移除已离开范围的信号（标记为"已离开"后下一轮删除）
+   - 严禁在正文中输出"signal001""雷达""威胁等级""信号强度"等元术语
+
+---
+■ AI 执行铁律
+---
+1. 每轮正文开始前先进行雷达扫描，结果通过叙事转化呈现
+2. 洞察档位不足时严格按精度描述限制信号细节
+3. {{user}} 主动"观察四周"时，必须给出更详细的当前信号列表（叙事化）
+4. 假阴茎相关信号在 stage<3 或 insight<30 时严禁出现
+5. 雷达信号仅作为环境感知，不直接揭示剧情真相（需 {{user}} 进一步调查）
+6. 已知 NPC 的位置由 NPC 自身状态决定（参 [mvu_plot]女性使用者管理），雷达只读取不创造
+7. 雷达扫描不消耗时段（被动感知），但主动"聚焦"某信号消耗1时段
+8. 信号强度/威胁等级必须与实际剧情状态匹配，不得伪造威胁
+</radar>

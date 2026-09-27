@@ -1,0 +1,81 @@
+@@generate_before
+<%
+// ═══════════════════════════════════════
+// 场景控制器 + LCG确定性骰子
+// 参考raft_13的LCG算法,用天数+时段做种子
+// ═══════════════════════════════════════
+if (typeof _day === 'undefined') var _day = Number(getvar('stat_data.系统变量.天数', { scope: 'local', defaults: 1 }));
+if (typeof _period === 'undefined') var _period = getvar('stat_data.系统变量.时段', { scope: 'local', defaults: '上午' });
+if (typeof _chap === 'undefined') var _chap = Number(getvar('stat_data.系统变量.当前章节', { scope: 'local', defaults: 1 }));
+if (typeof _rating === 'undefined') var _rating = Number(getvar('stat_data.反派状态.评价值', { scope: 'local', defaults: 80 }));
+if (typeof _gamePhase === 'undefined') var _gamePhase = getvar('stat_data.系统变量.游戏阶段', { scope: 'local', defaults: '日常轮' });
+
+// LCG确定性种子: 同天数+同时段=同结果
+var _pi = {'黎明':0,'上午':1,'中午':2,'下午':3,'傍晚':4,'夜晚':5,'深夜':6}[_period];
+if (typeof _pi === 'undefined') _pi = 1;
+var _s = _day * 7 + _pi + 7919;
+function _r() { _s = (_s * 1664525 + 1013904223) | 0; return (_s >>> 0) / 4294967296; }
+%>
+<% if (typeof lastMessageId !== 'undefined' && lastMessageId > 0) { %>
+<%/* ═══════════════════════════════════════
+   日常轮: 事件判定 + 场景加载
+   ═══════════════════════════════════════ */%>
+<% if (_gamePhase === '日常轮') { %>
+<%
+// 事件触发率: 基于评价值,评价越低事件越频繁
+var _eventRate = _rating >= 80 ? 0.35 : _rating >= 60 ? 0.45 : _rating >= 40 ? 0.55 : _rating >= 20 ? 0.65 : 0.75;
+var _hasEvent = _r() < _eventRate;
+var _roll = _r() * 100;
+var _cat = _roll < 30 ? 'family'        // 30% 家属冲突
+        : _roll < 55 ? 'bound_woman'    // 25% 绑定女性主动
+        : _roll < 75 ? 'comment'        // 20% 读者评论
+        : _roll < 88 ? 'discovery'      // 13% {{user}}发现线索
+        : _roll < 96 ? 'binding'        // 8%  新绑定机会
+        : 'crisis';                     // 4%  危机事件
+%>
+<% if (_hasEvent) { %>
+[本轮事件判定：<%= _cat %>。参照对应世界观条目展开具体描写。禁止数据化呈现此判定。]
+<% if (_cat === 'family') { %>
+<%- await getwi('角色/家属/陈富贵') %>
+<%- await getwi('角色/家属/张强') %>
+<%- await getwi('角色/家属/李大强') %>
+<% } else if (_cat === 'bound_woman') { %>
+<%- await getwi('语料库/绑定女性语料库') %>
+<% } else if (_cat === 'comment') { %>
+<%- await getwi('语料库/红果短视频通用语料库') %>
+<% } else if (_cat === 'discovery') { %>
+<%- await getwi('约束/防全知') %>
+<% } else if (_cat === 'crisis') { %>
+<%- await getwi('约束/防绝望') %>
+<% } %>
+<% } else { %>
+[本轮事件判定：无。专注环境描写、角色互动或主角主动行为的展开。]
+<% } %>
+<% } %>
+
+<%/* ═══════════════════════════════════════
+   交涉中: 加载交涉系统 + 思维链
+   ═══════════════════════════════════════ */%>
+<% if (_gamePhase === '交涉中') { %>
+<%- await getwi('系统/交涉属性体系') %>
+<%- await getwi('系统/交涉规则') %>
+<%- await getwi('系统/思维链') %>
+<% } %>
+
+<%/* ═══════════════════════════════════════
+   评价值危机加载: 评价低于40时加载崩坏语料
+   ═══════════════════════════════════════ */%>
+<% if (_rating < 40) { %>
+<%- await getwi('语料库/林天7阶段语料库') %>
+<% } %>
+
+<%/* ═══════════════════════════════════════
+   苏婉绑定深度监控: 深度<80时加载苏婉语料
+   ═══════════════════════════════════════ */%>
+<%
+if (typeof _suDepth === 'undefined') var _suDepth = Number(getvar('stat_data.绑定花名册.苏婉.绑定深度', { scope: 'local', defaults: 100 }));
+%>
+<% if (_suDepth < 100) { %>
+<%- await getwi('语料库/苏婉语料库') %>
+<% } %>
+<% } %>

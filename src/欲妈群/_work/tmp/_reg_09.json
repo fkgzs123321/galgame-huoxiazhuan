@@ -1,0 +1,17 @@
+{
+  "id": "b7c41a2e-9d38-4f10-9a55-3e6c18d0f7a2",
+  "scriptName": "秘密任务结算美化",
+  "findRegex": "/<task_result>([\\s\\S]*?)<\\/task_result>/g",
+  "replaceString": "<style>\n.ymq-task{font-size:13px;line-height:1.6;color:#2b2b2b;background:#fdf7ee;border:1px solid #e8d9bf;border-left:3px solid #b8863f;border-radius:6px;padding:8px 11px;margin:6px 0}\n.ymq-task .t{font-weight:600;color:#8a5a1c;margin-bottom:3px}\n.ymq-task .t::before{content:'任务结算 · '}\n</style>\n<div class=\"ymq-task\"><div class=\"t\"></div><div>$1</div></div>",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

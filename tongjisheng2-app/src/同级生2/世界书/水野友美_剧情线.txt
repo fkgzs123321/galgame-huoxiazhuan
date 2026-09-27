@@ -1,0 +1,168 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 水野友美 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=8 / 原版经典女角 · 青梅竹马线
+   核心弧线：邻家日常—偷拍误会—信任危机—真相揭示—恋人成立（五阶段）
+   互斥关系：无明确互斥，与鸣泽唯（同居义妹）存在隐性竞争
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 水野友美_STORYLINE = {
+  heroine_id: 8,
+  name: '水野友美',
+  core_position: {
+    role: '邻家青梅竹马线核心 — 偷拍误会推动哥们儿框架崩塌与恋人成立',
+    archetype: '元气青梅的暗恋弧线 — 哥们儿伪装的破壁者',
+    function: '通过"邻家日常→偷拍误会→信任危机→真相揭示→恋人成立"五段式弧线，把十年哥们儿关系转向恋人关系',
+    plot_weight: 'high — 完整独立女角线，无明确互斥；与鸣泽唯线存在隐性竞争'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: 'PM/晚',
+      location: '鸣泽家（主角自宅）',
+      event: '友美来访鸣泽家',
+      description: '寒假第一天傍晚，友美以"看看邻居"为名来访鸣泽家，与主角闲聊童年趣事；唯在旁观察，青梅与义妹的隐性竞争初现；好感+2',
+      triggers_route: '友美线 — 开启"邻家青梅"前置剧情',
+      is_reversible: true,
+      flags: ['flag_tomomi_neighbor_awareness', 'flag_tomomi_first_visit'],
+      note: '好感+2（15→17），邻家关系铺垫；唯线隐性竞争初现'
+    },
+    {
+      date: '12-23~12-27',
+      time_slot: '全天',
+      location: '水野家 / 鸣泽家 / 自宅周边',
+      event: '邻家日常互动期',
+      description: '友美与主角多次在水野家/鸣泽家互动，可聊童年回忆、网球、动漫话题；哥们儿框架松动，暗恋情感暗流涌动；好感累积期',
+      triggers_route: '友美线 — 好感累积期，达15解锁偷拍事件',
+      is_reversible: true,
+      flags: ['flag_tomomi_daily_interaction'],
+      note: '好感需达15才能触发偷拍误会事件；此期间唯的好感若过高会触发友美嫉妒值升高'
+    },
+    {
+      date: '12-28~12-30',
+      time_slot: 'PM',
+      location: '自宅周边 / 水野家附近',
+      event: '偷拍误会事件',
+      description: '友美被变态摄影师偷拍，主角恰好在场被误认为同伙；友美在惊吓与谣言中误信主角涉案，十年哥们儿信任出现裂痕；哥们儿伪装崩塌',
+      triggers_route: '友美线 — 信任危机分支开启',
+      is_reversible: false,
+      flags: ['flag_tomomi_photographer_incident', 'flag_tomomi_misunderstanding'],
+      note: '★ 不可逆 flag — 偷拍事件触发后信任危机必然发生；触发条件：友美好感≥15'
+    },
+    {
+      date: '12-31~01-03',
+      time_slot: '全天',
+      location: '水野家 / 自宅周边',
+      event: '信任危机深化期',
+      description: '友美回避主角，哥们儿互动停滞；唯趁机介入安慰主角（隐性竞争升级）；主角需主动调查真相并澄清，否则友美线进入Normal End',
+      triggers_route: '友美线 — 信任危机分支',
+      is_reversible: true,
+      flags: ['flag_tomomi_trust_crisis'],
+      note: '若主角选择放弃澄清，友美线锁定 Normal End；唯线在此期间好感易升高'
+    },
+    {
+      date: '01-04~01-06',
+      time_slot: 'PM',
+      location: '水野家',
+      event: '真相揭示 + 哥们儿框架崩塌',
+      description: '主角调查发现真凶（变态摄影师），向友美展示证据；友美意识到误会主角，愧疚叠加多年暗恋情感倾泻，哥们儿框架彻底崩塌；友美准备好接受告白',
+      triggers_route: '友美线 — 恋人成立前置',
+      is_reversible: false,
+      flags: ['flag_tomomi_truth_revealed', 'flag_tomomi_confession_ready'],
+      note: '★ 不可逆 flag — 真相揭示后友美线进入恋人成立阶段；此节点后友美好感大幅回升+10'
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '水野家 / 鸣泽家',
+      event: '最终判定',
+      description: '寒假最后一天深夜，根据友美好感值判定结局：好感≥60 达成 Good End（友美主动告白，恋人成立）；30~59 Normal End（暧昧持续，哥们儿关系修复）；<30 Bad End（哥们儿框架固化，友美退出）',
+      triggers_route: '友美线 — 结局判定',
+      is_reversible: false,
+      flags: ['flag_tomomi_final_judgment'],
+      note: '★ 不可逆 flag — 结局判定一旦触发无法回退；Good End 需好感≥60 + flag_tomomi_truth_revealed'
+    }
+  ],
+
+  triggered_routes: {
+    '友美线 Good End': {
+      condition: '01-07 深夜 友美好感≥60 + flag_tomomi_truth_revealed 已触发',
+      trigger_nodes: ['12-22 来访', '12-28~30 偷拍事件', '01-04~06 真相揭示', '01-07 判定'],
+      impact: '友美主动告白，十年暗恋倾泻，哥们儿关系正式转为恋人；邻家青梅线圆满'
+    },
+    '友美线 Normal End': {
+      condition: '01-07 深夜 友美好感 30~59，或信任危机未完全解决',
+      trigger_nodes: ['12-28~30 偷拍事件', '12-31~01-03 信任危机'],
+      impact: '暧昧持续，哥们儿关系修复但未升级；友美继续暗恋，开放结局'
+    },
+    '友美线 Bad End': {
+      condition: '01-07 深夜 友美好感<30，或偷拍误会未澄清',
+      trigger_nodes: ['12-28~30 偷拍事件（未澄清）'],
+      impact: '哥们儿框架固化，友美退出主角线；十年青梅关系冷淡'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: '青梅竹马十年 — 暗恋未表白',
+      detail: '十年邻居+同学，affection=15/trust=35 的哥们儿关系；友美单恋主角多年但用哥们儿伪装掩饰；12/22 来访是寒假首次互动'
+    },
+    '鸣泽唯': {
+      type: '隐性竞争者（heroine_id=1）',
+      detail: '唯是主角同居义妹，友美是邻家青梅；唯的存在感是友美嫉妒值的主要来源；12/22 来访时唯在旁观察，竞争初现'
+    },
+    '鸣泽美佐子': {
+      type: '邻居长辈（heroine_id=2）',
+      detail: '水野家与鸣泽家是邻居，美佐子是主角义母；友美与美佐子有邻里长辈关系'
+    },
+    '水野父母': {
+      type: '房东 / 父母',
+      detail: '水野家是房东；转校生路线中接待主角借住；友美与父母同住水野家'
+    },
+    '网球部成员': {
+      type: '朋友 / 部活伙伴',
+      detail: '友美是网球部成员，部员是友美的情报源和支援者'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_tomomi_photographer_incident',
+      trigger: '12-28~12-30 PM 偷拍误会事件',
+      effect: '友美被偷拍，主角被误认为同伙，信任危机开启；哥们儿伪装崩塌',
+      reversibility: '不可逆 — 一旦触发，信任危机必然发生（好感≥15 才触发）'
+    },
+    {
+      flag: 'flag_tomomi_misunderstanding',
+      trigger: '12-28~12-30 偷拍事件后',
+      effect: '友美误信谣言，回避主角；哥们儿互动停滞',
+      reversibility: '可逆 — 通过 01-04~06 真相揭示可解除'
+    },
+    {
+      flag: 'flag_tomomi_truth_revealed',
+      trigger: '01-04~01-06 PM 水野家事件',
+      effect: '主角向友美展示真凶证据，误会解除；友美愧疚+暗恋倾泻，哥们儿框架彻底崩塌',
+      reversibility: '不可逆 — 一旦真相揭示无法回退；友美线进入恋人成立阶段'
+    },
+    {
+      flag: 'flag_tomomi_confession_ready',
+      trigger: '01-04~01-06 真相揭示后',
+      effect: '友美准备好接受/主动告白；Good End 前置条件',
+      reversibility: '不可逆 — 一旦准备就绪无法回退'
+    },
+    {
+      flag: 'flag_tomomi_final_judgment',
+      trigger: '01-07 深夜结局判定',
+      effect: '根据友美好感值判定 Good/Normal/Bad End',
+      reversibility: '不可逆 — 结局判定一旦触发无法回退'
+    }
+  ],
+
+  summary: '友美的剧情线是"邻家日常—偷拍误会—信任危机—真相揭示—恋人成立"五阶段弧线，核心功能是通过偷拍误会事件打破十年哥们儿框架，让友美的多年暗恋情感得以倾泻。与鸣泽唯线存在隐性竞争（邻家青梅 vs 同居义妹），但无明确互斥。Good End 需好感≥60 + 真相揭示。'
+};
+%>
+
+水野友美 · 剧情线已加载。核心定位：邻家青梅竹马线（12/22 来访→12-28~30 偷拍误会→12-31~01-03 信任危机→01-04~06 真相揭示→01-07 最终判定）。不可逆 flag：flag_tomomi_photographer_incident（12-28~30 偷拍事件，好感≥15触发）、flag_tomomi_truth_revealed（01-04~06 真相揭示）、flag_tomomi_confession_ready（恋人成立前置）、flag_tomomi_final_judgment（01-07 结局判定）。Good End 需好感≥60 + 真相揭示；与鸣泽唯线隐性竞争但无明确互斥。

@@ -1,0 +1,1 @@
+import 'https://gcore.jsdelivr.net/gh/AlbusKen/shujuku@spv7.9/index.js';

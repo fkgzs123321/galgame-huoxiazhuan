@@ -1,0 +1,414 @@
+@@generate_before
+<%
+// ═══════════════════════════════════════
+// 初始变量定义 - 系统哥的末日
+// 仅在游戏开始时执行一次，将所有变量初始化
+// ═══════════════════════════════════════
+
+var initFlag = getvar('stat_data.系统变量.$已初始化', { scope: 'local', defaults: false });
+if (!initFlag) {
+  // 系统变量
+  setvar('stat_data.系统变量.游戏阶段', '日常轮', { scope: 'local' });
+  setvar('stat_data.系统变量.当前章节', 1, { scope: 'local' });
+  setvar('stat_data.系统变量.天数', 1, { scope: 'local' });
+  setvar('stat_data.系统变量.时段', '上午', { scope: 'local' });
+  setvar('stat_data.系统变量.$代写模式', false, { scope: 'local' });
+  setvar('stat_data.系统变量.$已初始化', true, { scope: 'local' });
+
+  // 反派林天状态（A9，已绑定8人，苏婉是第9目标，与SPV antagonist_state表同步）
+  setvar('stat_data.反派状态.姓名', '林天', { scope: 'local' });
+  setvar('stat_data.反派状态.财富等级', 'A9', { scope: 'local' });
+  setvar('stat_data.反派状态.财富值', 500000000, { scope: 'local' });
+  setvar('stat_data.反派状态.绑定名额总数', 10, { scope: 'local' });
+  setvar('stat_data.反派状态.已绑定数', 8, { scope: 'local' });
+  setvar('stat_data.反派状态.剩余名额', 2, { scope: 'local' });
+  setvar('stat_data.反派状态.系统状态', '活跃', { scope: 'local' });
+  setvar('stat_data.反派状态.评价值', 100, { scope: 'local' });
+  setvar('stat_data.反派状态.评价趋势', '稳定', { scope: 'local' });
+  setvar('stat_data.反派状态.良知值', 50, { scope: 'local' });
+  setvar('stat_data.反派状态.系统警告', '无', { scope: 'local' });
+  setvar('stat_data.反派状态.当前阶段', '满分巅峰', { scope: 'local' });
+  setvar('stat_data.反派状态.当前位置', '林天私人会所', { scope: 'local' });
+  setvar('stat_data.反派状态.心情', '玩味', { scope: 'local' });
+
+  // 反派资源（技能次数/商店积分/道具库存/整局资源，由额外模型每轮维护，见变量更新规则 4.7.10）
+  setvar('stat_data.反派状态.时停剩余', 1, { scope: 'local' });
+  setvar('stat_data.反派状态.短剧剩余', 3, { scope: 'local' });
+  setvar('stat_data.反派状态.预判剩余', 3, { scope: 'local' });
+  setvar('stat_data.反派状态.绝对掌控剩余', 3, { scope: 'local' });
+  setvar('stat_data.反派状态.系统救场剩余', 1, { scope: 'local' });
+  setvar('stat_data.反派状态.系统积分', 500, { scope: 'local' });
+  setvar('stat_data.反派状态.道具库存', '', { scope: 'local' });
+  setvar('stat_data.反派状态.强制洗白可用', true, { scope: 'local' });
+  setvar('stat_data.反派状态.系统暴走次数', 0, { scope: 'local' });
+  setvar('stat_data.反派状态.四墙剩余', 3, { scope: 'local' });
+
+  // user状态（A8，妻子苏婉刚被锁定，与SPV protagonist_info表同步）
+  setvar('stat_data.user状态.姓名', '你', { scope: 'local' });
+  setvar('stat_data.user状态.财富等级', 'A8', { scope: 'local' });
+  setvar('stat_data.user状态.财富值', 80000000, { scope: 'local' });
+  setvar('stat_data.user状态.婚姻状态', '完好', { scope: 'local' });
+  setvar('stat_data.user状态.反抗力', 30, { scope: 'local' });
+  setvar('stat_data.user状态.觉醒度', 0, { scope: 'local' });
+  setvar('stat_data.user状态.理智值', 85, { scope: 'local' });
+  setvar('stat_data.user状态.心理状态', '震惊', { scope: 'local' });
+  setvar('stat_data.user状态.怀疑度', 20, { scope: 'local' });
+  setvar('stat_data.user状态.证据数量', 0, { scope: 'local' });
+  setvar('stat_data.user状态.当前位置', '家中', { scope: 'local' });
+  setvar('stat_data.user状态.与妻子关系', '疏远', { scope: 'local' });
+
+  // 交涉状态（初始未交涉）
+  setvar('stat_data.交涉状态.交涉进行中', false, { scope: 'local' });
+  setvar('stat_data.交涉状态.交涉对象', '', { scope: 'local' });
+  setvar('stat_data.交涉状态.交涉回合', 0, { scope: 'local' });
+  setvar('stat_data.交涉状态.交涉幕次', '结束', { scope: 'local' });
+  setvar('stat_data.交涉状态.user交涉策略', '', { scope: 'local' });
+  setvar('stat_data.交涉状态.对手交涉策略', '', { scope: 'local' });
+  setvar('stat_data.交涉状态.user气势', 50, { scope: 'local' });
+  setvar('stat_data.交涉状态.user口才', 50, { scope: 'local' });
+  setvar('stat_data.交涉状态.user情报', 30, { scope: 'local' });
+  setvar('stat_data.交涉状态.user地位', 60, { scope: 'local' });
+  setvar('stat_data.交涉状态.对手气势', 60, { scope: 'local' });
+  setvar('stat_data.交涉状态.对手口才', 60, { scope: 'local' });
+  setvar('stat_data.交涉状态.对手情报', 70, { scope: 'local' });
+  setvar('stat_data.交涉状态.对手地位', 70, { scope: 'local' });
+  setvar('stat_data.交涉状态.上轮user骰', 0, { scope: 'local' });
+  setvar('stat_data.交涉状态.上轮对手骰', 0, { scope: 'local' });
+  setvar('stat_data.交涉状态.上轮判定', '', { scope: 'local' });
+  setvar('stat_data.交涉状态.user共识分', 0, { scope: 'local' });
+  setvar('stat_data.交涉状态.对手共识分', 0, { scope: 'local' });
+
+  // 角色属性表（4维属性：气势/口才/情报/地位，0-100，交涉时参照执行）
+  // 数值与 source/entries/系统/属性与技能系统（地狱档）.txt 保持同步（运行时地狱档生效）
+  var attrs = {
+    '林天':    { 气势: 100, 口才: 95, 情报: 100, 地位: 100 },
+    'user':    { 气势: 30, 口才: 30, 情报: 15, 地位: 40 },
+    '苏婉':    { 气势: 40, 口才: 55, 情报: 30, 地位: 75 },
+    '陈雪华':  { 气势: 15, 口才: 25, 情报: 10, 地位: 5 },
+    '林雅芝':  { 气势: 20, 口才: 40, 情报: 20, 地位: 10 },
+    '王秀兰':  { 气势: 25, 口才: 35, 情报: 15, 地位: 8 },
+    '赵敏':    { 气势: 55, 口才: 60, 情报: 45, 地位: 70 },
+    '孙莉':    { 气势: 40, 口才: 50, 情报: 35, 地位: 45 },
+    '周慧敏':  { 气势: 70, 口才: 65, 情报: 60, 地位: 85 },
+    '吴琼':    { 气势: 80, 口才: 75, 情报: 70, 地位: 82 },
+    '郑秀':    { 气势: 45, 口才: 55, 情报: 40, 地位: 75 },
+    '沈梦瑶':  { 气势: 75, 口才: 80, 情报: 85, 地位: 80 },
+  };
+  Object.keys(attrs).forEach(name => {
+    var a = attrs[name];
+    setvar(stat_data.角色属性.${name}.气势, a.气势, { scope: 'local' });
+    setvar(stat_data.角色属性.${name}.口才, a.口才, { scope: 'local' });
+    setvar(stat_data.角色属性.${name}.情报, a.情报, { scope: 'local' });
+    setvar(stat_data.角色属性.${name}.地位, a.地位, { scope: 'local' });
+  });
+
+  // 角色技能表（每个角色1-3个技能，交涉时修正参照）
+  // 技能类型：被动（始终生效）/主动（每场限1次）/触发（条件满足自动生效）
+  // 字段：技能名、类型、说明
+  var skills = {
+    '林天': [
+      { 名: '系统洞察', 类型: '被动', 说明: '每轮交涉开始时情报+25，自动获知user策略类型' },
+      { 名: '短剧套路', 类型: '主动', 说明: '每场限3次，强制重骰本轮骰子（取保候审/越狱/证据不认账）' },
+      { 名: '财富压制', 类型: '触发', 说明: '地位高于对手20+时气势自动+30' },
+      { 名: '系统预判', 类型: '触发', 说明: '每轮40%概率预判user策略，预判成功时user策略效果减半' },
+      { 名: '穿越第四面墙', 类型: '触发', 说明: '评价值≥90时每周1次，可操控评论倾向/屏蔽user觉醒度+1~3' },
+      { 名: '金手指升级', 类型: '被动', 说明: '每3章自动获得1次系统奖励' },
+      { 名: '绝对掌控', 类型: '触发', 说明: '绑定女性清醒瞬间强制压制（每章3次，绑定深度≥50时100%成功）' },
+      { 名: '大势掌控', 类型: '被动', 说明: '交涉中user所有策略修正额外-5' },
+      { 名: '时停一瞬', 类型: '主动', 说明: '每章1次，跳过user本轮的1个行动回合' },
+    ],
+    'user': [
+      { 名: '真相追寻', 类型: '被动', 说明: '发现罪证时情报+3；每收集2条罪证情报永久+1' },
+      { 名: '绝地反击', 类型: '主动', 说明: '反抗力<5时可触发，本轮骰子+6；每场限1次' },
+      { 名: '觉醒之眼', 类型: '触发', 说明: '觉醒度>85解锁，可看穿林天短剧套路；>95时情报永久+5' },
+    ],
+    '苏婉': [
+      { 名: '青梅记忆', 类型: '触发', 说明: '与{{user}}交涉时共识分起点+20（20年感情残留）' },
+      { 名: '贵妇涵养', 类型: '被动', 说明: '口才+10，交涉中免疫首轮威胁策略' },
+    ],
+    '陈雪华': [
+      { 名: '求生本能', 类型: '触发', 说明: '生命受威胁时气势+15；向林天求助时口才+10' },
+    ],
+    '林雅芝': [
+      { 名: '母性坚韧', 类型: '触发', 说明: '提及小宝时理智+10、气势+10；为保护小宝可触发额外骰子+10' },
+    ],
+    '王秀兰': [
+      { 名: '隐忍积势', 类型: '被动', 说明: '首轮共识分-10，但后续每轮+5（生活磨砺的耐心）' },
+    ],
+    '赵敏': [
+      { 名: '千金骄纵', 类型: '触发', 说明: '地位高于对手时气势+10' },
+      { 名: '订婚誓言', 类型: '触发', 说明: '提及王昊时理智-5但反抗力+5' },
+    ],
+    '孙莉': [
+      { 名: '表演天赋', 类型: '主动', 说明: '每场限1次，可伪装情绪让对手下轮骰子-10' },
+    ],
+    '周慧敏': [
+      { 名: '豪门手腕', 类型: '被动', 说明: '交涉时口才+15' },
+      { 名: '隐忍积势', 类型: '被动', 说明: '首轮共识分-10，但后续每轮+5（比王秀兰更强）' },
+    ],
+    '吴琼': [
+      { 名: '铁娘子', 类型: '被动', 说明: '气势+20' },
+      { 名: '商战老手', 类型: '被动', 说明: '情报+15' },
+    ],
+    '郑秀': [
+      { 名: '家族庇护', 类型: '触发', 说明: '提及郑家时地位+15，但林天评价值-3（OOC风险）' },
+    ],
+    '沈梦瑶': [
+      { 名: '创投眼光', 类型: '被动', 说明: '情报+20' },
+      { 名: '冷静分析', 类型: '被动', 说明: '首轮免疫威胁策略；每轮结束可看穿对手1个策略' },
+    ],
+  };
+  Object.keys(skills).forEach(name => {
+    skills[name].forEach((s, i) => {
+      setvar(stat_data.角色技能.${name}.技能${i + 1}.名称, s.名, { scope: 'local' });
+      setvar(stat_data.角色技能.${name}.技能${i + 1}.类型, s.类型, { scope: 'local' });
+      setvar(stat_data.角色技能.${name}.技能${i + 1}.说明, s.说明, { scope: 'local' });
+      setvar(stat_data.角色技能.${name}.技能${i + 1}.已使用, false, { scope: 'local' });
+    });
+  });
+
+  // 绑定花名册（10人，与SPV important_npc表同步）
+  // 字段名与数据库列名完全统一（全中文），便于双写同步
+  // 包含全部30+ NSFW字段（乳头/胸型/腰型/臀型/后庭/阴毛/阴唇/阴道等）
+  var women = [
+    { key: '陈雪华', name: '陈雪华', grade: 'A6', order: 1, depth: 85, cost: '失忆', sanity: 30,
+      identity: '贫民窟少女，林天旗下低端夜场经理',
+      family_relation: '父·陈富贵（酒鬼）', original_partner: '无', children_info: '无',
+      last_lucid: '上月在书房呼唤前未婚夫名字后被打断',
+      play_type: 'NTR隐奸|恋父养成|角色扮演',
+      clothing: '白色校服衬衫+百褶裙', exposure: '轻度',
+      wetness: 30, skin_marks: '锁骨咬痕', arousal: 25, semen: '无',
+      marks: '锁骨咬痕;刻林字银项链;私处脱毛造型',
+      cup: 'B', bust: 92, waist: 58, hip: 82, height: 158, weight: 43,
+      nipple_size: '小', nipple_color: '粉色', areola_size: '小', breast_shape: '碗状',
+      breast_sens: 120, lactation: '无', waist_shape: '纤细', waist_sens: 60,
+      hand_desc: '纤细白嫩', nail_style: '淡粉美甲',
+      hip_shape: '圆润', hip_sens: 100, anal_desc: '紧致',
+      pubic_hair: '稀疏', labia_size: '适中', labia_color: '粉色',
+      vaginal_tight: '紧致', special: '无', lube: '充足', hymen: '已破', fertility: '正常',
+      body_sens: 120, zones: '颈后/耳后', triggers: '言语挑逗',
+      ejs_stage: '阶段2·稳定期', bind_period: '完全绑定' },
+    { key: '林雅芝', name: '林雅芝', grade: 'A5', order: 2, depth: 70, cost: '发疯', sanity: 45,
+      identity: '便利店老板娘，单亲妈妈',
+      family_relation: '前夫张强，女儿小宝3岁', original_partner: '张强', children_info: '小宝3岁',
+      last_lucid: '上月抱着小宝哭喊不要这样',
+      play_type: 'NTR隐奸|精神虐待|母乳调教',
+      clothing: '哺乳内衣+宽松家居服', exposure: '轻度',
+      wetness: 60, skin_marks: '乳房咬痕', arousal: 50, semen: '少量',
+      marks: '剖腹产疤痕文身林字;颈项钻石项链;戴前夫银戒羞辱印记',
+      cup: 'D', bust: 102, waist: 68, hip: 92, height: 162, weight: 50,
+      nipple_size: '中等', nipple_color: '深粉', areola_size: '中等', breast_shape: '下垂',
+      breast_sens: 180, lactation: '泌乳中', waist_shape: '微胖', waist_sens: 80,
+      hand_desc: '柔软丰满', nail_style: '裸色',
+      hip_shape: '丰满', hip_sens: 110, anal_desc: '半开发',
+      pubic_hair: '稀疏', labia_size: '适中', labia_color: '深粉',
+      vaginal_tight: '普通', special: '母乳体质', lube: '充足', hymen: '已破', fertility: '正常',
+      body_sens: 150, zones: '乳房/乳头', triggers: '吸吮乳头',
+      ejs_stage: '阶段3·适应期', bind_period: '绑定深化' },
+    { key: '王秀兰', name: '王秀兰', grade: 'A4', order: 3, depth: 75, cost: '失忆', sanity: 35,
+      identity: '菜场摊主妻',
+      family_relation: '夫·老李', original_partner: '老李', children_info: '子·李小龙12岁',
+      last_lucid: '曾试图给老李打电话被系统中断',
+      play_type: 'NTR隐奸|精神虐待',
+      clothing: '宽松棉质睡衣', exposure: '轻度',
+      wetness: 0, skin_marks: '臀部咬印', arousal: 0, semen: '无',
+      marks: '臀部咬印;会阴撕裂疤牙印;戴老李金戒羞辱印记',
+      cup: 'C', bust: 105, waist: 74, hip: 98, height: 165, weight: 58,
+      nipple_size: '中等', nipple_color: '褐色', areola_size: '中等', breast_shape: '下垂',
+      breast_sens: 80, lactation: '无', waist_shape: '粗壮', waist_sens: 50,
+      hand_desc: '粗糙有力', nail_style: '无',
+      hip_shape: '宽大', hip_sens: 70, anal_desc: '已开发',
+      pubic_hair: '浓密', labia_size: '较大', labia_color: '深褐',
+      vaginal_tight: '松弛', special: '无', lube: '不足', hymen: '已破', fertility: '已结扎',
+      body_sens: 80, zones: '臀部', triggers: '拍打臀部',
+      ejs_stage: '阶段3·适应期', bind_period: '绑定深化' },
+    { key: '赵敏', name: '赵敏', grade: 'A7', order: 4, depth: 60, cost: '发疯', sanity: 70,
+      identity: '地产商千金，前未婚夫王昊',
+      family_relation: '父·赵立明', original_partner: '王昊', children_info: '无',
+      last_lucid: '曾在婚礼前夕清醒试图报警',
+      play_type: 'NTR明目侵犯|变态道具|身体改造',
+      clothing: '黑色真丝吊带裙', exposure: '中度',
+      wetness: 35, skin_marks: '手腕勒痕', arousal: 30, semen: '无',
+      marks: '全身敏感度改造痕迹;私处文身',
+      cup: 'C', bust: 100, waist: 60, hip: 90, height: 168, weight: 49,
+      nipple_size: '小', nipple_color: '粉色', areola_size: '小', breast_shape: '挺拔',
+      breast_sens: 200, lactation: '无', waist_shape: '纤细', waist_sens: 150,
+      hand_desc: '修长白皙', nail_style: '法式美甲',
+      hip_shape: '紧翘', hip_sens: 180, anal_desc: '半开发',
+      pubic_hair: '激光脱毛', labia_size: '适中', labia_color: '粉色',
+      vaginal_tight: '紧致', special: '敏感度改造', lube: '充足', hymen: '已破', fertility: '正常',
+      body_sens: 200, zones: '全身（改造后）', triggers: '轻触即反应',
+      ejs_stage: '阶段3·适应期', bind_period: '绑定深化' },
+    { key: '孙莉', name: '孙莉', grade: 'A5', order: 5, depth: 80, cost: '失忆', sanity: 25,
+      identity: '签约女艺人，前男友陈浩',
+      family_relation: '父母不知情', original_partner: '陈浩', children_info: '无',
+      last_lucid: '曾哭着求陈浩救她',
+      play_type: 'NTR明目侵犯|多人运动|公开羞辱',
+      clothing: '舞台演出服', exposure: '重度',
+      wetness: 70, skin_marks: '颈部指印', arousal: 65, semen: '少量',
+      marks: '锁骨纹身',
+      cup: 'E', bust: 105, waist: 62, hip: 94, height: 168, weight: 50,
+      nipple_size: '中等', nipple_color: '粉色', areola_size: '中等', breast_shape: '挺拔',
+      breast_sens: 160, lactation: '无', waist_shape: '纤细', waist_sens: 100,
+      hand_desc: '纤细修长', nail_style: '红色美甲',
+      hip_shape: '圆润', hip_sens: 140, anal_desc: '已开发',
+      pubic_hair: '稀疏', labia_size: '适中', labia_color: '粉色',
+      vaginal_tight: '普通', special: '无', lube: '充足', hymen: '已破', fertility: '正常',
+      body_sens: 160, zones: '颈部/锁骨', triggers: '言语挑逗',
+      ejs_stage: '阶段2·稳定期', bind_period: '绑定深化' },
+    { key: '周慧敏', name: '周慧敏', grade: 'A8', order: 6, depth: 90, cost: '发疯', sanity: 15,
+      identity: '董事长夫人',
+      family_relation: '夫·李建国，女·李雪11岁', original_partner: '李建国', children_info: '李雪11岁',
+      last_lucid: '极少清醒，几乎完全被控制',
+      play_type: '变态道具|多人运动|身体改造',
+      clothing: '高定晚礼服', exposure: '中度',
+      wetness: 90, skin_marks: 'N/A', arousal: 85, semen: '大量',
+      marks: '敏感度改造;私处脱毛;5克拉钻戒',
+      cup: 'D', bust: 108, waist: 66, hip: 95, height: 170, weight: 55,
+      nipple_size: '中等', nipple_color: '深粉', areola_size: '中等', breast_shape: '挺拔',
+      breast_sens: 250, lactation: '无', waist_shape: '纤细', waist_sens: 180,
+      hand_desc: '保养精致', nail_style: '钻石美甲',
+      hip_shape: '丰满', hip_sens: 200, anal_desc: '已开发',
+      pubic_hair: '激光脱毛', labia_size: '适中', labia_color: '深粉',
+      vaginal_tight: '普通', special: '敏感度改造', lube: '充足', hymen: '已破', fertility: '正常',
+      body_sens: 250, zones: '全身（改造后）', triggers: '任何刺激',
+      ejs_stage: '阶段2·稳定期', bind_period: '完全绑定' },
+    { key: '吴琼', name: '吴琼', grade: 'A4', order: 7, depth: 65, cost: '死亡', sanity: 50,
+      identity: '某高校女讲师',
+      family_relation: '父母', original_partner: '无', children_info: '无',
+      last_lucid: '上月清醒时试图逃跑被抓回',
+      play_type: '恋父养成|NTR隐奸|公开羞辱',
+      clothing: '衬衫+一步裙', exposure: '轻度',
+      wetness: 0, skin_marks: '颈项项圈勒痕', arousal: 0, semen: '无',
+      marks: '颈项项圈',
+      cup: 'F', bust: 95, waist: 62, hip: 96, height: 170, weight: 56,
+      nipple_size: '大', nipple_color: '深粉', areola_size: '大', breast_shape: '挺拔',
+      breast_sens: 100, lactation: '无', waist_shape: '纤细', waist_sens: 70,
+      hand_desc: '修长骨感', nail_style: '透明护甲',
+      hip_shape: '紧翘', hip_sens: 90, anal_desc: '未开发',
+      pubic_hair: '浓密', labia_size: '适中', labia_color: '深粉',
+      vaginal_tight: '紧致', special: '无', lube: '不足', hymen: '已破', fertility: '正常',
+      body_sens: 90, zones: '胸部', triggers: '揉捏乳房',
+      ejs_stage: '阶段3·适应期', bind_period: '绑定深化' },
+    { key: '郑秀', name: '郑秀', grade: 'A7', order: 8, depth: 78, cost: '发疯', sanity: 40,
+      identity: '郑家大小姐',
+      family_relation: '父·郑老爷子，两个哥哥', original_partner: '前未婚夫李公子', children_info: '无',
+      last_lucid: '曾试图向哥哥求救被系统中断',
+      play_type: 'NTR明目侵犯|精神虐待|主奴契约',
+      clothing: '香奈儿套装', exposure: '中度',
+      wetness: 40, skin_marks: '手腕烫伤疤', arousal: 35, semen: '无',
+      marks: '手腕烫伤疤痕;颈后文身',
+      cup: 'C', bust: 83, waist: 56, hip: 88, height: 165, weight: 48,
+      nipple_size: '小', nipple_color: '粉色', areola_size: '小', breast_shape: '挺拔',
+      breast_sens: 130, lactation: '无', waist_shape: '纤细', waist_sens: 90,
+      hand_desc: '娇小白嫩', nail_style: '法式美甲',
+      hip_shape: '圆润', hip_sens: 120, anal_desc: '半开发',
+      pubic_hair: '稀疏', labia_size: '适中', labia_color: '粉色',
+      vaginal_tight: '紧致', special: '无', lube: '充足', hymen: '已破', fertility: '正常',
+      body_sens: 130, zones: '颈后/手腕', triggers: '疼痛刺激',
+      ejs_stage: '阶段3·适应期', bind_period: '绑定深化' },
+    { key: '苏婉', name: '苏婉', grade: 'A9', order: 9, depth: 15, cost: '失忆', sanity: 80,
+      identity: '苏婉集团董事长',
+      family_relation: '夫·{{user}}，女·乐乐6岁', original_partner: '你', children_info: '乐乐6岁',
+      last_lucid: '开局前一天刚被绑定，抱着{{user}}哭求保护',
+      play_type: '刚被控制·尚未玷污',
+      clothing: '黑色连衣裙', exposure: '保守',
+      wetness: 0, skin_marks: '无', arousal: 0, semen: '无',
+      marks: '左手无名指婚戒尚在',
+      cup: 'E', bust: 105, waist: 58, hip: 92, height: 168, weight: 52,
+      nipple_size: '中等', nipple_color: '粉色', areola_size: '中等', breast_shape: '挺拔',
+      breast_sens: 100, lactation: '无', waist_shape: '纤细', waist_sens: 70,
+      hand_desc: '保养精致', nail_style: '裸色美甲',
+      hip_shape: '圆润', hip_sens: 90, anal_desc: '未开发',
+      pubic_hair: '稀疏', labia_size: '适中', labia_color: '粉色',
+      vaginal_tight: '紧致', special: '无', lube: '正常', hymen: '完整', fertility: '正常',
+      body_sens: 100, zones: '颈后/耳后', triggers: '言语挑逗',
+      ejs_stage: '阶段0·刚被控制', bind_period: '当前目标' },
+    { key: '沈梦瑶', name: '', grade: 'A10', order: 10, depth: 0, cost: '', sanity: 0,
+      identity: '', family_relation: '', original_partner: '无', children_info: '无',
+      last_lucid: '', play_type: '',
+      clothing: 'N/A', exposure: 'N/A',
+      wetness: 0, skin_marks: 'N/A', arousal: 0, semen: 'N/A',
+      marks: '',
+      cup: '', bust: 0, waist: 0, hip: 0, height: 0, weight: 0,
+      nipple_size: '', nipple_color: '', areola_size: '', breast_shape: '',
+      breast_sens: 0, lactation: '', waist_shape: '', waist_sens: 0,
+      hand_desc: '', nail_style: '',
+      hip_shape: '', hip_sens: 0, anal_desc: 'N/A',
+      pubic_hair: '', labia_size: '', labia_color: '',
+      vaginal_tight: '', special: '', lube: '', hymen: '', fertility: '',
+      body_sens: 0, zones: '', triggers: '',
+      ejs_stage: '', bind_period: '' },
+  ];
+  women.forEach(w => {
+    var k = w.key;
+    // 基本信息（与important_npc表列名一致）
+    setvar(stat_data.绑定花名册.${k}.姓名, w.name, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.类型, ${w.grade}时期, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.绑定等级, w.grade, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.绑定顺序, w.order, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.状态, k === '苏婉' ? '绑定中' : (k === '沈梦瑶' ? '待绑定' : '已绑定'), { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.绑定深度, w.depth, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.清醒频率, w.sanity, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.解绑代价, w.cost, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.身份, w.identity || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.家庭关系, w.family_relation || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.原伴侣, w.original_partner || '无', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.子女信息, w.children_info || '无', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.上次清醒瞬间, w.last_lucid || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.NTR玩法类型, w.play_type || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.EJS阶段, w.ejs_stage || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.时期, w.bind_period || '', { scope: 'local' });
+    // NSFW 实时状态（变量名与DB列名完全一致）
+    setvar(stat_data.绑定花名册.${k}.当前衣着, w.clothing || 'N/A', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.暴露程度, w.exposure || 'N/A', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.湿润度, w.wetness || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.兴奋度, w.arousal || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.精液残留, w.semen || 'N/A', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.占有印记, w.marks || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.皮肤痕迹, w.skin_marks || 'N/A', { scope: 'local' });
+    // NSFW 静态身体特征（变量名与DB列名完全一致，共23个字段）
+    setvar(stat_data.绑定花名册.${k}.罩杯, w.cup || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.胸围, w.bust || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.腰围, w.waist || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.臀围, w.hip || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.身高, w.height || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.体重, w.weight || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.乳头大小, w.nipple_size || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.乳头颜色, w.nipple_color || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.乳晕大小, w.areola_size || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.胸型, w.breast_shape || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.胸部敏感度, w.breast_sens || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.泌乳, w.lactation || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.腰型, w.waist_shape || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.腰部敏感度, w.waist_sens || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.手部描述, w.hand_desc || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.美甲风格, w.nail_style || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.臀型, w.hip_shape || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.臀部敏感度, w.hip_sens || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.后庭描述, w.anal_desc || 'N/A', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.阴毛, w.pubic_hair || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.阴唇大小, w.labia_size || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.阴唇颜色, w.labia_color || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.阴道紧度, w.vaginal_tight || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.特殊体质, w.special || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.润滑程度, w.lube || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.处女膜状态, w.hymen || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.生育能力, w.fertility || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.全身敏感度, w.body_sens || 0, { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.敏感带, w.zones || '', { scope: 'local' });
+    setvar(stat_data.绑定花名册.${k}.兴奋触发点, w.triggers || '', { scope: 'local' });
+  });
+
+  // 评论系统
+  setvar('stat_data.评论系统.本轮评论', [], { scope: 'local' });
+  setvar('stat_data.评论系统.累计点赞', 0, { scope: 'local' });
+  setvar('stat_data.评论系统.累计吐槽', 0, { scope: 'local' });
+  setvar('stat_data.评论系统.热门评论', '', { scope: 'local' });
+  setvar('stat_data.评论系统.评论倾向', '中性', { scope: 'local' });
+
+  // 最近记忆
+  setvar('stat_data.最近记忆', [], { scope: 'local' });
+  setvar('stat_data.思维链历史', [], { scope: 'local' });
+}
+%>

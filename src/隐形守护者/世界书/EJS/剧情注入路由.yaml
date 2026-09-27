@@ -1,0 +1,31 @@
+名称: 剧情注入路由
+类型: EJS预处理
+启用: false
+激活策略:
+  类型: 蓝灯
+  优先级: 199
+插入位置:
+  类型: 指定深度
+  角色: system
+  深度: 2
+  顺序: 205
+
+内容: |
+  【剧情注入 · EJS 路由（勿开分拆条目）】
+
+  以下分拆世界书条目已 **关闭**（灰灯），避免与当前章节无关的 token：
+  序章主持、序章-1~5、写死表、校验表、BE范例、铁律（均由 EJS is_prologue getwi）。
+
+  按 MVU `stat_data.剧情` 只读本条 + 阶段指导 + 写死表：
+
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '序章' }) === '序章' && getvar('stat_data.剧情.序章已完成', { scope: 'local', defaults: false }) !== true
+  **当前：序章** → 只注入《序章抉择全书-写死表》+《阶段指导》序章段；节点={{ getvar('stat_data.剧情.当前节点', { scope: 'local', defaults: '序章-1' }) }}
+  @@endif
+
+  @@if getvar('stat_data.剧情.当前章节', { scope: 'local', defaults: '' }) === '第一章' && getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) !== true
+  **当前：第一章** → 只注入《阶段指导》第一章段；勿注入序章写死表。
+  @@endif
+
+  @@if getvar('stat_data.剧情.已死亡', { scope: 'local', defaults: false }) === true
+  **死亡结局** → 只演绎 BE；见《阶段指导》死亡段。
+  @@endif

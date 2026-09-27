@@ -1,0 +1,100 @@
+@@generate_before
+# 世界书条目：终局分支触发
+# 激活策略：变量条件（疑心度 ≥ 150 或 总使用次数 ≥ 100）
+# 100级体系·5阶段对齐 + 女性能力对抗判定
+
+<%
+var suspicion = Number(getvar('stat_data.状态.怀疑值', {scope:'local', defaults:0})) || 0;
+var total_uses = Number(getvar('stat_data.使用阶段.总使用次数', {scope:'local', defaults:0})) || 0;
+var stage = Number(getvar('stat_data.使用阶段.当前阶段', {scope:'local', defaults:1})) || 1;
+var meditation = Number(getvar('stat_data.技能.冥想.等级', {scope:'local', defaults:1})) || 1;
+var willpower = Number(getvar('stat_data.技能.意志.等级', {scope:'local', defaults:1})) || 1;
+var exercise = Number(getvar('stat_data.技能.锻炼.等级', {scope:'local', defaults:1})) || 1;
+var recovery = Number(getvar('stat_data.技能.恢复.等级', {scope:'local', defaults:1})) || 1;
+var insight = Number(getvar('stat_data.技能.洞察.等级', {scope:'local', defaults:1})) || 1;
+var energy = Number(getvar('stat_data.状态.精力', {scope:'local', defaults:80})) || 80;
+var sanity = Number(getvar('stat_data.状态.理智', {scope:'local', defaults:80})) || 80;
+var corruption = Number(getvar('stat_data.状态.堕落值', {scope:'local', defaults:0})) || 0;
+var pc = getvar('stat_data.隐藏层.传播链', {scope:'local', defaults:[]}) || []; var chain_count = Array.isArray(pc) ? pc.length : 0;
+var exam = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) || 103;
+var score = Number(getvar('stat_data.学业.分数', {scope:'local', defaults:75})) || 75;
+var academic = Number(getvar('stat_data.学业.阶段', {scope:'local', defaults:3})) || 3;
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+
+// LCG 函数
+function lcg_next(s) { var a=1664525,c=1013904223,m=4294967296; return ((s*a+c)>>>0); }
+
+// 计算女性总战力
+var femaleCombatPower = 0;
+var femaleCount = 0;
+var uidOrder = getvar('stat_data.女性角色.UID顺序', {scope:'local', defaults:[]});
+var idMul = Number(getvar('stat_data.配置.LCG常数.ID乘数', {scope:'local', defaults:7919})) || 7919;
+
+if (Array.isArray(uidOrder)) {
+  uidOrder.forEach(function(uid) {
+    var abilities = getvar('stat_data.女性角色.' + uid + '.能力', {scope:'local', defaults:null});
+    if (abilities && abilities.技能等级 !== undefined) {
+      var avg = (Number(abilities.技能等级) + Number(abilities.隐蔽) + Number(abilities.持久) + Number(abilities.控制) + Number(abilities.诱惑) * 0.5 + Number(abilities.欲望) * 0.5) / 5;
+      femaleCombatPower += avg;
+      femaleCount++;
+    }
+  });
+}
+
+if (femaleCount > 0) {
+  femaleCombatPower = femaleCombatPower / femaleCount;        // 平均能力
+  femaleCombatPower = femaleCombatPower * (1 + femaleCount * 0.05);  // 人数加权
+  femaleCombatPower = femaleCombatPower * (1 + corruption / 200);    // 沉沦放大器
+}
+
+// 玩家战力
+var playerCombatPower = (
+  meditation * 0.30 +    // 定力（意识）
+  willpower * 0.25 +     // 意志（抗性）
+  energy * 0.20 +        // 精力（生命力）
+  sanity * 0.15 +        // 理智（清醒度）
+  insight * 0.10          // 洞察（感知）
+) * (1 + (100 - corruption) / 200);  // 低沉沦增益
+
+if (suspicion >= 150 || total_uses >= 100) {
+  // 觉醒进度计算（100级公式）
+  var progress = 0;
+  progress += Math.min(40, suspicion * 0.2);       // 疑心度贡献
+  progress += Math.min(30, meditation * 0.3);       // 定力贡献
+  progress += Math.min(20, exercise * 0.2);          // 体质贡献
+  progress += Math.min(15, insight * 0.15);           // 洞察贡献
+  progress -= Math.min(30, corruption * 0.3);        // 沉沦度扣减
+  progress = Math.max(0, Math.min(100, progress));
+
+  // 能力对抗 LCG 骰子
+  var powerRatio = playerCombatPower > 0 ? Math.min(5.0, Math.max(0.2, femaleCombatPower / playerCombatPower)) : 1.0;
+  var combatSeed = (((((day * 7 + hour * 13) * 7919 + Math.floor(femaleCombatPower)) * 11 + stage) * 17 + Math.floor(playerCombatPower)) * 31) >>> 0;
+  var combatRoll = lcg_next(combatSeed) % 10000 / 10000;
+
+  // 对抗结果：0~1 越小对玩家越有利
+  var combatOutcome = combatRoll < powerRatio * 0.35 ? 'female_dominant' : (combatRoll > 1 - powerRatio * 0.20 ? 'player_dominant' : 'balanced');
+
+  setvar('stat_data.隐藏层.觉醒进度', progress);
+  setvar('stat_data.隐藏层.女性战斗力', Math.round(femaleCombatPower * 100) / 100);
+  setvar('stat_data.隐藏层.玩家战斗力', Math.round(playerCombatPower * 100) / 100);
+  setvar('stat_data.隐藏层.对抗结果', combatOutcome);
+
+  // 终局分支判定（100级/5档条件 + 能力对抗修正·统一中文键名）
+  if (combatOutcome === 'female_dominant' && corruption >= 60) {
+    // 女性掌控结局
+    setvar('stat_data.结局.黑市掌控', true, {scope:'local'});
+  } else if (combatOutcome === 'player_dominant' && progress >= 80 && meditation >= 61 && energy > 30) {
+    // 真相大白（最佳结局）
+    setvar('stat_data.结局.真相揭示', true, {scope:'local'});
+  } else if (progress >= 80 && meditation >= 61 && energy > 30) {
+    setvar('stat_data.结局.真相揭示', true, {scope:'local'});
+  } else if (progress >= 60 && energy > 20) {
+    setvar('stat_data.结局.平庸', true, {scope:'local'});
+  } else if (progress >= 40 && energy > 0) {
+    setvar('stat_data.结局.坠落', true, {scope:'local'});
+  } else {
+    setvar('stat_data.结局.崩坏', true, {scope:'local'});
+  }
+}
+%>

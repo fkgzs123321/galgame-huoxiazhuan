@@ -1,0 +1,428 @@
+{
+  "projectName": "秦璐",
+  "worldbookName": "秦璐",
+  "form": "charactercard",
+  "mvu": false,
+  "entryManifest": {
+    "unknown": {
+      "角色/秦璐": {
+        "path": "世界书\\角色_秦璐.yaml",
+        "keywords": [
+          "秦璐",
+          "母亲",
+          "妈妈"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "秦璐",
+            "母亲",
+            "妈妈"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "display_index": 0,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "角色/苏梦": {
+        "path": "世界书\\角色_苏梦.yaml",
+        "keywords": [
+          "苏梦",
+          "姐姐",
+          "梦姐"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏梦",
+            "姐姐",
+            "梦姐"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "display_index": 1,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "角色/苏文": {
+        "path": "世界书\\角色_苏文.txt",
+        "keywords": [
+          "苏文",
+          "父亲",
+          "爸爸"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "苏文",
+            "父亲",
+            "爸爸"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "display_index": 2,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "角色/主角": {
+        "path": "世界书\\角色_主角.yaml",
+        "keywords": [
+          "主角",
+          "儿子",
+          "弟弟",
+          "<user>"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "主角",
+            "儿子",
+            "弟弟",
+            "<user>"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "display_index": 3,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "MVU 框架动态注入当前变量结构+值，与 schema 自动同步": {
+        "path": "世界书\\MVU 框架动态注入当前变量结构+值，与 schema 自动同步.yaml",
+        "keywords": [
+          "[变量列表]"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant",
+          "keys": [
+            "[变量列表]"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 1
+        },
+        "display_index": 4,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "[mvu_update]变量/变量更新规则": {
+        "path": "世界书\\变量_变量更新规则.yaml",
+        "keywords": [
+          "[mvu_update]",
+          "变量更新规则"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant",
+          "keys": [
+            "[mvu_update]",
+            "变量更新规则"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 2
+        },
+        "display_index": 5,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "[mvu_update]变量/变量输出格式": {
+        "path": "世界书\\变量_变量输出格式.txt",
+        "keywords": [
+          "[mvu_update]",
+          "变量输出格式"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant",
+          "keys": [
+            "[mvu_update]",
+            "变量输出格式"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 3
+        },
+        "display_index": 6,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "2026-07-03 已在酒馆手动转蓝灯常驻（关键词几乎不会被触发：AI 被禁止说这些词）；快照只列动态清单，语义说明以此条目为准": {
+        "path": "世界书\\2026-07-03 已在酒馆手动转蓝灯常驻（关键词几乎不会被触发：AI 被禁止说这些词）；快照只列动态清单，语义说明以此条目为准.yaml",
+        "keywords": [
+          "念头",
+          "习惯",
+          "培育",
+          "植入念头"
+        ],
+        "abstract": "",
+        "enabled": true,
+        "strategy": {
+          "type": "constant",
+          "keys": [
+            "念头",
+            "习惯",
+            "培育",
+            "植入念头"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        },
+        "display_index": 7,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "[InitVar]仅在新建聊天时开启一次，用于初始化MVU变量": {
+        "path": "世界书\\仅在新建聊天时开启一次，用于初始化MVU变量.yaml",
+        "keywords": [
+          "[initvar]",
+          "变量初始化勿开"
+        ],
+        "abstract": "",
+        "enabled": false,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "[initvar]",
+            "变量初始化勿开"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 0
+        },
+        "display_index": 8,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      },
+      "[config_override]": {
+        "path": "世界书\\[config_override].json",
+        "keywords": [],
+        "abstract": "MVU 卡内配置：强制采用额外模型解析更新变量",
+        "enabled": false,
+        "position": {
+          "type": "before_character_definition",
+          "order": 4
+        },
+        "display_index": 9,
+        "recursion": {
+          "prevent_incoming": false,
+          "prevent_outgoing": false
+        }
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [],
+    "after_char": [],
+    "depth": []
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "avatar": "avatar.png",
+  "description": "",
+  "first_messages": [
+    "开场白\\0.txt"
+  ],
+  "tags": [
+    "秦璐",
+    "重置版",
+    "完结版"
+  ],
+  "creator": "shujshujun",
+  "creator_notes": "《秦璐》v1.1 完结版。\n权威源码基线为 Git 0.40 的完整“秦璐重置版”，保留双角色面板、完整网店、路线共鸣、录像与苏文视角。\n修复苏文位置连续性：普通对白提到明天不再误跳时段；旧档先按状态栏真值校准作息游标；下班必须经过返家转场。\n新增永久特权“静滞怀表”：售价1000，购买后需再次点击启用，永久冻结苏文状态、位置、作息游标与两项疑心值。\n资源固定到热修标签 qin1.1.1；发布版本仍为 qin1.1。需要启用最新版酒馆助手与 MVU。",
+  "version": "1.1",
+  "create_date": "2026-09-10",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "script_file": "脚本\\MVU.txt",
+          "enabled": true,
+          "id": "c6ba3c2e-e86f-5745-b575-c0c5bdbe43b0",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": false
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": false
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": false
+              }
+            ]
+          },
+          "data": {}
+        },
+        "变量结构": {
+          "type": "script",
+          "script_file": "脚本\\变量结构.txt",
+          "enabled": true,
+          "id": "3e0c2a0a-29d2-5fc0-823b-214ae02199ea",
+          "info": "发公告出新版本时把0.25改成对应的版本号就行了",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "游戏逻辑": {
+          "type": "script",
+          "script_file": "脚本\\游戏逻辑.txt",
+          "enabled": true,
+          "id": "c396a0a2-d8cc-5d21-a8c1-f3aad5458d52",
+          "info": "发公告出新版本时把0.25改成对应的版本号就行了",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        }
+      },
+      "variables": {}
+    },
+    "talkativeness": "0.5",
+    "fav": false,
+    "world": "秦璐",
+    "depth_prompt": {
+      "prompt": "",
+      "depth": 4,
+      "role": "system"
+    },
+    "xiaobaix-tasks": {
+      "tasks": []
+    },
+    "odysseia_trace": {
+      "v": 1,
+      "kid": "v1",
+      "nonce": "y284Bfn5YUoi7YJ3",
+      "ciphertext": "GQh4vPrId53ABEfTRx8Paxi-IBUD5KTEkpPM9M_VJ6KjaHavoCutfJ4f2fJbz4UYchR9STuoacgwH-y5LaVceqQn7BjVjG9aVN15Gu5TtrUM_qCrPtSC6RH2fO-3pzxoDLRirNeCbwxA4PQcnANiJXwQ8255SCxMRYcR5yk6deM-zotQjc0UtoslC5o56YkrNGU-LFtAnyPRvzNj3UVC9bVAoFRe9nhvwCHtgCuvwylcDI8796Q"
+    }
+  },
+  "regex_scripts": {
+    "状态栏": {
+      "id": "425a8ee9-a77f-5bbb-8c12-5208acf21742",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replace_file": "正则\\状态栏.txt",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "行动选项": {
+      "id": "181a7c65-07c1-5d33-a84e-d3be8a35f73c",
+      "findRegex": "/<options>[\\s\\S]*?<\\/options>/gi",
+      "replace_file": "正则\\行动选项.txt",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "去除变量更新": {
+      "id": "f36482b1-63ea-556b-b0a2-0fec20a9fb7a",
+      "findRegex": "/<UpdateVariable>[\\s\\S]*?<\\/UpdateVariable>|<status_current_variables>[\\s\\S]*?<\\/status_current_variables>/gm",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    },
+    "1.对AI隐藏状态栏": {
+      "id": "3d51f9e7-62f5-522c-9f46-b09a6b259298",
+      "findRegex": "<StatusPlaceHolderImpl/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0
+    }
+  }
+}

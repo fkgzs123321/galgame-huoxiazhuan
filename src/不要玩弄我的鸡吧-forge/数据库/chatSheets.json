@@ -1,0 +1,1045 @@
+{
+  "mate": {
+    "type": "chatSheets",
+    "version": 2,
+    "updateConfigUiSentinel": -1,
+    "globalInjectionConfig": {
+      "readableEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "wrapperPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99980
+      }
+    }
+  },
+  "sheet_a1b2c3d4": {
+    "uid": "sheet_a1b2c3d4",
+    "name": "全局状态表",
+    "sourceData": {
+      "note": "全局状态表，仅 1 行。职责：时间/难度/使用阶段/玩家状态/持有者/场景概览/不可逆flag",
+      "initNode": "开场白首轮回复时INSERT一行（row_id=1），后续禁止INSERT第二行。\nSQL示例: INSERT INTO global_state (row_id,day,hour,weekday,date_str,time_slot,difficulty,use_stage,total_uses,today_uses,last_use_day,stage_progress,energy,energy_max,sanity,health,stress,stamina,suspicion,corruption,money,academic_score,academic_stage,study_count_today,exam_countdown,teacher_attention,holder_id,active_users_count,propagation_count,scene_summary,system_alert,flags_text) VALUES (1,1,8,'周一','02-24 周一','早晨','困难',1,0,0,0,0,80,80,80,75,10,80,0,0,500,75,3,0,103,0,'林婉清',0,0,'','无','{}');",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时UPDATE唯一行。\nSQL示例: UPDATE global_state SET day=1,hour=22,time_slot='夜里',use_stage=1,total_uses=1,today_uses=1,last_use_day=1,stage_progress=10,energy=60,sanity=75,stress=20,active_users_count=1,scene_summary='林婉清深夜首次使用假阴茎',system_alert='无' WHERE row_id=1;",
+      "insertNode": "禁止。此表有且仅有一行，不允许INSERT第二行。",
+      "ddl": "CREATE TABLE IF NOT EXISTS global_state ( -- 全局状态表\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  day INTEGER NOT NULL DEFAULT 1 CHECK(day >= 1), -- 天数（从1开始，02-24开学）\n  hour INTEGER NOT NULL DEFAULT 8 CHECK(hour BETWEEN 0 AND 23), -- 小时（0-23）\n  weekday TEXT NOT NULL DEFAULT '周一', -- 星期\n  date_str TEXT NOT NULL DEFAULT '02-24 周一', -- 日期字符串\n  time_slot TEXT NOT NULL DEFAULT '早晨' CHECK(time_slot IN ('早晨','晨读','上午','中午','下午','傍晚','晚自习','夜里','半夜')), -- 时段（由 hour 映射）\n  difficulty TEXT NOT NULL DEFAULT '困难' CHECK(difficulty IN ('普通','困难','地狱')), -- 难度\n  use_stage INTEGER NOT NULL DEFAULT 1 CHECK(use_stage BETWEEN 1 AND 5), -- 使用阶段（1-5）\n  total_uses INTEGER NOT NULL DEFAULT 0 CHECK(total_uses >= 0), -- 累计使用次数\n  today_uses INTEGER NOT NULL DEFAULT 0 CHECK(today_uses >= 0), -- 今日使用次数\n  last_use_day INTEGER NOT NULL DEFAULT 0 CHECK(last_use_day >= 0), -- 最后使用日\n  stage_progress INTEGER NOT NULL DEFAULT 0 CHECK(stage_progress BETWEEN 0 AND 100), -- 阶段进度（0-100）\n  energy INTEGER NOT NULL DEFAULT 80 CHECK(energy BETWEEN 0 AND 100), -- 精力\n  energy_max INTEGER NOT NULL DEFAULT 80 CHECK(energy_max BETWEEN 50 AND 150), -- 精力上限\n  sanity INTEGER NOT NULL DEFAULT 80 CHECK(sanity BETWEEN 0 AND 100), -- 理智\n  health INTEGER NOT NULL DEFAULT 75 CHECK(health BETWEEN 0 AND 100), -- 健康\n  stress INTEGER NOT NULL DEFAULT 10 CHECK(stress BETWEEN 0 AND 100), -- 压力\n  stamina INTEGER NOT NULL DEFAULT 80 CHECK(stamina BETWEEN 0 AND 100), -- 体力\n  suspicion INTEGER NOT NULL DEFAULT 0 CHECK(suspicion BETWEEN 0 AND 200), -- 怀疑值\n  corruption INTEGER NOT NULL DEFAULT 0 CHECK(corruption BETWEEN 0 AND 200), -- 堕落值\n  money INTEGER NOT NULL DEFAULT 500 CHECK(money >= 0), -- 金钱\n  academic_score INTEGER NOT NULL DEFAULT 75 CHECK(academic_score BETWEEN 0 AND 100), -- 学业分数\n  academic_stage INTEGER NOT NULL DEFAULT 3 CHECK(academic_stage BETWEEN 1 AND 5), -- 学业阶段（1-5）\n  study_count_today INTEGER NOT NULL DEFAULT 0 CHECK(study_count_today >= 0), -- 今日学习次数\n  exam_countdown INTEGER NOT NULL DEFAULT 103 CHECK(exam_countdown >= 0), -- 考试倒计时\n  teacher_attention INTEGER NOT NULL DEFAULT 0 CHECK(teacher_attention BETWEEN 0 AND 100), -- 老师关注度\n  holder_id TEXT NOT NULL DEFAULT '林婉清', -- 持有者ID（姓名）\n  active_users_count INTEGER NOT NULL DEFAULT 0 CHECK(active_users_count >= 0), -- 活跃使用人数\n  propagation_count INTEGER NOT NULL DEFAULT 0 CHECK(propagation_count >= 0), -- 传播次数\n  scene_summary TEXT NOT NULL DEFAULT '' CHECK(LENGTH(scene_summary) <= 60), -- 场景概览（≤60字）\n  system_alert TEXT NOT NULL DEFAULT '无' CHECK(system_alert IN ('无','警告','危险','崩坏')), -- 系统警报\n  flags_text TEXT NOT NULL DEFAULT '{}' -- 不可逆flag（JSON）\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "day",
+        "hour",
+        "weekday",
+        "date_str",
+        "time_slot",
+        "difficulty",
+        "use_stage",
+        "total_uses",
+        "today_uses",
+        "last_use_day",
+        "stage_progress",
+        "energy",
+        "energy_max",
+        "sanity",
+        "health",
+        "stress",
+        "stamina",
+        "suspicion",
+        "corruption",
+        "money",
+        "academic_score",
+        "academic_stage",
+        "study_count_today",
+        "exam_countdown",
+        "teacher_attention",
+        "holder_id",
+        "active_users_count",
+        "propagation_count",
+        "scene_summary",
+        "system_alert",
+        "flags_text"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "全局状态表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "全局状态表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 0
+  },
+  "sheet_e5f6g7h8": {
+    "uid": "sheet_e5f6g7h8",
+    "name": "女性角色表",
+    "sourceData": {
+      "note": "女性角色表，多行（39条初始记录）。职责：女性档案/技能能力/上限/阶段轨迹/持有者信息/使用习惯/传播倾向/学业",
+      "initNode": "开场白首轮INSERT 25行初始女性角色（uid 叶知秋~025），后续新增陌生女性时INSERT新行（uid自增）。\nSQL示例: INSERT INTO female_users (row_id,uid,name,role,grade_class,age,template_type,current_stage,sanity,rationality,obsession,academic_pressure,escape_awareness,skill_level,stealth,endurance,control,temptation,desire,skill_level_cap,stealth_cap,endurance_cap,control_cap,favorability,familiarity,interaction_count,known_truth,is_holder,acquire_method,acquire_day,package_status,has_used,use_count,preferred_time,preferred_location,usage_style,special_props,propagation_tendency,propagation_method,academic_score,academic_stage,total_uses,orgasm_count,total_drain,last_use_day,used_today,daily_growth_used,appearance,brief_intro,identity_text,location_name,presence_status,past_experience,last_updated,heartbeat,jealousy,trust,stage_locked,mutex_group,mutex_partner_name,cycle_day,cycle_stage,pregnancy_state,pregnancy_stage,conception_seed,delivery_result,postpartum_days,child_count) VALUES (26,'新角色姓名','新角色姓名','','',17,'纯真',1,100,80,0,50,0,2,60,40,30,40,35,40,40,40,30,0,0,0,0,0,'',0,'',0,0,0,'午休','空教室','温柔','无',0.2,'',75,3,0,0,0,0,0,0,'','','','','离场','','',0,0,50,0,'','',1,'行经期',0,'未孕','','未分娩',0,0);",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时UPDATE当前互动女性行（其他女性按需UPDATE）。\nSQL示例: UPDATE female_users SET has_used=1,use_count=1,total_uses=1,last_use_day=1,used_today=1,skill_level=1,package_status='已开箱',sanity=95,presence_status='在场',location_name='宿舍',last_updated='02-24 22:00',heartbeat=20,trust=55 WHERE uid='林婉清';",
+      "insertNode": "新增陌生女性时INSERT新行（row_id自增，uid直接用中文姓名）。\nSQL示例: INSERT INTO female_users (row_id,uid,name,role,grade_class,age,template_type,current_stage,sanity,rationality,obsession,academic_pressure,escape_awareness,skill_level,stealth,endurance,control,temptation,desire,skill_level_cap,stealth_cap,endurance_cap,control_cap,favorability,familiarity,interaction_count,known_truth,is_holder,acquire_method,acquire_day,package_status,has_used,use_count,preferred_time,preferred_location,usage_style,special_props,propagation_tendency,propagation_method,academic_score,academic_stage,total_uses,orgasm_count,total_drain,last_use_day,used_today,daily_growth_used,appearance,brief_intro,identity_text,location_name,presence_status,past_experience,last_updated,heartbeat,jealousy,trust,stage_locked,mutex_group,mutex_partner_name,cycle_day,cycle_stage,pregnancy_state,pregnancy_stage,conception_seed,delivery_result,postpartum_days,child_count) VALUES (26,'新角色姓名','新角色姓名','','',17,'纯真',1,100,80,0,50,0,2,60,40,30,40,35,40,40,40,30,0,0,0,0,0,'',0,'',0,0,0,'午休','空教室','温柔','无',0.2,'',75,3,0,0,0,0,0,0,'','','','','离场','','',0,0,50,0,'','',1,'行经期',0,'未孕','','未分娩',0,0);",
+      "ddl": "CREATE TABLE IF NOT EXISTS female_users ( -- 女性角色表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  uid TEXT NOT NULL UNIQUE, -- 唯一标识（中文姓名）\n  name TEXT NOT NULL, -- 姓名\n  role TEXT NOT NULL DEFAULT '', -- 角色身份\n  grade_class TEXT NOT NULL DEFAULT '', -- 年级班级\n  age INTEGER NOT NULL DEFAULT 18 CHECK(age BETWEEN 14 AND 55), -- 年龄（14-55）\n  template_type TEXT NOT NULL DEFAULT '纯真' CHECK(template_type IN ('纯真','御姐','辣妹','运动','运动-支配型','文静','熟女','萝莉')), -- 模板类型（纯真/御姐/辣妹/运动/文静/熟女/萝莉）\n  current_stage INTEGER NOT NULL DEFAULT 1 CHECK(current_stage BETWEEN 1 AND 5), -- 当前阶段（1-5）\n  sanity INTEGER NOT NULL DEFAULT 100 CHECK(sanity BETWEEN 0 AND 100), -- 理智（0-100）\n  rationality INTEGER NOT NULL DEFAULT 80 CHECK(rationality BETWEEN 0 AND 100), -- 理性（0-100）\n  obsession INTEGER NOT NULL DEFAULT 0 CHECK(obsession BETWEEN 0 AND 100), -- 执念（0-100）\n  academic_pressure INTEGER NOT NULL DEFAULT 50 CHECK(academic_pressure BETWEEN 0 AND 100), -- 学业压力（0-100）\n  escape_awareness INTEGER NOT NULL DEFAULT 0 CHECK(escape_awareness BETWEEN 0 AND 100), -- 逃离意识（0-100）\n  skill_level INTEGER NOT NULL DEFAULT 1 CHECK(skill_level BETWEEN 0 AND 100), -- 技能等级（0-100）\n  stealth INTEGER NOT NULL DEFAULT 50 CHECK(stealth BETWEEN 0 AND 100), -- 潜行（0-100）\n  endurance INTEGER NOT NULL DEFAULT 50 CHECK(endurance BETWEEN 0 AND 100), -- 耐力（0-100）\n  control INTEGER NOT NULL DEFAULT 50 CHECK(control BETWEEN 0 AND 100), -- 控制力（0-100）\n  temptation INTEGER NOT NULL DEFAULT 50 CHECK(temptation BETWEEN 0 AND 100), -- 诱惑力（0-100）\n  desire INTEGER NOT NULL DEFAULT 30 CHECK(desire BETWEEN 0 AND 100), -- 欲望（0-100）\n  skill_level_cap INTEGER NOT NULL DEFAULT 50 CHECK(skill_level_cap BETWEEN 0 AND 100), -- 技能等级上限（0-100）\n  stealth_cap INTEGER NOT NULL DEFAULT 50 CHECK(stealth_cap BETWEEN 0 AND 100), -- 潜行上限（0-100）\n  endurance_cap INTEGER NOT NULL DEFAULT 50 CHECK(endurance_cap BETWEEN 0 AND 100), -- 耐力上限（0-100）\n  control_cap INTEGER NOT NULL DEFAULT 50 CHECK(control_cap BETWEEN 0 AND 100), -- 控制力上限（0-100）\n  favorability INTEGER NOT NULL DEFAULT 30 CHECK(favorability BETWEEN 0 AND 100), -- 好感度（0-100）\n  familiarity INTEGER NOT NULL DEFAULT 0 CHECK(familiarity BETWEEN 0 AND 100), -- 熟悉度（0-100）\n  interaction_count INTEGER NOT NULL DEFAULT 0 CHECK(interaction_count >= 0), -- 互动次数\n  known_truth INTEGER NOT NULL DEFAULT 0 CHECK(known_truth IN (0,1)), -- 是否知晓真相（0/1）\n  is_holder INTEGER NOT NULL DEFAULT 0 CHECK(is_holder IN (0,1)), -- 是否为持有者（0/1）\n  acquire_method TEXT NOT NULL DEFAULT '', -- 获得方式\n  acquire_day INTEGER NOT NULL DEFAULT 0, -- 获得日期\n  package_status TEXT NOT NULL DEFAULT '' CHECK(package_status IN ('已下单','已发货','已签收','已开箱','')), -- 包裹状态\n  has_used INTEGER NOT NULL DEFAULT 0 CHECK(has_used IN (0,1)), -- 是否已使用（0/1）\n  use_count INTEGER NOT NULL DEFAULT 0 CHECK(use_count >= 0), -- 使用次数\n  preferred_time TEXT NOT NULL DEFAULT '午休' CHECK(preferred_time IN ('午休','放学后','深夜','课间','上课中','自习课','保健室时间')), -- 偏好时间\n  preferred_location TEXT NOT NULL DEFAULT '空教室' CHECK(preferred_location IN ('空教室','音乐室','保健室','天台','图书馆','体育仓库','宿舍','实验室','美术室','办公室','走廊','讲台','校医室','教室','食堂','操场','花园','楼梯间','校门口')), -- 偏好地点\n  usage_style TEXT NOT NULL DEFAULT '温柔' CHECK(usage_style IN ('温柔','粗暴','实验性','仪式性','急切','催眠式','冷漠','游戏')), -- 使用风格\n  special_props TEXT NOT NULL DEFAULT '无' CHECK(special_props IN ('无','润滑油','跳蛋','捆缚','冰','低温蜡烛','震动手环','按摩棒','束缚带')), -- 特殊道具\n  propagation_tendency REAL NOT NULL DEFAULT 0.3 CHECK(propagation_tendency BETWEEN 0 AND 1), -- 传播倾向（0-1）\n  propagation_method TEXT NOT NULL DEFAULT '' CHECK(propagation_method IN ('借出','归还','分享','偷窃','买卖','捡到','强制','')), -- 传播方式\n  academic_score INTEGER NOT NULL DEFAULT 75 CHECK(academic_score BETWEEN 0 AND 100), -- 学业分数（0-100）\n  academic_stage INTEGER NOT NULL DEFAULT 3 CHECK(academic_stage BETWEEN 1 AND 5), -- 学业阶段（1-5）\n  total_uses INTEGER NOT NULL DEFAULT 0 CHECK(total_uses >= 0), -- 累计使用次数\n  orgasm_count INTEGER NOT NULL DEFAULT 0 CHECK(orgasm_count >= 0), -- 高潮次数\n  total_drain INTEGER NOT NULL DEFAULT 0 CHECK(total_drain >= 0), -- 累计损耗\n  last_use_day INTEGER NOT NULL DEFAULT 0 CHECK(last_use_day >= 0), -- 最后使用日\n  used_today INTEGER NOT NULL DEFAULT 0 CHECK(used_today >= 0), -- 今日已使用（0/1）\n  daily_growth_used INTEGER NOT NULL DEFAULT 0 CHECK(daily_growth_used >= 0), -- 今日成长已用\n  appearance TEXT NOT NULL DEFAULT '' CHECK(LENGTH(appearance) <= 60), -- 外貌（≤60字）\n  brief_intro TEXT NOT NULL DEFAULT '' CHECK(LENGTH(brief_intro) <= 30), -- 简介（≤30字）\n  identity_text TEXT NOT NULL DEFAULT '', -- 身份标签\n  location_name TEXT NOT NULL DEFAULT '', -- 当前位置\n  presence_status TEXT NOT NULL DEFAULT '离场' CHECK(presence_status IN ('在场','离场')), -- 在场状态（在场/离场）\n  past_experience TEXT NOT NULL DEFAULT '', -- 过往经历\n  last_updated TEXT NOT NULL DEFAULT '', -- 最后更新时间戳\n  heartbeat INTEGER NOT NULL DEFAULT 0 CHECK(heartbeat BETWEEN -100 AND 100), -- 心跳（-100~100）\n  jealousy INTEGER NOT NULL DEFAULT 0 CHECK(jealousy BETWEEN -100 AND 100), -- 嫉妒（-100~100）\n  trust INTEGER NOT NULL DEFAULT 50 CHECK(trust BETWEEN 0 AND 100), -- 信任度（0-100）\n  stage_locked INTEGER NOT NULL DEFAULT 0 CHECK(stage_locked IN (0,1)), -- 阶段锁定（0/1）\n  mutex_group TEXT NOT NULL DEFAULT '', -- 互斥组\n  mutex_partner_name TEXT NOT NULL DEFAULT '', -- 互斥伙伴名\n  cycle_day INTEGER NOT NULL DEFAULT 1 CHECK(cycle_day BETWEEN 1 AND 28), -- 生理周期日（1-28）\n  cycle_stage TEXT NOT NULL DEFAULT '行经期' CHECK(cycle_stage IN ('行经期','卵泡期','排卵期','黄体期')), -- 生理周期阶段\n  pregnancy_state INTEGER NOT NULL DEFAULT 0 CHECK(pregnancy_state >= 0), -- 怀孕日数（0=未孕）\n  pregnancy_stage TEXT NOT NULL DEFAULT '未孕' CHECK(pregnancy_stage IN ('未孕','无症状','孕吐期','行动受限','临产期','分娩触发')), -- 怀孕阶段\n  conception_seed TEXT NOT NULL DEFAULT '', -- 受孕判定种子\n  delivery_result TEXT NOT NULL DEFAULT '未分娩' CHECK(delivery_result IN ('未分娩','成功','风险')), -- 分娩结果\n  postpartum_days INTEGER NOT NULL DEFAULT 0 CHECK(postpartum_days >= 0), -- 产后恢复剩余天数\n  child_count INTEGER NOT NULL DEFAULT 0 CHECK(child_count >= 0) -- 已生育子女数\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "uid",
+        "name",
+        "role",
+        "grade_class",
+        "age",
+        "template_type",
+        "current_stage",
+        "sanity",
+        "rationality",
+        "obsession",
+        "academic_pressure",
+        "escape_awareness",
+        "skill_level",
+        "stealth",
+        "endurance",
+        "control",
+        "temptation",
+        "desire",
+        "skill_level_cap",
+        "stealth_cap",
+        "endurance_cap",
+        "control_cap",
+        "favorability",
+        "familiarity",
+        "interaction_count",
+        "known_truth",
+        "is_holder",
+        "acquire_method",
+        "acquire_day",
+        "package_status",
+        "has_used",
+        "use_count",
+        "preferred_time",
+        "preferred_location",
+        "usage_style",
+        "special_props",
+        "propagation_tendency",
+        "propagation_method",
+        "academic_score",
+        "academic_stage",
+        "total_uses",
+        "orgasm_count",
+        "total_drain",
+        "last_use_day",
+        "used_today",
+        "daily_growth_used",
+        "appearance",
+        "brief_intro",
+        "identity_text",
+        "location_name",
+        "presence_status",
+        "past_experience",
+        "last_updated",
+        "heartbeat",
+        "jealousy",
+        "trust",
+        "stage_locked",
+        "mutex_group",
+        "mutex_partner_name",
+        "cycle_day",
+        "cycle_stage",
+        "pregnancy_state",
+        "pregnancy_stage",
+        "conception_seed",
+        "delivery_result",
+        "postpartum_days",
+        "child_count"
+      ],
+      [26, "卓玛", "卓玛", "地理课代表", "高二2班", 17, "文静", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "仪式性", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "乌黑粗辫垂腰系红绳，小麦色肌肤，绛红氆氇边外套", "高原地理课代表·酥油茶信仰者", "高二地理课代表", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 26, "黄体期", 0, "未孕", "", "未分娩", 0, 0],
+      [27, "阿茹娜", "阿茹娜", "体育委员", "高三2班", 18, "运动", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "急切", "无", 0.4, "", 75, 3, 0, 0, 0, 0, 0, 0, "偏硬黑发高马尾如马鬃，蜜色肌肤，五官大气肩背挺拔", "草原体育委员·咸奶茶奔放者", "高三体育委员", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 27, "黄体期", 0, "未孕", "", "未分娩", 0, 0],
+      [28, "宋雅", "宋雅", "历史课代表", "高三2班", 18, "文静", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "温柔", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "偏硬直发低马尾，白里透红鹅蛋脸，校服扣到最上一颗", "燕赵历史课代表·端庄慢理者", "高三历史课代表", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 28, "黄体期", 0, "未孕", "", "未分娩", 0, 0],
+      [29, "马丽亚", "马丽亚", "生物课代表", "高三2班", 18, "文静", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "实验性", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "偏硬黑发低马尾，偏白干爽肤，五官立体西北硬朗", "青海生物课代表·熬茶理性者", "高三生物课代表", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 1, "行经期", 0, "未孕", "", "未分娩", 0, 0],
+      [30, "马晓月", "马晓月", "数学课代表", "高三2班", 18, "文静", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "温柔", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "偏硬黑发低马尾，偏白暖调肤，五官深邃，校服扣到最上一颗", "宁夏数学课代表·念珠庄重者", "高三数学课代表", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 2, "行经期", 0, "未孕", "", "未分娩", 0, 0],
+      [31, "白雪", "白雪", "化学课代表", "高三2班", 18, "文静", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "实验性", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "偏硬直发低马尾，冷白皮鹅蛋脸，五官大气眉眼有神", "东北化学课代表·理性干脆者", "高三化学课代表", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 3, "行经期", 0, "未孕", "", "未分娩", 0, 0],
+      [32, "林心怡", "林心怡", "交换生", "高三2班", 17, "纯真", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "温柔", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "奶茶色染发低马尾，苹果肌饱满精致韩系妆，白皙细腻", "台妹交换生·奶茶续命周杰伦粉", "高三交换生", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 4, "行经期", 0, "未孕", "", "未分娩", 0, 0],
+      [33, "陈雅思", "陈雅思", "交换生", "高三2班", 17, "御姐", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "温柔", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "中长自然直发，鹅蛋脸偏瘦削五官立体，港式简约妆", "港女交换生·茶餐厅续命维港爱好者", "高三交换生", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 5, "行经期", 0, "未孕", "", "未分娩", 0, 0],
+      [34, "何美琪", "何美琪", "交换生", "高三2班", 17, "纯真", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "温柔", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "中长自然微卷发，鹅蛋脸偏圆润五官立体柔和，素颜为主", "澳门混血交换生·葡式蛋挞大三巴守望者", "高三交换生", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 6, "卵泡期", 0, "未孕", "", "未分娩", 0, 0],
+      [35, "樱井美咲", "樱井美咲", "汉语课代表助理", "高三2班", 17, "文静", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "仪式性", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "齐刘海黑色长直发，鹅蛋脸五官精致柔和，皮肤白皙透亮", "东京交换生·茶道少女江户之子", "高三交换生·汉语课代表助理", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 7, "卵泡期", 0, "未孕", "", "未分娩", 0, 0],
+      [36, "艾米丽·沃克", "艾米丽·沃克", "体育课代表助理", "高三2班", 17, "运动", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "急切", "无", 0.4, "", 75, 3, 0, 0, 0, 0, 0, 0, "金色长卷发高马尾，鹅蛋脸偏长蓝眼睛，小麦色肌肤运动员", "加州交换生·排球运动员直球气质", "高三交换生·体育课代表助理", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 8, "卵泡期", 0, "未孕", "", "未分娩", 0, 0],
+      [37, "奥克萨娜·科瓦连科", "奥克萨娜·科瓦连科", "数学课代表助理", "高三2班", 18, "御姐", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "实验性", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "金色长发低马尾黑色发带，冷白皮蓝眼睛，高鼻梁薄唇", "乌克兰交换生·斯拉夫冷美人数学课代表助理", "高三交换生·数学课代表助理", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 9, "卵泡期", 0, "未孕", "", "未分娩", 0, 0],
+      [38, "阿莎·帕特尔", "阿莎·帕特尔", "英语课代表助理", "高三2班", 18, "纯真", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "温柔", "无", 0.3, "", 75, 3, 0, 0, 0, 0, 0, 0, "黑色卷发麻花辫，棕色暖肤鹅蛋脸偏圆，大眼睛浓睫毛丰唇", "孟买卖交换生·印度暖女英语课代表助理", "高三交换生·英语课代表助理", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 10, "卵泡期", 0, "未孕", "", "未分娩", 0, 0],
+      [39, "娜奥米·恩迪亚耶", "娜奥米·恩迪亚耶", "法语课代表助理", "高三2班", 18, "御姐", 1, 100, 80, 0, 50, 0, 1, 60, 40, 30, 40, 35, 40, 40, 40, 30, 0, 0, 0, 0, 0, "", 0, "未开箱", 0, 0, "深夜", "宿舍", "仪式性", "无", 0.1, "", 75, 3, 0, 0, 0, 0, 0, 0, "黑色卷发高丸子头象牙色发簪，深棕色肤高颧骨丰唇深眼窝", "塞内加尔裔法籍交换生·巴黎达喀尔之女法语课代表助理", "高三交换生·法语课代表助理", "高三2班教室", "在场", "", "", 0, 0, 50, 0, "", "", 11, "卵泡期", 0, "未孕", "", "未分娩", 0, 0]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "女性角色表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "女性角色表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 1
+  },
+  "sheet_i9j0k1l2": {
+    "uid": "sheet_i9j0k1l2",
+    "name": "传播链表",
+    "sourceData": {
+      "note": "传播链表，多行（初始空）。职责：记录假阴茎在女性间传播的每一条链路（from/to/方法/时间/原因）",
+      "initNode": "发生传播事件时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO propagation_chain (row_id,from_uid,from_name,to_uid,to_name,method,day,hour,reason) VALUES (1,'林婉清','林婉清','唐小糖','唐小糖','借出',3,15,'林婉清在音乐室借给唐小糖试用');",
+      "deleteNode": "禁止。",
+      "updateNode": "禁止UPDATE（传播链不可篡改）。",
+      "insertNode": "发生传播事件时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO propagation_chain (row_id,from_uid,from_name,to_uid,to_name,method,day,hour,reason) VALUES (1,'林婉清','林婉清','唐小糖','唐小糖','借出',3,15,'林婉清在音乐室借给唐小糖试用');",
+      "ddl": "CREATE TABLE IF NOT EXISTS propagation_chain ( -- 传播链表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  from_uid TEXT NOT NULL, -- 传播方uid\n  from_name TEXT NOT NULL, -- 传播方姓名\n  to_uid TEXT NOT NULL, -- 接收方uid\n  to_name TEXT NOT NULL, -- 接收方姓名\n  method TEXT NOT NULL CHECK(method IN ('借出','归还','分享','偷窃','买卖','捡到','强制')), -- 传播方式\n  day INTEGER NOT NULL CHECK(day >= 1), -- 发生日期\n  hour INTEGER NOT NULL CHECK(hour BETWEEN 0 AND 23), -- 发生小时（0-23）\n  reason TEXT NOT NULL DEFAULT '' -- 传播原因\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "from_uid",
+        "from_name",
+        "to_uid",
+        "to_name",
+        "method",
+        "day",
+        "hour",
+        "reason"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "传播链表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "传播链表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 2
+  },
+  "sheet_m3n4o5p6": {
+    "uid": "sheet_m3n4o5p6",
+    "name": "使用记录表",
+    "sourceData": {
+      "note": "使用记录表，多行（初始空）。职责：每次女性使用假阴茎的详细记录（时间/地点/时长/强度/损耗/技能增长/场景标签）",
+      "initNode": "每次使用发生时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO usage_log (row_id,day,hour,user_uid,user_alias,location,duration,intensity,drain_amount,skill_gain,scene_tag) VALUES (1,1,22,'林婉清','林婉清','宿舍',30,5,5,1,'dorm_night_solo');",
+      "deleteNode": "禁止。",
+      "updateNode": "禁止UPDATE（记录不可篡改）。",
+      "insertNode": "每次使用发生时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO usage_log (row_id,day,hour,user_uid,user_alias,location,duration,intensity,drain_amount,skill_gain,scene_tag) VALUES (1,1,22,'林婉清','林婉清','宿舍',30,5,5,1,'dorm_night_solo');",
+      "ddl": "CREATE TABLE IF NOT EXISTS usage_log ( -- 使用记录表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  day INTEGER NOT NULL CHECK(day >= 1), -- 日期\n  hour INTEGER NOT NULL CHECK(hour BETWEEN 0 AND 23), -- 小时（0-23）\n  user_uid TEXT NOT NULL, -- 使用者uid\n  user_alias TEXT NOT NULL, -- 使用者别名（与user_uid一致的真实姓名）\n  location TEXT NOT NULL CHECK(location IN ('空教室','音乐室','保健室','天台','图书馆','体育仓库','宿舍','实验室','美术室','办公室')), -- 地点\n  duration INTEGER NOT NULL DEFAULT 0 CHECK(duration >= 0), -- 时长（分钟）\n  intensity INTEGER NOT NULL DEFAULT 5 CHECK(intensity BETWEEN 1 AND 10), -- 强度（1-10）\n  drain_amount INTEGER NOT NULL DEFAULT 0 CHECK(drain_amount >= 0), -- 精液损耗量（ml）\n  skill_gain INTEGER NOT NULL DEFAULT 0 CHECK(skill_gain >= 0), -- 技能增长值\n  scene_tag TEXT NOT NULL DEFAULT '' -- 场景标签\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "day",
+        "hour",
+        "user_uid",
+        "user_alias",
+        "location",
+        "duration",
+        "intensity",
+        "drain_amount",
+        "skill_gain",
+        "scene_tag"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "使用记录表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "使用记录表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 3
+  },
+  "sheet_q7r8s9t0": {
+    "uid": "sheet_q7r8s9t0",
+    "name": "事件日志表",
+    "sourceData": {
+      "note": "事件日志表，多行（初始空）。职责：所有重要事件（使用/症状/调查/社交/考试/结局/系统）的时序记录",
+      "initNode": "重要事件发生时INSERT新行（row_id自增，event_id格式 EVT0001起）。\nSQL示例: INSERT INTO events (row_id,event_id,day,hour,type,event_desc,related_uids,drain,stage,users_count,mode,rhythm,scene,blocked) VALUES (1,'EVT0001',1,22,'使用','林婉清深夜在宿舍首次使用假阴茎，伴随强烈心理冲击','[\"林婉清\"]',5,1,1,'internal','normal','dorm_night',0);",
+      "deleteNode": "禁止。",
+      "updateNode": "禁止UPDATE（事件日志不可篡改）。",
+      "insertNode": "重要事件发生时INSERT新行（row_id自增，event_id格式 EVT0001起）。\nSQL示例: INSERT INTO events (row_id,event_id,day,hour,type,event_desc,related_uids,drain,stage,users_count,mode,rhythm,scene,blocked) VALUES (1,'EVT0001',1,22,'使用','林婉清深夜在宿舍首次使用假阴茎，伴随强烈心理冲击','[\"林婉清\"]',5,1,1,'internal','normal','dorm_night',0);",
+      "ddl": "CREATE TABLE IF NOT EXISTS events ( -- 事件日志表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  event_id TEXT NOT NULL, -- 事件编码（EVT0001起）\n  day INTEGER NOT NULL CHECK(day >= 1), -- 日期\n  hour INTEGER NOT NULL CHECK(hour BETWEEN 6 AND 22), -- 小时（6-22）\n  type TEXT NOT NULL CHECK(type IN ('使用','症状','调查','社交','考试','结局','系统','usage')), -- 事件类型\n  event_desc TEXT NOT NULL, -- 事件描述\n  related_uids TEXT NOT NULL DEFAULT '[]', -- 关联uid（JSON数组）\n  drain INTEGER NOT NULL DEFAULT 0, -- 损耗量\n  stage INTEGER NOT NULL DEFAULT 1, -- 阶段\n  users_count INTEGER NOT NULL DEFAULT 1, -- 涉及人数\n  mode TEXT NOT NULL DEFAULT '', -- 使用模式快照\n  rhythm TEXT NOT NULL DEFAULT '', -- 节奏快照\n  scene TEXT NOT NULL DEFAULT '', -- 场景快照\n  blocked INTEGER NOT NULL DEFAULT 0 CHECK(blocked IN (0,1)) -- 是否被打断（0/1）\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "event_id",
+        "day",
+        "hour",
+        "type",
+        "event_desc",
+        "related_uids",
+        "drain",
+        "stage",
+        "users_count",
+        "mode",
+        "rhythm",
+        "scene",
+        "blocked"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "事件日志表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "事件日志表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 4
+  },
+  "sheet_u1v2w3x4": {
+    "uid": "sheet_u1v2w3x4",
+    "name": "关系图谱表",
+    "sourceData": {
+      "note": "关系图谱表，多行（初始空）。职责：女性间全局关系（from/to/类型/信任度/亲密度）",
+      "initNode": "关系确立或变化时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO relationship_graph (row_id,from_uid,to_uid,type,trust,closeness) VALUES (1,'唐小糖','林婉清','闺蜜',0.7,'亲密');",
+      "deleteNode": "关系断裂时DELETE对应行。",
+      "updateNode": "关系值变化时UPDATE对应行。\nSQL示例: UPDATE relationship_graph SET trust=0.8,closeness='亲密' WHERE from_uid='唐小糖' AND to_uid='林婉清';",
+      "insertNode": "关系确立时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO relationship_graph (row_id,from_uid,to_uid,type,trust,closeness) VALUES (1,'唐小糖','林婉清','闺蜜',0.7,'亲密');",
+      "ddl": "CREATE TABLE IF NOT EXISTS relationship_graph ( -- 关系图谱表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  from_uid TEXT NOT NULL, -- 关系方uid\n  to_uid TEXT NOT NULL, -- 对方uid\n  type TEXT NOT NULL CHECK(type IN ('闺蜜','好友','对手','暗恋','师生','母女','买卖','同事','上下级','陌生人')), -- 关系类型\n  trust REAL NOT NULL DEFAULT 0.5 CHECK(trust BETWEEN 0 AND 1), -- 信任度（0-1）\n  closeness TEXT NOT NULL DEFAULT '普通' CHECK(closeness IN ('亲密','普通','疏远','敌对')) -- 亲密度\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "from_uid",
+        "to_uid",
+        "type",
+        "trust",
+        "closeness"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "关系图谱表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "关系图谱表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 5
+  },
+  "sheet_y5z6a7b8": {
+    "uid": "sheet_y5z6a7b8",
+    "name": "结局追踪表",
+    "sourceData": {
+      "note": "结局追踪表，仅 1 行。职责：8种布尔结局 + 某人清醒/某人崩坏的JSON数组（统一英文列名·对齐其他表 hydrate 机制）",
+      "initNode": "开场白首轮INSERT一行（row_id=1），后续禁止INSERT第二行。\nSQL示例: INSERT INTO endings (row_id,healthy,mediocre,truth_revealed,fallen,broken,blackmarket_control,mutual_destruction,unsolved_mystery,someone_sober,someone_broken) VALUES (1,0,0,0,0,0,0,0,0,'[]','[]');",
+      "deleteNode": "禁止。",
+      "updateNode": "结局触发时UPDATE唯一行（对应结局字段置1，someone_sober/someone_broken追加姓名到JSON数组）。\nSQL示例: UPDATE endings SET broken=1,someone_sober='[\"林婉清\"]',someone_broken='[\"唐小糖\"]' WHERE row_id=1;",
+      "insertNode": "禁止。此表有且仅有一行，不允许INSERT第二行。",
+      "ddl": "CREATE TABLE IF NOT EXISTS endings ( -- 结局追踪表（统一英文列名，对齐其他表 hydrate 机制）\n  row_id INTEGER PRIMARY KEY CHECK(row_id = 1), -- 行号，仅允许为 1\n  healthy INTEGER NOT NULL DEFAULT 0 CHECK(healthy IN (0,1)), -- 健康结局（0/1）\n  mediocre INTEGER NOT NULL DEFAULT 0 CHECK(mediocre IN (0,1)), -- 平庸结局（0/1）\n  truth_revealed INTEGER NOT NULL DEFAULT 0 CHECK(truth_revealed IN (0,1)), -- 真相揭示结局（0/1）\n  fallen INTEGER NOT NULL DEFAULT 0 CHECK(fallen IN (0,1)), -- 坠落结局（0/1）\n  broken INTEGER NOT NULL DEFAULT 0 CHECK(broken IN (0,1)), -- 崩坏结局（0/1）\n  blackmarket_control INTEGER NOT NULL DEFAULT 0 CHECK(blackmarket_control IN (0,1)), -- 黑市掌控结局（0/1）\n  mutual_destruction INTEGER NOT NULL DEFAULT 0 CHECK(mutual_destruction IN (0,1)), -- 同归于尽结局（0/1）\n  unsolved_mystery INTEGER NOT NULL DEFAULT 0 CHECK(unsolved_mystery IN (0,1)), -- 未解之谜结局（0/1）\n  someone_sober TEXT NOT NULL DEFAULT '[]', -- 某人清醒（JSON数组）\n  someone_broken TEXT NOT NULL DEFAULT '[]' -- 某人崩坏（JSON数组）\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "healthy",
+        "mediocre",
+        "truth_revealed",
+        "fallen",
+        "broken",
+        "blackmarket_control",
+        "mutual_destruction",
+        "unsolved_mystery",
+        "someone_sober",
+        "someone_broken"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "结局追踪表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "结局追踪表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 6
+  },
+  "sheet_b2c3d4e5": {
+    "uid": "sheet_b2c3d4e5",
+    "name": "物品表",
+    "sourceData": {
+      "note": "物品表，多行（初始空）。职责：物品名/类别/数量/品质/描述/来源/使用次数",
+      "initNode": "物品获得时INSERT新行（row_id自增），丢弃/消耗完时DELETE。\nSQL示例: INSERT INTO inventory (row_id,item_name,item_type,quantity,quality,description,source_text,used_count) VALUES (1,'润滑液','耗材',1,'普通','降低摩擦不适，提升体验','保健室获取',0);",
+      "deleteNode": "物品数量为0时DELETE该行。",
+      "updateNode": "物品数量/使用次数变化时UPDATE该行。\nSQL示例: UPDATE inventory SET used_count=used_count+1 WHERE item_name='润滑液';",
+      "insertNode": "物品获得时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO inventory (row_id,item_name,item_type,quantity,quality,description,source_text,used_count) VALUES (1,'润滑液','耗材',1,'普通','降低摩擦不适，提升体验','保健室获取',0);",
+      "ddl": "CREATE TABLE IF NOT EXISTS inventory ( -- 物品表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  item_name TEXT NOT NULL UNIQUE CHECK(LENGTH(item_name) <= 10), -- 物品名称（≤10字，唯一）\n  item_type TEXT NOT NULL CHECK(item_type IN ('道具','耗材','线索','药品','其他')), -- 物品类别\n  quantity INTEGER NOT NULL DEFAULT 1 CHECK(quantity >= 0), -- 数量\n  quality TEXT NOT NULL DEFAULT '普通' CHECK(quality IN ('普通','精良','稀有','史诗','传说','神话')), -- 品质\n  description TEXT NOT NULL DEFAULT '' CHECK(LENGTH(description) <= 60), -- 描述（≤60字）\n  source_text TEXT NOT NULL DEFAULT '', -- 来源描述\n  used_count INTEGER NOT NULL DEFAULT 0 CHECK(used_count >= 0) -- 累计使用次数\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "item_name",
+        "item_type",
+        "quantity",
+        "quality",
+        "description",
+        "source_text",
+        "used_count"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "物品表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "物品表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 7
+  },
+  "sheet_c3d4e5f6": {
+    "uid": "sheet_c3d4e5f6",
+    "name": "检定建议表",
+    "sourceData": {
+      "note": "检定建议表，最多5行（row_id 1-5）。职责：每轮AI动态生成最多5条检定建议供玩家点击",
+      "initNode": "每轮回复时按需INSERT/UPDATE（row_id固定1-5），禁止INSERT第6行。\nSQL示例: INSERT INTO check_suggestions (row_id,display_text,dice_command) VALUES (1,'潜行检定(难度60)','1d100') ON CONFLICT(row_id) DO UPDATE SET display_text=excluded.display_text,dice_command=excluded.dice_command;",
+      "deleteNode": "禁止DELETE（用UPDATE覆盖旧建议，或留空）。",
+      "updateNode": "每轮回复时UPDATE现有行（覆盖旧建议）。\nSQL示例: INSERT INTO check_suggestions (row_id,display_text,dice_command) VALUES (1,'潜行检定(难度60)','1d100') ON CONFLICT(row_id) DO UPDATE SET display_text=excluded.display_text,dice_command=excluded.dice_command;",
+      "insertNode": "每轮回复时按需INSERT（row_id固定1-5，最多5行）。\nSQL示例: INSERT INTO check_suggestions (row_id,display_text,dice_command) VALUES (1,'潜行检定(难度60)','1d100') ON CONFLICT(row_id) DO UPDATE SET display_text=excluded.display_text,dice_command=excluded.dice_command;",
+      "ddl": "CREATE TABLE IF NOT EXISTS check_suggestions ( -- 检定建议表\n  row_id INTEGER PRIMARY KEY CHECK(row_id BETWEEN 1 AND 5), -- 行号（1-5）\n  display_text TEXT NOT NULL CHECK(TRIM(display_text) <> ''), -- 按钮显示文本\n  dice_command TEXT NOT NULL CHECK(TRIM(dice_command) <> '') -- 骰子指令\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "display_text",
+        "dice_command"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "检定建议表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "检定建议表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 8
+  },
+  "sheet_d4e5f6g7": {
+    "uid": "sheet_d4e5f6g7",
+    "name": "纪要表",
+    "sourceData": {
+      "note": "纪要表，多行（初始空）。职责：长期记忆纪要（时间段总结），与 events 实时日志区分",
+      "initNode": "重要阶段节点发生时INSERT新行（row_id自增，code_index格式 TL0001起）。\nSQL示例: INSERT INTO chronicle (row_id,code_index,time_span,summary,chronicle_text,related_uids) VALUES (1,'TL0001','02-24 08:00 ~ 02-26 22:00','林婉清开箱首次使用并借出唐小糖','第1-3天纪要：林婉清收到淘宝包裹并于深夜首次使用假阴茎，第3天在音乐室借给唐小糖试用，传播链启动。','[\"林婉清\",\"唐小糖\"]');",
+      "deleteNode": "禁止。",
+      "updateNode": "禁止UPDATE（纪要不可篡改，历史事实）。",
+      "insertNode": "重要阶段节点发生时INSERT新行（row_id自增）。\nSQL示例: INSERT INTO chronicle (row_id,code_index,time_span,summary,chronicle_text,related_uids) VALUES (1,'TL0001','02-24 08:00 ~ 02-26 22:00','林婉清开箱首次使用并借出唐小糖','第1-3天纪要：林婉清收到淘宝包裹并于深夜首次使用假阴茎，第3天在音乐室借给唐小糖试用，传播链启动。','[\"林婉清\",\"唐小糖\"]');",
+      "ddl": "CREATE TABLE IF NOT EXISTS chronicle ( -- 纪要表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  code_index TEXT NOT NULL UNIQUE CHECK(code_index GLOB 'TL[0-9][0-9][0-9][0-9]'), -- 纪要编码（TL0001起）\n  time_span TEXT NOT NULL CHECK(time_span GLOB '??-?? ??:?? ~ ??-?? ??:??'), -- 时间跨度\n  summary TEXT NOT NULL CHECK(LENGTH(summary) <= 60), -- 概览（≤60字）\n  chronicle_text TEXT NOT NULL, -- 纪要正文\n  related_uids TEXT NOT NULL DEFAULT '[]' -- 关联uid（JSON数组）\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "code_index",
+        "time_span",
+        "summary",
+        "chronicle_text",
+        "related_uids"
+      ]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "纪要表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "纪要表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 9
+  },
+  "sheet_e1f2g3h5": {
+    "uid": "sheet_e1f2g3h5",
+    "name": "女性身体档案表",
+    "sourceData": {
+      "note": "女性身体档案表，多行（39条初始记录）。职责：女性身体数据（三围/罩杯/敏感度等），uid 外键关联 female_users.uid",
+      "initNode": "开场白首轮INSERT 25行初始身体档案（uid 对应 female_users.uid），新增陌生女性时同步INSERT新行。\nSQL示例: INSERT INTO female_body (row_id,uid,cup_size,bust_size,waist_size,hip_size,height,weight,nipple_size,nipple_color,areola_size,breast_shape,breast_sensitivity,lactation,waist_shape,waist_sensitivity,hand_desc,nail_style,hip_shape,hip_sensitivity,anal_desc,pubic_hair) VALUES (26,'新角色姓名','A',76,54,80,156,43,'小巧','粉嫩','小','碗形',95,'无','纤细',90,'娇小','素甲','小巧',90,'紧致','稀疏');",
+      "deleteNode": "禁止。",
+      "updateNode": "身体数据变化时UPDATE对应行（如敏感度提升/发育变化）。\nSQL示例: UPDATE female_body SET breast_sensitivity=85,waist_sensitivity=65 WHERE uid='林婉清';",
+      "insertNode": "新增陌生女性时同步INSERT新行（row_id自增，uid 关联 female_users.uid）。\nSQL示例: INSERT INTO female_body (row_id,uid,cup_size,bust_size,waist_size,hip_size,height,weight,nipple_size,nipple_color,areola_size,breast_shape,breast_sensitivity,lactation,waist_shape,waist_sensitivity,hand_desc,nail_style,hip_shape,hip_sensitivity,anal_desc,pubic_hair) VALUES (26,'新角色姓名','A',76,54,80,156,43,'小巧','粉嫩','小','碗形',95,'无','纤细',90,'娇小','素甲','小巧',90,'紧致','稀疏');",
+      "ddl": "CREATE TABLE IF NOT EXISTS female_body ( -- 女性身体档案表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  uid TEXT NOT NULL UNIQUE, -- 唯一标识（关联 female_users.uid）\n  cup_size TEXT CHECK(cup_size IN ('无','A','B','C','D','E','F','G','H')), -- 罩杯（无/A-H）\n  bust_size INTEGER, -- 胸围（cm）\n  waist_size INTEGER, -- 腰围（cm）\n  hip_size INTEGER, -- 臀围（cm）\n  height INTEGER NOT NULL CHECK(height BETWEEN 140 AND 190), -- 身高（140-190）\n  weight INTEGER CHECK(weight BETWEEN 35 AND 80), -- 体重（35-80）\n  nipple_size TEXT, -- 乳头大小\n  nipple_color TEXT, -- 乳头颜色\n  areola_size TEXT, -- 乳晕大小\n  breast_shape TEXT, -- 胸型\n  breast_sensitivity INTEGER CHECK(breast_sensitivity BETWEEN 0 AND 300), -- 胸部敏感度（0-300）\n  lactation TEXT, -- 泌乳状态\n  waist_shape TEXT, -- 腰型\n  waist_sensitivity INTEGER CHECK(waist_sensitivity BETWEEN 0 AND 300), -- 腰部敏感度（0-300）\n  hand_desc TEXT, -- 手部描述\n  nail_style TEXT, -- 美甲风格\n  hip_shape TEXT, -- 臀型\n  hip_sensitivity INTEGER CHECK(hip_sensitivity BETWEEN 0 AND 300), -- 臀部敏感度（0-300）\n  anal_desc TEXT, -- 后庭描述\n  pubic_hair TEXT -- 阴毛\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "uid",
+        "cup_size",
+        "bust_size",
+        "waist_size",
+        "hip_size",
+        "height",
+        "weight",
+        "nipple_size",
+        "nipple_color",
+        "areola_size",
+        "breast_shape",
+        "breast_sensitivity",
+        "lactation",
+        "waist_shape",
+        "waist_sensitivity",
+        "hand_desc",
+        "nail_style",
+        "hip_shape",
+        "hip_sensitivity",
+        "anal_desc",
+        "pubic_hair"
+      ],
+      [1, "叶知秋", "B", 80, 56, 84, 160, 45, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 150, "无", "纤细", 120, "白嫩纤细", "素甲", "小巧紧致", 100, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [2, "周思琪", "A", 81, 57, 83, 159, 42, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 80, "娇小干燥", "素甲短指甲", "小巧紧致", 80, "浅粉色菊花状褶皱细密紧致", "少量"],
+      [3, "唐小糖", "C", 90, 61, 89, 163, 50, "长约6mm较粗", "浅褐色", "中等直径约3cm", "半球形", 180, "无", "纤细", 150, "纤细戴手链", "酒红美甲", "圆润翘挺", 150, "褐色褶皱均匀细致", "修剪"],
+      [4, "小夜", "A", 72, 54, 75, 148, 38, "米粒大小约3mm", "淡粉色近白色", "极小直径不到1cm", "未发育丘形", 80, "无", "纤细", 70, "娇小苍白", "素甲短指甲", "平坦紧致", 70, "极浅粉色近乎白色褶皱几乎不可见极度紧致光滑", "无"],
+      [5, "张雨萱", "C", 86, 59, 87, 160, 46, "小颗如红豆直径约5mm", "淡粉色", "小而浅直径约2cm", "圆锥形", 150, "无", "纤细", 120, "修长柔软有薄茧", "素甲短指甲", "饱满紧闭", 100, "浅粉色菊花状褶皱细密紧致", "少量"],
+      [6, "怜奈", "A", 70, 53, 73, 146, 36, "米粒大小约3mm", "淡粉色近白色", "极小直径不到1cm", "未发育丘形", 80, "无", "纤细", 70, "细瘦苍白沾颜料", "素甲短指甲", "平坦紧致", 70, "极浅粉色近乎白色褶皱几乎不可见", "无"],
+      [7, "林婉清", "D", 83, 58, 86, 165, 50, "中等偏大约长8mm", "粉褐色", "大直径约4-5cm", "水滴形", 180, "无", "纤细", 150, "纤细修长", "素甲修剪整齐", "圆润饱满", 120, "浅褐色褶皱均匀深刻周围有极淡色素沉着", "浓密"],
+      [8, "林小艾", "A", 79, 56, 82, 158, 43, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 80, "纤细白净", "素甲短指甲", "小巧紧致", 80, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [9, "柚子", "A", 73, 55, 76, 149, 39, "米粒大小约3mm", "淡粉色近白色", "极小直径不到1cm", "未发育丘形", 80, "无", "纤细", 70, "纤细指尖粗糙", "素甲短指甲", "平坦紧致", 70, "极浅粉色近乎白色褶皱几乎不可见", "无"],
+      [10, "柳思雨", "B", 88, 60, 90, 165, 50, "较小约5mm", "浅粉褐色", "小而紧凑直径约2cm", "半球形", 180, "无", "柔韧水蛇腰", 150, "修长有力", "酒红美甲", "翘挺上翘", 180, "浅褐色括约肌紧致有力褶皱均匀", "修剪"],
+      [11, "桃桃", "A", 76, 56, 78, 150, 42, "米粒大小约3mm", "淡粉色近白色", "极小直径不到1cm", "未发育丘形", 60, "无", "圆润", 50, "肉肉小手", "素甲短指甲", "平坦微微隆起", 50, "极浅粉色近乎白色褶皱几乎不可见极度紧致光滑", "无"],
+      [12, "欧阳雪", "C", 88, 62, 90, 170, 55, "较大长约1cm", "深褐色", "大直径约5-6cm", "纺锤形", 120, "无", "纤瘦", 100, "纤长白皙", "豆沙色美甲", "匀称", 100, "深褐色褶皱大而深周围有明显色素沉着环", "浓密"],
+      [13, "江月白", "B", 84, 59, 87, 172, 55, "较小约5mm", "浅粉褐色", "小而紧凑直径约2cm", "圆锥半球形", 100, "无", "纤瘦", 80, "纤长冷白", "素甲修剪整齐", "紧实", 80, "浅褐色括约肌紧致有力褶皱均匀", "修剪"],
+      [14, "沈雨桐", "D", 93, 61, 91, 167, 55, "长约8mm", "粉褐色", "大直径约4-5cm", "水滴形", 200, "无", "纤细", 150, "修长纤细圆润", "素甲修剪圆润", "圆润饱满", 150, "浅褐色褶皱均匀深刻周围有极淡色素沉着", "浓密"],
+      [15, "白露", "C", 90, 64, 92, 172, 58, "较小约5mm", "浅粉褐色", "小而紧凑直径约2cm", "圆锥半球形", 120, "无", "匀称", 100, "修长有力", "素甲短指甲", "紧实上翘", 120, "浅褐色括约肌紧致有力褶皱均匀", "修剪"],
+      [16, "秦雨", "B", 84, 60, 85, 162, 48, "小颗约5mm", "浅粉色", "小而浅直径约2cm", "半球形", 150, "无", "纤细", 120, "纤细白嫩", "素甲修剪整齐", "饱满紧闭", 120, "浅粉色菊花状褶皱细密紧致", "少量"],
+      [17, "苏婉清", "D", 91, 68, 93, 160, 60, "较大长约1cm", "深褐色", "大直径约5-6cm", "纺锤形", 150, "无", "丰腴", 120, "粗糙有薄茧", "素甲短指甲", "丰满", 120, "深褐色褶皱大而深周围有明显色素沉着环", "浓密"],
+      [18, "苏晴", "C", 88, 60, 89, 168, 54, "较小约5mm", "浅粉褐色", "小而紧凑直径约2cm", "圆锥半球形", 120, "无", "匀称", 100, "修长有力", "素甲短指甲", "紧实", 120, "浅褐色括约肌紧致有力褶皱均匀", "修剪"],
+      [19, "赵灵儿", "A", 79, 57, 81, 156, 46, "小颗如红豆直径约5mm", "淡粉色", "小而浅直径约2cm", "圆锥形", 150, "无", "纤细", 120, "娇小有力", "素甲短指甲", "饱满紧闭", 120, "浅粉色菊花状褶皱细密紧致周围光滑无毛", "少量"],
+      [20, "铃", "A", 71, 54, 74, 147, 38, "米粒大小约3mm", "淡粉色近白色", "极小直径不到1cm", "未发育丘形", 80, "无", "纤细", 70, "细小苍白", "素甲短指甲", "平坦紧致", 70, "极浅粉色近乎白色褶皱几乎不可见极度紧致光滑", "无"],
+      [21, "陆诗涵", "C", 86, 60, 88, 163, 50, "小颗约5mm", "淡粉色", "小而浅直径约2cm", "圆锥形", 120, "无", "匀称", 100, "纤细白嫩", "素甲修剪整齐", "饱满", 100, "浅粉色菊花状褶皱细密紧致", "自然"],
+      [22, "韩雪", "C", 88, 63, 91, 165, 53, "中等", "深褐色", "中等直径约3cm", "纺锤形", 150, "无", "匀称", 120, "纤长白皙", "素甲短指甲", "丰满", 120, "褐色褶皱均匀", "浓密"],
+      [23, "顾小曼", "D", 92, 65, 95, 168, 56, "较大长约1cm", "深褐色", "大直径约5-6cm", "纺锤形", 150, "无", "匀称", 120, "修长精致", "正红色美甲", "丰满圆润", 150, "深褐色褶皱大而深周围有明显色素沉着环", "修剪"],
+      [24, "陈老师", "A", 78, 56, 80, 158, 44, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 80, "纤细灵巧", "淡粉美甲", "小巧紧致", 80, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [25, "慕容晴", "B", 82, 58, 85, 162, 48, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 120, "无", "匀称", 100, "圆润小巧", "透明护甲油", "小巧紧致", 100, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [26, "卓玛", "B", 82, 58, 84, 158, 47, "极小约4mm", "浅褐色", "小而浅直径约2cm", "圆锥形", 100, "无", "纤细", 90, "粗糙有高原红", "素甲短指甲", "小巧紧致", 90, "浅褐色菊花状褶皱细密紧致", "少量"],
+      [27, "阿茹娜", "C", 88, 60, 90, 168, 56, "较小约5mm", "浅褐色", "小而紧凑直径约2cm", "半球形", 120, "无", "匀称", 110, "修长有力有薄茧", "素甲短指甲", "紧实上翘", 110, "浅褐色褶皱均匀括约肌有力", "自然"],
+      [28, "宋雅", "B", 82, 58, 85, 162, 48, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 90, "白皙纤细", "素甲短指甲", "小巧紧致", 90, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [29, "马丽亚", "B", 83, 59, 86, 163, 50, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 90, "白皙干燥", "素甲短指甲", "小巧紧致", 90, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [30, "马晓月", "B", 82, 58, 84, 160, 47, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 90, "白皙柔软", "素甲短指甲", "小巧紧致", 90, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [31, "白雪", "B", 84, 60, 87, 168, 53, "极小约4mm", "淡粉色近白色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤瘦", 90, "冷白纤长", "素甲修剪整齐", "紧实", 90, "极浅粉色近乎白色褶皱几乎不可见极度紧致光滑", "少量"],
+      [32, "林心怡", "B", 80, 56, 83, 158, 46, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 90, "无", "纤细", 80, "白嫩纤细", "素甲短指甲", "小巧紧致", 80, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [33, "陈雅思", "C", 86, 59, 88, 163, 50, "较小约5mm", "粉褐色", "小而浅直径约2cm", "半球形", 130, "无", "匀称", 120, "修长白皙", "豆沙色美甲", "饱满紧闭", 120, "浅褐色褶皱均匀细致", "少量"],
+      [34, "何美琪", "B", 82, 58, 85, 160, 47, "极小约4mm", "淡粉色", "极小直径约1.5cm", "圆锥形", 90, "无", "纤细", 80, "白皙圆润", "素甲短指甲", "小巧紧致", 80, "浅粉色近白菊花状褶皱极细密紧致", "少量"],
+      [35, "樱井美咲", "B", 80, 56, 82, 158, 45, "极小约4mm", "淡粉色近白色", "极小直径约1.5cm", "圆锥形", 100, "无", "纤细", 90, "白嫩纤细", "素甲短指甲", "小巧紧致", 90, "极浅粉色近乎白色褶皱几乎不可见极度紧致光滑", "少量"],
+      [36, "艾米丽·沃克", "C", 88, 62, 92, 170, 58, "较小约5mm", "浅褐色", "小而紧凑直径约2cm", "半球形", 120, "无", "匀称", 110, "修长有力有薄茧", "素甲短指甲", "紧实上翘", 110, "浅褐色褶皱均匀括约肌有力", "自然"],
+      [37, "奥克萨娜·科瓦连科", "D", 90, 60, 90, 172, 55, "中等偏大约长8mm", "粉褐色", "大直径约4-5cm", "水滴形", 130, "无", "纤瘦", 120, "纤长白皙", "素甲修剪整齐", "紧实", 120, "浅褐色褶皱均匀深刻", "自然"],
+      [38, "阿莎·帕特尔", "C", 88, 62, 92, 160, 50, "较小约5mm", "深褐色", "中等直径约3cm", "半球形", 90, "无", "匀称", 80, "棕色柔软", "素甲短指甲", "丰满圆润", 80, "深褐色褶皱均匀周围有色素沉着", "浓密"],
+      [39, "娜奥米·恩迪亚耶", "D", 92, 63, 94, 170, 56, "较大长约1cm", "深褐色", "大直径约5-6cm", "纺锤形", 130, "无", "匀称", 120, "修长深棕", "正红色美甲", "丰满圆润", 120, "深褐色褶皱大而深周围有明显色素沉着环", "自然"]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "女性身体档案表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "女性身体档案表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 10
+  },
+  "sheet_c1d2e3f5": {
+    "uid": "sheet_c1d2e3f5",
+    "name": "女性当前状态表",
+    "sourceData": {
+      "note": "女性当前状态表，多行（39条初始记录）。职责：女性动态当前状态（外衣/内衣/月经/卫生用品/身体反应等），uid 外键关联 female_users.uid。与 female_body（静态身体档案）分离",
+      "initNode": "开场白首轮INSERT 25行初始当前状态（uid 对应 female_users.uid），新增陌生女性时同步INSERT新行。\nSQL示例: INSERT INTO female_current_state (row_id,uid,outerwear_top,outerwear_bottom,outerwear_detail,bra,bra_color,panties,panties_color,menstrual_phase,menstrual_day,menstrual_flow,is_menstruating,sanitary_product,sanitary_change_time,arousal_level,lubrication_level,nipple_state,clitoris_state,body_temperature,last_bath_time,is_virgin,hymen_state,last_update_hour) VALUES (26,'新角色姓名','校服外套','校服长裤','','运动内衣','白色','棉质三角裤','白色','月经期',1,'无',0,'无','',0,0,'柔软','休眠',36.5,'',1,'完整',0);",
+      "deleteNode": "禁止。",
+      "updateNode": "每轮回复结束时UPDATE当前互动女性行（衣着/月经/兴奋度等动态变化）。\nSQL示例: UPDATE female_current_state SET outerwear_top='校服外套（敞开）',bra='蕾丝内衣',bra_color='黑色',arousal_level=20,lubrication_level=15,nipple_state='微挺',last_update_hour=22 WHERE uid='林婉清';",
+      "insertNode": "新增陌生女性时同步INSERT新行（row_id自增，uid 关联 female_users.uid）。\nSQL示例: INSERT INTO female_current_state (row_id,uid,outerwear_top,outerwear_bottom,outerwear_detail,bra,bra_color,panties,panties_color,menstrual_phase,menstrual_day,menstrual_flow,is_menstruating,sanitary_product,sanitary_change_time,arousal_level,lubrication_level,nipple_state,clitoris_state,body_temperature,last_bath_time,is_virgin,hymen_state,last_update_hour) VALUES (26,'新角色姓名','校服外套','校服长裤','','运动内衣','白色','棉质三角裤','白色','月经期',1,'无',0,'无','',0,0,'柔软','休眠',36.5,'',1,'完整',0);",
+      "ddl": "CREATE TABLE IF NOT EXISTS female_current_state ( -- 女性当前状态表\n  row_id INTEGER PRIMARY KEY, -- 行号\n  uid TEXT NOT NULL UNIQUE, -- 唯一标识（关联 female_users.uid）\n  outerwear_top TEXT NOT NULL DEFAULT '校服外套', -- 外套（校服外套/卫衣/毛衣/风衣/无等）\n  outerwear_bottom TEXT NOT NULL DEFAULT '校服长裤', -- 外裤/裙（校服长裤/校服短裙/百褶裙/牛仔裤/运动短裤等）\n  outerwear_detail TEXT NOT NULL DEFAULT '', -- 外衣细节（扣到第几颗/拉链状态/袖口卷起等）\n  bra TEXT NOT NULL DEFAULT '运动内衣', -- 文胸类型（运动内衣/蕾丝内衣/无钢圈/钢圈内衣/无等）\n  bra_color TEXT NOT NULL DEFAULT '白色', -- 文胸颜色\n  panties TEXT NOT NULL DEFAULT '棉质三角裤', -- 内裤类型（棉质三角裤/蕾丝内裤/丁字裤/平角裤/无等）\n  panties_color TEXT NOT NULL DEFAULT '白色', -- 内裤颜色\n  menstrual_phase TEXT NOT NULL DEFAULT '月经期' CHECK(menstrual_phase IN ('月经期','行经期','卵泡期','排卵期','黄体期','经期前')), -- 月经周期阶段（行经期=月经期的别名兼容）\n  menstrual_day INTEGER NOT NULL DEFAULT 1 CHECK(menstrual_day BETWEEN 0 AND 35), -- 当前周期天数（0-35）\n  menstrual_flow TEXT NOT NULL DEFAULT '无' CHECK(menstrual_flow IN ('无','微量','少量','中等','量大')), -- 当前经血量\n  is_menstruating INTEGER NOT NULL DEFAULT 0 CHECK(is_menstruating IN (0,1)), -- 是否正在月经（0/1）\n  sanitary_product TEXT NOT NULL DEFAULT '无' CHECK(sanitary_product IN ('无','日用卫生巾','夜用卫生巾','卫生棉条','月经杯','护垫','卫生巾')), -- 卫生用品（卫生巾=日用卫生巾的兼容）\n  sanitary_change_time TEXT NOT NULL DEFAULT '', -- 上次更换时间\n  arousal_level INTEGER NOT NULL DEFAULT 0 CHECK(arousal_level BETWEEN 0 AND 100), -- 当前兴奋度（0-100）\n  lubrication_level INTEGER NOT NULL DEFAULT 0 CHECK(lubrication_level BETWEEN 0 AND 100), -- 当前润滑度（0-100）\n  nipple_state TEXT NOT NULL DEFAULT '柔软' CHECK(nipple_state IN ('柔软','微挺','勃起','肿胀')), -- 乳头当前状态\n  clitoris_state TEXT NOT NULL DEFAULT '休眠' CHECK(clitoris_state IN ('休眠','微充血','充血','勃起')), -- 阴蒂当前状态\n  body_temperature REAL NOT NULL DEFAULT 36.5 CHECK(body_temperature BETWEEN 35 AND 40), -- 体温（35-40）\n  last_bath_time TEXT NOT NULL DEFAULT '', -- 上次洗澡时间\n  is_virgin INTEGER NOT NULL DEFAULT 1 CHECK(is_virgin IN (0,1)), -- 是否处女（0/1）\n  hymen_state TEXT NOT NULL DEFAULT '完整' CHECK(hymen_state IN ('完整','破裂','残存','无')), -- 处女膜状态\n  last_update_hour INTEGER NOT NULL DEFAULT 0 -- 最后更新时间（小时）\n);"
+    },
+    "content": [
+      [
+        "row_id",
+        "uid",
+        "outerwear_top",
+        "outerwear_bottom",
+        "outerwear_detail",
+        "bra",
+        "bra_color",
+        "panties",
+        "panties_color",
+        "menstrual_phase",
+        "menstrual_day",
+        "menstrual_flow",
+        "is_menstruating",
+        "sanitary_product",
+        "sanitary_change_time",
+        "arousal_level",
+        "lubrication_level",
+        "nipple_state",
+        "clitoris_state",
+        "body_temperature",
+        "last_bath_time",
+        "is_virgin",
+        "hymen_state",
+        "last_update_hour"
+      ],
+      [1, "叶知秋", "校服外套（扣到第二颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 1, "少量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [2, "周思琪", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 2, "中等", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [3, "唐小糖", "校服外套（敞开）", "校服短裙（膝上10cm）", "内搭紧身T恤显露曲线", "蕾丝内衣", "黑色", "蕾丝内裤", "黑色", "卵泡期", 3, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [4, "小夜", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 4, "少量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [5, "张雨萱", "校服外套（扣到第二颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 5, "微量", 1, "护垫", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [6, "怜奈", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 6, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [7, "林婉清", "校服外套（扣到最上一颗）", "校服长裙（过膝）", "", "运动内衣", "白色", "棉质三角裤", "白色", "月经期", 1, "微量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [8, "林小艾", "校服外套（扣到第二颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 8, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [9, "柚子", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 9, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [10, "柳思雨", "校服外套（敞开）", "校服短裙（膝上8cm）", "内搭紧身T恤", "蕾丝内衣", "黑色", "蕾丝内裤", "黑色", "卵泡期", 10, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [11, "桃桃", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 11, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [12, "欧阳雪", "校服外套（扣到第二颗）", "校服短裙（过膝）", "", "无钢圈内衣", "米色", "棉质三角裤", "白色", "卵泡期", 12, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [13, "江月白", "校服外套（敞开）", "校服长裤", "内搭运动背心", "运动内衣", "黑色", "平角裤", "黑色", "卵泡期", 13, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [14, "沈雨桐", "白大褂", "职业长裤", "内搭浅色衬衫", "钢圈内衣", "米色", "蕾丝内裤", "白色", "排卵期", 14, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 0, "破裂", 8],
+      [15, "白露", "运动外套（敞开）", "运动短裤", "内搭运动背心", "运动内衣", "白色", "平角裤", "白色", "排卵期", 15, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [16, "秦雨", "校服外套（扣到第二颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "排卵期", 16, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [17, "苏婉清", "修身衬衫（束进腰）", "及膝一步裙", "肉色丝袜", "蕾丝内衣", "黑色", "蕾丝三角裤", "黑色", "黄体期", 17, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [18, "苏晴", "运动外套（拉链半开）", "运动长裤", "运动背心", "运动内衣", "灰色", "平角裤", "白色", "黄体期", 18, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [19, "赵灵儿", "运动外套（敞开）", "运动短裤", "运动背心", "运动内衣", "白色", "平角裤", "白色", "黄体期", 19, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [20, "铃", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "黄体期", 20, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [21, "陆诗涵", "修身针织衫", "及膝裙", "", "蕾丝内衣", "米色", "蕾丝三角裤", "米色", "黄体期", 21, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [22, "韩雪", "职业衬衫", "西裤", "西装外套", "蕾丝内衣", "肤色", "蕾丝三角裤", "肤色", "黄体期", 22, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 0, "破裂", 8],
+      [23, "顾小曼", "修身衬衫", "包臀裙", "黑色丝袜", "蕾丝内衣", "红色", "蕾丝三角裤", "红色", "黄体期", 23, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 0, "破裂", 8],
+      [24, "陈老师", "校服外套（敞开）", "校服短裙（缩短）", "露肩T恤", "蕾丝内衣", "黑色", "蕾丝三角裤", "黑色", "黄体期", 24, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [25, "慕容晴", "校服外套（扣到最上一颗）", "校服长裙（过膝）", "", "棉质内衣", "白色", "棉质三角裤", "白色", "黄体期", 25, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [26, "卓玛", "校服外套（扣到最上一颗）", "校服长裙（过膝）", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 1, "少量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [27, "阿茹娜", "校服外套（扣到第二颗）", "校服长裤", "", "运动内衣", "白色", "平角裤", "白色", "卵泡期", 8, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [28, "宋雅", "校服外套（扣到最上一颗）", "校服长裙（过膝）", "", "棉质内衣", "白色", "棉质三角裤", "白色", "黄体期", 22, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [29, "马丽亚", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 1, "少量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [30, "马晓月", "校服外套（扣到最上一颗）", "校服长裙（过膝）", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 2, "中等", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [31, "白雪", "校服外套（扣到最上一颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 3, "少量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [32, "林心怡", "校服外套（扣到第二颗）", "校服短裙（膝上10cm）", "", "棉质内衣", "白色", "棉质三角裤", "白色", "月经期", 4, "少量", 1, "日用卫生巾", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [33, "陈雅思", "校服外套（敞开）", "校服短裙（膝上8cm）", "内搭浅色T恤", "蕾丝内衣", "米色", "蕾丝三角裤", "米色", "月经期", 5, "微量", 1, "护垫", "第1天早晨", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [34, "何美琪", "校服外套（扣到第二颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 6, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [35, "樱井美咲", "校服外套（扣到最上一颗）", "校服长裙（过膝）", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 7, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [36, "艾米丽·沃克", "校服外套（敞开）", "校服长裤", "", "运动内衣", "白色", "平角裤", "白色", "卵泡期", 8, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [37, "奥克萨娜·科瓦连科", "校服外套（敞开）", "校服长裤", "", "蕾丝内衣", "米色", "蕾丝三角裤", "米色", "卵泡期", 9, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [38, "阿莎·帕特尔", "校服外套（扣到第二颗）", "校服长裤", "", "棉质内衣", "白色", "棉质三角裤", "白色", "卵泡期", 10, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8],
+      [39, "娜奥米·恩迪亚耶", "校服外套（敞开）", "校服长裙（过膝）", "", "蕾丝内衣", "黑色", "蕾丝三角裤", "黑色", "卵泡期", 11, "无", 0, "无", "", 0, 0, "柔软", "休眠", 36.5, "第1天早晨", 1, "完整", 8]
+    ],
+    "updateConfig": {
+      "uiSentinel": -1,
+      "contextDepth": -1,
+      "updateFrequency": 1,
+      "batchSize": -1,
+      "skipFloors": -1,
+      "groupId": -1
+    },
+    "exportConfig": {
+      "enabled": false,
+      "splitByRow": false,
+      "entryName": "女性当前状态表",
+      "entryType": "constant",
+      "keywords": "",
+      "preventRecursion": true,
+      "injectionTemplate": "",
+      "extraIndexEnabled": false,
+      "extraIndexEntryName": "女性当前状态表-索引",
+      "extraIndexColumns": [],
+      "extraIndexColumnModes": {},
+      "extraIndexInjectionTemplate": "",
+      "sqlInjectionTemplate": "",
+      "entryPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10000
+      },
+      "extraIndexPlacement": {
+        "position": "at_depth_as_system",
+        "depth": 2,
+        "order": 10010
+      },
+      "fixedEntryPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99981
+      },
+      "fixedIndexPlacement": {
+        "position": "before_character_definition",
+        "depth": 2,
+        "order": 99982
+      }
+    },
+    "orderNo": 11
+  }
+}

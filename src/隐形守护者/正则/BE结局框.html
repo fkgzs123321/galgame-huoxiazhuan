@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+:root{
+  --bg-card:linear-gradient(165deg,#2a2622 0%,#1e1b18 100%);
+  --bg-inner:rgba(255,255,255,.04);
+  --border:rgba(193,185,173,.22);
+  --text:#c1b9ad;
+  --text-dim:#9e978e;
+  --text-muted:#645e55;
+  --danger:#b4534a;
+  --danger-bg:rgba(92,32,32,.38);
+  --gold:#b8863d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{margin:0;padding:8px 12px;background:transparent;font-family:"Noto Serif SC","Songti SC",serif;color:var(--text)}
+.be-panel{
+  width:100%;max-width:720px;margin:8px 0;
+  background:var(--bg-card);
+  border:1px solid rgba(180,83,74,.42);
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+.be-head{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  background:var(--danger-bg);
+  border-bottom:1px solid rgba(180,83,74,.35);
+}
+.be-seal{
+  flex-shrink:0;width:32px;height:32px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;letter-spacing:.12em;
+  color:#f4f1eb;background:var(--danger);
+  font-family:"Courier New",monospace;
+}
+.be-meta{min-width:0}
+.be-label{font-size:10px;letter-spacing:.28em;color:#e8c4c0;text-transform:uppercase}
+.be-title{font-size:15px;font-weight:700;color:#f4f1eb;margin-top:4px;line-height:1.35}
+.be-foot{padding:10px 16px;font-size:11px;color:var(--text-dim);letter-spacing:.06em}
+</style>
+</head>
+<body>
+<div class="be-panel">
+  <div class="be-head">
+    <div class="be-seal">终</div>
+    <div class="be-meta">
+      <div class="be-label">Bad End · 失败结局</div>
+      <div class="be-title" id="bt">—</div>
+    </div>
+  </div>
+  <div class="be-foot">请手动删楼回到检查点前，或发送检查点对应选项原文重开。</div>
+</div>
+<div id="raw" style="display:none">$1</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  function H(){
+    try{var f=window.frameElement;if(f)f.style.height=document.body.scrollHeight+'px';}catch(e){}
+  }
+  new ResizeObserver(H).observe(document.body);
+  setTimeout(H,60);
+  var raw=document.getElementById('raw');
+  var title=document.getElementById('bt');
+  if(!raw||!title)return;
+  var t=(raw.textContent||raw.innerText||'').trim();
+  if(!t)t='【结局 · 未知】';
+  if(!/【结局/.test(t)) t='【结局 · '+t+'】';
+  title.textContent=t;
+  H();
+});
+</script>
+</body>
+</html>

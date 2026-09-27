@@ -1,0 +1,89 @@
+  /* ════════════════════════════════════════════════════════════
+     开局（★ 解决「第 8 套郁灼没法选」）
+     只在开局时出现：选她（人设）+ 选门派 + 起名
+     ════════════════════════════════════════════════════════════ */
+  function 画开局() {
+    var 套 = D.八套 || [];
+    var 门 = D.门派 || [];
+    var 现人设 = String((状态.她 || {}).人设 || '');
+    var 现门 = String((状态.场景 || {}).当前门派 || '');
+    var 名 = String((状态.主角 || {}).名 || '');
+    var H = "";
+    H += '<div class="yx-r"><div class="yx-c yx-w"><div class="yx-ttl">开局 <em>（她要玩谁的那一局）</em></div>';
+    H += '<div class="yx-nt">★ 这是「她」在玩的那一局 —— 定下之后，她的每一步选择都按这套人设长出来。</div>';
+
+    // ① 选她
+    H += '<div class="yx-k2">' + (现人设 ? '当前：' + E(现人设) : '选一个「她」') + '</div>';
+    H += '<div class="yx-skgrid">' + 套.map(function (n) {
+      var 是 = (n === 现人设);
+      var 色 = 是 ? "var(--gold)" : "var(--t3)";
+      return '<div class="yx-sk' + (是 ? " sel" : "") + '" data-她="' + E(n) + '" style="border-color:' + 色 + '66">'
+        + '<div class="ring"><span class="ic" style="color:' + 色 + '">' + ic("角色", 17) + '</span></div>'
+        + '<div class="nm" style="color:' + 色 + '">' + E(String(n).replace(/^她_/, "")) + '</div>'
+        + '<div class="bdg" style="color:' + 色 + ';border-color:' + 色 + '66">' + (是 ? "已选" : "选她") + '</div></div>';
+    }).join("") + "</div>";
+    H += '<div class="yx-nt">每套人设的「手段」都不同：遇障碍怎么办、遇无聊怎么办（见「她用过的手段」）。</div>';
+
+    // ② 选门派
+    H += '<div class="yx-k2">' + (现门 ? '当前门派：' + E(现门) : '入门派') + '</div>';
+    H += '<div class="yx-chips">' + 门.map(function (p) {
+      var 名p = p.名 || p;
+      var 是 = (名p === 现门);
+      return '<span class="yx-ch clk' + (是 ? " on" : "") + '" data-门="' + E(名p) + '">' + E(名p) + "</span>";
+    }).join("") + "</div>";
+    H += '<div class="yx-nt">门派决定能学哪些武功（门派武功表）。</div>';
+
+    // ③ 起名
+    H += '<div class="yx-k2">起个名字</div>';
+    H += '<div class="yx-ops"><button class="yx-btn" id="yx-ming">' + (名 ? "改名（现在叫 " + E(名) + "）" : "取个名") + '</button></div>';
+
+    // ④ 开局确认
+    var 齐 = 现人设 && 现门;
+    H += '<div class="yx-ops" style="margin-top:14px"><button class="yx-btn pri" id="yx-开"' + (齐 ? "" : " disabled") + ">"
+      + (齐 ? "★ 开局" : "还差：" + (!现人设 ? "选她 " : "") + (!现门 ? "门派" : "")) + "</button></div>";
+    H += "</div></div>";
+
+    // 已定下的信息
+    if (齐) {
+      H += '<div class="yx-r"><div class="yx-c yx-w"><div class="yx-ttl">这一局</div>';
+      H += 折行("她", E(现人设));
+      H += 折行("门派", E(现门));
+      H += 折行("你", 名 || "（未取名）");
+      H += 折行("时间", (数(T.岁数, 14)) + " 岁 · 第 " + (数(T.月, 1)) + " 月");
+      H += 折行("耐心", 数(状态.时间 ? 状态.时间.耐心 : 24, 24) + " 月");
+      H += "</div>";
+      var 套详 = D.套详 || {};
+      var 说 = 套详[现人设];
+      if (说) H += '<div class="yx-c yx-w"><div class="yx-ttl">她的手段</div><div class="yx-nt">' + E(String(说).slice(0, 300)) + "</div></div>";
+      H += "</div>";
+    }
+    return H;
+  }
+  function 绑开局() {
+    [].forEach.call(document.querySelectorAll("[data-她]"), function (c) {
+      c.addEventListener("click", function () {
+        var n = c.getAttribute("data-她");
+        写(function (sd) { sd.她 = sd.她 || {}; sd.她.人设 = n; });
+        setTimeout(画, 200);
+      });
+    });
+    [].forEach.call(document.querySelectorAll("[data-门]"), function (c) {
+      c.addEventListener("click", function () {
+        var n = c.getAttribute("data-门");
+        写(function (sd) { sd.场景 = sd.场景 || {}; sd.场景.当前门派 = n; });
+        setTimeout(画, 200);
+      });
+    });
+    var m = document.getElementById("yx-ming");
+    if (m) m.addEventListener("click", function () {
+      var v = prompt("他叫什么？", String((状态.主角 || {}).名 || ""));
+      if (v) 写(function (sd) { sd.主角 = sd.主角 || {}; sd.主角.名 = String(v).slice(0, 8); });
+      setTimeout(画, 200);
+    });
+    var k = document.getElementById("yx-开");
+    if (k) k.addEventListener("click", function () {
+      alert("开局已定 —— 剩下的交给她。");
+      页 = 'overview'; 画();
+    });
+  }
+

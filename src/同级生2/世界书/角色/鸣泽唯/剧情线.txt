@@ -1,0 +1,235 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 鸣泽唯 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=1 / 第一女主角 · 主角义妹（无血缘），剧情权重最高
+   核心弧线：日常兄妹→暗恋萌芽→西御寺危机→主角救援→恋人确立→结局判定
+   互斥关系：与鸣泽美佐子线（义母，heroine_id=2）互斥，二选一
+   核心矛盾：10年同居的"义兄妹"框架既是禁忌感的来源，也是她压抑情感的牢笼
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 鸣泽唯_STORYLINE = {
+  heroine_id: 1,
+  name: '鸣泽唯',
+  core_position: {
+    role: '第一女主角 — 主角义妹线的核心，全书剧情权重最高的女角',
+    archetype: '禁忌义妹的觉醒弧线 — 从义兄妹到恋人的越界之路',
+    function: '通过"日常兄妹→暗恋萌芽→西御寺危机→主角救援→恋人确立→结局判定"六阶段弧线，承担全书主线的情感轴心和危机高潮',
+    plot_weight: 'highest — 第一女主角，剧情权重最高；西御寺事件是全书核心危机节点'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: 'AM',
+      location: '鸣泽家（厨房/餐厅）',
+      event: '寒假第一天 · 唯准备早餐',
+      description: '寒假第一天，唯比主角早起准备早餐（咖喱饭/草莓牛奶），以"义妹的本分"掩饰关心；主角下楼时唯会用冷淡语气说"起来啦，饭在桌上"，但耳后会泛红。日常兄妹互动的开场，奠定两人10年同居的默契底子',
+      triggers_route: '唯线 — 开启"日常兄妹"基础剧情，affection+1/trust稳定',
+      is_reversible: true,
+      flags: ['flag_yui_daily_route_started']
+    },
+    {
+      date: '12-22~12-23',
+      time_slot: '全天',
+      location: '鸣泽家 / 自宅周边 / 商业区',
+      event: '日常兄妹积累期',
+      description: '唯与主角在自宅周边、商业区偶遇；可一起购物、看偶像剧、聊校园八卦；唯会以"哥哥真烦"掩饰依赖，但会主动黏人撒娇（间歇性依赖）；陪伴购物与看偶像剧是最佳相处时机',
+      triggers_route: '唯线 — 通过日常互动积累 affection，是后续剧情的前置基础',
+      is_reversible: true,
+      flags: ['flag_yui_bond_rising']
+    },
+    {
+      date: '12-24~12-25',
+      time_slot: 'PM/夜',
+      location: '鸣泽家（圣诞夜场景）',
+      event: '圣诞夜事件',
+      description: '12/24 平安夜起，鸣泽家进入圣诞场景；12/25 圣诞夜，唯与主角在家中独处（美佐子可能在咖啡店忙碌），唯会穿主角的旧T恤当睡衣，气氛暧昧；若主角选择正确（送小束鲜花/聊偶像剧/陪伴看电视），唯好感+5，进入"暗恋萌芽"阶段；唯会红着脸说"哥哥...今晚就陪我一下吧"',
+      triggers_route: '唯线 — 圣诞夜事件是唯线从"日常兄妹"转向"暗恋萌芽"的关键节点',
+      is_reversible: true,
+      flags: ['flag_yui_christmas_event', 'flag_yui_crush_budding'],
+      note: '★ 关键节点 — 好感+5；若主角缺席或选择错误（送贵重礼物/聊学业/表现冷淡），唯线进入"延迟萌芽"分支'
+    },
+    {
+      date: '12-26~12-27',
+      time_slot: '全天',
+      location: '鸣泽家 / 商业区 / 八十八海岸',
+      event: '暗恋萌芽深化期',
+      description: '圣诞夜后，唯对主角的态度出现微妙变化 — 表面更冷淡（掩饰害羞），但会主动制造独处机会（赖在主角房间、抢主角的零食、借偶像剧DVD）；唯的嫉妒值开始升高（主角与友美/美佐子/其他女角互动都+5）；主角若陪伴唯购物或看偶像剧，affection持续上升',
+      triggers_route: '唯线 — 深化期是12/28西御寺事件的前置积累',
+      is_reversible: true,
+      flags: ['flag_yui_jealousy_rising']
+    },
+    {
+      date: '12-28',
+      time_slot: 'PM',
+      location: '八十八学园门口 / 商业区 / 鸣泽家附近',
+      event: '西御寺警告主角事件（预兆）',
+      description: '12/28 西御寺有友带跟班拦截主角，警告主角"离鸣泽唯远点，她是我的"；西御寺从寒假首日起持续骚扰唯，被唯拒绝后转入阴险阶段；此事件是西御寺阴谋期的预兆，主角可选择正面硬刚/回避/告知唯；若主角硬刚则唯 trust+5（但西御寺仇恨加深），若回避则唯线进入"主角懦弱"分支（后续救援难度提升）',
+      triggers_route: '唯线 — 西御寺警告是12/29阴谋高潮的前兆节点',
+      is_reversible: true,
+      flags: ['flag_yutomo_warning_protagonist', 'flag_yui_crisis_precursor'],
+      note: '★ 预兆节点 — 主角的选择影响12/29救援难度和唯的trust变化'
+    },
+    {
+      date: '12-29',
+      time_slot: 'PM/夜',
+      location: '西御寺家豪宅附近 / 旅馆 / 88公园（分支地点）',
+      event: '西御寺阴谋高潮 · 主角救援',
+      description: '12/29 西御寺策划针对唯的阴谋 — 以"派对邀请"为名将唯骗至西御寺家豪宅/旅馆，企图伤害唯；主角得知后必须赶赴现场救援。救援成功则唯 affection+10/trust+10，唯线进入"依赖加深→暧昧"阶段；若唯好感≥40 但主角缺席或救援失败，触发 BAD_END_6 预警（唯被西御寺伤害，主角线崩溃）；若唯好感<40 则西御寺阴谋仍可被识破但唯受伤更深',
+      triggers_route: '唯线 — 救援事件是唯线核心危机节点，决定后续分支走向',
+      is_reversible: false,
+      flags: ['flag_yutomo_conspiracy_climax', 'flag_yui_rescue_event'],
+      note: '★ 不可逆 flag — 一旦触发无法回退；若救援失败则唯线进入 BAD_END_6 分支；救援成功是唯线进入"暧昧阶段"的必要条件'
+    },
+    {
+      date: '12-30~01-06',
+      time_slot: '全天',
+      location: '鸣泽家 / 自宅周边 / 商业区',
+      event: '唯线深化 · 暧昧阶段',
+      description: '救援后唯对主角的依赖加深 — 夜里会偷偷溜进主角房间（"我害怕，陪我睡"）、白天会主动黏人、眼神躲闪时耳后泛红；唯开始承认"哥哥不只是哥哥"的心意，但仍受"义兄妹"禁忌框架束缚；此阶段是主角突破禁忌框架的关键期 — 必须由唯主动松绑，强行亲密会触发关系破裂结局（BAD_END_1 报警）；陪伴唯、用零食/偶像/时尚话题切入、逐步越界是正确路径',
+      triggers_route: '唯线 — 暧昧阶段是1/7最终判定的最后积累期',
+      is_reversible: true,
+      flags: ['flag_yui_ambiguous_phase', 'flag_yui_dependent_deepening']
+    },
+    {
+      date: '01-03',
+      time_slot: 'PM5:05',
+      location: '旅馆大厅',
+      event: '旅馆误会事件（西御寺后续阴谋）',
+      description: '若12/29救援成功但西御寺未被彻底击溃，1/3 西御寺在旅馆大厅设局，制造唯与西御寺的"误会现场"让主角撞见；是唯线的二次反派节点。若主角识破则西御寺被反击（1/1 被主角痛打的前置/延续），唯线继续；若主角缺席或误会成立，唯线进入"被毁谤"分支（即使12/29救援成功也可能崩盘）',
+      triggers_route: '唯线 — 旅馆误会事件是唯线结局分支的二次反派节点',
+      is_reversible: false,
+      flags: ['flag_yutomo_yui_misunderstanding'],
+      note: '★ 不可逆 flag — 误会事件一旦发生无法撤回（但结局可分支）；与西御寺有友剧情线交叉'
+    },
+    {
+      date: '01-05',
+      time_slot: '全天',
+      location: '88公园',
+      event: '88公园救唯事件',
+      description: '若主角识破1/3误会事件，1/5 在88公园救唯是唯线结局分支的关键节点 — 唯被西御寺余党或芳树围堵，主角再次救援；此事件彻底击溃西御寺阴谋，唯对主角完全交付，进入"恋人确立前夜"状态；若主角缺席则唯线进入"Normal End"分支（唯心灰意冷，与主角回归义兄妹关系）',
+      triggers_route: '唯线 — 88公园救唯是唯线 Good End 的关键节点',
+      is_reversible: true,
+      flags: ['flag_yui_rescued_88park']
+    },
+    {
+      date: '01-07',
+      time_slot: '深夜',
+      location: '鸣泽家',
+      event: '最终判定 · 结局分支',
+      description: '01-07 寒假最后一天深夜触发结局判定。若唯好感≥60 且救援事件全部完成（12/29救援+1/3识破+1/5救唯）→ Good End（兄妹恋人成立，唯主动突破禁忌框架，H场景触发）；若唯好感 40~59 → Normal End（唯承认心意但犹豫不决，开放结局）；若唯好感<40 或触发 BAD_END_6 条件 → Bad End。互斥判定：若美佐子线已深化，唯线强制进入 Normal/Bad End',
+      triggers_route: '唯线 — 最终判定节点，决定 Good/Normal/Bad End 走向',
+      is_reversible: false,
+      flags: ['flag_yui_final_judgment', 'flag_yui_route_locked'],
+      note: '★ 不可逆 flag — Good End 阈值：affection≥60 + 救援事件完成；H场景仅在 Good End 触发；与美佐子线互斥'
+    }
+  ],
+
+  triggered_routes: {
+    '鸣泽美佐子线（heroine_id=2，义母）': {
+      role: 'mutex — 互斥关系',
+      trigger_nodes: ['12-26 美佐子酒后场景开启', '12-30~01-07 唯线深化期'],
+      impact: '唯线与美佐子线互斥（义母女二选一）— 若美佐子线已深化（12/26 酒后场景触发后），唯线强制进入 Normal/Bad End；攻略唯后美佐子路线复杂化但不强制锁定仇视（非严格互斥，但结局分支受限）'
+    },
+    '西御寺有友线（npc_id=N3，反派）': {
+      role: 'antagonist — 唯线核心反派',
+      trigger_nodes: ['12-22~12-25 介入期', '12-28 警告主角', '12-29 阴谋高潮', '01-03 旅馆误会事件', '01-05 88公园救唯'],
+      impact: '西御寺是唯线核心反派 — 12/29 阴谋高潮是唯线核心危机节点，1/3 误会事件是二次反派节点，1/5 88公园救唯是 Good End 关键；若主角缺席任一节点，唯线进入失败分支'
+    },
+    '水野友美线（heroine_id=8，青梅竹马）': {
+      role: 'rival — 唯视友美为情敌',
+      trigger_nodes: ['12-22~01-07 自宅周边偶遇'],
+      impact: '唯视友美为情敌（友美是主角青梅竹马，唯嫉妒值+5/次）；主角与友美互动会降低唯线好感积累效率，但不强制锁定唯线'
+    }
+  },
+
+  relationship_network: {
+    '主角（义兄，无血缘）': {
+      type: 'lover_route — 义兄妹→恋人（核心关系）',
+      detail: '已同居10年的义兄妹，初始 affection=5/heartbeat=0/jealousy=0/trust=30；唯表面冷淡实则依恋，10年同居的信任底子是攻略基础；禁忌框架必须由唯主动松绑'
+    },
+    '鸣泽美佐子（heroine_id=2，义母）': {
+      type: 'family_mutex — 亲生母女 + 攻略互斥',
+      detail: '美佐子是唯的亲生母亲，鸣泽家家长，咖啡店老板娘；唯线与美佐子线互斥（义母女二选一）；若主角攻略美佐子，唯会察觉并心灰意冷'
+    },
+    '西御寺有友（npc_id=N3）': {
+      type: 'enemy — 唯线核心反派',
+      detail: '西御寺单方面纠缠唯，被唯拒绝后阴险报复；12/29 阴谋高潮是唯线核心危机；1/3 误会事件是二次反派节点'
+    },
+    '水野友美（heroine_id=8）': {
+      type: 'rival — 唯视其为情敌',
+      detail: '友美是主角青梅竹马，唯视其为情敌；主角与友美互动会触发唯嫉妒值+5'
+    },
+    '长冈芳树（npc_id=N2）': {
+      type: 'indirect_enemy — 西御寺共谋者',
+      detail: '芳树与西御寺利益同盟，提供偷拍情报；1/5 88公园围堵唯的余党可能与芳树有关'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_yui_christmas_event',
+      trigger: '12-24~12-25 圣诞夜事件',
+      effect: '唯线从"日常兄妹"转向"暗恋萌芽"，好感+5；若缺席或选择错误则进入"延迟萌芽"分支',
+      reversibility: '可逆 — 圣诞夜事件结果可被后续行为修正'
+    },
+    {
+      flag: 'flag_yutomo_warning_protagonist',
+      trigger: '12-28 西御寺警告主角事件',
+      effect: '西御寺正式介入唯线，预兆12/29阴谋高潮；主角的选择影响救援难度',
+      reversibility: '可逆 — 警告事件本身可被后续行为修正'
+    },
+    {
+      flag: 'flag_yui_rescue_event',
+      trigger: '12-29 西御寺阴谋高潮 · 主角救援',
+      effect: '救援成功则唯 affection+10/trust+10，唯线进入"暧昧阶段"；救援失败则触发 BAD_END_6',
+      reversibility: '不可逆 — 救援事件一旦发生无法回退，结果决定唯线走向'
+    },
+    {
+      flag: 'flag_yui_bad_end_6',
+      trigger: '12-29 救援失败（唯好感≥40 但主角缺席/救援失败）',
+      effect: 'BAD_END_6 — 西御寺事件未解决，唯被西御寺伤害，主角线崩溃',
+      reversibility: '不可逆 — 一旦触发 BAD_END_6 无法回退，唯线直接结束'
+    },
+    {
+      flag: 'flag_yutomo_yui_misunderstanding',
+      trigger: '01-03 PM5:05 旅馆大厅关键误会事件',
+      effect: '若主角识破则西御寺被反击，唯线继续；若主角缺席或误会成立，唯线进入"被毁谤"分支',
+      reversibility: '不可逆 — 误会事件一旦发生无法撤回（但结局可分支）'
+    },
+    {
+      flag: 'flag_yui_rescued_88park',
+      trigger: '01-05 88公园救唯事件',
+      effect: '彻底击溃西御寺阴谋，唯对主角完全交付，进入"恋人确立前夜"状态',
+      reversibility: '可逆 — 若主角缺席则唯线进入 Normal End 分支'
+    },
+    {
+      flag: 'flag_yui_final_judgment',
+      trigger: '01-07 深夜最终判定',
+      effect: 'Good End 阈值：affection≥60 + 救援事件完成；Normal End：affection 40~59；Bad End：affection<40 或 BAD_END_6 触发',
+      reversibility: '不可逆 — 最终判定一旦触发无法回退，唯线锁定结局'
+    }
+  ],
+
+  bad_endings: {
+    BAD_END_1: {
+      trigger: '主角对唯强行亲密（H场景前）',
+      condition: '唯的"义兄妹"禁忌框架未由唯主动松绑时，主角强行推进H',
+      result: '唯报警 + 关系破裂，主角线直接结束',
+      note: '★ 强迫初H直接触发 — 义妹禁忌是她的牢笼，必须由她主动松绑'
+    },
+    BAD_END_6: {
+      trigger: '12-29 西御寺阴谋高潮救援失败',
+      condition: '唯好感≥40 但主角缺席12/29救援事件，或救援失败',
+      result: '西御寺事件未解决，唯被西御寺伤害，主角线崩溃',
+      note: '★ 唯线核心 BAD_END — 西御寺事件是唯线核心危机节点'
+    }
+  },
+
+  summary: '鸣泽唯的剧情线是"日常兄妹→暗恋萌芽→西御寺危机→主角救援→恋人确立→结局判定"六阶段弧线，是全书剧情权重最高的第一女主角线。核心危机节点是12/28-29的西御寺事件（警告→阴谋高潮→救援），救援失败触发 BAD_END_6。1/7 最终判定：唯好感≥60 + 救援事件完成 → Good End（兄妹恋人成立，H场景触发）。与美佐子线（义母）互斥，二选一。唯是 NPC 不是可操作角色，玩家通过主角的选择影响唯的四维数值决定结局。禁忌框架必须由唯主动松绑，强行亲密触发 BAD_END_1。'
+};
+%>
+
+鸣泽唯 · 剧情线已加载。核心定位：第一女主角（heroine_id=1），全书剧情权重最高。六阶段弧线：日常兄妹（12/22）→圣诞夜萌芽（12/24-25，好感+5）→西御寺警告（12/28）→西御寺阴谋高潮+主角救援（12/29，好感+10，BAD_END_6预警）→暧昧深化（12/30-1/7）→最终判定（1/7，好感≥60 Good End）。不可逆 flag：flag_yui_rescue_event（12/29 救援）、flag_yui_bad_end_6（BAD_END_6）、flag_yutomo_yui_misunderstanding（1/3 误会）、flag_yui_final_judgment（1/7 锁定结局）。互斥关系：与美佐子线（heroine_id=2）互斥。唯是 NPC 不是可操作角色，禁忌框架必须由唯主动松绑。

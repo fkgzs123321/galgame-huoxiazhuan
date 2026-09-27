@@ -1,0 +1,85 @@
+  /* ════════════════════════════════════════════════════════════
+     雷达图（四天赋）★ 参考项目里有「情感温度七级色阶」的做法
+     把文字数字变成一眼能看出形状的图
+     ════════════════════════════════════════════════════════════ */
+  function 画雷达(值表, 边, 色) {
+    var 键s = Object.keys(值表);
+    var n = 键s.length;
+    if (!n) return "";
+    var R = 78, cx = 100, cy = 92, 最 = 100;
+    var s = '<svg viewBox="0 0 200 190" width="200" height="190" class="yx-radar">';
+    // 三圈底
+    [0.35, 0.65, 1].forEach(function (k) {
+      var pts = 键s.map(function (_, i) {
+        var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+        return (cx + Math.cos(a) * R * k).toFixed(1) + "," + (cy + Math.sin(a) * R * k).toFixed(1);
+      }).join(" ");
+      s += '<polygon points="' + pts + '" fill="none" stroke="' + 边 + '" stroke-width="1" opacity=".28"/>';
+    });
+    // 辐条
+    键s.forEach(function (_, i) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.cos(a) * R).toFixed(1) + '" y2="' + (cy + Math.sin(a) * R).toFixed(1) + '" stroke="' + 边 + '" stroke-width="1" opacity=".22"/>';
+    });
+    // 数据面
+    var 点数 = 键s.map(function (k, i) {
+      var v = Math.max(0, Math.min(1, 数(值表[k]) / 最));
+      var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      return (cx + Math.cos(a) * R * v).toFixed(1) + "," + (cy + Math.sin(a) * R * v).toFixed(1);
+    }).join(" ");
+    s += '<polygon points="' + 点数 + '" fill="' + 色 + '33" stroke="' + 色 + '" stroke-width="1.6"/>';
+    // 顶点
+    键s.forEach(function (k, i) {
+      var v = Math.max(0, Math.min(1, 数(值表[k]) / 最));
+      var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      s += '<circle cx="' + (cx + Math.cos(a) * R * v).toFixed(1) + '" cy="' + (cy + Math.sin(a) * R * v).toFixed(1) + '" r="2.6" fill="' + 色 + '"/>';
+      var lx = cx + Math.cos(a) * (R + 20), ly = cy + Math.sin(a) * (R + 15) + 4;
+      s += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle" fill="' + 边 + '" font-size="10">' + E(k) + "</text>";
+      s += '<text x="' + lx.toFixed(1) + '" y="' + (ly + 11).toFixed(1) + '" text-anchor="middle" fill="' + 色 + '" font-size="9" opacity=".85">' + 数(值表[k]) + "</text>";
+    });
+    s += "</svg>";
+    return s;
+  }
+
+  /* ══ 情感温度带（七级）★ 出处：参考项目的情感温度色阶 ══ */
+  var 温度阶 = [
+    { 名: "仇视", 色: "#8a8f98", 门: -100 },
+    { 名: "敌意", 色: "#5b8dc9", 门: -60 },
+    { 名: "冷淡", 色: "#7fa8c9", 门: -20 },
+    { 名: "中立", 色: "#a39f98", 门: 0 },
+    { 名: "友好", 色: "#e0a06e", 门: 20 },
+    { 名: "亲近", 色: "#eb613f", 门: 50 },
+    { 名: "挚交", 色: "#e8c87a", 门: 80 },
+  ];
+  function 温度(好感) {
+    var v = 数(好感);
+    var 得 = 温度阶[0];
+    for (var i = 0; i < 温度阶.length; i++) if (v >= 温度阶[i].门) 得 = 温度阶[i];
+    return 得;
+  }
+  function 温度带(好感) {
+    var v = Math.max(-100, Math.min(100, 数(好感)));
+    var 得 = 温度(好感);
+    var 位 = (v + 100) / 200 * 100;
+    return '<div class="yx-tmp"><div class="track">'
+      + 温度阶.map(function (t, i) {
+        var a = i === 0 ? 0 : (温度阶[i - 1].门 + 100) / 2, b = (t.门 + 100) / 2;
+        return '<i style="left:' + Math.max(0, a) + '%;width:' + Math.max(0, b - a) + '%;background:' + t.色 + '"></i>';
+      }).join("")
+      + '</div><span class="mk" style="left:' + 位 + '%;background:' + 得.色 + '"></span>'
+      + '<span class="lb" style="color:' + 得.色 + '">' + 得.名 + "（" + Math.round(v) + "）</span></div>";
+  }
+
+  /* ══ 进度环 ══ */
+  function 画环(百分, 色, 标签, 值文) {
+    var p = Math.max(0, Math.min(100, 数(百分)));
+    var R = 26, C = 2 * Math.PI * R;
+    return '<div class="yx-ring"><svg viewBox="0 0 64 64" width="64" height="64">'
+      + '<circle cx="32" cy="32" r="' + R + '" fill="none" stroke="' + 色 + '22" stroke-width="5"/>'
+      + '<circle cx="32" cy="32" r="' + R + '" fill="none" stroke="' + 色 + '" stroke-width="5"'
+      + ' stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - p / 100)).toFixed(1) + '"'
+      + ' stroke-linecap="round" transform="rotate(-90 32 32)"/>'
+      + '<text x="32" y="36" text-anchor="middle" fill="' + 色 + '" font-size="13" font-weight="600">' + Math.round(p) + "</text>"
+      + '</svg><span class="lb">' + E(标签) + '</span><span class="vl">' + E(值文 || "") + "</span></div>";
+  }
+

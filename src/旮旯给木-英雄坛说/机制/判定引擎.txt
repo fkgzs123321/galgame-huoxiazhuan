@@ -1,0 +1,405 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   判定引擎（E3）· 机制层 · 不含任何具体内容
+
+   ┌─ 红线 ────────────────────────────────────────────────┐
+   │ 本文件不出现任何世界观 / 角色 / 地点 / 道具名。          │
+   │ 出现了就说明「要素」漏进了引擎层。                       │
+   └──────────────────────────────────────────────────────┘
+
+   规范: 机制层规范.md §E3
+   替代: 原卡 属性技能骰子联动.txt 的四个函数（合并为三个，并修掉两个 bug）
+
+   ── 修掉的两个 bug ──────────────────────────────────────
+   bug①  原实现分档与成败不同源 → 会同时产出「大成功」与「失败」
+         修法: judgeTier(diff, success) 两个参数一起收
+   bug②  原实现关系阶段修正恒为 0 → 恋爱游戏最核心的状态不参与判定
+         修法: judgeRequire 的 stageMod 是真实使用的参数
+
+   ── 保留的三个好设计 ────────────────────────────────────
+   ① LCG 确定性伪随机（禁 Math.random，保证可复现）
+   ② 权重归一化（除以权重总和）→ 尺度无关
+   ③ 难度用乘法不用加法 → 无论基准值多高，难度感受一致
+
+   ════════════════════════════════════════════════════════════
+   ★ v2 新增（从四个 SillyTavern 衍生项目挖到的算法，逐条注明出处）
+   ════════════════════════════════════════════════════════════
+
+   ①【相对修正】出处：zhushen-space《摇骰子判定-集成指导》
+     问题：能力值是**开放数值**（后期上千），绝对值进阈值会崩
+           （前期必败、后期必成、骰子变噪声）
+     解法：所有修正**相对化** —— 只看「比自己的均值高多少」
+           rel(v, avg) = clamp(round((v − avg) / avg × K), −A, +B)
+
+   ②【对战的绝对强度差】出处：同上（这是那份文档里最关键的一条）
+     问题：纯相对修正在「人 vs 任务」成立，但「人 vs 人」会丢掉绝对强弱
+           —— 全 2 的杂鱼和全 500 的神，属性修正都 ≈ 0
+     解法：对战 = **绝对强度差 + 相对修正差**
+
+   ③【自然极值 / 优势劣势】出处：同上
+     自然极值：骰子原始点触顶/触底 → 无视修正，直接大成功/大失败
+     优势劣势：掷两次取高/低（替代奖惩骰）
+
+   ④【日常行动判定】出处：char_card_1《姬侠传》游戏指南
+     最终值 = (随机数 + 天赋加成) × (体力 + 难度加成) / 100
+     三层巧思：体力是**乘法因子**（拖垮所有行动）
+               成功度 = **体力消耗**（成功省体力、失败费体力 → 正负反馈闭环）
+               一个公式管所有日常行动
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、LCG 伪随机（E3 的骰子源）
+   播种在变量里，AI 不可见、不更新；同一回合重新渲染得到同一结果
+   ════════════════════════════════════════════════════════════ */
+this._LCG_A = 1664525;
+this._LCG_C = 1013904223;
+this._LCG_M = 4294967296;
+
+this._lcgState = Number(getvar('stat_data.主角.$骰子种子', { scope: 'local', defaults: 20260915 })) || 20260915;
+
+this._lcgNext = function () {
+  this._lcgState = (this._LCG_A * this._lcgState + this._LCG_C) % this._LCG_M;
+  return this._lcgState;
+};
+
+/* 0 ~ 1 */
+this._r = function () {
+  return this._lcgNext() / this._LCG_M;
+};
+
+/* 0 ~ 99.99（判定用） */
+this._roll = function () {
+  return this._r() * 100;
+};
+
+/* ★ 优势 / 劣势（出处：zhushen-space）
+   优势 = 掷两次取【低】（百分骰越小越好）；劣势 = 取【高】
+   这样与 roll < rate 的语义一致 */
+this._rollAdv = function (adv) {
+  var _a = this._roll();
+  if (!adv) return _a;
+  var _b = this._roll();
+  return adv > 0 ? Math.min(_a, _b) : Math.max(_a, _b);
+};
+
+/* 1~20 的 d20 骰（自然极值判定用） */
+this._d20 = function () {
+  return Math.floor(this._r() * 20) + 1;
+};
+
+/* ════════════════════════════════════════════════════════════
+   二、★ 相对修正（出处：zhushen-space）—— v2 新增
+   开放数值体系下，绝对量纲会失真。所有修正都相对「自身均值」。
+
+   rel(v, avg, K, lo, hi)：
+     中心值 avg、斜率 K（每 100% 偏离换多少分）、上下封顶
+   ════════════════════════════════════════════════════════════ */
+this.rel = function (v, avg, K, lo, hi) {
+  var _v = Number(v) || 0;
+  var _a = Number(avg);
+  if (!_a || _a <= 0) _a = Math.abs(_v) || 1;
+  var _raw = Math.round(((_v - _a) / _a) * (Number(K) || 30));
+  var _lo = (lo == null) ? -15 : Number(lo);
+  var _hi = (hi == null) ? 20 : Number(hi);
+  return Math.max(_lo, Math.min(_hi, _raw));
+};
+
+/* 取一组数的均值（相对修正的基准） */
+this.avgOf = function (obj) {
+  var _s = 0, _n = 0;
+  for (var _k in (obj || {})) {
+    var _x = Number(obj[_k]);
+    if (isFinite(_x)) { _s += _x; _n++; }
+  }
+  return _n ? _s / _n : 0;
+};
+
+/* ════════════════════════════════════════════════════════════
+   三、能力值（加权平均 · 权重归一化）
+   ★ v2：另给一个「相对化」版本 judgePowerRel —— 开放数值体系该用它
+   ════════════════════════════════════════════════════════════ */
+this.judgePower = function (values, weights) {
+  var _v = values || {};
+  var _w = weights || {};
+  var _sum = 0;
+  var _total = 0;
+  for (var _k in _w) {
+    var _wv = Number(_w[_k]) || 0;
+    if (_wv === 0) continue;
+    _sum += (Number(_v[_k]) || 0) * _wv;
+    _total += _wv;
+  }
+  if (_total <= 0) return 0;
+  return _sum / _total;
+};
+
+/* ★ 相对版：先把每个参与的状态转成「相对自身均值」的修正，再按权重合成
+   出处：zhushen-space 的「所有修正都相对化」
+   返回 −15 ~ +20 量级的一个修正值（不是能力值本身） */
+this.judgePowerRel = function (values, weights, K) {
+  var _v = values || {};
+  var _w = weights || {};
+  var _avg = this.avgOf(_v);
+  var _sum = 0, _total = 0;
+  for (var _k in _w) {
+    var _wv = Number(_w[_k]) || 0;
+    if (_wv === 0) continue;
+    _sum += this.rel(_v[_k], _avg, K || 30, -15, 20) * _wv;
+    _total += _wv;
+  }
+  if (_total <= 0) return 0;
+  return _sum / _total;
+};
+
+/* ════════════════════════════════════════════════════════════
+   四、要求值（乘法难度 + 目标修正 + 阶段修正）
+   ════════════════════════════════════════════════════════════ */
+this.judgeRequire = function (base, diffMult, targetMod, stageMod) {
+  var _r = Number(base) || 50;
+  var _m = Number(diffMult);
+  if (isNaN(_m) || _m <= 0) _m = 1;
+  _r = _r * _m;
+  _r = _r + (Number(targetMod) || 0);
+  _r = _r + (Number(stageMod) || 0);
+  return Math.max(0, Math.min(100, Math.round(_r)));
+};
+
+/* ════════════════════════════════════════════════════════════
+   五、档位（由差值【与】成败联合决定）+ 后果倍率
+   ★ v2：倍率对齐 zhushen-space 的后果分级
+        大成功 ×2 ｜ 碾压/成功 ×1.5 / ×1 ｜ 勉强 ×0.6 ｜ 大失败 反噬
+   ════════════════════════════════════════════════════════════ */
+this.judgeTier = function (diff, success) {
+  var _d = Number(diff) || 0;
+  if (success) {
+    if (_d >= 30) return { key: 'critical_success', label: '大成功', effect_mult: 2.0 };
+    if (_d >= 15) return { key: 'great_success',    label: '碾压成功', effect_mult: 1.5 };
+    if (_d >= 10) return { key: 'success',          label: '成功',   effect_mult: 1.0 };
+    return           { key: 'barely_success',      label: '勉强成功', effect_mult: 0.6 };
+  }
+  if (_d <= -30) return { key: 'critical_failure', label: '大失败', effect_mult: 2.0 };
+  return            { key: 'failure',          label: '失败',   effect_mult: 0.0 };
+};
+
+/* ════════════════════════════════════════════════════════════
+   六、统一入口（普通检定）
+   ★ v2 新增参数：
+     tpl        'plain' | 'social' | 'romance'   —— 检定模板
+     nat        true 开启自然极值（骰子触顶触底无视修正）
+     adv        1 优势 / -1 劣势 / 0 无
+     favor      好感值（social / romance 用）
+     favorGate  求爱好感门槛（低于它直接必败。出处：zhushen-space）
+   ════════════════════════════════════════════════════════════ */
+this.judge = function (opts) {
+  var _o = opts || {};
+  var _avg  = this.avgOf(_o.values);
+  var _rel  = this.judgePowerRel(_o.values, _o.weights, this._K || 30);
+  var _power = this.judgePower(_o.values, _o.weights);
+  var _req  = this.judgeRequire(_o.base, _o.diffMult, _o.targetMod, _o.stageMod);
+  var _env  = Number(_o.envMod) || 0;
+
+  /* 修正项 = 相对修正 + 环境修正 */
+  var _mod = _rel + _env;
+
+  /* 模板修正（出处：zhushen-space 的杂项检定映射表 / 好感修正） */
+  var _tpl = String(_o.tpl || 'plain');
+  if (_tpl === 'social' || _tpl === 'romance') {
+    var _f = Number(_o.favor);
+    if (isFinite(_f)) {
+      if (_f >= 80) _mod += 6;
+      else if (_f >= 60) _mod += 4;
+      else if (_f >= 40) _mod += 2;
+      else if (_f >= 20) _mod += 0;
+      else if (_f >= 0)  _mod -= 2;
+      else _mod -= 4;
+    }
+  }
+
+  /* ★ 爱慕门槛（求爱）—— 好感过低直接必败，防一上来硬求爱靠运气成功 */
+  var _gate = (_tpl === 'romance') ? (Number(_o.favorGate) || 20) : null;
+  var _gated = (_gate != null) && (Number(_o.favor) < _gate);
+
+  /* 基准成功率：50 + (能力−要求) + 修正 */
+  var _d0   = _power - _req;
+  var _rate = Math.max(5, Math.min(95, Math.round(50 + _d0 + _mod)));
+
+  /* 掷值（支持优势/劣势） */
+  var _roll = this._rollAdv(_o.adv);
+  var _d20  = _o.nat ? this._d20() : null;
+
+  /* ★ 自然极值（出处：zhushen-space）—— 骰子触顶触底，无视修正 */
+  var _natHit = null;
+  if (_o.nat) {
+    if (_d20 >= 20) _natHit = 'crit';
+    else if (_d20 <= 1) _natHit = 'fumble';
+  }
+
+  var _ok, _tier;
+  if (_gated) {
+    _ok = false;
+    _tier = { key: 'failure', label: '失败（好感未到）', effect_mult: 0 };
+  } else if (_natHit === 'crit') {
+    _ok = true;  _tier = { key: 'critical_success', label: '大成功（自然极值）', effect_mult: 2.0 };
+  } else if (_natHit === 'fumble') {
+    _ok = false; _tier = { key: 'critical_failure', label: '大失败（自然极值）', effect_mult: 2.0 };
+  } else {
+    _ok = _roll < _rate;
+    _tier = this.judgeTier(Math.round(_d0 + _mod), _ok);
+  }
+
+  return {
+    action:       String(_o.action || ''),
+    tpl:          _tpl,
+    power:        Math.round(_power * 100) / 100,
+    avg:          Math.round(_avg * 100) / 100,
+    rel_mod:      Math.round(_rel * 100) / 100,
+    env_mod:      _env,
+    total_mod:    Math.round(_mod * 100) / 100,
+    requirement:  _req,
+    diff:         Math.round((_d0 + _mod) * 100) / 100,
+    success_rate: _rate,
+    roll:         Math.round(_roll * 100) / 100,
+    d20:          _d20,
+    natural:      _natHit,
+    gated:        !!_gated,
+    success:      _ok,
+    tier:         _tier.key,
+    tier_label:   _tier.label,
+    effect_mult:  _tier.effect_mult
+  };
+};
+
+/* ════════════════════════════════════════════════════════════
+   七、★ 对战（人 vs 人）—— v2 新增
+   出处：zhushen-space「对战 = 绝对强度差 + 相对修正差」
+   ★ 这是那份文档里最关键的一条：纯相对修正会丢掉绝对强弱
+
+   参数：
+     mine / foe  各自的 { 值, 权重, 强度分, 环境 }
+   强度档差：每差 1 档 ≈ ±6（百分骰），封顶 ±40（给弱方留一线）
+   ════════════════════════════════════════════════════════════ */
+this.judgeContest = function (opts) {
+  var _o = opts || {};
+  var _m = _o.mine || {}, _f = _o.foe || {};
+
+  var _mRel = this.judgePowerRel(_m.values, _m.weights, this._K || 30);
+  var _fRel = this.judgePowerRel(_f.values, _f.weights, this._K || 30);
+
+  var _mStr = Number(_m.strength) || 0;      /* 强度分（阶位/战力档折算） */
+  var _fStr = Number(_f.strength) || 0;
+
+  /* 绝对强度差：每 10 分算 1 档，每档 ±6，封顶 ±40 */
+  var _gapRaw = ((_mStr - _fStr) / 10) * 6;
+  var _gap = Math.max(-40, Math.min(40, Math.round(_gapRaw)));
+
+  var _mEnv = Number(_m.env) || 0;
+  var _fEnv = Number(_f.env) || 0;
+
+  /* P = clamp(50 + 强度差 + (我方修正 − 敌方修正), 5, 95) */
+  var _rate = Math.max(5, Math.min(95, Math.round(50 + _gap + (_mRel + _mEnv) - (_fRel + _fEnv))));
+
+  var _roll = this._rollAdv(_o.adv);
+  var _ok = _roll < _rate;
+
+  return {
+    action:       String(_o.action || ''),
+    mine_rel:     Math.round(_mRel * 100) / 100,
+    foe_rel:      Math.round(_fRel * 100) / 100,
+    strength_gap: _gap,
+    success_rate: _rate,
+    roll:         Math.round(_roll * 100) / 100,
+    success:      _ok,
+    tier:         this.judgeTier(_rate - 50 + (50 - _rate), _ok).key,
+    tier_label:   this.judgeTier(0, _ok).label,
+    effect_mult:  this.judgeTier(0, _ok).effect_mult
+  };
+};
+
+/* ════════════════════════════════════════════════════════════
+   八、★ 日常行动判定 —— v2 新增
+   出处：char_card_1《姬侠传》
+     最终值 = (随机数 + 天赋加成) × (体力 + 难度加成) / 100
+   三层巧思：
+     · 体力是【乘法因子】→ 体力低拖垮所有行动
+     · 成功度 = 【体力消耗】→ 成功省体力、失败费体力（正负反馈闭环）
+     · 一个公式管所有日常行动（只换天赋）
+
+   参数：
+     talent   对应天赋值（0~100）
+     stamina  当前体力（0~100）
+     diff     难度：简单 +20 / 普通 +10 / 困难 +0
+     staminaMax 体力上限（用于换算消耗的绝对值）
+   ════════════════════════════════════════════════════════════ */
+this.judgeAction = function (opts) {
+  var _o = opts || {};
+  var _rnd     = this._roll();                       /* 0~99.99 随机数 */
+  var _talent  = Number(_o.talent) || 0;
+  var _stamina = Number(_o.stamina);
+  if (!isFinite(_stamina)) _stamina = 100;
+  var _diffC   = { '简单': 20, '普通': 10, '困难': 0 }[String(_o.diff || '普通')];
+  if (_diffC == null) _diffC = 10;
+
+  var _val = (_rnd + _talent) * (_stamina + _diffC) / 100;
+
+  var _band;
+  if (_val >= 80)      _band = { key: 'great',   label: '大成功', cost: 0,  gain: 'high',   mult: 1.5 };
+  else if (_val >= 60) _band = { key: 'success', label: '成功',   cost: 5,  gain: 'mid',    mult: 1.0 };
+  else if (_val >= 40) _band = { key: 'so-so',   label: '一般',   cost: 10, gain: 'low',    mult: 0.6 };
+  else if (_val >= 20) _band = { key: 'fail',    label: '失败',   cost: 15, gain: 'tiny',   mult: 0.3 };
+  else                 _band = { key: 'bad',     label: '大失败', cost: 20, gain: 'none',   mult: 0.0 };
+
+  /* 体力消耗换算成绝对点数（若给了上限） */
+  var _mx = Number(_o.staminaMax);
+  var _costAbs = isFinite(_mx) && _mx > 0 ? Math.round(_band.cost / 100 * _mx * 5) : _band.cost;
+
+  return {
+    action:      String(_o.action || ''),
+    roll:        Math.round(_rnd * 100) / 100,
+    talent:      _talent,
+    stamina:     _stamina,
+    diff_c:      _diffC,
+    value:       Math.round(_val * 100) / 100,
+    band:        _band.key,
+    band_label:  _band.label,
+    stamina_cost: _band.cost,
+    stamina_cost_abs: _costAbs,
+    gain:        _band.gain,
+    effect_mult: _band.mult
+  };
+};
+
+/* ════════════════════════════════════════════════════════════
+   九、★ 概率型属性效果 —— v2 新增
+   出处：char_card_1《姬侠传》
+     「心性 → 概率 = 心性值/2 (%) → 本次行动不消耗行动点」
+     「魅力 → 概率 = 魅力值/2 (%) → 好感变化翻倍（只对上升生效）」
+   ★ 要点：属性不是「加数值」，是「按概率触发特殊效果」
+   ════════════════════════════════════════════════════════════ */
+this.judgeProc = function (opts) {
+  var _o = opts || {};
+  var _attr = Number(_o.attr) || 0;
+  var _pct  = Math.max(0, Math.min(95, _attr / 2));
+  var _r    = this._r() * 100;
+  var _hit  = _r < _pct;
+  return {
+    attr:     _attr,
+    chance:   Math.round(_pct * 100) / 100,
+    rolled:   Math.round(_r * 100) / 100,
+    proc:     _hit,
+    label:    _hit ? String(_o.label || '触发') : '未触发'
+  };
+};
+
+/* 供调用方把推进后的种子写回变量（保持可复现） */
+this.judgeSeedOut = function () {
+  return this._lcgState;
+};
+
+/* 从底座读修正斜率（相对修正的 K） */
+this._K = Number(getvar('stat_data.世界.$判定斜率K', { scope: 'local', defaults: 30 })) || 30;
+%>
+
+[判定引擎 v2 已加载。可用：judge() / judgeContest() / judgeAction() / judgeProc() /
+ judgePower() / judgePowerRel() / judgeRequire() / judgeTier() / rel() / avgOf() /
+ _r() / _roll() / _rollAdv() / _d20()]

@@ -1,0 +1,329 @@
+# 血月七夜（狼人杀）· 创作规划
+# 项目级事实来源（skills 正式 schema：project/world/characters/style/entries/mvu/ejs/first_messages）。
+# 机制细则唯一权威 = 同目录 机制总纲.md（本文件不再重复机制细节）。
+# 实现流程依据 = 同目录 实现蓝图.md（严格按 tavern-cards skills 十步）。
+# 立项 2026-09-27；文风已拍板：结构=阶段性反差（热夜冷昼），词料=母猪+无尽骚妈（直接露骨）；user 为 12 分之 1 真实参与者。
+
+project:
+  name: 血月七夜
+  worldbookName: 血月七夜
+  form: charactercard
+  mvu: true
+  avatar: avatar.png        # 待放置（打包 PNG 前就位）
+  ui_mode: frontend
+
+# ─────────────────────────────────────────────────────────
+# 一、世界
+# ─────────────────────────────────────────────────────────
+
+world:
+  overview: |
+    现代世界，唯一超自然物是狼人：血月之夜强制发情变身，兽性驱动杀戮与性。深山温泉旅馆
+    「霞隐庄」所在古老家族世代守着此地是狼巢的秘密，持「银之审判」传统：血月期间每夜日出前
+    必须交出一名被指认者处决。血月之力遮蔽银验，白天无法试身，只能投票处决，死状验真伪——
+    冤案真实发生。其余一切按现实走：暴风雪封山、救援中断、尸检、法律程序，全部真实。
+  regions:
+    - name: 霞隐庄
+      scenes: [大堂与晚餐厅, 温泉区, 客房走廊, 审判台（后院刑台）, 后山林缘（禁区）]
+      description: 单一封闭空间，五场景覆盖全部玩法；12 间独栋离屋间隔二三十米，暴风雪=天然声墙
+  constraints:
+    - 血月七夜：每夜必有人死，七夜未分胜负则狼胜
+    - 双重封闭：暴风雪（现实）+ 血月结界（超自然），出山者死在雪里
+    - 银验失效：白天无法验证狼身份 → 投票处决是唯一手段，死状验真伪
+    - 夜忆清零：全员含狼清晨昨夜归零；NPC 永不陈述昨夜具体事件
+    - 信息隔离：NPC 身份真相只存 $ 前缀隐藏变量，AI 叙事层永不知道谁是狼（机制总纲 §十二 v2）
+
+# ─────────────────────────────────────────────────────────
+# 二、角色（名单已过目默认通过；表面层零身份信息——阵营由脚本指派）
+# 行为池素材（狼面/持物面）不进本文件：脚本侧数据，见机制总纲 §八。
+# ─────────────────────────────────────────────────────────
+
+characters:
+  - name: 庄晚棠
+    type: NPC
+    basic: { age: 38, gender: 女, identity: 霞隐庄老板娘·守狼巢家族末裔·银之审判持有人 }
+    appearance: [丰腴高挑, 常穿改良旗袍, 笑意不到眼底]
+    personality: { base: 圆融, main: [周全, 压场], accent: 悲悯 }
+    surface_hook: 对祖上的秘密知道多少
+  - name: 白蘅
+    type: NPC
+    basic: { age: 26, gender: 女, identity: 管家 }
+    appearance: [清瘦冷淡, 黑发一丝不苟, 说话极简]
+    personality: { base: 冷静, main: [寡言, 精确], accent: 忠直 }
+    surface_hook: 夜里有人在走廊见过她
+  - name: 灶婶
+    type: NPC
+    basic: { age: 45, gender: 女, identity: 厨娘 }
+    appearance: [敦实, 手上常年有烫疤, 嗓门大]
+    personality: { base: 热络, main: [热心, 迷信], accent: 护食 }
+    surface_hook: 山里长大，认得狼毒草
+  - name: 小满
+    type: NPC
+    basic: { age: 19, gender: 女, identity: 本地女侍 }
+    appearance: [娇小, 圆脸, 躲人的眼神]
+    personality: { base: 胆小, main: [怯懦, 依赖], accent: 嘴快 }
+    surface_hook: 老人警告过她别在庄里过血月
+  - name: 姜芸
+    type: NPC
+    basic: { age: 34, gender: 女, identity: 医生 }
+    appearance: [利落短发, 白大褂气质, 指甲剪得极短]
+    personality: { base: 理性, main: [冷静, 求实], accent: 控制欲 }
+    surface_hook: 她的验尸结论能带偏所有人
+  - name: 苏黎
+    type: NPC
+    basic: { age: 24, gender: 女, identity: 网红主播 }
+    appearance: [精致妆容, 打光感, 指甲亮片]
+    personality: { base: 张扬, main: [表演型, 敏感], accent: 恋镜 }
+    surface_hook: 信号断了但镜头还在录
+  - name: 陆霜霜
+    type: NPC
+    basic: { age: 27, gender: 女, identity: 苏黎的摄影师闺蜜 }
+    appearance: [高个, 工装口袋, 咬指甲]
+    personality: { base: 警觉, main: [护主, 记仇], accent: 失眠 }
+    surface_hook: 苏黎指谁她咬谁
+  - name: 闻人夏
+    type: NPC
+    basic: { age: 22, gender: 女, identity: 植物系大学生·独行背包客 }
+    appearance: [晒伤素颜, 帆布包挂标本袋, 袖口有草汁渍]
+    personality: { base: 迟钝于社交, main: [专注, 独行], accent: 对草木话多 }
+    surface_hook: 狼毒草专家，与守卫技能面强关联
+  - name: 程郁
+    type: NPC
+    basic: { age: 29, gender: 女, identity: 休假期刑警 }
+    appearance: [利落马尾, 腰际空枪套, 坐姿总对着门]
+    personality: { base: 沉稳, main: [审讯腔, 责任感], accent: 暴躁底线 }
+    surface_hook: 有枪——血月里枪对狼没用，对人有全用
+  - name: 顾青芜
+    type: NPC
+    basic: { age: 31, gender: 女, identity: 姐姐·带妹妹散心 }
+    appearance: [温婉, 眼下青黑, 手腕缠红绳]
+    personality: { base: 温柔, main: [牺牲型, 偏执护短], accent: 祈祷 }
+    surface_hook: 为妹妹可以钉死任何人
+  - name: 顾青黛
+    type: NPC
+    basic: { age: 18, gender: 女, identity: 妹妹 }
+    appearance: [苍白瘦弱, 咬着下唇, 袖口遮手腕]
+    personality: { base: 沉默, main: [怯生, 恋姐], accent: 夜惧 }
+    surface_hook: 最近夜里有「梦游」，自己不知道
+
+  - name: <user>
+    basic:
+      age: 20
+      gender: 男
+      identity: 独自进山的旅人/摄影师（暂定）
+      relationship: 12 人中唯一的男性，暴风雪前投宿
+      position: 真实参与者——身份（狼/民/四持物）由脚本在开场白后随机指派，与其他 11 人同等风险
+
+# ─────────────────────────────────────────────────────────
+# 三、文风（已拍板：结构=阶段性反差；词料=母猪+无尽骚妈）
+# ─────────────────────────────────────────────────────────
+
+style:
+  perspective: 第二人称锁玩家（视角锁定）；NPC 内心只侧写
+  tone: 直给露骨——脏话麻花五法则全开，母猪/骚妈词料，器官部位直白落地
+  mood: 热夜冷昼（温度律：夜的体温潮湿腥颤 vs 昼的尸斑青晨雾白干涩）
+  structure: 阶段性反差套——行为模式随昼夜切换，性格底色不变（by-style/06 阶段性反差 三份定结构）
+  lexicon: 母猪+无尽骚妈两套词料取词（by-style/03、/02 定用词），craft-05 三栏词表共享
+  reference: 文风五律——同源律（性杀恐同体）/残留律（夜在身体上）/失语律（回避的那个词）/温度律/具体律
+
+# ─────────────────────────────────────────────────────────
+# 四、条目清单（数组顺序=创作顺序；typeLists 见 state）
+# ─────────────────────────────────────────────────────────
+
+entries:
+  # ── before_char ──
+  - name: 世界设定
+    type: 世界观
+    path: 世界书/世界观/世界设定.yaml
+    purpose: 血月七夜/银之审判/狼的设定/人死物灭/血月历
+  - name: 呈现方式
+    type: 扮演准则
+    path: 世界书/扮演准则/呈现方式.yaml
+    purpose: 文风五律＋§十二叙事纪律（第二人称/不写不在场/夜晚=脚本结算窗声明/无依据断言不理睬）
+    rephrase: true
+  - name: 血月秘史
+    type: 时间线
+    path: 世界书/时间线/血月秘史.yaml
+    part: history
+    purpose: 家族守狼巢秘史·银之审判由来·历代血月记录
+  - name: 霞隐庄
+    type: 地理
+    path: 世界书/地理/霞隐庄.yaml
+    part: region
+    purpose: 本馆+五场景+12 独栋离屋+暴风雪声墙+离屋间隔
+  # ── after_char ──
+  - name: 角色速览
+    type: 角色
+    path: 世界书/角色/角色速览.yaml
+    purpose: 12 人一表（≥5 角色必写，character-catalog 规范）
+  - name: 玩家_基础信息
+    type: 角色
+    path: 世界书/角色/旅人/基础信息.yaml
+    part: basic
+    purpose: <user> 投宿旅人档案；身份由脚本指派（身份块见 depth 层）
+  - { name: 庄晚棠, type: NPC, path: 世界书/NPC/庄晚棠.yaml }
+  - { name: 白蘅,   type: NPC, path: 世界书/NPC/白蘅.yaml }
+  - { name: 灶婶,   type: NPC, path: 世界书/NPC/灶婶.yaml }
+  - { name: 小满,   type: NPC, path: 世界书/NPC/小满.yaml }
+  - { name: 姜芸,   type: NPC, path: 世界书/NPC/姜芸.yaml }
+  - { name: 苏黎,   type: NPC, path: 世界书/NPC/苏黎.yaml }
+  - { name: 陆霜霜, type: NPC, path: 世界书/NPC/陆霜霜.yaml }
+  - { name: 闻人夏, type: NPC, path: 世界书/NPC/闻人夏.yaml }
+  - { name: 程郁,   type: NPC, path: 世界书/NPC/程郁.yaml }
+  - { name: 顾青芜, type: NPC, path: 世界书/NPC/顾青芜.yaml }
+  - { name: 顾青黛, type: NPC, path: 世界书/NPC/顾青黛.yaml }
+  # ── depth ──
+  - name: 守庄之物
+    type: 机制
+    path: 世界书/机制/守庄之物.yaml
+    purpose: 四物物性叙事层（铜镜/药囊/银匕/草汁）——只写 AI 可感知层，无数值掷骰表
+  - name: 死状与取证
+    type: 机制
+    path: 世界书/机制/死状与取证.yaml
+    purpose: 六种死状线索表/雪地脚印时效/搜尸搜房规则/疑听不可验证
+  - name: 话术世界
+    type: 机制
+    path: 世界书/机制/话术世界.yaml
+    purpose: 五信息源/三招（述梦/验身/指认链）/NPC 永不陈述昨夜
+  - name: 血月历
+    type: 机制
+    path: 世界书/机制/血月历.yaml
+    purpose: 七夜倒计时的算术恐怖——夜数=存活数算术=死亡的数学
+  - name: 身份_狼
+    type: 机制
+    path: 世界书/机制/身份_狼.yaml
+    purpose: 玩家狼身份块（@@if）——狼队互认/围猎参与/夜议面板引导/白天伪装义务
+  - name: 身份_民
+    type: 机制
+    path: 世界书/机制/身份_民.yaml
+    purpose: 玩家民身份块（@@if）——纯推理视角/入睡选择/话术参与
+  - name: 身份_铜镜
+    type: 机制
+    path: 世界书/机制/身份_铜镜.yaml
+    purpose: 玩家持镜身份块（@@if）——夜照一人/持镜暴露风险/信息管理
+  - name: 身份_药囊
+    type: 机制
+    path: 世界书/机制/身份_药囊.yaml
+    purpose: 玩家持药身份块（@@if）——毒药+麻沸散操作/暴露面
+  - name: 身份_银匕
+    type: 机制
+    path: 世界书/机制/身份_银匕.yaml
+    purpose: 玩家持匕身份块（@@if）——遇袭搏命/以银代众抉择
+  - name: 身份_草汁
+    type: 机制
+    path: 世界书/机制/身份_草汁.yaml
+    purpose: 玩家持汁身份块（@@if）——涂门护一夜/续采禁区
+  - name: 阶段指导
+    type: 阶段指导
+    path: 世界书/阶段指导/阶段指导.yaml
+    purpose: 七夜主持策略——EJS 按天数×昼夜×话术阶段（试探/对峙/审判）渲染
+
+# ─────────────────────────────────────────────────────────
+# 五、MVU（schema.ts 的依据；schema-agent 编写 schema.ts，主代理写 initvar/更新规则）
+# 铁律：名单/事实/指令全部字符串整串 replace，不用数组；11 人命名空间预置，只 replace 值永不新增键
+# ─────────────────────────────────────────────────────────
+
+mvu:
+  structure: |
+    stat_data:
+      _世界:            # AI 可见不可改——脚本每晨/每事件生成
+        天数 / 阶段(夜|昼) / 存活名单("名1|名2|…") / 昨夜死讯 / 公开事实(累积) / 今日广播(中立行为指令+尸体状态+知情集摘要)
+      _玩家:            # AI 可见不可改——AI 读它写主观体验，改不了真相
+        身份 / 存活     # 血梦原文/同伴名单/藏处位置/被种夜 一律不进 MVU（_ 前缀会注入 prompt=泄密），存脚本变量由 UI 渲染
+      _人物.${11人}.已知 # AI 可见不可改——演 NPC 反应的知情边界
+      人物.${11人}:     # AI 可见可改（叙事判定的落库通道，schema clamp 0-100）
+        好感 / 怀疑
+      世界:             # AI 唯一申报通道（脚本每晨消费后清空）
+        传递事件        # AI 申报本轮信息传递，脚本裁决写入 _人物.X.已知
+      $物品:            # AI 不可见——四物在谁手/存量，UI 与脚本读
+        草汁存量 / 毒药已用 / 麻沸散已用 / 银匕在身 / 铜镜在身 / 草汁在身 / 药囊在身
+      $人物.${11人}:    # AI 不可见——身份真相脚本专属
+        身份 / 持物 / 被种 / 兽化 / 存活
+    AI 可改变量仅三处：人物.好感、人物.怀疑、世界.传递事件——脚本=裁判的变量层落实。
+    对局中间态存脚本变量(type:script)，不入 MVU：血梦 / 同伴 / 玩家藏处 / 玩家被种夜 / 藏处{职} / 互疑{谁}{对谁} / 镜验{持镜人}(照镜私知) / 暴露{人}(公开传递神信息的狼队权重加成) / 同屋{人} / 银匕随身 / 今夜麻沸(晨起头痛线索)。
+  variables:
+    - { path: _世界.天数, type: number, range: 1~7 }
+    - { path: _世界.阶段, enum: [夜, 昼] }
+    - { path: _世界.存活名单, description: "名1|名2|…整串 replace（MVU 数组陷阱）" }
+    - { path: _世界.昨夜死讯, description: "脚本生成：谁/死因/发现情境，无则空串" }
+    - { path: _世界.公开事实, description: "累积公开信息（死者/公开遗言/处决验出），脚本维护" }
+    - { path: _世界.今日广播, description: "脚本每晨生成：今日行为指令（中立措辞）+尸体状态+在场 NPC 知情集摘要" }
+    - { path: _玩家.身份, enum: [未指派, 狼, 民, 铜镜, 药囊, 银匕, 草汁] }
+    - { path: _玩家.存活 }
+    - { path: "人物.${庄晚棠|白蘅|灶婶|小满|姜芸|苏黎|陆霜霜|闻人夏|程郁|顾青芜|顾青黛}.好感", type: number, range: 0~100, description: "对玩家的信任依恋，进 NPC 投票权重；AI 叙事判定落库" }
+    - { path: "人物.${庄晚棠|白蘅|灶婶|小满|姜芸|苏黎|陆霜霜|闻人夏|程郁|顾青芜|顾青黛}.怀疑", type: number, range: 0~100, description: "对玩家是否为狼的疑心，进投票权重" }
+    - { path: "_人物.${庄晚棠|白蘅|灶婶|小满|姜芸|苏黎|陆霜霜|闻人夏|程郁|顾青芜|顾青黛}.已知", description: "知情集（她被告知/目击过什么）——脚本裁决入账，AI 只读" }
+    - { path: 世界.传递事件, description: "AI 申报：本轮谁把什么信息告诉了谁；脚本每晨消费入账后清空" }
+    - { path: $物品.草汁存量, type: number, range: 0~3 }
+    - { path: $物品.毒药已用, enum: [否, 是] }
+    - { path: $物品.麻沸散已用, enum: [否, 是] }
+    - { path: $物品.银匕在身, description: "持有人名或空串" }
+    - { path: $物品.铜镜在身, description: "持有人名或空串" }
+    - { path: $物品.草汁在身, description: "持有人名或空串" }
+    - { path: $物品.药囊在身, description: "持有人名或空串" }
+    - { path: "$人物.${庄晚棠|白蘅|灶婶|小满|姜芸|苏黎|陆霜霜|闻人夏|程郁|顾青芜|顾青黛}.${身份|持物|被种|兽化|存活}", description: "身份真相脚本专属：身份(未指派|狼|民|铜镜|药囊|银匕|草汁)/持物/被种/兽化/存活" }
+
+# ─────────────────────────────────────────────────────────
+# 六、EJS（ejs.entries 正式段；condition 变量全部在 schema 有定义）
+# ─────────────────────────────────────────────────────────
+
+ejs:
+  entries:
+    - name: 身份_狼
+      complexity: 条目显隐
+      condition: "getvar('stat_data._玩家.身份', { defaults: '' }) === '狼'"
+    - name: 身份_民
+      complexity: 条目显隐
+      condition: "getvar('stat_data._玩家.身份', { defaults: '' }) === '民'"
+    - name: 身份_铜镜
+      complexity: 条目显隐
+      condition: "getvar('stat_data._玩家.身份', { defaults: '' }) === '铜镜'"
+    - name: 身份_药囊
+      complexity: 条目显隐
+      condition: "getvar('stat_data._玩家.身份', { defaults: '' }) === '药囊'"
+    - name: 身份_银匕
+      complexity: 条目显隐
+      condition: "getvar('stat_data._玩家.身份', { defaults: '' }) === '银匕'"
+    - name: 身份_草汁
+      complexity: 条目显隐
+      condition: "getvar('stat_data._玩家.身份', { defaults: '' }) === '草汁'"
+    - name: 阶段指导
+      complexity: 段落控制
+      stages:
+        - name: 试探期
+          condition: "getvar('stat_data._世界.天数', { defaults: 1 }) <= 2"
+        - name: 对峙期
+          condition: "getvar('stat_data._世界.天数', { defaults: 1 }) >= 3 && getvar('stat_data._世界.天数', { defaults: 1 }) <= 5"
+        - name: 审判期
+          condition: "getvar('stat_data._世界.天数', { defaults: 1 }) >= 6"
+      # 夜/昼氛围与天数动态文本在条目内容内用动态文本层级处理（getvar 直插）
+
+# ─────────────────────────────────────────────────────────
+# 七、开场白（3 条，全部收束于晚餐夜·身份未指派；N 条走 N 条感知通道）
+# ─────────────────────────────────────────────────────────
+
+first_messages:
+  - format: 叙事式
+    word_count: 700~900
+    output_path: 开场白/0.txt
+    scene: 投宿之夜——暴风雪封山前的晚餐，血月升起
+    opening_situation: |
+      独行投宿。晚餐桌上 11 位宿客+老板娘逐一过场（速览式亮相），血月升起的瞬间全员失神一拍。
+      结尾开场点：灶婶收走你的碗时压低声音说「今夜早些闩门」，走廊尽头你的房门虚掩着，门缝里有灯。
+  - format: 叙事式
+    word_count: 700~900
+    output_path: 开场白/1.txt
+    scene: 自驾被困——山路塌方前弃车步行投宿
+    opening_situation: |
+      车抛锚后踏雪进庄，从温泉区方向入场——撞见苏黎直播陆霜霜掌镜，被镜头和 11 双眼睛同时打量。
+      感知通道：视觉先行（美人+镜头+温泉雾）。结尾开场点：庄晚棠递来干毛巾，说「住下可以，七夜之内别想走」。
+  - format: 叙事式
+    word_count: 700~900
+    output_path: 开场白/2.txt
+    scene: 搜救未遂——随救援队进山寻人被困（与程郁旧识）
+    opening_situation: |
+      你与休假随队的程郁是旧识（她当年办过你家人的案子）。救援中止，全员滞留。
+      感知通道：听觉先行（风声+程郁的对讲机杂音+晚餐桌上的刀叉声）。结尾开场点：程郁把你拉到走廊，说了半句「这地方三年前……」就被白蘅的铃声打断。
+  # 三条均不需 initvar_override：同一初始态（身份未指派），旧识钩子走叙事不建机制差
+
+status: 条目清单已定稿 —— 等待用户确认 entries 后进入 schema.ts（步骤 3）

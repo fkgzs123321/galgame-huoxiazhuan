@@ -1,0 +1,15 @@
+{
+  "id": "fjb-rel-change-beautify",
+  "scriptName": "关系变化美化",
+  "findRegex": "/<RelChange\\s+char=\"([^\"]+)\"\\s+type=\"([^\"]+)\"\\s+delta=\"([+-]?\\d+)\"\\s+reason=\"([^\"]+)\"\\/>/g",
+  "replaceString": "<div class=\"fjb-relchange\" data-type=\"$2\" data-delta=\"$3\"><div class=\"fjb-relchange-avatar\">$1</div><div class=\"fjb-relchange-body\"><div class=\"fjb-relchange-char\">$1</div><div class=\"fjb-relchange-info\"><span class=\"fjb-relchange-type\">$2</span><span class=\"fjb-relchange-delta\">$3</span></div><div class=\"fjb-relchange-reason\">$4</div></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

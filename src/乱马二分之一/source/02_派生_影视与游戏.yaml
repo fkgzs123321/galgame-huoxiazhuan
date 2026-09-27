@@ -1,0 +1,139 @@
+# 02 · 派生作品（TV 动画 / 剧场版 / OVA / 真人 / 游戏）
+# 口径：人名地名一律日文汉字转简体，不用台版盗版华人姓氏
+# 可信度：★ 多源交叉一致 ｜ ☆ 单一来源 ｜ ? 存疑
+
+tv_1989:
+  studio: Studio DEEN
+  network: 富士电视台
+  segments:
+    - name: 乱马½（无印）
+      air: 1989/4/15 - 1989/9/16（周六 19:30）
+      episodes: 18
+    - name: 乱马½ 热斗篇
+      air: 1989/10/20 - 1992/9/25（周五 17:30）
+      episodes: 143
+  total_episodes: 161
+  coverage: 约原作第 1 卷 - 第 22 卷开头（第 217 话前后）
+  not_adapted: [麝香王朝篇, 公纹道场篇, 凤凰山终章]
+  differences:
+    - 全校直到很后期都不知道乱马会变身（原作里同学很早就知道）
+    - 五寸钉光出场极晚，前期戏份由动画原创的九能家忍者猿隐佐助顶替
+    - 大量动画原创回与原创角色（铃铃·兰兰、大黑香织、杨贵妃、武藏小金、雷门手鞠等）
+    - 篇章顺序重排
+    - 无结局，诅咒全未解决
+  note: 日本无官方分季，只有上述两段。美版 Viz 切成 7 季并重排顺序，不可作考据依据。 ☆
+
+tv_2024:
+  studio: MAPPA
+  network: 日本电视台 + Netflix
+  seasons:
+    - season: 第1季
+      air: 2024/10/6 - 2024/12/22
+      episodes: 12（第1-12话）
+    - season: 第2季
+      air: 2025/10/5 - 2025/12/21
+      episodes: 12（第13-24话）
+    - season: 第3季
+      air: 2026/10/3 起
+      episodes: 未公布（第25话起；官方先行上映会已标明第25、26话）
+      new_cast: [大文字煎太郎（福山润）, 红翼（田中美海）]
+      note: 截至 2026-09-22 尚未播出，内容未详
+  episode_mapping:
+    status: 无官方逐话对照表
+    confirmed_anchors:
+      - 九能小太刀登场 = 第2卷 PART9，对应新版第6话 ☆
+      - 珊璞登场 = 第4卷 PART4，对应新版第10话 ☆
+    estimate: 第1季≈第1-5卷，第2季≈第5/6-11卷前后，第3季未详（推算，非考据）
+  differences_from_1989:
+    - 整体更忠实原作（天道靡睡衣改回原作背心短裤；九能与天道靡课堂对话改回原作版）
+    - 裸露做令和合规处理：保留入浴戏但不画乳头、不画腰臀（黄金档限制）
+    - 删改部分中国共产主义象征 ★
+    - 战斗作画大幅强化
+    - 加入漫画式拟声手写字幕
+    - 主要角色沿用 1989 版声优
+
+movies:
+  - no: 1
+    title: 中国寝昆仑大决战！规则无视的激斗篇!!
+    date: 1991/11/02
+    runtime: 74分
+    director: 井内秀治
+    studio: Studio DEEN
+    plot: |
+      八宝斋偷内衣引发全镇追捕。麒麟王子持「幸运卷轴」选拔新娘，
+      小茜被掳往中国寝昆仑，乱马一行远征营救。
+    original_characters: [麒麟, 荔枝, 七福神武道家（毗沙门天、大黑星、大白星、惠比天、门龙等）]
+  - no: 2
+    title: 决战桃幻乡！夺回新娘子!!
+    date: 1992/08/01
+    runtime: 60分
+    plot: |
+      九能游船遇难漂到南海无人岛，女生接连失踪、现场都留下桃子。
+      犯人是浮空岛桃幻乡的托马王子，抓人办新娘选拔赛。
+      桃幻乡的桃树树液能让触水者变成男人 —— 对乱马是个大钩子。
+    original_characters: [托马王子, 半兽人部下 Sarutoru / Torristan / Wonton]
+  - no: 3
+    title: 超无差别决战！乱马队VS传说的凤凰
+    date: 1994/08/20
+    runtime: 31分
+    note: 三片联映；因片长偏短，美版 Viz 归入 OVA 发行
+    plot: |
+      并非原创剧情，改编自单行本第 29 卷 PART1-2「凤凰剑」篇：
+      九能在邪马台古董店买下凤凰蛋，蛋在他头顶孵化，东京大乱。
+      唯一一部没有发生绑架、没离开风林馆的剧场版。
+
+ovas:
+  note: 部数口径不一：百度 15（含 2 部 MV + 总集篇）／英文维基 12／德文站 13
+  list:
+    - { no: 1,  title: 热斗歌合战 其1, date: 1990/11/07, type: MV }
+    - { no: 2,  title: 热斗歌合战 其2, date: 1990/11/21, type: MV }
+    - { no: 3,  title: 珊璞暴变！反转宝珠惹的祸, date: 1993/10/21, props: [反转宝珠], note: 发售日另有 1993/12/07 一说 ? }
+    - { no: 4,  title: 天道家混乱的圣诞节, date: 1993/12/17, note: 含九能切西瓜才艺 }
+    - { no: 5,  title: 小茜VS乱马·妈妈的味道由我守护, date: 1994/02/18, note: 天道亡母食谱 }
+    - { no: 6,  title: 校园吹起风暴！身材剧变的雏子老师, date: 1994/04/21, characters: [二宫雏子, 八宝斋] }
+    - { no: 7,  title: 道场继承者 上, date: 1994/06/17, characters: [公纹龙], source: 原作第28卷 }
+    - { no: 8,  title: 道场继承者 下, date: 1994/08/19, techniques: [山千拳, 海千拳] }
+    - { no: 9,  title: SPECIAL 苏醒的记忆 上, date: 1994/12/16, places: [流幻泽·飞御森林], characters: [真之介] }
+    - { no: 10, title: SPECIAL 苏醒的记忆 下, date: 1995/02/17, note: 八歧大蛇、生命之水 }
+    - { no: 11, title: 总集篇 29个打不够的家伙, date: 1995/03/03, type: 总集篇 }
+    - { no: 12, title: SUPER 破恋洞的诅咒！吾爱永存, date: 1995/09/21, places: [破恋洞], source: 原作第27卷 }
+    - { no: 13, title: SUPER 邪恶之鬼, date: 1995/11/17 }
+    - { no: 14, title: SUPER 两个小茜「乱马，看着我！」, date: 1996/01/19, note: 分身小茜 }
+    - { no: 15, title: It's a Rumic World 恶梦！春眠香, date: 2010/01/29(BOX) / 2010/10/20(单售), source: 原作第34卷 }
+
+live_action:
+  - type: 单集电视剧 SP
+    date: 2011/12/09
+    network: 日本电视台（19:00-20:54）
+    rating: 7.9%
+    director: 西村了
+    writer: 泉吉纮
+    cast:
+      天道茜: 新垣结衣
+      男乱马: 贺来贤人
+      女乱马: 夏菜
+      早乙女玄马: 古田新太
+      天道早云: 生濑胜久
+      天道霞: 长谷川京子
+      天道靡: 西山茉希
+      九能带刀: 永山绚斗
+      小乃东风: 谷原章介
+      五寸钉光: 金井勇太
+      原创反派: 教头小蒲田加毛依（田山凉成）
+  - type: 舞台剧
+    status: 未详（未找到官方记录）
+
+games:
+  note: 无确认的「美少女游戏式攻略女性角色」系统。分支与多结局集中在《とらわれの花嫁》与《白兰爱歌》。
+  list:
+    - { title: 乱马½ とらわれの花嫁, platform: PC Engine CD, date: 1990/12/07, genre: 数字漫画＋分支选项 }
+    - { title: 乱马½ 町内激斗篇, platform: SFC, date: 1992/03/27, genre: 格斗, note: 美版名 Street Combat }
+    - { title: 乱马½ 热烈格斗篇, platform: GB, date: 1992/08/17, genre: ARPG }
+    - { title: 乱马½ Hard Battle 爆烈乱斗篇, platform: SFC, date: 1992/12/25, genre: 格斗 }
+    - { title: 乱马½ 白兰爱歌, platform: MEGA-CD, date: 1993/04/23, genre: 视觉小说, note: 原创女主角南条亚里沙 }
+    - { title: 乱马½ 赤猫团的秘宝, platform: PC Engine CD, date: 1993/04/23, genre: ARPG, note: 原作 BOSS 为赤猫团 }
+    - { title: 乱马½ 超技乱舞篇, platform: SFC, date: 1994/04/28, genre: ARPG }
+    - { title: 乱马½ 格剧问答!!, platform: GB, date: 1993, genre: 问答RPG }
+    - { title: 乱马½ 奥义邪暗拳, platform: Satellaview, date: 1995/07/10, genre: 落物解谜 }
+    - { title: 乱马½ 飞龙传说, platform: PC-98 / MSX, date: 1992, genre: 点击冒险 }
+    - { title: 乱马½ バトルルネサンス, platform: PS, date: 1996, genre: 格斗 }

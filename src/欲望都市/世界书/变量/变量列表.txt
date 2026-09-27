@@ -1,0 +1,6 @@
+---
+<status_current_variable>
+{{format_message_variable::stat_data.时间}}
+{{format_message_variable::stat_data.玩家}}
+{{format_message_variable::stat_data.排班}}
+</status_current_variable>

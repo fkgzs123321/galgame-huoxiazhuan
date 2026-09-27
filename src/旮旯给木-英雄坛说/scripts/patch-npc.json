@@ -1,0 +1,2888 @@
+[
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/古松道长"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/苍月道长"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/清虚道长"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/商宝震"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/商剑鸣"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/王维扬"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/雪山教头"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/封万剑"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/白瑞德"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/腾王丸"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/花十郎"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/和仲阳"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/方长老"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/余鸿儒"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/华佗"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/北海鳄神"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/娜可露"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/葛洪"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/留孙真人"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/茅盈"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/老裁缝"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/小裁缝"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/葛朗台"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/荷西"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/张屠夫"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/小书童"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/茅十七"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/采花大盗"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/民团团丁"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/官兵"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/寻捕"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/公子哥"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/杂货贩"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/老花镜主人"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/王剑杰"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/王剑英"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/阎基"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/平阿四"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/欧阳千善"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/马千刚"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/赵千猛"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/齐万翼"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/韩长老"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/齐林天"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/褚红灯"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/王万轫"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/谷虚道长"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/天津虾"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/易容师"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/山大王"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/食野太郎"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/明月"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/独行侠"
+ },
+ {
+  "op": "remove",
+  "path": "/entryManifest/NPC/镇上的人"
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/古松道长",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/古松道长.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "古松道长"
+   ],
+   "abstract": "NPC：古松道长",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "古松道长"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 600
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/苍月道长",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/苍月道长.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "苍月道长"
+   ],
+   "abstract": "NPC：苍月道长",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "苍月道长"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 601
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/清虚道长",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/清虚道长.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "清虚道长"
+   ],
+   "abstract": "NPC：清虚道长",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "清虚道长"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 602
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/商宝震",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/商宝震.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "商宝震"
+   ],
+   "abstract": "NPC：商宝震",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "商宝震"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 603
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/商剑鸣",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/商剑鸣.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "商剑鸣"
+   ],
+   "abstract": "NPC：商剑鸣",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "商剑鸣"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 604
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/王维扬",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/王维扬.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "王维扬"
+   ],
+   "abstract": "NPC：王维扬",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "王维扬"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 605
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/雪山教头",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/雪山教头.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "雪山教头"
+   ],
+   "abstract": "NPC：雪山教头",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "雪山教头"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 606
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/封万剑",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/封万剑.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "封万剑"
+   ],
+   "abstract": "NPC：封万剑",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "封万剑"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 607
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/白瑞德",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/白瑞德.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "白瑞德"
+   ],
+   "abstract": "NPC：白瑞德",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "白瑞德"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 608
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/腾王丸",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/腾王丸.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "腾王丸"
+   ],
+   "abstract": "NPC：腾王丸",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "腾王丸"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 609
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/花十郎",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/花十郎.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "花十郎"
+   ],
+   "abstract": "NPC：花十郎",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "花十郎"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 610
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/和仲阳",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/和仲阳.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "和仲阳"
+   ],
+   "abstract": "NPC：和仲阳",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "和仲阳"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 611
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/方长老",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/方长老.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "方长老"
+   ],
+   "abstract": "NPC：方长老",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "方长老"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 612
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/余鸿儒",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/余鸿儒.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "余鸿儒"
+   ],
+   "abstract": "NPC：余鸿儒",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "余鸿儒"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 613
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/华佗",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/华佗.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "华佗"
+   ],
+   "abstract": "NPC：华佗",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "华佗"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 614
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/北海鳄神",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/北海鳄神.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "北海鳄神"
+   ],
+   "abstract": "NPC：北海鳄神",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "北海鳄神"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 615
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/娜可露",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/娜可露.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "娜可露"
+   ],
+   "abstract": "NPC：娜可露",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "娜可露"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 616
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/葛洪",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/葛洪.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "葛洪"
+   ],
+   "abstract": "NPC：葛洪",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "葛洪"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 617
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/留孙真人",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/留孙真人.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "留孙真人"
+   ],
+   "abstract": "NPC：留孙真人",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "留孙真人"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 618
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/茅盈",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/茅盈.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "茅盈"
+   ],
+   "abstract": "NPC：茅盈",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "茅盈"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 619
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/老裁缝",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/老裁缝.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "老裁缝"
+   ],
+   "abstract": "NPC：老裁缝",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "老裁缝"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 620
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/小裁缝",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/小裁缝.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "小裁缝"
+   ],
+   "abstract": "NPC：小裁缝",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "小裁缝"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 621
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/葛朗台",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/葛朗台.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "葛朗台"
+   ],
+   "abstract": "NPC：葛朗台",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "葛朗台"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 622
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/荷西",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/荷西.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "荷西"
+   ],
+   "abstract": "NPC：荷西",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "荷西"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 623
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/张屠夫",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/张屠夫.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "张屠夫"
+   ],
+   "abstract": "NPC：张屠夫",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "张屠夫"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 624
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/小书童",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/小书童.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "小书童"
+   ],
+   "abstract": "NPC：小书童",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "小书童"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 625
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/茅十七",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/茅十七.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "茅十七"
+   ],
+   "abstract": "NPC：茅十七",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "茅十七"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 626
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/采花大盗",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/采花大盗.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "采花大盗"
+   ],
+   "abstract": "NPC：采花大盗",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "采花大盗"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 627
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/民团团丁",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/民团团丁.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "民团团丁"
+   ],
+   "abstract": "NPC：民团团丁",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "民团团丁"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 628
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/官兵",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/官兵.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "官兵"
+   ],
+   "abstract": "NPC：官兵",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "官兵"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 629
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/寻捕",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/寻捕.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "寻捕"
+   ],
+   "abstract": "NPC：寻捕",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "寻捕"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 630
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/公子哥",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/公子哥.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "公子哥"
+   ],
+   "abstract": "NPC：公子哥",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "公子哥"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 631
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/杂货贩",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/杂货贩.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "杂货贩"
+   ],
+   "abstract": "NPC：杂货贩",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "杂货贩"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 632
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/老花镜主人",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/老花镜主人.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "老花镜主人"
+   ],
+   "abstract": "NPC：老花镜主人",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "老花镜主人"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 633
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/王剑杰",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/王剑杰.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "王剑杰"
+   ],
+   "abstract": "NPC：王剑杰",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "王剑杰"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 634
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/王剑英",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/王剑英.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "王剑英"
+   ],
+   "abstract": "NPC：王剑英",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "王剑英"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 635
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/阎基",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/阎基.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "阎基"
+   ],
+   "abstract": "NPC：阎基",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "阎基"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 636
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/平阿四",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/平阿四.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "平阿四"
+   ],
+   "abstract": "NPC：平阿四",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "平阿四"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 637
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/欧阳千善",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/欧阳千善.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "欧阳千善"
+   ],
+   "abstract": "NPC：欧阳千善",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "欧阳千善"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 638
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/马千刚",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/马千刚.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "马千刚"
+   ],
+   "abstract": "NPC：马千刚",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "马千刚"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 639
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/赵千猛",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/赵千猛.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "赵千猛"
+   ],
+   "abstract": "NPC：赵千猛",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "赵千猛"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 640
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/齐万翼",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/齐万翼.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "齐万翼"
+   ],
+   "abstract": "NPC：齐万翼",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "齐万翼"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 641
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/韩长老",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/韩长老.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "韩长老"
+   ],
+   "abstract": "NPC：韩长老",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "韩长老"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 642
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/齐林天",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/齐林天.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "齐林天"
+   ],
+   "abstract": "NPC：齐林天",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "齐林天"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 643
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/褚红灯",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/褚红灯.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "褚红灯"
+   ],
+   "abstract": "NPC：褚红灯",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "褚红灯"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 644
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/王万轫",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/王万轫.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "王万轫"
+   ],
+   "abstract": "NPC：王万轫",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "王万轫"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 645
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/谷虚道长",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/谷虚道长.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "谷虚道长"
+   ],
+   "abstract": "NPC：谷虚道长",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "谷虚道长"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 646
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/天津虾",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/天津虾.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "天津虾"
+   ],
+   "abstract": "NPC：天津虾",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "天津虾"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 647
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/易容师",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/易容师.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "易容师"
+   ],
+   "abstract": "NPC：易容师",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "易容师"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 648
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/山大王",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/山大王.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "山大王"
+   ],
+   "abstract": "NPC：山大王",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "山大王"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 649
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/食野太郎",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/食野太郎.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "食野太郎"
+   ],
+   "abstract": "NPC：食野太郎",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "食野太郎"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 650
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/明月",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/明月.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "明月"
+   ],
+   "abstract": "NPC：明月",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "明月"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 651
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/独行侠",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/独行侠.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "独行侠"
+   ],
+   "abstract": "NPC：独行侠",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "独行侠"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 652
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/小女孩",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/小女孩.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "小女孩"
+   ],
+   "abstract": "NPC：小女孩",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "小女孩"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 653
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/小商贩",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/小商贩.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "小商贩"
+   ],
+   "abstract": "NPC：小商贩",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "小商贩"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 654
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/游客",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/游客.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "游客"
+   ],
+   "abstract": "NPC：游客",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "游客"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 655
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/店小二",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/店小二.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "店小二"
+   ],
+   "abstract": "NPC：店小二",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "店小二"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 656
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/厨师",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/厨师.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "厨师"
+   ],
+   "abstract": "NPC：厨师",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "厨师"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 657
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/挑夫",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/挑夫.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "挑夫"
+   ],
+   "abstract": "NPC：挑夫",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "挑夫"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 658
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/盐商",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/盐商.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "盐商"
+   ],
+   "abstract": "NPC：盐商",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "盐商"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 659
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/工地管事",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/工地管事.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "工地管事"
+   ],
+   "abstract": "NPC：工地管事",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "工地管事"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 660
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/石料管事",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/石料管事.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "石料管事"
+   ],
+   "abstract": "NPC：石料管事",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "石料管事"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 661
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/独脚大盗",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/独脚大盗.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "独脚大盗"
+   ],
+   "abstract": "NPC：独脚大盗",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "独脚大盗"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 662
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/白衣教众",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/白衣教众.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "白衣教众"
+   ],
+   "abstract": "NPC：白衣教众",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "白衣教众"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 663
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/黑衣教众",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/黑衣教众.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "黑衣教众"
+   ],
+   "abstract": "NPC：黑衣教众",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "黑衣教众"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 664
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/红衣教众",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/红衣教众.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "红衣教众"
+   ],
+   "abstract": "NPC：红衣教众",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "红衣教众"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 665
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/蓝衣教众",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/蓝衣教众.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "蓝衣教众"
+   ],
+   "abstract": "NPC：蓝衣教众",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "蓝衣教众"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 666
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/进香客",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/进香客.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "进香客"
+   ],
+   "abstract": "NPC：进香客",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "进香客"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 667
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/清风",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/清风.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "清风"
+   ],
+   "abstract": "NPC：清风",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "清风"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 668
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/卡尔",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/卡尔.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "卡尔"
+   ],
+   "abstract": "NPC：卡尔",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "卡尔"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 669
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/华岳",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/华岳.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "华岳"
+   ],
+   "abstract": "NPC：华岳",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "华岳"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 670
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/北海鳄神看门人",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/北海鳄神看门人.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "北海鳄神看门人"
+   ],
+   "abstract": "NPC：北海鳄神看门人",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "北海鳄神看门人"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 671
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/留孙真人看门人",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/留孙真人看门人.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "留孙真人看门人"
+   ],
+   "abstract": "NPC：留孙真人看门人",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "留孙真人看门人"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 672
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/坛中喽啰",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/坛中喽啰.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "坛中喽啰"
+   ],
+   "abstract": "NPC：坛中喽啰",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "坛中喽啰"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 673
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/青龙坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/青龙坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "青龙坛主"
+   ],
+   "abstract": "NPC：青龙坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "青龙坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 674
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/白虎坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/白虎坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "白虎坛主"
+   ],
+   "abstract": "NPC：白虎坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "白虎坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 675
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/朱雀坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/朱雀坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "朱雀坛主"
+   ],
+   "abstract": "NPC：朱雀坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "朱雀坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 676
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/玄武坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/玄武坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "玄武坛主"
+   ],
+   "abstract": "NPC：玄武坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "玄武坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 677
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/天微坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/天微坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "天微坛主"
+   ],
+   "abstract": "NPC：天微坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "天微坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 678
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/紫煞坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/紫煞坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "紫煞坛主"
+   ],
+   "abstract": "NPC：紫煞坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "紫煞坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 679
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/山岚坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/山岚坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "山岚坛主"
+   ],
+   "abstract": "NPC：山岚坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "山岚坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 680
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/地罡坛主",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/地罡坛主.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "地罡坛主"
+   ],
+   "abstract": "NPC：地罡坛主",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "地罡坛主"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 681
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/总瓢把子",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/总瓢把子.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "总瓢把子"
+   ],
+   "abstract": "NPC：总瓢把子",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "总瓢把子"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 682
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/东方求败",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/东方求败.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "东方求败"
+   ],
+   "abstract": "NPC：东方求败",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "东方求败"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 683
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/我是谁",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/我是谁.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "我是谁"
+   ],
+   "abstract": "NPC：我是谁",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "我是谁"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 684
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/谁是我",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/谁是我.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "谁是我"
+   ],
+   "abstract": "NPC：谁是我",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "谁是我"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 685
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/道德和尚",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/道德和尚.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "道德和尚"
+   ],
+   "abstract": "NPC：道德和尚",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "道德和尚"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 686
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/十卫兵",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/十卫兵.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "十卫兵"
+   ],
+   "abstract": "NPC：十卫兵",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "十卫兵"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 687
+   }
+  }
+ },
+ {
+  "op": "add",
+  "path": "/entryManifest/NPC/镇上的人",
+  "value": {
+   "contents": [
+    {
+     "content": "@@if getvar('stat_data.世界.底座', { defaults: '' }) === 'yingxiong'"
+    },
+    {
+     "file": "世界书/NPC/镇上的人.yaml"
+    }
+   ],
+   "scope": "specific",
+   "keywords": [
+    "镇上的人"
+   ],
+   "abstract": "NPC：镇上的人",
+   "enabled": true,
+   "strategy": {
+    "type": "selective",
+    "keys": [
+     "镇上的人"
+    ]
+   },
+   "position": {
+    "type": "after_character_definition",
+    "order": 688
+   }
+  }
+ }
+]

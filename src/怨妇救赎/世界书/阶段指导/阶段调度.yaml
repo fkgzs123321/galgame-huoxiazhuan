@@ -1,0 +1,20 @@
+@@generate_before
+@@private
+# 阶段调度（多阶段内容按需拉取·蓝灯）
+<%_ const tgt = getvar('stat_data.当前目标', { defaults: '' }); _%>
+<%_ const jd = tgt ? Number(getvar('stat_data.女主.' + tgt + '.阶段', { defaults: 1 })) || 1 : 0; _%>
+<%_ const juolie = tgt ? getvar('stat_data.女主.' + tgt + '.决裂', { defaults: false }) === true : false; _%>
+<%_ const stageNames = ['', '陌生·攻略', '暧昧·初孕', '觉醒·掌控', '巅峰·蜜月', '决裂·火葬场']; _%>
+
+<%_ if (tgt && getvar('stat_data.女主.' + tgt, { defaults: null })) { _%>
+## 当前目标：<%- tgt %>（阶段<%- jd %>/5 · <%- stageNames[jd] %>）
+<%- await getwi(tgt + '_私密档案') %>
+<%- await getwi(tgt + '_阶段行为') %>
+<%_ if (juolie) { _%>
+<%- await getwi('追夫火葬场') %>
+<%_ } _%>
+<%_ } else { _%>
+## 当前目标：无（自由时段）
+- 可自由推进：结识新的有夫之妇（8 位花名册见名录总表）、经营已有关系、处理家庭危机事件、或选定当前目标（写入"当前目标"变量）。
+- 每位女主独立五阶段推进（陌生攻略→暧昧初孕→觉醒掌控→巅峰蜜月→决裂火葬场），详细阶段内容在她成为当前目标后按阶段展开。
+<%_ } _%>

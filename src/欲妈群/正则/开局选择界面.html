@@ -1,0 +1,136 @@
+<body>
+<style>
+  .ymq-open{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;max-width:560px;margin:14px auto;padding:16px 16px 20px;border-radius:14px;background:linear-gradient(160deg,rgba(45,16,32,.96),rgba(26,10,20,.97));border:1px solid rgba(244,114,182,.3);color:#fff0f5;line-height:1.7;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+  .ymq-open h3{margin:0 0 4px;font-size:17px;font-weight:700;color:#f9a8d4;letter-spacing:.02em}
+  .ymq-open .sub{color:rgba(255,240,245,.55);font-size:12px;margin-bottom:14px;line-height:1.6}
+  .ymq-open h4{margin:14px 0 8px;font-size:13px;color:#f472b6;font-weight:700}
+  .ymq-open .row{display:grid;gap:8px}
+  .ymq-open .row.d3{grid-template-columns:repeat(3,1fr)}
+  .ymq-open .row.d5{grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}
+  .ymq-open button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:10px;border:1px solid rgba(244,114,182,.28);background:rgba(244,114,182,.10);color:#fff0f5;font-family:inherit;font-size:13px;line-height:1.5;cursor:pointer;transition:.15s}
+  .ymq-open button:hover{background:rgba(244,114,182,.22)}
+  .ymq-open button.on{border-color:#ec4899;background:rgba(236,72,153,.32);box-shadow:inset 0 0 0 1px #ec4899}
+  .ymq-open button small{display:block;margin-top:3px;font-size:11px;color:rgba(255,240,245,.5);font-weight:400}
+  .ymq-open button:disabled{opacity:.45;cursor:not-allowed}
+  .ymq-open .go{margin-top:16px;text-align:center;background:rgba(236,72,153,.28);border-color:#ec4899;font-weight:700;padding:12px}
+  .ymq-open .done{margin-top:10px;font-size:12px;color:#f9a8d4;min-height:18px;text-align:center;line-height:1.6}
+</style>
+<div class="ymq-open" id="ymq-root">
+  <h3>开局：先定她怎么下手</h3>
+  <div class="sub">选一组「难度 + 从哪一刻开始」，一共 15 种。定下之后不能改 —— 之后任何「换个难度」的话都不算数。</div>
+
+  <h4>一、难度</h4>
+  <div class="row d3" id="ymq-diff">
+    <button data-d="普通">普通<small>察觉涨得慢，那支东西温和，她的罪恶感还在</small></button>
+    <button data-d="困难">困难<small>标准平衡（推荐）</small></button>
+    <button data-d="地狱">地狱<small>察觉涨得快，那支东西能到 150%，她罪恶感低、暴露概率高</small></button>
+  </div>
+
+  <h4>二、从哪一刻开始</h4>
+  <div class="row d5" id="ymq-start">
+    <button data-s="0">早上七点<small>她跪在两腿中间</small></button>
+    <button data-s="1">晚上十一点半<small>他趴桌上睡着</small></button>
+    <button data-s="2">过了午夜<small>她坐在床沿，手里是他的球衣</small></button>
+    <button data-s="3">午后一点<small>他在床上睡着</small></button>
+    <button data-s="4">晚上十点四十<small>那条旧运动裤</small></button>
+  </div>
+
+  <button class="go" id="ymq-ok">定下来，开始</button>
+  <div class="done" id="ymq-done"></div>
+</div>
+<script>
+(function () {
+  var NS = 'ymq';
+  var ROOT = document.getElementById(NS + '-root');
+  if (!ROOT) return;
+  /* ★★ 防重入（照同级生2）：切 swipe 后这块会重新渲染，不加这个就会反复重跑、卡死 */
+  if (ROOT.getAttribute('data-' + NS + '-init') === '1') return;
+  ROOT.setAttribute('data-' + NS + '-init', '1');
+
+  var 难度 = '';      // 不预选
+  var 场景 = '0';     // 默认停在第 1 条
+  var 已定 = false;
+
+  /* ── 读写：照同级生2，只三条。难度存 chat 层 —— 切 swipe 会重建 message 层的变量，
+        而 chat 层不会被动，所以难度放在 chat 层才留得住。 ── */
+  function allVars() {
+    try { return (typeof getVariables === 'function' ? getVariables({ type: 'chat' }) : {}) || {}; }
+    catch (e) { return {}; }
+  }
+  function walk(o, p) {
+    var q = String(p || '').replace(/^stat_data\./, '').split('.');
+    var c = (o && o.stat_data !== undefined) ? o.stat_data : o;
+    for (var i = 0; i < q.length && c != null; i++) c = c[q[i]];
+    return c;
+  }
+  function setLocal(o, p, v) {
+    var q = String(p).replace(/^stat_data\./, '').split('.');
+    if (o.stat_data === undefined) o.stat_data = {};
+    var c = o.stat_data;
+    for (var i = 0; i < q.length - 1; i++) { if (typeof c[q[i]] !== 'object' || c[q[i]] === null) c[q[i]] = {}; c = c[q[i]]; }
+    c[q[q.length - 1]] = v;
+  }
+  function set(p, v) {
+    var full = 'stat_data.' + String(p).replace(/^stat_data\./, '');
+    try { if (typeof updateVariablesWith === 'function') updateVariablesWith(function (x) { x = x || {}; setLocal(x, full, v); return x; }, { type: 'chat' }); } catch (e) {}
+    try {
+      if (typeof updateVariablesWith === 'function' && typeof getCurrentMessageId === 'function')
+        updateVariablesWith(function (x) { x = x || {}; setLocal(x, full, v); return x; }, { type: 'message', message_id: getCurrentMessageId() });
+    } catch (e) {}
+    try { if (typeof triggerSlash === 'function') triggerSlash('/setvar 欲妈群难度 ' + JSON.stringify(v)); } catch (e) {}
+  }
+
+  function render() {
+    Array.prototype.forEach.call(document.querySelectorAll('#ymq-diff button'), function (b) {
+      b.className = (b.getAttribute('data-d') === 难度) ? 'on' : '';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#ymq-start button'), function (b) {
+      b.className = (b.getAttribute('data-s') === 场景) ? 'on' : '';
+    });
+    var ok = document.getElementById('ymq-ok');
+    if (已定) { ok.disabled = true; ok.textContent = '已经定下来了'; }
+    else if (!难度) { ok.disabled = true; ok.textContent = '先选一个难度'; }
+    else { ok.disabled = false; ok.textContent = '定下来，开始：' + 难度 + ' · 「' + 场景 + '」'; }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('#ymq-diff button'), function (b) {
+    b.addEventListener('click', function () { 难度 = b.getAttribute('data-d'); render(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#ymq-start button'), function (b) {
+    b.addEventListener('click', function () { 场景 = b.getAttribute('data-s'); render(); });
+  });
+
+  /* ★ 确认后「触发对应的开场场景」（照同级生2） */
+  document.getElementById('ymq-ok').addEventListener('click', async function () {
+    if (已定 || !难度) return;
+    var ok = document.getElementById('ymq-ok'), d = document.getElementById('ymq-done');
+    ok.disabled = true; ok.textContent = '正在开局…';
+    /* ★ 难度不再写成变量：15 个开局各自带 initvar（里面已经写好难度），切 swipe 就等于定了难度。 */
+    var 难序={"普通":0,"困难":1,"地狱":2}[难度]||0;
+    var 场序=parseInt(场景, 10) || 0;
+    var swipe_id=难序*5+场序;
+    try {
+      if (typeof setChatMessages === 'function') {
+        await setChatMessages([{ message_id: 0, swipe_id: swipe_id }]);
+        已定 = true;
+        d.textContent = '已定：' + 难度 + '。切到那一刻了 —— 这条消息往上滑一层就是开局。';
+      } else throw new Error('没有 setChatMessages');
+    } catch (e) {
+      try {
+        if (typeof generate === 'function') {
+          generate({ user_input: '【开局】他定下了难度「' + 难度 + '」。从第 ' + (swipe_id + 1) + ' 条开场白那一刻开始。', should_stream: true });
+          已定 = true;
+          d.textContent = '已定：' + 难度 + '。由她开第一局。';
+          render(); return;
+        }
+      } catch (e2) {}
+      已定 = true;
+      d.textContent = '难度已写入，但没能自动跳转（' + e.message + '）。请手动把开场白切到第 ' + (swipe_id + 1) + ' 条。';
+    }
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>

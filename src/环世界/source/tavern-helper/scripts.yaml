@@ -1,0 +1,8 @@
+- id: sp_database
+  name: SP·数据库
+  contentFile: sp_database.js
+  enabled: true
+  info: SPV数据库扩展脚本，提供<UpdateTable>块SQL执行能力。来源：https://github.com/AlbusKen/shujuku，版本spv7.5，用户明确要求启用数据库功能。
+  allowExternal: true
+  buttons: []
+  data: {}

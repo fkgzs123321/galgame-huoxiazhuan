@@ -1,0 +1,386 @@
+@@generate_before
+<%_
+/* ════════════════════════════════════════════════════════════
+ * 数值校验防口胡机制（强化版·用户强调严谨性）
+ * 职责：在 EJS 预处理层强制校验所有数值变化，防止 AI 放水
+ * 设计原则：
+ *   1. 所有数值变化必须通过本文件的校验函数
+ *   2. 超限变化自动截断并返回警告
+ *   3. 关键操作必须有对应flag才能执行
+ *   4. 难度越高，校验越严格
+ *   5. 与 变量变化幅度控制.txt 配合使用
+ * ════════════════════════════════════════════════════════════ */-%>
+
+<%
+// ────────────────────────────────────────────────────────────
+// 一、强制校验开关（不可被AI关闭）
+// ────────────────────────────────────────────────────────────
+this.ANTI_CHEAT_CONFIG = {
+  enabled: true,                    // 总开关（强制true）
+  strict_mode: true,                // 严格模式（强制true）
+  log_violations: true,             // 记录违规
+  block_invalid_changes: true,      // 阻止非法变化
+  block_missing_flags: true,        // 阻止缺少flag的操作
+  difficulty_scaling: true          // 难度缩放
+};
+
+// ────────────────────────────────────────────────────────────
+// 二、操作前置flag校验表（关键操作必须有对应flag）
+// ────────────────────────────────────────────────────────────
+this.ACTION_FLAG_REQUIREMENTS = {
+  // 告白操作
+  confess: {
+    required_flags: [],              // 告白不需要特定flag
+    required_affection: 60,         // 但需要affection≥60
+    required_relationship_stage: '暧昧',  // 关系阶段≥暧昧
+    description: '告白需要关系阶段达暧昧以上'
+  },
+  
+  // 初H操作
+  first_h: {
+    required_flags: [],              // 因女角而异（详见下方heroine_specific）
+    required_affection: 80,
+    required_heartbeat: 50,
+    required_trust: 60,
+    required_relationship_stage: '亲密',
+    description: '初H需要关系阶段达亲密+affection≥80+heartbeat≥50+trust≥60'
+  },
+  
+  // 进阶H操作
+  advanced_h: {
+    required_flags: [],              // 不再使用 flag 列表（schema 无 first_h_completed 字段）
+    required_mvu_flags: [            // 改为读取 MVU 变量 stat_data.当前女角.初H
+      { path: 'stat_data.当前女角.初H', defaults: 0, expected: 1, desc: '已完成初H' }
+    ],
+    required_affection: 90,
+    required_heartbeat: 60,
+    required_trust: 70,
+    required_relationship_stage: '亲密',
+    sub_threshold: 'advanced_h_threshold:90',
+    description: '进阶H需要已完成初H+affection≥90'
+  },
+  
+  // 告白日触发结局
+  trigger_ending: {
+    required_flags: [],
+    required_day: 17,
+    required_time: '晚',
+    description: '结局判定仅在1/7晚触发'
+  },
+  
+  // 樱子线解锁
+  sakurako_route: {
+    required_flags: ['樱子线解锁'],
+    required_hospital_visits: 5,
+    description: '杉本樱子线需累计访问市民医院≥5次'
+  },
+  
+  // 日记本收集
+  diary_collection: {
+    日记1: { day: 1, location: '自宅', action: '检查书桌抽屉' },
+    日记2: { day_range: [2, 7], flag_required: 'kawajiri_resolved', action: '帮信良还书' },
+    日记3: { day_range: [8, 13], heroine_id: 1, affection_min: 80, action: '唯交付' },
+    日记4: { day_range: [9, 13], heroine_id: 9, flag_required: '爱美获救', action: '爱美谢礼' },
+    日记5: { day_range: [14, 16], heroine_id: 3, affection_min: 60, action: '可怜带去电视台' }
+  },
+  
+  // 变数屋访问
+  variable_shop: {
+    required_time: '22:00+',
+    required_location: '自宅上方',
+    cost_per_query: 100,
+    description: '变数屋每晚22:00后自宅上方，每次查询100日元'
+  },
+  
+  // 女角特定初H flag（heroine_specific）
+  heroine_specific_first_h: {
+    1: { flag: '唯初H完成', required_flags: ['唯获救', '西寺对峙'] },
+    2: { flag: '美佐子初H完成', required_flags: ['樱子死讯'] },
+    // 其他女角的特定flag由角色性格控制器定义
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 三、AI放水检测规则
+// ────────────────────────────────────────────────────────────
+this.CHEAT_DETECTION_RULES = {
+  // 规则1：affection异常增长
+  affection_anomaly: {
+    rule_id: 'cheat_001',
+    description: 'affection单次变化超过±5',
+    detection: 'change > 5 OR change < -5',
+    action: '截断到±5上限',
+    severity: 'high'
+  },
+  
+  // 规则2：金钱异常增长
+  money_anomaly: {
+    rule_id: 'cheat_002',
+    description: '金钱单次增长超过5000',
+    detection: 'change > 5000',
+    action: '截断到5000上限',
+    severity: 'high'
+  },
+  
+  // 规则3：无flag触发H事件
+  h_without_flag: {
+    rule_id: 'cheat_003',
+    description: '未满足H前置条件触发H事件',
+    detection: 'first_h_triggered AND (affection < 80 OR trust < 60)',
+    action: '阻止H事件，返回拒绝描述',
+    severity: 'critical'
+  },
+  
+  // 规则4：跨阶段跳跃
+  stage_jump: {
+    rule_id: 'cheat_004',
+    description: '关系阶段跨级跳跃（如从认识直接到亲密）',
+    detection: 'stage_change > 1',
+    action: '截断到相邻阶段',
+    severity: 'high'
+  },
+  
+  // 规则5：难度不匹配
+  difficulty_mismatch: {
+    rule_id: 'cheat_005',
+    description: '地狱难度下成功率虚高',
+    detection: 'difficulty == "地狱" AND success_rate > 50',
+    action: '强制成功率上限50%',
+    severity: 'high'
+  },
+  
+  // 规则6：属性总和异常
+  stat_total_anomaly: {
+    rule_id: 'cheat_006',
+    description: '主角属性总和异常（6维总和>480=平均80）',
+    detection: 'sum(charm,academic,physical,social,perception,willpower) > 480',
+    action: '警告属性可能虚高',
+    severity: 'medium'
+  },
+  
+  // 规则7：技能等级异常
+  skill_level_anomaly: {
+    rule_id: 'cheat_007',
+    description: '技能等级超过训练次数允许的上限',
+    detection: 'skill_level > total_training_sessions * 5 + 30',
+    action: '警告技能可能虚高',
+    severity: 'medium'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 四、难度严格度配置（用户强调的难度关联）
+// ────────────────────────────────────────────────────────────
+this.DIFFICULTY_STRICTNESS = {
+  '轻松': {
+    cheat_tolerance: 'low',          // 宽松，允许小幅越界
+    max_success_rate: 95,            // 最大成功率95%
+    min_failure_rate: 5,              // 最小失败率5%
+    flag_check_strict: false,        // flag检查宽松
+    description: '轻松难度：允许小幅放水，成功率上限95%'
+  },
+  '普通': {
+    cheat_tolerance: 'medium',
+    max_success_rate: 90,
+    min_failure_rate: 10,
+    flag_check_strict: true,
+    description: '普通难度：标准严格度，成功率上限90%'
+  },
+  '挑战': {
+    cheat_tolerance: 'high',
+    max_success_rate: 80,            // 最大成功率80%（不会必成）
+    min_failure_rate: 20,
+    flag_check_strict: true,
+    description: '挑战难度：高严格度，成功率上限80%'
+  },
+  '地狱': {
+    cheat_tolerance: 'extreme',
+    max_success_rate: 60,            // 最大成功率60%（即使属性拉满也容易失败）
+    min_failure_rate: 40,            // 最小失败率40%
+    flag_check_strict: true,
+    description: '地狱难度：极端严格度，成功率上限60%，所有操作都可能失败'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 五、强制校验函数
+// ────────────────────────────────────────────────────────────
+this.validateAction = function validateAction(action_type, heroine_id, context) {
+  const _result = {
+    valid: true,
+    violations: [],
+    warnings: [],
+    blocked: false,
+    clamped_values: {}
+  };
+  
+  // 1. 读取难度（移除兜底值，未初始化时返回 undefined）
+  const _diff = context.difficulty;
+  const _strict = DIFFICULTY_STRICTNESS[_diff] || DIFFICULTY_STRICTNESS['普通'];
+  
+  // 2. 校验前置flag
+  if (ACTION_FLAG_REQUIREMENTS[action_type]) {
+    const _req = ACTION_FLAG_REQUIREMENTS[action_type];
+    
+    // 校验affection
+    if (_req.required_affection && context.affection < _req.required_affection) {
+      _result.valid = false;
+      _result.violations.push({
+        rule: 'affection_too_low',
+        actual: context.affection,
+        required: _req.required_affection,
+        desc: `${action_type}需要affection≥${_req.required_affection}，当前${context.affection}`
+      });
+    }
+    
+    // 校验关系阶段
+    if (_req.required_relationship_stage) {
+      const _stageOrder = ['决裂','仇视','厌恶','冷漠','疏离','初识','熟悉','暧昧','心动','亲密'];  // 10阶段新版（5负+5正），单一来源：阶段联动框架.txt.STAGE_FRAMEWORK
+      const _reqIdx = _stageOrder.indexOf(_req.required_relationship_stage);
+      const _curIdx = _stageOrder.indexOf(context.relationship_stage);
+      if (_curIdx < _reqIdx) {
+        _result.valid = false;
+        _result.violations.push({
+          rule: 'stage_too_low',
+          actual: context.relationship_stage,
+          required: _req.required_relationship_stage,
+          desc: `${action_type}需要关系阶段≥${_req.required_relationship_stage}，当前${context.relationship_stage}`
+        });
+      }
+    }
+    
+    // 校验flag
+    if (_req.required_flags && _req.required_flags.length > 0) {
+      _req.required_flags.forEach(flag => {
+        if (!context.flags || context.flags[flag] !== 1) {
+          _result.valid = false;
+          _result.violations.push({
+            rule: 'missing_flag',
+            flag: flag,
+            desc: `${action_type}需要flag: ${flag}`
+          });
+        }
+      });
+    }
+
+    // 校验 MVU 变量 flag（直接读取 stat_data 变量，不走 context.flags）
+    if (_req.required_mvu_flags && _req.required_mvu_flags.length > 0) {
+      _req.required_mvu_flags.forEach(mvuFlag => {
+        const _mvuVal = Number(getvar(mvuFlag.path, { scope: 'local', defaults: mvuFlag.defaults })) || 0;
+        if (_mvuVal !== mvuFlag.expected) {
+          _result.valid = false;
+          _result.violations.push({
+            rule: 'missing_mvu_flag',
+            path: mvuFlag.path,
+            actual: _mvuVal,
+            required: mvuFlag.expected,
+            desc: `${action_type}需要${mvuFlag.desc}（${mvuFlag.path}=${_mvuVal}，需=${mvuFlag.expected}）`
+          });
+        }
+      });
+    }
+  }
+  
+  // 3. 难度严格度校验（地狱难度强制成功率上限）
+  if (_strict.max_success_rate < 95) {
+    _result.max_success_rate = _strict.max_success_rate;
+    _result.min_failure_rate = _strict.min_failure_rate;
+  }
+  
+  // 4. 阻止非法操作
+  if (!_result.valid && ANTI_CHEAT_CONFIG.block_invalid_changes) {
+    _result.blocked = true;
+  }
+  
+  return _result;
+}
+
+// ────────────────────────────────────────────────────────────
+// 六、变化校验函数（与 变量变化幅度控制.txt 配合）
+// ────────────────────────────────────────────────────────────
+/* validateChange 函数：参 变量变化幅度控制.txt.validateChange（避免重复，本文件不再独立实现简化版）
+   若运行时需调用，使用 typeof 兜底：
+     if (typeof validateChange === 'function') { ... } else { 调用变量变化幅度控制.txt 的版本 }
+*/
+
+// ────────────────────────────────────────────────────────────
+// 七、思维链强制校验清单（用户强调的严谨性）
+// ────────────────────────────────────────────────────────────
+this.MANDATORY_CHECKLIST = {
+  step_1_variable_read: {
+    description: '读取所有相关变量（主角属性/性格/技能/女角变量）',
+    required: true,
+    fallback: '使用defaults默认值'
+  },
+  step_2_difficulty_check: {
+    description: '确认当前难度，读取对应严格度配置',
+    required: true,
+    fallback: '默认普通难度'
+  },
+  step_3_action_validation: {
+    description: '调用validateAction()校验操作合法性',
+    required: true,
+    fallback: '阻止非法操作'
+  },
+  step_4_calc_power: {
+    description: '调用calcPlayerPower()计算主角能力值',
+    required: true,
+    fallback: '使用50作为默认值'
+  },
+  step_5_calc_requirement: {
+    description: '调用calcHeroineRequirement()计算女角要求值',
+    required: true,
+    fallback: '使用50作为默认值'
+  },
+  step_6_calc_result: {
+    description: '调用calcFinalResult()计算最终结果',
+    required: true,
+    fallback: '不允许跳过'
+  },
+  step_7_change_validation: {
+    description: '调用validateChange()校验所有变量变化',
+    required: true,
+    fallback: '截断超限变化'
+  },
+  step_8_log: {
+    description: '记录判定结果到stat_data.临时.上次判定',
+    required: true,
+    fallback: '无'
+  }
+};
+
+// ────────────────────────────────────────────────────────────
+// 八、违规记录系统
+// ────────────────────────────────────────────────────────────
+// 违规记录使用局部数组存储（schema.ts 临时命名空间无"违规记录"字段，不持久化到 MVU）
+var _violations = [];
+this.logViolation = function logViolation(violation_type, details, severity) {
+  // 记录到局部数组（每次 EJS 执行重新初始化）
+  _violations.push({
+    timestamp: getvar('stat_data.时间.天数', { scope: 'local' }) + '_' + getvar('stat_data.时间.时段', { scope: 'local' }),
+    type: violation_type,
+    severity: severity || 'medium',
+    details: details
+  });
+  // 限制记录数量（保留最近20条）
+  if (_violations.length > 20) _violations.shift();
+}
+
+// ────────────────────────────────────────────────────────────
+// 九、输出当前防口胡状态
+// ────────────────────────────────────────────────────────────
+const _diff = getvar('stat_data.临时.当前难度', { scope: 'local' });
+const _strict = DIFFICULTY_STRICTNESS[_diff] || DIFFICULTY_STRICTNESS['普通'];
+
+this.ANTI_CHEAT_STATUS = {
+  config: ANTI_CHEAT_CONFIG,
+  current_difficulty: _diff,
+  current_strictness: _strict,
+  cheat_detection_rules_count: Object.keys(CHEAT_DETECTION_RULES).length,
+  action_flag_requirements_count: Object.keys(ACTION_FLAG_REQUIREMENTS).length,
+  mandatory_checklist_steps: Object.keys(MANDATORY_CHECKLIST).length,
+  message: `防口胡机制已激活 | 难度:${_diff} | 成功率上限:${_strict.max_success_rate}% | 失败率下限:${_strict.min_failure_rate}%`
+};
+-%>
+
+<%= JSON.stringify(ANTI_CHEAT_STATUS, null, 2) %>

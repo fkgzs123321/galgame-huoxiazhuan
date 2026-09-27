@@ -1,0 +1,204 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 全局规则总表（系统级·总控基础）
+   ════════════════════════════════════════════════════════════
+   职责：仙剑1 全局基础规则单一来源（主角身份 / 时间流逝 / 纪元 / 难度 / 场景 / 行动 / 经济 / 关系 / 死局 / 叙事铁律）
+   加载策略：蓝灯系统级，由主调度控制器首先 getwi 加载，供所有后续 EJS预处理 条目与系统模块引用
+   依赖：无（本表为最底层 var 兜底声明，其他条目依赖本表的变量声明）
+   define() 模式：注册 GLOBAL_RULES 全局常量，供所有控制器/系统模块/角色条目引用
+   变量路径（与 Zod Schema 对齐）：
+     stat_data.主角.基本信息.年龄          主角年龄（开局 19）
+     stat_data.主角.资产.铜钱              铜钱（0-9999999）
+     stat_data.世界.时间.游戏日期          仙剑历日期
+     stat_data.世界.时间.时间段            当前时段
+     stat_data.世界.当前位置.所在场景      当前场景
+     stat_data.难度                        当前难度档位
+     stat_data.今日行动次数                当日已行动次数
+     stat_data.对话楼层                    当前楼层
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取 MVU 当前运行时状态（var 兜底声明，供其他条目复用） ─── */
+if (typeof _protagonist_age === 'undefined') var _protagonist_age = Number(getvar('stat_data.主角.基本信息.年龄', { scope: 'local', defaults: 19 })) || 19;
+if (typeof _game_date === 'undefined') var _game_date = getvar('stat_data.世界.时间.游戏日期', { scope: 'local', defaults: '仙剑历0001年01月01日' });
+if (typeof _time_phase === 'undefined') var _time_phase = getvar('stat_data.世界.时间.时间段', { scope: 'local', defaults: '上午' });
+if (typeof _current_scene === 'undefined') var _current_scene = getvar('stat_data.世界.当前位置.所在场景', { scope: 'local', defaults: '余杭镇' });
+if (typeof _difficulty === 'undefined') var _difficulty = getvar('stat_data.难度', { scope: 'local', defaults: '普通' });
+if (typeof _action_count === 'undefined') var _action_count = Number(getvar('stat_data.今日行动次数', { scope: 'local', defaults: 0 })) || 0;
+if (typeof _copper === 'undefined') var _copper = Number(getvar('stat_data.主角.资产.铜钱', { scope: 'local', defaults: 500 })) || 0;
+if (typeof _floor === 'undefined') var _floor = Number(getvar('stat_data.对话楼层', { scope: 'local', defaults: 1 })) || 1;
+
+/* ════════════════════════════════════════════════════════════
+   二、全局规则总表（GLOBAL_RULES）
+   ════════════════════════════════════════════════════════════ */
+const GLOBAL_RULES = {
+
+  /* ───── 1. 主角身份（固定） ───── */
+  protagonist: {
+    name: '李逍遥',
+    age: 19,
+    origin: '余杭镇客栈店小二',
+    desc: '主角身份固定为李逍遥，开局19岁，余杭镇客栈店小二。婶婶李凤中毒后踏上求药寻人之旅。',
+    fixed: true,
+    note: '主角身份不可更换，年龄随剧情自然增长'
+  },
+
+  /* ───── 2. 时间流逝规则 ───── */
+  time_flow: {
+    rule: '每楼层固定 30 分钟（游戏内时间）',
+    minutes_per_floor: 30,
+    overflow_rule: '超时事件拆分至多楼层承接，禁止单楼层压缩超长时段',
+    note: '战斗楼层按回合数另计（每回合 6 分钟），非战斗叙事按 30 分钟/楼层推进'
+  },
+
+  /* ───── 3. 时间纪元 ───── */
+  era: {
+    name: '仙剑历',
+    origin: '自女娲封印水魔兽后开始纪元',
+    format: '仙剑历YYYY年MM月DD日',
+    start: '仙剑历0001年01月01日',
+    desc: '时间纪元采用仙剑历，自女娲封印水魔兽后开始纪元。日期格式：仙剑历YYYY年MM月DD日'
+  },
+
+  /* ───── 4. 难度系数表（4档） ───── */
+  difficulty: {
+    简单: { coeff: 0.5, desc: '敌人血量×0.7，伤害×0.7，经验×1.2，适合剧情体验' },
+    普通: { coeff: 1.0, desc: '标准难度，敌人属性基准值，经验×1.0' },
+    困难: { coeff: 1.5, desc: '敌人血量×1.3，伤害×1.3，经验×1.1，需策略应对' },
+    噩梦: { coeff: 2.0, desc: '敌人血量×1.6，伤害×1.6，经验×1.0，容错极低' }
+  },
+
+  /* ───── 5. 场景模式（5种） ───── */
+  scene_modes: {
+    探索: '场景探索，可移动/调查/对话/拾取，触发遭遇与隐藏剧情',
+    战斗: '战斗模式，回合制指令选择，绝技槽累计与五灵克制判定',
+    对话: '人物对话模式，推进剧情与关系变化，可触发好感事件',
+    炼丹: '炼丹模式，按配方投料判定成功率，可能炸炉',
+    休憩: '休整模式，恢复 HP/MP，推进时间段，可触发夜话事件'
+  },
+
+  /* ───── 6. 时间段（5时段） ───── */
+  time_phases: {
+    早:   { range: '05:00-09:00', desc: '清晨，万物初醒，遇敌率低' },
+    上午: { range: '09:00-12:00', desc: '日间活动，商店开门，探索正当时' },
+    下午: { range: '12:00-18:00', desc: '午后，战斗与剧情推进主力时段' },
+    晚:   { range: '18:00-22:00', desc: '入夜，酒馆任务开放，部分 NPC 出没' },
+    深夜: { range: '22:00-05:00', desc: '深夜，危险遭遇增多，可夜话/潜行' }
+  },
+
+  /* ───── 7. 行动次数限制 ───── */
+  action_limit: {
+    max_per_day: 5,
+    unit: '次/日',
+    desc: '每日（00:00 重置）行动次数上限 5，休憩不计入行动次数',
+    overflow_rule: '超出 5 次后强制进入休憩模式推进至次日'
+  },
+
+  /* ───── 8. 经济护栏 ───── */
+  economy: {
+    currency: '铜钱',
+    min: 0,
+    max: 9999999,
+    desc: '铜钱范围 0-9999999，超出上下限自动钳制',
+    clamp_rule: '任何写入 stat_data.主角.资产.铜钱 均钳制至 [0, 9999999]'
+  },
+
+  /* ───── 9. 角色关系阶段枚举 ───── */
+  relationship_stages: {
+    初识: { order: 1,  desc: '初次相遇，无深层了解' },
+    友好: { order: 2,  desc: '建立基本信任，可组队同行' },
+    暧昧: { order: 3,  desc: '情愫暗生，触发专属好感事件' },
+    恋爱: { order: 4,  desc: '确立关系，解锁恋爱剧情线' },
+    结拜: { order: 5,  desc: '生死之交/义结金兰，不可逆关系' },
+    敌对: { order: -1, desc: '立场冲突，可能转为决裂' },
+    决裂: { order: -2, desc: '关系彻底破裂，不可恢复' }
+  },
+
+  /* ───── 10. 死结局触发器（8类） ───── */
+  death_triggers: {
+    '主角死亡':     { cond: 'stat_data.主角.战斗状态.HP <= 0 且无还魂丹', irrecoverable: true,  desc: '主角 HP 归零且无复活手段' },
+    '灵儿献祭':     { cond: '女娲血脉觉醒至补天 + 水魔兽未封印',         irrecoverable: true,  desc: '灵儿以自身封印水魔兽，主角孤独终老' },
+    '全员阵亡':     { cond: '队伍所有成员 HP 同时归零',                   irrecoverable: true,  desc: '团灭结局' },
+    '拜月教主胜利': { cond: '终章 BOSS 战失败且水魔兽觉醒',             irrecoverable: true,  desc: '拜月教主召唤水魔兽毁灭苍生' },
+    '水魔兽破封':   { cond: '封印事件链失败 ≥ 3 次',                     irrecoverable: true,  desc: '水魔兽破封而出，天下浩劫' },
+    '时辰耗尽':     { cond: '关键限时事件超时未处理',                     irrecoverable: false, desc: '关键节点超时，进入 Bad 分支（可读档）' },
+    '心魔失控':     { cond: '连续大失败 ≥ 3 次且未净化',                 irrecoverable: false, desc: '主角陷入心魔，攻击队友（可解救）' },
+    '因果崩坏':     { cond: '世界线改写次数超过 3 次且互斥',             irrecoverable: true,  desc: '因果悖论触发，世界线崩塌' }
+  },
+
+  /* ───── 11. 叙事结构铁律 ───── */
+  narrative_structure: {
+    pipeline: ['叙事', 'StatusPlaceHolderImpl', 'UpdateVariable'],
+    rule: '每楼层必须按「叙事 → StatusPlaceHolderImpl → UpdateVariable」三段式输出',
+    desc: '主模型仅负责叙事与 StatusPlaceHolderImpl 占位，UpdateVariable 块由额外模型负责生成',
+    main_model_forbidden: '主模型禁止输出 <UpdateVariable> 块，仅由额外模型负责变量更新',
+    extra_model_duty: '额外模型读取主模型叙事结果与 StatusPlaceHolderImpl，输出 <UpdateVariable> 块完成变量更新'
+  }
+};
+
+define('GLOBAL_RULES', GLOBAL_RULES);
+%>
+
+<%_ // ───────── 参考摘要（输出给 AI 使用） ───────── _%>
+【仙剑1·全局规则总表 · 当前生效规则摘要】
+
+■ 主角身份
+- 姓名：李逍遥 ｜ 年龄：19 岁 ｜ 出身：余杭镇客栈店小二
+- 主角身份固定不可更换，年龄随剧情自然增长
+
+■ 时间流逝
+- 每楼层固定 30 分钟（游戏内时间）
+- 超时事件拆分至多楼层承接，禁止单楼层压缩超长时段
+
+■ 时间纪元
+- 纪元：仙剑历（自女娲封印水魔兽后开始）
+- 格式：仙剑历YYYY年MM月DD日
+- 当前游戏日期：<%= _game_date %>
+
+■ 难度系数表（4档）
+- 简单：×0.5（敌人血量/伤害×0.7，经验×1.2）
+- 普通：×1.0（标准基准）
+- 困难：×1.5（敌人血量/伤害×1.3，经验×1.1）
+- 噩梦：×2.0（敌人血量/伤害×1.6，容错极低）
+- 当前难度：<%= _difficulty %>
+
+■ 场景模式（5种）
+- 探索：移动/调查/拾取，触发遭遇与隐藏剧情
+- 战斗：回合制指令，绝技槽与五灵克制判定
+- 对话：推进剧情与关系，可触发好感事件
+- 炼丹：投料判定成功率，可能炸炉
+- 休憩：恢复 HP/MP，推进时间段，可夜话
+
+■ 时间段（5时段）
+- 早（05:00-09:00）｜ 上午（09:00-12:00）｜ 下午（12:00-18:00）｜ 晚（18:00-22:00）｜ 深夜（22:00-05:00）
+- 当前时段：<%= _time_phase %>
+
+■ 行动次数限制
+- 每日上限 5 次（00:00 重置），休憩不计入
+- 当前已行动：<%= _action_count %>/5
+
+■ 经济护栏
+- 货币：铜钱 ｜ 范围：0 - 9999999（自动钳制）
+- 当前铜钱：<%= _copper %>
+
+■ 角色关系阶段枚举
+- 正向：初识 → 友好 → 暧昧 → 恋爱 → 结拜
+- 负向：敌对 → 决裂
+- 结拜/决裂为不可逆关系
+
+■ 死结局触发器（8类）
+1. 主角死亡（HP 归零且无还魂丹）
+2. 灵儿献祭（补天觉醒 + 水魔兽未封印）
+3. 全员阵亡（队伍全灭）
+4. 拜月教主胜利（终章 BOSS 战失败）
+5. 水魔兽破封（封印事件链失败 ≥ 3 次）
+6. 时辰耗尽（关键限时事件超时，可读档）
+7. 心魔失控（连续大失败 ≥ 3 次且未净化，可解救）
+8. 因果崩坏（世界线改写次数超限且互斥）
+
+■ 叙事结构铁律
+- 输出顺序：叙事 → StatusPlaceHolderImpl → UpdateVariable
+- 主模型禁止输出 <UpdateVariable> 块
+- <UpdateVariable> 仅由额外模型负责生成
+
+[全局规则总表加载完毕。AI 须严格遵守以上规则；变量写入请在 <UpdateVariable> 块中由额外模型执行。]

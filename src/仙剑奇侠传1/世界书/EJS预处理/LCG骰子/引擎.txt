@@ -1,0 +1,113 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+ * 仙剑奇侠传1 · LCG 确定性骰子引擎
+ * ──────────────────────────────────────────────────────────
+ * 算法：线性同余生成器 (Linear Congruential Generator)
+ *   X(n+1) = (a × X(n) + c) mod m
+ *   a = 1664525, c = 1013904223, m = 2^32（Numerical Recipes 经典常数）
+ * 种子：hash(场景 + 时间 + 楼层 + 人物名)
+ * 档位：
+ *   1-20   大失败（灾难性后果）
+ *   21-40  失败
+ *   41-60  普通
+ *   61-80  成功
+ *   81-95  大成功
+ *   96-100 暴击（双倍效果）
+ * 应用场景：战斗命中 / 法术效果 / 炼丹成功 / 事件触发 / NPC反应
+ * 暴击机制：绝技槽 +50，伤害 ×2
+ * 失败连锁：连续 3 次大失败 → 触发"心魔"状态
+ * ════════════════════════════════════════════════════════════ */%>
+<%
+/* —— 1. 读取种子锚点（场景 / 时辰 / 楼层 / 人物名） —— */
+if (typeof _scene === 'undefined') var _scene = getvar('stat_data.当前场景', { scope: 'local', defaults: '余杭镇' });
+if (typeof _timePhase === 'undefined') var _timePhase = getvar('stat_data.当前时辰', { scope: 'local', defaults: '白天' });
+if (typeof _floor === 'undefined') var _floor = Number(getvar('stat_data.对话楼层', { scope: 'local', defaults: 1 })) || 1;
+if (typeof _actor === 'undefined') var _actor = getvar('stat_data.当前人物', { scope: 'local', defaults: '李逍遥' });
+
+/* —— 2. 自包含函数定义（避免作用域隔离问题） ——
+ * 生2项目规则：使用 _lcgRoll / _check 的 EJS 预处理条目必须内联定义
+ * hashSeed + lcgRoll + check 三函数，禁止依赖外部作用域。
+ */
+
+/* _hashSeed: 多维锚点 → 32 位无符号整数种子（DJB2 变体） */
+function _hashSeed(scene, time, floor, actor) {
+  var _str = String(scene) + '|' + String(time) + '|' + String(floor) + '|' + String(actor);
+  var _h = 5381;
+  for (var _i = 0; _i < _str.length; _i++) {
+    _h = ((_h << 5) + _h + _str.charCodeAt(_i)) | 0;
+  }
+  return _h >>> 0;
+}
+
+/* _lcgRoll: LCG 单步推进，返回 [1, 100] 骰子值
+ *   X(n+1) = (a × X(n) + c) mod m
+ *   a = 1664525, c = 1013904223, m = 2^32
+ */
+function _lcgRoll(seed) {
+  var _s = (seed + 7919) | 0;                  /* 质数偏移，避免低种子聚集 */
+  _s = (_s * 1664525 + 1013904223) | 0;        /* LCG 推进，32 位溢出截断 */
+  var _r = (_s >>> 0) / 4294967296;             /* 归一化至 [0, 1) */
+  return Math.floor(_r * 100) + 1;             /* 映射到 [1, 100] */
+}
+
+/* _check: 按档位返回结果对象 */
+function _check(roll) {
+  if (roll <= 20) return { tier: '大失败',   code: 'crit_fail',    desc: '灾难性后果',  effect: '负面极大，可能触发不可逆损失' };
+  if (roll <= 40) return { tier: '失败',     code: 'fail',          desc: '行动未达预期', effect: '负面' };
+  if (roll <= 60) return { tier: '普通',     code: 'normal',        desc: '常规结果',     effect: '中性' };
+  if (roll <= 80) return { tier: '成功',     code: 'success',       desc: '行动达成',     effect: '正面' };
+  if (roll <= 95) return { tier: '大成功',   code: 'great_success', desc: '出色完成',     effect: '正面加强' };
+  return            { tier: '暴击',     code: 'crit',           desc: '双倍效果',     effect: '伤害×2，绝技槽 +50' };
+}
+
+/* —— 3. 计算当前轮骰子 —— */
+var _seed = _hashSeed(_scene, _timePhase, _floor, _actor);
+var _roll = _lcgRoll(_seed);
+var _res = _check(_roll);
+
+/* —— 4. 暴击机制：绝技槽 +50，伤害 ×2（EJS 预处理只读，变量写入由 AI 在 <UpdateVariable> 执行） —— */
+var _curSlot = Number(getvar('stat_data.绝技槽', { scope: 'local', defaults: 0 })) || 0;
+var _suggestSlot = _curSlot + 50;
+
+/* —— 5. 失败连锁：连续 3 次大失败 → 心魔状态 —— */
+var _streak = Number(getvar('stat_data.连续大失败次数', { scope: 'local', defaults: 0 })) || 0;
+var _newStreak = _streak;
+var _heartDemon = false;
+if (_res.code === 'crit_fail') {
+  _newStreak = _streak + 1;
+  if (_newStreak >= 3) _heartDemon = true;
+} else if (_res.code !== 'fail') {
+  _newStreak = 0;
+}
+
+/* —— 6. 应用场景对照（供 AI 按当前剧情选用对应判定） —— */
+var _sceneMap = {
+  battle:  '战斗命中判定（命中 / 闪避 / 暴击 / 反击）',
+  spell:   '法术效果判定（效果强度 / 五灵反噬 / 持续回合）',
+  alchemy: '炼丹成功判定（成丹品质 / 炸炉 / 副产物）',
+  event:   '事件触发判定（隐藏剧情 / 随机遭遇 / 探索发现）',
+  npc:     'NPC 反应判定（好感 / 敌意 / 特殊对话 / 帮助意愿）'
+};
+%>
+<%/* —— 7. 输出当前轮骰子结果摘要给 AI —— */%>
+[仙剑1·LCG骰子引擎·本轮判定]
+- 种子锚点: 场景=<%= _scene %> | 时辰=<%= _timePhase %> | 楼层=<%= _floor %> | 人物=<%= _actor %>
+- 种子值:   <%= _seed %>
+- 骰子值:   <%= _roll %> / 100
+- 档位:     <%= _res.tier %>（<%= _res.desc %>）
+- 效果:     <%= _res.effect %>
+<%_ if (_res.code === 'crit') { _%>
+- 暴击加成: 绝技槽 +50（当前 <%= _curSlot %> → 建议 <%= _suggestSlot %>），伤害 ×2。请 AI 在 <UpdateVariable> 中执行 stat_data.绝技槽 写入。
+<%_ } _%>
+<%_ if (_heartDemon) { _%>
+- 失败连锁: 已连续 <%= _newStreak %> 次大失败，触发【心魔】状态。请 AI 在 <UpdateVariable> 中将 stat_data.心魔状态 置为 true，并将 stat_data.连续大失败次数 归零。
+<%_ } else if (_res.code === 'crit_fail') { _%>
+- 失败连锁: 当前连续大失败 <%= _newStreak %> 次（累计 3 次触发心魔）。
+<%_ } _%>
+- 应用场景指引（按当前剧情选用对应判定）:
+  · 战斗命中: <%= _sceneMap.battle %>
+  · 法术效果: <%= _sceneMap.spell %>
+  · 炼丹成功: <%= _sceneMap.alchemy %>
+  · 事件触发: <%= _sceneMap.event %>
+  · NPC 反应: <%= _sceneMap.npc %>
+[本轮骰子判定结束。AI 须按档位结果展开叙事：禁止数据化呈现骰子数值与概率；禁止让角色知晓"骰子"存在；暴击/心魔的变量写入须在 <UpdateVariable> 块中完成。]

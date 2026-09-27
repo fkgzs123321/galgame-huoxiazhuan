@@ -1,0 +1,81 @@
+@@generate_before
+<%
+if (typeof _loc === 'undefined') var _loc = getvar('stat_data.user状态.当前位置', { scope: 'local', defaults: '未知' });
+if (typeof _chap === 'undefined') var _chap = Number(getvar('stat_data.系统变量.当前章节', { scope: 'local', defaults: 1 })) || 1;
+%>
+
+<%/* ═══ 角色控制器：根据当前位置加载对应家属条目 ═══ */%>
+<%/* 家属条目为静态档案（无7阶段），按场景按需加载节省token */%>
+
+<% if (typeof lastMessageId !== 'undefined' && lastMessageId > 0) { %>
+
+<%/* 场景1：贫民窟（-陈雪华相关） */%>
+<% if (_loc.includes('贫民窟') || _loc.includes('棚户区') || _loc.includes('陈雪华')) { %>
+<%- await getwi('角色/家属/陈富贵') %>
+<% } %>
+
+<%/* 场景2：林天豪宅/小宝生日宴（-林雅芝相关） */%>
+<% if (_loc.includes('林天豪宅') || _loc.includes('小宝') || _loc.includes('林雅芝')) { %>
+<%- await getwi('角色/家属/林晓宝') %>
+<%- await getwi('角色/家属/林秀芬') %>
+<% } %>
+
+<%/* 场景3：市场/老李家（-王秀兰相关） */%>
+<% if (_loc.includes('市场') || _loc.includes('老李') || _loc.includes('王秀兰')) { %>
+<%- await getwi('角色/家属/李大强') %>
+<%- await getwi('角色/家属/李晓婉') %>
+<% } %>
+
+<%/* 场景4：赵家/订婚宴（-赵敏相关） */%>
+<% if (_loc.includes('赵家') || _loc.includes('订婚') || _loc.includes('赵敏')) { %>
+<%- await getwi('角色/家属/王昊') %>
+<%- await getwi('角色/家属/赵立明') %>
+<% } %>
+
+<%/* 场景5：剧组/片场（-孙莉相关） */%>
+<% if (_loc.includes('剧组') || _loc.includes('片场') || _loc.includes('孙莉')) { %>
+<%- await getwi('角色/家属/孙建国') %>
+<%- await getwi('角色/家属/陈浩') %>
+<% } %>
+
+<%/* 场景6：李家/豪门（-周慧敏相关） */%>
+<% if (_loc.includes('李家') || _loc.includes('豪门') || _loc.includes('周慧敏')) { %>
+<%- await getwi('角色/家属/李建国') %>
+<%- await getwi('角色/家属/李承乾') %>
+<%- await getwi('角色/家属/李雪') %>
+<% } %>
+
+<%/* 场景7：吴琼公司（-吴琼相关） */%>
+<% if (_loc.includes('吴琼') || _loc.includes('公司') || _loc.includes('董事会')) { %>
+<%- await getwi('角色/家属/吴小婷') %>
+<% } %>
+
+<%/* 场景8：郑家/财阀（-郑秀相关） */%>
+<% if (_loc.includes('郑家') || _loc.includes('财阀') || _loc.includes('郑秀')) { %>
+<%- await getwi('角色/家属/郑鸿远') %>
+<%- await getwi('角色/家属/李文轩') %>
+<%- await getwi('角色/家属/郑鸿涛') %>
+<%- await getwi('角色/家属/郑鸿波') %>
+<% } %>
+
+<%/* 场景9：user家中（-苏婉相关，核心场景） */%>
+<% if (_loc.includes('user') || _loc.includes('家中') || _loc.includes('苏婉') || _loc.includes('用户')) { %>
+<%- await getwi('角色/家属/乐乐') %>
+<% } %>
+
+<%/* 场景10：硅谷/科技圈（-沈梦瑶相关） */%>
+<% if (_loc.includes('硅谷') || _loc.includes('科技') || _loc.includes('沈梦瑶') || _loc.includes('梦瑶')) { %>
+<%- await getwi('角色/家属/陈泽') %>
+<% } %>
+
+<%/* 场景11：张强老家（前夫，特殊触发） */%>
+<% if (_loc.includes('张强') || _loc.includes('前夫老家')) { %>
+<%- await getwi('角色/家属/张强') %>
+<% } %>
+
+<%/* 兜底：第1章开场默认加载乐乐（user家庭场景） */%>
+<% if (_chap === 1 && (_loc === '未知' || _loc === '')) { %>
+<%- await getwi('角色/家属/乐乐') %>
+<% } %>
+
+<% } %>

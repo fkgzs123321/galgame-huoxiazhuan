@@ -1,0 +1,764 @@
+﻿---
+title: 汗青書
+description: 汗青書
+aside: false
+outline: [2, 3]
+sidebar: false
+borderless: false
+tags:
+    - end
+    - history
+    - 結局
+    - 汗青書
+---
+
+# {{ $frontmatter.title }}
+
+::: danger 前方高能
+本列表頁具有嚴重劇透，若在意遊戲體驗被破壞者，請速速離開。
+:::
+
+## 有請作者魏夫子本人親自出場防劇透
+
+<img height="300" width="300" src="/images/characters/girl_7/special.webp" alt="作者本人" />
+
+<br>
+
+<BTable :stickyHeader=true searchMode="or"
+:tags="[
+{ text: '【唐默鈴】'},
+{ text: '【葉雲裳】' },
+{ text: '【虞小梅】' },
+{ text: '【上官螢】'},
+{ text: '【夏侯蘭】' },
+{ text: '【郁竹】' },
+{ text: '【魏菊】' },
+{ text: '【龍湘】' },
+{ text: '【結緣】' },
+{ text: '【結緣？】' },
+{ text: '【破廟線】' },
+{ text: '【青城留學】' },
+{ text: '【小梅綁架】' },
+{ text: '【隨四師兄行商】' },
+{ text: '【離開唐門】' },
+{ text: '【戰死】' },
+{ text: '【遣散唐門】' },
+{ text: '【唐門覆滅】' },
+{ text: '【西武林盟】' }
+]">
+
+<tr>
+<td>
+結局編號
+</td>
+<td :unsortable=true>
+結局名稱
+</td>
+<td :unsortable=true>
+結局概要
+</td>
+</tr>
+<tr>
+<td>
+結局 1
+</td>
+<td style="color: #a83232;">
+回歸隱居
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span>
+</td>
+</tr>
+<tr>
+<td>
+結局 2
+</td>
+<td style="color: #a83232;">
+毀滅性聲波攻擊
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span>
+</td>
+</tr>
+<tr>
+<td>
+結局 3
+</td>
+<td style="color: #a83232;">
+青春的尾聲，夢想的殘渣
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span>
+</td>
+</tr>
+<tr>
+<td>
+結局 4
+</td>
+<td style="color: #a83232;">
+<EndIcon no="4">唐門叛徒</EndIcon>
+</td>
+<td>
+<span style="color: Gray;">【離開唐門】</span><br>
+被趕出唐門，最終一事無成，泯於人海。
+</td>
+</tr>
+<tr>
+<td>
+結局 5
+</td>
+<td style="color: #a83232;">
+<EndIcon no="5">獨善其身</EndIcon>
+</td>
+<td>
+<span style="color: #FF1493;">【結緣？】</span><br>
+Demo 版結局，唐門滅派前夕選擇跟普通女弟子下山延續唐門薪火。
+</td>
+</tr>
+<tr>
+<td>
+結局 6
+</td>
+<td style="color: #a83232;">
+<EndIcon no="6">睡死</EndIcon>
+</td>
+<td>
+遭受重大打擊之後，選擇一睡不醒。
+</td>
+</tr>
+<tr>
+<td>
+結局 7
+</td>
+<td style="color: #a83232;">
+<EndIcon no="7">孤獨死</EndIcon>
+</td>
+<td>
+<span style="color: #B0DCD5;">【葉雲裳】</span><br>
+南宮壽宴拒絕陪大師兄說相聲，並衝動逃離一切。<br>
+雲裳線打贏鐵冠道人的隱藏壞結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 8
+</td>
+<td style="color: #a83232;">
+<EndIcon no="8">被煮的狗</EndIcon>
+</td>
+<td>
+廣州唐門襲擊唐門時，選擇背叛唐門。
+</td>
+</tr>
+<tr>
+<td>
+結局 9
+</td>
+<td style="color: #a83232;">
+<EndIcon no="9">竹之城</EndIcon>
+</td>
+<td>
+<span style="color: #B22222;">【小梅綁架】</span>
+<span style="color: #FF2D51;">【虞小梅】</span>
+<span style="color: #70AA39;">【郁竹】</span>
+<span style="color: #FF1493;">【結緣？】</span><br>
+在治療大師兄時被虞小梅威脅中途收功，後被虞小梅軟禁世外桃源，不敢跟郁竹告白僅能成為鄰居，在世外桃源度過餘生。
+</td>
+</tr>
+<tr>
+<td>
+結局 10
+</td>
+<td style="color: #a83232;">
+<EndIcon no="10">退隱江湖</EndIcon>
+</td>
+<td>
+<span style="color: #B22222;">【小梅綁架】</span>
+<span style="color: #FF2D51;">【虞小梅】</span>
+<span style="color: #70AA39;">【郁竹】</span>
+<span style="color: #FF1493;">【結緣？】</span><br>
+在治療大師兄時被虞小梅威脅中途收功，後被虞小梅軟禁世外桃源，跟郁竹結為夫妻，在世外桃源共度一生。
+</td>
+</tr>
+<tr>
+<td>
+結局 11
+</td>
+<td style="color: #a83232;">
+<EndIcon no="11">魂歸故里</EndIcon>
+</td>
+<td>
+<span style="color: #B22222;">【小梅綁架】</span>
+<span style="color: #FF2D51;">【虞小梅】</span><br>
+在治療大師兄時被虞小梅威脅中途收功，後被虞小梅軟禁世外桃源，一生只想著再次回到唐門。
+</td>
+</tr>
+<tr>
+<td>
+結局 12
+</td>
+<td style="color: #a83232;">
+<EndIcon no="12">孤獨終老</EndIcon>
+</td>
+<td>
+<span style="color: #EEE8AA;">【隨四師兄行商】</span><br>
+隨四師兄一同離開唐門，貿易行商。
+</td>
+</tr>
+<tr>
+<td>
+結局 13
+</td>
+<td style="color: #a83232;">
+<EndIcon no="13">西遊記</EndIcon>
+</td>
+<td>
+<span style="color: #EEE8AA;">【隨四師兄行商】</span>
+<span style="color: #E34234;">【唐默鈴】</span><br>
+依約與對感情含矇未懂的小師妹告別，隨四師兄一同離開唐門，貿易行商。
+</td>
+</tr>
+<tr>
+<td>
+結局 14
+</td>
+<td style="color: #a83232;">
+<EndIcon no="14">天下寂寥事，與君闊別時</EndIcon>
+</td>
+<td>
+<span style="color: #EEE8AA;">【隨四師兄行商】</span>
+<span style="color: #E34234;">【唐默鈴】</span><br>
+依約與淚流滿面的小師妹告別，隨四師兄一同離開唐門，貿易行商。
+</td>
+</tr>
+<tr>
+<td>
+結局 15
+</td>
+<td style="color: #a83232;">
+<EndIcon no="15">天下寂寥事，與君闊別時</EndIcon>
+</td>
+<td>
+<span style="color: #EEE8AA;">【隨四師兄行商】</span>
+<span style="color: #B0DCD5;">【葉雲裳】</span><br>
+與留在唐門的葉雲裳告別，隨四師兄一同離開唐門，貿易行商。
+</td>
+</tr>
+<tr>
+<td>
+結局 16
+</td>
+<td style="color: #a83232;">
+<EndIcon no="16">猿鶴蟲沙</EndIcon>
+</td>
+<td>
+在小師妹比武招親，金烏上人來襲的夜晚。不講武德進行圍毆還輸掉成為武林笑話，在唐門關門後成為無派之士，戰死於護國戰場。
+</td>
+</tr>
+<tr>
+<td>
+結局 17
+</td>
+<td style="color: #a83232;">
+<EndIcon no="17">盲劍客</EndIcon>
+</td>
+<td>
+<span style="color: White;">【龍湘】</span><br>
+在破廟為龍湘擋下石灰卻因此失明，在龍湘劍術指導之下成為盲眼劍客。
+</td>
+</tr>
+<tr>
+<td>
+結局 18
+</td>
+<td style="color: #a83232;">
+被關到死
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+不留學，負氣離開唐門，綁架來找來的小師妹與葉雲裳，被關在牢裡關到死。
+</td>
+</tr>
+<tr>
+<td>
+結局 19
+</td>
+<td style="color: #a83232;">
+<EndIcon no="19">流浪漢</EndIcon>
+</td>
+<td>
+<span style="color: Gray;">【離開唐門】</span><br>
+不留學，負氣離開唐門，送小師妹(或加上葉雲裳)回唐門後，依然選擇永遠離開唐門，浪跡天涯。
+</td>
+</tr>
+<tr>
+<td>
+結局 20
+</td>
+<td style="color: #a83232;">
+<EndIcon no="20">入無窮之門，遊無極之野</EndIcon>
+</td>
+<td>
+<span style="color: #bfdcb0;">【青城留學】</span><br>
+放棄成為大俠的夢想，遁入青城，千朝習道，忘棄紅塵。
+</td>
+</tr>
+<tr>
+<td>
+結局 21
+</td>
+<td style="color: #a83232;">
+<EndIcon no="21">退隱江湖</EndIcon>
+</td>
+<td>
+<span style="color: Gray;">【離開唐門】</span><br>
+<span style="color: #FF1493;">【破廟線】</span><br>
+不留學，負氣離開唐門，送小師妹(或加上葉雲裳)回唐門後，依然選擇永遠離開唐門，退隱江湖。<br>
+性情為謹慎的時候，在破廟線最後那段會多一個趕緊跑路的選項，遇到敵人並戰勝
+</td>
+</tr>
+<tr>
+<td>
+結局 22
+</td>
+<td style="color: #a83232;">
+<EndIcon no="22">恩仇的盡頭</EndIcon>
+</td>
+<td>
+<span style="color: #00BFFF;">【夏侯蘭】</span><br>
+拜師夏侯蘭，在小師妹比武招親，金烏上人來襲的夜晚。不講武德進行圍毆還輸掉成為武林笑話，在恩師帶領下殺上崆峒派結清恩仇。
+</td>
+</tr>
+<tr>
+<td>
+結局 23
+</td>
+<td style="color: #a83232;">
+<EndIcon no="23">宦海浮沉</EndIcon>
+</td>
+<td>
+<span style="color: #00BFFF;">【夏侯蘭】</span>
+<span style="color: Gold;">【魏菊】</span>
+<span style="color: #FF1493;">【結緣？】</span><br>
+拜師夏侯蘭，因為練功分心被強逼跟惡霸綁來的村姑互換鴛盟，離開江湖加入官場，忘記自己的模樣成為另一個人。
+</td>
+</tr>
+<tr>
+<td>
+結局 24
+</td>
+<td style="color: #a83232;">
+<EndIcon no="24">趕海人</EndIcon>
+</td>
+<td>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: White;">【龍湘】</span>
+<span style="color: #FF1493;">【結緣？】</span><br>
+即使已經有了紅粉知己，仍在在遣散唐門時與龍湘告白，迫使龍湘投崖自盡。
+</td>
+</tr>
+<tr>
+<td>
+結局 25
+</td>
+<td style="color: #a83232;">
+<EndIcon no="25">退隱江湖</EndIcon>
+</td>
+<td>
+<span style="color: #006F86;">【遣散唐門】</span><br>
+遣散唐門，退隱江湖。
+</td>
+</tr>
+<tr>
+<td>
+結局 26
+</td>
+<td style="color: #a83232;">
+山中老人
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: #FF2D51;">【虞小梅】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與虞小梅結緣的低道德遣散唐門結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 27
+</td>
+<td style="color: #a83232;">
+世外桃源
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: #FF2D51;">【虞小梅】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與虞小梅結緣的高道德遣散唐門結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 28
+</td>
+<td style="color: #a83232;">
+血河刀
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: #70AA39;">【郁竹】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與郁竹結緣的低道德遣散唐門結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 29
+</td>
+<td style="color: #a83232;">
+再世龐統
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: #70AA39;">【郁竹】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與郁竹結緣的高道德遣散唐門結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 30
+</td>
+<td style="color: #a83232;">
+山林隱逸
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: Gold;">【魏菊】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與魏菊結緣的遣散唐門結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 31
+</td>
+<td style="color: #a83232;">
+<EndIcon no="31">傳說之人</EndIcon>
+</td>
+<td>
+<span style="color: #006F86;">【遣散唐門】</span>
+<span style="color: #00BFFF;">【夏侯蘭】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與夏侯蘭結緣的高道德遣散唐門結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 32
+</td>
+<td style="color: #a83232;">
+ <EndIcon no="32">殉志而死</EndIcon>
+</td>
+<td>
+<span style="color: #AA0000;">【戰死】</span><br>
+為了貫徹自己意志戰死。
+</td>
+</tr>
+<tr>
+<td>
+結局 33
+</td>
+<td style="color: #a83232;">
+<EndIcon no="33">全軍覆沒</EndIcon>
+</td>
+<td>
+<span style="color: Yellow;">【西武林盟】</span><br>
+東西武林教戰，在防守外堡的戰役中全軍覆沒。
+</td>
+</tr>
+<tr>
+<td>
+結局 34
+</td>
+<td style="color: #a83232;">
+<EndIcon no="34">行屍走肉</EndIcon>
+</td>
+<td>
+<span style="color: #00BFFF;">【夏侯蘭】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+在唐門滅門危機時，聽從夏侯蘭師令逃離唐門。
+</td>
+</tr>
+<tr>
+<td>
+結局 35
+</td>
+<td style="color: #a83232;">
+<EndIcon no="35">慷慨就義</EndIcon>
+</td>
+<td>
+<span style="color: #AA0000;">【戰死】</span><br>
+在防守唐門大院的戰鬥中戰死。
+</td>
+</tr>
+<tr>
+<td>
+結局 36
+</td>
+<td style="color: #a83232;">
+<EndIcon no="36">唐門的暗器</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span><br>
+唐門滅門戰中，下山突圍到武林盟主前，敗給武林盟主。
+</td>
+</tr>
+<tr>
+<td>
+結局 37
+</td>
+<td style="color: #a83232;">
+<EndIcon no="37">唐門薪火</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: #E34234;">【唐默鈴】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與小師妹心心相印締結婚約後，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 38
+</td>
+<td style="color: #a83232;">
+<EndIcon no="38">神州旅人</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: #B0DCD5;">【葉雲裳】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與葉雲裳結緣，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 39
+</td>
+<td style="color: #a83232;">
+富甲一方
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: MediumOrchid;">【上官螢】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與上官螢結緣，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 40
+</td>
+<td style="color: #a83232;">
+小梅私藏
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: #FF2D51;">【虞小梅】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與虞小梅結緣，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 41
+</td>
+<td style="color: #a83232;">
+千古名匠
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: #70AA39;">【郁竹】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與郁竹結緣，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 42
+</td>
+<td style="color: #a83232;">
+隱世大儒
+</td>
+<td>
+<span style="color: red;">【目前版本無法達成】</span><br>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: Gold;">【魏菊】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+與魏菊結緣，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 43
+</td>
+<td style="color: #a83232;">
+<EndIcon no="43">失寵</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: #00BFFF;">【夏侯蘭】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+身為欺師滅祖的畜生，娶了恩師夏侯蘭後，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 44
+</td>
+<td style="color: #a83232;">
+<EndIcon no="44">雞腿大亨</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span>
+<span style="color: White;">【龍湘】</span>
+<span style="color: #FF1493;">【結緣】</span><br>
+從弟弟到夫婿，化解了龍湘的心魔於後山拜堂後，在唐門滅門戰中，下山突圍到武林盟主前，戰勝武林盟主成為唐門倖存者。
+</td>
+</tr>
+<tr>
+<td>
+結局 45
+</td>
+<td style="color: #a83232;">
+<EndIcon no="45">最後的唐門弟子</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span><br>
+唐門滅門戰中，下山突圍，最終孤身殺到武林盟主前，戰勝武林盟主，成為唐門最後一人。
+</td>
+</tr>
+<tr>
+<td>
+結局 46
+</td>
+<td style="color: #a83232;">
+<EndIcon no="46">相聲二人組</EndIcon>
+</td>
+<td>
+<span style="color: #DC0000;">【唐門覆滅】</span><br>
+唐門滅門戰中，下山突圍，最終孤身殺到武林盟主前，戰勝武林盟主。與詐死歸來的大師兄相聲一生。
+</td>
+</tr>
+<tr>
+<td>
+結局 47
+</td>
+<td style="color: #a83232;">
+<EndIcon no="47">君所願兮江湖行</EndIcon>
+</td>
+<td>
+<span style="color: Yellow;">【西武林盟】</span><br>
+西武林盟成立後，在眉山決戰輸給武林盟主。
+</td>
+</tr>
+<tr>
+<td>
+結局 48
+</td>
+<td style="color: #a83232;">
+<EndIcon no="48">武林傳奇</EndIcon>
+</td>
+<td>
+<span style="color: Yellow;">【西武林盟】</span><br>
+西武林盟成立後，在眉山決戰擊敗武林盟主。
+</td>
+</tr>
+<tr>
+<td>
+結局 49
+</td>
+<td style="color: #a83232;">
+<EndIcon no="49">喪家之犬</EndIcon>
+</td>
+<td>
+<span style="color: Yellow;">【西武林盟】</span><br>
+東西武林盟交戰時敗給南宮深後，被南宮深救出。
+</td>
+</tr>
+<tr>
+<td>
+結局 50
+</td>
+<td style="color: #a83232;">
+<EndIcon no="50">峨嵋弟子</EndIcon>
+</td>
+<td>
+<span style="color: #FF1493;">【結緣？】</span><br>
+打贏來唐門留學的唐嬌嬌，與唐嬌嬌成親加入峨嵋派。
+</td>
+</tr>
+<tr>
+<td>
+結局 51
+</td>
+<td>
+<EndIcon no="51">窩囊死</EndIcon>
+</td>
+<td>
+<span style="color: #FF1493;">【破廟線】</span><br>
+打不贏唐大鯨，二師兄罩你，再戰又輸，對你失望透頂。
+</td>
+</tr>
+<tr>
+<td>
+結局 52
+</td>
+<td>
+<EndIcon no="52">苟且偷生</EndIcon>
+</td>
+<td>
+<span style="color: #FF1493;">【破廟線】</span><br>
+不守護唐門，偷偷溜走又被賊人抓住，嚴刑拷打。
+</td>
+</tr>
+<tr>
+<td>
+結局 53
+</td>
+<td>
+<EndIcon no="53">劃地為牢</EndIcon>
+</td>
+<td>
+<span style="color: #bfdcb0;">【青城留學】</span>
+<span style="color: #FF1493;">【葉雲裳】</span><br>
+青城留學開頭，道德大於惡棍，打贏申屠龍的隱藏壞結局。
+</td>
+</tr>
+<tr>
+<td>
+結局 54
+</td>
+<td>
+<EndIcon no="54">與妳同行</EndIcon>
+</td>
+<td>
+<span style="color: #FF1493;">【葉雲裳】</span><br>
+於谷底治療葉雲裳時，四連戰輸掉任何一場，與她共赴黃泉。
+</td>
+</tr>
+</BTable>
+
+## 備註
+
+-   資料來源：巴哈姆特－[【攻略】v1.05 生死簿汗青書整理(有雷)](https://forum.gamer.com.tw/C.php?bsn=73317&snA=3647&tnum=3&subbsn=3)
+-   滅門線結局，結緣優先度(v1.0.3201.1)：<Girl0Icon>唐默鈴</Girl0Icon>＞<Girl2Icon>葉雲裳</Girl2Icon>＞<Girl4Icon>上官螢</Girl4Icon>＞<Girl3Icon>虞小梅</Girl3Icon>＞<Girl6Icon>郁竹</Girl6Icon>＞<Girl7Icon>魏菊</Girl7Icon>＞<Girl5Icon>夏侯蘭</Girl5Icon>＞<Girl8Icon>龍湘</Girl8Icon>

@@ -1,0 +1,15 @@
+{
+  "id": "fjb-inner-monologue-beautify",
+  "scriptName": "内心独白美化",
+  "findRegex": "/<InnerMonologue\\s+char=\"([^\"]+)\"(?:\\s+type=\"([^\"]+)\")?\\s*>([\\s\\S]*?)<\\/InnerMonologue>/g",
+  "replaceString": "<div class=\"fjb-mono fjb-mono-$2\"><div class=\"fjb-mono-head\"><span class=\"fjb-mono-icon\">💭</span><span class=\"fjb-mono-char\">$1</span><span class=\"fjb-mono-type\">$2</span></div><div class=\"fjb-mono-body\">$3</div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}

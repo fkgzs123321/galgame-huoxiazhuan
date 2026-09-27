@@ -1,0 +1,1740 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 全局规则总表（单一来源 Single Source of Truth）
+   ════════════════════════════════════════════════════════════
+   所有 EJS 控制器（D0/角色性格/世界观场景/寒假日程调度器）的规则来源。
+   任何数值、阈值、变化量、互斥关系都在此处写死，AI 不可私自修改。
+   修改规则必须先改本表，再传播到各控制器。
+*/%>
+
+<%
+/* ───────── 一、玩家身份（player_identity，5 位预设男性 + 1 自定义身份） ───────── */
+if (typeof this.PLAYER_IDENTITIES === 'undefined') this.PLAYER_IDENTITIES = {
+  '原作主角': {
+    name_placeholder: '{{user}}',
+    age: 18,
+    identity: '八十八学园三年生，鸣泽家义子（重组家庭）',
+    home: '鸣泽家（与义妹唯、义母美佐子同住）',
+    school_access: true,
+    work_access: true,
+    initial_money: 5000,
+    initial_stats: { charm: 50, academic: 50, physical: 80, social: 50, perception: 30, willpower: 50 },
+    initial_skills_bonus: {},
+    initial_relations: {
+      '鸣泽唯': { affection: 5, heartbeat: 0, jealousy: 0, trust: 30, note: '义妹，已同居 10 年' },
+      '鸣泽美佐子': { affection: 10, heartbeat: 0, jealousy: 0, trust: 40, note: '义母，关照多年' },
+      '水野友美': { affection: 15, heartbeat: 0, jealousy: 0, trust: 35, note: '青梅竹马，邻居' },
+      '川尻信良': { affection: 20, heartbeat: 0, jealousy: 0, trust: 45, note: '损友（玩家选 P1 时作为 NPC 存在）' }
+    }
+  },
+  '川尻信良': {
+    name_placeholder: '川尻信良',
+    age: 18,
+    identity: '八十八学园三年生，相沢诚的知心朋友；洋子线推动者',
+    home: '川尻家（自宅周边）',
+    school_access: true,
+    work_access: true,
+    initial_money: 4000,
+    initial_stats: { charm: 45, academic: 40, physical: 70, social: 60, perception: 40, willpower: 55 },
+    initial_skills_bonus: { speech: 50 },
+    initial_relations: {
+      '南川洋子': { affection: 10, heartbeat: 0, jealousy: 0, trust: 20, note: '同班同学，有些交集' },
+      '鸣泽唯': { affection: 0, heartbeat: 0, jealousy: 0, trust: 10, note: '认识但不熟' },
+      '相沢诚': { affection: 20, heartbeat: 0, jealousy: 0, trust: 45, note: '好友（玩家选 P2 时相沢诚作为 NPC 存在）' }
+    }
+  },
+  '长冈芳树': {
+    name_placeholder: '长冈芳树',
+    age: 18,
+    identity: '八十八学园三年生，偷拍问题儿童；友美线反派 + 美纪线威胁者',
+    home: '长冈家（八十八町住宅区）',
+    school_access: true,
+    work_access: 'limited',
+    initial_money: 3000,
+    initial_stats: { charm: 35, academic: 45, physical: 60, social: 30, perception: 50, willpower: 20 },
+    initial_skills_bonus: { stealth: 40, observation: 50 },
+    initial_relations: {
+      '水野友美': { affection: -10, heartbeat: 0, jealousy: 0, trust: -20, note: '被偷拍过，敌意' },
+      '加藤美纪': { affection: -5, heartbeat: 0, jealousy: 0, trust: -10, note: '被威胁过' }
+    }
+  },
+  '西御寺有友': {
+    name_placeholder: '西御寺有友',
+    age: 19,
+    identity: '八十八学园三年生（留级），财阀独生子；唯线+美纪线+美铃线核心反派',
+    home: '西御寺家豪宅（八十八町商业区）',
+    school_access: true,
+    work_access: false,
+    initial_money: 50000,
+    initial_stats: { charm: 60, academic: 30, physical: 50, social: 70, perception: 20, willpower: 40 },
+    initial_skills_bonus: {},
+    initial_relations: {
+      '鸣泽唯': { affection: -20, heartbeat: 0, jealousy: 0, trust: -30, note: '被骚扰过，敌意' },
+      '加藤美纪': { affection: -10, heartbeat: 0, jealousy: 0, trust: -20, note: '被纠缠过' },
+      '片桐美铃': { affection: -15, heartbeat: 0, jealousy: 0, trust: -25, note: '师生关系紧张' }
+    }
+  },
+  '天道新干线': {
+    name_placeholder: '天道新干线',
+    age: 28,
+    identity: '八十八学园教师，虐待狂；爱美线核心反派',
+    home: '天道家（八十八町住宅区）',
+    school_access: true,
+    work_access: true,
+    initial_money: 20000,
+    initial_stats: { charm: 55, academic: 70, physical: 60, social: 65, perception: 15, willpower: 60 },
+    initial_skills_bonus: {},
+    initial_relations: {
+      '安田爱美': { affection: 5, heartbeat: 0, jealousy: 0, trust: 10, note: '有特殊企图' },
+      '片桐美铃': { affection: 10, heartbeat: 0, jealousy: 0, trust: 20, note: '同事关系' }
+    }
+  },
+  '自定义': {
+    name_placeholder: '{{user}}',
+    age: null,  // 玩家自定义（18~30）
+    identity: '玩家自由创建',
+    home: '玩家自定义',
+    school_access: 'auto',  // 由年龄推断：≤22 默认 true，≥23 需背景说明
+    work_access: true,
+    initial_money: null,   // 玩家自定义（0~50000，超 50000 强制降至 50000）
+    initial_stats: null,   // 玩家自定义（6 维每项 0~难度对应上限，总和 ≤ 难度对应上限）
+    initial_skills_bonus: null,  // 玩家自定义（1 项 +30 或 2 项各 +15，可不选）
+    initial_relations: null,    // 由 AI 根据背景描述生成
+    is_custom: true,
+    custom_constraints: {
+      stats_max_per_dim: '由难度决定（轻松90/普通80/挑战70/地狱60）',
+      stats_total_max: '由难度决定（轻松420/普通360/挑战300/地狱240）',
+      money_max: 50000,
+      age_range: [18, 30],
+      age_student_default: [18, 22],
+      age_worker_required_explanation: [23, 30],
+      difficulty_ref: 'DIFFICULTY_MODIFIERS[_diff].stats_max_per_dim / stats_total_max'
+    },
+    custom_fields: ['姓名', '年龄', '身份', '住所', '初始金钱', '初始属性', '初始技能加成', '性格倾向', '背景描述', '游戏难度']
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   身份感知场景描述（每个身份独立 day1-day17 场景）
+   核心原则：用具体名字，不用"主角"；每个身份事件独立，不通用
+   ════════════════════════════════════════════════════════════ */
+if (typeof this.IDENTITY_PROFILES === 'undefined') this.IDENTITY_PROFILES = {
+  '原作主角': {
+    name: '相沢诚',
+    short_name: '相沢诚',
+    home: '鸣泽家',
+    identity_desc: '八十八学园三年生，鸣泽家义子（重组家庭）',
+    special_role: '原作主角，全 20 位女角开放攻略',
+    day1: {
+      morning: '相沢诚在鸣泽家自宅起床，义妹唯已在厨房准备早餐，义母美佐子正在整理客厅。寒假第一天，重组家庭的温馨氛围。',
+      afternoon: '相沢诚与唯在鸣泽家客厅闲聊寒假计划，兄妹关系基调建立。唯好感 +3。',
+      evening: '水野友美来鸣泽家拜访相沢诚，青梅竹马邻家关系铺垫。友美好感 +2。',
+      diary_hint: '义母美佐子曾在搬入时提过书桌抽屉里有上一任房客留下的东西。'
+    },
+    day2: {
+      morning: '相沢诚在鸣泽家起床，唯已备好早餐，今日是学园开放日，相沢诚与友美约好同行。义母美佐子叮嘱早归。',
+      afternoon: '相沢诚在八十八学园开放日与水野友美、可怜、泉美初遇，多线女角埋下伏笔。',
+      evening: '相沢诚回到鸣泽家，唯与美佐子在客厅等候，分享学园见闻。唯好感 +2。',
+      diary_hint: '相沢诚听美佐子提起鸣泽家祖辈曾在八十八町经营物件店。'
+    },
+    day3: {
+      morning: '相沢诚在鸣泽家起床，唯提及加藤美纪近况异常。美佐子嘱咐留意学园传闻。',
+      afternoon: '相沢诚在海岸偶遇南川洋子（洋子线铺垫），同时加藤美纪谜团初现端倪。',
+      evening: '相沢诚回鸣泽家整理线索，唯流露对美纪的担忧。唯好感 +1。',
+      diary_hint: '相沢诚想起抽屉日记本中提到"双面少女"的字样。'
+    },
+    day4: {
+      morning: '相沢诚在鸣泽家与唯、美佐子共度圣诞前日，准备圣诞夜家宴。',
+      afternoon: '相沢诚协助美佐子采买圣诞食材，唯装饰客厅。家庭氛围温馨。',
+      evening: '相沢诚与唯、美佐子在鸣泽家共度圣诞夜，义妹义母围桌晚餐。唯好感 +3，美佐子好感 +2。',
+      diary_hint: '相沢诚翻阅日记本，发现上一任房客记录了某个圣诞夜的秘密。'
+    },
+    day5: {
+      morning: '相沢诚在鸣泽家起床，今日前往商业区采买。美佐子托其顺路办事。',
+      afternoon: '相沢诚在便利店首遇水野美里，田中美沙可能出现在88车站（多线埋点）。',
+      evening: '相沢诚回鸣泽家，向唯描述便利店趣事。唯好感 +1。',
+      diary_hint: '相沢诚记下日记本中"美里"的名字。'
+    },
+    day6: {
+      morning: '相沢诚在鸣泽家起床，今日为自由探索日，可推进任意女角线。',
+      afternoon: '相沢诚在八十八町多线推进，可能触发友美/可怜/泉美/美纪事件。',
+      evening: '相沢诚回鸣泽家与唯、美佐子汇报，家庭氛围稳定。',
+      diary_hint: '相沢诚整理日记本线索，标注各女角行踪。'
+    },
+    day7: {
+      morning: '相沢诚在鸣泽家起床，唯提及西御寺有友近日来周边徘徊，流露不安。',
+      afternoon: '相沢诚在学园附近遭遇西御寺有友警告事件，唯线索升级。',
+      evening: '相沢诚回鸣泽家安抚唯，美佐子察觉异样。唯好感 +2。',
+      diary_hint: '相沢诚在日记本中读到"西御寺"的旧记录。'
+    },
+    day8: {
+      morning: '相沢诚在鸣泽家起床，今日需救援唯（西御寺有友骚扰升级）。',
+      afternoon: '相沢诚在商业区/旧校舍救援唯，与西御寺有友正面对峙。',
+      evening: '相沢诚带唯回鸣泽家安抚，美佐子关怀备至。唯好感 +5。',
+      diary_hint: '相沢诚记下救援过程，日记本浮现"守护"字样。'
+    },
+    day9: {
+      morning: '相沢诚在鸣泽家起床，若已邀约泉美则启程温泉旅行。',
+      afternoon: '相沢诚在温泉旅行中推进泉美线，途中可能触发友美偷拍误会。',
+      evening: '相沢诚处理偷拍误会，澄清与友美关系。友美好感波动。',
+      diary_hint: '相沢诚在日记本中读到"温泉"的旧记录。'
+    },
+    day10: {
+      morning: '相沢诚在鸣泽家起床，今日跨年。美佐子提议神宫参拜。',
+      afternoon: '相沢诚与唯、美佐子在神宫参拜，可能偶遇其他女角。',
+      evening: '相沢诚回鸣泽家参加跨年聚会，家庭围炉守岁。唯好感 +3，美佐子好感 +2。',
+      diary_hint: '相沢诚在日记本中读到"跨年"的旧记录。'
+    },
+    day11: {
+      morning: '相沢诚在鸣泽家起床，听闻樱子死讯（医院传来消息）。',
+      afternoon: '相沢诚前往医院确认樱子死讯，剧情转折。',
+      evening: '相沢诚回鸣泽家，美佐子在浴室为相沢诚洗背（义母亲密事件）。美佐子好感 +5。',
+      diary_hint: '相沢诚在日记本中读到"樱子"与"洗背"的旧记录。'
+    },
+    day12: {
+      morning: '相沢诚在鸣泽家起床，今日受邀佐知子晚餐。',
+      afternoon: '相沢诚在商业区/学园附近推进佐知子线，唯察觉异样。',
+      evening: '相沢诚赴佐知子晚餐，剧情深化。佐知子好感 +3。',
+      diary_hint: '相沢诚在日记本中读到"佐知子"的旧记录。'
+    },
+    day13: {
+      morning: '相沢诚在鸣泽家起床，佐知子线深化日。',
+      afternoon: '相沢诚与佐知子多次接触，剧情推进。',
+      evening: '相沢诚回鸣泽家，唯流露对相沢诚的依赖。唯好感 +2。',
+      diary_hint: '相沢诚在日记本中读到"深化"的旧记录。'
+    },
+    day14: {
+      morning: '相沢诚在鸣泽家起床，今日前往医院探望佐知子。',
+      afternoon: '相沢诚在医院探望佐知子，剧情高潮。',
+      evening: '相沢诚回鸣泽家，唯与美佐子等候。家庭氛围。',
+      diary_hint: '相沢诚在日记本中读到"医院"的旧记录。'
+    },
+    heroine_focus: ['鸣泽唯（义妹同居）', '鸣泽美佐子（义母）', '水野友美（邻家青梅竹马）']
+  },
+  '川尻信良': {
+    name: '川尻信良',
+    short_name: '信良',
+    home: '川尻家',
+    identity_desc: '八十八学园三年生，相沢诚的知心朋友；洋子线推动者',
+    special_role: '洋子线推动者，口才大师（+50）',
+    day1: {
+      morning: '川尻信良在川尻家起床，独自准备早餐（父母上班早出）。寒假第一天，损友相沢诚应该也在鸣泽家起床。作为洋子线推动者，本日可在学园或商业区寻找南川洋子。',
+      afternoon: '川尻信良下午在学园附近/机车行方向偶遇南川洋子，同班同学关系铺垫。洋子好感 +1。',
+      evening: '川尻信良傍晚在川尻家周边散步，可能遇到相沢诚（好友 NPC）。',
+      diary_hint: '川尻信良整理书桌时发现抽屉深处一本泛黄日记本（上一任房客遗物）。'
+    },
+    day2: {
+      morning: '川尻信良在川尻家起床，今日学园开放日，作为洋子线推动者，计划推进南川洋子好感。',
+      afternoon: '川尻信良在学园开放日与南川洋子互动，洋子好感 +2。',
+      evening: '川尻信良回川尻家整理日记本，记录洋子行踪。',
+      diary_hint: '川尻信良发现日记本第2本线索（洋子短发伏笔）。'
+    },
+    day3: {
+      morning: '川尻信良在川尻家起床，今日前往机车行方向寻找洋子。',
+      afternoon: '川尻信良与南川洋子在机车行互动，洋子线推进，洋子好感 +3。',
+      evening: '川尻信良回川尻家，整理洋子线情报。',
+      diary_hint: '川尻信良在日记本中读到"机车"的旧记录。'
+    },
+    day4: {
+      morning: '川尻信良在川尻家独自起床，今日圣诞夜（非鸣泽家家庭场景）。',
+      afternoon: '川尻信良在川尻家周边或商业区闲逛，可能偶遇南川洋子。',
+      evening: '川尻信良在川尻家独自度过圣诞夜，或与洋子偶遇（非家庭场景）。',
+      diary_hint: '川尻信良在日记本中读到"圣诞"的旧记录。'
+    },
+    day5: {
+      morning: '川尻信良在川尻家起床，洋子短发事件铺垫日。',
+      afternoon: '川尻信良与南川洋子互动，洋子线深化，洋子好感 +2。',
+      evening: '川尻信良回川尻家，整理洋子线情报。',
+      diary_hint: '川尻信良在日记本中读到"短发"的旧记录。'
+    },
+    day6: {
+      morning: '川尻信良在川尻家起床，自由探索日，可推进洋子线或其他支线。',
+      afternoon: '川尻信良在八十八町推进洋子线，洋子好感 +1。',
+      evening: '川尻信良回川尻家整理情报。',
+      diary_hint: '川尻信良在日记本中标注洋子线进度。'
+    },
+    day7: {
+      morning: '川尻信良在川尻家起床，今日西御寺警告事件（川尻家周边）。',
+      afternoon: '川尻信良在川尻家周边遭遇西御寺有友警告事件。',
+      evening: '川尻信良回川尻家整理情报，警惕西御寺。',
+      diary_hint: '川尻信良在日记本中读到"西御寺"的旧记录。'
+    },
+    day8: {
+      morning: '川尻信良在川尻家起床，今日信良放弃洋子，颓废一天。',
+      afternoon: '川尻信良颓废游荡，最终决定放弃洋子线，交付日记本第2本。',
+      evening: '川尻信良在川尻家独自整理日记本，正式退出洋子线。',
+      diary_hint: '川尻信良将日记本第2本交付相沢诚（好友 NPC）。'
+    },
+    day9: {
+      morning: '川尻信良在川尻家起床，今日推动温泉旅行邀约泉美（信良推动）。',
+      afternoon: '川尻信良协助相沢诚邀约泉美温泉旅行。',
+      evening: '川尻信良回川尻家整理情报。',
+      diary_hint: '川尻信良在日记本中读到"温泉"的旧记录。'
+    },
+    day10: {
+      morning: '川尻信良在川尻家独自起床，今日跨年（川尻家独自或与洋子偶遇）。',
+      afternoon: '川尻信良在川尻家周边或商业区闲逛，可能偶遇南川洋子。',
+      evening: '川尻信良在川尻家独自跨年，或与洋子偶遇（非家庭场景）。',
+      diary_hint: '川尻信良在日记本中读到"跨年"的旧记录。'
+    },
+    day11: {
+      morning: '川尻信良在川尻家起床，听闻樱子死讯。',
+      afternoon: '川尻信良前往医院确认樱子死讯。',
+      evening: '川尻信良回川尻家整理情报（无美佐子浴室洗背，非义母关系）。',
+      diary_hint: '川尻信良在日记本中读到"樱子"的旧记录。'
+    },
+    day12: {
+      morning: '川尻信良在川尻家起床，今日可能咖啡店偶遇佐知子晚餐。',
+      afternoon: '川尻信良在商业区/咖啡店偶遇佐知子，剧情深化。',
+      evening: '川尻信良回川尻家整理情报。',
+      diary_hint: '川尻信良在日记本中读到"佐知子"的旧记录。'
+    },
+    day13: {
+      morning: '川尻信良在川尻家起床，佐知子线深化（偶遇）。',
+      afternoon: '川尻信良在咖啡店/商业区偶遇佐知子，剧情推进。',
+      evening: '川尻信良回川尻家整理情报。',
+      diary_hint: '川尻信良在日记本中读到"深化"的旧记录。'
+    },
+    day14: {
+      morning: '川尻信良在川尻家起床，今日前往医院探望佐知子（通用场景）。',
+      afternoon: '川尻信良在医院探望佐知子。',
+      evening: '川尻信良回川尻家整理情报。',
+      diary_hint: '川尻信良在日记本中读到"医院"的旧记录。'
+    },
+    heroine_focus: ['南川洋子（同班同学，洋子线核心）', '相沢诚（好友 NPC）']
+  },
+  '长冈芳树': {
+    name: '长冈芳树',
+    short_name: '芳树',
+    home: '长冈家',
+    identity_desc: '八十八学园三年生，偷拍问题儿童；友美线反派 + 美纪线威胁者',
+    special_role: '偷拍问题儿童，潜行 +40 / 观察 +50',
+    day1: {
+      morning: '长冈芳树在长冈家起床，独自准备简单早餐。寒假第一天，作为偷拍问题儿童，本日可准备偷拍设备，计划尾随水野友美。',
+      afternoon: '长冈芳树下午在学园附近/八十八町住宅区潜行，寻找偷拍机会。',
+      evening: '长冈芳树傍晚在长冈家周边观察，可能发现友美行踪（敌意关系，需谨慎）。',
+      diary_hint: '长冈芳树整理书桌时发现抽屉深处一本泛黄日记本（上一任房客遗物）。'
+    },
+    day2: {
+      morning: '长冈芳树在长冈家起床，今日学园潜行，准备偷拍设备。',
+      afternoon: '长冈芳树在学园附近潜行，偷拍水野友美（敌意关系，需谨慎）。',
+      evening: '长冈芳树回长冈家整理偷拍成果。',
+      diary_hint: '长冈芳树在日记本中标注友美行踪。'
+    },
+    day3: {
+      morning: '长冈芳树在长冈家起床，今日计划偷拍加藤美纪。',
+      afternoon: '长冈芳树在商业区/学园偷拍美纪，发现美纪双身份谜团。',
+      evening: '长冈芳树回长冈家整理偷拍成果，标注美纪谜团。',
+      diary_hint: '长冈芳树在日记本中读到"双面"的旧记录。'
+    },
+    day4: {
+      morning: '长冈芳树在长冈家独自起床，今日圣诞夜（长冈家独自，无家庭场景）。',
+      afternoon: '长冈芳树在长冈家周边潜行，寻找偷拍机会。',
+      evening: '长冈芳树在长冈家独自度过圣诞夜（无家庭场景）。',
+      diary_hint: '长冈芳树在日记本中读到"圣诞"的旧记录。'
+    },
+    day5: {
+      morning: '长冈芳树在长冈家起床，今日整理偷拍成果，问题儿童行为日。',
+      afternoon: '长冈芳树在长冈家整理偷拍照片/视频，标注情报。',
+      evening: '长冈芳树在长冈家周边观察，可能发现新偷拍目标。',
+      diary_hint: '长冈芳树在日记本中标注偷拍成果。'
+    },
+    day6: {
+      morning: '长冈芳树在长冈家起床，今日自由潜行，情报收集。',
+      afternoon: '长冈芳树在八十八町潜行，收集女角情报。',
+      evening: '长冈芳树回长冈家整理情报。',
+      diary_hint: '长冈芳树在日记本中标注情报网络。'
+    },
+    day7: {
+      morning: '长冈芳树在长冈家起床，今日西御寺警告事件（长冈家周边）。',
+      afternoon: '长冈芳树在长冈家周边遭遇西御寺有友警告事件。',
+      evening: '长冈芳树回长冈家整理情报，警惕西御寺。',
+      diary_hint: '长冈芳树在日记本中读到"西御寺"的旧记录。'
+    },
+    day8: {
+      morning: '长冈芳树在长冈家起床，今日救援唯事件（因偷拍情报介入）。',
+      afternoon: '长冈芳树利用偷拍情报介入救援唯事件。',
+      evening: '长冈芳树回长冈家整理情报。',
+      diary_hint: '长冈芳树在日记本中读到"救援"的旧记录。'
+    },
+    day9: {
+      morning: '长冈芳树在长冈家起床，今日友美偷拍误会（芳树视角）。',
+      afternoon: '长冈芳树在商业区/学园被友美发现偷拍，误会升级。',
+      evening: '长冈芳树回长冈家整理情报，应对友美敌意。',
+      diary_hint: '长冈芳树在日记本中读到"误会"的旧记录。'
+    },
+    day10: {
+      morning: '长冈芳树在长冈家独自起床，今日跨年（长冈家独自或神宫偶遇）。',
+      afternoon: '长冈芳树在长冈家周边潜行，或前往神宫偷拍。',
+      evening: '长冈芳树在长冈家独自跨年，或在神宫偶遇其他角色（无家庭场景）。',
+      diary_hint: '长冈芳树在日记本中读到"跨年"的旧记录。'
+    },
+    day11: {
+      morning: '长冈芳树在长冈家起床，听闻樱子死讯。',
+      afternoon: '长冈芳树前往医院确认樱子死讯。',
+      evening: '长冈芳树回长冈家整理情报（无美佐子浴室洗背）。',
+      diary_hint: '长冈芳树在日记本中读到"樱子"的旧记录。'
+    },
+    day12: {
+      morning: '长冈芳树在长冈家起床，今日可能咖啡店偶遇佐知子晚餐。',
+      afternoon: '长冈芳树在商业区/咖啡店偶遇佐知子。',
+      evening: '长冈芳树回长冈家整理情报。',
+      diary_hint: '长冈芳树在日记本中读到"佐知子"的旧记录。'
+    },
+    day13: {
+      morning: '长冈芳树在长冈家起床，佐知子线深化（偶遇）。',
+      afternoon: '长冈芳树在咖啡店/商业区偶遇佐知子，剧情推进。',
+      evening: '长冈芳树回长冈家整理情报。',
+      diary_hint: '长冈芳树在日记本中读到"深化"的旧记录。'
+    },
+    day14: {
+      morning: '长冈芳树在长冈家起床，今日前往医院探望佐知子（通用场景）。',
+      afternoon: '长冈芳树在医院探望佐知子。',
+      evening: '长冈芳树回长冈家整理情报。',
+      diary_hint: '长冈芳树在日记本中读到"医院"的旧记录。'
+    },
+    heroine_focus: ['水野友美（敌意，偷拍目标）', '加藤美纪（敌意，威胁对象）']
+  },
+  '西御寺有友': {
+    name: '西御寺有友',
+    short_name: '西御寺',
+    home: '西御寺家豪宅',
+    identity_desc: '八十八学园三年生（留级），财阀独生子；唯线+美纪线+美铃线核心反派',
+    special_role: '财阀独生子，金钱 50000，核心反派',
+    day1: {
+      morning: '西御寺有友在西御寺家豪宅起床，佣人已备好早餐。寒假第一天，作为财阀独生子，本日可在商业区闲逛或计划次日去学园骚扰唯。',
+      afternoon: '西御寺有友下午在商业区闲逛，可能遇到加藤美纪（敌意关系）。',
+      evening: '西御寺有友傍晚在西御寺家豪宅享受财阀生活，计划次日行动。',
+      diary_hint: '西御寺有友整理书桌时发现抽屉深处一本泛黄日记本（豪宅前主人遗物）。'
+    },
+    day2: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日学园开放日，计划骚扰唯。',
+      afternoon: '西御寺有友在学园开放日骚扰鸣泽唯，与加藤美纪冲突。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中标注唯行踪。'
+    },
+    day3: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日商业区闲逛，计划骚扰唯。',
+      afternoon: '西御寺有友在商业区闲逛，计划次日骚扰唯。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"唯"的旧记录。'
+    },
+    day4: {
+      morning: '西御寺有友在西御寺家豪宅独自起床，今日圣诞夜（西御寺家豪宅独自，无家庭场景）。',
+      afternoon: '西御寺有友在西御寺家豪宅享受财阀生活。',
+      evening: '西御寺有友在西御寺家豪宅独自度过圣诞夜（无家庭场景）。',
+      diary_hint: '西御寺有友在日记本中读到"圣诞"的旧记录。'
+    },
+    day5: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日财阀生活，计划骚扰唯/美纪/美铃。',
+      afternoon: '西御寺有友在商业区/学园计划骚扰唯/美纪/美铃。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中标注多线目标。'
+    },
+    day6: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日自由行动，金钱优势。',
+      afternoon: '西御寺有友在八十八町自由行动，利用金钱优势。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中标注金钱流向。'
+    },
+    day7: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日西御寺警告事件（西御寺家豪宅）。',
+      afternoon: '西御寺有友在西御寺家豪宅发出警告事件。',
+      evening: '西御寺有友在西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"警告"的旧记录。'
+    },
+    day8: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日救援唯事件（因敌意关系，被动介入）。',
+      afternoon: '西御寺有友因敌意关系被动介入救援唯事件。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"救援"的旧记录。'
+    },
+    day9: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日商业区活动，财阀社交。',
+      afternoon: '西御寺有友在商业区活动，财阀社交。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"社交"的旧记录。'
+    },
+    day10: {
+      morning: '西御寺有友在西御寺家豪宅独自起床，今日跨年（西御寺家豪宅独自）。',
+      afternoon: '西御寺有友在西御寺家豪宅享受财阀生活。',
+      evening: '西御寺有友在西御寺家豪宅独自跨年（无家庭场景）。',
+      diary_hint: '西御寺有友在日记本中读到"跨年"的旧记录。'
+    },
+    day11: {
+      morning: '西御寺有友在西御寺家豪宅起床，听闻樱子死讯。',
+      afternoon: '西御寺有友前往医院确认樱子死讯。',
+      evening: '西御寺有友回西御寺家豪宅（无美佐子浴室洗背）。',
+      diary_hint: '西御寺有友在日记本中读到"樱子"的旧记录。'
+    },
+    day12: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日可能咖啡店偶遇佐知子晚餐。',
+      afternoon: '西御寺有友在商业区/咖啡店偶遇佐知子。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"佐知子"的旧记录。'
+    },
+    day13: {
+      morning: '西御寺有友在西御寺家豪宅起床，佐知子线深化（偶遇）。',
+      afternoon: '西御寺有友在咖啡店/商业区偶遇佐知子。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"深化"的旧记录。'
+    },
+    day14: {
+      morning: '西御寺有友在西御寺家豪宅起床，今日前往医院探望佐知子（通用场景）。',
+      afternoon: '西御寺有友在医院探望佐知子。',
+      evening: '西御寺有友回西御寺家豪宅享受财阀生活。',
+      diary_hint: '西御寺有友在日记本中读到"医院"的旧记录。'
+    },
+    heroine_focus: ['鸣泽唯（敌意，骚扰目标）', '加藤美纪（敌意）', '片桐美铃（师生紧张）']
+  },
+  '天道新干线': {
+    name: '天道新干线',
+    short_name: '天道',
+    home: '天道家',
+    identity_desc: '八十八学园教师，虐待狂；爱美线核心反派',
+    special_role: '教师身份，爱美线核心，金钱 20000',
+    day1: {
+      morning: '天道新干线在天道家起床，独自准备早餐。寒假第一天，作为八十八学园教师，本日可去学校处理教务或寻找安田爱美。',
+      afternoon: '天道新干线下午在八十八学园教师室办公，可能遇到片桐美铃（同事关系）。',
+      evening: '天道新干线傍晚在天道家休息，可能计划次日去保育园接触爱美。',
+      diary_hint: '天道新干线整理书桌时发现抽屉深处一本泛黄日记本（天道家前主人遗物）。'
+    },
+    day2: {
+      morning: '天道新干线在天道家起床，今日学园教师室办公，接触安田爱美。',
+      afternoon: '天道新干线在八十八学园教师室办公，可能接触片桐美铃（同事）或安田爱美。',
+      evening: '天道新干线回天道家休息，整理爱美线情报。',
+      diary_hint: '天道新干线在日记本中标注爱美行踪。'
+    },
+    day3: {
+      morning: '天道新干线在天道家起床，今日前往保育园接触爱美。',
+      afternoon: '天道新干线在保育园接触安田爱美，爱美线推进。',
+      evening: '天道新干线回天道家休息，整理爱美线情报。',
+      diary_hint: '天道新干线在日记本中读到"保育园"的旧记录。'
+    },
+    day4: {
+      morning: '天道新干线在天道家独自起床，今日圣诞夜（天道家独自，无家庭场景）。',
+      afternoon: '天道新干线在天道家周边闲逛，可能接触安田爱美。',
+      evening: '天道新干线在天道家独自度过圣诞夜（无家庭场景）。',
+      diary_hint: '天道新干线在日记本中读到"圣诞"的旧记录。'
+    },
+    day5: {
+      morning: '天道新干线在天道家起床，今日爱美线深化，教师身份优势。',
+      afternoon: '天道新干线利用教师身份推进爱美线。',
+      evening: '天道新干线回天道家休息，整理爱美线情报。',
+      diary_hint: '天道新干线在日记本中标注爱美线进度。'
+    },
+    day6: {
+      morning: '天道新干线在天道家起床，今日自由行动，教师身份。',
+      afternoon: '天道新干线在八十八町自由行动，利用教师身份。',
+      evening: '天道新干线回天道家休息。',
+      diary_hint: '天道新干线在日记本中标注情报网络。'
+    },
+    day7: {
+      morning: '天道新干线在天道家起床，今日西御寺警告事件（天道家周边/学园）。',
+      afternoon: '天道新干线在天道家周边或学园遭遇西御寺有友警告事件。',
+      evening: '天道新干线回天道家休息，警惕西御寺。',
+      diary_hint: '天道新干线在日记本中读到"西御寺"的旧记录。'
+    },
+    day8: {
+      morning: '天道新干线在天道家起床，今日救援唯事件（因教师身份被动介入）。',
+      afternoon: '天道新干线因教师身份被动介入救援唯事件。',
+      evening: '天道新干线回天道家休息。',
+      diary_hint: '天道新干线在日记本中读到"救援"的旧记录。'
+    },
+    day9: {
+      morning: '天道新干线在天道家起床，今日爱美线推进。',
+      afternoon: '天道新干线在保育园/学园推进爱美线。',
+      evening: '天道新干线回天道家休息，整理爱美线情报。',
+      diary_hint: '天道新干线在日记本中读到"爱美"的旧记录。'
+    },
+    day10: {
+      morning: '天道新干线在天道家独自起床，今日跨年（天道家独自或神宫偶遇）。',
+      afternoon: '天道新干线在天道家周边闲逛，或前往神宫。',
+      evening: '天道新干线在天道家独自跨年，或在神宫偶遇其他角色（无家庭场景）。',
+      diary_hint: '天道新干线在日记本中读到"跨年"的旧记录。'
+    },
+    day11: {
+      morning: '天道新干线在天道家起床，听闻樱子死讯。',
+      afternoon: '天道新干线前往医院确认樱子死讯。',
+      evening: '天道新干线回天道家休息（无美佐子浴室洗背）。',
+      diary_hint: '天道新干线在日记本中读到"樱子"的旧记录。'
+    },
+    day12: {
+      morning: '天道新干线在天道家起床，今日可能咖啡店偶遇佐知子晚餐。',
+      afternoon: '天道新干线在商业区/咖啡店偶遇佐知子。',
+      evening: '天道新干线回天道家休息。',
+      diary_hint: '天道新干线在日记本中读到"佐知子"的旧记录。'
+    },
+    day13: {
+      morning: '天道新干线在天道家起床，佐知子线深化（偶遇）。',
+      afternoon: '天道新干线在咖啡店/商业区偶遇佐知子。',
+      evening: '天道新干线回天道家休息。',
+      diary_hint: '天道新干线在日记本中读到"深化"的旧记录。'
+    },
+    day14: {
+      morning: '天道新干线在天道家起床，今日前往医院探望佐知子（通用场景）。',
+      afternoon: '天道新干线在医院探望佐知子。',
+      evening: '天道新干线回天道家休息。',
+      diary_hint: '天道新干线在日记本中读到"医院"的旧记录。'
+    },
+    heroine_focus: ['安田爱美（特殊企图）', '片桐美铃（同事）']
+  },
+  '自定义': {
+    name: '{{user}}',
+    short_name: '玩家',
+    home: '玩家自定义住所',
+    identity_desc: '玩家自由创建身份',
+    special_role: '自定义主角，按玩家背景描述推进',
+    day1: {
+      morning: '{{user}}在自定义住所起床，按背景描述安排寒假第一天。',
+      afternoon: '{{user}}下午在住所周边/学园/商业区探索（按背景描述）。',
+      evening: '{{user}}傍晚在住所休息，规划寒假。',
+      diary_hint: '{{user}}整理书桌时发现抽屉深处一本泛黄日记本（上一任房客遗物）。'
+    },
+    day2: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day2剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day2行踪。'
+    },
+    day3: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day3剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day3行踪。'
+    },
+    day4: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day4剧情（圣诞夜）。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所度过圣诞夜（按背景描述）。',
+      diary_hint: '{{user}}在日记本中标注day4行踪。'
+    },
+    day5: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day5剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day5行踪。'
+    },
+    day6: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day6剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day6行踪。'
+    },
+    day7: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day7剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day7行踪。'
+    },
+    day8: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day8剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day8行踪。'
+    },
+    day9: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day9剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day9行踪。'
+    },
+    day10: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day10剧情（跨年）。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所跨年（按背景描述）。',
+      diary_hint: '{{user}}在日记本中标注day10行踪。'
+    },
+    day11: {
+      morning: '{{user}}在自定义住所起床，听闻樱子死讯。',
+      afternoon: '{{user}}前往医院确认樱子死讯。',
+      evening: '{{user}}傍晚在住所休息（按背景描述）。',
+      diary_hint: '{{user}}在日记本中标注day11行踪。'
+    },
+    day12: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day12剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day12行踪。'
+    },
+    day13: {
+      morning: '{{user}}在自定义住所起床，按背景描述推进day13剧情。',
+      afternoon: '{{user}}下午按背景描述探索八十八町。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day13行踪。'
+    },
+    day14: {
+      morning: '{{user}}在自定义住所起床，今日前往医院探望佐知子（通用场景）。',
+      afternoon: '{{user}}在医院探望佐知子。',
+      evening: '{{user}}傍晚在住所休息，整理情报。',
+      diary_hint: '{{user}}在日记本中标注day14行踪。'
+    },
+    heroine_focus: ['按玩家背景描述决定']
+  }
+};
+
+/* ───────── 二、生存属性规则（关键真实机制） ───────── */
+if (typeof this.SURVIVAL_RULES === 'undefined') this.SURVIVAL_RULES = {
+  hunger: {
+    name: '饥饿值',
+    range: [0, 100],
+    default: 30,
+    auto_increment_per_slot: 10,  // 每时段自动 +10
+    decrement_by_food: true,      // 食物消除
+    thresholds: {
+      'safe': { range: [0, 69], effect: '正常' },
+      'warning': { range: [70, 89], effect: '饥饿debuff：每时段体力-10/心情-5/女角好感-2' },
+      'critical': { range: [90, 99], effect: '饿晕事件：强制送医，金钱-2000，当日所有行动取消' },
+      'deadly': { range: [100, 100], effect: '触发 BAD_END_3_破产 子条件（需配合 money≤0 + 连续3天无收入）' }
+    },
+    food_recovery_ref: '见 固定物品效果表.txt → SHOP_ITEMS（category=三餐），hunger 减少量按 effect.hunger 取值',
+    // 与 固定物品效果表.txt 完全对齐（SKU 单一来源）：
+    // 便利店便当 -30 / 饭团 -20 / 三明治 -25 / 家庭料理 -25 / 美佐子料理 -50 / 咖啡店简餐 -40 / 高级餐厅套餐 -60 / 温泉特产点心 -10 / 手工巧克力 -5
+  },
+  thirst: {
+    name: '口渴值',
+    range: [0, 100],
+    default: 20,
+    auto_increment_per_slot: 15,  // 每时段自动 +15（比饥饿快）
+    decrement_by_drink: true,     // 饮料消除
+    thresholds: {
+      'safe': { range: [0, 69], effect: '正常' },
+      'warning': { range: [70, 89], effect: '口渴debuff：每时段体力-5/心情-3' },
+      'critical': { range: [90, 99], effect: '脱水事件：强制送医，金钱-1500' },
+      'deadly': { range: [100, 100], effect: '触发 BAD_END_3_破产 子条件' }
+    },
+    drink_recovery_ref: '见 固定物品效果表.txt → SHOP_ITEMS（category=饮料），thirst 减少量按 effect.thirst 取值',
+    // 与 固定物品效果表.txt 完全对齐：
+    // 矿泉水 -25 / 罐装咖啡 -15 / 果汁 -20 / 运动饮料 -30 / 茶 -20 / 能量饮料 -10 / 特调咖啡 -20 / 咖啡店简餐 -10（含饮料）
+  },
+  hygiene: {
+    name: '清洁度',
+    range: [0, 100],
+    default: 80,
+    auto_decrement_per_day: 20,   // 每日凌晨 -20
+    increment_by_wash: true,      // 洗澡/温泉恢复
+    thresholds: {
+      'clean': { range: [80, 100], effect: '正常，女角互动加成 +1' },
+      'normal': { range: [31, 79], effect: '正常' },
+      'dirty': { range: [11, 30], effect: '异味debuff：女角互动好感-3/次，willpower-1' },
+      'disgusting': { range: [0, 10], effect: '被嫌弃事件：女角拒绝接近，mood-10' }
+    },
+    wash_recovery_ref: '见 固定物品效果表.txt → SHOP_ITEMS（category=洗浴），hygiene 增加量按 effect.hygiene 取值',
+    // 与 固定物品效果表.txt 完全对齐：
+    // 淋浴券 +30 / 温泉券 +60 / 温泉旅馆住宿 +80（同时恢复 sleep_quality +20）
+  },
+  sleep_quality: {
+    name: '睡眠质量',
+    range: [0, 100],
+    default: 70,
+    computed_at_sleep: true,  // 深夜睡眠时计算
+    formula: {
+      base: 50,
+      intimate_today: 10,        // 当日有亲密互动
+      negative_today: -15,       // 当日有负面事件
+      hunger_high: -20,          // 当日 hunger ≥70
+      fatigue_high: -10          // 当日 fatigue ≥80
+    },
+    next_day_effect: {
+      good: { range: [70, 100], stamina_recover: 25, fatigue_recover: 40 },
+      normal: { range: [40, 69], stamina_recover: 15, fatigue_recover: 25 },
+      bad: { range: [0, 39], stamina_recover: 5, fatigue_recover: 10 }
+    }
+  }
+};
+
+/* ───────── 二·补、NSFW 身体规则（已拆分至「全局规则-NSFW身体规则.txt」按需加载） ───────── */
+// 兜底声明：若 D0 控制器未按 scene_mode 加载扩展模块，此处提供空对象避免引用错误
+this.NSFW_BODY_RULES = { _partial: true };
+
+/* ───────── 二·补2、技能系统规则（已拆分至「全局规则-技能系统.txt」按需加载） ───────── */
+// 兜底声明：若 D0 控制器未按 scene_mode 加载扩展模块，此处提供空对象避免引用错误
+this.SKILL_RULES = { _partial: true };
+
+/* ───────── 三、难度修正系数（更极端版，含生存属性速率挂钩 + 属性上限挂钩） ───────── */
+if (typeof this.DIFFICULTY_MODIFIERS === 'undefined') this.DIFFICULTY_MODIFIERS = {
+  '轻松': {
+    dice_threshold_mult: 0.8,    // 骰子判定阈值 ×0.8（更易成功）
+    money_mult: 1.2,              // 金钱获得 ×1.2
+    decrease_mult: 0.5,           // 数值下降幅度 ×0.5
+    increase_mult: 1.5,           // 数值上升幅度 ×1.5
+    per_turn_cap: 5,              // 单轮变化上限
+    jealousy_gain_mult: 0.5,      // 嫉妒值增长 ×0.5
+    bad_ending_threshold: -100,   // 死结局触发阈值
+    // 生存属性速率挂钩（轻松：递增更慢，递减更快）
+    survival_hunger_mult: 0.8,    // hunger 每时段 +10×0.8 = +8
+    survival_thirst_mult: 0.8,    // thirst 每时段 +15×0.8 = +12
+    survival_hygiene_mult: 0.75,  // hygiene 每日 -20×0.75 = -15
+    // 属性上限挂钩（轻松：放宽）
+    stats_max_per_dim: 90,        // 单维属性上限 90
+    stats_total_max: 420,         // 6维总和上限 420
+    stat_gain_mult: 1.3,          // 属性提升倍数 ×1.3（成长更快）
+    note: '休闲向，专注于剧情与恋爱'
+    // Remake 映射：本档对应同级生2 Remake Easy 模式（机制级放宽，含骰子+经济+嫉妒三重简化）
+  },
+  '普通': {
+    dice_threshold_mult: 1.0,
+    money_mult: 1.0,
+    decrease_mult: 1.0,
+    increase_mult: 1.0,
+    per_turn_cap: 5,
+    jealousy_gain_mult: 1.0,
+    bad_ending_threshold: -100,
+    // 生存属性速率（基准值）
+    survival_hunger_mult: 1.0,    // hunger 每时段 +10
+    survival_thirst_mult: 1.0,    // thirst 每时段 +15
+    survival_hygiene_mult: 1.0,   // hygiene 每日 -20
+    // 属性上限挂钩（普通：基准）
+    stats_max_per_dim: 80,        // 单维属性上限 80
+    stats_total_max: 360,         // 6维总和上限 360
+    stat_gain_mult: 1.0,          // 属性提升倍数 ×1.0（基准）
+    note: '原作难度，平衡体验'
+  },
+  '挑战': {
+    dice_threshold_mult: 1.2,
+    money_mult: 0.9,
+    decrease_mult: 1.2,
+    increase_mult: 0.9,
+    per_turn_cap: 5,
+    jealousy_gain_mult: 1.5,
+    bad_ending_threshold: -100,
+    // 生存属性速率（挑战：递增更快，递减更慢）
+    survival_hunger_mult: 1.2,    // hunger 每时段 +12
+    survival_thirst_mult: 1.2,   // thirst 每时段 +18
+    survival_hygiene_mult: 1.25, // hygiene 每日 -25
+    // 属性上限挂钩（挑战：收紧）
+    stats_max_per_dim: 70,        // 单维属性上限 70
+    stats_total_max: 300,         // 6维总和上限 300
+    stat_gain_mult: 0.8,          // 属性提升倍数 ×0.8（成长较慢）
+    note: '硬核向，需要规划'
+  },
+  '地狱': {
+    dice_threshold_mult: 2.0,    // 骰子判定阈值 ×2（极难成功）
+    money_mult: 0.3,              // 金钱获得 ×0.3（穷）
+    decrease_mult: 2.0,           // 数值下降幅度 ×2（暴跌）
+    increase_mult: 0.3,           // 数值上升幅度 ×0.3（难涨）
+    per_turn_cap: 5,
+    jealousy_gain_mult: 2.5,      // 嫉妒值增长 ×2.5（极易嫉妒）
+    bad_ending_threshold: -100,
+    // 生存属性速率（地狱：递增极快，递减极慢）
+    survival_hunger_mult: 1.5,    // hunger 每时段 +15
+    survival_thirst_mult: 1.47,   // thirst 每时段 +22
+    survival_hygiene_mult: 1.5,   // hygiene 每日 -30
+    // 属性上限挂钩（地狱：严苛）
+    stats_max_per_dim: 60,        // 单维属性上限 60
+    stats_total_max: 240,         // 6维总和上限 240
+    stat_gain_mult: 0.5,          // 属性提升倍数 ×0.5（成长极慢）
+    note: '受难向，每一步都可能崩盘'
+  }
+};
+
+/* ───────── 三、关系值分档表（-100~+100，10 阶段） ─────────
+   对齐综合设计方案.md 与各女角性格调色盘.txt 的 10 阶段定义
+   移除多余的"攻略完成"和"失恋"（攻略完成属于结局状态非关系阶段；
+   失恋属于事件触发后的互斥状态，由互斥组机制处理，不进入关系分档） */
+if (typeof this.RELATION_STAGES === 'undefined') this.RELATION_STAGES = [
+  { range: [-100, -81], name: '决裂', stage: '决裂', color: 'darkred', behavior: '关系彻底破裂/不可挽回/可能触发BAD_END' },
+  { range: [-80, -61],  name: '仇视', stage: '仇视', color: 'red',    behavior: '拒绝交流/敌意/可能报警' },
+  { range: [-60, -41],  name: '厌恶', stage: '厌恶', color: 'red',    behavior: '冷淡回避/言语攻击' },
+  { range: [-40, -21],  name: '冷漠', stage: '冷漠', color: 'gray',   behavior: '不愿主动接触/客套' },
+  { range: [-20, -1],   name: '疏离', stage: '疏离', color: 'gray',   behavior: '刻意回避/疏远' },
+  { range: [0, 19],     name: '初识', stage: '初识', color: 'gray',   behavior: '普通同学/点头之交' },
+  { range: [20, 39],    name: '熟悉', stage: '熟悉', color: 'blue',   behavior: '可单独相处/普通话题' },
+  { range: [40, 59],    name: '暧昧', stage: '暧昧', color: 'yellow', behavior: '可牵手/可深夜独处' },
+  { range: [60, 79],    name: '心动', stage: '心动', color: 'pink',   behavior: '可亲吻/可表白' },
+  { range: [80, 100],   name: '亲密', stage: '亲密', color: 'deeppink', behavior: '初H/进阶H全解锁（90+进阶H自动开放）/攻略完成后维持此阶段' }
+];
+
+this.stageOf = function stageOf(value) {
+  const v = Number(value) || 0;
+  for (const s of RELATION_STAGES) {
+    if (v >= s.range[0] && v <= s.range[1]) return s;
+  }
+  return RELATION_STAGES[5]; // 默认初识（索引5=初识）
+}
+
+/* ───────── 四、行为数值变化表（写死） ───────── */
+// 每条行为 → 触发条件 + 数值变化（基础值，再乘难度系数）
+if (typeof this.BEHAVIOR_TABLE === 'undefined') this.BEHAVIOR_TABLE = {
+  // ── 日常交流类 ──
+  '普通对话': {
+    requires: { affection: -19, trust: -19, stage: ['初识', '熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +2, heartbeat: 0, jealousy: 0, trust: +1 },
+    note: '基础社交，每次小幅提升'
+  },
+  '深入交谈': {
+    requires: { affection: 20, trust: 20, stage: ['熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +3, heartbeat: +2, jealousy: 0, trust: +2 },
+    note: '需熟悉阶段，话题涉及内心'
+  },
+  '送礼（普通）': {
+    requires: { affection: -19, trust: -19, stage: ['初识', '熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +3, heartbeat: +1, jealousy: 0, trust: +1 },
+    cost_money: true,  // 金额由物品表决定
+    note: '普通礼物，提升幅度有限'
+  },
+  '送礼（贵重）': {
+    requires: { affection: 20, trust: 20, stage: ['熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +5, heartbeat: +3, jealousy: +2, trust: +2 },
+    cost_money: true,
+    note: '贵重礼物，可能触发其他女角嫉妒'
+  },
+  '送礼（禁忌）': {
+    requires: { affection: 40, trust: 40, stage: ['暧昧', '心动', '亲密'] },
+    changes: { affection: +5, heartbeat: +5, jealousy: +5, trust: 0 },
+    cost_money: true,
+    note: '内衣等敏感礼物，关系不够会反感'
+  },
+
+  // ── 肢体接触类 ──
+  '牵手': {
+    requires: { affection: 20, trust: 20, stage: ['熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +3, heartbeat: +3, jealousy: 0, trust: +2 },
+    fail_changes: { affection: -3, trust: -5, jealousy: +2 },
+    note: 'NSFW 硬门槛参 NSFW_BODY_RULES.nsfw_hard_gates.轻度接触（拥抱/牵手）'
+  },
+  '拥抱': {
+    requires: { affection: 20, trust: 20, stage: ['熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +4, heartbeat: +4, jealousy: 0, trust: +3 },
+    fail_changes: { affection: -3, trust: -5, jealousy: +2 },
+    note: '与牵手同属轻度接触，门槛一致'
+  },
+  '亲吻（唇）': {
+    requires: { affection: 60, heartbeat: 40, trust: 50, stage: ['心动', '亲密'] },
+    changes: { affection: +5, heartbeat: +5, jealousy: 0, trust: +5 },
+    fail_changes: { affection: -10, trust: -10, jealousy: +5, mood: -5 },
+    note: 'NSFW 硬门槛参 NSFW_BODY_RULES.nsfw_hard_gates.中度接触（亲吻/抚摸上半身）'
+  },
+  '初H': {
+    requires: { affection: 80, heartbeat: 60, trust: 70, h_exp: 20, stage: ['亲密'] },
+    changes: { affection: +5, heartbeat: +5, jealousy: 0, trust: +5, h_exp: +20 },
+    fail_changes: { affection: -20, trust: -20, jealousy: +10, illegal_count: +1 },
+    bad_ending: '强行初H 触发报警死结局（BAD_END_1）',
+    note: 'NSFW 硬门槛参 NSFW_BODY_RULES.nsfw_hard_gates.初H'
+  },
+  '进阶H玩法': {
+    requires: { affection: 90, heartbeat: 70, trust: 80, h_exp: 40, stage: ['亲密'] },
+    changes: { affection: +3, heartbeat: +3, jealousy: 0, trust: +3, h_exp: +5 },
+    fail_changes: { affection: -25, trust: -25, jealousy: +15, illegal_count: +1 },
+    note: 'NSFW 硬门槛参 NSFW_BODY_RULES.nsfw_hard_gates.进阶H玩法（口交/肛交/多人/道具）'
+  },
+
+  // ── 负面行为类 ──
+  '言语侮辱': {
+    requires: { stage: ['仇视', '厌恶', '冷漠', '初识', '熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: -8, heartbeat: -5, jealousy: 0, trust: -8 },
+    note: '主动侮辱，关系暴跌'
+  },
+  '暴力威胁': {
+    requires: { stage: ['仇视', '厌恶', '冷漠', '初识', '熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: -20, heartbeat: -15, jealousy: 0, trust: -25 },
+    bad_ending_warn: '触发法律意识护栏，可能进入死结局',
+    note: '严重负面行为'
+  },
+  '强制猥亵': {
+    requires: {},
+    changes: { affection: -50, heartbeat: -40, jealousy: 0, trust: -60 },
+    bad_ending: '强制猥亵 → 报警 → 死结局（BAD END 1）',
+    note: '绝对禁止，无论关系如何'
+  },
+  '尾随跟踪': {
+    requires: { stage: ['仇视', '厌恶', '冷漠', '初识', '熟悉'] },
+    changes: { affection: -10, heartbeat: -5, jealousy: +5, trust: -15 },
+    bad_ending_warn: '被发现 → 关系暴跌，多次发现触发法律意识',
+    note: '需消耗 1 时段，可能被发现'
+  },
+  '偷窥': {
+    requires: {},
+    changes: { affection: -15, heartbeat: -10, jealousy: +3, trust: -20 },
+    bad_ending_warn: '被发现 → 关系暴跌，触发法律意识',
+    note: '温泉/浴室场景高风险'
+  },
+
+  // ── 经济行为类 ──
+  '便利店打工': {
+    requires: { physical: 20, fatigue: 80 },
+    changes: { money: +800, fatigue: +15, physical: -10, mood: -2, willpower: 0 },
+    time_cost: '1 时段',
+    note: '基础工作，无门槛'
+  },
+  '咖啡店帮忙': {
+    requires: { physical: 20, fatigue: 80, relation: { '鸣泽美佐子': { affection: 20 } } },
+    changes: { money: +1000, fatigue: +12, physical: -8, mood: +2, willpower: +1 },
+    time_cost: '1 时段',
+    note: '需美佐子好感 ≥ 20'
+  },
+  '家教': {
+    requires: { physical: 30, fatigue: 70, academic: 50 },
+    changes: { money: +1500, fatigue: +10, physical: -5, academic: +1, mood: 0, willpower: +1 },
+    time_cost: '1 时段',
+    note: '需学业 ≥ 50'
+  },
+  '车站搬运': {
+    requires: { physical: 40, fatigue: 60 },
+    changes: { money: +1200, fatigue: +20, physical: -15, mood: -3, willpower: 0 },
+    time_cost: '1 时段',
+    note: '体力消耗大'
+  },
+  '温泉旅馆服务': {
+    requires: { physical: 30, fatigue: 70, location: '温泉乡' },
+    changes: { money: +1500, fatigue: +15, physical: -10, mood: +1, willpower: +2 },
+    time_cost: '1 时段',
+    note: '需在温泉乡'
+  },
+  '偶像助理': {
+    requires: { physical: 25, fatigue: 70, relation: { '舞岛可怜': { affection: 40 } } },
+    changes: { money: +2000, fatigue: +10, physical: -5, mood: +3, willpower: +3 },
+    time_cost: '1 时段',
+    note: '需舞岛可怜好感 ≥ 40'
+  },
+
+  // ── 生存行为类（强制机制，AI 必须遵守，数值与 固定物品效果表.txt 完全对齐） ──
+  '吃便利店便当': {
+    requires: { money: 300 },
+    changes: { money: -300, hunger: -30, fatigue: -5, mood: +1 },
+    time_cost: '0.5 时段',
+    note: '基础一餐，便利店购买（=SHOP_ITEMS.便利店便当）'
+  },
+  '吃咖啡店简餐': {
+    requires: { money: 500, location: '八十八町商业区' },
+    changes: { money: -500, hunger: -40, thirst: -10, fatigue: -8, mood: +2 },
+    time_cost: '0.5 时段',
+    note: '中等一餐带饮料，需在咖啡店（=SHOP_ITEMS.咖啡店简餐）'
+  },
+  '吃家庭料理': {
+    requires: { money: 200, location: '自宅周边' },
+    changes: { money: -200, hunger: -25, fatigue: -3, mood: +1 },
+    time_cost: '0.5 时段',
+    note: '在家用餐，需在自宅（=SHOP_ITEMS.家庭料理）'
+  },
+  '吃美佐子料理': {
+    requires: { relation: { '鸣泽美佐子': { affection: 20 } }, location: '自宅周边' },
+    changes: { hunger: -50, fatigue: -8, mood: +5 },
+    time_cost: '0.5 时段',
+    note: '需美佐子好感≥20，免费（=SHOP_ITEMS.美佐子料理）'
+  },
+  '吃高级餐厅套餐': {
+    requires: { money: 1500, location: ['温泉乡','八十八町商业区'] },
+    changes: { money: -1500, hunger: -60, thirst: -20, fatigue: -10, mood: +5 },
+    time_cost: '1 时段',
+    note: '奢侈一餐带饮料（=SHOP_ITEMS.高级餐厅套餐）'
+  },
+  '喝水': {
+    requires: { money: 0 },
+    changes: { thirst: -25, mood: 0 },
+    time_cost: '0 时段',
+    note: '免费自来水，可随时执行（thirst-25，等同于矿泉水效果但不花钱不补货）'
+  },
+  '喝矿泉水': {
+    requires: { money: 100 },
+    changes: { money: -100, thirst: -25 },
+    time_cost: '0 时段',
+    note: '便利店购买（=SHOP_ITEMS.矿泉水）'
+  },
+  '喝罐装咖啡': {
+    requires: { money: 120 },
+    changes: { money: -120, thirst: -15, fatigue: -2, mood: +1 },
+    time_cost: '0 时段',
+    note: '便利店/自动贩卖机购买（=SHOP_ITEMS.罐装咖啡）'
+  },
+  '喝果汁': {
+    requires: { money: 150 },
+    changes: { money: -150, thirst: -20, mood: +1 },
+    time_cost: '0 时段',
+    note: '便利店购买（=SHOP_ITEMS.果汁）'
+  },
+  '喝运动饮料': {
+    requires: { money: 200 },
+    changes: { money: -200, thirst: -30, fatigue: -5, physical: +3, mood: +1 },
+    time_cost: '0 时段',
+    note: '运动后恢复体力（=SHOP_ITEMS.运动饮料）'
+  },
+  '喝茶': {
+    requires: { money: 130 },
+    changes: { money: -130, thirst: -20, fatigue: -1, mood: +1 },
+    time_cost: '0 时段',
+    note: '便利店购买（=SHOP_ITEMS.茶）'
+  },
+  '喝能量饮料': {
+    requires: { money: 200 },
+    changes: { money: -200, thirst: -10, fatigue: -10, mood: +2, physical: +5 },
+    time_cost: '0 时段',
+    note: '强效提神（=SHOP_ITEMS.能量饮料）'
+  },
+  '在家淋浴': {
+    requires: { location: '自宅周边' },
+    changes: { hygiene: +30, fatigue: -3, mood: +2 },
+    time_cost: '0.5 时段',
+    note: '免费在家淋浴（与 SHOP_ITEMS.淋浴券 效果一致但免费，仅限自宅）'
+  },
+  '泡温泉': {
+    requires: { money: 800, location: '温泉乡' },
+    changes: { money: -800, hygiene: +60, fatigue: -10, mood: +5 },
+    time_cost: '1 时段',
+    note: '温泉乡泡温泉（=SHOP_ITEMS.温泉券）'
+  },
+  '温泉旅馆过夜': {
+    requires: { money: 5000, location: '温泉乡' },
+    changes: { money: -5000, hygiene: +80, fatigue: -20, mood: +10, sleep_quality: +20 },
+    time_cost: '1 晚',
+    note: '温泉旅馆过夜，等同深度休息（=SHOP_ITEMS.温泉旅馆住宿）'
+  },
+  '如厕': {
+    requires: {},
+    changes: { mood: +1 },
+    time_cost: '0 时段',
+    note: '免费，可随时执行'
+  },
+
+  // ── 自我提升类 ──
+  '学习': {
+    requires: { fatigue: 70 },
+    changes: { academic: +3, fatigue: +5, mood: -1 },
+    time_cost: '1 时段',
+    note: '提升学业'
+  },
+  '锻炼': {
+    requires: { physical: 20, fatigue: 70 },
+    changes: { physical: +3, fatigue: +8, mood: +1 },
+    time_cost: '1 时段',
+    note: '提升体力上限'
+  },
+  '梳洗打扮': {
+    requires: { fatigue: 80 },
+    changes: { charm: +2, fatigue: +2, mood: +2 },
+    time_cost: '0.5 时段',
+    note: '提升魅力'
+  },
+  '休息': {
+    requires: {},
+    changes: { fatigue: -25, physical: +15, mood: +3 },
+    time_cost: '1 时段',
+    note: '恢复体力疲劳'
+  },
+  '睡眠': {
+    requires: {},
+    changes: { fatigue: -40, physical: +25, mood: +5 },
+    time_cost: '深夜强制',
+    note: '深夜必须睡眠'
+  },
+
+  // ── 社交活动类 ──
+  '约会': {
+    requires: { affection: 40, heartbeat: 20, trust: 30, stage: ['暧昧', '心动', '亲密'] },
+    changes: { affection: +4, heartbeat: +4, jealousy: 0, trust: +3, money: -500 },
+    time_cost: '1 时段',
+    note: '需暧昧以上，消耗金钱'
+  },
+  '一起用餐': {
+    requires: { affection: 20, trust: 20, stage: ['熟悉', '暧昧', '心动', '亲密'] },
+    changes: { affection: +2, heartbeat: +1, jealousy: 0, trust: +2, money: -200 },
+    time_cost: '0.5 时段',
+    note: '普通社交'
+  }
+};
+
+/* ───────── 五、固定基础日薪表（普通难度） ───────── */
+if (typeof this.BASE_SALARY === 'undefined') this.BASE_SALARY = {
+  '便利店打工': 800,
+  '咖啡店帮忙': 1000,
+  '家教': 1500,
+  '车站搬运': 1200,
+  '温泉旅馆服务': 1500,
+  '偶像助理': 2000
+};
+
+/* ───────── 六、LCG 档位修正（写死） ───────── */
+if (typeof this.LCG_TIER_MODIFIER === 'undefined') this.LCG_TIER_MODIFIER = {
+  'gray': { name: '常见(灰)', mult: 0.8, desc: '出错/迟到，扣薪' },
+  'green': { name: '精良(绿)', mult: 1.0, desc: '正常完成' },
+  'blue': { name: '稀有(蓝)', mult: 1.2, desc: '受表扬，加班费' },
+  'purple': { name: '传说(紫)', mult: 1.5, desc: '特殊贡献，奖金' },
+  'gold': { name: '神话(金)', mult: 2.0, desc: '稀有事件触发' }
+};
+
+this.calcSalary = function calcSalary(jobName, difficulty, lcgTier) {
+  const base = BASE_SALARY[jobName] || 0;
+  const diffMult = (DIFFICULTY_MODIFIERS[difficulty] || DIFFICULTY_MODIFIERS['普通']).money_mult;
+  const tierMult = (LCG_TIER_MODIFIER[lcgTier] || LCG_TIER_MODIFIER['green']).mult;
+  return Math.round(base * diffMult * tierMult);
+}
+
+/* ───────── 七、死结局触发条件（8 类） ───────── */
+if (typeof this.BAD_ENDINGS === 'undefined') this.BAD_ENDINGS = {
+  'BAD_END_1_报警': {
+    trigger: '强制猥亵 / 强行初H / 暴力威胁女角',
+    result: '女角报警 → 警察介入 → 主角被拘留 → 游戏结束',
+    stage_lock: '无论关系如何都触发'
+  },
+  'BAD_END_2_学园开除': {
+    trigger: '在校内严重违规（暴力/偷窥/性骚扰）',
+    result: '被片桐美铃上报 → 学园开除 → 游戏结束',
+    stage_lock: '需 school_access = true'
+  },
+  'BAD_END_3_破产': {
+    trigger: '金钱 ≤ 0 且无法支付三餐（连续 3 天）',
+    result: '饥饿晕倒 → 被送医 → 没钱治疗 → 游戏结束',
+    stage_lock: '困难难度加速'
+  },
+  'BAD_END_4_崩溃': {
+    trigger: '心情 ≤ 0（防绝望触发失败）',
+    result: '主角精神崩溃 → 住院 → 游戏结束',
+    stage_lock: '需多次负面事件累积'
+  },
+  'BAD_END_5_嫉妒杀戮': {
+    trigger: '某女角 jealousy ≥ 90 且关系达亲密',
+    result: '女角因爱生恨 → 行凶 → 游戏结束',
+    stage_lock: '地狱难度高发'
+  },
+  'BAD_END_6_西御寺阴谋': {
+    trigger: '与鸣泽唯关系达亲密，但未在 12-29 前解决西御寺事件',
+    result: '西御寺财阀介入 → 唯被迫转学 → 游戏结束',
+    stage_lock: '鸣泽唯线专属'
+  },
+  'BAD_END_7_法律制裁': {
+    trigger: '累计 3 次违法行为（偷窥/尾随/暴力威胁）',
+    result: '被起诉 → 判刑 → 游戏结束',
+    stage_lock: '法律意识护栏触发'
+  },
+  'BAD_END_8_时间终焉': {
+    trigger: '第 17 天结束（01-07 深夜）',
+    result: '寒假结束 → 进入结局判定',
+    stage_lock: '必然触发，根据攻略情况判定 NORMAL/GOOD/BAD'
+  }
+};
+
+/* ───────── 八、互斥影响关系表 ───────── */
+if (typeof this.MUTEX_RELATIONS === 'undefined') this.MUTEX_RELATIONS = {
+  '齐藤姐妹': {
+    members: ['齐藤澪', '齐藤澪奈'],
+    rule: '攻略其中一人后，另一人锁定仇视，无法攻略',
+    impact: '选择 A 后 B.affection = -50，B.jealousy = +30'
+  },
+  '田中铃木': {
+    members: ['田中美沙', '铃木美穗'],
+    rule: '田中美沙/铃木美穗互斥（同期《同级生1》女主 vs 重制版新增）',
+    impact: '选择 A 后 B 锁定失恋阶段'
+  },
+  '仁科正树': {
+    members: ['仁科', '正树夏子'],
+    rule: '仁科/正树夏子互斥（重制版新增）',
+    impact: '选择 A 后 B 锁定失恋阶段'
+  },
+  '鸣泽母女': {
+    members: ['鸣泽唯', '鸣泽美佐子'],
+    rule: '非严格互斥，但攻略美佐子会显著影响唯',
+    impact: '美佐子达亲密后，唯.heartbreak +1 阶段；唯达亲密（90~100 子阶段）后，美佐子愧疚值 +20'
+  },
+  '西御寺对立': {
+    members: ['主角', '西御寺有友'],
+    rule: '与西御寺是死敌关系，无法和解',
+    impact: '西御寺事件链触发条件：与唯.affection ≥ 40 且 day_count ≥ 5'
+  },
+  '永岛母女': {
+    members: ['永岛久美子', '永岛佐知子'],
+    rule: '攻略久美子后无法攻略佐知子（伦理锁定）',
+    impact: '久美子达亲密后，佐知子.affection = -20'
+  },
+  '樱子美佐子共生': {
+    members: ['杉本樱子', '鸣泽美佐子'],
+    rule: '杉本樱子（20）与鸣泽美佐子（2）存在共生关系，攻略其中一人会影响另一人',
+    impact: '攻略美佐子后，樱子线好感下降但可继续；攻略樱子后，美佐子愧疚值 +20'
+  }
+};
+
+/* ───────── 八·2 互斥关系 heroine_id 索引表（9.B.10 修复版）─────────
+   说明：原 MUTEX_RELATIONS 以组名为键，无法被角色性格控制器的
+        _mutexMap[_currentHeroineId] 直接命中。新增本表以 heroine_id 为键，
+        便于运行时按当前女角 id 反查互斥对象与触发条件。
+   触发条件字段（trigger）说明：
+     - stage_threshold: 当本女角关系阶段达到此阶段时，互斥对象自动锁定
+     - affection_threshold: 当本女角 affection ≥ 此值时触发
+     - flag_auto_set: 触发时自动 set 的 flag 名（用于持久化互斥状态）
+     - partner_impact: 对互斥对象的影响（affection/jealousy/relationship）
+   ⚠️ 触发判定逻辑实际由 D0系统控制器.txt 步骤 11.8 执行（自动 set flag +
+      UpdateVariable），角色性格控制器.txt 仅根据已 set 的 flag 渲染叙事提示。
+─────────────────────────────────────────────────────────── */
+if (typeof this.MUTEX_BY_HEROINE_ID === 'undefined') this.MUTEX_BY_HEROINE_ID = {
+  /* ── 齐藤姐妹互斥（id=15 澪 ⇔ id=16 澪奈）──
+     触发：本女角 affection ≥ 50（达「暧昧」阶段临界）即触发互斥
+     原作设定：双胞胎姐妹，选择一方则另一方锁仇视 */
+  15: {
+    group_name: '齐藤姐妹',
+    partner_id: 16,
+    trigger: {
+      affection_threshold: 50,
+      stage_threshold: '暧昧',
+      flag_auto_set: '齐藤互斥触发',
+      description: '与齐藤澪（姐）affection ≥ 50（达暧昧临界）即触发互斥；妹妹澪奈锁定仇视'
+    },
+    partner_impact: { affection: -50, jealousy: +30, relationship: '仇视', route_locked: 1 },
+    rule: '齐藤姐妹互斥：双胞胎设定，攻略其一则另一永久不可攻略'
+  },
+  16: {
+    group_name: '齐藤姐妹',
+    partner_id: 15,
+    trigger: {
+      affection_threshold: 50,
+      stage_threshold: '暧昧',
+      flag_auto_set: '齐藤互斥触发',
+      description: '与齐藤澪奈（妹）affection ≥ 50（达暧昧临界）即触发互斥；姐姐澪锁定仇视'
+    },
+    partner_impact: { affection: -50, jealousy: +30, relationship: '仇视', route_locked: 1 },
+    rule: '齐藤姐妹互斥：双胞胎设定，攻略其一则另一永久不可攻略'
+  },
+
+  /* ── 田中铃木互斥（id=10 美沙 ⇔ id=17 美穗）──
+     触发：本女角 affection ≥ 30（达「熟悉」阶段临界）即触发互斥
+     原作设定：田中美沙（《同级生1》原女主）vs 铃木美穗（转校生） */
+  10: {
+    group_name: '田中铃木',
+    partner_id: 17,
+    trigger: {
+      affection_threshold: 30,
+      stage_threshold: '熟悉',
+      flag_auto_set: '田中铃木互斥触发',
+      description: '与田中美沙 affection ≥ 30（达熟悉临界）即触发互斥；铃木美穗锁定失恋'
+    },
+    partner_impact: { affection: -30, jealousy: +20, relationship: '失恋', route_locked: 1 },
+    rule: '田中铃木互斥：原作女主 vs 转校生，选择其一则另一锁定失恋'
+  },
+  17: {
+    group_name: '田中铃木',
+    partner_id: 10,
+    trigger: {
+      affection_threshold: 30,
+      stage_threshold: '熟悉',
+      flag_auto_set: '田中铃木互斥触发',
+      description: '与铃木美穗 affection ≥ 30（达熟悉临界）即触发互斥；田中美沙锁定失恋'
+    },
+    partner_impact: { affection: -30, jealousy: +20, relationship: '失恋', route_locked: 1 },
+    rule: '田中铃木互斥：转校生 vs 原作女主，选择其一则另一锁定失恋'
+  },
+
+  /* ── 仁科正树互斥（id=18 仁科 ⇔ id=19 正树夏子）──
+     触发：本女角 affection ≥ 30（达「熟悉」阶段临界）即触发互斥
+     原作设定：图书委员 vs 广播委员，文静 vs 开朗 */
+  18: {
+    group_name: '仁科正树',
+    partner_id: 19,
+    trigger: {
+      affection_threshold: 30,
+      stage_threshold: '熟悉',
+      flag_auto_set: '仁科正树互斥触发',
+      description: '与仁科 affection ≥ 30（达熟悉临界）即触发互斥；正树夏子锁定失恋'
+    },
+    partner_impact: { affection: -30, jealousy: +20, relationship: '失恋', route_locked: 1 },
+    rule: '仁科正树互斥：图书委员 vs 广播委员，选择其一则另一锁定失恋'
+  },
+  19: {
+    group_name: '仁科正树',
+    partner_id: 18,
+    trigger: {
+      affection_threshold: 30,
+      stage_threshold: '熟悉',
+      flag_auto_set: '仁科正树互斥触发',
+      description: '与正树夏子 affection ≥ 30（达熟悉临界）即触发互斥；仁科锁定失恋'
+    },
+    partner_impact: { affection: -30, jealousy: +20, relationship: '失恋', route_locked: 1 },
+    rule: '仁科正树互斥：广播委员 vs 图书委员，选择其一则另一锁定失恋'
+  },
+
+  /* ── 永岛母女硬分支（id=13 久美子 ⇔ id=14 佐知子）──
+     触发：1/3 PM5:00 硬分支点，二选一，另一永久不可攻略（伦理锁定）
+     与上面 3 组「软互斥」不同，本组是「硬分支」 */
+  13: {
+    group_name: '永岛母女',
+    partner_id: 14,
+    trigger: {
+      flag_required: '永岛久美子分支',
+      description: '1/3 PM5:00 选择久美子后立即触发硬分支；佐知子永久锁定仇视（伦理锁定）'
+    },
+    partner_impact: { affection: -50, jealousy: +30, relationship: '仇视', route_locked: 1 },
+    rule: '永岛母女硬分支：1/3 PM5:00 二选一，攻略其一则另一永久不可攻略'
+  },
+  14: {
+    group_name: '永岛母女',
+    partner_id: 13,
+    trigger: {
+      flag_required: '永岛佐知子分支',
+      description: '1/3 PM5:00 选择佐知子后立即触发硬分支；久美子永久锁定仇视（伦理锁定）'
+    },
+    partner_impact: { affection: -50, jealousy: +30, relationship: '仇视', route_locked: 1 },
+    rule: '永岛母女硬分支：1/3 PM5:00 二选一，攻略其一则另一永久不可攻略'
+  },
+
+  /* ── 友美泉美 H 互斥（id=5 泉美 ⇔ id=8 友美）──
+     触发：12/29 温泉 H 完成后触发（泉美H完成 flag）OR 1/4 友美误会解开（友美误会解决 flag）
+     注：本组是 H 互斥而非路线互斥，仍可保持朋友关系 */
+  5: {
+    group_name: '友美泉美 H 互斥',
+    partner_id: 8,
+    trigger: {
+      flag_required: '泉美H完成',
+      description: '12/29 与泉美完成 H 后触发 H 互斥；友美线 H 永久关闭，但仍可做朋友'
+    },
+    partner_impact: { route_locked_h: 1, affection: -10, jealousy: +10 },
+    rule: '友美泉美 H 互斥：与泉美 H 完成后，友美 H 永久关闭'
+  },
+  8: {
+    group_name: '友美泉美 H 互斥',
+    partner_id: 5,
+    trigger: {
+      flag_required: '友美误会解决',
+      description: '1/4 与友美解开误会后触发 H 互斥；泉美线 H 永久关闭，但仍可做朋友'
+    },
+    partner_impact: { route_locked_h: 1, affection: -10, jealousy: +10 },
+    rule: '友美泉美 H 互斥：与友美误会解开后，泉美 H 永久关闭'
+  },
+
+  /* ── 樱子美佐子共生（id=20 樱子 ⇔ id=2 美佐子）──
+     非互斥，是共生关系：攻略其一影响另一，但不强制锁定 */
+  20: {
+    group_name: '樱子美佐子共生',
+    partner_id: 2,
+    trigger: {
+      is_symbiosis: true,
+      description: '共生关系：攻略美佐子后樱子线好感下降但可继续；攻略樱子后美佐子愧疚值 +20'
+    },
+    partner_impact: { affection: -20, guilt: +20, route_locked: 0 },
+    rule: '樱子美佐子共生：攻略其一影响另一，但不强制锁定'
+  },
+  2: {
+    group_name: '樱子美佐子共生',
+    partner_id: 20,
+    trigger: {
+      is_symbiosis: true,
+      description: '共生关系：攻略美佐子后樱子线好感下降但可继续；攻略樱子后美佐子愧疚值 +20'
+    },
+    partner_impact: { affection: -20, guilt: +20, route_locked: 0 },
+    rule: '樱子美佐子共生：攻略其一影响另一，但不强制锁定'
+  }
+};
+
+/* 全局影响规则 */
+if (typeof this.GLOBAL_IMPACT === 'undefined') this.GLOBAL_IMPACT = {
+  '攻略某人达亲密': { other_heroines_jealousy: +5, max_affected: 3 },
+  '攻略某人达亲密（90~100 子阶段）': { other_heroines_jealousy: +10, max_affected: 5 },
+  '与某女角 H 场景被发现': { witness_jealousy: +20, witness_trust: -10 },
+  '同日与 2 位女角亲密互动': { all_jealousy: +3, mood: -2 },
+  '同日与 3+ 位女角亲密互动': { all_jealousy: +8, mood: -5, willpower: -3 }
+};
+
+/* ───────── 十、固定物品/礼品效果表（已迁移到 EJS预处理/固定物品效果表.txt）───────── */
+// SKU 单一来源：固定物品效果表.txt → SHOP_ITEMS
+// 本表不再重复定义物品，所有数值查询请使用 SHOP_ITEMS（由 固定物品效果表.txt 加载）
+// 物品分类与效果摘要（与 固定物品效果表.txt 完全一致）：
+//   - 三餐（消除 hunger）：便利店便当-30 / 饭团-20 / 三明治-25 / 家庭料理-25 / 美佐子料理-50 / 咖啡店简餐-40 / 高级餐厅套餐-60 / 温泉特产点心-10 / 手工巧克力-5
+//   - 饮料（消除 thirst）：矿泉水-25 / 罐装咖啡-15 / 果汁-20 / 运动饮料-30 / 茶-20 / 能量饮料-10 / 特调咖啡-20
+//   - 洗浴（恢复 hygiene）：淋浴券+30 / 温泉券+60 / 温泉旅馆住宿+80（含 sleep_quality+20）
+//   - 礼物-普通/贵重/禁忌：详见 固定物品效果表.txt SHOP_ITEMS target_effect 字段
+//   - 关键道具：修学旅行缴费单 / 学生证 / 钱包 / 修学旅行宣传单 / 圣诞礼物 / 新年参拜签
+if (typeof this.ITEM_EFFECTS_REF === 'undefined') this.ITEM_EFFECTS_REF = {
+  source: '固定物品效果表.txt',
+  const_name: 'SHOP_ITEMS',
+  categories: ['三餐','饮料','洗浴','礼物-普通','礼物-贵重','礼物-禁忌','关键道具','消耗品'],
+  total_count: 78  // 与 固定物品效果表.txt Object.keys(SHOP_ITEMS).length 同步（三餐8+饮料8+洗浴3+礼物普通33+礼物贵重12+礼物禁忌3+关键道具6+消耗品5）
+};
+
+/* ───────── 十一、时段地点人物锁定原则 ───────── */
+if (typeof this.TIME_LOCATION_RULES === 'undefined') this.TIME_LOCATION_RULES = {
+  // 5 时段定义
+  time_slots: [
+    { id: 1, name: '早', time: '06:00-09:00', note: '起床/早餐' },
+    { id: 2, name: '上午', time: '09:00-12:00', note: '工作/学习' },
+    { id: 3, name: '下午', time: '12:00-17:00', note: '社交/约会' },
+    { id: 4, name: '晚', time: '17:00-22:00', note: '晚餐/约会' },
+    { id: 5, name: '深夜', time: '22:00-06:00', note: '强制睡眠/特殊事件' }
+  ],
+
+  // 7 区域
+  regions: [
+    { id: 1, name: '自宅周边' },
+    { id: 2, name: '八十八学园' },
+    { id: 3, name: '八十八町商业区' },
+    { id: 4, name: '八十八海岸' },
+    { id: 5, name: '温泉乡' },
+    { id: 6, name: '88市民医院' },
+    { id: 7, name: '保育园' }
+  ],
+
+  // 时段强制规则（每楼层 30 分钟，深夜不强制睡眠）
+  forced_rules: [
+    '每楼层固定流逝 30 分钟，按时间线推进',
+    '每日子夜（00:00）自动推进 day_count',
+    '深夜不强制睡眠，由生存属性决定（fatigue≥80 才强制休息）',
+    '疲劳 ≥ 80 强制休息，无法再行动',
+    '体力 ≤ 20 强制休息，无法再行动',
+    '同一时段只能在一个区域，移动需消耗时间',
+    '17 天不可提前结束，第 17 天深夜必然触发结局'
+  ],
+
+  // 人物出现锁定
+  character_lock_rules: [
+    '当前时段未在 schedule 文件中列出的女角，绝对不会出现',
+    '即使路过该区域，也只会显示环境描写，不触发对话',
+    'AI 不可凭空让女角出现在非锁定时段',
+    '主角描述"我希望遇到 XX"无效，除非该女角在该时段该区域被列入',
+    '特殊事件触发的女角出现需满足：date + time + condition 三重校验'
+  ]
+};
+
+/* ───────── 十二、表结构摘要（AI 写 SQL 时参考，完整 DDL 见表格模板JSON条目） ───────── */
+// 提示：表格模板JSON 条目默认 启用:false（关灯），由"📦 创建表格模板"按钮脚本
+//       调用 AutoCardUpdaterAPI.importTemplateFromData 注入预设。AI 写 <UpdateTable>
+//       SQL 时必须严格使用下列字段名，禁止臆造。详细约束/CHECK/DEFAULT 见 DDL 原文。
+if (typeof this.TABLE_SUMMARY === 'undefined') this.TABLE_SUMMARY = {
+  // ═══ 单行表（row_id=1，禁止 INSERT 第二行，禁止 DELETE）═══
+  global_state:     'row_id, current_location, current_minor_region, current_major_region, prev_scene_time, elapsed_time, cur_time, day_count, time_slot, difficulty, current_heroine, scene_summary, flags_text（共13列）',
+  protagonist_info: 'row_id, name, gender, age, appearance, identity_text, self_status, location_name, charm, academic, social, physical, willpower, perception, hunger, thirst, fatigue, mood, money, category_modifiers, base_attributes, special_attributes, resources_text（共23列，row_id=1）',
+  // ═══ 固定行数表（按需 INSERT/UPDATE，禁止 DELETE 已有行）═══
+  world_map_points: 'row_id, location_name, minor_region, major_region, location_type, environment_desc, importance, exploration_status（共8列）',
+  map_elements:     'row_id, element_name, element_type, location_name, element_desc, status_text, interaction_options（共7列）',
+  factions:         'row_id, faction_name, description, leader, relations_text, headquarters（共6列）',
+  important_npc:    'row_id, name, gender, age, brief_intro, appearance, identity_text, base_attributes, special_attributes, location_name, presence_status, relations_text, interaction_options, past_experience, affection, heartbeat, jealousy, trust, relationship_stage, stage_locked, is_pursued, route_locked, mutex_group, mutex_partner_name, h_exp, first_kiss_done, first_h_done, advanced_h_done, cup_size, bust_size, waist_size, hip_size, height, weight, nipple_size, nipple_color, areola_size, breast_shape, breast_sensitivity, lactation, waist_shape, waist_sensitivity, hand_desc, nail_style, hip_shape, hip_sensitivity, anal_desc, pubic_hair, labia_size, labia_color, vaginal_tightness, vaginal_special, lubrication_level, hymen_status, fertility, body_sensitivity, sensitive_zones, arousal_triggers, clothing_state, exposure_level, wetness, arousal_level, semen_residue, last_updated（共64列）',
+  check_suggestions: 'row_id, display_text, dice_command（共3列，row_id 限定 1-5）',
+  // ═══ 多行表（可 INSERT/UPDATE/DELETE）═══
+  inventory:        'row_id, item_name, item_type, quantity, quality, description（共6列，item_name 不可重复）',
+  equipment:        'row_id, equipment_name, equipment_type, quality, status_text, description（共6列）',
+  quests:           'row_id, quest_name, quest_type, priority_level, target_desc, progress_text, status_tag, source_text, reward_text（共9列）',
+  // ═══ 仅 INSERT 不 UPDATE/DELETE ═══
+  chronicle:        'row_id, code_index, time_span, summary, chronicle_text（共5列，code_index 格式 AMXXXX，time_span 格式 MM-DD HH:MM ~ MM-DD HH:MM）'
+};
+%>
+
+[全局规则总表已加载。所有 EJS 控制器必须从本表读取规则，AI 必须严格遵守上述所有数值与阈值。]
+
+<%
+// ════════════════════════════════════════════════════════════
+// 输出格式铁律（OUTPUT_RULES）
+// ════════════════════════════════════════════════════════════
+if (typeof this.OUTPUT_RULES === 'undefined') this.OUTPUT_RULES = {
+  // 状态栏占位符：叙事正文之后、UpdateTable 之前必须输出
+  statusbar: {
+    placeholder: '<StatusPlaceHolderImpl/>',
+    rule: '叙事正文之后、<UpdateTable> 块之前必须输出 <StatusPlaceHolderImpl/> 占位符，否则状态栏不刷新',
+    must_after: '叙事正文（主模型输出）'
+  },
+  // 叙事禁忌：禁止在正文中暴露游戏机制
+  narrative_taboos: {
+    forbidden_in_prose: [
+      '难度等级名称（轻松/普通/挑战/地狱）',
+      '生存属性数值（饥饿值/口渴值/清洁度）',
+      '属性数值（魅力50/学业50/体力80 等）',
+      '技能熟练度数值',
+      '关系值数值（好感度+10/信任度-5 等）',
+      'H 经验值数值',
+      '嫉妒值数值',
+      '阶段名称（初识/熟悉/暧昧 等，除非角色自然说出）',
+      'MVU 变量名（stat_data.主角.魅力 等）',
+      'SQL 语句（INSERT/UPDATE/DELETE 等）',
+      'CHECK 约束内容',
+      'DDL 表名或列名',
+      'EJS 模板语法',
+      '世界书条目名',
+      'LCG 骰子点数（除非剧情需要）'
+    ],
+    allowed_in: '上述数值只能出现在 <UpdateVariable> 块（额外模型）和 <UpdateTable> 块（主模型）中，不能出现在叙事正文',
+    prose_focus: '叙事正文应聚焦于：场景描写、角色对话、心理活动、感官描写、情节推进'
+  },
+  // 回复结构铁律（额外模型模式·主模型与额外模型分离）
+  reply_structure: {
+    main_model_order: [
+      '1. 叙事正文（场景/对话/心理/感官，禁止暴露数值机制）',
+      '2. <StatusPlaceHolderImpl/> 占位符（状态栏刷新，单独一行）',
+      '3. <UpdateTable> 块（SPV 数据库 SQL 语句，如有表格数据变化）'
+    ],
+    extra_model_order: [
+      '1. <UpdateVariable> 块（仅 MVU 变量更新，JSONPatch 格式，禁止输出叙事正文/StatusPlaceHolderImpl/UpdateTable）'
+    ],
+    main_model_must_not: '主模型禁止输出 <UpdateVariable> 块（由额外模型处理）',
+    extra_model_must_not: '额外模型禁止输出叙事正文/<StatusPlaceHolderImpl/>/<UpdateTable>（由主模型处理）',
+    must_have: '主模型每轮必须包含叙事正文 + <StatusPlaceHolderImpl/>；额外模型每轮必须输出 <UpdateVariable> 块（无变更时输出空 JSONPatch）',
+    no_mechanics_in_prose: '叙事正文中禁止出现任何数值/机制术语'
+  }
+};
+%>
+
+<%
+// ════════════════════════════════════════════════════════════
+// 十三、楼层时间流逝规则（重写·用户核心要求：每楼层固定 30 分钟）
+// 每一次玩家与 AI 的交互（一个楼层）= 游戏内固定流逝 30 分钟
+// 按时间线推进，深夜不强制睡眠（由生存属性决定）
+// ════════════════════════════════════════════════════════════
+if (typeof this.TIME_ACTION_LIMITS === 'undefined') this.TIME_ACTION_LIMITS = {
+  // 核心规则：每楼层固定 30 分钟（叙事、行为、变量三统一）
+  per_floor: {
+    time_advance_minutes: 30,      // 每楼层固定流逝 30 分钟
+    rule: '每一次玩家与 AI 的交互（一个楼层）= 游戏内固定流逝 30 分钟。叙事、行为、变量三统一，全部 30 分钟',
+    timeline_progression: '按时间线推进，不跳跃。楼层累计 30 分钟 = 1 小时 = 2 楼层',
+    no_slot_jump: '单楼层不跨时段。若当前时段剩余时间不足 30 分钟，则本轮停留在该时段末尾，下一轮切换至新时段',
+    strict_enforcement: '无论 AI 回复 200 字还是 5000 字，时间只推进 30 分钟。超过 30 分钟的行动只描述前 30 分钟的部分'
+  },
+  // 时段定义（5 时段 × 24 小时制）
+  time_slots: [
+    { id: 1, name: '早',   time: '06:00-09:00', duration_minutes: 180, note: '起床/早餐/晨间准备' },
+    { id: 2, name: '上午', time: '09:00-12:00', duration_minutes: 180, note: '工作/学习最佳时段' },
+    { id: 3, name: '下午', time: '12:00-17:00', duration_minutes: 300, note: '社交/约会/工作' },
+    { id: 4, name: '晚',   time: '17:00-22:00', duration_minutes: 300, note: '晚餐/约会/事件' },
+    { id: 5, name: '深夜', time: '22:00-06:00', duration_minutes: 480, note: '夜间活动/休息/睡眠（由生存属性决定，不强制）' }
+  ],
+  // 30 分钟内能做的事（合理性约束）
+  within_30_minutes: {
+    rule: '玩家描述的行动必须能在 30 分钟内合理完成。超过 30 分钟的事 → 拒绝或拆分',
+    can_do: [
+      '一次简短对话（5-15 分钟）',
+      '吃一顿简餐（15-20 分钟）',
+      '便利店购物（10-15 分钟）',
+      '短途移动（步行 10-20 分钟内）',
+      '梳洗打扮（10-15 分钟）',
+      '打电话/发信息（5-10 分钟）',
+      '一次打工片段（30 分钟工作量）',
+      '一段学习/锻炼（30 分钟量）',
+      '一次事件应对（30 分钟内）',
+      '短暂休息（30 分钟小憩）'
+    ],
+    cannot_do_in_30min: [
+      '完成一整堂课（通常 50-90 分钟）',
+      '完成一整天打工（通常 4-8 小时）',
+      '长途旅行到其他城市',
+      '完成一次性事的完整流程（前戏+H+事后）',
+      '睡一整晚（需 6-8 小时）',
+      '完成一次正式约会（通常 2-4 小时）',
+      '深入训练一个技能（需 1-2 小时）'
+    ],
+    multi_action_reject: '玩家描述了需 1 小时才能完成的事 → AI 回复「这事至少需要 1 小时，本轮 30 分钟做不完。可以开始做，下轮继续，或选择更短的事。」',
+    split_rule: '长任务可拆分为多个 30 分钟楼层。如打工 4 小时 = 8 个楼层，每楼层描述 30 分钟的工作片段'
+  },
+  // 深夜规则（不强制睡眠，由生存属性决定）
+  night_rules: {
+    no_forced_sleep: '深夜不强制睡眠。玩家可选择继续活动、夜间散步、通宵等',
+    survival_check: '是否睡眠由生存属性决定：fatigue≥80 → 强制休息（无法继续行动）；sleep_quality 低 → 次日 debuff',
+    night_events: '深夜可能触发特殊事件（夜袭/邂逅/突发事件），需 flag 标记 + LCG 骰子判定',
+    curfew_note: '深夜部分场所关闭（学校/部分商店），部分打工禁止（童工法）'
+  },
+  // 时段切换规则
+  slot_transition: {
+    auto_advance: '当楼层累计时间填满当前时段时，自动切换至下一时段',
+    day_rollover: '深夜时段结束后（06:00）→ 次日清晨，day_count + 1',
+    no_skip: '禁止跳过时段。即使玩家说"睡到第二天"，也需按 30 分钟/楼层推进至次日',
+    time_track: 'AI 必须在每轮 <UpdateVariable> 中输出 临时.current_time（HH:MM 格式）和 临时.current_slot（时段名）'
+  },
+  // 文字量与时间关系（核心约束）
+  token_vs_time: {
+    rule: 'AI 回复文字量不影响时间流逝。无论回复 200 字还是 5000 字，一个楼层固定流逝 30 分钟',
+    enforcement: '若玩家在一轮回复中描述了需超过 30 分钟的行动，AI 只描述前 30 分钟的部分，剩余提示"未完成，下轮继续"',
+    no_mechanics_in_prose: '30 分钟流逝由 <UpdateVariable> 中的时间变量更新体现，叙事正文中不出现"30 分钟"字样'
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+// 十四、属性提升统一公式（新增·用户核心要求）
+// 公式：final_gain = floor(base_gain × difficulty_stat_mult × location_bonus × category_modifier)
+// ════════════════════════════════════════════════════════════
+if (typeof this.ATTRIBUTE_GROWTH_FORMULA === 'undefined') this.ATTRIBUTE_GROWTH_FORMULA = {
+  formula: 'Math.max(0, Math.floor(base_gain × difficulty_stat_mult × location_bonus × category_modifier))',
+  
+  // 难度系数（从 DIFFICULTY_MODIFIERS[difficulty].stat_gain_mult 读取）
+  difficulty_stat_mult: {
+    '轻松': 1.3, '普通': 1.0, '挑战': 0.8, '地狱': 0.5
+  },
+  
+  // 地点加成（在 属性系统.txt GROWTH_RULES.training_growth 基础上）
+  location_bonus: {
+    '健身房':   { stat: 'physical',    bonus: 1.5 },
+    '图书馆':   { stat: 'academic',    bonus: 1.5 },
+    '武道馆':   { stat: 'physical',    bonus: 1.7 },
+    '美术室':   { stat: 'perception',  bonus: 1.5 },
+    '学园':     { stat: 'academic',    bonus: 1.2 },
+    '自宅':     { stat: null,          bonus: 1.0 },
+    '默认':     { stat: null,          bonus: 1.0 }
+  },
+  
+  // category 修正（从 protagonist.{stat}_modifiers JSON 读取子维度，±0~±15）
+  category_modifier: {
+    rule: '1 + (modifier / 100)，修正值可正可负',
+    charm_mapping:    'charm_modifiers: romantic(浪漫)/social(社交)/intimidate(威慑)',
+    academic_mapping: 'academic_modifiers: exam(考试)/study(学习)/tutor(辅导)',
+    social_mapping:  'social_modifiers: romantic(浪漫)/business(商务)/threat(威胁)'
+  },
+  
+  // 基础增益表（与 属性系统.txt GROWTH_RULES 对齐，单一来源）
+  base_gains: {
+    '学习':       { stat: 'academic',    base_gain: 3, time_cost: '1 时段' },
+    '锻炼':       { stat: 'physical',    base_gain: 3, time_cost: '1 时段' },
+    '梳洗打扮':   { stat: 'charm',       base_gain: 2, time_cost: '0.5 时段' },
+    '社交聊天':   { stat: 'social',      base_gain: 2, time_cost: '1 时段' },
+    '观察女角':   { stat: 'perception',  base_gain: 2, time_cost: '即时' },
+    '家教':       { stat: 'academic',    base_gain: 1, time_cost: '1 时段', also: { willpower: 1 } },
+    '温泉旅馆':   { stat: 'willpower',   base_gain: 2, time_cost: '1 时段' },
+    '偶像助理':   { stat: 'willpower',   base_gain: 3, time_cost: '1 时段' },
+    '学校事件':   { stat: 'academic',    base_gain: 3, time_cost: '即时' },
+    '群体事件':   { stat: 'social',      base_gain: 5, time_cost: '即时' },
+    '正义行为':   { stat: 'willpower',   base_gain: 3, time_cost: '即时' }
+  },
+  
+  // 上限校验（与 变量变化幅度控制.txt 对齐）
+  caps: {
+    per_change_max: 10,
+    daily_max: 5,
+    daily_min: { charm: -5, academic: -5, physical: -10, social: -5, perception: -5, willpower: -10 }
+  },
+  
+  // 计算示例
+  examples: [
+    '普通难度+图书馆学习(无修正): floor(3 × 1.0 × 1.5 × 1.0) = 4 → academic +4',
+    '地狱难度+自宅学习(无修正): floor(3 × 0.5 × 1.0 × 1.0) = 1 → academic +1',
+    '轻松难度+武道馆锻炼(study修正+15): floor(3 × 1.3 × 1.7 × 1.15) = 7 → physical +7'
+  ]
+};
+
+// ════════════════════════════════════════════════════════════
+// 十五、打工额外生存消耗（新增·用户核心要求：具体数值）
+// 公式：本时段实际增量 = 自动递增×难度系数 + 打工额外消耗
+// ════════════════════════════════════════════════════════════
+if (typeof this.WORK_SURVIVAL_COST === 'undefined') this.WORK_SURVIVAL_COST = {
+  rule: '打工比日常活动更消耗体力，在每时段自动递增基础上额外增加',
+  
+  // 各打工类型的额外生存消耗
+  costs: {
+    '便利店打工':     { extra_hunger: 5,  extra_thirst: 3,  extra_fatigue: 0,  type: '轻度劳动' },
+    '咖啡店帮忙':     { extra_hunger: 5,  extra_thirst: 3,  extra_fatigue: 0,  type: '轻度劳动' },
+    '家教':           { extra_hunger: 3,  extra_thirst: 2,  extra_fatigue: 0,  type: '脑力劳动' },
+    '车站搬运':       { extra_hunger: 10, extra_thirst: 5,  extra_fatigue: 5,  type: '重度体力劳动' },
+    '温泉旅馆服务':   { extra_hunger: 8,  extra_thirst: 4,  extra_fatigue: 3,  type: '中度劳动' },
+    '偶像助理':       { extra_hunger: 3,  extra_thirst: 2,  extra_fatigue: 0,  type: '轻度劳动+社交' }
+  },
+  
+  // 疲劳基础消耗（以 BEHAVIOR_TABLE 为准，单一来源）
+  fatigue_base_ref: 'BEHAVIOR_TABLE[jobName].changes.fatigue（便利店15/咖啡店12/家教10/车站搬运20/温泉旅馆15/偶像助理10）',
+  
+  // 计算公式
+  formula: {
+    hunger:  'SURVIVAL_RULES.hunger.auto_increment_per_slot × DIFFICULTY_MODIFIERS[difficulty].survival_hunger_mult + WORK_SURVIVAL_COST.costs[jobName].extra_hunger',
+    thirst: 'SURVIVAL_RULES.thirst.auto_increment_per_slot × DIFFICULTY_MODIFIERS[difficulty].survival_thirst_mult + WORK_SURVIVAL_COST.costs[jobName].extra_thirst',
+    fatigue: 'BEHAVIOR_TABLE[jobName].changes.fatigue × DIFFICULTY_MODIFIERS[difficulty].decrease_mult + WORK_SURVIVAL_COST.costs[jobName].extra_fatigue'
+  },
+  
+  // 计算示例
+  examples: [
+    '普通+车站搬运: hunger=10×1.0+10=20, thirst=15×1.0+5=20, fatigue=20×1.0+5=25',
+    '地狱+便利店打工: hunger=10×1.5+5=20, thirst=15×1.47+3=25, fatigue=15×2.0+0=30',
+    '轻松+家教: hunger=10×0.8+3=11, thirst=15×0.8+2=14, fatigue=10×0.5+0=5'
+  ]
+};
+%>
+
+<%= JSON.stringify({
+  player_identities: Object.keys(PLAYER_IDENTITIES),
+  difficulties: Object.keys(DIFFICULTY_MODIFIERS),
+  relation_stages: RELATION_STAGES.map(s => s.stage),
+  behavior_count: Object.keys(BEHAVIOR_TABLE).length,
+  base_salary: BASE_SALARY,
+  bad_endings: Object.keys(BAD_ENDINGS).length,
+  item_count: ITEM_EFFECTS_REF.total_count,
+  item_source: ITEM_EFFECTS_REF.source,
+  output_rules: '已加载（状态栏占位符 + 叙事禁忌 + 回复结构铁律）',
+  time_action_limits: '已加载（每楼层固定30分钟流逝/按时间线推进/深夜不强制睡眠/30分钟内只能做合理的事）',
+  attribute_growth_formula: '已加载（floor(base × difficulty × location × category)，4档难度系数1.3/1.0/0.8/0.5）',
+  work_survival_cost: '已加载（6种打工额外hunger/thirst/fatigue消耗，公式：auto×diff+extra）'
+}, null, 2) %>

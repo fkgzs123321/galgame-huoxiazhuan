@@ -1,0 +1,589 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 时间线剧情索引库（按需查询 Single Source of Truth）
+   ════════════════════════════════════════════════════════════
+   职责：
+   1. 统一索引 17 天 × 5 时段的剧情数据，供 AI 按需查询
+   2. 数据来源：寒假日程调度器/day01~day17 + 关键事件.yaml
+   3. 按需查询：只输出当前 day_count + time_slot 的剧情，控制 token
+   4. AI 查询接口：queryDayStory(day_count) / querySlotStory(time_slot) / queryCurrentStory(day_count, time_slot)
+   5. available_heroines 引用关系：运行时从 寒假日程调度器/人物出现总表.txt.DEFAULT_SCHEDULE[time_slot][location] 查询
+      （原硬编码 17 天女角列表与人物出现总表重复，已移除；locked_heroines/key_events 仍在本表维护）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、17 天剧情索引表（day_count 1~17）
+   数据来源：世界书/EJS预处理/寒假日程调度器/dayXX_XXXX.txt
+   ════════════════════════════════════════════════════════════ */
+const TIMELINE_INDEX = {
+  // ─── 寒假前奏（day 1-5，12-22 ~ 12-26） ───
+  1: {
+    date: '12/22',
+    weekday: '周日',
+    chapter: '寒假前奏',
+    story_arc: '序章·寒假第一日',
+    summary: '寒假第一天，主角自宅起床，唯准备早餐，奠定寒假初始家庭氛围；傍晚友美来访',
+    key_events: [
+      { time_slot: '早', event: '主角起床，唯准备早餐', location: '鸣泽家自宅', forced: true, event_id: 'event_day01_morning_home' },
+      { time_slot: '下午', event: '与唯客厅对话，寒假计划闲聊', location: '鸣泽家客厅', forced: false, affection: '+3唯', event_id: 'event_day01_afternoon_yui_conversation' },
+      { time_slot: '晚', event: '水野友美来访', location: '鸣泽家自宅', forced: false, affection: '+2友美', event_id: 'event_day01_evening_tomomi_visit' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '水野家', '咖啡店《憩》'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day1_start', 'met_yui', 'met_misako', 'met_tomomi'],
+    bad_end_risk: 'none',
+    notes: '仅唯/美佐子/友美可遇，其余 16 位女角锁定'
+  },
+
+  2: {
+    date: '12/23',
+    weekday: '周一',
+    chapter: '寒假前奏',
+    story_arc: '日常·校园开放日',
+    summary: '校园开放日，主角返校可偶遇加藤美纪/都筑梢江/片桐美铃/齐藤姐妹/仁科正树等同学',
+    key_events: [
+      { time_slot: '上午', event: '校园偶遇加藤美纪/都筑梢江', location: '八十八学园', forced: false, affection: '+2美纪/+1梢江', event_id: 'event_day02_morning_school_visit' },
+      { time_slot: '下午', event: '咖啡店美佐子谈心', location: '咖啡店《憩》', forced: false, affection: '+2美佐子', event_id: 'event_day02_afternoon_cafe' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '八十八学园', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 5, 6, 9, 10, 12, 13, 14, 17],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day2_start', 'met_kano_miki', 'met_tsuchiya_sakue'],
+    bad_end_risk: 'none',
+    notes: '开始接触学校女角；齐藤姐妹/仁科正树互斥预警首次出现'
+  },
+
+  3: {
+    date: '12/24',
+    weekday: '周二',
+    chapter: '寒假前奏',
+    story_arc: '平安夜·商业区采购',
+    summary: '平安夜，商业区采购圣诞礼物（影响 Day 4 好感加成），咖啡店圣诞特饮',
+    key_events: [
+      { time_slot: '下午', event: '商业区采购圣诞礼物', location: '八十八町商业区', forced: false, condition: '需提前购买礼物', event_id: 'event_day03_christmas_eve_shopping' },
+      { time_slot: '晚', event: '咖啡店圣诞特饮', location: '咖啡店《憩》', forced: false, event_id: 'event_day03_christmas_eve_cafe' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '八十八町商业区', '咖啡店《憩》', '水野家'],
+    locked_heroines: [4, 5, 6, 7, 9, 11, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day3_start', 'christmas_gift_purchased'],
+    bad_end_risk: 'none',
+    notes: '圣诞礼物必须在本日购买，否则 Day 4 好感加成减半'
+  },
+
+  4: {
+    date: '12/25',
+    weekday: '周三',
+    chapter: '寒假前奏',
+    story_arc: '圣诞夜事件',
+    summary: '圣诞夜事件，鸣泽家场景；唯/美佐子圣诞好感加成；礼物事件触发',
+    key_events: [
+      { time_slot: '晚', event: '与唯的圣诞夜', location: '鸣泽家自宅', forced: false, condition: '礼物已购买', affection: '+5唯(+2礼物)', event_id: 'event_day04_christmas_eve_yui' },
+      { time_slot: '深夜', event: '与美佐子的圣诞夜', location: '咖啡店/自宅', forced: false, condition: '礼物已购买', affection: '+5美佐子(+2礼物)', event_id: 'event_day04_christmas_eve_misako' },
+      { time_slot: '全天', event: '送礼事件', location: '鸣泽家自宅', forced: false, event_id: 'event_day04_christmas_gift' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '雪',
+    flags_triggered: ['day4_start', '圣诞夜事件', 'christmas_gift_given'],
+    bad_end_risk: 'low',
+    notes: '圣诞事件好感加成决定后续女角线推进难度'
+  },
+
+  5: {
+    date: '12/26',
+    weekday: '周四',
+    chapter: '寒假核心',
+    story_arc: '美佐子线深化·酒后场景',
+    summary: '美佐子酒后场景开启，美佐子线暧昧阶段前置；需美佐子好感≥10',
+    key_events: [
+      { time_slot: '深夜', event: '美佐子深夜醉酒归来', location: '鸣泽家自宅', forced: false, condition: '美佐子好感≥10', affection: '+3美佐子', event_id: 'event_day05_evening_misako_drunk' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '雪',
+    flags_triggered: ['day5_start', 'misako_drunk_event'],
+    bad_end_risk: 'low',
+    notes: '美佐子酒后场景是美佐子线深化核心事件，好感不足则跳过且不可补触发'
+  },
+
+  // ─── 寒假核心（day 6-12，12-27 ~ 01-02） ───
+  6: {
+    date: '12/27',
+    weekday: '周五',
+    chapter: '寒假核心',
+    story_arc: '日常·多线推进',
+    summary: '正常寒假日，自由探索日；可怜电视台偶遇，洋子机车行偶遇',
+    key_events: [
+      { time_slot: '上午', event: '电视台偶遇舞岛可怜', location: '电视台区域', forced: false, affection: '+3可怜', event_id: 'event_day06_karen_tv_station' },
+      { time_slot: '下午', event: '机车行偶遇南川洋子', location: '机车行区域', forced: false, affection: '+3洋子', event_id: 'event_day06_yoko_garage' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '电视台', '机车行', '八十八海岸', '咖啡店《憩》', '八十八町商业区'],
+    locked_heroines: [4, 5, 7, 9, 11, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day6_start', 'met_karen_tv', 'met_yoko_garage'],
+    bad_end_risk: 'none',
+    notes: '多线推进关键日，建议优先推进可怜/洋子线'
+  },
+
+  7: {
+    date: '12/28',
+    weekday: '周六',
+    chapter: '寒假核心',
+    story_arc: '西御寺事件·预兆',
+    summary: '西御寺有友出现警告主角远离唯，唯表现出焦虑；唯线危机铺垫开启',
+    key_events: [
+      { time_slot: '上午', event: '西御寺有友警告主角', location: '自宅周边/商业区', forced: false, condition: '唯好感≥20', event_id: 'event_day07_nishioji_warning' },
+      { time_slot: '晚', event: '唯表现出不安', location: '鸣泽家自宅', forced: false, condition: 'event_day07_nishioji_warning已触发', affection: '+2唯(安慰)', event_id: 'event_day07_yui_anxiety' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '八十八町商业区', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '阴',
+    flags_triggered: ['day7_start', 'nishioji_warning'],
+    bad_end_risk: 'medium',
+    notes: '西御寺事件必须在 Day 8 前解决，否则触发 BAD_END_6'
+  },
+
+  8: {
+    date: '12/29',
+    weekday: '周日',
+    chapter: '寒假核心',
+    story_arc: '西御寺事件·高潮',
+    summary: '西御寺阴谋策划针对唯，主角救援唯；BAD_END_6 触发临界点',
+    key_events: [
+      { time_slot: '上午', event: '西御寺阴谋', location: '事件场景', forced: false, condition: '唯好感≥40触发BAD_END_6预警', event_id: 'event_day08_nishioji_conspiracy' },
+      { time_slot: '下午', event: '主角救援唯', location: '事件场景', forced: false, condition: 'event_day07_nishioji_warning已触发', affection: '+10唯(救援成功)', event_id: 'event_day08_yui_rescue' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '水野家', '事件场景'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '阴',
+    flags_triggered: ['day8_start', 'nishioji_confrontation', 'yui_rescued'],
+    bad_end_risk: 'high',
+    notes: 'BAD_END_6 触发临界点。若未在 Day 7-8 解决西御寺事件，强制触发 BAD_END_6'
+  },
+
+  9: {
+    date: '12/30',
+    weekday: '周一',
+    chapter: '寒假核心',
+    story_arc: '筱原泉美·温泉之旅预兆',
+    summary: '弓箭场与泉美对话，泉美邀请温泉之旅（需好感≥30）',
+    key_events: [
+      { time_slot: '上午', event: '弓箭场与泉美对话', location: '八十八学园弓箭场', forced: false, affection: '+3泉美', event_id: 'event_day09_izumi_archery' },
+      { time_slot: '下午', event: '泉美邀请温泉之旅', location: '八十八学园', forced: false, condition: '泉美好感≥30', event_id: 'event_day09_izumi_onsen_invite' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '八十八学园弓箭场', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 4, 6, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day9_start', 'izumi_archery_event'],
+    bad_end_risk: 'none',
+    notes: '温泉之旅邀请需泉美好感≥30，建议优先推进泉美线'
+  },
+
+  10: {
+    date: '12/31',
+    weekday: '周二',
+    chapter: '寒假核心',
+    story_arc: '跨年事件',
+    summary: '跨年夜，如月神宫参拜，多女角聚齐；鸣泽家跨年聚会',
+    key_events: [
+      { time_slot: '晚', event: '如月神宫跨年参拜', location: '如月神宫', forced: false, affection: '+2参拜女角', event_id: 'event_day10_new_year_eve_shrine' },
+      { time_slot: '深夜', event: '鸣泽家跨年聚会', location: '鸣泽家自宅', forced: false, condition: 'event_day10_new_year_eve_shrine已触发', event_id: 'event_day10_new_year_eve_party' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '如月神宫', '八十八町商业区', '水野家'],
+    locked_heroines: [4, 5, 6, 7, 9, 11, 13, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '雪',
+    flags_triggered: ['day10_start', 'new_year_eve_event', 'shrine_visit'],
+    bad_end_risk: 'low',
+    notes: '跨年聚会是多女角好感同时推进的关键机会'
+  },
+
+  11: {
+    date: '1/1',
+    weekday: '周三',
+    chapter: '寒假尾声',
+    story_arc: '元日·永岛久美子登场',
+    summary: '元日事件，永岛久美子走失登场；主角选择是否收留（决定后续久美子线走向）',
+    key_events: [
+      { time_slot: '上午', event: '自宅周边遇到走失的久美子', location: '自宅周边', forced: false, affection: '+5久美子(初次相遇)', event_id: 'event_day11_new_year_kumiko_lost' },
+      { time_slot: '晚', event: '久美子暂住选择（收留/拒绝）', location: '鸣泽家自宅', forced: false, condition: '选择收留→久美子线开启', affection: '+3久美子(收留)', event_id: 'event_day11_kumiko_stay' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '自宅周边', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19],
+    new_unlock: [13],
+    weather_default: '雪',
+    flags_triggered: ['day11_start', 'new_year_day', 'met_kumiko', 'kumiko_stay_choice'],
+    bad_end_risk: 'medium',
+    notes: '久美子暂留选择决定后续 Day 12-15 久美子线走向，建议选择收留'
+  },
+
+  12: {
+    date: '1/2',
+    weekday: '周四',
+    chapter: '寒假尾声',
+    story_arc: '久美子线·深化',
+    summary: '与久美子的早晨，带久美子外出游玩；久美子好感推进',
+    key_events: [
+      { time_slot: '早', event: '与久美子的早晨', location: '鸣泽家自宅', forced: false, condition: 'event_day11_kumiko_stay选择收留', affection: '+3久美子', event_id: 'event_day12_kumiko_morning' },
+      { time_slot: '下午', event: '带久美子外出（商业区/海岸）', location: '八十八町商业区/八十八海岸', forced: false, condition: 'event_day12_kumiko_morning已触发', affection: '+4~5久美子', event_id: 'event_day12_kumiko_afternoon_play' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '八十八町商业区', '八十八海岸', '咖啡店《憩》', '水野家'],
+    locked_heroines: [3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day12_start', 'kumiko_morning', 'kumiko_outing'],
+    bad_end_risk: 'none',
+    notes: '若 Day 11 未选择收留久美子，本日事件不触发，久美子线中断'
+  },
+
+  // ─── 寒假尾声（day 13-16，01-03 ~ 01-06） ───
+  13: {
+    date: '1/3',
+    weekday: '周五',
+    chapter: '寒假尾声',
+    story_arc: '永岛佐知子·登场',
+    summary: '永岛佐知子来主角家接久美子，佐知子线正式开启',
+    key_events: [
+      { time_slot: '上午', event: '佐知子来接久美子', location: '鸣泽家自宅', forced: false, condition: 'event_day11_kumiko_stay选择收留', affection: '+3佐知子(初次相遇)', event_id: 'event_day13_sachiko_arrival' },
+      { time_slot: '下午', event: '佐知子的感激', location: '鸣泽家自宅/咖啡店', forced: false, condition: 'event_day13_sachiko_arrival已触发', affection: '+5佐知子(感激)', event_id: 'event_day13_sachiko_gratitude' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '水野家'],
+    locked_heroines: [],
+    new_unlock: [14],
+    weather_default: '晴',
+    flags_triggered: ['day13_start', 'met_sachiko', 'sachiko_line_opened'],
+    bad_end_risk: 'none',
+    notes: '佐知子线开启后，需在 Day 14-15 集中推进好感'
+  },
+
+  14: {
+    date: '1/4',
+    weekday: '周六',
+    chapter: '寒假尾声',
+    story_arc: '佐知子线·深化',
+    summary: '医院探望佐知子，与佐知子共进晚餐；佐知子线深化',
+    key_events: [
+      { time_slot: '上午', event: '医院探望佐知子', location: '88市民医院', forced: false, condition: '佐知子好感≥10', affection: '+3佐知子', event_id: 'event_day14_sachiko_hospital_visit' },
+      { time_slot: '晚', event: '与佐知子共进晚餐', location: '咖啡店《憩》/鸣泽家自宅', forced: false, condition: 'event_day14_sachiko_hospital_visit已触发', affection: '+5~6佐知子', event_id: 'event_day14_sachiko_dinner' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '88市民医院', '咖啡店《憩》', '水野家'],
+    locked_heroines: [],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day14_start', 'sachiko_hospital_visit', 'sachiko_dinner'],
+    bad_end_risk: 'none',
+    notes: '佐知子好感需在 Day 14 达成≥25，否则 Day 15 联动剧情受限'
+  },
+
+  15: {
+    date: '1/5',
+    weekday: '周日',
+    chapter: '寒假尾声',
+    story_arc: '久美子线·攻略完成',
+    summary: '久美子线高潮事件，达亲密阶段，is_completed=1（需好感≥40）',
+    key_events: [
+      { time_slot: '下午', event: '久美子线高潮', location: '鸣泽家自宅', forced: false, condition: '久美子好感≥40', affection: '久美子达亲密阶段', event_id: 'event_day15_kumiko_climax' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '水野家'],
+    locked_heroines: [],
+    new_unlock: [],
+    weather_default: '晴',
+    flags_triggered: ['day15_start', 'kumiko_climax', 'kumiko_is_completed'],
+    bad_end_risk: 'medium',
+    notes: '久美子攻略完成后 is_completed=1，影响 Day 17 结局判定'
+  },
+
+  16: {
+    date: '1/6',
+    weekday: '周一',
+    chapter: '寒假尾声',
+    story_arc: '终章前奏·女角线收束',
+    summary: '所有女角线收束检查，储蓄检查（savings≥50000→修学旅行结局前置）',
+    key_events: [
+      { time_slot: '全天', event: '所有女角线收束检查', location: '多区域', forced: true, event_id: 'event_day16_final_preparation' },
+      { time_slot: '上午', event: '储蓄进度检查', location: '鸣泽家自宅', forced: false, condition: 'savings≥50000→修学旅行前置', event_id: 'event_day16_savings_check' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '88市民医院', '水野家', '八十八町商业区'],
+    locked_heroines: [],
+    new_unlock: [],
+    weather_default: '阴',
+    flags_triggered: ['day16_start', 'final_preparation', 'savings_check'],
+    bad_end_risk: 'medium',
+    notes: '结局判定准备日，所有女角线状态将定格；建议优先检查储蓄'
+  },
+
+  // ─── 结局阶段（day 17，01-07） ───
+  17: {
+    date: '1/7',
+    weekday: '周二',
+    chapter: '结局',
+    story_arc: '终章·告白日·结局判定',
+    summary: '寒假最后一天，深夜触发结局判定；结局类型由女角攻略完成度+主角属性+储蓄综合决定',
+    key_events: [
+      { time_slot: '早', event: '最后一天活动', location: '多区域', forced: true, event_id: 'event_day17_final_day' },
+      { time_slot: '晚', event: '告别场景', location: '鸣泽家自宅', forced: true, condition: 'event_day17_final_day已触发', event_id: 'event_day17_evening_farewell' },
+      { time_slot: '深夜', event: '深夜结局判定', location: '鸣泽家自宅', forced: true, triggers_ending: true, event_id: 'event_day17_midnight_ending' }
+    ],
+    /* available_heroines: 运行时从寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询，本表不再硬编码 */
+    available_locations: ['鸣泽家自宅', '咖啡店《憩》', '水野家', '88市民医院'],
+    locked_heroines: [],
+    new_unlock: [],
+    weather_default: '雪',
+    flags_triggered: ['day17_start', 'confession_day', 'ending_triggered'],
+    bad_end_risk: 'critical',
+    notes: '结局类型：True End(好感≥100+储蓄≥50000) / Good End(好感≥80+储蓄≥50000) / Normal End(好感≥60+储蓄≥30000) / Bad End / BAD_END_X',
+    ending_matrix: {
+      'True End': '主攻略女角affection≥100 + savings≥50000 + illegal_count=0 + jealousy≤30',
+      'Good End': '主攻略女角affection≥80 + savings≥50000 + illegal_count=0',
+      'Normal End': '主攻略女角affection≥60 + savings≥30000',
+      'Bad End': '主攻略女角affection<60 OR savings<30000',
+      'BAD_END_X': '已在前16天触发任一死结局标识'
+    }
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   二、5 时段专属剧情索引
+   数据来源：全局规则总表.txt → TIME_LOCATION_RULES.time_slots
+   ════════════════════════════════════════════════════════════ */
+const SLOT_STORY_INDEX = {
+  '早': {
+    time_range: '06:00-09:00',
+    common_events: [
+      { event: '起床', effect: 'sleep_quality_check, fatigue恢复', forced: true },
+      { event: '早餐', condition: 'money≥200 OR 美佐子料理', effect: 'hunger-25~50, mood+1~5', location: '鸣泽家自宅' },
+      { event: '出门准备', time: 'AM7:30', effect: '可移动至其他区域' }
+    ],
+    heroines_available: '自宅：唯/美佐子；水野家：友美',
+    available_actions: ['起床', '吃早餐', '上学', '打工早班'],
+    notes: '起床后自动检查睡眠质量，影响当日 physical/fatigue 恢复'
+  },
+
+  '上午': {
+    time_range: '09:00-12:00',
+    common_events: [
+      { event: '打工', condition: 'physical≥20, fatigue<80', effect: 'money+800~2000, fatigue+10~20', locations: ['便利店', '咖啡店', '车站', '家教'] },
+      { event: '上学', condition: 'school_access=true', effect: 'academic+3', location: '八十八学园' },
+      { event: '约会', condition: '女角好感≥40', effect: 'affection+4, money-500', location: '多区域' }
+    ],
+    heroines_available: '在校学生（美纪/梢江/泉美/美铃/齐藤姐妹/仁科正树）；商业区女角（可怜/美沙/美里）',
+    available_actions: ['打工', '上学', '约会', '购物', '事件'],
+    notes: '主要行动时段，可触发女角登场/深化事件'
+  },
+
+  '下午': {
+    time_range: '12:00-17:00',
+    common_events: [
+      { event: '午休', time: 'PM12:00', effect: 'hunger-25', location: '教室/食堂/咖啡店' },
+      { event: '社团活动', time: 'PM3:30', effect: 'physical+3/skill+5', location: '体育馆/弓箭场' },
+      { event: '放学', time: 'PM4:00', effect: '可自由移动', location: '校庭' },
+      { event: '约会', condition: '女角好感≥40', effect: 'affection+4', location: '多区域' }
+    ],
+    heroines_available: '在校学生；商业区女角；海岸女角（可怜/洋子）',
+    available_actions: ['打工', '约会', '事件', '外出', '休息'],
+    notes: '社交核心时段，多女角可遭遇'
+  },
+
+  '晚': {
+    time_range: '17:00-22:00',
+    common_events: [
+      { event: '晚餐', condition: 'money≥200~1500', effect: 'hunger-25~60, mood+1~5', location: '自宅/咖啡店/高级餐厅' },
+      { event: '咖啡店帮忙', condition: '美佐子好感≥20', effect: 'money+1000, mood+2', location: '咖啡店《憩》' },
+      { event: '约会', condition: '女角好感≥40', effect: 'affection+4', location: '多区域' },
+      { event: '自由时间', time: 'PM7:00~10:00', effect: '可触发女角特殊对话' }
+    ],
+    heroines_available: '根据当前地点：自宅（唯/美佐子）；咖啡店（美佐子）；水野家（友美）',
+    available_actions: ['晚餐', '约会', '咖啡店帮忙', '事件'],
+    notes: '晚餐时段可触发美佐子酒后事件（Day 5+）；约会质量加成时段'
+  },
+
+  '深夜': {
+    time_range: '22:00-06:00',
+    common_events: [
+      { event: '睡眠', effect: 'fatigue-40, physical+25, mood+5', forced: true, location: '鸣泽家自宅' },
+      { event: '深夜外出', condition: '特殊事件触发', effect: '风险事件，可能触发BAD_END预警' },
+      { event: 'NSFW事件', condition: '女角亲密阶段+特定条件', effect: 'h_exp+5~20' }
+    ],
+    heroines_available: '特定女角深夜事件（美佐子酒后/久美子高潮/佐知子晚餐延续）',
+    available_actions: ['休息', '深夜外出', 'NSFW事件', '睡眠'],
+    notes: '强制睡眠时段；睡眠质量影响次日 physical/fatigue 恢复；深夜外出有风险'
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   三、查询函数（供 AI 按需查询）
+   ════════════════════════════════════════════════════════════ */
+
+// 查询当前日期的剧情
+function queryDayStory(day_count) {
+  const _dc = Number(day_count) || 1;
+  const _story = TIMELINE_INDEX[_dc];
+  if (!_story) {
+    return {
+      found: false,
+      message: 'day_count ' + _dc + ' 无专属剧情（超出 1-17 范围），使用日常剧情'
+    };
+  }
+  return {
+    found: true,
+    day: _dc,
+    date: _story.date,
+    weekday: _story.weekday,
+    chapter: _story.chapter,
+    story_arc: _story.story_arc,
+    summary: _story.summary,
+    key_events: _story.key_events,
+    available_heroines: _story.available_heroines || [],  /* 运行时从 寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE 查询 */
+    available_locations: _story.available_locations,
+    locked_heroines: _story.locked_heroines,
+    new_unlock: _story.new_unlock,
+    weather_default: _story.weather_default,
+    flags_triggered: _story.flags_triggered,
+    bad_end_risk: _story.bad_end_risk,
+    notes: _story.notes,
+    ending_matrix: _story.ending_matrix
+  };
+}
+
+// 查询当前时段的剧情
+function querySlotStory(time_slot) {
+  const _slot = SLOT_STORY_INDEX[time_slot];
+  if (!_slot) {
+    return {
+      found: false,
+      message: 'time_slot ' + time_slot + ' 无效，有效值：早/上午/下午/晚/深夜'
+    };
+  }
+  return {
+    found: true,
+    time_slot: time_slot,
+    time_range: _slot.time_range,
+    common_events: _slot.common_events,
+    heroines_available: _slot.heroines_available,
+    available_actions: _slot.available_actions,
+    notes: _slot.notes
+  };
+}
+
+// 查询当前日期+时段的剧情（组合查询）
+function queryCurrentStory(day_count, time_slot) {
+  const _dayStory = queryDayStory(day_count);
+  const _slotStory = querySlotStory(time_slot);
+
+  // 筛选当日此时段的专属事件
+  var _currentSlotEvents = [];
+  if (_dayStory.found && _dayStory.key_events) {
+    _currentSlotEvents = _dayStory.key_events.filter(function(e) {
+      return e.time_slot === time_slot || e.time_slot === '全天';
+    });
+  }
+
+  return {
+    day_story: _dayStory,
+    slot_story: _slotStory,
+    current_slot_events: _currentSlotEvents,
+    is_forced_event: _currentSlotEvents.some(function(e) { return e.forced === true; })
+  };
+}
+%>
+
+<%/* ─── 四、读取当前 MVU 变量并输出当前剧情（精简版，控制 token） ─── */%>
+<%
+var _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local' }));
+var _timeSlot = getvar('stat_data.时间.时段', { scope: 'local' });
+var _currentStory = queryCurrentStory(_dayCount, _timeSlot);
+
+var CURRENT_STORY_INFO = {
+  day: _dayCount,
+  date: _currentStory.day_story.date || '未知',
+  weekday: _currentStory.day_story.weekday || '未知',
+  time_slot: _timeSlot,
+  time_range: _currentStory.slot_story.time_range || '未知',
+  chapter: _currentStory.day_story.chapter || '日常',
+  story_arc: _currentStory.day_story.story_arc || '日常',
+  summary: _currentStory.day_story.summary || '无特殊事件',
+  key_events: _currentStory.day_story.key_events || [],
+  current_slot_events: _currentStory.current_slot_events || [],
+  is_forced_event: _currentStory.is_forced_event,
+  available_heroines: _currentStory.day_story.available_heroines || [],
+  available_locations: _currentStory.day_story.available_locations || [],
+  locked_heroines: _currentStory.day_story.locked_heroines || [],
+  new_unlock: _currentStory.day_story.new_unlock || [],
+  weather_default: _currentStory.day_story.weather_default || '晴',
+  slot_actions: _currentStory.slot_story.available_actions || [],
+  bad_end_risk: _currentStory.day_story.bad_end_risk || 'none',
+  notes: _currentStory.day_story.notes || ''
+};
+%>
+
+[时间线剧情索引库已加载。当前查询：day=<%= _dayCount %>（<%= CURRENT_STORY_INFO.date %> <%= CURRENT_STORY_INFO.weekday %>），time_slot=<%= _timeSlot %>（<%= CURRENT_STORY_INFO.time_range %>）。
+
+【当前日剧情】
+- 章节：<%= CURRENT_STORY_INFO.chapter %>
+- 剧情线：<%= CURRENT_STORY_INFO.story_arc %>
+- 摘要：<%= CURRENT_STORY_INFO.summary %>
+- 坏结局风险：<%= CURRENT_STORY_INFO.bad_end_risk %>
+<% if (CURRENT_STORY_INFO.notes) { %>- 备注：<%= CURRENT_STORY_INFO.notes %><% } %>
+
+【当日关键事件】
+<% if (CURRENT_STORY_INFO.key_events.length === 0) { %>- 无专属事件，使用日常剧情
+<% } else { %><% CURRENT_STORY_INFO.key_events.forEach(function(ev) { %>- [<%= ev.time_slot %>] <%= ev.event %><% if (ev.location) { %> @ <%= ev.location %><% } %><% if (ev.condition) { %> (条件: <%= ev.condition %>)<% } %><% if (ev.forced) { %> [强制]<% } %><% if (ev.affection) { %> → <%= ev.affection %><% } %>
+<% }); %>
+<% } %>
+
+【当前时段专属事件】
+<% if (CURRENT_STORY_INFO.current_slot_events.length === 0) { %>- 无此时段专属事件，执行日常行动
+<% } else { %><% CURRENT_STORY_INFO.current_slot_events.forEach(function(ev) { %>- <%= ev.event %><% if (ev.location) { %> @ <%= ev.location %><% } %><% if (ev.condition) { %> (条件: <%= ev.condition %>)<% } %><% if (ev.forced) { %> [强制]<% } %>
+<% }); %>
+<% } %>
+
+【当前时段通用行动】
+<%= CURRENT_STORY_INFO.slot_actions.join(' / ') %>
+
+【可遭遇女角】
+- 可见：运行时从 寒假日程调度器/人物出现总表.DEFAULT_SCHEDULE[time_slot][location] 查询（本表不再硬编码）
+- 锁定：<%= CURRENT_STORY_INFO.locked_heroines.length > 0 ? CURRENT_STORY_INFO.locked_heroines.join(', ') + '（AI 不可让其出现）' : '无' %>
+<% if (CURRENT_STORY_INFO.new_unlock.length > 0) { %>- 新解锁：<%= CURRENT_STORY_INFO.new_unlock.join(', ') %><% } %>
+
+【天气】<%= CURRENT_STORY_INFO.weather_default %>]
+
+<%= JSON.stringify({
+  query_status: 'success',
+  day_count: _dayCount,
+  time_slot: _timeSlot,
+  total_days_indexed: Object.keys(TIMELINE_INDEX).length,
+  total_slots_indexed: Object.keys(SLOT_STORY_INDEX).length,
+  current_bad_end_risk: CURRENT_STORY_INFO.bad_end_risk,
+  current_event_count: CURRENT_STORY_INFO.key_events.length,
+  current_slot_event_count: CURRENT_STORY_INFO.current_slot_events.length,
+  available_heroine_count: CURRENT_STORY_INFO.available_heroines.length,
+  is_forced_event: CURRENT_STORY_INFO.is_forced_event
+}, null, 2) %>

@@ -1,0 +1,7 @@
+---
+<status_current_variable>
+<%= JSON.stringify(
+      _.pick(getvar('stat_data') || {}, ['主角', '她', '世界', '局面', '终局']),
+      function (k, v) { return k.charAt(0) === '$' ? undefined : v; },
+      1) %>
+</status_current_variable>

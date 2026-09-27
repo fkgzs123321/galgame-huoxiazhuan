@@ -1,0 +1,89 @@
+  /* ════════════════════════════════════════════════════════════
+     英雄榜（打榜）★ 借自参考项目「主神空间」的竞技场
+     为什么加：练了武功要有个去处 —— 榜单给了「明确目标 + 可量化进度」
+     ════════════════════════════════════════════════════════════ */
+  var 榜 = null;
+  function 造榜() {
+    var 分档 = ((D.英雄榜 || {}).榜单 || {}).分档 || [];
+    var 我名 = (状态.主角 || {}).名 || "我";
+    var 武 = 数(((状态.技能 || {}).基本 || {})["基本拳脚"], 0) + 数(((状态.技能 || {}).门派 || {})["太极拳"], 0);
+    var 层 = 分档.length ? 分档[0] : { 名: "本门榜" };
+    if (武 >= 1000 && 分档[2]) 层 = 分档[2];
+    else if (武 >= 300 && 分档[1]) 层 = 分档[1];
+    // 生成 30 人（缓存：同一天不变）
+    var 名池 = Object.keys(D.NPC || {});
+    var 列 = [];
+    for (var i = 0; i < 30; i++) {
+      var n = 名池[(i * 7) % Math.max(1, 名池.length)] || ("江湖人" + (i + 1));
+      var 品 = NPC品级(n);
+      var 强 = ({ q0: 8, q1: 14, q2: 22, q3: 34, q4: 50, q5: 70, q6: 90 })[品] || 14;
+      列.push({ 名: n, 品: 品, 强: 强 + Math.floor(i / 5), 名次: i + 1 });
+    }
+    榜 = { 层: 层.名 || "本门榜", 列: 列, 我: 31, 最佳: 31, 连胜: 0 };
+    画();
+  }
+  function 挑战(名次) {
+    var o = (榜 && 榜.列 || []).filter(function (x) { return x.名次 === 名次; })[0];
+    if (!o) return;
+    var 力 = 数((状态.时间 || {}).体力, 100);
+    if (力 < 20) { alert("体力不够（要 20）"); return; }
+    if (!在据点()) { alert("须回驻地才能打榜"); return; }
+    写(function (sd) { sd.时间 = sd.时间 || {}; sd.时间.体力 = Math.max(0, 力 - 20); });
+    // 打赢判定：用打斗的自动战（前端跑）
+    var t = 算天赋(状态), d = 派生(t, 状态), B = 状态.身体 || {};
+    var A = 战 ? null : null;
+    var 我 = { 生命: Math.max(1, 数(B.生命当前, 100)), 生命上限: Math.max(1, 数(d.气血上限, 100)), 气: 0, 挑衅: 0, 攻击: Math.max(4, Math.round(数(d.攻击力, 20))), 格挡: Math.max(0, Math.round(数(d.护甲, 0))) };
+    var 敌 = { 生命: o.强 * 5, 生命上限: o.强 * 5, 气: 0, 挑衅: 0, 攻击: o.强, 格挡: Math.round(o.强 / 4) };
+    // 跑一场（最多 30 回合，简化：双方互殴）
+    var 轮 = 0;
+    while (轮 < 30 && 我.生命 > 0 && 敌.生命 > 0) {
+      轮++;
+      var 伤 = Math.max(1, Math.round(我.攻击 * (轮 % 3 === 0 ? 1.5 : 1) - 敌.格挡));
+      敌.生命 = Math.max(0, 敌.生命 - 伤);
+      if (敌.生命 <= 0) break;
+      var 伤2 = Math.max(1, Math.round(敌.攻击 * (轮 % 4 === 0 ? 1.5 : 1) - 我.格挡));
+      我.生命 = Math.max(0, 我.生命 - 伤2);
+    }
+    var 胜 = 敌.生命 <= 0 && 我.生命 > 0;
+    if (胜) {
+      榜.最佳 = Math.min(榜.最佳, o.名次);
+      榜.我 = o.名次;
+      榜.连胜++;
+      alert("★ 胜了 —— 名次取代为 #" + o.名次 + (榜.连胜 > 1 ? "　连胜 " + 榜.连胜 : ""));
+    } else {
+      榜.连胜 = 0;
+      alert("败了 —— 名次不变，随时可以再来");
+    }
+    写(function (sd) { sd.身体 = sd.身体 || {}; sd.身体.生命当前 = 我.生命; });
+    画();
+  }
+  function 画英雄榜() {
+    if (!榜) { 造榜(); }
+    var H = "";
+    H += '<div class="yx-r"><div class="yx-c yx-w"><div class="yx-ttl">英雄榜 <em>' + E(榜.层) + '</em></div>';
+    H += '<div class="yx-nt">打赢谁就顶替谁的名次 —— 一路往上打就能爬榜。前 100 有名有姓，第一名有唯一称号。</div>';
+    H += '<div class="yx-chips" style="margin:9px 0">'
+      + '<span class="yx-ch on">我的名次 #' + 榜.我 + '</span>'
+      + '<span class="yx-ch">最佳 #' + 榜.最佳 + '</span>'
+      + '<span class="yx-ch' + (榜.连胜 ? " gr" : "") + '">连胜 ' + 榜.连胜 + '</span>'
+      + '<span class="yx-ch">' + (在据点() ? "在驻地" : "不在驻地") + '</span></div>';
+    if (!在据点()) H += '<div class="yx-nt w">★ 须回驻地才能挑战</div>';
+    H += '</div></div>';
+    H += '<div class="yx-r"><div class="yx-c yx-w"><div class="yx-ttl">榜单</div><div class="yx-list">';
+    H += 榜.列.slice(0, 20).map(function (o) {
+      var 色 = 档色(o.品);
+      return '<div class="yx-it"><span class="x" style="min-width:34px">#' + o.名次 + '</span>'
+        + '<span class="n" style="color:' + 色 + '">' + E(o.名) + '</span>'
+        + '<span class="x">' + 品名(o.品) + '　强度 ' + o.强 + '</span>'
+        + (在据点() ? '<button class="yx-btn sm" data-挑="' + o.名次 + '">挑战</button>' : "")
+        + '</div>';
+    }).join("");
+    H += "</div></div></div>";
+    return H;
+  }
+  function 绑英雄榜() {
+    [].forEach.call(document.querySelectorAll("[data-挑]"), function (b) {
+      b.addEventListener("click", function () { 挑战(数(b.getAttribute("data-挑"))); });
+    });
+  }
+

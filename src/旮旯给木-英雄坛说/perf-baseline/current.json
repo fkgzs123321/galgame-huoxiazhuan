@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "identity": {
+    "file": "E:\\Games\\写卡\\tavern_helper_template\\src\\旮旯给木-英雄坛说\\旮旯给木-英雄坛说.json",
+    "sha256": "596a2011c865bdf15a87bedb5f82512af9ce80e732e5e09251171b8bfc623e81"
+  },
+  "metrics": {
+    "fileBytes": 836174,
+    "stringBytes": 439783,
+    "maxStringBytes": 12398,
+    "embeddedDataBytes": 0,
+    "promptBytes": 4586,
+    "worldbookEntries": 253,
+    "worldbookBytes": 385278,
+    "regexCount": 12,
+    "regexBytes": 9481,
+    "helperScriptCount": 2,
+    "helperScriptBytes": 12487,
+    "remoteUrlCount": 3
+  },
+  "metricPaths": {
+    "maxStringPath": "$.data.extensions.tavern_helper.scripts[1].content"
+  },
+  "redaction": "No string values, URLs, scripts, prompts, or embedded payloads are included."
+}

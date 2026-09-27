@@ -1,0 +1,422 @@
+/* ============================================================
+   响应式移动端适配(阶段4)
+   ============================================================
+   策略:
+   - 桌面 > 1024px:三栏 220px / 1fr / 240px(原布局)
+   - 平板 769-1024px:三栏 180px / 1fr / 200px(收紧侧栏)
+   - 移动 ≤ 768px:单栏 + 顶部 Tab 切换(角色/对话/状态)
+   - 小屏 ≤ 480px:紧凑模式(2 列快捷按钮、缩小字号)
+
+   注:由于组件大量使用内联样式,本文件统一使用 !important
+   强制覆盖内联样式,仅在小屏断点生效,不影响桌面外观。
+   ============================================================ */
+
+/* ════════════════════════════════════════════
+   1. App 外层容器
+   ════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .app-shell--game {
+    max-width: 100% !important;
+    padding: 8px 10px !important;
+  }
+
+  .app-shell--dev {
+    max-width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .app-header {
+    padding: 10px 14px !important;
+  }
+
+  .app-header h1 {
+    font-size: 20px !important;
+  }
+
+  .app-header p {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell--game,
+  .app-shell--dev {
+    padding: 6px 8px !important;
+  }
+
+  .app-header {
+    padding: 8px 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .app-header h1 {
+    font-size: 17px !important;
+    letter-spacing: 1px !important;
+  }
+
+  .app-header p {
+    font-size: 10px !important;
+    display: none !important;
+  }
+
+  .app-header-actions {
+    gap: 6px !important;
+  }
+
+  .app-header-actions button,
+  .app-header-actions .theme-chip {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header h1 {
+    font-size: 15px !important;
+  }
+
+  .app-header-actions {
+    gap: 4px !important;
+  }
+}
+
+/* ════════════════════════════════════════════
+   2. GameView 三栏布局
+   ════════════════════════════════════════════ */
+
+/* 平板:收紧侧栏宽度 */
+@media (max-width: 1024px) {
+  .gv-grid {
+    grid-template-columns: 180px 1fr 200px !important;
+    gap: 8px !important;
+  }
+
+  .gv-root {
+    height: calc(100vh - 56px) !important;
+    min-height: 500px !important;
+    gap: 8px !important;
+  }
+
+  .gv-scene-chips {
+    gap: 8px !important;
+    font-size: 11px !important;
+  }
+
+  .gv-portrait {
+    min-height: 220px !important;
+  }
+
+  .gv-portrait-name {
+    font-size: 18px !important;
+  }
+}
+
+/* 移动:单栏 + Tab 切换 */
+@media (max-width: 768px) {
+  .gv-root {
+    height: auto !important;
+    min-height: calc(100vh - 90px) !important;
+  }
+
+  .gv-header {
+    padding: 8px 10px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+
+  .gv-header-row {
+    width: 100% !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .gv-title {
+    font-size: 16px !important;
+  }
+
+  .gv-scene-chips {
+    gap: 6px !important;
+    font-size: 10px !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    padding-bottom: 2px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gv-scene-chips::-webkit-scrollbar {
+    height: 3px !important;
+  }
+
+  .gv-status-pill {
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+  }
+
+  /* 三栏切换为单栏 */
+  .gv-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    grid-template-columns: none !important;
+  }
+
+  /* 默认只显示中栏(对话),左右栏通过 Tab 切换 */
+  .gv-left,
+  .gv-right {
+    display: none !important;
+  }
+
+  .gv-left.is-active,
+  .gv-right.is-active {
+    display: flex !important;
+  }
+
+  .gv-main {
+    display: flex !important;
+  }
+
+  /* 当对话被隐藏时 */
+  .gv-main.is-hidden {
+    display: none !important;
+  }
+
+  /* 移动端 Tab 切换条 */
+  .gv-mobile-tabs {
+    display: flex !important;
+  }
+
+  /* 立绘框:移动端高度更紧凑 */
+  .gv-portrait {
+    min-height: 280px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .gv-portrait-name {
+    font-size: 20px !important;
+  }
+
+  /* 对话消息流:限定高度避免拉伸 */
+  .gv-message-stream {
+    height: 60vh !important;
+    min-height: 320px !important;
+    flex: 0 0 auto !important;
+    padding: 10px !important;
+  }
+
+  /* 输入栏紧凑 */
+  .gv-input-bar {
+    padding: 8px !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .gv-input-bar input {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .gv-input-bar button {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex: 0 0 auto !important;
+  }
+
+  /* 快捷操作:3 列网格 */
+  .gv-quick-actions {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 4px !important;
+  }
+
+  .gv-quick-btn {
+    padding: 6px 2px !important;
+    font-size: 10px !important;
+  }
+
+  .gv-quick-btn .gv-quick-icon {
+    font-size: 13px !important;
+  }
+
+  /* 完整状态栏 */
+  .gv-full-status {
+    max-height: 50vh !important;
+  }
+}
+
+/* 小屏手机:2 列快捷按钮 + 进一步紧凑 */
+@media (max-width: 480px) {
+  .gv-quick-actions {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .gv-message-stream {
+    height: 55vh !important;
+    min-height: 280px !important;
+    padding: 8px !important;
+  }
+
+  .gv-message-bubble {
+    max-width: 88% !important;
+    font-size: 13px !important;
+  }
+
+  .gv-input-bar {
+    padding: 6px !important;
+  }
+
+  .gv-input-bar input {
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+
+  .gv-input-bar button {
+    padding: 7px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .gv-scene-chips {
+    font-size: 10px !important;
+  }
+
+  .gv-portrait {
+    min-height: 240px !important;
+    padding: 10px !important;
+  }
+}
+
+/* 默认隐藏移动端 Tab 切换条(仅在 ≤768px 显示) */
+.gv-mobile-tabs {
+  display: none;
+}
+
+/* ════════════════════════════════════════════
+   3. 调试 / 状态栏等面板
+   ════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .panel-container {
+    max-width: 100% !important;
+    padding: 10px !important;
+  }
+
+  .panel-container h2 {
+    font-size: 16px !important;
+  }
+
+  .panel-tab-bar {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .panel-tab-bar button {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  .panel-card {
+    padding: 8px !important;
+  }
+
+  /* 调试面板表格紧凑 */
+  .debug-trace-entry {
+    font-size: 10px !important;
+    padding: 4px 6px !important;
+  }
+
+  /* 状态栏 9 分类网格:移动端 1-2 列 */
+  .statusbar-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusbar-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .panel-container {
+    padding: 8px !important;
+  }
+}
+
+/* ════════════════════════════════════════════
+   4. 配置页 / 身份选择
+   ════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .config-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .config-form-grid input,
+  .config-form-grid select,
+  .config-form-grid textarea {
+    font-size: 13px !important;
+    padding: 8px 10px !important;
+  }
+
+  .identity-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .identity-card {
+    padding: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .identity-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ════════════════════════════════════════════
+   5. 触摸友好:增大按钮命中区域
+   ════════════════════════════════════════════ */
+
+@media (max-width: 768px) and (pointer: coarse) {
+  button {
+    min-height: 32px;
+  }
+
+  .gv-quick-btn {
+    min-height: 48px;
+  }
+
+  .gv-input-bar button {
+    min-height: 40px;
+  }
+
+  /* 禁用 hover 缩放避免触屏粘连 */
+  .romance-card:hover,
+  .romance-button:hover:not(:disabled) {
+    transform: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════
+   6. 横屏适配(短高度设备)
+   ════════════════════════════════════════════ */
+
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 600px) {
+  .gv-portrait {
+    min-height: 180px !important;
+  }
+
+  .gv-message-stream {
+    height: 50vh !important;
+    min-height: 240px !important;
+  }
+
+  .gv-root {
+    min-height: 400px !important;
+  }
+}

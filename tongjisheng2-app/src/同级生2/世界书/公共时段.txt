@@ -1,0 +1,209 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 寒假日程调度器 - 公共时段
+   ════════════════════════════════════════════════════════════
+   职责：
+   1. 加载人物出现总表（19 女角 × 5 时段 × 7 区域）
+   2. 定义 5 时段的通用规则（每个时段都加载）
+   3. 时间推进锁定：禁止跳过时段
+   4. 输出当前时段的可行动列表
+   5. 单日行动次数累计与上限检查
+   ════════════════════════════════════════════════════════════ */%>
+
+<%/* ─── 0. 加载人物出现总表（必选） ─── */%>
+<%- await getwi('EJS预处理/寒假日程调度器/人物出现总表') %>
+
+<%
+/* ─── 读取关键 MVU 变量 ─── */
+/* 移除所有兜底值，变量未初始化时返回 undefined/NaN */
+if (typeof _dayCount === 'undefined') var _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local' }));
+if (typeof _tslot === 'undefined') var _tslot = getvar('stat_data.时间.时段', { scope: 'local' });
+if (typeof _turnActions === 'undefined') var _turnActions = Number(getvar('stat_data.临时.本时段楼层数', { scope: 'local' }));
+if (typeof _stamina === 'undefined') var _stamina = Number(getvar('stat_data.主角.体力', { scope: 'local' }));
+if (typeof _fatigue === 'undefined') var _fatigue = Number(getvar('stat_data.主角.疲劳', { scope: 'local' }));
+%>
+
+<%
+/* ─── 身份感知：从 IDENTITY_PROFILES 读取玩家信息（用具体名字，不用"主角"） ─── */
+if (typeof _playerIdentity === 'undefined') var _playerIdentity = String(getvar('stat_data.主角.玩家身份', { scope: 'local', defaults: '未选择' }) || '未选择');
+if (typeof _profile === 'undefined') var _profile = (typeof IDENTITY_PROFILES !== 'undefined' && IDENTITY_PROFILES[_playerIdentity]) ? IDENTITY_PROFILES[_playerIdentity] : null;
+if (typeof _playerName === 'undefined') var _playerName = _profile ? _profile.name : '玩家';
+if (typeof _isP1 === 'undefined') var _isP1 = (_playerIdentity === '原作主角');
+%>
+
+<%/* ─── 时段定义表 ─── */%>
+<% var _slotMap = {
+  '早':   { time: '06:00-09:00', actions: ['起床','吃早餐','上学','打工早班'] },
+  '上午': { time: '09:00-13:00', actions: ['打工','上学','约会','购物','事件'] },
+  '下午': { time: '13:00-18:00', actions: ['打工','约会','事件','外出','休息'] },
+  '晚':   { time: '18:00-22:00', actions: ['晚餐','约会','咖啡店帮忙','事件'] },
+  '深夜': { time: '22:00-02:00', actions: ['休息','深夜外出','NSFW事件','睡眠'] }
+}; %>
+<% var _curSlot = _slotMap[_tslot] || _slotMap['早']; %>
+
+<%/* ─── 1. 时间推进锁定（强制按顺序推进） ─── */%>
+[时间锁定指令：
+当前时段：day=<%= _dayCount %>（共 17 天），time_slot=<%= _tslot %>（<%= _curSlot.time %>）
+时段推进顺序：早 → 上午 → 下午 → 晚 → 深夜 → 次日早
+禁止跳过任何时段。禁止"一觉睡到第二天"等跳过描述（除非玩家明确选择"休息一整天"，但仍需按 5 时段推进，每时段执行休息动作）。
+禁止"几天后"等时间跳跃描述。每个时段必须有完整的剧情展开。
+未到次日早时段，禁止将 day_count 加 1。]
+
+<%/* ─── 2. 楼层时间流逝提示（每楼层 30 分钟，无每日上限） ─── */%>
+<%/* 移除每日 5 次行动上限。改为每楼层固定流逝 30 分钟 */%>
+[时间流逝：每楼层固定 30 分钟。当前时段 <%= _tslot %>，已用 <%= _turnActions %> 个楼层（<%= _turnActions * 30 %> 分钟）。
+本时段可选行动：<%= _curSlot.actions.join(' / ') %>。
+注意：30 分钟内只能做合理的事。长任务（打工/上课/约会）需多个楼层完成。]
+
+<%/* ─── 3. 体力/疲劳检查（强制休息） ─── */%>
+<% if (_fatigue >= 80) { %>
+[疲劳警告：<%= _playerName %> 疲劳值已达 <%= _fatigue %>（≥80）。强制本时段执行"休息"动作，禁止打工/约会/上学。强行行动将导致晕倒死结局。]
+<% } else if (_fatigue >= 60) { %>
+[疲劳提示：<%= _playerName %> 疲劳值 <%= _fatigue %>（≥60）。建议本时段休息。打工收入减半，约会质量下降。]
+<% } %>
+
+<% if (_stamina <= 20) { %>
+[体力警告：<%= _playerName %> 体力 <%= _stamina %>（≤20）。强制本时段执行"休息"或"睡眠"，禁止剧烈活动。强行行动将导致晕倒死结局。]
+<% } %>
+
+<%/* ─── 4. 章节进度锁定（17 天不能提前结束） ─── */%>
+<% if (_dayCount < 17) { %>
+[章节锁定指令：当前为 day=<%= _dayCount %>/17，禁止以任何理由提前结束寒假。
+即使所有女角已攻略完成，也必须按 5 时段/天推进至 day=17。
+玩家若试图"完结故事"或"快进到结局"，以"寒假还没有结束"为由拒绝。]
+<% } else if (_dayCount === 17) { %>
+[最终日指令：day=17/17，今日为寒假最后一天（01-07）。深夜时段结束后触发结局判定。
+结局类型由各女角攻略完成度 + <%= _playerName %> 属性综合决定：
+- 单一女角亲密 + 该女角 is_completed=1 → 该女角专属结局
+- 多女角亲密（≥3）→ 后宫结局
+- 无女角亲密 → 单身结局
+- 修学旅行费未达成（savings < 50000）→ 修学旅行取消结局]
+<% } %>
+
+<%/* ─── 5. 本时段女角动态简报（让世界活起来）─── */%>
+<%/* 根据DEFAULT_SCHEDULE反查当前时段所有女角的位置，生成动态简报
+     让AI知道"玩家未接触的女角此刻在做什么"，便于在叙事中体现世界运转 */%>
+<%
+/* 女角默认活动表（按 ID + 位置 索引） */
+if (typeof _heroineActivity === 'undefined') var _heroineActivity = {
+  1:  { '自宅周边': '在家做家务/看偶像剧', '八十八町商业区': '在商业区购物' },
+  2:  { '自宅周边': '在家休息/准备餐食', '八十八町商业区': '在咖啡店《憩》工作' },
+  3:  { '八十八海岸': '在海边散步', '八十八町商业区': '在商业区闲逛' },
+  4:  { '八十八学园': '在学园处理学生会事务' },
+  5:  { '八十八学园': '在学园处理社团事务' },
+  6:  { '八十八海岸': '在海岸跑步训练' },
+  7:  { '八十八学园': '在学园自习', '八十八町商业区': '在书店看书' },
+  8:  { '自宅周边': '在家学习/做手工' },
+  9:  { '保育园': '在保育园照顾孩子' },
+  10: { '八十八町商业区': '在商业区逛街' },
+  11: { '八十八学园': '在办公室处理教务' },
+  12: { '八十八町商业区': '在商业区闲逛' },
+  13: { '自宅周边': '在家做家务' },
+  14: { '自宅周边': '在家整理花艺' },
+  15: { '八十八学园': '在学生会办公室处理事务' },
+  16: { '八十八学园': '在田径部训练' },
+  17: { '八十八町商业区': '在商业区采购日用品' },
+  18: { '八十八学园': '在图书室整理图书' },
+  19: { '八十八学园': '在广播室准备广播稿' },
+  20: { '88市民医院': '在病房休息' }
+};
+
+/* 生成简报：反查当前时段所有女角位置 */
+var _schedToday = (typeof DEFAULT_SCHEDULE !== 'undefined' && DEFAULT_SCHEDULE[_tslot]) ? DEFAULT_SCHEDULE[_tslot] : {};
+var _overridesToday = (typeof DATE_OVERRIDES !== 'undefined' && DATE_OVERRIDES[_dayCount]) ? DATE_OVERRIDES[_dayCount] : null;
+var _lockedToday = (_overridesToday && _overridesToday.locked) ? _overridesToday.locked : [];
+var _sakurakoUnlockedFlag = Boolean(getvar('stat_data.隐藏.樱子线解锁', { scope: 'local', defaults: false }));
+
+var _briefingLines = [];
+for (var _locKey in _schedToday) {
+  var _idsAtLoc = _schedToday[_locKey] || [];
+  for (var _bi = 0; _bi < _idsAtLoc.length; _bi++) {
+    var _bhid = _idsAtLoc[_bi];
+    if (_lockedToday.indexOf(_bhid) >= 0) continue;        /* 跳过当日锁定女角 */
+    if (_bhid === 20 && !_sakurakoUnlockedFlag) continue;    /* 樱子需解锁 */
+    var _bname = (typeof HEROINE_ID_MAP !== 'undefined') ? (HEROINE_ID_MAP[_bhid] || ('id='+_bhid)) : ('id='+_bhid);
+    var _bact = (_heroineActivity[_bhid] && _heroineActivity[_bhid][_locKey]) ? _heroineActivity[_bhid][_locKey] : '活动不明';
+    _briefingLines.push(_bname + '@' + _locKey + ' — ' + _bact);
+  }
+}
+%>
+<% if (_briefingLines.length > 0) { %>
+[本时段女角动态简报（day=<%= _dayCount %> <%= _tslot %>）：
+以下女角此刻正在各自位置活动。<%= _playerName %> 可在对应区域遇到她们。
+<%= _playerName %> 未主动接触时，她们仍按自身节奏生活（情绪/状态可能因日常琐事变化）。
+AI 在叙事中可简短提及背景动态（如"远处商业区传来美佐子咖啡店的铃声"、"海岸方向洋子还在跑步"），让世界有真实运转感。
+<% _briefingLines.forEach(function(_bl) { %>
+- <%= _bl %>
+<% }); %>
+提示：<%= _playerName %> 到达对应区域时触发偶遇事件；未到达区域的女角按自身节奏活动，AI 不需要展开她们的详细剧情，仅在背景描写中简短提及即可。]
+<% } %>
+
+<%/* ─── 6. 跨角色互动提示（关键节点触发 · 让世界更真实）─── */%>
+<%
+/* 关键节点跨角色互动表（按 day_count 索引）
+   身份感知：P1 用 <%= _playerName %>（相沢诚）；P2-P6 用"玩家"，唯在鸣泽家独自活动（玩家不在场） */
+var _crossCharacterInteractions = {
+  3: { /* 12-24 平安夜 */
+    desc: _isP1 ? `平安夜，商业区与温泉乡有活动；唯可能独自在家等${_playerName}` : '平安夜，商业区与温泉乡有活动；唯在鸣泽家独自活动（玩家不在场）',
+    pairs: [_isP1 ? `唯@自宅（等${_playerName}回家）` : '唯@鸣泽家（独自，玩家不在场）', '美佐子@商业区（咖啡店忙碌）']
+  },
+  4: { /* 12-25 圣诞夜 */
+    desc: _isP1 ? `圣诞夜事件，唯与${_playerName}在鸣泽家独处；美佐子可能在咖啡店忙碌` : '圣诞夜事件，玩家住所独自度过圣诞夜；相沢诚×唯@鸣泽家作为 NPC 原作剧情推进',
+    pairs: [_isP1 ? `唯×${_playerName}@鸣泽家（圣诞夜事件）` : '相沢诚×唯@鸣泽家（NPC 推进原作剧情）', '美佐子@咖啡店（忙碌）']
+  },
+  7: { /* 12-28 信良电话邀约泉美 */
+    desc: '信良下午6:00打电话邀约泉美温泉旅行（泉美线触发点）',
+    pairs: ['信良×泉美@电话（温泉旅行邀约）']
+  },
+  8: { /* 12-29 信良放弃洋子 + 日记本第2本交付 */
+    desc: `信良意识到洋子眼里只有运动，颓废一天；把日记本第2本交给${_playerName}，托付"替我照顾洋子"`,
+    pairs: ['信良@自宅（颓废）', '洋子@海岸（不知情，继续跑步）']
+  },
+  9: { /* 12-30 温泉旅行 + 友美偷拍误会 */
+    desc: '泉美温泉旅行（若已邀约）；友美偷拍误会事件可能发生',
+    pairs: [`泉美×${_playerName}@温泉乡（温泉旅行）`, '友美@学园体育馆后面（偷拍误会）']
+  },
+  10: { /* 12-31 跨年 + 可怜夏威夷出差 */
+    desc: _isP1 ? '跨年夜，多女角可能聚集商业区；可怜已出发夏威夷出差' : '跨年夜，多女角可能聚集商业区；可怜已出发夏威夷出差；唯@鸣泽家跨年（玩家不在场）',
+    pairs: [_isP1 ? '唯@自宅（跨年）' : '唯@鸣泽家（跨年，玩家不在场）', '美佐子@商业区（跨年活动）', '可怜@夏威夷（出差中）']
+  },
+  11: { /* 01-01 元旦 + 可怜夏威夷 */
+    desc: '元旦，神社参拜活动；可怜仍在夏威夷',
+    pairs: ['多女角@神社（参拜）', '可怜@夏威夷（出差中）']
+  },
+  12: { /* 01-02 西御寺和芳树共谋 */
+    desc: `西御寺与芳树在商业区共谋针对${_playerName}（反派联盟）`,
+    pairs: ['西御寺×芳树@商业区（共谋）']
+  },
+  13: { /* 01-03 永岛佐知子登场 + 关键误会事件 */
+    desc: '永岛佐知子来接久美子；下午5:05旅馆大厅关键误会事件（西御寺干预）',
+    pairs: ['佐知子×久美子@永岛家（登场）', '西御寺@旅馆大厅（关键误会）']
+  },
+  17: { /* 01-07 最终日 */
+    desc: '寒假最后一天，深夜触发结局判定；所有女角的剧情线进入最终阶段',
+    pairs: ['全员@各自位置（结局判定前夜）']
+  }
+};
+
+var _crossInteraction = _crossCharacterInteractions[_dayCount];
+%>
+<% if (_crossInteraction) { %>
+[跨角色互动提示（day=<%= _dayCount %> 关键节点）：
+<%= _crossInteraction.desc %>
+今日有以下跨角色互动正在发生（非<%= _playerName %>参与）：
+<% _crossInteraction.pairs.forEach(function(_pair) { %>
+- <%= _pair %>
+<% }); %>
+叙事要求：
+1. AI 可在背景描写中简短提及这些跨角色互动（如"远处商业区传来跨年钟声"、"信良家方向传来颓废的叹息"）
+2. 不需要展开详细剧情，仅作为世界真实运转的背景氛围
+3. 若<%= _playerName %>主动前往互动地点，可触发相关事件]
+<% } %>
+
+★ 身份感知：当前玩家身份=<%= _playerIdentity %>，玩家姓名=<%= _playerName %>，P1 场景模式=<%= _isP1 ? '是' : '否' %>。
+P1 玩家在鸣泽家过家庭生活（唯/美佐子为亲属，可共度圣诞夜/跨年）；P2-P6 玩家在对应住所独自生活，唯/美佐子作为偶遇对象，不与玩家同住，禁止描写"唯在自宅等玩家回家/与玩家共度圣诞夜"等 P1 专属场景。相沢诚作为 NPC 在原作鸣泽家场景活动，玩家不在该场景。
+
+★ 身份感知铁律：
+1. 禁止用"主角"代称，必须用具体名字（相沢诚/川尻信良/长冈芳树/西御寺有友/天道新干线/{{user}}）。
+2. 每个身份的开场场景独立，禁止 P2-P6 描写"在鸣泽家起床/唯准备早餐/美佐子呼唤下楼"等 P1 专属场景。
+3. 相沢诚作为 NPC 在原作鸣泽家场景活动（玩家选 P2-P6 时），玩家不在该场景。

@@ -1,0 +1,272 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 固定物品/礼品效果表（SKU 单一来源·强化版）
+   ════════════════════════════════════════════════════════════
+   ★ 强制购买规则（用户核心要求·凸显打工赚钱重要性）：
+   1. 所有生存类物品（三餐/饮料/洗浴）必须用金钱购买，禁止白嫖
+      - 唯一例外：美佐子料理（price=0，需美佐子好感≥20，义母关照）
+   2. 所有可使用道具（礼物/消耗品/关键道具购买项）必须用金钱购买
+      - 唯一例外：初始持有 3 件（学生证/钱包/修学旅行宣传单，见 INITIAL_OWNED 白名单）
+   3. AI 禁止凭空生成任何物品，所有交易必须从此 SHOP_ITEMS 表选择
+   4. 与 DDL.inventory.obtained_from CHECK 约束联动：obtained_from ∈
+      ('初始持有','便利店购买','商业区购买','温泉乡购买','海岸购买','医院购买','保育园购买','学园购买','事件获得','美佐子料理')
+   5. 生存预算硬约束：每日最低 600 日元（2 饭团 + 1 矿泉水），money < 300 触发强制送医
+   6. AI 口胡驳回规则：若 AI 输出未在 SKU 表中的物品，正则自动替换为「[物品无效·请从商店选择]」
+
+   - 价格固定，难度不影响价格（只影响打工收入）
+   - 效果固定，关系不够送禁忌礼物会触发反感（反向效果）
+   - 商店分区域：便利店/商业区/温泉乡/海岸/医院/保育园，区域限定商品
+   - 食物消除 hunger，饮料消除 thirst，洗浴恢复 hygiene（真实生存机制）
+   - 必须能保证生存：每日至少 1 餐 + 1 饮水 + 隔日洗澡才不致坏结局
+*/%>
+
+<%
+/* ─── 初始持有白名单（仅此 3 件不可凭空生成其他初始物品）─── */
+this.INITIAL_OWNED = ['学生证', '钱包', '修学旅行宣传单'];
+
+/* ─── 强制购买校验函数（D0/思维链调用）─── */
+this._validateItemAcquisition = function _validateItemAcquisition(item_name, obtained_from, money_available) {
+  const item = SHOP_ITEMS[item_name];
+  if (!item) return { valid: false, reason: '物品不在 SKU 表中·禁止凭空生成', action: 'reject' };
+  if (INITIAL_OWNED.includes(item_name) && obtained_from === '初始持有') {
+    return { valid: true, reason: '初始持有白名单', action: 'allow' };
+  }
+  if (item_name === '美佐子料理' && obtained_from === '美佐子料理') {
+    return { valid: true, reason: '义母关照免费餐', action: 'allow' };
+  }
+  if (item.price === 0 && obtained_from === '事件获得') {
+    return { valid: true, reason: '事件获得关键道具', action: 'allow' };
+  }
+  if (money_available < item.price) {
+    return { valid: false, reason: `金钱不足 ${money_available}/${item.price}`, action: 'reject_work' };
+  }
+  const valid_sources = {
+    '便利店购买': ['自宅周边','八十八町商业区'],
+    '商业区购买': ['八十八町商业区'],
+    '温泉乡购买': ['温泉乡'],
+    '海岸购买': ['八十八海岸'],
+    '医院购买': ['88市民医院'],
+    '保育园购买': ['保育园'],
+    '学园购买': ['八十八学园']
+  };
+  const expected_source = Object.keys(valid_sources).find(s => valid_sources[s].some(r => item.region.includes(r)));
+  if (expected_source && obtained_from !== expected_source) {
+    return { valid: false, reason: `购买地点不符·应为 ${expected_source}`, action: 'reject' };
+  }
+  return { valid: true, reason: '购买校验通过', action: 'allow_purchase' };
+}
+
+this.SHOP_ITEMS = {
+  /* ─── 区域 1：便利店（自宅周边/商业区）── 食物 + 饮料 ─── */
+  '便利店便当':     { price: 300,  region: ['自宅周边','八十八町商业区'], category: '三餐', effect: { hunger: -30, fatigue: -5, mood: +1 }, target_effect: {}, requirement: {}, note: '基础一餐，hunger-30' },
+  '饭团':           { price: 150,  region: ['自宅周边','八十八町商业区'], category: '三餐', effect: { hunger: -20, fatigue: -3, mood: +1 }, target_effect: {}, requirement: {}, note: '简易一餐，hunger-20' },
+  '三明治':         { price: 250,  region: ['自宅周边','八十八町商业区'], category: '三餐', effect: { hunger: -25, fatigue: -4, mood: +1 }, target_effect: {}, requirement: {}, note: '简易一餐，hunger-25' },
+  '家庭料理':       { price: 200,  region: ['自宅周边'], category: '三餐', effect: { hunger: -25, fatigue: -3, mood: +1 }, target_effect: {}, requirement: {}, note: '在家用餐，hunger-25' },
+  '美佐子料理':     { price: 0,    region: ['自宅周边'], category: '三餐', effect: { hunger: -50, fatigue: -8, mood: +5 }, target_effect: {}, requirement: { relation: { '鸣泽美佐子': { affection: 20 } } }, note: '需美佐子好感≥20，免费，hunger-50' },
+
+  /* ─── 饮料类（thirst 消除）── 便利店/咖啡店 ─── */
+  '矿泉水':         { price: 100,  region: ['自宅周边','八十八町商业区','温泉乡'], category: '饮料', effect: { thirst: -25 }, target_effect: {}, requirement: {}, note: '基础解渴，thirst-25' },
+  '罐装咖啡':       { price: 120,  region: ['自宅周边','八十八町商业区'], category: '饮料', effect: { thirst: -15, fatigue: -2, mood: +1 }, target_effect: {}, requirement: {}, note: '轻度提神解渴，thirst-15' },
+  '果汁':           { price: 150,  region: ['自宅周边','八十八町商业区'], category: '饮料', effect: { thirst: -20, mood: +1 }, target_effect: {}, requirement: {}, note: 'thirst-20' },
+  '运动饮料':       { price: 200,  region: ['自宅周边','八十八町商业区'], category: '饮料', effect: { thirst: -30, fatigue: -5, physical: +3 }, target_effect: {}, requirement: {}, note: '强效恢复体力，thirst-30' },
+  '茶':             { price: 130,  region: ['自宅周边','八十八町商业区'], category: '饮料', effect: { thirst: -20, fatigue: -1, mood: +1 }, target_effect: {}, requirement: {}, note: 'thirst-20' },
+  '能量饮料':       { price: 200,  region: ['自宅周边','八十八町商业区'], category: '饮料', effect: { thirst: -10, fatigue: -10, mood: +2, physical: +5 }, target_effect: {}, requirement: {}, note: '强效提神，thirst-10' },
+
+  /* ─── 洗浴类（hygiene 恢复）── 自宅/温泉乡 ─── */
+  '淋浴券':         { price: 200,  region: ['自宅周边'], category: '洗浴', effect: { hygiene: +30, fatigue: -3, mood: +2 }, target_effect: {}, requirement: {}, note: '自宅淋浴，hygiene+30' },
+  '温泉券':         { price: 800,  region: ['温泉乡'], category: '洗浴', effect: { hygiene: +60, fatigue: -10, mood: +5 }, target_effect: {}, requirement: {}, note: '温泉乡泡汤，hygiene+60' },
+  '温泉旅馆住宿':   { price: 5000, region: ['温泉乡'], category: '洗浴', effect: { hygiene: +80, fatigue: -20, mood: +10, sleep_quality: +20 }, target_effect: {}, requirement: {}, note: '温泉旅馆过夜，hygiene+80，sleep_quality+20' },
+
+  /* ─── 区域 2：咖啡店《憩》（商业区）── 餐 + 饮料 + 礼物 ─── */
+  '咖啡店简餐':     { price: 500,  region: ['八十八町商业区'], category: '三餐', effect: { hunger: -40, thirst: -10, fatigue: -8, mood: +2 }, target_effect: {}, requirement: {}, note: '中等一餐带饮料，hunger-40' },
+  '特调咖啡':       { price: 400,  region: ['八十八町商业区'], category: '饮料', effect: { thirst: -20, fatigue: -5, mood: +3 }, target_effect: {}, requirement: { relation: { '鸣泽美佐子': { affection: 0 } } }, note: '美佐子亲手调制，thirst-20' },
+  '手工巧克力':     { price: 800,  region: ['八十八町商业区'], category: '礼物-普通', effect: { hunger: -5, mood: +1 }, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '美佐子特制，微量充饥' },
+
+  /* ─── 区域 4：商业区礼品店 ─── */
+  '小束鲜花':       { price: 500,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '通用礼物' },
+  '流行CD':         { price: 1200, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '舞岛可怜偏好' },
+  '少女漫画':       { price: 600,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '都筑梢江偏好' },
+  '文学书':         { price: 1500, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +5, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '水野友美偏好' },
+  '运动护腕':       { price: 1000, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '南川洋子偏好' },
+  '可爱发卡':       { price: 800,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '都筑梢江偏好' },
+  '保育绘本':       { price: 600,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '安田爱美偏好' },
+  '导游手册':       { price: 1000, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '野野村美里偏好' },
+  '银项链':         { price: 5000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '通用贵重' },
+  '品牌化妆品':     { price: 8000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +6, heartbeat: +4, jealousy: +3 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '需暧昧阶段' },
+  '设计师手袋':     { price: 15000,region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +8, heartbeat: +5, jealousy: +5 }, requirement: { stage: ['心动','亲密'] }, note: '需心动阶段' },
+  '度假旅行券':     { price: 30000,region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +10, heartbeat: +8, jealousy: +5 }, requirement: { stage: ['亲密'] }, note: '需亲密阶段' },
+
+  /* ─── 区域 5：温泉乡礼品店 ─── */
+  '丝绸睡衣':       { price: 5000, region: ['温泉乡'], category: '礼物-禁忌', effect: {}, target_effect: { affection: +5, heartbeat: +5, jealousy: +5 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '需暧昧阶段，否则反感' },
+  '性感内衣':       { price: 8000, region: ['温泉乡'], category: '礼物-禁忌', effect: {}, target_effect: { affection: +5, heartbeat: +5, jealousy: +5 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '需暧昧阶段' },
+  '按摩油':         { price: 2000, region: ['温泉乡'], category: '礼物-禁忌', effect: {}, target_effect: { affection: +3, heartbeat: +3, jealousy: +3 }, requirement: { stage: ['亲密'] }, note: '需亲密阶段' },
+  '温泉特产点心':   { price: 800,  region: ['温泉乡'], category: '礼物-普通', effect: { hunger: -10, mood: +1 }, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '通用，微量充饥' },
+
+  /* ─── 区域 6：高级餐厅（温泉乡/商业区）─── */
+  '高级餐厅套餐':   { price: 1500, region: ['八十八町商业区','温泉乡'], category: '三餐', effect: { hunger: -60, thirst: -20, fatigue: -10, mood: +5 }, target_effect: {}, requirement: {}, note: '奢侈一餐，hunger-60' },
+
+  /* ─── 区域 7：八十八海岸（海边商店）─── */
+  '海鲜烧烤':       { price: 800,  region: ['八十八海岸'], category: '三餐', effect: { hunger: -50, thirst: -10, fatigue: -5, mood: +3 }, target_effect: {}, requirement: {}, note: '海鲜大餐，hunger-50' },
+  '海水冰沙':       { price: 300,  region: ['八十八海岸'], category: '饮料', effect: { thirst: -30, mood: +2 }, target_effect: {}, requirement: {}, note: '海边解暑，thirst-30' },
+  '贝壳项链':       { price: 1500, region: ['八十八海岸'], category: '礼物-普通', effect: {}, target_effect: { affection: +5, heartbeat: +3 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '永岛亚纪偏好（文学少女也爱贝壳）' },
+  '海螺哨':         { price: 500,  region: ['八十八海岸'], category: '礼物-普通', effect: {}, target_effect: { affection: +2, heartbeat: +1 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '通用海边礼物' },
+  '游泳圈':         { price: 500,  region: ['八十八海岸'], category: '关键道具', effect: {}, target_effect: {}, requirement: {}, note: '海边游泳必需，无则触发溺水风险' },
+  '防晒霜':         { price: 800,  region: ['八十八海岸'], category: '消耗品', effect: { hygiene: +10 }, target_effect: {}, requirement: {}, note: '海边防晒，hygiene+10' },
+
+  /* ─── 区域 8：88市民医院（医院小卖部）─── */
+  '感冒药':         { price: 300,  region: ['88市民医院'], category: '消耗品', effect: { fatigue: -5, mood: +1 }, target_effect: {}, requirement: {}, note: '治疗感冒，fatigue-5' },
+  '维生素':         { price: 500,  region: ['88市民医院'], category: '消耗品', effect: { physical: +5, fatigue: -3 }, target_effect: {}, requirement: {}, note: '恢复体力，physical+5' },
+  '健康体检':       { price: 2000, region: ['88市民医院'], category: '消耗品', effect: { reveal: 'all_attributes' }, target_effect: {}, requirement: {}, note: '一次性揭示主角所有属性（含隐藏属性）' },
+  '住院用品套装':   { price: 1500, region: ['88市民医院'], category: '关键道具', effect: {}, target_effect: {}, requirement: {}, note: '住院时必需' },
+
+  /* ─── 区域 9：女角专属偏好礼物（按女角 row_id 排列，19 女角每女 1-2 个）─── */
+  // 1. 鸣泽唯（义妹）
+  '八音盒':         { price: 8000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +8, heartbeat: +5, jealousy: +2 }, requirement: { stage: ['心动','亲密'] }, note: '鸣泽唯专属（义妹心动以上）' },
+  '手作围巾':       { price: 1500, region: ['自宅周边'], category: '礼物-普通', effect: { mood: +2 }, target_effect: { affection: +5, heartbeat: +3 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '鸣泽唯专属（亲手编织感）' },
+  // 2. 鸣泽美佐子（义母）
+  '高级茶叶':       { price: 1500, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '鸣泽美佐子偏好' },
+  '丝巾':           { price: 6000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +6, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '鸣泽美佐子专属（成熟女性礼物）' },
+  // 3. 舞岛可怜（偶像）- 已有"流行CD"，追加 1 个
+  '粉丝应援毛巾':   { price: 1000, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '舞岛可怜偏好（偶像应援）' },
+  // 4. 水野友美（青梅竹马）- 已有"文学书"，追加 1 个
+  '手帕':           { price: 500,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '水野友美偏好（青梅竹马情怀）' },
+  // 5. 田中美沙（网球少女）
+  '网球帽':         { price: 1200, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '田中美沙偏好' },
+  '网球护腕':       { price: 800,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '田中美沙偏好（与南川洋子运动护腕区分）' },
+  // 6. 都筑梢江 - 已有"少女漫画"+"可爱发卡"，不追加
+  // 7. 南川洋子 - 已有"运动护腕"，追加 1 个
+  '运动头带':       { price: 600,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '南川洋子偏好' },
+  // 8. 安田爱美 - 已有"保育绘本"，追加 1 个
+  '儿童玩具套装':   { price: 1200, region: ['保育园'], category: '礼物-普通', effect: {}, target_effect: { affection: +5, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '安田爱美偏好（保育园场景限定）' },
+  // 9. 野野村美里 - 已有"导游手册"，追加 1 个
+  '温泉明信片':     { price: 300,  region: ['温泉乡'], category: '礼物-普通', effect: {}, target_effect: { affection: +2, heartbeat: +1 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '野野村美里偏好' },
+  // 10. 片桐美铃（老师）
+  '康乃馨':         { price: 500,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '片桐美铃偏好（师生界限礼物）' },
+  '教学用品':       { price: 800,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '片桐美铃偏好' },
+  // 11. 杉本樱（武道馆前辈）
+  '武道护具':       { price: 1500, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '杉本樱偏好' },
+  '武道头巾':       { price: 500,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +2, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '杉本樱偏好' },
+  // 12. 永岛亚纪（文学少女）
+  '文库本':         { price: 600,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +4, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '永岛亚纪偏好（与水野友美文学书区分）' },
+  '古典音乐CD':     { price: 1200, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '永岛亚纪偏好' },
+  // 13. 高冈丽（时尚学妹）
+  '时尚杂志':       { price: 500,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '高冈丽偏好' },
+  '墨镜':           { price: 3000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '高冈丽偏好（贵重）' },
+  // 14. 沢渡美知子（占卜师）
+  '占卜卡牌':       { price: 1000, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '沢渡美知子偏好' },
+  '水晶球':         { price: 5000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '沢渡美知子偏好（贵重）' },
+  // 15. 齐藤澪（重制版）
+  '香水':           { price: 5000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '齐藤澪专属（重制版贵重）' },
+  // 16. 齐藤澪奈（重制版）
+  '口红':           { price: 4000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '齐藤澪奈专属（重制版贵重）' },
+  // 17. 铃木美穗（重制版）
+  '手作饰品套装':   { price: 1500, region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +5, heartbeat: +3 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '铃木美穗专属（重制版，手作爱好者）' },
+  // 18. 仁科（重制版）
+  '胶卷':           { price: 800,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +2 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '仁科偏好（重制版，摄影爱好者）' },
+  '相机背带':       { price: 3000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '仁科专属（重制版贵重）' },
+  // 19. 正树夏子（重制版）
+  '商务笔记本':     { price: 500,  region: ['八十八町商业区'], category: '礼物-普通', effect: {}, target_effect: { affection: +3, heartbeat: +1 }, requirement: { stage: ['熟悉','暧昧','心动','亲密'] }, note: '正树夏子偏好（重制版，商务向）' },
+  '高级钢笔':       { price: 5000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +5, heartbeat: +3, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '正树夏子专属（重制版贵重）' },
+  // 20. 杉本樱子（隐藏可攻略·88市民医院长期住院患者·心脏病设定）
+  '手工千纸鹤':     { price: 300,  region: ['八十八町商业区'], category: '礼物-普通', effect: { mood: +2 }, target_effect: { affection: +5, heartbeat: +3 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '杉本樱子专属（祈愿康复·病弱少女最珍视的心意）' },
+  '彩色绘本':       { price: 800,  region: ['88市民医院','八十八町商业区'], category: '礼物-普通', effect: { mood: +1 }, target_effect: { affection: +4, heartbeat: +2 }, requirement: { stage: ['初识','熟悉','暧昧','心动','亲密'] }, note: '杉本樱子偏好（病房消遣·温柔治愈系）' },
+  '八音盒小坠饰':   { price: 2000, region: ['八十八町商业区'], category: '礼物-贵重', effect: {}, target_effect: { affection: +6, heartbeat: +4, jealousy: +2 }, requirement: { stage: ['暧昧','心动','亲密'] }, note: '杉本樱子专属（病房长久陪伴·贵重）' },
+
+  /* ─── 关键道具（不可购买，事件获得）─── */
+  '修学旅行缴费单': { price: 50000,region: ['八十八学园'], category: '关键道具', effect: { game_progress: 'TRUE_END_unlock' }, target_effect: {}, requirement: {}, note: '储蓄目标，决定结局' },
+  '学生证':         { price: 0,    region: ['八十八学园'], category: '关键道具', effect: {}, target_effect: {}, requirement: {}, note: '初始持有' },
+  '钱包':           { price: 0,    region: ['自宅周边'], category: '关键道具', effect: {}, target_effect: {}, requirement: {}, note: '初始持有' },
+  '修学旅行宣传单': { price: 0,    region: ['八十八学园'], category: '关键道具', effect: {}, target_effect: {}, requirement: {}, note: '初始持有' },
+  '圣诞礼物':       { price: 0,    region: [], category: '关键道具', effect: { event: '圣诞夜事件' }, target_effect: {}, requirement: {}, note: '12-25 触发，需提前准备' },
+  '新年参拜签':     { price: 100,  region: ['温泉乡'], category: '关键道具', effect: { event: '元日参拜' }, target_effect: {}, requirement: {}, note: '01-01 触发' }
+};
+
+/* ───────── 商店分区域（含原空区域补全）───────── */
+this.SHOP_BY_REGION = {
+  '自宅周边':   ['便利店便当','饭团','三明治','家庭料理','美佐子料理','矿泉水','罐装咖啡','果汁','运动饮料','茶','能量饮料','淋浴券','手作围巾'],
+  '八十八町商业区':     ['便利店便当','饭团','三明治','矿泉水','罐装咖啡','果汁','运动饮料','茶','能量饮料','咖啡店简餐','特调咖啡','手工巧克力','小束鲜花','流行CD','少女漫画','文学书','运动护腕','可爱发卡','保育绘本','导游手册','银项链','品牌化妆品','设计师手袋','度假旅行券','高级餐厅套餐','八音盒','高级茶叶','丝巾','粉丝应援毛巾','手帕','网球帽','网球护腕','运动头带','康乃馨','教学用品','武道护具','武道头巾','文库本','古典音乐CD','时尚杂志','墨镜','占卜卡牌','水晶球','香水','口红','手作饰品套装','胶卷','相机背带','商务笔记本','高级钢笔','手工千纸鹤','彩色绘本','八音盒小坠饰'],
+  '温泉乡':     ['矿泉水','丝绸睡衣','性感内衣','按摩油','温泉特产点心','高级餐厅套餐','温泉券','温泉旅馆住宿','新年参拜签','温泉明信片'],
+  '八十八学园':       ['修学旅行缴费单','学生证','修学旅行宣传单'],
+  '八十八海岸': ['海鲜烧烤','海水冰沙','贝壳项链','海螺哨','游泳圈','防晒霜'],
+  '88市民医院': ['感冒药','维生素','健康体检','住院用品套装','彩色绘本'],
+  '保育园':     ['儿童玩具套装']
+};
+
+/* ───────── 反感规则（关系不够送禁忌礼物）───────── */
+this.REFUSAL_RULE = {
+  trigger: '礼物 requirement.stage 不满足当前 relationship_stage',
+  reverse_effect: { affection: -5, heartbeat: -3, jealousy: +3, trust: -5 },
+  message: '女角因收到不合适的礼物而反感'
+};
+
+/* ───────── 生存三餐规则（真实生存机制·严格化）───────── */
+this.MEAL_RULE = {
+  daily_meal_required: 1,         // 每日至少 1 餐（强制·漏餐惩罚）
+  daily_drink_required: 1,        // 每日至少 1 次饮水（强制·漏水惩罚）
+  daily_bath_required: 0.5,       // 每 2 日至少 1 次洗浴（隔日洗澡）
+  // 漏餐惩罚：加速 hunger 上升
+  meal_miss_penalty: { hunger: +20, fatigue: +5, mood: -5 },
+  // 漏水惩罚：加速 thirst 上升
+  drink_miss_penalty: { thirst: +25, fatigue: +3, mood: -3 },
+  // 漏浴惩罚：hygiene 持续下降
+  bath_miss_penalty: { hygiene: -20, mood: -2 },
+  // 连续 3 天不进餐 → 触发 BAD_END_3_破产 子条件
+  consecutive_miss_bad_ending_days: 3,
+  // 最低生存预算（避免无法购买食物导致饿死）
+  minimum_food_budget: 600,  // 至少能买 2 个饭团 + 1 矿泉水 = 400，留余量
+  // ★ 强制购买校验：所有食物/饮料/洗浴必须从 SHOP_ITEMS 购买
+  force_purchase: true,
+  // ★ 禁止白嫖规则：禁止"在家做饭"等不花钱的描述（除非触发美佐子料理）
+  no_free_lunch: true,
+  // ★ AI 描述约束：禁止 AI 编造"主角在家随便吃了点"等无 SKU 的进食
+  ai_description_lock: '所有进食/饮水/洗浴行为必须引用 SHOP_ITEMS 中的具体 SKU，否则视为未进食'
+};
+
+/* ───────── 物品使用规则 ───────── */
+this.ITEM_USE_RULES = {
+  'gift': '送礼时执行：检查 requirement.stage 是否满足 → 满足则应用 target_effect → 不满足则应用 REFUSAL_RULE.reverse_effect',
+  'meal': '食用时执行：应用 effect（hunger 减少）到 protagonist_info 表 → 记录到 chronicle 表 → 当日累计 1 次则三餐满足',
+  'drink': '饮用时执行：应用 effect（thirst 减少）到 protagonist_info 表 → 记录到 chronicle 表 → 当日累计 1 次则饮水满足',
+  'wash': '洗浴时执行：应用 effect（hygiene 恢复）到 protagonist_info 表 → 记录到 chronicle 表 → 隔日至少 1 次则洗浴满足',
+  'consumable': '使用时执行：应用 effect 到 protagonist_info 表',
+  'key_item': '关键道具不可丢弃、不可出售、不可消耗',
+  // ★ 新增：强制金钱扣除规则
+  'purchase_required': '所有非 INITIAL_OWNED/非美佐子料理/非事件获得的物品必须扣除对应金钱',
+  'money_check': '购买前必须校验 money ≥ price，不足则拒绝购买并提示打工赚钱',
+  'inventory_log': '购买后必须写入 DDL.inventory 表，obtained_from 字段必须符合 CHECK 约束'
+};
+
+/* ───────── 生存预算校验（严格化）───────── */
+this.SURVIVAL_BUDGET = {
+  // 每日最低生存成本（强制·凸显打工赚钱重要性）
+  daily_minimum_cost: 600,  // 2饭团(300) + 1矿泉水(100) + 偶尔淋浴券(200) = 600
+  // 当 money < 此值时触发"经济危机"警告
+  warning_threshold: 1000,
+  // 当 money < 此值且无食物储备时强制住院（送医）
+  critical_threshold: 300,
+  // 推荐每日生存套餐
+  recommended_set: ['饭团','饭团','矿泉水'],
+  recommended_cost: 400,
+  // ★ 新增：打工赚钱硬约束
+  work_income_required: '当 money < warning_threshold 时，AI 必须在叙事中提示主角需要打工',
+  // ★ 新增：拒绝"无中生有"的金钱
+  money_source_lock: '所有金钱增加必须通过 <UpdateTable> 更新 protagonist_info 表的 money 字段，并在 chronicle 表插入收入记录（记录收入来源：便利店打工/咖啡店打工/车站搬运/家庭教师/其他）',
+  // ★ 新增：拒绝"无中生有"的物品
+  item_source_lock: '所有物品增加必须通过 _validateItemAcquisition 校验'
+};
+%>
+
+[固定物品表已加载。强化版：所有生存类物品（三餐/饮料/洗浴）必须用金钱购买，禁止白嫖；所有可使用道具必须购买（初始持有 3 件除外）；AI 禁止凭空生成任何物品，所有交易必须从 SHOP_ITEMS 表选择；金钱增加必须对应 economy.income_type CHECK 约束；购买后必须写入 inventory 表并符合 obtained_from CHECK 约束。每日至少 1 餐 + 1 饮水 + 隔日洗澡，money < 300 触发强制送医。凸显打工赚钱的重要性。]
+
+<%= JSON.stringify({
+  total_items: Object.keys(SHOP_ITEMS).length,
+  food_items: Object.keys(SHOP_ITEMS).filter(k => SHOP_ITEMS[k].category === '三餐').length,
+  drink_items: Object.keys(SHOP_ITEMS).filter(k => SHOP_ITEMS[k].category === '饮料').length,
+  wash_items: Object.keys(SHOP_ITEMS).filter(k => SHOP_ITEMS[k].category === '洗浴').length,
+  regions: Object.keys(SHOP_BY_REGION),
+  initial_owned: INITIAL_OWNED,
+  refusal_rule: REFUSAL_RULE.reverse_effect,
+  meal_rule: MEAL_RULE,
+  survival_budget: SURVIVAL_BUDGET,
+  item_use_rules: ITEM_USE_RULES
+}, null, 2) %>

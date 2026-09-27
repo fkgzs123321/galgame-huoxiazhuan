@@ -1,0 +1,138 @@
+{
+  "areas": {
+    "cove": {
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "fileCount": 9,
+      "files": [
+        "cove.1.mash.darkest",
+        "cove.2.mash.darkest",
+        "cove.3.mash.darkest",
+        "cove.4.mash.darkest",
+        "cove.5.mash.darkest",
+        "cove.conditional.1.mash.darkest",
+        "cove.conditional.3.mash.darkest",
+        "cove.conditional.5.mash.darkest",
+        "cove.props.darkest"
+      ]
+    },
+    "crypts": {
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "fileCount": 9,
+      "files": [
+        "crypts.1.mash.darkest",
+        "crypts.2.mash.darkest",
+        "crypts.3.mash.darkest",
+        "crypts.4.mash.darkest",
+        "crypts.5.mash.darkest",
+        "crypts.conditional.1.mash.darkest",
+        "crypts.conditional.3.mash.darkest",
+        "crypts.conditional.5.mash.darkest",
+        "crypts.props.darkest"
+      ]
+    },
+    "darkestdungeon": {
+      "levels": [
+        6
+      ],
+      "fileCount": 2,
+      "files": [
+        "darkestdungeon.6.mash.darkest",
+        "darkestdungeon.props.darkest"
+      ]
+    },
+    "town": {
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "fileCount": 7,
+      "files": [
+        "town.1.mash.darkest",
+        "town.2.mash.darkest",
+        "town.3.mash.darkest",
+        "town.4.mash.darkest",
+        "town.5.mash.darkest",
+        "town.6.mash.darkest",
+        "town.props.darkest"
+      ]
+    },
+    "warrens": {
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "fileCount": 9,
+      "files": [
+        "warrens.1.mash.darkest",
+        "warrens.2.mash.darkest",
+        "warrens.3.mash.darkest",
+        "warrens.4.mash.darkest",
+        "warrens.5.mash.darkest",
+        "warrens.conditional.1.mash.darkest",
+        "warrens.conditional.3.mash.darkest",
+        "warrens.conditional.5.mash.darkest",
+        "warrens.props.darkest"
+      ]
+    },
+    "weald": {
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "fileCount": 9,
+      "files": [
+        "weald.1.mash.darkest",
+        "weald.2.mash.darkest",
+        "weald.3.mash.darkest",
+        "weald.4.mash.darkest",
+        "weald.5.mash.darkest",
+        "weald.conditional.1.mash.darkest",
+        "weald.conditional.3.mash.darkest",
+        "weald.conditional.5.mash.darkest",
+        "weald.props.darkest"
+      ]
+    },
+    "_shared": {
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "fileCount": 6,
+      "files": [
+        "conditional.1.mash.darkest",
+        "conditional.2.mash.darkest",
+        "conditional.3.mash.darkest",
+        "conditional.4.mash.darkest",
+        "conditional.5.mash.darkest",
+        "conditional.6.mash.darkest"
+      ]
+    }
+  },
+  "source": "dungeons/*/"
+}

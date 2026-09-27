@@ -1,0 +1,221 @@
+@@generate_before
+# [mvu_plot]RPG环境系统
+# 策略：constant（常驻）
+# 配套字段：stat_data.环境 / stat_data.时间 / stat_data.学业
+
+<%
+// ===== 读取时间与位置 =====
+var day = Number(getvar('stat_data.时间.天数', {scope:'local', defaults:1})) || 1;
+var hour = Number(getvar('stat_data.时间.小时', {scope:'local', defaults:8})) || 8;
+var weekdayStr = getvar('stat_data.时间.星期', {scope:'local', defaults:'周一'}) || '周一';
+var weekdayMap = {'周一':1, '周二':2, '周三':3, '周四':4, '周五':5, '周六':6, '周日':7};
+var weekday = weekdayMap[weekdayStr] || 1;
+var dateStr = getvar('stat_data.时间.日期', {scope:'local', defaults:'2月13日'}) || '2月13日';
+
+// ===== 当前位置（默认教学楼）=====
+var currentLocation = getvar('stat_data.环境.位置', {scope:'local', defaults:'高三2班教室'}) || '高三2班教室';
+var currentZone = getvar('stat_data.环境.区域', {scope:'local', defaults:'教学楼'}) || '教学楼';
+
+// ===== 天气系统 =====
+var weather = getvar('stat_data.环境.天气', {scope:'local', defaults:'多云'}) || '多云';
+var temperature = parseFloat(getvar('stat_data.环境.温度', {scope:'local', defaults:'12°C'})) || 12;
+var humidity = parseFloat(getvar('stat_data.环境.湿度', {scope:'local', defaults:'65%'})) || 65;
+var season = getvar('stat_data.环境.季节', {scope:'local', defaults:'冬末初春'}) || '冬末初春';
+
+// ===== 校园区域列表 =====
+// 教学楼 / 食堂 / 宿舍区 / 操场 / 图书馆 / 校医室 / 小卖部 / 礼堂 / 实验楼 / 行政楼 / 校门口 / 校园花园
+var zones = [
+  { id:'教学楼', locations:['高三2班教室','其他班级教室','教师办公室','走廊','女卫生间（{{user}}使用最里侧隔间，女生默认回避）','楼梯间'] },
+  { id:'食堂', locations:['一楼大众餐厅','二楼小炒区','教师餐厅'] },
+  { id:'宿舍区', locations:['女生宿舍A栋三楼高三2班4人宿舍（{{user}}与苏晴/秦雨/张雨萱同住，每间宿舍有独立卫生间含淋浴）','女生宿舍A栋三楼隔壁单人间（林婉清独住）','女生宿舍A栋三楼走廊（{{user}}可进入）','女生宿舍A栋二楼/四楼（{{user}}禁入）','女生宿舍B栋','女生宿舍C栋','宿舍管理处','公共洗衣房','A栋三楼公共女澡堂（{{user}}分时段使用）'] },
+  { id:'操场', locations:['田径场','篮球场','排球场','器械区','看台'] },
+  { id:'图书馆', locations:['阅览室','自习区','书库','借阅台'] },
+  { id:'校医室', locations:['诊疗室','输液室','药品柜','沈雨桐办公室','附属女卫生间（{{user}}可使用）'] },
+  { id:'小卖部', locations:['收银区','货架','冷柜'] },
+  { id:'礼堂', locations:['舞台','观众席','后台','道具室'] },
+  { id:'实验楼', locations:['物理实验室','化学实验室','生物实验室','准备室'] },
+  { id:'行政楼', locations:['校长室','教务处','学生处','广播室','一楼教工女厕所（{{user}}可使用）'] },
+  { id:'校门口', locations:['门卫室','接送区','告示栏'] },
+  { id:'校园花园', locations:['紫藤长廊','假山小池','林荫小道','秘密角落'] }
+];
+
+// ===== 活动倒计时系统 =====
+// 距高考/月考/周考/社团活动/校园活动
+var examCountdown = Number(getvar('stat_data.学业.考试倒计时', {scope:'local', defaults:103})) || 103;
+var monthExamCountdown = (30 - (day % 30));
+if (monthExamCountdown === 30) monthExamCountdown = 0;
+var weekExamCountdown = (3 - (weekday % 7) + 7) % 7;
+
+var activities = [
+  { id:'gaokao', name:'高考', countdown: examCountdown, importance:'终极', desc:'第103天，决定结局走向' },
+  { id:'monthly_exam', name:'月考', countdown: monthExamCountdown, importance:'高', desc:'每月最后3天，影响学业成绩' },
+  { id:'weekly_exam', name:'周考', countdown: weekExamCountdown, importance:'中', desc:'每周三上午，影响学业小幅波动' },
+  { id:'pe_class', name:'体育课', countdown: (5 - weekday + 7) % 7, importance:'低', desc:'每周五下午，锻炼经验+5' },
+  { id:'assembly', name:'升旗仪式', countdown: (8 - weekday) % 7, importance:'低', desc:'每周一早晨，全员集合' },
+  { id:'club_activity', name:'社团活动', countdown: (5 - weekday + 7) % 7, importance:'低', desc:'每周五傍晚，可选参加' }
+];
+
+// ===== 新闻系统 =====
+// 校园八卦 / 公告 / 社会新闻
+// stat_data.环境.新闻 是 record<string, EnvNewsSchema>，key 为新闻编号
+// 需要转为数组才能 sort/forEach（不用 Object.values 以兼容旧 JS 引擎）
+var newsRecord = getvar('stat_data.环境.新闻', {scope:'local', defaults:{
+  news001: { 编号:'news001', 标题:'开学典礼通知', 头条:'公告', 热度:30, 重要性:100, 内容:'高三下学期开学典礼通知', 摘要:'教务处发布', 来源:'教务处', 时间:'第1天', 位置:'教学楼', 状态:'进行中' },
+  news002: { 编号:'news002', 标题:'转学生来了', 头条:'八卦', 热度:80, 重要性:95, 内容:'听说高三2班转来一个男生', 摘要:'匿名传闻', 来源:'匿名', 时间:'第1天', 位置:'教学楼', 状态:'进行中' },
+  news003: { 编号:'news003', 标题:'高考护航', 头条:'社会', 热度:20, 重要性:100, 内容:'本市启动高考护航行动', 摘要:'市电视台报道', 来源:'市电视台', 时间:'第1天', 位置:'全市', 状态:'进行中' }
+}}) || {};
+var newsList = [];
+if (newsRecord && typeof newsRecord === 'object') {
+  for (var _nk in newsRecord) {
+    if (Object.prototype.hasOwnProperty.call(newsRecord, _nk)) {
+      newsList.push(newsRecord[_nk]);
+    }
+  }
+}
+
+// ===== 时段判定（与时间轴系统对齐）=====
+var timeSlot;
+if (hour >= 5 && hour < 7) timeSlot = '早晨';
+else if (hour >= 7 && hour < 8) timeSlot = '晨读';
+else if (hour >= 8 && hour < 12) timeSlot = '上午';
+else if (hour >= 12 && hour < 14) timeSlot = '中午';
+else if (hour >= 14 && hour < 17) timeSlot = '下午';
+else if (hour >= 17 && hour < 19) timeSlot = '傍晚';
+else if (hour >= 19 && hour < 22) timeSlot = '晚自习';
+else if (hour >= 22 || hour < 2) timeSlot = '夜里';
+else timeSlot = '半夜';
+
+// ===== 天气时段修正 =====
+// 2月开学，温度5-15℃，湿度50-80%
+// 多云/晴/阴/小雨/中雨/大雨/雪/雾
+var weatherEffects = {
+  '晴': { mood:'+5', energy:'+2', suspicion_perception:'+0' },
+  '多云': { mood:'+0', energy:'+0', suspicion_perception:'+0' },
+  '阴': { mood:'-3', energy:'-2', suspicion_perception:'+1' },
+  '小雨': { mood:'-5', energy:'-3', suspicion_perception:'+2', restrict:'户外活动受限' },
+  '中雨': { mood:'-8', energy:'-5', suspicion_perception:'+3', restrict:'户外活动禁止' },
+  '大雨': { mood:'-10', energy:'-8', suspicion_perception:'+5', restrict:'户外活动禁止，能见度低' },
+  '雪': { mood:'+2', energy:'-5', suspicion_perception:'+2', restrict:'路面结冰' },
+  '雾': { mood:'-3', energy:'-2', suspicion_perception:'+5', restrict:'能见度极低，雷达范围-30%' }
+};
+
+var curWeatherEffect = weatherEffects[weather] || weatherEffects['多云'];
+%>
+
+<environment_system>
+【RPG环境系统 - AI内部参考，严禁外露元数据】
+
+---
+■ 当前环境状态
+---
+日期：第 <%= day %> 天（<%= dateStr %>，星期<%= ['一','二','三','四','五','六','日'][weekday-1] %>）
+时段：<%= timeSlot %>（hour=<%= hour %>）
+当前位置：<%= currentLocation %>（区域：<%= currentZone %>）
+季节：<%= season %>
+天气：<%= weather %> | 温度：<%= temperature %>℃ | 湿度：<%= humidity %>%
+
+天气效果：
+- 心情修正：<%= curWeatherEffect.mood %>
+- 精力修正：<%= curWeatherEffect.energy %>
+- 感知修正：<%= curWeatherEffect.suspicion_perception %>
+<% if (curWeatherEffect.restrict) { %>- 活动限制：<%= curWeatherEffect.restrict %><% } %>
+
+---
+■ 校园区域与位置
+---
+<% zones.forEach(function(z) { %>
+【<%= z.id %>】<%= z.locations.join('、') %>
+<% }); %>
+
+位置切换规则：
+- 相邻区域移动：1时段（如教学楼→食堂，需消耗1时段）
+- 同区域内移动：不消耗时段（如高三2班教室→走廊→卫生间）
+- 跨校区移动：禁止（封闭管理）
+- 时段限制位置：
+  · 宿舍：仅夜里(22:00后)和早晨(05:00-07:00)可进入
+  · 教学楼：晨读-晚自习(07:00-22:00)可进入
+  · 食堂：早晨/中午/傍晚三餐时段可进
+  · 校医室：上午-傍晚(08:00-19:00)可进，需沈雨桐在场才能买药
+  · 图书馆：中午/傍晚/晚自习可进
+  · 操场：早晨/下午/傍晚可进
+- {{user}}位置移动由变量 AI 自动 patch：
+  - stat_data.环境.位置 = 新位置
+  - stat_data.环境.区域 = 新区域
+
+---
+■ 活动倒计时系统
+---
+<% activities.forEach(function(a) { %>
+- <%= a.name %>：倒计时 <%= a.countdown %> 天 | 重要性：<%= a.importance %> | <%= a.desc %>
+<% }); %>
+
+活动推进规则：
+- 每跨日（day+1）所有倒计时-1
+- 倒计时归零当日触发对应活动
+- 周考/月考触发后自动重置下一周期倒计时
+- 活动触发由变量 AI 自动同步：
+  - stat_data.环境.活动.<activity_id>.countdown = 新值
+  - stat_data.环境.活动.<activity_id>.last_triggered_day = day
+
+---
+■ 新闻系统
+---
+当前新闻列表（按热度排序）：
+<% newsList.sort(function(a,b){return (b.热度||0) - (a.热度||0);}).slice(0,5).forEach(function(n) { %>
+- [<%= n.头条 || '未知' %>] <%= n.内容 || '' %>（热度:<%= n.热度 || 0 %> 重要性:<%= n.重要性 || 0 %>% 来源:<%= n.来源 || '未知' %> <%= n.时间 || '' %>）
+<% }); %>
+
+新闻类型与机制：
+- 公告（credibility=100%）：教务处/校长室/广播站发布的官方通知
+- 八卦（credibility=30-70%）：学生间传播的传言，热度衰减慢但可信度低
+- 社会（credibility=80-100%）：电视台/报纸/网络新闻，与校园间接相关
+- 紧急（credibility=90%+）：突发事件通知，热度峰值高、衰减极快
+
+新闻生成规则：
+- 每天最多生成1-2条新新闻
+- 八卦热度初始值50-80，每天-10
+- 公告热度初始值30-50，每天-5
+- 紧急新闻热度初始值90+，每天-20
+- 八卦可信度受事件真实性影响：真事件70%+，假事件<40%
+- 玩家行为可能成为新闻源（如被发现异常行为 → 八卦热度暴涨）
+- 重大剧情节点必须生成对应新闻（如考试作弊传闻、女生失踪等）
+
+新闻存储字段：
+- stat_data.环境.新闻 = record<string, EnvNewsSchema>，key 为新闻编号
+- 每条新闻字段：编号/标题/头条/热度/重要性/内容/摘要/来源/时间/位置/状态
+- 编号 news001 起递增，稳定不重用
+- 已生成新闻保留 7 天后自动清理
+
+---
+■ 环境状态更新铁律
+---
+1. 每轮必须更新环境状态（除非本轮未发生时段变化/移动/天气变化）：
+   - 时段变化 → 更新 timeSlot 描述、调整活动可用性
+   - 位置移动 → 更新 location/zone，并触发新位置的雷达扫描
+   - 跨日 → 重新生成天气、调整温度湿度、所有活动倒计时-1
+2. 天气系统跨日更新规则：
+   - 季节基准温度：2-3月 5-15℃ / 4-5月 15-25℃ / 6月 25-32℃
+   - 天气随机切换概率：晴20% / 多云30% / 阴20% / 雨20% / 雾雪10%
+   - 连续3天同天气后必切换
+   - 雨天持续不超过2天，雪天持续不超过3天
+3. 每轮环境状态变化由变量 AI 自动同步：
+   - stat_data.环境.天气 = 新天气
+   - stat_data.环境.温度 = 新温度
+   - stat_data.环境.湿度 = 新湿度
+   - stat_data.环境.位置 = 新位置（如移动）
+   - stat_data.环境.区域 = 新区域（如移动）
+4. 严禁正文出现"环境系统""天气效果""雷达范围-30%"等元术语
+5. 天气对叙事的转化：
+   - 阴雨天 {{user}} 心情低落、精力恢复变慢、女性使用频率可能微升（独自室内时间增多）
+   - 雾天 {{user}} 感知异常度上升（"今早起床雾气很重，走廊里什么都看不清"）
+   - 晴天 {{user}} 心情转好、户外活动增多、女性户外活动也增多
+6. 新闻与剧情联动：
+   - 重大事件发生次日生成对应新闻（如某女学生请假多日 → 八卦）
+   - 新闻可作为线索触发 {{user}} 调查动机
+   - 假新闻（credibility<40）可能误导 {{user}} 判断
+7. 活动倒计时归零当日 AI 必须在叙事中体现：
+   - 周考日：上午时段固定描述考试场景
+   - 月考日：连续3天考试场景
+   - 升旗日：周一早晨固定描述
+   - 体育课日：周五下午固定描述
+</environment_system>

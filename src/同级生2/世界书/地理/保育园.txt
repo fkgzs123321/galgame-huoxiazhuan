@@ -1,0 +1,138 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 保育园 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionNursery = {
+  region_name: '保育园',
+  scenes: [
+    '保育园门口',
+    '游乐场',
+    '绘本角'
+  ],
+  time_slot_access: {
+    '早':   { accessible: false, note: '未到保育时间' },
+    '上午': { accessible: true,  note: '保育时间（09:00-12:00）' },
+    '下午': { accessible: true,  note: '保育时间（13:00-17:00）' },
+    '晚':   { accessible: false, note: '保育园已关闭' },
+    '深夜': { accessible: false, note: '保育园已关闭，禁止进入' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["保育园"]（1件）：儿童玩具套装',
+  special_events: [
+    { day: 8,  slot: '下午', event_id: 'day08下午_保育园志愿服务', note: '与水野友美共同志愿服务，青馥期推进' },
+    { day: 13, slot: '上午', event_id: 'day13上午_偶遇美沙带妹妹', note: '偶遇田中美沙带妹妹，重逢期推进' }
+  ],
+  description: '八十八町保育园，水野友美和田中美沙常出入地点。仅上午/下午保育时间开放，晚/深夜关闭。水野友美（8）在此志愿服务，是青馥期推进关键场景；田中美沙（10）带妹妹来园，是重逢期推进场景。商店仅售儿童玩具套装（安田爱美偏好礼物，需熟悉以上阶段）。',
+  location_details: {
+    '保育园门口': {
+      aliases: ['保育园门口','正门','保育园入口'],
+      description: '保育园正门入口，接送儿童必经，偶遇场景高发地',
+      ambient_sounds: '儿童笑声/家长寒暄/门铃声',
+      default_activities: ['接送','偶遇','等待','打招呼'],
+      time_slot_descriptions: { '早':'未开园','上午':'送园高峰','下午':'接园高峰','晚':'已闭园','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'湿滑','雪':'寒冷','暴风雪':'闭园' },
+      heroines_likely: [8, 10],
+      bad_end_risk: 'low',
+      events_triggered: ['day13上午_偶遇美沙带妹妹']
+    },
+    '游乐场': {
+      aliases: ['游乐场','游戏场','庭院游乐场'],
+      description: '保育园游乐场，滑梯/秋千/沙坑，儿童活动核心，志愿服务主要场所',
+      ambient_sounds: '儿童笑声/滑梯声/秋千声',
+      default_activities: ['陪儿童玩','志愿服务','与友美/美沙交流','看护'],
+      time_slot_descriptions: { '早':'未开园','上午':'户外活动','下午':'户外活动','晚':'已闭园','深夜':'禁止' },
+      weather_modifiers: { '晴':'户外高峰','雨':'室内','雪':'玩雪','暴风雪':'闭园' },
+      heroines_likely: [8, 10],
+      bad_end_risk: 'low',
+      events_triggered: ['day08下午_保育园志愿服务'],
+      flags_set: ['volunteer_count']
+    },
+    '绘本角': {
+      aliases: ['绘本角','读书角','图书角'],
+      description: '保育园绘本角，儿童读物丰富，水野友美志愿服务核心场景',
+      ambient_sounds: '翻书声/儿童提问声/朗读声',
+      default_activities: ['读绘本','志愿服务','与友美交流','陪儿童看书'],
+      time_slot_descriptions: { '早':'未开园','上午':'读书时间','下午':'读书时间','晚':'已闭园','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光书页','雨':'室内','雪':'温暖','暴风雪':'闭园' },
+      heroines_likely: [8],
+      bad_end_risk: 'low',
+      events_triggered: ['day08下午_保育园志愿服务'],
+      flags_set: ['tomumi_volunteer_count']
+    },
+    '休息室': {
+      aliases: ['休息室','保育室','职员休息室'],
+      description: '保育园职工休息室，可与友美/美沙独处休息，偶发私密对话',
+      ambient_sounds: '空调嗡鸣/低声交谈/饮水机声',
+      default_activities: ['休息','与友美/美沙独处','聊天','喝水'],
+      time_slot_descriptions: { '早':'未开园','上午':'休息时段','下午':'休息时段','晚':'已闭园','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [8, 10],
+      bad_end_risk: 'low',
+      flags_set: ['nursery_rest_count']
+    },
+    '后院': {
+      aliases: ['后院','保育园后院',' backyard'],
+      description: '保育园后院，隐蔽空间，可触发特殊秘密事件，偶有独处',
+      ambient_sounds: '风声/远处儿童声/树叶沙沙',
+      default_activities: ['独处','触发秘密事件','秘密对话'],
+      time_slot_descriptions: { '早':'未开园','上午':'空旷','下午':'偶有人','晚':'已闭园','深夜':'禁止' },
+      weather_modifiers: { '晴':'明亮','雨':'湿滑','雪':'银白','暴风雪':'禁入' },
+      heroines_likely: [8],
+      bad_end_risk: 'medium',
+      hidden_location: true,
+      unlock_condition: '友美关系青馥期以上或特定flag触发',
+      flags_set: ['nursery_backyard_count'],
+      events_triggered: ['保育园后院特殊事件'],
+      time_lock: '独处需关系阶段达标'
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 5 个地点） */
+const _currentLocationDetail = _regionNursery.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出 ─── */%>
+[区域：保育园。八十八町保育园，仅上午/下午保育时间开放，晚/深夜关闭。水野友美（8）在此志愿服务，是青馥期推进关键场景；田中美沙（10）带妹妹来园，是重逢期推进场景。儿童玩具套装为安田爱美偏好礼物（需熟悉以上阶段，否则触发反感）。当前时段下可遭遇 NPC 已锁定，禁止引入未列出的女角。]
+
+<%= JSON.stringify({
+  region: _regionNursery.region_name,
+  scenes: _regionNursery.scenes,
+  time_slot_access: _regionNursery.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["保育园"]',
+  shop_items_count: 1,
+  special_events: _regionNursery.special_events,
+  description: _regionNursery.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

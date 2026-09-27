@@ -1,0 +1,391 @@
+import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js'
+
+/* ============================================================
+ * KK园区 MVU 变量管理脚本
+ * 功能：MVU变量读写、LCG确定性骰子、状态栏刷新、事件监听
+ * 环境：SillyTavern TavernHelper
+ * 说明：不使用SPV数据库(chatSheets)，仅MVU单源
+ * ============================================================ */
+
+/* ========= TavernHelper 扩展上下文 ========= */
+var extensionCtx = null;
+try {
+  if (typeof tavernHelper !== 'undefined' && tavernHelper && tavernHelper.extensionCtx) {
+    extensionCtx = tavernHelper.extensionCtx;
+  }
+} catch (e) {}
+
+/* ========= 工具函数 ========= */
+function hasMeaningfulStatData(stat) {
+  return stat && typeof stat === 'object' && !Array.isArray(stat) && Object.keys(stat).length > 0;
+}
+
+function pickStatData(source) {
+  if (!source || typeof source !== 'object') return null;
+  var stat = source.stat_data;
+  return hasMeaningfulStatData(stat) ? stat : null;
+}
+
+function cloneObj(obj) {
+  if (!obj || typeof obj !== 'object') return {};
+  try { return JSON.parse(JSON.stringify(obj)); } catch (e) { return {}; }
+}
+
+/* ========= DEFAULT_STAT 兜底常量（与 initvar.yaml 一致） ========= */
+var DEFAULT_STAT = {
+  "身份系统": {
+    "当前身份": "",
+    "身份阶段": "",
+    "剧情进度": 1,
+    "结局分支": ""
+  },
+  "通用": {
+    "时间": { "天数": 1, "时段": "清晨" },
+    "体力": 80,
+    "精神": 80,
+    "饥饿": 30,
+    "脱水": 20,
+    "疲劳": 20,
+    "金钱": 0,
+    "当前位置": "KK园区大门",
+    "持有物品": [],
+    "LCG种子": 0
+  },
+  "RPG": {
+    "力量": 5, "敏捷": 5, "体质": 5, "智力": 5, "感知": 5, "魅力": 5,
+    "未分配点数": 30,
+    "诈骗术": 0, "格斗术": 0, "潜行术": 0, "社交术": 0, "技术术": 0,
+    "求生术": 0, "伪装术": 0, "情报收集": 0, "逃脱术": 0, "交际手腕": 0,
+    "暗网操作": 0, "拷问抗性": 0,
+    "成长": {
+      "力量使用计数": 0, "敏捷使用计数": 0, "体质使用计数": 0,
+      "智力使用计数": 0, "感知使用计数": 0, "魅力使用计数": 0,
+      "技能使用计数": {}
+    }
+  },
+  "user": {
+    "容貌值": 50, "性别稀缺度": 100, "被觊觎度": 0, "生育价值": 0
+  },
+  "身份": {
+    "受害者": {
+      "伪装度": 0, "逃跑准备": 0, "情报网": 0, "信任值": 0,
+      "伤势": 0, "恐惧值": 0, "希望值": 80, "被迫度": 0,
+      "权力接触": false, "外部援助": false, "警方线索": 0
+    },
+    "管理者": {
+      "业绩": 0, "上级信任": 30, "下属忠诚": 20, "良心值": 70,
+      "法律风险": 0, "手上血债": 0
+    },
+    "打手": {
+      "忠诚度": 70, "暴力倾向": 30, "良心觉醒": 0, "手上血债": 0
+    },
+    "老板": {
+      "权力": 50, "财富": 100000, "警方压力": 10, "内部分裂": 20, "手上血债": 0
+    }
+  },
+  "暗网": {
+    "拍卖状态": "未上架", "拍卖价格": 0, "直播次数": 0,
+    "暗网知名度": 0, "买家关注": []
+  },
+  "女性专属": {
+    "处境值": 0, "羞辱值": 0, "身体自主权": 100
+  },
+  "人际": {
+    "NPC关系": {}, "当前在场角色": [], "互动计数": {}
+  },
+  "角色库": {
+    "已生成列表": [], "当前交互角色": "", "角色生成计数器": 0
+  },
+  "道德": { "善恶值": 0 },
+  "派系": {
+    "园区董事会": 0, "管理层": 0, "打手团": 0, "受害者群": 0, "暗网网络": 0
+  },
+  "任务": {
+    "当前主线任务": "", "已接取支线": [], "已完成任务": []
+  },
+  "情报库": {
+    "已获取情报": [], "待验证情报": []
+  },
+  "成就": {
+    "已达成": [], "生存天数": 0, "结识NPC数": 0, "救助人数": 0
+  },
+  "同伙": {
+    "已招募": [], "待招募候选": []
+  },
+  "证据": {
+    "已收集": [], "已传递": 0
+  }
+};
+
+/* ========= deepMergeStat 递归合并函数 ========= */
+/* 将 source 深合并到 target，返回新对象（不修改原对象） */
+function deepMergeStat(target, source) {
+  if (!source || typeof source !== 'object') return target;
+  var out = cloneObj(target);
+  for (var k in source) {
+    if (!Object.prototype.hasOwnProperty.call(source, k)) continue;
+    var sv = source[k];
+    var dv = out[k];
+    if (sv && typeof sv === 'object' && !Array.isArray(sv) &&
+        dv && typeof dv === 'object' && !Array.isArray(dv)) {
+      out[k] = deepMergeStat(dv, sv);
+    } else {
+      out[k] = sv;
+    }
+  }
+  return out;
+}
+
+/* ========= readStatData 读取 MVU 变量 ========= */
+/* 优先级：MVU API → getVariables → embedded(首楼兜底) → DEFAULT_STAT */
+/* opt: { message_id } 可选，默认读取最新楼层 */
+function readStatData(opt) {
+  var options = opt || {};
+  var messageId = options.message_id;
+  var query = { type: 'message' };
+  if (messageId !== undefined && messageId !== null) {
+    query.message_id = messageId;
+  } else {
+    query.message_id = 'latest';
+  }
+
+  /* 1. 尝试 MVU API */
+  try {
+    if (typeof Mvu !== 'undefined' && Mvu && typeof Mvu.getMvuData === 'function') {
+      var mvuData = Mvu.getMvuData(query);
+      var stat = pickStatData(mvuData);
+      if (stat) return deepMergeStat(DEFAULT_STAT, stat);
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] MVU API 读取失败:', e);
+  }
+
+  /* 2. 尝试 getVariables */
+  try {
+    if (typeof getVariables === 'function') {
+      var vars = getVariables(query);
+      var stat2 = pickStatData(vars);
+      if (stat2) return deepMergeStat(DEFAULT_STAT, stat2);
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] getVariables 读取失败:', e);
+  }
+
+  /* 3. 尝试首楼兜底（embedded：读取第 0 楼的 MVU 变量） */
+  try {
+    if (typeof Mvu !== 'undefined' && Mvu && typeof Mvu.getMvuData === 'function') {
+      var embedded = Mvu.getMvuData({ type: 'message', message_id: 0 });
+      var stat3 = pickStatData(embedded);
+      if (stat3) return deepMergeStat(DEFAULT_STAT, stat3);
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] 首楼兜底读取失败:', e);
+  }
+
+  /* 4. 返回 DEFAULT_STAT 兜底 */
+  return cloneObj(DEFAULT_STAT);
+}
+
+/* ========= writeStatData 写入 MVU 变量 ========= */
+/* 通过 setVariables / insertOrAssignVariables 写入 */
+/* opt: { type, message_id } 可选，默认写入最新楼层 */
+function writeStatData(data, opt) {
+  var options = opt || {};
+  var type = options.type || 'message';
+  if (!data || typeof data !== 'object') {
+    return Promise.resolve(false);
+  }
+
+  /* 优先使用 Mvu.replaceMvuData */
+  try {
+    if (typeof Mvu !== 'undefined' && Mvu && typeof Mvu.replaceMvuData === 'function') {
+      var query = { type: type };
+      if (options.message_id !== undefined && options.message_id !== null) {
+        query.message_id = options.message_id;
+      } else {
+        query.message_id = 'latest';
+      }
+      return Mvu.replaceMvuData({ stat_data: data }, query).then(function () {
+        return true;
+      }).catch(function (e) {
+        console.warn('[KK园区 MVU] Mvu.replaceMvuData 写入失败:', e);
+        return writeViaSetVariables(data, type);
+      });
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] Mvu API 写入异常:', e);
+  }
+
+  /* 回退到 setVariables / insertOrAssignVariables */
+  return writeViaSetVariables(data, type);
+}
+
+/* 通过 setVariables 或 insertOrAssignVariables 写入变量 */
+function writeViaSetVariables(data, type) {
+  try {
+    if (typeof setVariables === 'function') {
+      var result = setVariables({ stat_data: data }, { type: type });
+      if (result && typeof result.then === 'function') {
+        return result.then(function () { return true; }).catch(function (e) {
+          console.warn('[KK园区 MVU] setVariables 写入失败:', e);
+          return false;
+        });
+      }
+      return Promise.resolve(true);
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] setVariables 写入异常:', e);
+  }
+
+  try {
+    if (typeof insertOrAssignVariables === 'function') {
+      return insertOrAssignVariables({ stat_data: data }, { type: type }).then(function () {
+        return true;
+      }).catch(function (e) {
+        console.warn('[KK园区 MVU] insertOrAssignVariables 写入失败:', e);
+        return false;
+      });
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] insertOrAssignVariables 写入异常:', e);
+  }
+
+  console.warn('[KK园区 MVU] 无可用变量写入接口');
+  return Promise.resolve(false);
+}
+
+/* ========= lcgRoll LCG 确定性骰子 ========= */
+/* 基于种子和 message_id 生成确定性随机数，返回 1~100 的整数 */
+/* seed: LCG种子值（来自 MVU 变量 stat_data.通用.LCG种子） */
+/* mod:  消息楼层 ID 或其他修饰因子（确保不同楼层结果不同） */
+function lcgRoll(seed, mod) {
+  var s = ((Number(seed) || 0) * 4 + (Number(mod) || 0) + 7919) | 0;
+  s = (s * 1664525 + 1013904223) | 0;
+  var r = (s >>> 0) / 4294967296;
+  return Math.floor(r * 100) + 1;
+}
+
+/* ========= refreshStatusBar 状态栏刷新 ========= */
+/* 尝试多种方式触发状态栏刷新 */
+function refreshStatusBar() {
+  try {
+    /* 尝试调用全局 refresh 函数（状态栏 HTML 中定义） */
+    if (typeof window.refresh === 'function') {
+      window.refresh();
+      return;
+    }
+    /* 尝试通过 postMessage 通知 iframe 状态栏 */
+    var iframes = document.querySelectorAll('iframe');
+    for (var i = 0; i < iframes.length; i++) {
+      try {
+        iframes[i].contentWindow.postMessage({ type: 'kk_statusbar_refresh' }, '*');
+      } catch (e) {}
+    }
+    /* 也尝试通知父窗口（脚本可能运行在 iframe 内） */
+    if (window.parent && window.parent !== window) {
+      try {
+        window.parent.postMessage({ type: 'kk_statusbar_refresh' }, '*');
+      } catch (e) {}
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] 刷新状态栏失败:', e);
+  }
+}
+
+/* ========= autoRefresh 延迟刷新封装 ========= */
+/* 800ms 延迟后调用 refreshStatusBar，给 MVU 扩展时间完成数据持久化 */
+function autoRefresh() {
+  setTimeout(refreshStatusBar, 800);
+}
+
+/* ========= 事件监听 ========= */
+function setupEventListeners() {
+  /* 酒馆助手事件监听 */
+  try {
+    if (typeof eventOn === 'function') {
+      /* 生成结束事件：AI 回复生成完毕 */
+      eventOn('GENERATION_ENDED', autoRefresh);
+      /* 消息编辑事件：用户或 AI 编辑已有消息 */
+      eventOn('MESSAGE_EDITED', autoRefresh);
+      /* MVU 变量更新结束事件：MagVarUpdate 完成变量解析 */
+      eventOn('mag_variable_update_ended', autoRefresh);
+    }
+  } catch (e) {
+    console.warn('[KK园区 MVU] 事件监听注册失败:', e);
+  }
+
+  /* MVU VARIABLE_UPDATE_ENDED 事件（如果 MVU 已初始化） */
+  try {
+    if (typeof Mvu !== 'undefined' && Mvu && Mvu.events &&
+        Mvu.events.VARIABLE_UPDATE_ENDED && typeof eventOn === 'function') {
+      eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, autoRefresh);
+    }
+  } catch (e) {}
+
+  /* iframe postMessage 兜底（用于嵌入状态栏场景） */
+  try {
+    window.addEventListener('message', function (e) {
+      try {
+        var data = e.data;
+        var t = (data && data.type) || (typeof data === 'string' ? data : '') || '';
+        if (typeof t === 'string' &&
+            (t.indexOf('generation_ended') >= 0 ||
+             t.indexOf('message_edit') >= 0 ||
+             t.indexOf('mag_variable_update') >= 0 ||
+             t.indexOf('kk_statusbar_refresh') >= 0)) {
+          autoRefresh();
+        }
+      } catch (x) {}
+    });
+  } catch (e) {}
+}
+
+/* ========= 等待 MVU 初始化 ========= */
+function waitForMvuInit(callback) {
+  /* 优先使用 waitGlobalInitialized */
+  if (typeof waitGlobalInitialized === 'function') {
+    waitGlobalInitialized('Mvu').then(function () {
+      callback(true);
+    }).catch(function () {
+      callback(false);
+    });
+    return;
+  }
+  /* 回退轮询等待 */
+  var count = 0;
+  var maxRetry = 50;
+  function check() {
+    if (typeof Mvu !== 'undefined' && Mvu) {
+      callback(true);
+    } else if (count < maxRetry) {
+      count++;
+      setTimeout(check, 200);
+    } else {
+      console.warn('[KK园区 MVU] MVU 初始化等待超时');
+      callback(false);
+    }
+  }
+  check();
+}
+
+/* ========= 初始化 ========= */
+function init() {
+  setupEventListeners();
+  console.log('[KK园区 MVU] 脚本已加载');
+}
+
+/* 执行初始化（事件监听立即注册，不阻塞 MVU 初始化） */
+init();
+
+/* 后台等待 MVU 初始化完成后补充注册 VARIABLE_UPDATE_ENDED 事件 */
+waitForMvuInit(function (ok) {
+  if (ok) {
+    try {
+      if (typeof Mvu !== 'undefined' && Mvu && Mvu.events &&
+          Mvu.events.VARIABLE_UPDATE_ENDED && typeof eventOn === 'function') {
+        eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, autoRefresh);
+      }
+    } catch (e) {}
+    console.log('[KK园区 MVU] MVU 框架已就绪');
+  }
+});

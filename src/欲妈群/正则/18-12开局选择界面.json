@@ -1,0 +1,17 @@
+{
+  "id": "yumq-regex-100-opening-select",
+  "scriptName": "12开局选择界面",
+  "findRegex": "<OpeningSelectUI\\s*/>",
+  "trimStrings": [],
+  "placement": [
+    2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null,
+  "replace_file": "正则/开局选择界面.html"
+}

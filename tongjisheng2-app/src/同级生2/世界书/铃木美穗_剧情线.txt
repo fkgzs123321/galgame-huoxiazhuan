@@ -1,0 +1,205 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 铃木美穗 · 剧情线
+   ════════════════════════════════════════════════════════════
+   heroine_id=17 / 跨界客串自《同级生1 Remake》(2022) · 转校生
+   ⚠️ 来源澄清：原为《同级生1》(1992) 原作女角，本次项目作为「跨界客串」福利配置
+   核心弧线：商业区偶遇—日常交往—前作背景—好感推进—恋人成立（五阶段）
+   互斥关系：田中铃木（与田中美沙 row_id=10 互斥，原作女主 vs 重制版新女主）
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+const 铃木美穗_STORYLINE = {
+  heroine_id: 17,
+  name: '铃木美穗',
+  core_position: {
+    role: '跨界客串女角 — 初代《同级生》女主于同级生2 寒假时间线的福利登场',
+    archetype: '都市派转校生的异乡孤独弧线 — 看似开放实则戒备的"懂她"型攻略',
+    function: '通过"商业区偶遇→前作背景揭示→逃离东京共鸣→好感推进"四段式弧线，提供一条区别于本作女主群的都市成熟系恋爱支线；同时触发田中铃木互斥，对田中美沙线产生阻断效应',
+    plot_weight: 'medium — 客串福利线，独立闭环但与田中美沙线形成互斥'
+  },
+
+  key_plot_nodes: [
+    {
+      date: '12-22',
+      time_slot: '全天',
+      location: '—（未登场）',
+      event: '寒假第一天锁定',
+      description: '12/22 寒假首日铃木美穗未登场（人物出现总表 DATE_OVERRIDES[1].locked 含 id=17）；玩家无法在本日相遇',
+      triggers_route: '无 — 角色未登场',
+      is_reversible: true,
+      flags: [],
+      note: '★ 锁定状态 — 本日不可遇'
+    },
+    {
+      date: '12-23',
+      time_slot: '上午/下午/晚',
+      location: '八十八町商业区',
+      event: '首次相遇 · 商业区偶遇',
+      description: '12/23 起铃木美穗在八十八町商业区全时段可遇（人物出现总表 DEFAULT_SCHEDULE 上午/下午/晚 均含 id=17）；玩家可在咖啡店、电影院、商业街多处触发首次偶遇；她以都市派转校生姿态登场，言谈自信但略带疏离',
+      triggers_route: '美穗线 — 开启"初识"前置剧情；affection 从 0 起计',
+      is_reversible: true,
+      flags: ['flag_miho_first_meeting']
+    },
+    {
+      date: '12-23~12-27',
+      time_slot: '上午/下午/晚',
+      location: '八十八町商业区（咖啡店/电影院/商业街）',
+      event: '日常交往期 · 多次偶遇深化',
+      description: '12/23~12/27 期间玩家可在商业区多次与美穗偶遇；以独立电影、时尚趋势、咖啡品鉴、胶片摄影为话题切入可显著提升好感；她看似开放实则戒备，强行亲密会触发"东京男人都这样"反射；需要先建立"懂她"而非"追她"的关系；affection 推进至约 20~25 区间',
+      triggers_route: '美穗线 — 进入"熟悉"推进期',
+      is_reversible: true,
+      flags: ['flag_miho_daily_contact']
+    },
+    {
+      date: '12-24~12-25',
+      time_slot: 'PM/夜',
+      location: '八十八町商业区（平安夜/圣诞夜场景）',
+      event: '平安夜/圣诞夜商业区相遇',
+      description: '12/24 平安夜与 12/25 圣诞夜美穗仍在商业区出现（DATE_OVERRIDES 未锁定 id=17）；若玩家选择在商业区度过节日，可触发美穗独自度节的孤独场景；这是推进好感的窗口期，但美穗对"节日浪漫"表现出都市派的疏离姿态，需要以陪伴而非表白切入',
+      triggers_route: '美穗线 — 节日陪伴支线',
+      is_reversible: true,
+      flags: ['flag_miho_holiday_together']
+    },
+    {
+      date: '12-28~12-31',
+      time_slot: 'PM/夜',
+      location: '八十八町商业区（咖啡店深夜/爵士酒吧）',
+      event: '前作背景揭露 · 逃离东京的秘密',
+      description: '好感达 30 以上后，美穗会在深夜商业区咖啡店或爵士酒吧向主角吐露逃离东京的真实原因：父亲公司调职失败后父母分居，她独自搬到八十八町；这是美穗线关键转折，标志着她从"都市派戒备"转向"被理解即融化"；同时若 affection ≥ 30 将触发田中铃木互斥（详见 triggered_routes）',
+      triggers_route: '美穗线 — 进入"信任"深化期；田中铃木互斥触发节点',
+      is_reversible: false,
+      flags: ['flag_miho_tokyo_secret', 'flag_tanaka_suzuki_mutex'],
+      note: '★ 不可逆 flag — 一旦触发，田中美沙线锁定失恋，美穗线进入"信任深化"分支'
+    },
+    {
+      date: '01-01~01-05',
+      time_slot: '全天',
+      location: '八十八町商业区 / 美穗公寓周边',
+      event: '亲密期 · 好感推进至临界',
+      description: '01/01~01/05 期间美穗线进入亲密推进期；玩家可通过胶片相机配件、独立电影 DVD、咖啡器具等偏好礼物加速好感；当 affection ≥ 50 且 trust ≥ 40 时，可受邀至美穗公寓（八十八町商业区附近，独居），触发亲密对话与肢体接触渐进；她"看似开放实则戒备"的反差在此阶段彻底融化',
+      triggers_route: '美穗线 — 进入"恋人前夜"阶段',
+      is_reversible: true,
+      flags: ['flag_miho_intimate']
+    },
+    {
+      date: '01-06',
+      time_slot: 'PM/夜',
+      location: '八十八町商业区（爵士酒吧/海岸）',
+      event: '终章前奏 · 告白前夜',
+      description: '01/06 终章前奏日，美穗线进入告白前夜；若 affection ≥ 55 且未触发互斥锁回退，美穗会主动约主角至爵士酒吧或海岸，流露"不想回东京"的真实心意；玩家的回应决定 01/07 结局判定走向',
+      triggers_route: '美穗线 — 告白前夜分支',
+      is_reversible: true,
+      flags: ['flag_miho_confession_eve']
+    },
+    {
+      date: '01-07',
+      time_slot: 'PM/夜',
+      location: '八十八町商业区 / 美穗公寓',
+      event: '最终判定 · Good End / Normal End / Bad End 分支',
+      description: '01/07 寒假最后一天深夜触发结局判定：美穗 affection ≥ 60 达成 Good End（恋人成立，美穗决定留在八十八町）；affection 50~59 达成 Normal End（暧昧延续，美穗回东京但保持联系）；affection < 50 或互斥触发后回退达成 Bad End（美穗悄然离开八十八町，线断）',
+      triggers_route: '美穗线 — 最终结局判定',
+      is_reversible: false,
+      flags: ['flag_miho_good_end', 'flag_miho_normal_end', 'flag_miho_bad_end'],
+      note: '★ 不可逆 flag — 三选一结局，一旦触发无法回退'
+    }
+  ],
+
+  triggered_routes: {
+    '田中美沙线（heroine_id=10）': {
+      role: 'mutex — 田中铃木互斥阻断',
+      trigger_nodes: ['12-28~12-31 affection ≥ 30 触发互斥'],
+      impact: '与铃木美穗 affection ≥ 30（达熟悉临界）即触发田中铃木互斥；田中美沙锁定失恋（affection -30 / jealousy +20 / route_locked=1）；美沙会以"原本只是来八十八町散心"为由疏远主角，但不会主动敌对，每次见面隐约流露失落',
+      mutex_detail: {
+        group_name: '田中铃木',
+        partner_id: 10,
+        affection_threshold: 30,
+        stage_threshold: '熟悉',
+        flag_auto_set: '田中铃木互斥触发',
+        narrative_hint: '触发后美沙会以"原本只是来八十八町散心"为由疏远主角，但仍保留一线希望；她不会主动敌对，但每次见面都隐约流露失落'
+      }
+    },
+    '美穗线本线（heroine_id=17）': {
+      role: 'self — 主线推进',
+      trigger_nodes: ['12-23 首次相遇', '12-28~12-31 前作背景揭露', '01-01~01-05 亲密期', '01-07 最终判定'],
+      impact: '美穗线为独立闭环客串福利线，不依赖本作其他女角线推进；其核心节点均位于八十八町商业区，与田中美沙线在商业区时段重叠形成互斥触发窗口'
+    }
+  },
+
+  relationship_network: {
+    '相沢诚': {
+      type: 'lover_candidate — 恋人候选',
+      detail: '八十八学园同班同学转校生视角的相遇；初始 affection=0/trust=0/heartbeat=0/jealousy=0；通过商业区偶遇与"懂她"式交往推进'
+    },
+    '田中美沙（heroine_id=10）': {
+      type: 'mutex_target — 互斥对象',
+      detail: '田中铃木互斥对位（原作女主 vs 重制版新女主）；美穗 affection ≥ 30 触发互斥，美沙锁定失恋；两人无直接冲突对话，但剧情机制上无法兼得'
+    },
+    '父母（留在东京）': {
+      type: 'family_distant — 疏远家人',
+      detail: '父亲公司调职失败后父母分居；美穗独自搬到八十八町；父母是其"逃离东京"心结的根源，也是 01-07 结局判定的潜在牵绊'
+    },
+    '商业区咖啡店店员': {
+      type: 'friend — 商业区人脉',
+      detail: '美穗在八十八町的少数朋友之一；是玩家打探美穗行踪与喜好的情报源'
+    },
+    '电影院售票员': {
+      type: 'friend — 商业区人脉',
+      detail: '美穗独立电影爱好的同好；可通过电影院偶遇推进美穗线'
+    },
+    '舞岛可怜（heroine_id=3，间接）': {
+      type: 'none — 无直接关联',
+      detail: '可怜 12-31~1-3 夏威夷出差期间商业区场景缺席，与美穗线无直接交集；但可怜线的商业区时段与美穗线重叠，形成时段竞争'
+    }
+  },
+
+  irreversible_flags: [
+    {
+      flag: 'flag_miho_first_meeting',
+      trigger: '12-23 八十八町商业区首次相遇',
+      effect: '美穗线开启；affection 从 0 起计；商业区后续互动可推进',
+      reversibility: '可逆 — 未推进至 30 前可自然淡化'
+    },
+    {
+      flag: 'flag_tanaka_suzuki_mutex',
+      trigger: '12-28~12-31 美穗 affection ≥ 30',
+      effect: '田中铃木互斥触发；田中美沙 affection -30 / jealousy +20 / route_locked=1；美沙以"散心"为由疏远主角',
+      reversibility: '不可逆 — 一旦触发无法回退，美沙线永久锁定失恋状态'
+    },
+    {
+      flag: 'flag_miho_tokyo_secret',
+      trigger: '12-28~12-31 深夜咖啡店/爵士酒吧前作背景揭露',
+      effect: '美穗线从"都市派戒备"转向"信任深化"；affection 推进速率+50%；开启公寓邀约前置',
+      reversibility: '不可逆 — 一旦吐露心事无法回退至疏离状态'
+    },
+    {
+      flag: 'flag_miho_intimate',
+      trigger: '01-01~01-05 affection ≥ 50 且 trust ≥ 40 受邀至美穗公寓',
+      effect: '美穗线进入"恋人前夜"阶段；"看似开放实则戒备"反差融化；肢体接触渐进解锁',
+      reversibility: '可逆 — 若后续选择伤害美穗（如同时推进其他女角亲密），可回退至"信任"阶段'
+    },
+    {
+      flag: 'flag_miho_good_end',
+      trigger: '01-07 PM/夜 affection ≥ 60',
+      effect: '美穗线 Good End 达成 — 恋人成立，美穗决定留在八十八町',
+      reversibility: '不可逆 — 结局 flag，三选一互斥'
+    },
+    {
+      flag: 'flag_miho_normal_end',
+      trigger: '01-07 PM/夜 affection 50~59',
+      effect: '美穗线 Normal End — 暧昧延续，美穗回东京但保持联系',
+      reversibility: '不可逆 — 结局 flag，三选一互斥'
+    },
+    {
+      flag: 'flag_miho_bad_end',
+      trigger: '01-07 PM/夜 affection < 50 或互斥触发后回退',
+      effect: '美穗线 Bad End — 美穗悄然离开八十八町，线断',
+      reversibility: '不可逆 — 结局 flag，三选一互斥'
+    }
+  ],
+
+  summary: '铃木美穗的剧情线是"商业区偶遇—日常交往—前作背景—好感推进—恋人成立"五阶段弧线，核心功能是提供一条跨界客串福利支线（独立闭环），同时通过 affection ≥ 30 触发田中铃木互斥对田中美沙线产生阻断。核心节点均在八十八町商业区（咖啡店/电影院/爵士酒吧），12-22 锁定不可遇，12-23 起全时段可遇，01-07 最终判定（affection ≥ 60 Good End）。'
+};
+%>
+
+铃木美穗 · 剧情线已加载。核心定位：跨界客串女角（heroine_id=17，初代《同级生》女主于同级生2 寒假时间线福利登场）。核心弧线：商业区偶遇→日常交往→前作背景→好感推进→恋人成立（五阶段）。关键节点：12-22 锁定未登场→12-23 商业区首次相遇→12-28~12-31 前作背景揭露+田中铃木互斥触发节点（affection≥30）→01-01~01-05 亲密期→01-07 最终判定（affection≥60 Good End）。不可逆 flag：flag_tanaka_suzuki_mutex（田中铃木互斥）、flag_miho_tokyo_secret（前作背景吐露）、flag_miho_good_end/normal_end/bad_end（三选一结局）。

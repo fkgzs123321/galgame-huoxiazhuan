@@ -1,0 +1,11 @@
+import{n as e,t}from"./chunk-Dlw1TIMF.js";const n=e=>{let t,n=new Set,r=(e,r)=>{let i=typeof e==`function`?e(t):e;if(!Object.is(i,t)){let e=t;t=r??(typeof i!=`object`||!i)?i:Object.assign({},t,i),n.forEach(n=>n(t,e))}},i=()=>t,a={setState:r,getState:i,getInitialState:()=>o,subscribe:e=>(n.add(e),()=>n.delete(e))},o=t=e(r,i,a);return a},r=(e=>e?n(e):n);
+/**
+* @license React
+* react.production.js
+*
+* Copyright (c) Meta Platforms, Inc. and affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+var i=t((e=>{var t=Symbol.for(`react.forward_ref`),n={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},r=Object.assign,i={};function a(e,t,r){this.props=e,this.context=t,this.refs=i,this.updater=r||n}a.prototype.isReactComponent={},a.prototype.setState=function(e,t){if(typeof e!=`object`&&typeof e!=`function`&&e!=null)throw Error(`takes an object of state variables to update or a function which returns an object of state variables.`);this.updater.enqueueSetState(this,e,t,`setState`)},a.prototype.forceUpdate=function(e){this.updater.enqueueForceUpdate(this,e,`forceUpdate`)};function o(){}o.prototype=a.prototype;function s(e,t,r){this.props=e,this.context=t,this.refs=i,this.updater=r||n}var c=s.prototype=new o;c.constructor=s,r(c,a.prototype),c.isPureReactComponent=!0,Array.isArray;var l={H:null,A:null,T:null,S:null};e.forwardRef=function(e){return{$$typeof:t,render:e}},e.useCallback=function(e,t){return l.H.useCallback(e,t)},e.useDebugValue=function(){},e.useSyncExternalStore=function(e,t,n){return l.H.useSyncExternalStore(e,t,n)}})),a=t(((e,t)=>{t.exports=i()})),o=e(a(),1);const s=e=>e;function c(e,t=s){let n=o.useSyncExternalStore(e.subscribe,o.useCallback(()=>t(e.getState()),[e,t]),o.useCallback(()=>t(e.getInitialState()),[e,t]));return o.useDebugValue(n),n}const l=e=>{let t=r(e),n=e=>c(t,e);return Object.assign(n,t),n},u=(e=>e?l(e):l);export{a as n,u as t};

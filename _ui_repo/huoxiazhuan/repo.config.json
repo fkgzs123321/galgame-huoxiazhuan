@@ -1,0 +1,13 @@
+{
+  "GH_NAME": "fkgzs123321",
+  "GH_PROJECT_NAME": "galgame-huoxiazhuan",
+  "BRANCH": "main",
+  "PROJECT_NAME": "活侠传",
+  "CDN": "https://testingcf.jsdelivr.net/gh",
+  "UI_FILE": "index.html",
+  "CARD_LOADER": "src/活侠传/正则/状态栏界面.html",
+  "LAST_COMMIT": "95dc343",
+  "note": "改面板 → node _ui_repo/huoxiazhuan/push.cjs（构建 + 推 + 回填 commit + 重打包）。",
+  "ASSETS_COMMIT": "a5af195",
+  "INDEX_COMMIT": "63b9130"
+}

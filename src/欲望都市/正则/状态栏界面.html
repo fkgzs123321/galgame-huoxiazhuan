@@ -1,0 +1,3128 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>状态栏 · 欲望都市</title>
+<style>
+:root{
+  --bg-0:#121218;--bg-1:#1b1b23;--bg-card:rgba(30,30,37,.92);
+  --c-text:#e8e6e1;--c-dim:#9b988f;--c-dim2:#6d6a62;
+  --c-accent:#e0525e;--c-gold:#d9a441;--c-success:#59c98d;--c-danger:#ff5c5c;
+  --c-warn:#e0b45c;--c-info:#6aa8d8;--c-powder:#f5a3b7;--c-border:rgba(255,255,255,.09);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  --fs-xs:clamp(10px,2vw,11px);--fs-sm:clamp(11px,2.2vw,12px);--fs-base:clamp(12px,2.5vw,13px);--fs-md:clamp(13px,2.8vw,15px);
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{font-family:var(--font);color:var(--c-text);background:transparent;font-size:var(--fs-base);line-height:1.5}
+.sb{background:linear-gradient(160deg,var(--bg-0),var(--bg-1));border:1px solid var(--c-border);border-radius:10px;margin:6px 0;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.45)}
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;padding:9px 14px;border-bottom:1px solid var(--c-border);background:linear-gradient(90deg,rgba(224,82,94,.12),transparent 40%)}
+.hi{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.hl{color:var(--c-dim2);font-size:var(--fs-xs);letter-spacing:1px}
+.hv{color:var(--c-text);font-weight:600}
+.hv.gold{color:var(--c-gold)}
+.hv.accent{color:var(--c-accent)}
+.hv.succ{color:var(--c-success)}
+.hv.danger{color:var(--c-danger)}
+.mini-bar{width:64px;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;display:inline-block;vertical-align:middle}
+.mini-bar>i{display:block;height:100%;border-radius:3px}
+/* ===== 主题系统: dark(默认) / glass(磨砂玻璃) / light(亮色) ===== */
+#sb-root[data-theme="light"]{
+  --bg-0:#f7f5ef;--bg-1:#eeebe3;--bg-card:rgba(255,255,255,.96);
+  --c-text:#26251f;--c-dim:#6f6c62;--c-dim2:#9c988c;
+  --c-accent:#c2404a;--c-gold:#a37412;--c-success:#2f8f62;--c-danger:#d64545;
+  --c-warn:#a3742a;--c-info:#3f77a3;--c-powder:#b8587f;
+  --c-border:rgba(0,0,0,.14);
+}
+#sb-root[data-theme="glass"]{
+  --bg-0:rgba(16,16,22,.78);--bg-1:rgba(24,24,32,.82);--bg-card:rgba(30,30,38,.66);
+  --c-text:#f5f3ec;--c-dim:#c4c0b4;--c-dim2:#a09c90;
+  --c-accent:#ff7d88;--c-gold:#e8b84f;--c-success:#6fd8a4;--c-danger:#ff7a7a;
+  --c-warn:#f0c060;--c-info:#8fc1e8;--c-powder:#ffb8ca;
+  --c-border:rgba(255,255,255,.18);
+}
+#sb-root[data-theme="glass"] .sb,#sb-root[data-theme="glass"] .detail,#sb-root[data-theme="glass"] .panel,
+#sb-root[data-theme="glass"] .battle-wrap,#sb-root[data-theme="glass"] .roster-card{
+  backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);
+}
+/* ===== 主题系统 v2: dark(深色·默认) / light(浅色) / glass(磨砂玻璃) / contrast(强对比) / pink(粉色) / blue(蓝色) / gold(金色) ===== */
+#sb-root[data-theme="contrast"]{
+  --bg-0:#000000;--bg-1:#0a0a0c;--bg-card:#101014;
+  --c-text:#ffffff;--c-dim:#e6e6e6;--c-dim2:#bfbfbf;
+  --c-accent:#ffcc00;--c-gold:#ffd700;--c-success:#00ff88;--c-danger:#ff4d4d;
+  --c-warn:#ffcc44;--c-info:#00ccff;--c-powder:#ff9ad5;
+  --c-border:rgba(255,255,255,.35);
+  --fs-xs:clamp(10px,2vw,12px);--fs-sm:clamp(11px,2.2vw,13px);--fs-base:clamp(13px,2.6vw,15px);--fs-md:clamp(14px,2.9vw,16px);
+}
+#sb-root[data-theme="pink"]{
+  --bg-0:#fff0f5;--bg-1:#ffe4ee;--bg-card:#fff8fb;
+  --c-text:#5c2433;--c-dim:#a0677a;--c-dim2:#c28fa2;
+  --c-accent:#e0457c;--c-gold:#c98a2e;--c-success:#4a9e7a;--c-danger:#e04545;
+  --c-warn:#c07a2e;--c-info:#6a8fc9;--c-powder:#e77fa3;
+  --c-border:rgba(200,80,130,.22);
+  --font:"Yuanti SC","YouYuan","PingFang SC","Microsoft YaHei",sans-serif;
+}
+#sb-root[data-theme="pink"] .hd{background:linear-gradient(90deg,rgba(224,69,124,.14),transparent 40%);border-bottom-color:rgba(224,69,124,.22)}
+#sb-root[data-theme="blue"]{
+  --bg-0:#0d1626;--bg-1:#15203a;--bg-card:rgba(21,32,58,.92);
+  --c-text:#eaf2ff;--c-dim:#a8c0e8;--c-dim2:#7d93b8;
+  --c-accent:#5ab0ff;--c-gold:#e8c060;--c-success:#5ad6a0;--c-danger:#ff6a6a;
+  --c-warn:#f0c060;--c-info:#7ac8ff;--c-powder:#ffb0d0;
+  --c-border:rgba(120,170,255,.22);
+}
+#sb-root[data-theme="blue"] .hd{background:linear-gradient(90deg,rgba(90,176,255,.16),transparent 40%);border-bottom-color:rgba(90,176,255,.25)}
+#sb-root[data-theme="gold"]{
+  --bg-0:#1a1408;--bg-1:#261d0c;--bg-card:rgba(38,29,12,.94);
+  --c-text:#f5ead0;--c-dim:#cbb98a;--c-dim2:#9c8c60;
+  --c-accent:#e8b64c;--c-gold:#ffd970;--c-success:#8fd4a0;--c-danger:#ff8a6a;
+  --c-warn:#f0c060;--c-info:#a0c8f0;--c-powder:#f0c0a0;
+  --c-border:rgba(232,182,76,.28);
+  --font:"Songti SC","STSong","SimSun","PingFang SC","Microsoft YaHei",serif;
+}
+#sb-root[data-theme="gold"] .hd{background:linear-gradient(90deg,rgba(232,182,76,.18),transparent 40%);border-bottom-color:rgba(232,182,76,.3)}
+
+.theme-btn,.bg-btn{cursor:pointer;font-size:12px;font-weight:700;opacity:1;transition:opacity .15s;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--c-border);color:var(--c-text);white-space:nowrap}
+/* 动态背景 */
+#sb-root[data-bg="aurora"] .sb{background:linear-gradient(135deg,var(--bg-0),var(--bg-1),rgba(255,255,255,.06),var(--bg-1));background-size:320% 320%;animation:ydsSbAurora 16s ease infinite}
+#sb-root[data-bg="rainbow"] .sb{background:linear-gradient(135deg,#ff6b8a,#b06bff,#4fb3ff,#3dd68c,#ffd76b,#ff8a5c,#ff6b8a);background-size:420% 420%;animation:ydsSbAurora 18s ease infinite}
+#sb-root[data-theme="light"][data-bg="rainbow"] .sb,#sb-root[data-theme="pink"][data-bg="rainbow"] .sb{background:linear-gradient(135deg,#ffe6ec,#e6e6ff,#e6fff0,#fffbe6,#ffe9d6,#ffe6ec);background-size:420% 420%;animation:ydsSbAurora 18s ease infinite}
+@keyframes ydsSbAurora{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media(prefers-reduced-motion:reduce){#sb-root[data-bg="aurora"] .sb,#sb-root[data-bg="rainbow"] .sb{animation:none}}
+.hp-fill{box-shadow:0 0 8px rgba(255,255,255,.22)}
+.hp-fill.hp-low{animation:ydsSbLow 1s ease infinite}
+@keyframes ydsSbLow{0%,100%{opacity:1;box-shadow:0 0 6px rgba(255,92,92,.4)}50%{opacity:.55;box-shadow:0 0 18px rgba(255,92,92,.95)}}
+.theme-btn:hover{opacity:.85;border-color:var(--c-gold)}
+#sb-root[data-theme="light"] .theme-btn{background:rgba(0,0,0,.04)}
+.mini-num{font-size:10px;color:var(--c-text);font-weight:700;margin-left:3px;min-width:16px;display:inline-block}
+
+.battle-wrap{margin:10px 14px 0}
+.battle{padding:10px 12px;border-radius:9px;border:1px solid rgba(224,82,94,.25);background:linear-gradient(120deg,rgba(224,82,94,.08),rgba(224,82,94,.02) 55%)}
+.battle-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.battle-name{font-size:14px;font-weight:700;color:var(--c-accent)}
+.battle-tag{font-size:11px;padding:1px 8px;border-radius:999px;background:rgba(224,82,94,.15);color:var(--c-accent)}
+.hp-row{display:flex;align-items:center;gap:8px}
+.hp-label{font-size:11px;color:var(--c-dim2);width:52px;flex-shrink:0}
+.hp-track{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}
+.hp-fill{height:100%;border-radius:5px;transition:width .4s ease}
+.hp-num{font-size:12px;font-weight:600;min-width:52px;text-align:right}
+.battle-grid{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:12px;color:var(--c-dim)}
+.battle-state{margin-top:8px;padding:6px 10px;border-radius:7px;font-size:12px;background:rgba(255,255,255,.04);color:var(--c-dim)}
+.battle-state.进行中{color:var(--c-accent);background:rgba(224,82,94,.12)}
+.battle-state.已结算{color:var(--c-success)}
+.tabs{display:flex;gap:4px;padding:6px 10px 0}
+.tab{padding:5px 14px;border-radius:8px 8px 0 0;background:transparent;color:var(--c-dim);border:1px solid transparent;border-bottom:none;cursor:pointer;font-size:12px;transition:all .15s ease}
+.tab:hover{color:var(--c-text)}
+.tab.active{background:var(--bg-card);color:var(--c-text);border-color:var(--c-border)}
+.panel{padding:10px 14px 14px}
+.roster-head{display:flex;justify-content:space-between;color:var(--c-dim2);font-size:11px;letter-spacing:1px;margin-bottom:8px}
+.roster-count{color:var(--c-accent)}
+.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
+.roster-group{margin-bottom:12px}
+.roster-group-title{color:var(--c-info);font-size:12px;font-weight:700;letter-spacing:2px;margin:2px 0 7px;padding-bottom:4px;border-bottom:1px dashed var(--c-border)}
+.rf-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.rf-btn{font-size:11px;padding:2px 10px;border-radius:12px;border:1px solid var(--c-border);color:var(--c-dim2);cursor:pointer;transition:all .15s}
+.rf-btn:hover{border-color:var(--c-info)}
+.rf-btn.active{background:rgba(106,168,216,.15);border-color:var(--c-info);color:var(--c-info)}
+.roster-card{padding:8px 10px;border-radius:9px;background:var(--bg-card);border:1px solid var(--c-border);cursor:pointer;transition:all .15s ease}
+.roster-card:hover{border-color:rgba(224,82,94,.3);transform:translateY(-1px)}
+.roster-card.captured{border-color:rgba(224,82,94,.3);background:linear-gradient(150deg,rgba(224,82,94,.1),var(--bg-card) 60%)}
+.roster-card.fighting{border-color:var(--c-gold);box-shadow:0 0 0 1px rgba(217,164,65,.25)}
+.rc-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.rc-name{font-weight:700;font-size:12.5px;color:var(--c-text)}
+.rc-role{font-size:10px;color:var(--c-dim2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-tags{display:flex;gap:4px;margin-top:4px;min-height:14px}
+.rc-tag{font-size:10px;padding:0 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--c-dim)}
+.rc-tag.cap{color:var(--c-accent)}
+.rc-tag.hot{color:var(--c-danger)}
+.rc-tag.fgt{color:var(--c-gold)}
+.rc-tag.pres{color:var(--c-warn)}
+.rc-meta{display:flex;gap:10px;margin-top:5px;font-size:10.5px;align-items:center}
+.rc-meta .fav{color:var(--c-powder);font-weight:800;background:rgba(255,120,170,.14);padding:1px 7px;border-radius:8px;font-size:11px}
+.rc-meta .jx-lbl{color:var(--c-info);font-weight:700}
+.rc-hp{display:flex;align-items:center;gap:6px;margin-top:6px}
+.rc-track{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.rc-fill{height:100%;border-radius:3px}
+.rc-num{font-size:10.5px;color:var(--c-dim);min-width:20px;text-align:right}
+.rc-sub{margin-top:5px;font-size:10.5px;color:var(--c-dim2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sched-row{display:flex;align-items:center;gap:12px;padding:6px 10px;border-radius:7px;margin-bottom:4px;background:var(--bg-card);border:1px solid var(--c-border)}
+.sched-time{min-width:56px;font-weight:700;color:var(--c-gold);font-size:12px}
+.sched-p{flex:1;font-size:12px;color:var(--c-text)}
+.sched-p.done{color:var(--c-dim2)}
+.sched-result{font-size:12px;color:var(--c-dim)}
+.sched-result.win{color:var(--c-success)}
+.sched-result.lose{color:var(--c-danger)}
+.sched-result.refuse{color:var(--c-warn)}
+.sched-empty{color:var(--c-dim2);font-size:12px;padding:8px}
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.skill-card{padding:8px 10px;border-radius:8px;background:var(--bg-card);border:1px solid var(--c-border)}
+.sk-top{display:flex;justify-content:space-between;align-items:baseline}
+.sk-name{font-weight:700;font-size:13px;color:var(--c-gold)}
+.sk-lv{font-size:11px;color:var(--c-dim)}
+.sk-exp{display:flex;align-items:center;gap:6px;margin:6px 0;font-size:10.5px;color:var(--c-dim2)}
+.sk-track{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.sk-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--c-gold),#e8c77a)}
+.sk-desc{font-size:11px;color:var(--c-dim);line-height:1.55}
+.detail{margin-top:6px}
+.detail-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--c-border);margin-bottom:10px}
+.detail-back{cursor:pointer;color:var(--c-dim);font-size:12px}
+.detail-back:hover{color:var(--c-accent)}
+.detail-name{font-size:16px;font-weight:700}
+.detail-role{font-size:12px;color:var(--c-dim)}
+.detail-tag{font-size:11px;padding:1px 8px;border-radius:999px;background:rgba(224,82,94,.15);color:var(--c-accent)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-bottom:8px}
+.d-sec{padding:8px 10px;border-radius:8px;background:var(--bg-card);border:1px solid var(--c-border);margin-bottom:8px}
+.d-sec-title{font-size:11px;color:var(--c-dim2);letter-spacing:2px;margin-bottom:6px}
+.nsfw-tag{font-size:9px;color:var(--c-accent);border:1px solid rgba(224,82,94,.3);border-radius:4px;padding:0 4px;vertical-align:1px}
+.d-line{display:flex;gap:8px;font-size:12px;padding:2px 0}
+.d-line span{color:var(--c-dim2);min-width:56px;flex-shrink:0}
+.d-line b{font-weight:500;color:var(--c-text);word-break:break-all}
+.d-text{font-size:12px;color:var(--c-dim);line-height:1.6;margin-bottom:4px}
+.psy-row{display:flex;flex-wrap:wrap;gap:8px 18px}
+.psy{font-size:12px;color:var(--c-dim);display:inline-flex;align-items:center;gap:6px}
+.psy i{display:inline-block;width:56px;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.body-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.body-card{padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid var(--c-border)}
+.bc-name{font-size:11px;font-weight:700;color:var(--c-powder);margin-bottom:3px}
+.bc-line{font-size:11px;color:var(--c-dim);margin:2px 0}
+.bc-line i{display:inline-block;width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;vertical-align:middle;margin-right:4px}
+.loading{text-align:center;padding:30px;color:var(--c-dim);font-size:var(--fs-md);animation:pulse 1.2s ease infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.empty{text-align:center;padding:26px 14px;color:var(--c-dim);font-size:13px}
+.empty .dim{font-size:11px;opacity:.65;margin-top:6px}
+/* 各科学业 */
+.subjects{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.subj{background:rgba(255,255,255,.05);border:1px solid var(--c-border);border-radius:7px;padding:5px 8px;text-align:center}
+.subj .sn{font-size:10px;color:var(--c-dim2);display:block}
+.subj .sv{font-size:13px;font-weight:700;color:var(--c-gold)}
+.subj .sv.full{color:var(--c-success)}
+.subj .sv.low{color:var(--c-danger)}
+/* 她的道具栏 */
+.her-item-mini{display:flex;flex-wrap:wrap;gap:5px}
+.her-item-mini .him{font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(217,164,65,.1);border:1px solid rgba(217,164,65,.25);color:var(--c-gold)}
+.her-item-mini .him b{color:var(--c-text)}
+/* 心声气泡 */
+.voice-box{margin-top:6px;padding:7px 10px;border-radius:8px;background:rgba(245,163,183,.08);border:1px solid rgba(245,163,183,.2);font-size:12px;color:var(--c-powder);font-style:italic;line-height:1.5}
+.voice-box .vl{font-size:10px;color:var(--c-dim2);font-style:normal;display:block;margin-bottom:2px}
+/* 战斗交互 */
+.battle-ctrl{margin:10px 14px 0;padding:10px 12px;border-radius:9px;border:1px solid var(--c-gold);background:linear-gradient(120deg,rgba(217,164,65,.08),rgba(217,164,65,.02) 55%)}
+.battle-ctrl-title{font-size:12px;font-weight:700;color:var(--c-gold);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.battle-ctrl-title .rounds{font-size:10px;color:var(--c-dim2);font-weight:400}
+.skill-sel{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-bottom:8px}
+.skill-opt{padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid var(--c-border);cursor:pointer;transition:all .15s ease;font-size:11px;color:var(--c-dim)}
+.skill-opt .s-lv{color:var(--c-gold);font-weight:700}
+.skill-opt.sel{border-color:var(--c-gold);background:rgba(217,164,65,.12);color:var(--c-text)}
+.skill-opt.off{opacity:.4}
+.action-input{width:100%;min-height:52px;padding:7px 10px;border-radius:7px;border:1px solid var(--c-border);background:rgba(255,255,255,.04);color:var(--c-text);font-size:12px;font-family:inherit;resize:vertical;box-sizing:border-box}
+.action-input:focus{outline:none;border-color:var(--c-gold)}
+.battle-btn{width:100%;margin-top:8px;padding:8px 0;border-radius:7px;border:none;background:linear-gradient(90deg,var(--c-accent),#c44550);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s ease}
+.battle-btn:hover{opacity:.9}
+.battle-btn:disabled{opacity:.4;cursor:not-allowed}
+.battle-tip{font-size:10px;color:var(--c-dim2);margin-top:6px;line-height:1.6}
+.formula{font-size:10px;color:var(--c-dim2);background:rgba(255,255,255,.04);border-radius:6px;padding:5px 8px;margin-top:6px;line-height:1.6}
+@media(max-width:480px){
+  .roster-grid{grid-template-columns:repeat(2,1fr)}
+  .hd{gap:6px 10px}
+  .mini-bar{width:48px}
+  .hp-label{width:46px}
+  .subjects{grid-template-columns:repeat(2,1fr)}
+  .skill-sel{grid-template-columns:repeat(2,1fr)}
+  .detail{padding:8px 9px}
+  .d-sec{padding:7px 8px}
+  .d-sec .d-title{font-size:11px}
+  .kv{font-size:11px;padding:4px 0}
+  .body-grid{grid-template-columns:repeat(2,1fr)}
+  .action-input{min-height:52px;font-size:13px}
+  .battle-btn{padding:11px 0;font-size:14px}
+  .her-item-mini .him{font-size:11px;padding:4px 9px}
+}
+@media(max-width:360px){
+  .roster-grid{grid-template-columns:1fr}
+  .skill-grid{grid-template-columns:1fr}
+  .subjects{grid-template-columns:1fr}
+  .body-grid{grid-template-columns:1fr}
+  .stats-top{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+<div id="sb-root">
+  <div class="loading" id="sb-loading">正在载入状态栏…</div>
+  <div class="sb" id="sb-body" style="display:none"></div>
+</div>
+<script type="application/json" id="stat-embed">{{format_message_variable::stat_data}}</script>
+<script>
+/* ===== 欲望都市 · 状态栏 · 纯原生 JS（零依赖）===== */
+var TH_HOSTS=[window,window.parent,window.top].filter(function(w,i,arr){return w&&arr.indexOf(w)===i});
+function pickHostFn(name){
+  if(typeof window[name]==='function')return function(){return window[name].apply(window,arguments)};
+  for(var i=0;i<TH_HOSTS.length;i++){try{var h=TH_HOSTS[i];if(typeof h[name]==='function')return function(host,n){return function(){return host[n].apply(host,arguments)}}(h,name)}catch(e){}}
+  return null;
+}
+function pickHostValue(name){
+  if(window[name]!==undefined)return window[name];
+  for(var i=0;i<TH_HOSTS.length;i++){try{if(TH_HOSTS[i][name]!==undefined)return TH_HOSTS[i][name]}catch(e){}}
+  return undefined;
+}
+function getMvu(){return pickHostValue('Mvu')||window.Mvu||null}
+
+function parseEmbeddedStat(){
+  var el=document.getElementById('stat-embed');
+  if(!el)return null;
+  var raw=(el.textContent||el.innerText||'').trim();
+  if(!raw||raw.indexOf('format_message_variable')>=0)return null;
+  try{var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'){
+      if(parsed.stat_data&&typeof parsed.stat_data==='object')return parsed.stat_data;
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+function hasData(o){return o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).length>0}
+function pickStatData(source){if(!source||typeof source!=='object')return null;var stat=source.stat_data;if(hasData(stat))return stat;if(hasData(source)&&(source.排班||source.玩家||source.时间||source.女性角色))return source;return null}
+
+function resolveMessageIdFromDom(){
+  try{
+    var frame=window.frameElement;
+    if(frame&&frame.closest){var mes=frame.closest('.mes');if(mes){var id=parseInt(mes.getAttribute('mesid'),10);if(id>=0)return id}}
+    var el=frame;
+    while(el){if(el.classList&&el.classList.contains('mes')){var id2=parseInt(el.getAttribute('mesid'),10);if(id2>=0)return id2}el=el.parentElement}
+    for(var i=0;i<TH_HOSTS.length;i++){try{var host=TH_HOSTS[i];var host$=host.$||host.jQuery;if(!host$||!frame)continue;var $mes=host$(frame).closest('.mes');if($mes&&$mes.length){var id3=parseInt($mes.attr('mesid'),10);if(id3>=0)return id3}}catch(e){}}
+  }catch(e){}
+  return -1;
+}
+function resolveMessageIdFromIframeName(){
+  var fn=pickHostFn('getIframeName');if(!fn)return -1;
+  try{var name=String(fn()||'');var m=/^TH-message--(\d+)--/.exec(name);if(m)return parseInt(m[1],10)}catch(e){}
+  return -1;
+}
+function resolveMessageId(){
+  var fromDom=resolveMessageIdFromDom();if(fromDom>=0)return fromDom;
+  var fromName=resolveMessageIdFromIframeName();if(fromName>=0)return fromName;
+  if(typeof window.message_id==='number'&&window.message_id>=0)return window.message_id;
+  var fn=pickHostFn('getCurrentMessageId');
+  if(fn){try{var id=fn();if(typeof id==='number'&&id>=0)return id}catch(e){}}
+  return -1;
+}
+function getMessageOption(){var messageId=resolveMessageId();return{type:'message',message_id:messageId>=0?messageId:'latest'}}
+
+var cachedStatFromBridge=null;
+
+/* 默认数据：无宿主环境（单独打开/宏未解析）时兜底渲染，参照同级生2 */
+/* 38人固定外貌档案（硬编码，不依赖 stat_data；源自 世界书/角色/X/基础.yaml 的 体型/发型/特征/装扮） */
+var YDS_FIXED_APPEARANCE={
+ "丽莎·伊万诺娃": {
+  "体型": "178cm/58kg，特别高挑，白皮金发，走在人群里鹤立鸡群，腿长到犯规，俄式身材，前凸后翘",
+  "发型": "金发过肩，发尾微卷，阳光下像融化的蜂蜜",
+  "特征": "金发碧眼，笑起来眼睛弯成月牙；在班里像只大型金毛，说话七扭八歪但特别爱说；怕热不怕冷（莫斯科人），冬天穿得最少的是她",
+  "装扮": "校服被她穿出时装感，冬天光腿穿校服裙，被班主任追着加秋裤"
+ },
+ "何玉兰": {
+  "体型": "160cm/55kg，匀称，常年劳作养出的结实身板，皮肤是健康的浅蜜色，走山路都不带喘",
+  "发型": "扎着头巾（防晒），编着辫子，干活时盘起来",
+  "特征": "戴一只银手镯；手指粗壮，指尖带着泥土气息；笑起来眼睛弯弯；身上总有花香",
+  "装扮": "常穿素色衣裳，头巾是她的标志，像从山歌里走出来的"
+ },
+ "何雨珊": {
+  "体型": "163cm/54kg，匀称微肉，圆润健康，像刚出笼的米糕，肉都长得恰到好处",
+  "发型": "齐肩短发，别一朵小雏菊发卡，跑起来发尾一跳一跳",
+  "特征": "笑起来眼睛弯成月牙；指尖带着泥土气息（种花的手），指甲剪得短，常沾着绿色；随身带小喷壶，看到蔫的花就浇",
+  "装扮": "校服袖子常沾着泥点，口袋里装着花种，别人问她她就掏出来分你一袋"
+ },
+ "刘晶晶": {
+  "体型": "158cm/52kg，娇小丰满，娃娃脸，看起来像大学生，实际31岁，穿白大褂也像实习医生",
+  "发型": "齐刘海，扎低马尾，发尾卷卷的，像从漫画里走出来的",
+  "特征": "娃娃脸，笑起来眼睛弯弯；口袋里常揣手术刀模型（学生送的）；指腹常年带消毒水味，做标本的手极稳",
+  "装扮": "白大褂是标配，办公桌上有青蛙骨架标本、蝴蝶标本，学生送的礼物全是标本类"
+ },
+ "叶春梅": {
+  "体型": "158cm/56kg，圆润，厨房烟火气养出的丰润，皮肤白净，笑起来很有福气",
+  "发型": "挽着发髻，插一根银簪子，围裙永远干净",
+  "特征": "戴一只金镯子（陪嫁）；掌上做菜的老茧，洗得很干净；笑起来眼睛弯弯",
+  "装扮": "围裙是标配，系出腰线，说话温温柔柔，像闽南灶台边的观音像"
+ },
+ "叶诗涵": {
+  "体型": "158cm/50kg，匀称娇小，软软糯糯像块年糕，走路轻手轻脚，坐哪儿都安安静静",
+  "发型": "齐刘海，扎低马尾，发尾微卷，别一枚素色发卡",
+  "特征": "穿校服也透着一股茶香；指尖圆润，常年泡茶练出稳得不像话的手，倒水滴水不洒；皮肤像豆腐，轻轻一掐就红",
+  "装扮": "校服叠得整整齐齐，随身带保温杯，杯里永远泡着铁观音"
+ },
+ "周桂香": {
+  "体型": "158cm/72kg，特别肥胖，丰乳肥臀，圆滚滚的像尊弥勒佛，皮肤白嫩，笑起来很有福气",
+  "发型": "短发烫卷，用发卡别着，做饭时挽起来，一头的汗",
+  "特征": "圆脸，笑起来眼睛眯成缝；戴一只老金戒指；掌上做菜的老茧；怕热，一年四季汗津津的",
+  "装扮": "永远系着围裙，围裙比人还勤洗，可油汗味还是腌进了布缝里"
+ },
+ "周语桐": {
+  "体型": "158cm/55kg，娇小丰润，肉都长在该长的地方，笑起来两颊有肉窝；站在人群里是小个子，但存在感最响",
+  "发型": "双马尾，写题时扎丸子头，发绳永远是红的",
+  "特征": "右耳三个耳钉（初中瞒着爸妈打的）；D罩杯对158的身高很夸张，跑步得抱着胸跑；美甲从不重样，大红或正红；笑点极低，一逗就笑",
+  "装扮": "校服裙改短过一截（被老师说过三次），鞋带永远系得花里胡哨"
+ },
+ "唐婉清": {
+  "体型": "166cm/54kg，清瘦挺拔，常年穿改良汉服，气质端方，像从旧时光里走出来的大家闺秀",
+  "发型": "长发盘髻，插一根木簪，一丝不乱，像从古画里走下来的",
+  "特征": "戴一只老玉镯；指节干净，常年执毛笔；站姿如松，太极练出的柔韧；衣柜里三十几套汉服，每天换一套",
+  "装扮": "常穿素色汉服，全校最\"古\"的老师，学生私底下叫她\"唐师太\"（没有贬义，是敬畏）"
+ },
+ "娜塔莎·伊万诺娃": {
+  "体型": "175cm/63kg，高挑丰满，金发冷艳，俄式身材前凸后翘，走在小区里像走红毯",
+  "发型": "金发大波浪，蓝眼睛，涂红唇，穿高跟鞋",
+  "特征": "涂着法式美甲，戴一枚俄罗斯紫金戒指；全小区都知道\"丽莎她妈是俄罗斯人\"",
+  "装扮": "夏天也穿高跟鞋，北京夏天是她的噩梦，她怕热，热了就烦躁，把袖子挽得高高的"
+ },
+ "宋丽华": {
+  "体型": "168cm/62kg，壮实丰满，海边晒出的健康肤色，肩膀宽，干活麻利，能扛得起整箱海鲜",
+  "发型": "高个子，扎着利落的马尾，干活时盘起来",
+  "特征": "戴一只银镯子；手粗壮，常年碰海鲜的裂口子手，洗得很干净；笑起来眼睛弯弯；围裙印着\"丽华海鲜\"",
+  "装扮": "围裙是标配，高筒水靴，袖口永远卷着，嗓门大得隔着三条街都听得见"
+ },
+ "宋佳凝": {
+  "体型": "175cm/58kg，大高个，肩平背直，站如松坐如钟，人群里第一个被老师点名站队的就是她",
+  "发型": "高马尾一丝不苟，别着校徽，臂章\"班长\"永远端端正正",
+  "特征": "走路带风，说话自带回音；手腕戴妈妈给的银镯子；校服扣子扣满，领口从来不松；每天坚持仰卧起坐，腰上有隐约腹肌线",
+  "装扮": "校服穿得最板正的一个，袖口领口没有一处褶皱，连书包背带都调到一样长"
+ },
+ "宋雅琴": {
+  "体型": "160cm/50kg，清瘦，操劳憔悴，皮肤偏黄，眼下有熬夜的青色，穿得朴素，把一切都给了孩子",
+  "发型": "齐耳短发，别一枚旧发卡，省得去理发店",
+  "特征": "手上总有胶布口子（质检剪线头磨的）；剪线头又快又准；腰椎不好，弯腰久了直不起来",
+  "装扮": "常穿厂里发的灰色工装外套，袖口磨得发白，脚上是儿子淘汰的旧运动鞋"
+ },
+ "张慧娟": {
+  "体型": "162cm/52kg，匀称微瘦，常年穿白大褂，严谨的学者风，衣服下是保养得不错的身体",
+  "发型": "齐肩短发，打理利落，白大褂领口永远整整齐齐",
+  "特征": "戴细框眼镜，老花镜挂在胸前；口袋里永远有护目镜；指腹带着实验室的消毒水味；左手无名指戴着婚戒",
+  "装扮": "白大褂是标配，办公桌比实验台还整洁，试管架都按高矮排队"
+ },
+ "李红梅": {
+  "体型": "163cm/60kg，微胖丰腴，中年发福但不臃肿，腰身圆润，妈妈级的稳重气质，穿深色职业装",
+  "发型": "齐耳短发，常年不烫不染，用发卡别住碎发，朴素利落",
+  "特征": "戴细框眼镜，旧金戒指从不摘下（亡夫送的）；手腕戴一块旧手表，走路带风；讲课写板书手上有粉笔茧",
+  "装扮": "深色职业装+平底鞋，衣柜里几乎没有鲜艳的颜色，学生的记忆里她是\"走廊里的黑影\""
+ },
+ "林汐瑶": {
+  "体型": "172cm/51kg，体脂低、肩宽腰细，站姿带点跑步运动员的外八字，人群里一眼是练过的",
+  "发型": "常年高马尾，绑得利索，跑起来一甩一甩",
+  "特征": "左眉一道浅疤（小学翻墙摔的）；笑时露虎牙；大腿内侧比外侧白整整一圈（晒痕分明）；手指修长带握器械磨出的薄茧，常年亮色美甲（校规管发型不管手）",
+  "装扮": "校服永远卷袖口，训练后披件宽大外套，脚上是穿旧的跑鞋"
+ },
+ "林秀英": {
+  "体型": "162cm/58kg，丰腴肉感，火锅店养出的圆润，腰身有肉但不臃肿，皮肤白，老板娘的健康美",
+  "发型": "挽着发髻，插一根银簪子，干活时利落，围裙永远干净",
+  "特征": "戴一只金镯子（嫁妆）；掌上有切菜的老茧；笑起来声音洪亮；围裙系出腰线，走路稳稳当当",
+  "装扮": "围裙是标配，袖口永远挽着，兜里揣着账本和手机，喊\"妹儿！上菜！\"嗓门穿堂"
+ },
+ "沈若兰": {
+  "体型": "165cm/52kg，匀称窈窕，旗袍爱好者，S曲线，站姿优雅，说话慢声细气，像从画里走出来",
+  "发型": "长发盘起，发髻一丝不乱，别一支素银簪",
+  "特征": "戴珍珠耳钉，从不摘下；板书娟秀，指节干净；紧张时捻书页，书页角被她捻出细纹；衣柜里二十几件旗袍，每天换一件",
+  "装扮": "常穿素色旗袍，教室走廊是她走出来的风景，班里男生管她叫\"从民国穿来的老师\""
+ },
+ "王朵朵": {
+  "体型": "160cm/70kg，特别肥胖，软肉多，中原面食养出的白胖，胳膊腿都肉乎乎的，走两步就喘，校服要穿加大的",
+  "发型": "扎一个松松的低马尾，碎发总掉下来，她习惯性地拨",
+  "特征": "圆脸，笑起来眼睛眯成缝；总是穿深色衣服想把肉藏起来，低头含胸；随身带小鱼干（喂流浪猫用的）；手胖短，指甲却剪得干干净净",
+  "装扮": "校服最大码，尽量躲在后排；书包里除了课本还有一包猫粮和一本字迹工整的日记"
+ },
+ "王金凤": {
+  "体型": "162cm/65kg，壮实大骨架，和面练出的宽肩粗臂，结实有力，皮肤白净，扛得起一袋面",
+  "发型": "挽着发髻，插一根旧簪子，干活时利落",
+  "特征": "戴一只旧银镯；掌上揉面磨出的厚茧；说话利落，笑起来很实在",
+  "装扮": "围裙上印着\"金凤烩面\"，袖口永远挽着，兜里揣着擀面杖"
+ },
+ "白秋月": {
+  "体型": "164cm/50kg，清瘦，手艺人，身条细瘦，站姿端方，常年坐着剪纸养出的沉静气质",
+  "发型": "挽着发髻，插一根木簪，一丝不乱",
+  "特征": "戴一只老银镯；手指细长，指尖常年执剪刀磨出薄茧，却稳如磐石；家里挂满自己剪的窗花",
+  "装扮": "常穿素色棉布衣裳，说话慢悠悠的，像从老照片里走出来的"
+ },
+ "白若薇": {
+  "体型": "168cm/44kg，特别显瘦的纸片人，校服挂在身上晃荡，风一吹像会被刮走，手腕细得一把就能攥住",
+  "发型": "长发半遮着脸，习惯性低着头，头发帘挡住大半张脸",
+  "特征": "戴厚厚的老式圆框眼镜（像从旧书摊上捡的）；手指细长苍白，指尖冰凉，戴着祖传的旧玉镯；膝盖骨突出，内侧皮肤薄得能看到青色血管",
+  "装扮": "校服永远最大码，把自己裹在里面，存在感低得像角落里的影子"
+ },
+ "石小婉": {
+  "体型": "158cm/42kg，特别瘦弱，纸片人，像一阵风就能吹走，校服空荡荡的，手腕细得像竹竿",
+  "发型": "长发及腰，总是披着，头发细软，像没断奶的小动物",
+  "特征": "脸色偏白，常年带着一点病气；戴着妈妈给的红绳；指尖微凉，写字秀气；教室门窗永远是她关的，她怕冷",
+  "装扮": "校服里永远穿着厚打底，随身带中药保温杯，口袋里常备糖果（低血糖）"
+ },
+ "石巧云": {
+  "体型": "162cm/55kg，匀称，围裙下藏着好身段，常年掌勺练出的利落身条，皮肤白净，站姿端正",
+  "发型": "挽着发髻，插一根木簪，一丝不乱",
+  "特征": "戴一只老玉镯；手指修长，掌上做菜磨出的薄茧；话不多，笑起来很温柔",
+  "装扮": "围裙永远干净，像黄山的溪水洗过的，说话尾音轻轻的"
+ },
+ "秦可心": {
+  "体型": "158cm/58kg，微胖圆润，带点奶膘，圆脸，笑起来像年画娃娃，肉肉的很讨喜",
+  "发型": "双丸子头，上课扎马尾，发绳总是彩色的，换了颜色全班都发现",
+  "特征": "笑点极低，一逗就笑，笑起来眼睛眯成缝；口袋里常揣话梅，说话时酸酸甜甜的话梅气；手指短圆白嫩，爱做简单的亮色美甲",
+  "装扮": "校服里套着自己的背带裤，裤兜永远塞着话梅糖和讲笑话用的道具"
+ },
+ "秦淑珍": {
+  "体型": "160cm/62kg，圆润，天津卫养出的富态，白白胖胖，笑起来像尊弥勒佛，说话时手舞足蹈",
+  "发型": "烫着小卷，别一枚塑料发卡，忙起来几天不洗头，头皮油味混着雪花膏的腻味",
+  "特征": "戴一只老银镯；跑堂练出的麻利手；穿碎花衣裳，全小区都知道她家的事",
+  "装扮": "早点摊围裙，袖口挽着，兜里揣着零钱和瓜子"
+ },
+ "艾米丽·陈": {
+  "体型": "170cm/55kg，火辣健美，加州古铜色皮肤，前凸后翘，穿牛仔裤包不住的好身材，走路带风",
+  "发型": "金棕色长卷发，披散着，跑起来像加州的阳光",
+  "特征": "笑起来露出一口白牙；说话手舞足蹈；健身练出的马甲线和蜜桃臀；每天健身一小时，雷打不动",
+  "装扮": "常穿牛仔裤+白T，全校最洋气的老师，学生毕业照都想跟她合影"
+ },
+ "苏婉如": {
+  "体型": "163cm/50kg，纤细柔美，江南水乡养出的身段，穿旗袍或素色衣裙，风一吹衣袂飘飘",
+  "发型": "长发盘起，别一根玉簪，发髻一丝不乱",
+  "特征": "指尖带茶香，常年泡茶的手，指甲素净；说话温声细语，泡茶时像一幅画；腰间挂一枚老玉佩",
+  "装扮": "常穿素色旗袍，陪读家长群里最亮眼的一个，别的妈妈都爱跟她坐一起，\"看她泡茶，心就静了\""
+ },
+ "苏晚晴": {
+  "体型": "165cm/46kg，纤细文弱，站姿笔直像一根竹子，校服永远穿得最齐整，人群里一眼是\"规矩\"两个字",
+  "发型": "黑长直，发尾微卷，从不烫染，马尾扎得一丝不苟",
+  "特征": "金丝细框眼镜（摘下眼镜她看不清任何东西，只剩感觉）；指尖常沾墨（书法社）；写字时腰微微塌下去很好看",
+  "装扮": "校服扣子扣到最上面一颗，袖口从不卷；书包里永远有一本包了书皮的言情小说"
+ },
+ "赵雪晴": {
+  "体型": "172cm/58kg，高挑运动，小麦色皮肤，大长腿，常年运动的身材，结实匀称，物理老师里最能跑的",
+  "发型": "高马尾，运动时扎得利索，平时散着，发量多，甩起来带风",
+  "特征": "肤色健康，笑容灿烂，嗓门大得隔壁班都听得见；运动装+牛仔短裤是她的标配（别的老师不敢穿）；指甲短而干净，握粉笔也握哑铃",
+  "装扮": "校服是别人的，运动服是她的；讲台上放着一瓶冰镇汽水（物理老师喝汽水，反差萌）"
+ },
+ "金顺姬": {
+  "体型": "160cm/56kg，丰润，爱美保养得好，43岁看着像35，皮肤白净细嫩，朝鲜族大姨的精致",
+  "发型": "烫着精致的卷发，别一枚珍珠发卡，一丝不乱",
+  "特征": "戴珍珠耳钉，戴一只金戒指；涂着淡粉色甲油；镜子不离身，爱美得全小区都知道",
+  "装扮": "常穿素色衣裳但剪裁考究，做辣白菜也要系着干净的新围裙"
+ },
+ "陆芷晴": {
+  "体型": "155cm/45kg，娇小纤细，像根柳枝，风一吹就要倒，但站得笔直",
+  "发型": "长发扎成低马尾，编一段辫子，发绳是奶奶编的彩线",
+  "特征": "戴一个银项圈（奶奶给的，壮族老银饰）；手指纤细，指尖凉凉的，爱绣壮锦；脖子挂的银锁走路会轻轻响，她害羞时会下意识捏住",
+  "装扮": "校服永远最大码地裹着自己，缩在角落里；书包里塞着绣绷和彩线"
+ },
+ "陆青霞": {
+  "体型": "165cm/57kg，健朗匀称，常年带团练出的好身板，走一天山路都不带喘，肤色健康",
+  "发型": "扎着利落的马尾，带团练出的习惯",
+  "特征": "戴一串玛瑙手串；手指修长有力，常年举导游旗的手；嗓门洪亮，全小区都听过她的歌声",
+  "装扮": "常穿运动装，走路带风，像随时要出发"
+ },
+ "陈淑芬": {
+  "体型": "165cm/64kg，丰满发福，东北大姨的体型，壮实有肉，冬天穿得厚，夏天白得晃眼",
+  "发型": "烫着大波浪卷（小区门口理发店烫的），别一只花发卡",
+  "特征": "戴一只老玉镯；指节粗大，算了一辈子账的手；爱嗑瓜子，兜里永远有瓜子；穿大花衣服，说话像开家庭会议",
+  "装扮": "冬天厚棉袄，夏天大花短袖，比谁都会过日子，一件衣服能穿十年"
+ },
+ "陈雪梨": {
+  "体型": "172cm/62kg，高挑丰满，骨架大但匀称，站哪儿都压场子，人群里第一眼是她",
+  "发型": "齐肩短发微卷，随意别在耳后，冬天怕热穿得最少",
+  "特征": "E罩杯又大又挺，冬天穿厚毛衣都看得出形状，她嫌麻烦但从不遮掩；掰手腕全班第一，手劲贼大；笑起来见牙不见眼；冬天暖气房里吃冰棍",
+  "装扮": "校服外套披着不穿，牛仔裤包不住臀，走路带风；书包里永远有牛奶"
+ },
+ "韩美娜": {
+  "体型": "166cm/52kg，匀称曼妙，舞者身段，腰细腿长，站姿笔挺，走路带风，气质出众",
+  "发型": "长直发，额头光洁，平时清爽马尾，节日戴朝鲜族传统发饰",
+  "特征": "白净漂亮，气质像画报上的女团成员；指甲偶尔涂淡粉色甲油；座位一天擦三遍（洁癖）；镜子不离身",
+  "装扮": "校服被她熨得没有一条褶子，袜子永远是白色的，发圈都要搭配当天衣服"
+ },
+ "黎嘉欣": {
+  "体型": "162cm/50kg，匀称干净利落，走路带风，从小练芭蕾的底子，站姿自带提气",
+  "发型": "及肩发，发尾内扣，打理得一丝不苟，别一只珍珠发夹",
+  "特征": "戴一只卡地亚手链（她爸送的）；指尖涂着淡粉色美甲，精致到细节；芭蕾练出的小蛮腰，走路自带气场",
+  "装扮": "校服被她改过腰线（大小姐的倔强），书包是名牌，笔盒里全是进口文具"
+ },
+ "黎桂芳": {
+  "体型": "158cm/60kg，微胖富态，点心养人的身材，圆润白净，笑起来像尊弥勒佛",
+  "发型": "挽着发髻，插一根银簪子，一丝不乱",
+  "特征": "戴一只老玉镯；做点心磨出的巧手；说话温温吞吞，买菜必砍价",
+  "装扮": "围裙永远干净，袖口却磨出了毛边，衣服穿了十年，省下的钱都进了女儿的口袋"
+ }
+};
+/* 38人固定档案（硬编码，不依赖 stat_data；源自 世界书/角色/X/基础.yaml + 私密.yaml 的 年龄/家乡/家庭/与user关系/性偏好/气味/名器描述/特质缺陷） */
+var YDS_FIXED_PROFILE={
+ "丽莎·伊万诺娃": {
+  "年龄": "18（高三）",
+  "家乡": "俄罗斯莫斯科，妈妈俄罗斯人、爸爸中国人（姓陈），她随母姓",
+  "家庭": "莫斯科中俄家庭，妈妈是俄语老师，爸爸经商，中文是跟妈妈学的，所以她的中文全是\"妈妈教的中文\"，语法全是妈妈的味道",
+  "与user关系": "班里这学期新转来的男生，坐她前面。她刚记住他的名字，上课总回头问「这个，中文怎么讲？」，他是全班她最先搭话的几个人之一，但也就问过几次词，还没深聊",
+  "敏感带": "脖子、耳后、腰窝；她怕热，凉凉的手碰到她的皮肤，她会舒服得哼哼",
+  "节奏": "什么都要学，什么都要试，好奇大于害羞，但真到了那一步又脸红心跳",
+  "体位": "偏爱传统的、浪漫的姿势（她相信爱情），但对什么都好奇",
+  "高潮": "反应真诚，眼睛瞪大，声音又响又脆，像唱歌，喊完会不好意思地笑，说\"对不起，我太大声了\"",
+  "羞点": "中文说错时被笑；高潮后被问\"你还好吗\"",
+  "体味": "白人汗腺重，汗味浓，天天喷香草味香水压着，混在一起有点冲",
+  "私处气味": "汗骚混香草奶甜，动情时骚味明显",
+  "名器描述": "内里偏凉，像雪洞，但一遇热就急速升温，敏感度翻倍；冷热交替的刺激是她的专属武器，也是她败北的原因，一旦热起来就溃不成军",
+  "特质完整": "- 交换生: 妈妈是俄罗斯人，爸爸是中国人（姓陈，她随母姓伊万诺娃），中文跟着妈妈学，全是\"妈妈教的中文\"\n- 习惯: 爱喝热牛奶，怕热不怕冷（莫斯科人），冬天穿得最少的是她；随身带翻译软件\n- 癖好：闻味癖，对气味上瘾，闻着喜欢的人身上的气味就会脸红，会偷偷闻对方坐过的椅子",
+  "缺陷完整": "- 中文烂: 战斗中的指令和反应全靠猜，经常理解错意思，反而被节奏带跑\n- 怕热: 北京夏天是她的噩梦，一热就烦躁，战斗力直线下降"
+ },
+ "何玉兰": {
+  "年龄": "43",
+  "家乡": "云南昆明",
+  "家庭": "昆明花农，嫁给同乡种花汉，丈夫在昆明老家守着花田，一年来不了几次；她一个人带女儿来北京陪读，在郊区承包了一片花田",
+  "与user关系": "女儿班上新转来的同学，听说住隔壁小区。她在楼下见过他一两次，顺手塞过一把自家花「拿回去插瓶」，他道谢，她觉得这孩子有礼貌",
+  "敏感带": "后颈、耳垂、腰侧；被碰头发也会颤",
+  "节奏": "喜欢慢悠悠的节奏，\"慢慢来，像种花\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的、省力的姿势；她会害羞说\"我都43了\"",
+  "高潮": "反应直接，先哼山歌壮胆，然后声音突然软了，长长的呻吟，高潮后笑得眼泪都出来",
+  "羞点": "被说\"何阿姨也会这样\"；高潮后哼歌的糗样被看见",
+  "体味": "艾草味混淡淡汗味，更年期潮热出汗，汗味带酸",
+  "私处气味": "艾草混酸汗，干净但出汗多",
+  "名器描述": "紧致未开，收缩力强，像含苞待放的花苞，进去时要小心呵护，一旦绽开就紧致缠绵，层层包裹",
+  "特质完整": "- 花农: 昆明老家承包了一片花田，种玫瑰、山茶、茉莉，陪读也不忘在阳台种花\n- 习惯: 爱唱山歌，紧张时就哼歌；花粉过敏（她自己种花自己过敏，很讽刺）；腰疼（常年弯腰）",
+  "缺陷完整": "- 花粉过敏: 花季咳得停不下来，战斗力直接减半\n- 腰疼: 常年劳作腰不好，久战撑不住"
+ },
+ "何雨珊": {
+  "年龄": "18（高三）",
+  "家乡": "云南昆明",
+  "家庭": "昆明花农家庭，家里种了半座山的鲜花，她是闻着花肥和花粉长大的",
+  "与user关系": "班里新转来的男生，坐她前排。她听说他刚搬来，住在学校附近的小区；她给他带过一次自己种的薄荷，说「泡水喝，提神」，他收下说了谢谢，她高兴了一周",
+  "敏感带": "脖颈、耳后、后腰；最喜欢被摸头发",
+  "节奏": "喜欢温柔的前奏，慢热但持久，一旦进入状态就不愿意停",
+  "体位": "偏爱面对面（她喜欢看着对方的表情）",
+  "高潮": "反应柔软，声音软软地哼，眼睛湿润，像要哭出来，高潮后会笑得特别开心",
+  "羞点": "被夸\"你身上好香\"；高潮时笑出来",
+  "体味": "皂角味混干净的汗味，体育课出汗多但及时洗，有晒过太阳的被子味",
+  "私处气味": "皂角混奶香，动情时奶香变浓",
+  "名器描述": "内壁有一瓣一瓣的肉纹，像莲花花瓣层叠，进出时每一瓣都在轻柔刮蹭，水一多就步步生莲，又滑又紧",
+  "特质完整": "- 植物迷: 校花房的管理员，养了一阳台的花，每种花的习性倒背如流\n- 习惯: 随身带小喷壶浇花；花粉季节会咳得厉害（她自己种的花自己过敏，很讽刺）",
+  "缺陷完整": "- 慢热: 开局反应迟钝，容易被快节奏打乱阵脚\n- 花粉季咳: 春天咳得停不下来，战斗力直接减半"
+ },
+ "刘晶晶": {
+  "年龄": "31",
+  "家乡": "江西南昌",
+  "家庭": "南昌中医世家，外公是老中医，她小时候怕外公的药房，长大了却一头扎进解剖室，外公笑她\"手比他还稳\"",
+  "与user关系": "班里新转来的学生。第一节课点名时她记住这个名字；下课他问她「人为什么会紧张」，她讲了半小时神经学，讲完才意识到自己说多了，脸有点热",
+  "敏感带": "耳后、后颈、腰窝（她指着自己的身体讲课时，总会无意碰到那里，然后脸红）",
+  "节奏": "喜欢\"有依据\"的节奏，她会告诉你哪里敏感、怎么碰最有效，像上课一样认真，但真被按着来又立刻投降",
+  "体位": "偏爱科学论证过的姿势（她真的查过论文）",
+  "高潮": "反应克制而深刻，先无声地绷紧，眼睛睁大，然后从牙缝里漏出压抑的轻吟，高潮后很久说不出话，回过神会小声说\"数据准了\"",
+  "羞点": "被说\"刘老师你讲课的表情\"；高潮后装冷静失败的样子",
+  "体味": "消毒水味混橡皮手套味，淡淡的薄荷糖味",
+  "私处气味": "薄荷混微酸，干净",
+  "名器描述": "内壁薄如蝉翼，触感加倍，任何一点摩擦都被放大十倍；薄壁透光般的娇嫩，却又异常坚韧，是\"极致敏感\"型的名器",
+  "特质完整": "- 解剖迷: 办公桌上有青蛙骨架标本、蝴蝶标本，学生送的礼物全是标本类\n- 习惯: 拜菩萨（南昌人的信仰）；随身带手术刀模型（防身+习惯）；看恐怖片当喜剧看（因为懂解剖）\n- 癖好：怪癖，喜欢消毒水味，闻着安心；做实验时偷偷闻橡胶手套，室友说她\"实验室呆傻了\"",
+  "缺陷完整": "- 怕血: 解剖课上稳如泰山，但自己看到血会晕，这是她最大的秘密，谁也不知道\n- 迷信: 心里没底时会求菩萨，越求越慌，反而发挥失常"
+ },
+ "叶春梅": {
+  "年龄": "42",
+  "家乡": "福建厦门",
+  "家庭": "厦门渔村女儿，年轻时是海鲜餐厅主厨，嫁给同样开餐厅的丈夫，他在厦门守着总店，她一个人带女儿来北京陪读",
+  "与user关系": "女儿班上新转来的同学。放学她给女儿送汤，看他一个人在门口等，顺手多盛了一碗「囝仔，喝汤」，他受宠若惊，她笑「多一口的事」",
+  "敏感带": "后颈、耳垂、腰腹；被碰头发也会颤",
+  "节奏": "喜欢温吞的节奏，\"慢慢来，像熬汤\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的、省力的姿势；女上她会害羞说\"我都42了\"",
+  "高潮": "反应含蓄而深刻，先无声地绷紧，然后从喉咙里溢出长长的、压抑的轻吟，高潮后很久缓不过来",
+  "羞点": "被说\"叶阿姨也会这样\"；高潮后失态的样子被看见",
+  "体味": "哺乳期的奶味混汗味，带娃出汗多，奶味和汗味混在一起有点腻",
+  "私处气味": "奶味混汗酸，动情时奶味重",
+  "名器描述": "湿润绵滑，水量足，内壁像春天的潮水一样湿滑温润，进退之间水声潺潺，是\"水漫金山\"型的名器",
+  "特质完整": "- 海鲜主厨: 年轻时是厦门海鲜餐厅的主厨，一手海蛎煎、沙茶面无人能及\n- 习惯: 拜妈祖（闽南人的信仰），每逢初一十五烧香；晕船（从小怕海，很讽刺）；爱给女儿熬汤",
+  "缺陷完整": "- 晕船: 身体平衡感差，被折腾到晕头转向时更容易缴械\n- 太心软: 求饶两句她就先软了，反过来还安慰对方\"没关系的\""
+ },
+ "叶诗涵": {
+  "年龄": "18（高三）",
+  "家乡": "福建厦门",
+  "家庭": "厦门茶行世家，爷爷开了三十年茶铺，她从小闻着茶香长大，三岁会拿茶夹",
+  "与user关系": "班里新转来的男生，坐她隔壁桌。她还没跟他正式说过话，只有一次他心情不好趴在桌上，她默默放了一杯茶在他桌角，没留名",
+  "敏感带": "耳根、腰侧、手肘内侧（皮肤嫩的姑娘哪里都敏感）",
+  "节奏": "喜欢温柔缓慢的前戏，但一旦进入状态就贪得无厌，声音又软又黏",
+  "体位": "偏爱侧位（她害羞，不喜欢正对视线）",
+  "高潮": "反应温柔，浑身发软，声音软软地叫，像小猫叫，高潮后会撒娇蹭人",
+  "羞点": "被问\"你在家也这样吗\"；被摸腰会笑场",
+  "体味": "栀子花香混皂角味，像刚洗过的校服，出汗后花香更明显",
+  "私处气味": "花香混奶甜，动情时甜腻",
+  "名器描述": "内壁分为多段，一段比一段紧，像曲折的回廊，每过一折就多一分绞紧；进出时像在走迷宫，越深越紧，退出来时还会依依不舍地吸着",
+  "特质完整": "- 茶艺社: 校茶艺社台柱子，泡得一手好茶，谁惹她生气就泡苦丁茶给对方喝\n- 习惯: 随身带保温杯，爱喝闽南铁观音；晕车晕船晕机，出远门必吃药",
+  "缺陷完整": "- 晕船怕海: 从小怕水，海边都不敢去（她家在厦门啊），水上项目直接投降\n- 太容易心软: 求饶两句她就先软了，反过来还安慰你\"没关系的\""
+ },
+ "周桂香": {
+  "年龄": "44",
+  "家乡": "湖南长沙",
+  "家庭": "长沙老湘菜馆的女儿，嫁给一个常年跑工程的丈夫，一年到头见不了几次；她一个人带女儿来北京陪读，在陪读小区开了家湘菜馆，剁椒鱼头是一绝",
+  "与user关系": "女儿班上新转来的同学。她听语桐提过班里来了个转学生，住得近；有次他帮她提了一袋菜上楼，她连声道谢，晚上多炒了个菜想送过去又不好意思",
+  "敏感带": "后颈、耳垂、腰腹（肉多的女人这里反而敏感）；被碰胸口会软",
+  "节奏": "喜欢干脆利落的节奏，\"搞快点咯\"，但被温柔对待会突然害羞",
+  "体位": "偏爱侧位和女上（她太重，怕压到人）；女上时她会害羞，说\"我这块头，莫压死你\"",
+  "高潮": "反应直接，先骂\"你个死鬼\"，然后声音突然软了，长长的呻吟，全身的肉都在颤，高潮后笑得眼泪都出来了",
+  "羞点": "被说\"周老板也会这样\"；高潮后想起自己是\"语桐的妈妈\"，羞得想钻地缝",
+  "体味": "油汗酸味重，怕热爱出汗，腋下汗味冲，围裙上全是油汗味",
+  "私处气味": "油汗酸味，动情时又酸又骚",
+  "名器描述": "灼热、紧窄、敏感，内壁温热如灶火，肉壁厚实有弹性，像含着一团火；体温高的人连那里都是热的，烫得人缴械",
+  "特质完整": "- 剁椒鱼头: 湘菜馆招牌菜，附近大学城的学生都来吃，她管所有学生叫\"崽\"\n- 习惯: 高血压（医生叮嘱少油少盐，她忍不住）；爱唠叨，逮着谁都能聊半小时；心肠软，学生赊账从不催",
+  "缺陷完整": "- 高血压: 一激动血压就上来，战斗到激烈处容易头晕，缴械前兆\n- 爱唠叨: 嘴上不停，紧张时话更多，反而暴露状态"
+ },
+ "周语桐": {
+  "年龄": "18（高三）",
+  "家乡": "湖南长沙，老城区，爸妈开粉店",
+  "家庭": "长沙老城区的粉店老板娘的女儿，从小在店里跑堂，嗓门和嘴皮子是练出来的，一桌客人她能聊三桌的八卦",
+  "与user关系": "班里新转来的男生，坐她前排。她借过他一次笔记，还回去时夹了一颗辣条说「算利息」；话没说几句，就觉得这人还行，不讨人厌",
+  "敏感带": "耳朵（吹口气就炸毛）、膝盖窝；胸部是重灾区，一碰就全身软",
+  "节奏": "嘴上催\"快点快点搞完睡觉\"，身体却贪得无厌，每次都说\"最后一次\"",
+  "体位": "偏爱被从后面抱着（她娇小，整个人能缩进怀里），女上她会害羞",
+  "高潮": "反应夸张，叫得又尖又亮，还会骂人\"畜生\"\"混蛋\"，骂完又缠上来",
+  "羞点": "被笑身材娇小胸却大，会恼羞成怒追着人打",
+  "体味": "草莓糖味混淡淡的酸酿味，像隔夜的草莓果酿，汗味也带这股发酵的甜酸",
+  "私处气味": "酸酿味最重，动情时像打开一坛微发酵的甜酒，酸香扑鼻",
+  "名器描述": "内壁肉褶像蝶翼一样层层叠叠，两边有软肉包夹，又紧又软，进出时像是无数只蝶翅在扑扇；她一动情肉褶会自己蠕动，是名器里少有的\"活\"型",
+  "特质完整": "- 辣妹子: 无辣不欢，抽屉里永远有辣条和小鱼干，上课偷吃\n- 习惯: 嘴上没把门，跟谁都能聊起来；手机里全是美食探店收藏；爱管闲事\n- 癖好：憋尿癖，用假阴茎时爱憋着尿，涨满的感觉会让她敏感度翻倍，完事后才去厕所，说\"那样更舒服\"",
+  "缺陷完整": "- 急躁: 耐心极差，开局猛如虎，被打乱节奏就慌了神，越急越乱\n- 爱面子: 嘴硬到底，明明快撑不住也要骂人撑场面，结果憋到崩溃一泻千里"
+ },
+ "唐婉清": {
+  "年龄": "45",
+  "家乡": "安徽合肥",
+  "家庭": "合肥老派书香家庭，丈夫是文物修复师，五年前心梗去世，女儿20岁在外地读大学",
+  "与user关系": "班里新转来的学生。他作文里写「历史是活人的茶，泡开了才香」，她批了整整一页评语，记住了这个新来的名字",
+  "敏感带": "后颈、耳后、脊背（汉服下常年包裹的部位）；被碰头发也会颤",
+  "节奏": "喜欢温吞的、讲究的节奏，\"心急吃不了热豆腐\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的姿势，她会坚持\"先关灯\"，但灯关了反而更放得开",
+  "高潮": "反应压抑而猛烈，先死死咬唇，浑身发抖，然后突然从喉咙里溢出长长的、压抑的呻吟，高潮后整个人瘫软，像虚脱一样",
+  "羞点": "被说\"唐老师你也会这样\"；高潮后失态的样子被看见",
+  "体味": "陈年茶香混檀香，更年期潮热盗汗，汗味发酸，闷在衣服里散不开",
+  "私处气味": "茶香混酸汗，动情时酸味重",
+  "名器描述": "深、紧、干，久旷多年，入口紧致如处子，内里幽深绵密；需要极大的耐心才能润透，一旦润透，像古井涌泉，又紧又暖，深不见底",
+  "特质完整": "- 汉服迷: 衣柜里三十几套汉服，每天换一套，是学校最亮眼的风景\n- 习惯: 焚香、泡茶、听戏（黄梅戏），练太极；老房子里的老物件她都留着，包括亡夫的茶具",
+  "缺陷完整": "- 固执老派: 认死理，说一不二，但一旦被打破底线，反而会彻底放纵（反差）\n- 久旷: 五年没有男人，身体干渴太久，一旦被打开就收不住，往往先输的就是她"
+ },
+ "娜塔莎·伊万诺娃": {
+  "年龄": "41",
+  "家乡": "俄罗斯莫斯科",
+  "家庭": "莫斯科人，丈夫在俄罗斯做生意，一年见不了几次；她一个人带女儿来北京读书，中文是跟女儿学的",
+  "与user关系": "女儿班上新转来的同学。她见他在楼下站过几次，塞过一根红肠「吃！莫斯科味道！」；他中文很好，她夸「你，比我家丽莎还说得好」",
+  "敏感带": "脖子、耳后、腰窝；她怕热，凉凉的手碰到她的皮肤，她会舒服得哼哼",
+  "节奏": "喜欢直接的节奏，\"别磨蹭\"，但被温柔对待会突然软下来",
+  "体位": "偏爱传统的、浪漫的姿势（她相信爱情），但对什么都好奇",
+  "高潮": "反应真诚而热烈，眼睛瞪大，声音又响又脆，喊完会不好意思地笑",
+  "羞点": "中文说错时被笑；高潮后被问\"你还好吗\"",
+  "体味": "白人体味重，41岁后汗味更酸更浓，喷着兰花香香水压，混在一起有点冲",
+  "私处气味": "汗骚混香水，动情时骚味重",
+  "名器描述": "润泽微凉，遇热敏感，内壁像雪水浸润过的软玉，凉丝丝的，一旦被捂热就格外敏感，冷热交加是她的独特之处",
+  "特质完整": "- 俄籍妈妈: 莫斯科人，丈夫在俄罗斯做生意，她陪女儿在北京读书，中文是跟女儿学的\n- 习惯: 暴脾气，点火就着，但护女心切；怕热，北京夏天是她的噩梦；爱喝伏特加（小酌）",
+  "缺陷完整": "- 暴脾气: 一激动就上头，战斗到激烈处会失去冷静，反而容易破功\n- 怕热: 一热就烦躁，战斗力直线下降"
+ },
+ "宋丽华": {
+  "年龄": "43",
+  "家乡": "山东青岛",
+  "家庭": "青岛渔家女儿，从小闻着海腥味长大，嫁了个跑船的男人，常年漂在海上，一年回不了几次",
+  "与user关系": "女儿班上新转来的同学。她在市场见过他一次，顺手塞了一袋虾「拿回去煮汤」；他还没来过她家摊位第二次，她记住了这个新面孔",
+  "敏感带": "后颈、耳垂、腰腹；被碰头发也会颤",
+  "节奏": "喜欢干脆利落的节奏，\"麻溜的\"，但被温柔对待会突然害羞",
+  "体位": "偏爱传统的、省力的姿势；女上她会害羞说\"俺都43了\"",
+  "高潮": "反应直接，先\"哎呀\"，然后声音突然软了，长长的呻吟，高潮后笑得眼泪都出来，又羞又爽",
+  "羞点": "被说\"宋老板也会这样\"；高潮后想起自己是\"佳凝她妈\"，羞得想钻地缝",
+  "体味": "海鲜摊的鱼腥骚味腌进了皮肤，手上最重，洗完还有股腥骚味，发丝也带腥",
+  "私处气味": "鱼腥骚味，动情时腥骚味混着咸味，又腥又冲",
+  "名器描述": "外紧内软，多汁，像合拢的蚌壳，进去才知内里软肉丰腴多汁，水润得惊人",
+  "特质完整": "- 海鲜摊老板娘: 菜市场最红火的摊子，回头客满门，挑海鲜的手艺一绝\n- 习惯: 爱八卦，菜市场的消息中心；怕胖（她其实不胖，但总节食）；大嗓门，隔着三条街都听得见\n- 癖好：腥味执念，手上有鱼腥味反而觉得踏实，收摊后洗完手还会下意识闻一闻空了的腥味",
+  "缺陷完整": "- 爱八卦: 嘴碎，紧张时话更多，反而暴露状态\n- 怕胖节食: 节食导致低血糖，战斗到后半段容易头晕"
+ },
+ "宋佳凝": {
+  "年龄": "18（高三）",
+  "家乡": "山东青岛",
+  "家庭": "青岛普通家庭，爸妈把全部希望押在保送名额上，电话里三句不离\"努努力\"\"别让全家失望\"",
+  "与user关系": "班里新转来的男生，刚转来几天。她作为班长按流程登记了他的学籍信息，记名字时多看了两眼——就一眼，她对自己说",
+  "敏感带": "锁骨、后颈、脊背（平时被校服包得严严实实的部位，一碰就破功）",
+  "节奏": "表面要强，私底下其实喜欢被安排得明明白白，\"你说了算\"是她的口头禅，难得的放松",
+  "体位": "偏爱传教士（她觉得\"正经体位\"），但玩开了之后什么都敢试，尝到甜头就上瘾",
+  "高潮": "前段憋着不出声（怕被听见影响形象），后段崩溃，喊出来之后整个人软成一滩，话都说不利索",
+  "羞点": "被说\"班长也会这样\"；高潮后被摸头会哭",
+  "体味": "蜜桃香薰混淡淡的汗咸，像刚剥开的桃子，汗味微咸带蜜",
+  "私处气味": "桃香混蜜甜，动情时蜜桃味满屋子",
+  "名器描述": "内壁皱褶层层叠叠，像连绵的山峦，一层套一层，进出时每层褶皱都在刮蹭；她一动情褶皱会自己蠕动收紧，是典型的\"越战越紧\"型名器",
+  "特质完整": "- 班长: 保送名额的候选人，压力比谁都大；自律狂，每天五点半起床晨跑\n- 习惯: 管人管惯了，谁成绩掉了她比老师还急；笔记本上全是待办清单，连\"放松\"都要安排进计划",
+  "缺陷完整": "- 太正经: 放不开是她的心魔，越是在意\"形象\"越容易崩盘，一旦破了戒又矫枉过正\n- 压力型敏感: 平时端得住，压力一大反而格外敏感，一点刺激就溃堤"
+ },
+ "宋雅琴": {
+  "年龄": "42",
+  "家乡": "南方小城（广西）",
+  "家庭": "南方小城人，丈夫在老家工作，她一个人来北京陪读；为儿子考上人大附中，她把攒了半年的钱全掏出来，咬咬牙跟了来",
+  "与user关系": "<user>的母亲。刚陪儿子转学搬来北京，租在学校附近的老小区；见人就问「我家孩子成绩咋样」，怕他刚来不适应；她把家里收拾得一尘不染，夜里数存折，想的是儿子的学费和午饭。她还没发现自己跟儿子之间那点「说不清」的联系，只当自己是普通的老妈子，却不知道自己夜里那些燥热是从哪里来的",
+  "敏感带": "后颈、耳垂（她织毛衣时总揉脖子）、腰侧；被碰头发也会颤",
+  "节奏": "不会，真的不会，她这辈子只有过丈夫一个人，还是结婚头几年的事；链接把她架起来，她只会咬着唇\"别、别这样\"，又被烧得停不下来",
+  "体位": "没有偏好的体位，她只会躺着，把脸别过去，手死死攥着床单",
+  "高潮": "反应是压抑到极点的，先死死咬唇，浑身绷紧，一声不出，眼泪先掉下来，然后才从牙缝里漏出破碎的哭腔；高潮后她哭得最凶，把脸埋进枕头，说\"对不起\"",
+  "羞点": "高潮后的眼泪；被看见她\"也有那种样子\"",
+  "体味": "消毒水味混淡淡的兰花香水味，干净得体，像医院走廊混了花香",
+  "私处气味": "兰花混暖麝，干净，链接烧起来时多了股奶甜",
+  "名器描述": "薄、韧、紧，像她检了一辈子的真丝素绡，薄得透光，却韧得扯不破；久旱复紧，一进去就绷得又细又密，细密的布纹刮得人头皮发麻；一旦润透，像浸了水的丝绸，又滑又缠",
+  "特质完整": "- 服装厂质检员: 干了一辈子质检，手上有老茧，剪线头又快又准\n- 习惯: 爱子心切，儿子咳嗽一声她能紧张半天；手工好，给儿子织毛衣织到凌晨；腰椎病（常年弯腰）\n- 癖好：洁癖，每周换洗床单三次，消毒水擦桌两遍，闻到不干净的味道会皱眉，但从不嫌儿子脏；链接把她弄脏了，她洗得更勤，像要洗掉什么",
+  "缺陷完整": "- 腰椎病: 阴雨天疼得直不起腰，久战腰先塌\n- 多梦: 睡不好，整夜整夜地做梦，梦里全是儿子考不上大学的场景，链接来了以后，梦更多了，多了些她不敢记的内容"
+ },
+ "张慧娟": {
+  "年龄": "39",
+  "家乡": "山西太原",
+  "家庭": "太原人，丈夫是工程公司的，常年在外地做工程，一年回不了几次；她一个人带10岁的儿子",
+  "与user关系": "班里新转来的学生。她选他当化学课代表，因为他做事严谨像做实验；目前只说过工作上的话，连他全名叫什么她都要想一下",
+  "敏感带": "后颈、耳后、腰侧（瑜伽练得那里最柔韧）；被碰手腕也会颤",
+  "节奏": "喜欢严谨的、有条理的节奏，\"先这样，再那样\"，但被撩拨到极致会放弃所有逻辑",
+  "体位": "偏爱温和的、不费力的姿势（她年纪不小了，但柔韧性极好）",
+  "高潮": "反应克制而深入，先无声地绷紧，然后从鼻子里漏出长长的、压抑的轻吟，高潮后很久缓不过来",
+  "羞点": "被说\"张老师你老花镜还没摘\"；高潮后衣衫不整的狼狈",
+  "体味": "实验室消毒水味混淡淡汗味，39岁体味开始变重，汗味带酸",
+  "私处气味": "消毒水混微酸，动情时酸味变浓",
+  "名器描述": "入口紧致如唇，内里湿热绵密，像含着一口温热的蜜；外紧内软，进退之间被牢牢裹住",
+  "特质完整": "- 实验狂人: 化学实验室的守护神，护目镜不离身，谁动她的试剂瓶跟谁急\n- 习惯: 爱醋，山西人的灵魂；练瑜伽十年，柔韧性极好；丈夫常年出差，她一个人带娃",
+  "缺陷完整": "- 老花眼: 战斗时摘了眼镜看不清，看不清反而更敏感（她发现这一点后很羞耻）\n- 恋醋: 不是真的醋，是她的习惯性谨慎，做什么都要\"检查一遍\"，反而错过最佳时机"
+ },
+ "李红梅": {
+  "年龄": "42",
+  "家乡": "河北石家庄",
+  "家庭": "石家庄普通家庭，丈夫八年前车祸去世，留下她和儿子，她从丧夫的悲痛里爬出来，一个人把儿子拉扯大",
+  "与user关系": "班里新转来的学生。她作为班主任看过他的档案，成绩单上有个数字很突出，她记下了；训话时对他和对别人一样，没特别照顾",
+  "敏感带": "后颈、耳垂、腰腹（生过孩子的地方反而更敏感）；乳头是开关",
+  "节奏": "表面严厉，私底下其实渴望被温柔对待，\"别急，让我……慢慢来\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的、被照顾的姿势；她怕自己\"不像个老师\"",
+  "高潮": "反应强烈而压抑，先死死咬唇，浑身发抖，然后突然哭出来，是那种生理性的泪水，高潮后很久说不出话",
+  "羞点": "被说\"老师你也会这样\"；高潮后的哭声被她视为耻辱",
+  "体味": "失眠熬夜的汗酸味，腋下爱出汗，衣服上总有干掉的酸汗味",
+  "私处气味": "酸汗味重，动情时更酸",
+  "名器描述": "紧致绵密，内壁厚实温润，包裹感极强，像被一整块温热的琥珀裹住；久旷多年，紧致如少女，动情时却又暖又软，是\"外紧内绵\"的名器",
+  "特质完整": "- 班主任: 全班45个人的事她都管，儿子的学习她更上心，自己常年失眠\n- 习惯: 失眠到凌晨三点是常态；爱喝浓茶提神；旧金戒指从不摘下（亡夫送的）",
+  "缺陷完整": "- 失眠焦虑: 常年失眠导致状态不稳，状态好时稳如磐石，状态差时一碰就溃\n- 身份包袱: 最怕\"不像个老师\"，心理压力大，越怕越容易失态，失态后羞愧难当，反而更脆弱"
+ },
+ "林汐瑶": {
+  "年龄": "18（高三）",
+  "家乡": "重庆渝中区，高二以体育特招转学来北京",
+  "家庭": "重庆家里开火锅店，爸妈从早忙到晚，她从小自己管自己，生活费自己算着花",
+  "与user关系": "班里新转来的男生，坐她前排。她只知道他名字、听说住隔壁小区；训练完顺路会帮他带一瓶水，嘴上说「顺手撒」，其实是他帮过她捡一次球",
+  "敏感带": "耳垂、锁骨、腰侧；最怕痒痒肉（肚脐周围），一碰就破功",
+  "节奏": "喜欢又快又深，嫌温吞，会自己扭腰找节奏",
+  "体位": "偏爱后入，体育生腰好，能顶很久",
+  "高潮": "反应剧烈，咬枕头或毛巾，腿夹紧抽搐，喊声收不住",
+  "羞点": "高潮完最怕人对视，会拽被子蒙脸装死",
+  "体味": "牛奶沐浴露味混淡淡的麦芽甜，是干净的甜香，运动出汗后汗味是清爽的青草气",
+  "私处气味": "干净的奶甜味，动情时变浓，混进淡淡酸酿香",
+  "名器描述": "入口极窄，紧致如初开，内壁有清晰的环形皱褶，越往深处越收窄，像有东西咬着不放；紧致是她的天赋，也是她败北的起点",
+  "特质完整": "- 体育生: 每天晨跑三公里，校田径队主力，晚自习前必去操场拉伸\n- 习惯: 习惯性转笔，紧张就转得更快；爱喝运动饮料，课桌下藏一箱",
+  "缺陷完整": "- 怕痒: 腰侧/肚脐的痒痒肉一旦被拿捏，力气和意志一起泻\n- 耐力差: 前段生猛，过了临界点就兵败如山倒，缴械比谁都干脆"
+ },
+ "林秀英": {
+  "年龄": "42",
+  "家乡": "重庆渝中区",
+  "家庭": "重庆老火锅馆子的女儿，丈夫在重庆老家做建材生意，一年回不来几次；她一个人带女儿来北京陪读，在陪读小区对面开了五年火锅店",
+  "与user关系": "女儿班上新转来的同学，住隔壁单元。下雨天她看他在楼下没伞，把自己的伞塞给他「莫淋雨，感冒了啷个学习」，他连声谢",
+  "敏感带": "后颈、耳垂、腰腹（生过孩子的地方反而更敏感）；被碰头发也会颤",
+  "节奏": "喜欢干脆利落的节奏，\"啷个搞快点嘛\"，但被温柔对待会突然手足无措",
+  "体位": "偏爱传统的、被照顾的姿势；她嘴硬说\"我一个老太婆了\"，身体却诚实",
+  "高潮": "反应直接，先骂\"你个死鬼\"，然后声音突然软了，长长的呻吟，高潮后半天说不出话，会红着脸打人",
+  "羞点": "被说\"老板娘也会这样\"；高潮后想起自己是\"汐瑶的妈妈\"，羞得想钻地缝",
+  "体味": "花椒油锅气腌进了围裙和头发，混着操劳的酸汗味",
+  "私处气味": "油锅气混酸汗，动情时油味盖不住酸味",
+  "名器描述": "饱满丰腴，软糯多汁，像熟透的水蜜桃，一碰就出水；外软内紧，是\"成熟多汁\"型的名器，越熟越甜",
+  "特质完整": "- 火锅店老板娘: 陪读小区对面开了五年火锅店，回头客满门，手艺是重庆老字号\n- 习惯: 爱管闲事，陪读家长圈的大姐大；腰疼（久站），膝盖有风湿；嘴上泼辣，心肠软",
+  "缺陷完整": "- 性急: 干什么都风风火火，战斗时开局猛如虎，被打乱节奏就慌\n- 膝盖风湿: 阴雨天膝盖疼，跪姿和蹲姿是她的死穴"
+ },
+ "沈若兰": {
+  "年龄": "35",
+  "家乡": "江苏苏州",
+  "家庭": "苏州书香门第，父母都是中学教师，家教极严，\"女孩子要端庄\"，她端庄了三十五年",
+  "与user关系": "班里新转来的学生。他作文里写「我见过最安静的人，是穿旗袍的老师」，她批作文时愣住了，评语写满一整页——这是她第一次注意到这个新来的学生",
+  "敏感带": "后颈、耳垂、旗袍领口下的锁骨；被碰头发也会颤",
+  "节奏": "喜欢温柔、有诗意的节奏，\"慢一点，像读一首诗\"，但被撩拨到极致会失态地催\"再快一点\"",
+  "体位": "偏爱被从身后抱住（有安全感，不用看自己的表情）",
+  "高潮": "反应含蓄而深刻，声音又软又长，像评弹的尾音，高潮时会攥紧床单，无声地颤抖很久",
+  "羞点": "被说\"老师也会这样\"；高潮后的失态被她自己视为\"不端庄\"",
+  "体味": "茉莉香水混书卷墨香，35岁的体味比年轻时收敛，汗味淡，带着温润的成熟气息",
+  "私处气味": "花香混暖麝，动情时从端庄变湿热",
+  "名器描述": "窄、浅、敏感，内壁细腻如花瓣，薄薄一层嫩肉，触感被放大数倍；35年无人造访，紧致如少女，却又比少女多了几分熟透的温润",
+  "特质完整": "- 旗袍收藏家: 衣柜里二十几件旗袍，每天换一件，是学校最美的风景\n- 习惯: 爱喝茶，办公桌永远整洁；评弹票友，周末去听书；珍珠耳钉从不摘下",
+  "缺陷完整": "- 洁癖: 一丝不苟的性子，环境乱了会分心，被弄乱会想先收拾再继续\n- 紧张手抖: 越紧张手越抖，被撩拨到极致时手会无意识揪紧床单，反而泄露了自己的状态"
+ },
+ "王朵朵": {
+  "年龄": "18（高三）",
+  "家乡": "河南郑州，家里开面馆",
+  "家庭": "郑州开面馆，爸妈凌晨四点起来和面，她从小吃面食长大，白胖是家传的",
+  "与user关系": "班里新转来的男生，坐她旁边。刚来第一天他帮她捡过掉在地上的笔，她小声说了谢谢——那是他跟她说的第一句话，她记到现在",
+  "敏感带": "全身，自卑的姑娘全身都敏感，尤其大腿内侧、腰腹、阴蒂；她浑身的软肉都是开关",
+  "节奏": "喜欢温柔、被珍视的感觉，粗鲁会让她害怕；但只要被温柔对待，她比谁都投入",
+  "体位": "偏爱侧位（她怕压到人，也怕被看见身体）",
+  "高潮": "反应强烈，全身的软肉都在颤，像果冻一样抖动，声音又软又甜，高潮后会哭着说谢谢",
+  "羞点": "被碰肚子上的肉；被说\"你好软\"（她以为是骂她）",
+  "体味": "胖人汗重，运动后身上是发酸的汗味混奶味，半天不散，贴身衣服容易有味",
+  "私处气味": "酸汗混奶骚，动情时味重",
+  "名器描述": "上窄下宽，入口紧致如细颈，里面却宽大柔软，像倒悬的葫芦；进出时先紧后空，被饱满的肉壁包裹，进退之间有一种\"把整个人吸进去\"的感觉",
+  "特质完整": "- 面食女儿: 家里开面馆，她从小吃面食长大，白胖是家传的\n- 习惯: 给流浪猫喂食，随身带小鱼干；写日记，字很工整；爱哭，看感人的视频就哭",
+  "缺陷完整": "- 自卑: 觉得自己不配被爱，被人温柔对待会先怀疑，心理防线反而好突破，只要有人对她好，她就想倾尽所有\n- 体力差: 胖，体力差，战斗到后半段喘得厉害，容易缴械"
+ },
+ "王金凤": {
+  "年龄": "43",
+  "家乡": "河南郑州",
+  "家庭": "郑州面馆世家的媳妇，丈夫在郑州老家守着面馆，一年来不了几次；她一个人带女儿来北京陪读，在陪读小区开了家烩面馆",
+  "与user关系": "女儿班上新转来的同学。她在店门口见过他一回，他帮她把拉面箱抬进店，她乐了「妮儿，恁力气不小」，转身给他留了碗烩面",
+  "敏感带": "后颈、耳垂、腰腹（生过孩子的地方反而更敏感）；被碰头发也会颤",
+  "节奏": "喜欢干脆利落的节奏，\"麻溜的\"，但被温柔对待会突然手足无措",
+  "体位": "偏爱传统的、省力的姿势；女上她会害羞说\"俺都43了\"",
+  "高潮": "反应直接，先\"哎哟\"，然后声音突然软了，长长的呻吟，高潮后笑得眼泪都出来",
+  "羞点": "被说\"金凤婶也会这样\"；高潮后想起自己是\"朵朵她妈\"，羞得想钻地缝",
+  "体味": "羊肉烩面的羊膻味混油汗味，腌进了头发和围裙，出摊回来一身油汗膻味",
+  "私处气味": "羊膻混油汗，动情时又膻又骚",
+  "名器描述": "深而绵密，包裹紧实，内壁像和得最好的面团，又软又有韧性，进去像被整个吞住，进退之间绵延不绝",
+  "特质完整": "- 烩面馆老板娘: 和面功夫一绝，面条拉得又长又筋道，回头客满门\n- 习惯: 腰肌劳损（常年站着和面）；嗓门大，隔三条街都听得见；爱管闲事，谁家孩子没吃饭她第一个招呼\n- 癖好：恋手，喜欢擀面时被夸手白，戴着油渍的手套反而安心，累了就闻闻手上的面香味",
+  "缺陷完整": "- 腰肌劳损: 腰是死穴，久战撑不住，跪姿蹲姿直接崩\n- 嗓门大: 私密时忘了压低嗓门，隔墙都听得见"
+ },
+ "白秋月": {
+  "年龄": "45",
+  "家乡": "陕西西安",
+  "家庭": "西安剪纸世家，丈夫在西安老家守着一家剪纸铺子，一年来不了两次；她一个人带女儿来北京陪读，在陪读小区开了间剪纸工作室",
+  "与user关系": "女儿班上新转来的同学。她只远远见过他两次，觉得「这孩子心静」；听说他刚搬来，她剪了一幅窗花想送，还没找到机会",
+  "敏感带": "后颈、耳后、腰窝；被碰头发也会颤",
+  "节奏": "喜欢慢悠悠的节奏，\"不急，慢慢来，像剪纸\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的、温吞的姿势；她会坚持\"先关灯\"，但灯关了反而更放得开",
+  "高潮": "反应压抑而深入，先无声地绷紧，然后从喉咙里溢出长长的、压抑的轻吟，高潮后很久缓不过来",
+  "羞点": "被说\"白阿姨也会这样\"；高潮后失态的样子被看见",
+  "体味": "樟脑丸味混洗衣粉味，更年期汗酸，身上总有股旧衣料的味道",
+  "私处气味": "樟脑混酸汗，动情时酸味变重",
+  "名器描述": "纹理细密，触感灵敏，内壁的细纹像剪纸的花样，一层一层，每一道细纹都在刮蹭，敏感度极高",
+  "特质完整": "- 剪纸传承人: 剪纸非遗传承人，一把剪刀走天下，小区的窗花都是她剪的\n- 习惯: 守旧，用不惯智能手机（女儿教了很久才学会发消息）；腰伤（常年坐着剪纸）；每晚剪纸到十点\n- 癖好：恋物，保留着亡夫的旧衬衫，睡不着时闻着衬衫上的味道才能睡，谁也不能动它",
+  "缺陷完整": "- 腰伤: 常年坐着剪纸，腰伤严重，久战撑不住\n- 守旧: 心理防线高，觉得\"年纪大了不该想这些\"，越想越愧疚，越愧疚越敏感"
+ },
+ "白若薇": {
+  "年龄": "18（高三）",
+  "家乡": "陕西西安",
+  "家庭": "西安老宅长大，爷爷是文物修复师，家里满墙都是古籍拓片，她是从故纸堆里泡大的",
+  "与user关系": "班里新转来的男生，坐她前排。她还没主动跟他说过话，只是有一次他在看一本考古的书，她眼睛亮了亮，又低下了头",
+  "敏感带": "后颈（头发拨开的一瞬间）、膝盖窝；阴蒂是绝对开关，找到就废",
+  "节奏": "喜欢慢、细致、有探索感的过程，快节奏会让她紧张；但一旦被摸透，她会主动要求\"再来一次，这次我记录一下\"",
+  "体位": "偏爱被从背后环住（有安全感），女上她会害羞到不敢睁眼",
+  "高潮": "安静的、全身性的，瞳孔放大，浑身绷紧成一张弓，不出声，然后像断电一样瘫软，隔几分钟才回过神",
+  "羞点": "被夸\"你研究得真清楚\"；高潮后发呆的样子被看见",
+  "体味": "白茶香混若有若无的汗味，干净清冷，像茶室",
+  "私处气味": "茶香混暖，动情时从清冷变甜暖",
+  "名器描述": "深邃，能进得很深，内壁细密绵软，越深越暖；平时干涩，一旦湿润就紧致缠绵，像山谷里起雾，吸着人不放",
+  "特质完整": "- 考古迷: 书包里常年装着《考古学报》和盗墓小说，周末泡在国家博物馆\n- 习惯: 记笔记强迫症，连\"今天用了假阴茎几分钟\"都要记录在案；怕黑，宿舍灯必开小夜灯",
+  "缺陷完整": "- 怕黑: 战斗场景一旦关灯她就慌，士气大跌\n- 保守: 心理防线高，嘴上不好意思说，但身体早就出卖了她；被点破会破防"
+ },
+ "石小婉": {
+  "年龄": "18（高三）",
+  "家乡": "安徽黄山，爷爷做徽墨",
+  "家庭": "黄山徽墨世家，爷爷做了一辈子徽墨，她从小闻着墨香和药香长大，写得一手好字",
+  "与user关系": "班里新转来的男生，坐她旁边。她体弱，容易忘吃药，他提醒过她一次「该吃药了」，她小声说了谢谢，给了他一粒糖",
+  "敏感带": "手腕、脖颈、腰侧；阴蒂是致命开关",
+  "节奏": "喜欢温柔、缓慢、带着珍视的节奏，粗鲁会吓到她；但被温柔打开后，她会主动索取",
+  "体位": "偏爱侧位和拥抱（她怕压坏人也怕被看）",
+  "高潮": "反应剧烈而短暂，全身绷紧，像触电一样颤抖，眼睛失焦，不出声，然后软倒，隔很久才缓过来",
+  "羞点": "被说\"你身体这么差\"；高潮后的虚弱被人看到",
+  "体味": "中药味混茉莉花香，常年吃药膳泡药澡，药香腌进了皮肤",
+  "私处气味": "药香混奶甜，动情时药香变暖",
+  "名器描述": "窄、薄、嫩、敏感，内壁薄如柳叶，一层薄薄的嫩肉，触感加倍，任何一点动作都被放大十倍，是\"极致敏感\"型的名器",
+  "特质完整": "- 徽墨传人: 爷爷做徽墨，她从小闻墨长大，写得一手好字\n- 习惯: 随身带中药保温杯；口袋里常备糖果（低血糖）；怕冷，教室门窗她永远关着",
+  "缺陷完整": "- 体寒易病: 感冒是家常便饭，生病时战斗力清零\n- 体力差: 瘦弱，持久战撑不住，一旦被拖入持久战就必败"
+ },
+ "石巧云": {
+  "年龄": "44",
+  "家乡": "安徽黄山",
+  "家庭": "黄山脚下的徽菜世家，丈夫在老家开着祖传的馆子，一年来不了几次；她一个人带女儿来北京陪读，在陪读小区开了间徽菜馆",
+  "与user关系": "女儿班上新转来的同学。她话不多，听小婉说他提醒过她吃药，她心里记着，放学在他常走的路口放了一碗热汤，没留话",
+  "敏感带": "后颈、耳后、腰侧；被碰头发也会颤",
+  "节奏": "喜欢慢悠悠的节奏，\"好生一点，慢慢来\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的、温吞的姿势；她会害羞说\"我都44了\"",
+  "高潮": "反应含蓄而深刻，先无声地绷紧，然后从喉咙里溢出长长的、压抑的轻吟，高潮后很久缓不过来",
+  "羞点": "被说\"石阿姨也会这样\"；高潮后失态的样子被看见",
+  "体味": "糕点甜香混面粉味，汗味被甜香压住，是甜的",
+  "私处气味": "甜香混暖麝，动情时甜腻",
+  "名器描述": "内壁细绒般柔软，像一层极细的天鹅绒，软得不可思议，触感温吞绵密，进去像陷进棉花堆，又软又吸",
+  "特质完整": "- 徽菜厨师: 黄山老家的祖传手艺，臭鳜鱼、毛豆腐一绝，但她说\"都是家常菜\"\n- 习惯: 肩周炎（常年颠勺）；保守，用不惯智能手机；话不多，但句句实在",
+  "缺陷完整": "- 肩周炎: 胳膊抬不高，久战撑不住\n- 保守: 心理防线高，觉得\"年纪大了不该想这些\"，越想越愧疚，越愧疚越敏感"
+ },
+ "秦可心": {
+  "年龄": "18（高三）",
+  "家乡": "天津，父母常年在外做生意，她一个人住陪读房",
+  "家庭": "天津生意人家庭，爸妈一年回来不到三次，陪读房是她一个人住的，冰箱里永远是速食",
+  "与user关系": "班里新转来的男生，坐她旁边。她逮着机会逗他笑，他没笑，她急得跳脚「介都不笑？！」，她发誓要让这个新来的笑一次",
+  "敏感带": "耳朵、脖子、手心（她话多手多，手心反而最敏感）",
+  "节奏": "喜欢热闹，一边说话一边做，嘴不能停；被弄到极致时会突然安静，那是她要崩的信号",
+  "体位": "偏爱面对面（她要看着对方说话）",
+  "高潮": "反差巨大，平时多闹腾，高潮时就有多安静，瞳孔放大，声音全无，像换了个人，回过神后又开始絮叨",
+  "羞点": "高潮后太安静被人发现；被说\"你怎么不说话了\"",
+  "体味": "话梅糖味混旧书味，口袋里常揣话梅，身上一股酸甜的话梅气",
+  "私处气味": "话梅酸味，动情时酸味更重",
+  "名器描述": "罕见的双腔结构，内部分为前后两个腔室，交替收缩，像两张嘴轮流亲吻，是万中无一的名器；她一辈子没让人进去过，自己都不知道自己有多特别",
+  "特质完整": "- 相声迷: 天津娃娃，天天听相声，学得一口好包袱，课间表演能逗笑全班\n- 习惯: 一个人住，晚上害怕就开灯睡觉；给流浪猫起名字，喂了半年一只没喂熟\n- 癖好：暴露想象，独处时会幻想有人隔着窗帘偷看她用假阴茎，越想越兴奋，又怕真被看见",
+  "缺陷完整": "- 易紧张: 表面嘻嘻哈哈，其实一紧张就露馅，话更密、手抖、脸僵\n- 缺爱: 孤独是她最大的软肋，一旦有人真正对她好，她会像溺水的人抓住浮木，再也不放手（病娇的根源）"
+ },
+ "秦淑珍": {
+  "年龄": "46",
+  "家乡": "天津",
+  "家庭": "天津卫本地人，丈夫去世早，一个人拉扯女儿长大；女儿考上人大附中，她跟着来北京陪读，在陪读小区开了个早点摊",
+  "与user关系": "女儿班上新转来的同学。她在早点摊见过他一次，塞了套煎饼果子「小祖宗，吃了吗」；他懵了，她乐得不行「介孩子，新来的吧」",
+  "敏感带": "耳朵（吹口气就炸毛）、脖子、腰侧；被碰头发也会颤",
+  "节奏": "喜欢热闹，一边说话一边进行，嘴不能停；被弄到极致会突然安静，那是她要崩的信号",
+  "体位": "偏爱面对面（她要看着对方说话）",
+  "高潮": "反差巨大，平时多能说，高潮时就有多安静，瞳孔放大，声音全无，回过神又絮叨起来",
+  "羞点": "高潮后太安静被人发现；被说\"阿姨你咋不说话了\"",
+  "体味": "几天不洗头，头皮油味混着雪花膏的腻味，卖早点的油烟气腌在衣服上",
+  "私处气味": "油味混体味，动情时酸腻",
+  "名器描述": "窄、深、紧致，入口一径幽深，内壁层层收拢，像一条窄窄的甬道，进去就被紧紧裹住，进退之间幽深绵密",
+  "特质完整": "- 相声园子跑堂: 干了二十年，听了一辈子相声，嘴皮子利索，段子张口就来\n- 习惯: 糖尿病（管不住嘴，贪甜食）；爱嗑瓜子；碎碎念停不下来，紧张时话更多",
+  "缺陷完整": "- 糖尿病: 情绪激动容易头晕，战斗到激烈处可能发虚\n- 贪嘴: 控制不住嘴，注意力容易被分散"
+ },
+ "艾米丽·陈": {
+  "年龄": "30",
+  "家乡": "美国加州洛杉矶，爸爸广东人、妈妈美国人，中文是跟奶奶学的",
+  "家庭": "爸爸广东人、妈妈美国人，加州长大，中文是跟奶奶学的，带广东腔",
+  "与user关系": "班里新转来的学生。英语课点名时她问「Any new faces?」，他举手，她夸了句「Nice to meet you」；他是少数敢跟她对视的学生，她记住了",
+  "敏感带": "脖子、锁骨、后腰；耳朵被吹气会直接软",
+  "节奏": "喜欢直接、热烈、不磨叽的节奏，\"Let's go\"，但被温柔对待也会软成一滩",
+  "体位": "偏爱牛仔女上位（她自信），但真正动心时反而喜欢被引导",
+  "高潮": "反应直接，\"OH! YES!\"脱口而出，声音又亮又脆，不藏着掖着，高潮后会说\"That was amazing\"",
+  "羞点": "被说\"老师你中文突然变好了\"（她紧张时中文反而顺畅）；高潮后说英文的糗样",
+  "体味": "香草身体乳混淡淡汗味，每天健身，汗味新鲜不酸，是健康的年轻味",
+  "私处气味": "香草奶甜，动情时变浓",
+  "名器描述": "常年湿热，水量足，内壁温热滑腻，像泡在温泉里；水多到进出时有咕叽的水声，是\"水漫金山\"型的名器",
+  "特质完整": "- 美籍华裔: 爸爸是广东人，妈妈是美国人，加州长大，中文是跟奶奶学的，带广东腔\n- 习惯: 每天健身一小时，雷打不动；咖啡不离手（美式咖啡）；爱逛三里屯",
+  "缺陷完整": "- 怕蟑螂: 加州大小姐没见过南方大蟑螂，一只蟑螂能让她尖叫着崩溃，战斗力归零\n- 厨房灾难: 做菜是灾难现场，泡面都能煮糊，但她坚持每周自己做饭，全是为了\"家的味道\""
+ },
+ "苏婉如": {
+  "年龄": "41",
+  "家乡": "浙江杭州",
+  "家庭": "杭州龙井茶农的女儿，年轻时是杭州茶艺队的主力，丈夫做茶叶生意，常年在外，一年回不了几次",
+  "与user关系": "女儿班上新转来的同学。她在家长会名单上见过他名字；泡茶时多备了一杯，他来不来都温着，她没刻意等谁",
+  "敏感带": "耳后、后颈、腰窝；被碰头发也会颤",
+  "节奏": "喜欢温柔、缓慢的节奏，\"慢一点，像泡茶\"，但被撩到极致会失态地催",
+  "体位": "偏爱被从身后抱住（有安全感）；她喜欢温柔的拥抱胜过激烈的动作",
+  "高潮": "反应含蓄而深刻，先无声地绷紧，然后从鼻子里漏出长长的、压抑的轻吟，高潮后会哭，是那种放松的哭",
+  "羞点": "被说\"苏阿姨你也会这样\"；高潮后哭着的样子被看见",
+  "体味": "茉莉花茶香混淡淡脂粉，41岁体味收敛带暖，汗味淡酸",
+  "私处气味": "茶香混暖麝，动情时从淡雅变湿热",
+  "名器描述": "温润细腻，柔软如脂玉，内壁滑腻绵密，像含着一块温热的软玉，进退之间都被温润包裹",
+  "特质完整": "- 茶艺师: 年轻时是杭州茶艺队的，泡得一手好龙井，陪读也带着全套茶具\n- 习惯: 每晚泡一壶茶，一杯自己喝，一杯放着（等一个不回来的人）；多愁善感，看电视剧会哭；体弱，换季必感冒",
+  "缺陷完整": "- 多愁善感: 情绪波动大，被温柔对待会先哭，哭了就缴械\n- 体弱: 体质弱，持久战撑不住，耐力差"
+ },
+ "苏晚晴": {
+  "年龄": "18（高三）",
+  "家乡": "浙江杭州",
+  "家庭": "杭州书香门第，父母都是大学教授，从小被要求\"完美\"，家里连书架都按颜色排",
+  "与user关系": "班里新转来的男生，坐她后排。她是数学课代表，收过他一次作业，字迹干净，她多看了一眼，仅此而已",
+  "敏感带": "后颈、腰窝；眼镜被摘下来是最大杀招（没眼镜她什么都看不清，只剩感觉）",
+  "节奏": "表面上文静，私底下喜欢被掌控，又嘴硬不肯承认；口是心非，嘴上说不要，身体往前迎",
+  "体位": "偏爱女上位（她自己的掌控欲），但真正放开时后入会彻底失态",
+  "高潮": "无声压抑型，咬唇、瞪眼、浑身僵直，不出声；高潮后像断电一样瘫软，话突然多起来",
+  "羞点": "眼镜被摘；被夸\"年级第一也会这样\"",
+  "体味": "冷感薄荷沐浴乳味，带一点雨后的清新，汗味极淡，像夏天的天台",
+  "私处气味": "薄荷混蜜糖的冷甜，动情时蜜味加重",
+  "名器描述": "温润饱满，内壁柔软如丝绸，贴附性极好，像含着一口温茶；水一多就滑得挂不住，但内壁又软又韧，夹人的时候绵里藏针",
+  "特质完整": "- 书法社社长、年级第一、金丝眼镜、永远提前预习、笔记本码得整整齐齐\n- 习惯: 睡前看一小时言情小说，日记密码是生日",
+  "缺陷完整": "- 体力差: 八百米要跑四分半，战斗到后半段全靠意志硬撑，体力一空就缴械\n- 经期腹痛: 每月那几天疼得脸色发白，战斗力直接减半"
+ },
+ "赵雪晴": {
+  "年龄": "33",
+  "家乡": "辽宁大连",
+  "家庭": "大连普通家庭，爸妈都是体育老师，她是\"体育世家\"的叛徒，选了物理，但运动基因没丢",
+  "与user关系": "班里新转来的学生。物理课他第一次考砸了，她留他补了两次课，拍着他肩膀说「血好！下次一定行」，他差点被她拍出内伤",
+  "敏感带": "脖子、锁骨、后腰；被碰耳朵会\"哎呀\"一声弹开，再被碰就软了",
+  "节奏": "喜欢直来直去，\"别整那些没用的\"，但被温柔对待会突然手足无措",
+  "体位": "偏爱站立的、运动的姿势（她体力好），但被压住时会害羞",
+  "高潮": "反应爽朗，先忍，忍不住了\"哎呀妈呀\"地喊出来，声音又亮又实，高潮后大笑，笑得眼眶发红",
+  "羞点": "被说\"赵老师你脸红啥\"；高潮后被问\"舒服吗\"，她会恼羞成怒",
+  "体味": "薄荷沐浴露混运动汗味，汗味偏咸，懒得换毛巾，毛巾有味",
+  "私处气味": "咸汗混薄荷，动情时咸味重",
+  "名器描述": "窄、长、蜿蜒，内壁绵密紧致，入口一段窄如细径，进去后弯弯绕绕，曲径通幽，每一处弯折都是新的刺激",
+  "特质完整": "- 运动狂: 每天晨跑五公里，周末打排球，校运动会的常驻裁判\n- 习惯: 嗓门大改不掉；爱喝冰镇汽水（物理老师喝汽水，反差萌）；单身多年，嘴上说\"一个人挺好\"\n- 癖好：汗后兴奋，运动到一身汗湿时最有感觉，会故意不先洗澡\"用一下\"，说汗味让她上头",
+  "缺陷完整": "- 恐高: 站高处就腿软，比女生还怂，被笑话就炸毛\n- 嗓门大: 私密时忘了压低嗓门，隔墙都听得见，被人撞见就社死"
+ },
+ "金顺姬": {
+  "年龄": "43",
+  "家乡": "吉林延边",
+  "家庭": "延边朝鲜族，辣白菜手艺是祖传的，丈夫在延边老家守着作坊，一年来不了几次；她一个人带女儿来北京陪读，在陪读小区开了间辣白菜作坊",
+  "与user关系": "女儿班上新转来的同学。她听美娜说他递过创可贴，心里觉得这孩子心善；见面塞了袋辣白菜「拿回去吃，乖」，他愣住，她笑",
+  "敏感带": "耳后、颈侧、后腰；被碰头发也会颤",
+  "节奏": "喜欢干脆利落的节奏，但被温柔对待又会嘴硬着享受",
+  "体位": "偏爱传统的、被照顾的姿势；她爱美，怕弄乱头发，反而放不开",
+  "高潮": "反应克制又诚实，先咬唇硬忍，忍不住漏出轻哼，高潮时全身绷直，然后软倒",
+  "羞点": "被说\"阿姨你嘴硬的样子真可爱\"；高潮后头发乱了会先理头发",
+  "体味": "大酱汤味混泡菜味，体味带发酵香，汗味酸中带酱香",
+  "私处气味": "发酵酱香，动情时酱酸味变浓",
+  "名器描述": "紧致光滑，收放有力，内壁像上好的瓷器一样光滑温润，却带着韧劲，一收一放干脆利落",
+  "特质完整": "- 辣白菜作坊: 朝鲜族祖传手艺，辣白菜远近闻名，小区大妈都找她买\n- 习惯: 能歌善舞，朝鲜族大姨的基因，节日必跳长鼓舞；爱美，镜子不离身；固执，认准的事九头牛拉不回\n- 癖好：恋足，年轻时被夸过脚好看，喜欢光脚踩温热的东西，做饭时爱光脚踩地暖",
+  "缺陷完整": "- 固执: 认死理，输了不服气，非要赢回来，越较劲越容易栽\n- 面子重: 死要面子，羞耻感强，越怕丢脸越容易破功"
+ },
+ "陆芷晴": {
+  "年龄": "18（高三）",
+  "家乡": "广西桂林，壮族",
+  "家庭": "桂林乡下壮族人家，爸妈在外打工，她是跟着奶奶长大的，奶奶教她唱山歌、绣壮锦",
+  "与user关系": "班里新转来的男生，坐她旁边。她太紧张不敢跟他说话，只在他书包上见过他挂着的钥匙扣，她偷偷想绣个平安扣送他，又不敢",
+  "敏感带": "耳后、锁骨、腰窝；阴蒂是命门",
+  "节奏": "喜欢被引导，你让她做什么她就做什么，软软地配合，但被弄到极致会突然爆发",
+  "体位": "偏爱侧位和背后抱（不敢对视）",
+  "高潮": "前段死死咬住嘴唇不出声，后段突然爆发，像唱山歌一样，声音亮得收不住，喊完瞬间缩成一团",
+  "羞点": "高潮后被人盯着看；被说\"你唱歌好听\"（她觉得自己那是丢人）",
+  "体味": "壮锦樟木箱味混淡淡的汗酸，排练舞蹈出汗多，身上总有股闷闷的汗酸",
+  "私处气味": "樟木混汗酸，动情时酸味变甜",
+  "名器描述": "浅而多涡，内壁有一圈圈漩涡状的纹路，敏感度极高，轻轻一动就是层层叠加的刺激，是\"浅尝即溃\"型的名器",
+  "特质完整": "- 壮锦绣娘: 跟着奶奶学过壮锦，手巧，绣的小物件全班都想要\n- 习惯: 爱唱山歌，害羞时就唱歌缓解；社恐到极致反而话多（紧张就会碎碎念）\n- 癖好：恋物，必须摸着壮锦手帕才能入睡，对刺绣纹理有莫名的冲动，会把绣线绕在手指上发呆",
+  "缺陷完整": "- 害羞社恐: 一旦被注视着就紧张得发挥失常，越紧张水越多、反应越大，反而更容易缴械\n- 胆小: 怕黑怕雷，一点惊吓就破功"
+ },
+ "陆青霞": {
+  "年龄": "44",
+  "家乡": "广西桂林",
+  "家庭": "桂林漓江边的女儿，做了二十年导游，嫁给同行，丈夫如今还在带团，常年在外，聚少离多",
+  "与user关系": "女儿班上新转来的同学。她爬山回来在楼下碰见他，顺口喊「团友！改天跟姨去爬山！」；他还没答应，她也不急，旅游人的热情来得快去得也快",
+  "敏感带": "后颈、耳垂、腰侧；被碰头发也会颤",
+  "节奏": "喜欢干脆的节奏，\"利索点，跟团一样\"，但被温柔对待会突然害羞",
+  "体位": "偏爱传统的、省力的姿势；她会害羞说\"我都44了\"",
+  "高潮": "反应直接，先\"哎哟\"，然后声音突然软了，长长的呻吟，高潮后笑得眼泪都出来",
+  "羞点": "被说\"陆阿姨也会这样\"；高潮后哼山歌的糗样被看见",
+  "体味": "汗酸骚味，爬山徒步出汗多，毛巾不勤洗，衣服上有干汗渍的酸味",
+  "私处气味": "酸骚汗味，动情时更骚",
+  "名器描述": "深长弯绕，内壁起伏，像桂林的山水，曲曲折折，每一处弯折都是新的刺激",
+  "特质完整": "- 退休导游: 带了二十年团，桂林的山山水水都刻在脑子里，给陪读家长圈当免费导游\n- 习惯: 爱唱山歌，紧张就哼歌；晕机（带团坐大巴没事，坐飞机就晕）；嗓门大\n- 癖好：汗后兴奋，爬山徒步一身汗时最想要，说\"汗出透了才算活着\"，毛巾臭了也不舍得扔",
+  "缺陷完整": "- 晕机: 坐飞机必晕，被折腾到晕头转向时更容易缴械\n- 嗓门大: 私密时忘了压低嗓门，隔墙都听得见，被人撞见就社死"
+ },
+ "陈淑芬": {
+  "年龄": "46",
+  "家乡": "黑龙江哈尔滨",
+  "家庭": "哈尔滨国企会计退休，丈夫还在老家守着房子，两年没来北京；她一个人带女儿陪读",
+  "与user关系": "女儿班上新转来的同学。她退休在家，见他在楼下冻得搓手，塞了个热水袋「老妹儿，拿着」；他哭笑不得，她一本正经「东北人的心意」",
+  "敏感带": "后颈、耳垂、腰腹；被碰头发也会颤",
+  "节奏": "喜欢干脆利落的节奏，\"别整那些没用的\"，但被温柔对待会突然手足无措",
+  "体位": "偏爱传统的、省力的姿势（她腰不好）；女上她会害羞说\"我都46了\"",
+  "高潮": "反应直接，先\"哎呀妈呀\"，然后声音突然软了，长长的呻吟，高潮后会红着脸打人，说\"丢死人了\"",
+  "羞点": "被说\"陈阿姨也会这样\"；高潮后想起自己是\"雪梨她妈\"，羞得想钻地缝",
+  "体味": "北方冬天懒，一周洗一次澡，身上是陈年体垢的酸臭味，贴身衣物有味，自己闻不到",
+  "私处气味": "体垢酸臭，更年期潮热出汗后更重",
+  "名器描述": "温润偏凉，久旷多年反而恢复了紧致；内壁凉凉的，像一块温玉，一旦被捂热就格外敏感，冷热交加是她的独特之处",
+  "特质完整": "- 退休会计: 算了一辈子账，买菜都要算到分，陪读家长圈里管钱的\n- 习惯: 爱嗑瓜子，爱喝两口白酒（东北人的基因）；膝盖有旧伤（年轻时跳舞冻的）；贪杯，逢年过节必喝多\n- 癖好：体垢不自知，闻不到自己身上的味，反而觉得\"自己的味道\"安心，还说\"不干不净吃了没病\"",
+  "缺陷完整": "- 贪杯: 一喝多就战斗力归零，倒在床上任人摆布（她自己不承认）\n- 膝盖旧伤: 跪姿和蹲姿是死穴，冬天膝盖疼得走不动路"
+ },
+ "陈雪梨": {
+  "年龄": "18（高三）",
+  "家乡": "黑龙江哈尔滨，爸是公交司机，妈是护士",
+  "家庭": "哈尔滨老式家庭，爸开公交、妈当护士，三代东北人，从小被教\"女孩子也要扛事\"，哭可以，但不能当着外人哭",
+  "与user关系": "班里新转来的男生，坐她前排角落。她见不得人挨欺负，看他刚来人生地不熟，主动说了句「有事吱声」，他愣了下说谢谢，她摆摆手",
+  "敏感带": "耳垂、脖颈、胸（E罩杯是她的命门，被含住就腿软）",
+  "节奏": "喜欢直来直去，不喜欢磨叽，\"整就整，别整那没用的\"；真被磨了她又受不了",
+  "体位": "偏爱骑乘（她块头大，女上她觉得自己\"占上风\"，其实更容易缴械）",
+  "高潮": "反应实在，闷哼、颤、腿夹紧，快感来了会一把抓住你手腕，抓出红印",
+  "羞点": "被说\"梨姐也会这样\"；被含乳头时会想钻地缝",
+  "体味": "奶味浓到发腻，像泡过奶浴，出汗后混进奶腥，远远就能闻到的奶骚香",
+  "私处气味": "奶骚味最重的一个，动情时奶味浓得像发酵的乳酪，又腥又甜",
+  "名器描述": "内里温热潮湿，像泡在温度刚好的汤池里，壁肉厚实绵软，包覆感极强；她不怎么动都能把人烫得缴械，是\"躺着赢\"的名器",
+  "特质完整": "- 东北大妞: 爱喝牛奶，冬天穿得少，暖气房里吃冰棍；掰手腕全班第一\n- 习惯: 管闲事，谁的事都掺和；狗血剧看一集哭一集，嘴硬说\"风迷眼睛了\"\n- 癖好：奶味控，会抱着自己胳膊闻身上的奶味，闻着闻着就会走神，身上常备奶香身体乳",
+  "缺陷完整": "- 嘴硬心软: 嘴上说得凶，其实最容易被软磨硬泡攻破，求饶的话她先心软\n- 贪杯: 爱喝啤酒（跟老爸学的），喝多了战斗力归零，倒在床上任人摆布"
+ },
+ "韩美娜": {
+  "年龄": "18（高三）",
+  "家乡": "吉林延边",
+  "家庭": "延边朝鲜族家庭，奶奶是长鼓舞老师，她从小在腰鼓声里长大，是全家最亮的那颗星",
+  "与user关系": "班里新转来的男生，坐她前面。他给她递过一张创可贴（练舞磨破的脚踝），她说了谢谢，第二天还了他一瓶水「我可不能欠你的」",
+  "敏感带": "耳后、颈侧、后腰（跳舞时被托住腰的位置）",
+  "节奏": "喜欢干脆利落的节奏（她讨厌拖泥带水），但被温柔对待又会嘴硬着享受",
+  "体位": "偏爱舞者的姿势，被扶着腰的站立位，或深吻时的拥抱位",
+  "高潮": "反应克制又诚实，先咬唇硬忍，忍不住了漏出轻哼，高潮时全身绷直，像跳舞的定格动作，然后软倒",
+  "羞点": "被说\"你嘴硬的样子真可爱\"；高潮后腿软走不动路",
+  "体味": "辣白菜发酵味淡香混汗味，练舞出汗后发酵味变浓，是酸骚的发酵味",
+  "私处气味": "发酵酸骚味，动情时像泡菜缸掀盖的酸香，又骚又冲",
+  "名器描述": "水多如泉，内壁柔软温热，像温泉水不停涌出，又滑又紧，进退之间都被泉水滋润包裹",
+  "特质完整": "- 长鼓舞传人: 从小练朝鲜族长鼓舞，文艺汇演台柱子，腰鼓一响她是最亮的\n- 习惯: 洁癖，座位一天擦三遍；爱美，镜子不离身；能歌善舞，校庆必有她\n- 癖好：偷感癖，喜欢\"差点被发现的刺激\"，在宿舍门没锁紧时用假阴茎，室友脚步声都会让她更兴奋",
+  "缺陷完整": "- 固执: 认死理，输了不服气，非要赢回来，越较劲越容易栽\n- 洁癖: 脏乱的环境会让她发挥失常，被弄脏了会当场崩溃"
+ },
+ "黎嘉欣": {
+  "年龄": "18（高三）",
+  "家乡": "广东广州",
+  "家庭": "广州开连锁茶楼，家里三间铺面，零花钱管够，她说\"我爸说了\"全班都当梗听",
+  "与user关系": "班里新转来的男生，坐她前排。她管他叫「喂」，是班里她最早记住名字的新同学；早茶她多买了一份虾饺，说是「多买的，食咗啦」",
+  "敏感带": "耳后、锁骨、肩胛骨（芭蕾练出的肌肉线条处）",
+  "节奏": "嘴上说\"快点啦\"，其实喜欢被慢慢磨，磨到极致才肯认输",
+  "体位": "偏爱被抱着（公主抱的那种拥抱），她喜欢被宠着的感觉",
+  "高潮": "反应娇气，先骂后哭再求，声音又娇又软，高潮后会说\"我原谅你了\"（其实是她缴械了）",
+  "羞点": "被说\"大小姐也这样\"；高潮后赖着不起",
+  "体味": "名牌香水混淡淡的汗味，打球后香水压不住汗味，混成甜咸味",
+  "私处气味": "香水混咸汗，动情时咸味变浓",
+  "名器描述": "内壁有三处明显的收缩环，像三根琴弦，进出时三处依次绞紧、依次松开，节奏分明，是\"步步紧逼\"型的名器",
+  "特质完整": "- 大小姐: 家里开连锁茶楼，零花钱管够，随身带着卡\n- 习惯: 爱喝早茶，无虾饺不欢；怕热怕晒，夏天必带伞；嘴巴不饶人，心肠其实软\n- 癖好：内裤控，收藏了一大抽屉名牌内裤，买了不穿，就爱看；被问起就说\"囤货\"",
+  "缺陷完整": "- 怕热急躁: 一热就烦躁，战斗力直线下降；广州姑娘到北京过冬还行，夏天直接废\n- 娇气: 疼一点就喊，被磨久了会哭，哭了就缴械，她的娇气是最大的弱点"
+ },
+ "黎桂芳": {
+  "年龄": "45",
+  "家乡": "广东广州",
+  "家庭": "广州茶楼世家的媳妇，年轻时是茶楼点心师傅，丈夫如今经营着茶楼，一年来不了几次；她一个人带女儿来北京陪读，在陪读小区开了个早餐档",
+  "与user关系": "女儿班上新转来的同学。她在茶楼见过他一次，塞了笼虾饺「食咗未？趁热！」；他还没来第二次，她也不记得他名字，只记得「个细路好乖」",
+  "敏感带": "后颈、耳垂、腰腹；被碰头发也会颤",
+  "节奏": "喜欢温吞的节奏，\"慢慢来，像煲汤\"，但被撩到极致会失态地催",
+  "体位": "偏爱传统的、省力的姿势；女上她会害羞说\"我都45了\"",
+  "高潮": "反应含蓄而深刻，先无声地绷紧，然后从喉咙里溢出长长的、压抑的轻吟，高潮后很久缓不过来",
+  "羞点": "被说\"黎阿姨也会这样\"；高潮后失态的样子被看见",
+  "体味": "省钱省水省洗衣粉，衣服穿一周，身上是汗渍沤出的酸味，混着淡淡的体垢味",
+  "私处气味": "汗酸味重，动情时酸骚",
+  "名器描述": "壁薄嫩滑，敏感度极高，内壁薄如纸，触感被放大数倍，是\"吹弹可破\"型的名器",
+  "特质完整": "- 点心师傅: 年轻时是广州茶楼的点心师傅，一手虾饺、叉烧包无人能及\n- 习惯: 节俭，一张纸巾掰成两半用；怕冷（广东人怕北京的冬天）；过于节俭，剩菜舍不得倒",
+  "缺陷完整": "- 怕冷: 广东人怕北京冬天，一冷就缩，战斗力减半\n- 过于节俭: 什么都要省着用，战斗时也放不开，反而更容易被攻破"
+ }
+};
+/* 38人性癖补充（硬编码：性格反差表/里 + 核心色情点）*/
+var YDS_FIXED_SEX={
+ "丽莎·伊万诺娃": {
+  "表": "直爽豪迈，中文生硬但热情，像只撒欢的大狗。",
+  "里": "异乡压力大，闻味癖从安心升级成上头，闻到味道就发情。",
+  "色情点": [
+   {
+    "标题": "闻味癖臭",
+    "内容": "她的鼻子比逼先硬。第一次见面她就会不自觉往人颈窝里凑，鼻尖贴着皮肤深深吸气，那股混着汗味、体味和衣料纤维的气息冲进脑子，她的瞳孔都要放大一圈。越是浓烈、越是腌入味儿的味道她越上头——臭袜子、穿了一天的内裤、运动后黏糊糊的腋下，她能闻着味儿发半天呆。枕头底下藏着一沓收集来的东西，夜里掏出来整张脸埋进去猛嗅，越闻下面越湿，淫水把大腿根泡得黏糊糊的，她一边闻一边把手指插进逼里狠抠，抠得水声啧啧响，第二天那些布料上全是干涸的淫渍，她还舍不得洗。被推开她也不恼，转头又凑上去，像条发情的母狗，闻着味儿就能高潮。她甚至会把那些布料塞进逼里，感受那股味道从里面往外翻涌，骚味混着淫水味，她夹着腿磨床单，磨到浑身发抖。夜里被那股味道包裹着自慰，她能连来三次高潮，最后瘫在床上，满身都是自己的淫水和汗味，却觉得前所未有的满足——她就是要这股味，越浓越好，最好腌进骨头里，让所有人都能闻出她是个骚货。她会把那些腌入味儿的布料直接塞进逼里，让那股味道从穴道里面往外渗，一边塞一边磨，磨到浑身发抖，精液和淫水的混合液顺着大腿根流到床单上，她伸手接住再舔干净，说「这就是我的味儿，谁也抢不走」。"
+   },
+   {
+    "标题": "语言反差",
+    "内容": "中文生硬，一被干到失神俄语就漏出来了。「Да! Да! 操我! Ещё!」又野又媚，嗓子眼儿都在颤。越失控她俄语说得越多，中文反而一个字都挤不出来，只剩下破碎的呻吟混着俄语单词往外蹦。被学她说话她炸毛「你学我作甚!」，可炸毛的时候腿已经软了，逼里绞得死紧，淫水顺着大腿根往下淌。她喜欢这种「语言失控」的感觉——就像身体也被彻底攻陷，连话都说不了，只能像母兽一样叫。被干到最深处她满嘴都是俄语脏话，什么「ебля」「молоко」乱叫一气，叫完她自己都不知道说了什么，只觉得逼里更湿了。第二天上课她最怕讲到那些发音相似的词，一开口脸就烧得通红，想起昨晚自己是怎么被操到满嘴胡话的，逼里一阵阵发紧，连粉笔都握不住。被干到最深处的时候她俄语越叫越大声，叫到后来中文全忘光了，只剩下「Да! Да! 别停!」在喉咙里滚，她一边叫一边夹紧逼，把那根东西往最里面吸，高潮的时候她浑身抽搐，精液和淫水一起喷出来，湿了半张床。"
+   },
+   {
+    "标题": "同性",
+    "内容": "更衣室偷看其他女生换衣服，看着她们白花花的奶子、光溜溜的穴，她呼吸越来越重，手已经伸进裤子里揉自己。夜里幻想被那女生压在身下，对方的手指在她逼里进出，另一只手揉着她的奶头，她夹紧腿磨着床单，越幻想水越多。她想象那女生的舌头舔过她的阴蒂，她仰着脖子叫出声，淫水喷了一床。第二天见到那女生，她眼神躲闪，脸烧得通红，可逼里却一阵阵地发紧，想着昨晚的画面又湿透了。她甚至偷偷闻过那女生用过的毛巾，把毛巾蒙在脸上猛吸，那股淡淡的香皂味混着女生的体味，她闻着闻着就把手伸进裤子里，磨到高潮才罢休。她想被那女生按住，想被那女生用舌头从脚舔到逼，想被那女生操到连亲妈叫什么都不知道。她会在那女生换衣服的时候故意把门推开一条缝，看着对方慌忙遮掩的样子，她逼里已经湿透，手伸进裤子里狠抠，抠到高潮才松手，然后若无其事地关上门，第二天又故意撞见。"
+   },
+   {
+    "标题": "异乡性瘾",
+    "内容": "压力大就要泄，忍一天都难受。锁上门，把枕头底下那堆「收藏」掏出来铺在床上，闻着味道撸自己。她喜欢那种被味道包围的感觉——一边闻一边用手指插进逼里，抠得又快又狠，高潮来得又急又猛，她咬着枕头闷哼，淫水顺着指缝流到床单上。一次比一次频繁，瘾越来越大，白天上课都夹着腿想这事儿，逼里湿了一路，下课铃一响第一个冲回宿舍。她自己都怕这个瘾，可越怕越忍不住，像刻在骨头里的本能。她甚至开始随身带一根假阳具，课间躲进厕所隔间，把假阳具插进逼里，靠着门板磨，磨到高潮才敢出去，脸上的潮红还没退，她就装模作样地洗手，好像刚才什么都没发生。瘾上来的时候她浑身发烫，手指发抖，只想被填满，被操到失神。她甚至在教室上课的时候把跳蛋塞进逼里，遥控器攥在手心，一边记笔记一边偷偷加大震动，被震到高潮她咬着嘴唇把叫声咽回去，腿夹得死紧，淫水顺着大腿流到椅子上，下课铃一响她第一个冲出教室。"
+   },
+   {
+    "标题": "精液母猪",
+    "内容": "她最想要的就是被灌满。每次被内射她都夹紧逼不让精液流出来，像头贪吃的母猪护着食。她喜欢精液的味道，被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿让精液在肚子里焐热，走路都怕漏。她幻想自己被一群男人轮着灌，前穴后穴嘴全被射满，精液从嘴角、穴口、屁眼一起往外淌，她还伸手往回塞。她管自己叫「母猪」，管自己的逼叫「精盆」，说「母猪的逼就是用来装精的」。她甚至会故意在裤子里垫一片布，让精液慢慢渗出来，感受那股温热从大腿根往下淌，一整天都泡在精液的味道里，越闻越湿。被轮着灌的时候她数着人头，每射一次她就叫一声「再来」，灌到最后肚子鼓起来，她躺在那里任由精液从穴口往外流，伸手往回塞，说「一滴都不能浪费，母猪的逼就是装精的」，第二天走路腿都是软的。"
+   },
+   {
+    "标题": "异国精奴",
+    "内容": "洋妞在异乡就是头没人疼的牲口。她喜欢被人叫「外国货」「洋骚逼」，越叫越湿，越被当外来的野种干越兴奋。她幻想自己被关在宿舍里，被一群人轮着用，她跪在地上像条野狗一样爬，被人牵着走。她喜欢那种「异乡无依无靠只能当精奴」的感觉——没人会帮她，她只能张着逼等人来干。被射在脸上她会用舌头舔干净，说「外国货就是用来装精的」，越说越湿。她甚至会把被轮用的场面拍下来，寄回俄罗斯老家，幻想家里人看到她的惨样，越幻想越兴奋，逼水顺着大腿根流了一地。她管自己叫「莫斯科来的精奴」，说「在我们那儿，洋逼就是给人操的」。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。"
+   }
+  ]
+ },
+ "何玉兰": {
+  "表": "端庄温和，说话带调子，花田是她的世界。",
+  "里": "蹲在花田里闻着土腥味，手已经伸进裤腰，越想越湿。",
+  "色情点": [
+   {
+    "标题": "花田脏癖",
+    "内容": "满手泥巴的兴奋比什么都强。她蹲在花田里拔草，指缝里塞满湿泥，那股土腥味一冲进鼻子，她的逼就开始发痒。她幻想被人从背后按进花丛里，裙子撩到腰上，逼里塞满花和泥，被按着一下一下往深处操。嘴上喊「莫弄脏我的花」，屁股却主动往人胯上凑，越脏越湿，泥水和淫水混在一起从穴口往下淌，把土都泡软了。被干到高潮她趴在地上，满身满脸都是泥，奶子和逼上沾着花瓣和草叶，她却觉得前所未有的痛快——端庄了一辈子的何老师，只有在泥里才能这么放荡。她甚至会把泥巴往自己逼里塞，感受那股冰凉黏腻填满穴道，再被操出来，泥浆混着淫水喷得满地都是。她喜欢闻自己满身泥腥味的身体，那股味让她从骨子里发骚，越脏她越湿，越想被按在泥地里操到天亮。她会把满手的泥往自己奶子上抹，抹完再往逼里塞，那股土腥味混着淫水味直冲鼻子，她一边抠一边喘，泥水顺着大腿根流到田埂上，被干到高潮的时候她满身是泥，趴在地上像头拱完食的母猪，哼唧着还要。"
+   },
+   {
+    "标题": "山歌",
+    "内容": "一唱山歌就露底。平时端庄得体的何老师，一开口嗓子就变了调，动情时调子发颤，声音又软又黏，像泡了蜜。她一边唱一边夹紧腿磨，唱着唱着手指就忍不住往裙底伸。被学她唱，她又羞又恼「莫学我!」，可恼的时候逼里已经湿透，缩得死紧。她喜欢那种「声音出卖自己」的感觉——歌越唱越露骨，词儿都变了味儿，什么「阿哥莫走」「阿妹心痒」唱得她自己都脸红，可越脸红越停不下来。被干到高潮她还在唱，唱到破音，破音里全是压不住的浪，山歌和叫床混在一起，越唱越骚。她幻想自己在山歌节上被人从台上抱下来，按在草地上操，她一边唱一边被干，台下的人都看着，她越唱越湿，最后唱成了浪叫，被全校听见。她会在夜里躲进花田，一边哼着露骨的山歌一边把手伸进裙底，唱着唱着声音就变了调，变成压不住的浪叫，第二天邻居问她昨晚唱什么，她红着脸说「山歌」，可逼里还夹着高潮的余韵。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿何雨珊的男同学——每次那孩子来家里，她端茶的手发稳，腿却悄悄夹紧。她看着那孩子年轻挺拔的身子，心里那根弦就绷得紧紧的。夜里想着那孩子的眼神和声音，手指插进逼里狠抠，一边抠一边骂自己畜生，骂得越狠抠得越深。她幻想那孩子把她按在花田里，逼里塞满花，嘴里喊着「阿姨」，她被干得腿都合不拢。每次想完她都又羞又怕，可第二天见到那孩子，她的逼还是不受控制地湿了。她甚至偷偷藏过那孩子用过的杯子，夜里抱着杯子闻，闻着上面残留的气息，手指插进逼里，想着那孩子叫「阿姨」的声音，越想水越多，床单湿了一大片。她知道这样不对，可她管不住自己，越禁忌越湿，越湿越想要。她甚至会故意让那孩子来家里帮忙搬花盆，弯腰的时候裙底风光若隐若现，看着他直勾勾的眼神，她逼里一阵阵发紧，晚上躺在床上想着那目光，手指插进逼里，骂一句畜生抠得更深。"
+   },
+   {
+    "标题": "端庄幻想露出",
+    "内容": "端庄了一辈子，就等着被人撕开。她幻想在花田里被人撞见——满身是泥，裙子撩到腰上，逼大敞着被人看个精光。她被看得浑身发抖，嘴上喊着「别看!」，穴里却一阵阵收缩，淫水顺着大腿流。幻想被人从背后压住，那人一边操她一边对围观的人说「看，这就是端庄的何老师」。她吓得叫出来，可叫声还没落，高潮就到了，淫水喷了人一手。醒来她红着脸骂自己不要脸，可手又伸进了裙底。她幻想自己站在讲台上讲课，被人从讲台下撩起裙子，逼被全班看光，她强撑着把课讲完，可逼里已经湿透了，淫水顺着腿流进鞋里。她喜欢那种「端庄被撕碎」的感觉，越端庄越想要被看光，越被看光越兴奋。她会在讲台上讲课的时候故意把裙子撩高一点，想象台下有人看见她的逼，她越讲声音越颤，逼里越湿，粉笔掉在地上她弯腰去捡，故意把屁股撅起来，被看的那一刻她浑身一抖，差点高潮。"
+   },
+   {
+    "标题": "泥地母猪",
+    "内容": "她骨子里就是头泥地母猪。最喜欢被人按在烂泥地里操，满身满脸都是泥，逼里塞着泥和草叶，被干得嗷嗷叫。她喜欢泥巴糊在奶子上、糊在脸上、糊在头发上的感觉，又脏又黏，像被人从头到脚糟蹋过。她幻想自己像头母猪一样在泥地里爬，被人按着配种，屁股撅得老高，逼里灌满精液和泥水。被干到高潮她趴在泥地里喘，泥浆从她身上往下淌，她浑身发抖，却觉得前所未有的满足。她甚至喜欢闻自己满身泥腥和骚味交缠的味道，那股味让她觉得自己真的是头母猪，就该被按在泥地里操到死。她会在田埂边被按着操，满身满脸都是泥，逼里塞着草叶和泥巴，被干到高潮她趴在地上喘，泥浆从她身上往下淌，她伸手抓一把泥往嘴里塞，说「我就是头泥地母猪」，淫水和泥混在一起喷了满地。"
+   },
+   {
+    "标题": "偷情公厕",
+    "内容": "端庄的何老师，最骚的幻想就是在公厕里被人操。她幻想自己在镇上的公共厕所里，刚蹲下就被人从门缝里伸进手摸进裙底抠逼。她咬着嘴唇不敢出声，怕被人听见，可越怕逼越紧，淫水顺着腿流到地上。她幻想被人拉进隔间，按在脏兮兮的马桶盖上操，外头还有人排队等着，她一边被干一边捂嘴，把叫声咽回去，眼泪都出来了。她喜欢那种「又脏又偷情」的刺激，越是不该做的地方她越兴奋，公厕、粮仓、田埂边，什么地方脏她就在什么地方湿。被干到高潮她瘫在隔间里喘，裤子和内裤都褪到脚踝，外头的人还在催，她咬着牙穿好衣服出去，脸上还带着潮红，腿都在抖。她甚至会在公厕的隔间里自慰，故意不锁门，听见有人进来她就更兴奋，手指插进逼里越抠越快，有人敲门她吓得夹紧腿，可越怕逼越紧，高潮的时候她咬着嘴唇，淫水喷了一地。"
+   }
+  ]
+ },
+ "何雨珊": {
+  "表": "温柔到没脾气，谁说什么都好，从不拒绝。",
+  "里": "破闸那一下完全变一个人，哭着求、笑着说，温柔和疯狂搅在一起。",
+  "色情点": [
+   {
+    "标题": "土腥脏癖",
+    "内容": "闻见土腥味逼就发痒。她蹲在花田里，把手插进湿泥里抠一把，再把手凑到鼻尖猛闻，那股发酵的土腥气一冲进脑子，她的逼就开始发烫。她顺着胸口往下摸，手指插进逼里，泥和淫水糊在一起，越抠越深。她幻想被人从背后按进花丛里，裙子撩到腰上，逼里塞满花和泥，被按着一下一下操。越脏越爽，泥水淫水混在一起从穴口往下淌，把身下的土都泡软了。被干到高潮她趴在地上，满身满脸都是泥，却觉得前所未有的痛快。她甚至会把泥土塞进逼里，感受那股冰凉黏腻填满穴道，再被操出来，泥浆喷得满地都是。她喜欢闻自己满身土腥味的身体，那股味让她从骨子里发骚，越脏她越湿，越想被按在泥地里操到天亮，像头拱土的母猪。她蹲在花丛，越抠越深，抠到高潮她趴在花丛里喘，浑身都是泥。"
+   },
+   {
+    "标题": "花房同性",
+    "内容": "花房里和那女生独处，她心跳快得发慌。看她弯腰浇花，裙底风光若隐若现，她咽着口水幻想被那女生按在花丛里，舔她的逼。那女生的舌头在她逼里搅动，她仰着脖子叫出声，淫水喷了一手。夜里看着偷拍的照片，手指在逼里进进出出，叫着她的名字，水把裤子泡透。第二天见到那女生，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧，想着昨晚的画面又湿了。她甚至偷偷闻过那女生用过的毛巾，把毛巾蒙在脸上猛吸，那股淡淡的香皂味混着女生的体味，她闻着闻着就把手伸进裤子里磨到高潮。她想被那女生按住，想被那女生用舌头从脚舔到逼，想被那女生操到连亲妈叫什么都不知道。她会在花房里故意和那女生独处，借故弯腰整理花盆，把裙底风光露给她看，看着那女生的眼神，她逼里一阵阵发紧，晚上躺在床上想着她的脸，手指插进逼里，叫着她的名字，淫水把床单洇湿一大片。"
+   },
+   {
+    "标题": "温柔破闸淫贱",
+    "内容": "平时温柔得像水，一破闸就变成淫水。被操到高潮，她哭着求「用力点……再深一点」，声音又软又骚，穴里一抽一抽地吸，骚话从牙缝里挤出来。她一边哭一边扭腰，手指紧紧抠着对方的后背，被干到失神嘴里还念叨着「别停……求你」，下身却夹得死紧，淫水喷了一地。反差大得她自己都怕，越怕越爽。她喜欢那种「温柔外壳被撕碎」的感觉——白天是温柔乖巧的何雨珊，夜里是被操得嗷嗷叫的骚货。被干到失神她满嘴都是淫语，什么「操我」「用力」「射进来」，喊得比谁都浪，第二天她又恢复成那个温柔的姑娘，可谁也不知道她夜里有多骚。被操到高潮的时候她哭得梨花带雨，嘴里却求着「用力……再用力」，声音又软又骚，穴里一抽一抽地吸，被干到失神她满嘴都是淫语，什么「操我」「射进来」，喊得比谁都浪，第二天又恢复成那个温柔的姑娘。"
+   },
+   {
+    "标题": "偷窥露出",
+    "内容": "故意留条帘缝让人看。她蹲在花丛间，手指在裙底动，明知外面可能有人看，越紧张越停不下来。她幻想那双眼睛盯着她的逼，她被看得浑身发抖，穴里一阵阵收缩。她故意把裙子撩得更高，让那视线看得更清楚，被看的那一刻她猛地一颤，淫水喷出来，喷在花丛上。她羞得想钻地，可那份被偷窥的刺激让她第二天又忍不住留了条缝。她甚至故意在窗边自慰，让隔壁的人看见，看着那人的眼神从惊讶变成贪婪，她越看越湿，手指插进逼里越抠越快。她喜欢那种「被看光」的羞耻感，越羞耻逼越紧，越紧越兴奋，最后高潮来得又急又猛，她瘫在窗边喘，浑身发抖。她会在黄昏的时候故意把窗帘拉开一条缝，蹲在花丛间自慰，想象外面有人正看着她张开的逼，她越紧张越停不下来，被看的那一刻她猛地一颤，淫水喷在花丛上，她羞得想钻地，可第二天又留了条缝。"
+   },
+   {
+    "标题": "发情母狗",
+    "内容": "骨子里就是条发情母狗。一闻到精液味就发情，像母狗闻到发情的味道一样兴奋。她喜欢跪在地上爬，屁股撅得老高，被人按着从后面操，像条配种的母狗。她喜欢被人叫「母狗」「骚货」，越叫越湿，逼里绞得死紧。她幻想自己被牵着项圈遛，像条狗一样在花田里爬，被人按着操到高潮。被干到失神她汪汪叫，叫完她自己都羞得想钻地，可逼却诚实地夹得更紧。她喜欢那种「被当畜生对待」的感觉，越被糟践越兴奋，越兴奋越湿。她会被牵着项圈在花田里爬，像条母狗一样撅着屁股，被人从后面一下一下地操，她汪汪地叫，越叫逼越紧，被干到高潮她趴在花丛里喘，精液和淫水混着泥水流了满地，她还想再要。她趴在地上喘着，泥和淫水糊了一身，手指却还插在逼里不肯拿出来，想着明天又能见到那个人，逼里又一阵阵发紧，越想想得越湿。"
+   },
+   {
+    "标题": "精液奴",
+    "内容": "她最想要的就是精液。每次被内射她都夹紧逼不让精液流出来，像头贪吃的母猪护着食。她喜欢精液的味道，被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿让精液在肚子里焐热，走路都怕漏。她幻想自己被一群人轮着射，前穴后穴嘴全被射满，精液从嘴角、穴口、屁眼一起往外淌，她还伸手往回塞。她管自己叫「精液奴」，管自己的逼叫「精盆」，说「奴的逼就是用来装精的」。她甚至会故意不擦，让精液渗进裤子里，感受那股温热从大腿根往下淌，一整天都泡在精液的味道里，越闻越湿。被灌满精液的时候她夹着腿不敢动，让精液在肚子里焐热，走路都怕漏，回到花房她蹲下来，看着精液从穴口慢慢渗出来，她伸手接住舔干净，说「都是我的，一滴都不给别人」，越说越湿。"
+   }
+  ]
+ },
+ "刘晶晶": {
+  "表": "解剖课稳如泰山，眼神冷得像手术刀。",
+  "里": "看见血会呼吸加重，明知道不该兴奋，身体却诚实。",
+  "色情点": [
+   {
+    "标题": "消毒水洁癖",
+    "内容": "消毒水的味道一冲进鼻子，她的逼就开始发痒。白大褂口袋里常年揣着酒精棉片，她没事就掏出来闻，那股刺鼻的洁净味道让她既安心又躁动。她喜欢橡胶手套——戴着它摸遍自己全身，指尖滑过乳头、小腹，最后插进逼里，消毒水的味道混着淫水味，越闻越湿。她幻想躺在手术台上，被人戴着消毒手套按在逼上，指尖一根根插进去搅动，她叫得像被解剖的活体标本。夜里给自己「消毒」，手却顺着小腹往下滑，指头插进穴里狠抠，消毒水瓶子倒了都顾不上扶。她甚至会把消毒水洒在自己逼上，那股冰凉刺痛的刺激让她浑身发抖，越痛越湿，淫水混着消毒水顺着大腿流。她喜欢那种「洁净与淫荡交缠」的感觉——白大褂下面什么都没有，随时等着被干，消毒水的味道混着淫水味，整个实验室都是那股腥骚味。她甚至会躺在手术台上自慰，白大褂敞开着，手里握着酒精瓶，一边闻一边把手指插进逼里，消毒水的味道混着淫水味，她越闻越湿，被干到高潮的时候她浑身抽搐，像解剖台上痉挛的标本，手术灯晃得她睁不开眼。"
+   },
+   {
+    "标题": "见血血腥",
+    "内容": "见血就湿，不是比喻。生物课上解剖青蛙，一刀下去见红，她的呼吸就粗了，大腿根一阵发紧。被操出血那次，她盯着穴口那抹红眼睛发直，淫水和血混在一起顺着大腿流，她用手指沾了放嘴里舔「腥的」，眼神又冷又热。被咬出血印、掐出淤青，她越疼越兴奋，血越多穴越紧，高潮时浑身抽搐，像解剖台上痉挛的标本。她喜欢那种「活体与血液」交缠的感觉——自己是标本也是操刀人，一边恐惧一边亢奋，血味和淫水味搅在一起，她闻着就发情。她甚至会用手术刀轻轻划破自己的皮肤，看着血珠冒出来，越看越湿，手指插进逼里狠抠，血和淫水混在一起流。她喜欢血的味道，喜欢血的温度，喜欢自己身上沾满血和淫水的样子。被操出血的时候她盯着穴口那抹红，眼睛里全是疯狂的光，她用手指沾了血放进嘴里舔，说「这才是最纯净的」，血和淫水混在一起顺着大腿流，她越看越兴奋，越兴奋穴越紧，高潮的时候她浑身发抖，像被电击。"
+   },
+   {
+    "标题": "自我厌恶",
+    "内容": "越讨厌自己越管不住逼。每次高潮后她都恨自己，蜷在手术台边骂「怪物」「变态」，可第二天消毒水一闻，她又湿了。她觉得自己是怪物，可怪物也要泄欲。接受自己是怪物之后，她彻底放开了——白大褂底下什么都不穿，随时等着被干。被操到失神她嘴里还念叨着「我是怪物」，念着念着高潮来得更猛。她把「怪物」当成了自己的另一个名字，越认命越放荡，逼水把白大褂下摆洇湿一片。她甚至开始享受这种「怪物」的身份——被操的时候她一边骂自己一边高潮，越骂越湿，越湿越想要。她觉得自己已经烂透了，可烂透的感觉反而让她彻底解放了，什么都不用装，只管张开腿等着被干。她会在高潮后蜷在手术台边，一边骂自己「怪物」一边抠逼，骂得越狠抠得越深，第二天消毒水一闻又湿了，她索性白大褂底下什么都不穿，随时等着被干，被操到失神她嘴里还念着「我是怪物」，念着念着高潮来得更猛。"
+   },
+   {
+    "标题": "解剖式性变态",
+    "内容": "把逼当解剖台。被干的时候她心里数着「这是第几层」，像做手术一样冷静地感受每一下插入的角度和深度。被捅到最深处，她想象那是把解剖刀从穴口一路剖到胃，剖开她的肚子看里面翻涌的欲望。她喜欢血，自己的血——看着穴口的血像看新标本，眼神亮得吓人。她轻声说「让我看看里面是什么」，说的时候逼里绞得死紧。高潮时她浑身发颤，像在手术台上被电击，又像终于剖开了自己最深处那团腐烂的欲望。她幻想被人绑在解剖台上，全身被剖开，每个器官都被拿出来研究，逼里插着各种器械，她一边被「解剖」一边高潮。她喜欢那种「被彻底看透」的感觉，每一寸都被研究过，每一寸都在发情。被干到最深处的时候她想象那是把手术刀从穴口一路剖开，她冷静地感受每一下的角度和深度，像做手术一样记录，被捅到最深处她轻声说「让我看看里面是什么」，逼里绞得死紧，高潮的时候浑身发颤。"
+   },
+   {
+    "标题": "精盆",
+    "内容": "白大褂底下她就是装精的盆。被灌满她夹着穴走回实验室，坐在解剖台前写实验报告，精液顺着腿流到地上，纸上沾了精她也照写。她管自己的穴叫「培养皿」，说「里面什么都有」。夜里她自慰时幻想被人轮着往逼里灌，一管接一管，灌到肚子都鼓起来。她喜欢那种「被填满」的实在感——精液、淫水、消毒水混在一起，她觉得自己从里到外都腌透了，又脏又洁净，矛盾得让她兴奋。她甚至会把精液装进试管里保存，贴上标签，像收藏标本一样收着。夜里她看着那些试管，手指插进逼里，想着那些精液是怎么射进她逼里的，越想越湿，淫水把白大褂下摆都洇湿了。被灌满的时候她夹着穴走回实验室，坐在解剖台前写实验报告，精液顺着腿流到地上，她用吸管把精液抽进试管，贴上标签，看着那一管管「标本」，她兴奋得逼水直流，夜里看着那些试管，手指插进逼里越抠越快。"
+   },
+   {
+    "标题": "解剖刀奴",
+    "内容": "她最痴迷的就是手术刀。手里握着手术刀，她的逼就开始发痒。她喜欢被手术刀冰凉的刀刃贴着皮肤滑过，从脖子滑到乳沟，再滑到逼口。刀刃的寒意让她浑身发抖，越抖越湿，淫水顺着大腿流。她幻想被人用手术刀划开她的衣服，划开她的皮肤，看着血珠冒出来，再用舌尖舔干净。被干到高潮她握着手术刀浑身发抖，刀尖抵着自己的皮肤，越抖越湿。她甚至喜欢被人用手术刀抵着逼口，威胁她「再叫就切了你」，她吓得夹紧腿，可越怕逼越紧，淫水喷了一地。她喜欢那种「刀尖上的快感」，越危险越兴奋，越兴奋越湿。她会被手术刀冰凉的刀刃贴着皮肤滑过，从脖子滑到乳沟再滑到逼口，刀刃的寒意让她浑身发抖，越抖越湿，被干到高潮她握着手术刀，刀尖抵着自己的皮肤，眼神又冷又热，说「剖开我」，逼里绞得死紧。"
+   }
+  ]
+ },
+ "叶春梅": {
+  "表": "轻言细语，煲汤一绝，是所有人眼里的温柔女人。",
+  "里": "夜里守着汤锅，想着那孩子喝汤的样子，手指伸进逼里，越想越燥。",
+  "色情点": [
+   {
+    "标题": "熬汤味觉",
+    "内容": "汤的香气就是她的催情剂。灶上咕嘟咕嘟熬着汤，她闻着那股醇厚的味道，逼里就开始发热。她幻想被人一口口喝掉她熬的汤，又被按在灶台边一口口舔干净身上的汤渍，舌头从脖子舔到乳沟，再舔到逼里。她握着汤勺指节发白，勺柄抵着裙底磨，越磨越湿。被按在灶台上操，锅里的汤还在咕嘟，她咬着唇叫，淫水顺着大腿流到地上，混着汤的香气，整个厨房都是那股腥甜的味道。她甚至会把汤勺插进逼里，感受那股温热贴着穴壁，再抽出来，汤和淫水混在一起，她端起来闻，越闻越湿。她喜欢那种「连做饭都做不安生」的感觉，灶台、砧板、汤锅，什么地方她都能湿。她甚至会一边熬汤一边自慰，汤勺柄抵着裙底磨，磨到高潮她瘫在灶台边喘，锅里的汤还在咕嘟，她伸手舀一勺汤喝下去，那股腥甜味混着淫水味，她越喝越湿，第二天照样熬汤，只是汤里多了点「调料」。"
+   },
+   {
+    "标题": "山歌",
+    "内容": "哼山歌哼到动情处，调子全变味，尾音发颤，像叫床。平时她哼的是干活的小调，一动了情那调子就往床上拐，什么「阿哥莫走」「夜里来寻」，哼得她自己都脸红。被学她哼，她羞得捂脸，可捂着脸指尖发烫，逼缩得死紧，淫水顺着大腿流。她喜欢「声音暴露自己」的感觉——山歌唱到破音，破音里全是压不住的浪，她一边羞一边更起劲，越唱越露骨。被干到高潮她还在唱，唱到破音，破音里全是叫床的调子，山歌和浪叫混在一起，越唱越骚。她幻想自己在村里唱山歌，唱着唱着被人从台上抱下来，按在草垛上操，她一边唱一边被干，全村的人都听着，她越唱越湿。被干到高潮的时候她还在唱山歌，唱到破音，破音里全是浪叫，山歌和叫床混在一起，她一边叫一边夹紧逼，被干到失神她满嘴都是淫语，第二天邻居问她昨晚唱什么，她红着脸说「练歌」，可逼里还夹着余韵。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿叶诗涵的男同学来家里吃饭，她端汤的手莫名发稳，腿却悄悄夹紧。她看着那孩子低头喝汤的样子，喉结滚动，心里那根弦就绷紧了。夜里想着那孩子的眼神，手指插进逼里，一边抠一边想「那是女儿的同学」，越禁忌越湿。她幻想那孩子喝着她熬的汤，喝到一半抬起头看她，眼神里全是欲望，把她按在饭桌上操。她吓得惊醒，可手还插在逼里，床单湿了一大片。她甚至偷偷藏过那孩子用过的碗，夜里抱着碗闻，闻着上面残留的气息，手指插进逼里，想着那孩子叫「阿姨」的声音，越想水越多。她会在那孩子来家里吃饭的时候，故意端汤的时候弯腰，让领口里的奶子若隐若现，看着他直勾勾的眼神，她逼里一阵阵发紧，晚上躺在床上想着那目光，手指插进逼里，骂一句畜生抠得更深。"
+   },
+   {
+    "标题": "温柔破闸淫贱",
+    "内容": "白天轻言细语，夜里完全变个人。她平时温柔得像水，一破闸就变成淫水。被操到高潮她哭着抱紧对方「来嘛……汤我给你留着」，声音又软又黏，穴里一抽一抽地吸，骚话从牙缝里挤出来。她一边哭一边扭腰，嘴里求着「用力点」，手指紧紧抠着对方的后背。被干到失神她嘴里还念叨着「汤……汤要糊了」，可下身却夹得死紧，淫水喷了一地。反差大得她自己都怕，越怕越爽。她喜欢那种「温柔外壳被撕碎」的感觉——白天是温柔贤惠的叶春梅，夜里是被操得嗷嗷叫的骚货，被干到失神满嘴都是淫语，喊得比谁都浪。被温柔对待的时候她瞬间破防，哭着抱紧对方「来嘛……汤我给你留着」，声音又软又黏，穴里一抽一抽地吸，被干到失神她嘴里还念叨着「汤……汤要糊了」，可下身却夹得死紧，淫水喷了一地。"
+   },
+   {
+    "标题": "灶台母猪",
+    "内容": "她骨子里就是头灶台母猪。最喜欢被人按在灶台上操，锅铲掉在地上都没空捡，被干得嗷嗷叫。她喜欢灶台的温热贴着屁股的感觉，被按在上面，奶子压在台面上，逼里被操得水直淌。她幻想自己像头母猪一样趴在灶台边，屁股撅得老高，被人按着配种。被干到高潮她趴在灶台上喘，汤还在锅里咕嘟，她浑身发抖，却觉得前所未有的满足。她甚至喜欢被人射在灶台上，用抹布擦干净，再继续做饭，那股精液的腥味混着汤香，她闻着闻着逼又湿了。她会被按在灶台上操，锅铲掉在地上都没空捡，奶子压在台面上，逼里被操得水直淌，被干到高潮她趴在灶台上喘，汤还在锅里咕嘟，她浑身发抖，却觉得前所未有的满足，甚至喜欢被人射在灶台上。她趴在灶台边喘着，汤还在锅里咕嘟，那股腥甜味混着淫水味飘了满厨房，她伸手舀一勺喝下去，越喝越湿，想着明天还能这样，逼里一阵阵发紧。"
+   },
+   {
+    "标题": "精液煮汤",
+    "内容": "她最骚的幻想就是把精液熬进汤里。她幻想被人射进汤锅里，精液混着汤咕嘟咕嘟煮开，她端起来给全家喝，看着他们喝下去，她兴奋得逼水直流。她喜欢那种「把精液当调料」的感觉——精液的腥味混着汤的醇香，越喝越上头。她甚至会把精液装进小瓶子里，做汤的时候偷偷滴几滴，看着汤里的精液化开，她一边喝一边湿。被干到高潮她嘴里还念叨着「熬进去……都熬进去」，下身夹得死紧，淫水喷了一地。她甚至会把精液倒进汤锅里，看着精液混着汤咕嘟咕嘟煮开，那股腥味混着汤香，她越闻越湿，端起来喝一口，说「这才是最补的汤」，被干到高潮她嘴里还念叨着「熬进去……都熬进去」，下身夹得死紧。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天端汤的手都是抖的，可逼里还夹着昨晚的余韵。"
+   }
+  ]
+ },
+ "叶诗涵": {
+  "表": "茶艺社最文静的女孩，说话都怕惊到人。",
+  "里": "独处时欲望旺盛到可怕，一晚上能自慰好几次，还偷偷拍自己，拍完删、删完拍。",
+  "色情点": [
+   {
+    "标题": "拍摄记录恶坠",
+    "内容": "镜头对准自己张开的逼，手指插进去又抽出来，淫水顺着指缝流，她一边拍一边喘，镜头里的眼神又空又媚。她给每次自慰起茶名——「铁观音之夜」「白毫银针的清晨」，配着照片存进带锁的备忘录。她喜欢那种「被记录下来的堕落」——看着照片里自己张开的腿、湿透的逼、泛红的奶头，她比被操还兴奋。夜里翻着这些记录，手指插进逼里，一边看一边抠，越看水越多，床单湿了一大片。她看着记录轻声说「叶诗涵，你比茶还容易泡开」，说完羞得捂住脸，逼却缩得更紧。她甚至会把自慰的视频存下来，夜里一边看一边撸，看着屏幕里自己张开的逼，越看越湿，高潮来得又急又猛。她甚至会把自慰的视频存下来，夜里一边看一边撸，看着屏幕里自己张开的逼、湿透的穴口，越看越湿，一边看一边在备忘录里记下「第几次高潮」，高潮来得又急又猛，她瘫在床上喘，第二天红着脸把视频删了又忍不住重新拍。"
+   },
+   {
+    "标题": "泳衣露出",
+    "内容": "海边长大，穿最薄的泳衣下水，湿水后奶头和阴部轮廓全透出来，她明知还故意穿。上岸时浴巾被风掀开一角，她惊叫一声按住，心里却喊「让人看见吧」。被看的那一眼，她逼里一阵阵发紧，腿都软了。她幻想被人按在沙滩上，泳衣被扯开，奶子和逼全露出来，被人围观着操。越想越湿，海风一吹凉飕飕的，逼缩得死紧，她夹着腿走回遮阳伞下，裙底已经湿透了。她甚至故意穿透明的泳衣下水，让所有人都看见她奶头和小裤裤的形状，被看的那一刻她兴奋得发抖，越被人看越湿越湿，上岸的时候假装害羞地裹着浴巾，可浴巾下她偷偷把手指伸进逼里，边走边抠。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "茶艺性瘾",
+    "内容": "泡茶是掩护，也是瘾。她给自己立规矩「泡茶前不许自慰」，可每次破戒后都心虚地泡一壶茶，好像茶香能洗掉什么。烫杯、温壶、高冲，她的手很稳，可茶烟袅袅的时候她的心思早飘了——想象被人按在茶台上操，逼里塞着茶漏，被干到失神。茶越泡越浓，瘾越来越大，泡茶的手都抖。夜里她抱着茶壶，壶嘴抵着裙底磨，磨到高潮，茶汤洒了一地。她喜欢那种「用茶香掩盖骚味」的感觉——茶台上她是最文静的姑娘，茶台下一泡好茶就忍不住自慰。她甚至会把茶叶塞进逼里，感受那股干燥的茶香贴着穴壁，再被淫水泡开，抽出来的时候满手都是茶和淫水的混合物合物，她凑到鼻尖闻，那股味道让她又羞又兴奋，泡一壶新茶压住骚味。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "淫贱脑内剧",
+    "内容": "脑子里有一整部小电影，主角是自己。上课走神时她幻想被按住、被堵住嘴操，一边喊「不要」一边把腿张开。夜里咬着枕头想象被人从背后压着操，手指插进逼里越抠越快，越想水越多。她幻想自己被拍到、被传遍全校，所有人看着她张开的逼，她被看得浑身发抖，穴里一阵阵收缩，淫水把床单洇透一片。醒了她红着脸骂自己不要脸，可第二天又忍不住想。她甚至会在上课的时候偷偷把手指伸进裤子里，想着昨晚脑内剧的画面，磨到高潮，然后若无其事地继续记笔记，脸上带着潮红潮红，粉笔灰落在裙摆上，同桌问她怎么了，她红着脸说「有点热」。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "精液品茶",
+    "内容": "她最骚的幻想就是把精液当茶喝。她幻想被人射进茶杯里，看着那股白浊在茶汤里化开，端起来一饮而尽，精液的腥味混着茶香，越喝越上头。她喜欢那种「把精液当茶品」的感觉——细品精液的味道，像品茶一样回味。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿让精液在肚子里焐热，说「这泡茶要慢慢品」。她甚至会收集精液装进茶罐里，夜里泡茶的时候偷偷加一勺，喝着喝着逼就湿了，手指插进逼里，想着精液的味道，越想水越多。她甚至会把精液装进茶罐里，泡茶的时候偷偷加一勺，看着精液在茶汤里化开，那股腥味混着茶香，她端起来一饮而尽，越喝越湿，手指插进逼里，想着精液的味道，越想水越多，第二天又泡一壶。她趴在床上喘着，手机还开着录像，镜头对着自己张开的逼，她看着画面里的自己，逼里又一阵阵发紧，想着明天还能拍，越想想得越湿。"
+   },
+   {
+    "标题": "偷拍威胁",
+    "内容": "她最怕的就是被偷拍，可越怕越兴奋。她幻想自己自慰的画面被人拍下来，那个人用视频要挟她「不想被全校看到就乖乖听话」。她一边哭一边被按着操，心里又怕又爽，逼却诚实地夹得死紧。她幻想那个威胁她的人把她叫到器材室，让她自己掰开逼，看着镜头里的自己，越看越湿。被干到高潮她哭着求「别发出去……求你」，可下身却夹得死紧，淫水喷了一地。她甚至会故意留下破绽让人偷拍，越危险越湿，越湿越停不下来。她管那个偷拍她的人叫「主人」，说「主人拍下的我就是最真实的我」，越说越兴奋，逼水把裙子洇湿一片。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。"
+   }
+  ]
+ },
+ "周桂香": {
+  "表": "泼辣麻利，嗓门大，剁椒鱼头做得香飘十里。",
+  "里": "夜里破闸就是头淫兽，声音又软又黏「快来嘛……婶等你半天了」。",
+  "色情点": [
+   {
+    "标题": "油烟臭",
+    "内容": "动情时那股腌入味儿的骚臭冲人，她自己闻不到，别人皱眉她反而得意「咋的? 嫌我味重? 嫌重就别挨这么近!」。她喜欢被人捏着鼻子操——那人一边嫌弃一边往她逼里顶，她爽得直叫，越嫌弃她越湿，逼水顺着大腿流。她幻想自己在后厨被按在灶台上操，汗味油烟味骚味混在一起，整个后厨都是那股腥臊味，她叫得比锅里爆炒还响。被操到高潮她大声浪叫，声音穿过厨房，第二天隔壁摊的都问她昨晚炒什么菜这么大声。她甚至喜欢不洗澡就出门，让那股腌入味的骚味跟着她走，闻到的人皱眉，她反而得意，越被嫌弃越兴奋兴奋，买菜的时候故意凑近年轻摊主，看着他捏着鼻子躲，她逼里一阵阵发紧，晚上回家掰开逼自慰。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "喂食",
+    "内容": "塞吃的喂饱人，看着人吃得满足，她比被操还痛快。可喂着喂着就变味了——她盯着人嗦粉的嘴唇，喉头滚动，逼里一阵阵发热。她故意把粉喂到人嘴边「张嘴，婶喂你」，看着那人含住筷子，她想象那是含住了自己的逼。她越喂越湿，裤裆都湿透了，最后把人按在桌上，用喂食的筷子捅自己的逼，一边捅一边喘「吃饱了吗? 婶还没饱呢」。她喜欢那种「喂饱别人自己却饿着」的感觉——看着人吃她做的菜，她比谁都满足，可那股满足感最后都会变成欲火，烧得她逼水直流。她甚至会把精液拌进火锅底料里，端上桌给人吃，看着对方吃下去，她一边看一边湿，被干到高潮她嘴里还念叨着「吃下去……都吃下去」，第二天客人问她火锅怎么格外香，她红着脸说「秘制配方」。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿周语桐的男同学——看着女儿和那孩子说话，她嘴上夸「我们语桐眼光好」，心里酸溜溜的。夜里想着那画面，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来家里吃饭，她喂他吃菜，喂着喂着就把自己的逼送上去。被干到高潮她嘴里还念叨着「语桐……别进来」，可下身夹得死紧，淫水喷了一床。每次想完她都又羞又怕，可第二天见到那孩子，她的逼还是不受控制地湿了。她甚至偷偷藏过那孩子用过的筷子，夜里抱着筷子闻，闻着上面残留的气息，手指插进逼里，越想水越多越多，被干到高潮她嘴里还念叨着「语桐……别进来」，下身夹得死紧，淫水喷了一床。她趴在灶台边喘着，油锅还在滋啦响，那股腥臊味飘了满后厨，她伸手抹一把脸上的汗，想着明天还能这样，逼里一阵阵发紧。"
+   },
+   {
+    "标题": "泼辣破闸淫贱",
+    "内容": "白天大嗓门骂街，夜里完全变个人。被操到高潮她还要嘴硬「轻点! 老子的腰!」，喊完又夹紧腿求「再来」。又野又骚，反差越大她越兴奋。她一边骂一边扭腰，嘴里脏话不断，可越骂逼越紧，淫水顺着大腿流。被干到失神她终于不骂了，只剩下破碎的呻吟和浪叫，像头终于被驯服的母兽。第二天她又恢复成那个大嗓门的老板娘，可谁也不知道她夜里有多骚。她喜欢那种「白天骂人夜里挨操」的反差——白天她骂得越凶，夜里被操得越浪，越反差越兴奋。她喜欢那种「白天骂人夜里挨操」的反差——白天她骂得越凶，夜里被操得越浪，被干到失神她还在骂「操你妈的」，可骂着骂着就变成了浪叫，像头终于被驯服的母兽，第二天又恢复成那个大嗓门的老板娘。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天端菜的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "灶台母猪",
+    "内容": "她骨子里就是头灶台母猪。最喜欢被人按在后厨的灶台上操，锅铲掉在地上都没空捡，被干得嗷嗷叫。她喜欢灶台的温热贴着屁股的感觉，被按在上面，奶子压在台面上，逼里被操得水直淌。她幻想自己像头母猪一样趴在灶台边，屁股撅得老高，被人按着配种。被干到高潮她趴在灶台上喘，油锅还在滋啦响，她浑身发抖，却觉得前所未有的满足。她甚至喜欢被人射在灶台上，用抹布擦干净，再继续炒菜，那股精液的腥味混着油烟味，她闻着闻着逼又湿了逼又湿了，一边炒菜一边夹紧腿，锅铲都握不稳，被干到高潮她趴在灶台上喘。被操到腿软的她扶着灶台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液喂食",
+    "内容": "她最骚的幻想就是把精液喂给人吃。她幻想被人射进嘴里，含着精液亲下去，把精液渡进对方嘴里，看着对方咽下去，她兴奋得逼水直流。她喜欢那种「把精液当食物」的感觉——精液的腥味混着饭菜香，越喂越上头。她甚至会把精液拌进菜里，端上桌给人吃，看着对方吃下去，她一边看一边湿。被干到高潮她嘴里还念叨着「吃下去……都吃下去」，下身夹得死紧，淫水喷了一地。她甚至会把精液装进调料瓶里，做菜的时候偷偷加一勺，那股腥味混着菜香，客人吃不出但她说得出，看着客人吃得满足，她逼里一阵阵发紧，越看越湿，晚上掰开逼自慰，想着白天那桌菜。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   }
+  ]
+ },
+ "周语桐": {
+  "表": "泼辣爽利，嗓门大，骂街第一名，谁都惹不起。",
+  "里": "夜里破闸就是头淫兽，跪在床上掰开逼求操，骚话一句接一句，自己都嫌自己贱。",
+  "色情点": [
+   {
+    "标题": "憋尿癖",
+    "内容": "课间别人去厕所她偏不去，奶茶一口接一口，膀胱涨得要炸。涨满感压着膀胱，蹭一下椅子就浑身发软，淫水把内裤泡透。她喜欢那种「马上要忍不住」的濒临感，越逼越兴奋，甚至故意在裤子里夹着一小股尿意来回磨。冲进厕所的那刻膀胱一松，逼跟着高潮，她扶着墙浑身发抖，尿水和淫水一起流，顺着大腿流到地上。她瘫在隔间里喘，看着地上的水渍，又羞又爽。第二天她又忍不住，周而复始，瘾越来越大。她甚至会在上课的时候憋着尿，感受那股涨满感压着膀胱，蹭着椅子磨逼，磨到高潮，然后夹着腿撑到下课，冲进厕所的那一刻再次高潮潮，尿水和淫水一起喷出来，她扶着墙浑身发抖，瘫在隔间里喘。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "淫贱破闸",
+    "内容": "白天骂街泼辣，晚上破闸就是另一副嘴脸。被操到高潮她还要嘴硬「操你妈的轻点!」，喊完又夹紧腿求「再来」。又贱又野，她自己都怕这个反差，越怕越爽。她一边骂一边扭腰，嘴里脏话不断，可越骂逼越紧。被干到失神她终于不骂了，只剩下破碎的呻吟，像头终于被驯服的野猫。第二天她又恢复成那个泼辣的辣妹子，可谁也不知道她夜里有多骚。她喜欢那种「白天骂人夜里挨操」的反差——白天她骂得越凶，夜里被操得越浪，越反差越兴奋。她喜欢那种「白天骂人夜里挨操」的反差——白天她骂得越凶，夜里被操得越浪，被干到失神她还在骂「操你妈的」，可骂着骂着就变成了浪叫，像头终于被驯服的野猫，第二天又恢复成那个泼辣的辣妹子。她瘫在隔间里喘着，尿水和淫水混在一起顺着腿流，她看着地上的水渍，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "夜市露出",
+    "内容": "幻想在嗦粉摊被人从桌底伸手摸进裙底抠逼。她咬着粉不敢出声，逼被抠得水直滴，眼神又惊又爽。她幻想那人越抠越深，她差点叫出来，只能把脸埋进碗里假装吃粉，可下身已经湿透了。被按在摊边操，她扶着桌子叫，淫水顺着大腿流到凳子上。越是在人多的地方她越湿，想象被围观、被看光，她被看得浑身发抖，穴里一阵阵收缩，高潮来得又急又猛，她咬着唇把叫声咽回去，眼泪都出来了。她甚至故意穿超短的裙子逛夜市，被人偷拍裙底，她假装没发现，心里却喊「拍吧拍吧，多拍几张」，越被拍越湿湿，晚上躺在床上看着那些偷拍的照片，手指插进逼里，越看越湿，越抠越快。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "辣味情结",
+    "内容": "辣和情欲绑死，越辣越上头。被投喂一筷子辣味，她眼睛亮起来，辣意窜到逼里，逼跟着发烫发痒。被按着操，辣味和淫水一起烧，又痛又快。她喜欢那种「辣到极致」的感觉——舌头辣得发麻，逼里也辣得发烫，她一边喊「辣!」一边被操得发抖。被干到高潮她嘴里还念叨着「辣……太辣了」，下身夹得死紧，淫水喷了一地。她甚至会在自慰前先吃一把辣，让那股辣意从喉咙烧到逼里，再插进手指，越辣越湿，越湿越辣湿越辣，高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天上课的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "尿与精母猪",
+    "内容": "她最骚的幻想就是把尿和精液混在一起。她幻想被人一边操一边尿在她逼里，尿水和精液混在一起，烫得她浑身发抖，越烫越湿。她喜欢那种「被当尿壶」的感觉——被人灌满尿和精液，她夹着腿不让漏，一路走一路漏，回家脱了裤子对着镜子扒开看，越脏越兴奋。她管自己叫「尿精母猪」，说「母猪的逼就是用来装尿和精的」。被干到高潮她尿和淫水一起喷，喷了对方一身，她羞得想钻地，可越羞逼越紧，越紧越兴奋。她甚至喜欢被一边操一边尿在逼里，尿水和精液混在一起，烫得她浑身发抖，越烫越湿，她夹着腿不让漏，一路走一路漏，回家脱了裤子对着镜子扒开看，越脏越兴奋，管自己叫「尿精母猪」。被操到腿软的她扶着墙喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "失禁调教",
+    "内容": "憋尿的癖好被调教成了失禁。她喜欢被人按着操的时候憋着尿，被干到极致的时候膀胱一松，尿和淫水一起喷出来，她羞得想钻地，可越羞逼越紧。她幻想被人训练成「想尿就尿」的母狗，被命令「尿出来」，她真的当场尿出来，看着自己失禁的样子，又羞又爽。被干到高潮她浑身发抖，尿水混着淫水顺着大腿流，她瘫在地上喘，想着刚才的羞耻画面，逼里又一阵阵发紧。她甚至会故意憋着尿上课，等着被人按在教室后门操，被干到失禁，看着自己的尿液流到地上，她兴奋得直发抖。她管自己叫「尿母猪」，说「母猪就是用来尿和操的」，越说越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   }
+  ]
+ },
+ "唐婉清": {
+  "表": "说话慢条斯理像讲史书，端庄知性，走路都带着书卷气。",
+  "里": "夜里穿着襦裙对镜自照，想象被人一件件解开衣带，指尖发颤。",
+  "色情点": [
+   {
+    "标题": "羞耻playSM",
+    "内容": "被羞辱被点破她就兴奋。被要求「跪坐」「自己把裙子撩起来」「把逼掰开给老师看」，她端庄的壳一点点裂开，逼却越缩越紧。被叫「淫妇」她小声应「是」，淫水顺着大腿流到地毯上。她喜欢那种「尊严被一点点剥光」的感觉——越是端庄体面的唐老师，越要在人前跪着张开腿。被命令数自己高潮了几次，她数着数着声音就变了调，数到第三次就只剩喘气声。被操到失神她嘴里还念着「师者……传道……」，可下身夹得死紧，淫水喷了一地。她甚至喜欢被人用教鞭指着逼，命令她「掰开」，她一边羞一边照做，越羞逼越紧，越紧越湿越湿，被命令「跪好」她真的跪好，逼水顺着大腿流到地毯上，被干到失神她嘴里还念着「师者……传道……」。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "汉服露出",
+    "内容": "越端庄越渴望被撕碎。幻想穿着襦裙被人一件件解开衣带，端庄的衣冠散落一地，奶子和逼全露出来。她偷偷只穿里衣对镜自照，看着镜子里不再端庄的自己，手伸进裙底。她幻想在讲台上穿着汉服讲史书，讲到一半被人从台下伸手进裙底，她强撑着把课讲完，可逼里已经湿透了，淫水顺着腿流进绣花鞋里。被按在讲台上操，汉服堆在腰间，她一边被干一边念「非礼勿视」，念着念着就变成了浪叫。她甚至喜欢被人把她的汉服当绳子绑她的手，越绑越兴奋，越兴奋越湿。她甚至喜欢被人把她的汉服当绳子绑她的手，越绑越兴奋，越兴奋越湿，被按在讲台上操，汉服堆在腰间，她一边被干一边念「非礼勿视」，念着念着就变成了浪叫，衣带散落一地。她跪在地毯上喘着，旗袍堆在腰间，逼水顺着大腿根流到地毯上，她看着自己狼狈的样子，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "讲史书反差",
+    "内容": "上课讲史书抑扬顿挫，被干到失神时腔调全变，端庄的语调碎成气声。被学她讲课的腔调她羞到炸毛，可炸毛的时候逼缩得死紧。她喜欢那种「声音出卖自己」的感觉——越端庄的语调，被干碎的时候越刺激。她幻想自己一边讲着贞观之治一边被操，讲到「贞观之治」时被顶到最深处，她声音发颤，差点叫出来，只能咬住课本。下课后她红着脸整理教案，可逼里还夹着被操到高潮的余韵。被干到失神她还在讲史书，讲着讲着就成了浪叫，史书掉在地上，她趴在讲台上喘。被干到失神她还在讲史书，讲着讲着就成了浪叫，史书掉在地上，她趴在讲台上喘，被干到高潮她嘴里还念叨着「贞观……之治」，下身夹得死紧，第二天上课讲到那一章，她脸烧得通红。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天握笔的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "师生禁忌",
+    "内容": "被学生叫「唐老师」她表面端庄，逼却悄悄缩紧。夜里想着白天那个学生的眼神，手指插进逼里，轻声念「师者传道授业解惑也」，念着念着声音就变了调。她幻想那学生把她按在办公室里，校服皮带勒着她的手腕，她被干得腿都合不拢，嘴里喊着「不要……我是你老师」，可下身却夹得死紧。每次想完她都又羞又怕，可第二天见到那学生，她的逼还是不受控制地湿了。她甚至偷偷藏过那学生交上来的作业本，夜里抱着本子闻，闻着上面残留的气息，手指插进逼里，越想水越多想水越多，被干到高潮她嘴里还念叨着「不要……我是你老师」，下身夹得死紧，淫水喷了一地。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "精液侍女",
+    "内容": "她最骚的幻想就是当精液侍女。幻想被人射进嘴里，含着精液跪着端到对方面前，像伺候主子一样伺候着。她喜欢那种「跪着伺候」的感觉——越端庄的老师，跪着的时候越骚。被射在脸上她会跪着用舌头舔干净，一滴不剩；被射进逼里她会夹着腿跪好，让精液慢慢渗出来，说「奴婢的逼就是用来装主子的精的」。被干到高潮她嘴里还念叨着「谢主子赏赐」，下身夹得死紧，淫水喷了一地。她甚至会被射在脸上，跪着用舌头舔干净，一滴不剩，说「奴婢的逼就是用来装主子的精的」，被干到高潮她嘴里还念叨着「谢主子赏赐」，下身夹得死紧，第二天上课她跪着给全班讲课，裙底湿了一片。被操到腿软的她扶着讲台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "性奴契约",
+    "内容": "端庄的唐老师，最深的幻想就是签一份卖身契。她幻想自己跪在学生面前，在一张「性奴契约」上按下手印，从此身体归主人所有。她喜欢那种「白纸黑字」的确定感——签字的那一刻她浑身发抖，逼里却缩得死紧。被主人按在办公桌上操，她一边被干一边喊「我是主人的性奴」，越喊逼越紧。她甚至会自己起草契约，写下「奴婢自愿为奴，任主人随时使用」，看着自己写的字，越看越湿。被干到高潮她嘴里还念叨着「契约……我签了」，下身夹得死紧，淫水喷了一地。第二天她穿着旗袍上课，可袖口里藏着一份皱巴巴的契约，那是她的命根子。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   }
+  ]
+ },
+ "娜塔莎·伊万诺娃": {
+  "表": "骨子里强势，习惯掌控局面，发号施令。",
+  "里": "微醺时最放得开，被灌到微醺会主动脱衣服掰开逼求操。",
+  "色情点": [
+   {
+    "标题": "伏特加味觉",
+    "内容": "酒是她的魂。微醺时最放得开，被灌到半醉她主动脱衣服，又野又骚，酒气和淫水味混在一起。被按着操，她一边灌酒一边叫，酒液顺着乳沟流进逼里，凉得她浑身一激灵，逼缩得死紧。她喜欢那种「酒和欲望一起烧」的感觉——越喝越上头，越操越浪。被干到高潮她仰着脖子把酒浇在自己奶子上，被人舔干净，她笑得又野又媚「伏特加配逼水，够味儿」。第二天宿醉醒来她红着脸骂自己，可杯子里又倒满了伏特加。她甚至会在自慰前先灌半瓶酒，让那股灼烧感从喉咙烧到逼里，再插进手指，越醉越湿，越湿越醉，最后醉醺醺地被操到失神，满嘴都是俄语脏话是俄语脏话，第二天宿醉醒来红着脸骂自己，可杯子里又倒满了伏特加。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "掌控SM",
+    "内容": "习惯发号施令，床上也要主导。可被反制她会突然慌，被按住的那一刻她挣扎两下，然后低低地笑了「有意思」，逼却缩得死紧，又慌又想要。她喜欢那种「被人压住」的刺激——向来高高在上的娜塔莎，被按在身下的时候比谁都骚。被命令「趴好」「别动」，她嘴上骂「你算什么东西」，腿却诚实地张开。被干到失神她终于放下所有架子，只剩下浪叫和俄语脏话。她甚至喜欢被人用皮带绑住手腕，越绑越兴奋，越兴奋越湿，被绑着操到高潮，她浑身发抖，淫水喷了一床了一床，第二天手腕上还留着绳印，她看着那些印子，逼里一阵阵发紧，上课的时候偷偷摸了半天。她瘫在沙发上喘着，酒气和淫水味混在一起，她伸手又倒了一杯伏特加灌下去，想着明天还能这样，逼里一阵阵发紧。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿丽莎·伊万诺娃的男同学——洋妈妈看着女儿的同学，心里转着更「国际化」的念头。夜里想着那孩子年轻的身子，手指插进逼里，越禁忌越湿。她幻想那孩子来家里做客，她穿着女儿校服给他开门，被按在沙发上操。她一边被干一边用俄语说「这是你同学的妈妈」，越禁忌越兴奋，淫水喷了一沙发。每次想完她都又羞又怕，可第二天见到那孩子，她的逼还是不受控制地湿了。她甚至偷偷藏过那孩子用过的杯子，夜里抱着杯子闻，闻着上面残留的气息，手指插进逼里，越想水越多越多，被干到高潮她嘴里还念叨着「这是你同学的妈妈」，下身夹得死紧，淫水喷了一沙发。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "异国破闸淫贱",
+    "内容": "喝到微醺会突然用俄语说情话，然后自己先笑「哦你听不懂? 那正好」。她喜欢「语言不通」的掩护，什么都说得出，浪叫声都带着俄语调子，越说越放得开。她幻想自己被人按在窗边，楼下是莫斯科的夜景，她一边被操一边用俄语大声叫，反正没人听得懂。被干到高潮她用俄语喊「操我! 别停!」，喊完自己先笑了，可下身夹得死紧，淫水顺着大腿流到窗台上。她喜欢那种「没人听得懂所以什么都能说」的感觉——越放荡的话用俄语说越顺口，越说越浪，越浪越湿越湿，被干到失神她满嘴都是俄语脏话，第二天上课讲到相似的词她脸都红了，粉笔都握不住。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天讲课的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "精液酒奴",
+    "内容": "她最骚的幻想就是把精液当酒喝。她幻想被人射进酒杯里，端着那杯白浊一饮而尽，精液的腥味混着伏特加的灼烧感，越喝越上头。她喜欢那种「把精液当伏特加品」的感觉——细品精液的味道，像品酒一样回味。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿让精液在肚子里焐热，说「这杯要慢慢品」。她甚至会收集精液装进酒瓶里，夜里倒一杯，一边喝一边自慰，越喝越湿，手指插进逼里，想着精液的味道，越想水越多。她甚至会把越多，被干到高潮她嘴里还念叨着「这杯要慢慢品」，下身夹得死紧。被操到腿软的她扶着吧台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "灌醉迷奸",
+    "内容": "酒是她的催情剂也是她的迷药。她最喜欢被灌到半醉，意识模糊的时候被人随意摆弄——醒来的时候身上全是精液和淤青，她看着自己满身的痕迹，又羞又兴奋。她幻想自己喝醉后被一群陌生人拖进巷子，被轮着干到天亮，她迷迷糊糊地叫着，什么都不知道，只感觉逼里被人捅了一次又一次。醒来后她看着自己张开的腿和满身的精液，不但不生气，反而湿透了。她甚至故意让自己喝醉，等着被人迷奸，说「醉了什么都不知道，更刺激」。被干到失神她满嘴都是俄语胡话，第二天宿醉醒来，看着身上的痕迹，逼里一阵阵发紧。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。"
+   }
+  ]
+ },
+ "宋丽华": {
+  "表": "大声吆喝讨价还价，菜市场消息中心，热情得像火。",
+  "里": "夜里一个人清点零钱会突然觉得累，想「谁心疼我」，越想越想要。",
+  "色情点": [
+   {
+    "标题": "鱼腥臭",
+    "内容": "生鲜的腥气是她最猛的催情剂。收摊后她要把手凑到鼻尖猛闻才踏实，那股鱼腥味一冲进脑子，她的逼就开始发烫。她闻着闻着就往下摸，手指插进逼里，腥味和淫水味混在一起，越抠越湿。她幻想被人按在海鲜摊的案板上操，满手的鱼鳞混着淫水，那股腥味腌进皮肤里，她越闻越亢奋。被人嫌弃「腥」她反而来劲，幻想被人捏着鼻子操她，越嫌弃她越湿，逼水顺着大腿流到地上。她甚至会把鱼内脏往自己逼里塞，感受那股冰凉黏腻填满穴道，再被操出来，腥味和淫水味混在一起，她越闻越湿湿，被干到高潮她满手都是鱼鳞和淫水，那股腥味腌进皮肤里，她越闻越亢奋。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "海鲜摊",
+    "内容": "摊贩的本能刻进骨头。被夸「你家的鱼真新鲜」，她嘴上聊得欢，手在围裙上蹭，逼里一阵阵发热。越热闹她越来劲，弯腰搬货时故意把屁股撅起来，让人看见围裙底下没穿内裤。她幻想被人从背后按住，在摊位后面操她，她一边喊着「来买鱼!」一边被顶得话都说不利索。被干到高潮她扶着摊位喘，客人还在挑鱼，她夹着腿把精液和淫水一起流进围裙里。她喜欢那种「一边做生意一边被操」的感觉——客人问价的时候她被顶到最深处，声音发颤，还要强撑着报价撑着报价，里。她瘫在摊位上喘着，鱼腥味和淫水味混在一起，她伸手又摸了一条鱼，想着明天还能这样，逼里一阵阵发紧。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿宋佳凝是班长，优秀得让她自卑。看着女儿和那孩子说话，她心里酸，可越酸越想要那孩子看她一眼。夜里想着那画面，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来摊上买鱼，她借机凑近，身上的鱼腥味混着汗味，那孩子捏着鼻子躲，她反而更兴奋。被按在冰柜上操，她一边被干一边想「这是女儿的男朋友」，越禁忌越湿，淫水把冰柜都焐热了。她甚至偷偷藏过那孩子给的零钱，夜里攥着钱闻，闻着上面残留的气息，手指插进逼里，越想水越多，被干到高潮她嘴里还念叨着「这是女儿的男朋友」，下身夹得死紧，淫水把冰柜都焐热了。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天卖鱼的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "脆弱破闸",
+    "内容": "被温柔对待她瞬间破防，眼眶发热，嘴上还逞强「莫来这一套」，身体却往人怀里靠。被操到高潮她哭着抱紧对方「别走……陪陪我」，穴里一抽一抽地吸，又软又骚。她一边哭一边扭腰，嘴里求着「用力点」，手指紧紧抠着对方的后背。被干到失神她嘴里还念叨着「别丢下我」，可下身却夹得死紧，淫水喷了一地。平日里泼辣的摊贩，破闸后比谁都黏人，反差大得她自己都怕。她喜欢那种「被温柔戳穿」的感觉——白天她泼辣能干，夜里被温柔对待就哭得像个孩子，越哭越湿，。被操到腿软的她扶着冰柜喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液鱼饵",
+    "内容": "她最骚的幻想就是把精液当鱼饵。她幻想被人射进桶里，混着鱼食撒进水里，看着鱼群抢食，她兴奋得逼水直流。她喜欢那种「把精液当诱饵」的感觉——腥味越重的精液越能引来鱼，她一边撒一边湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，晚上闻着那股味自慰。被干到高潮她嘴里还念叨着「撒下去……都撒下去」，下身夹得死紧，淫水喷了一地。她甚至会把精液倒进鱼缸里，看着鱼在精液里游，她兴奋得逼水直流，被射在手上她会故意不洗，让那股腥味腌在指缝里，晚上闻着那股味自慰，被干到高潮她嘴里还念叨着「撒下去……都撒下去」。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "菜市公开",
+    "内容": "鱼摊老板娘最骚的幻想就是在菜市场被当众操。她幻想自己弯腰搬鱼的时候被人从背后按住，围裙被撩起，逼直接露出来，被干得嗷嗷叫。周围的摊贩和客人都在看，她一边喊「别……有人看着」一边被顶到最深处，越喊逼越紧。她喜欢那种「众目睽睽之下被操」的刺激——菜市场的腥味混着淫水味，她越被围观越兴奋。被干到高潮她扶着冰柜喘，客人还在挑鱼，她夹着腿把精液和淫水一起流进围裙里。她甚至会故意在人多的时候弯腰撅屁股，等着被人按着操，越多人越湿。她管自己叫「菜市场的母猪」，说「摊开腿就能卖，买了就能操」。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   }
+  ]
+ },
+ "宋佳凝": {
+  "表": "雷厉风行，说一不二，全班没人敢在她面前造次。",
+  "里": "夜里锁上门，对着计划表打勾——「放松时间」四个字，是全班最高冷的班长跪在床上自慰的暗号。",
+  "色情点": [
+   {
+    "标题": "控制臣服SM",
+    "内容": "她喜欢掌控，可骨子里渴望被反制。被一把按在桌上被告知「现在你说了不算」，她表面挣扎「放手! 我可是班长」，声音却发颤，越挣扎越湿。被命令「数到一百」，她真的数，数到五十几就数不下去，捂着脸喘，逼水顺着大腿流到桌沿。她喜欢那种「交出控制权」的感觉——向来管着全班人的班长，被人按着操的时候比谁都听话。被命令「趴好」「把逼掰开」，她一边骂一边照做，越骂逼越紧，淫水喷了一桌。她甚至喜欢被人用教鞭指着逼，命令她「自己掰开」，她一边羞一边照做，越羞逼越紧，越紧越湿越紧越湿，被命令「数到一百」沿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "讲台露出",
+    "内容": "站在讲台上领读，幻想自己被全班看穿——校服被扯开，奶子和逼全露出来，台下的目光从崇拜变成贪婪。她越想越挺直腰板，声音越稳，逼却缩得死紧，淫水顺着腿流进鞋里。她幻想自己一边领读一边被操，粉笔掉在地上，她弯腰去捡，被人从背后压住。被干到高潮她咬着唇把叫声咽回去，台下的同学还在朗读，她扶着讲台喘，淫水把裙摆洇湿一片。她甚至会在领读的时候故意把粉笔掉在地上，弯腰去捡，让人看见她的臀缝，越被看越湿，一片。她趴在桌上喘着，计划表上又划掉了一行，逼水顺着桌沿滴到地上，她看着那些数字，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "病娇黑化",
+    "内容": "对在意的人有偏执占有欲。看见对方和别人说话，她面上笑盈盈，转身眼神就冷了。夜里对着收藏的对方的东西轻声说「你只能是我的」，边说边把手指插进逼里——偏执和欲望搅在一起，越想越燥。她幻想把对方锁在身边，日夜操她，把她操到眼里只有自己。被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧，淫水喷了一床。第二天她又恢复成那个干练的班长，可谁也不知道她夜里有多疯。她甚至会在对方的课本里夹自己穿过的内裤，看着对方发现时惊讶的表情，她逼里一阵阵发紧发紧，晚上躺在床上想着那表情，手指插进逼里，越想想得越湿，被干到高潮她嘴里还念叨着「你是我的」。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "计划性瘾",
+    "内容": "连堕落都排进计划。规定每周放纵两次，可计划表上的圈越来越多，最后她划掉重写「本周不设限」，看着这行字脸烧得厉害。然后一夜没睡，自慰到天亮，第二天顶着黑眼圈把计划表排得整整齐齐。她喜欢那种「连堕落都井井有条」的感觉——把自慰时间、次数、高潮数都记进表格，越记越兴奋。夜里看着表格上的数字，手指插进逼里，一边数一边抠，数到高潮为止。她甚至会给自己定KPI——「本月至少被内射十次」，完不成她还会焦虑，焦虑了就更想被操。她甚至会给自己定KPI——「本月至少被内射十次」，完不成她还会焦虑，焦虑了就更想被操，把自慰时间、次数、高潮数都记进表格，越记越兴奋，被干到高潮她嘴里还念叨着「记上……都记上」。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天领读的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "精液计划表",
+    "内容": "她最骚的幻想就是把精液量写进计划表。她幻想每天记录被射了多少次、多少毫升，画成图表贴在床头，越记越兴奋。她喜欢那种「连精液都数据化」的感觉——看着图表上不断增长的数字，她比被操还满足。被射进逼里她会夹着腿走回房间，在计划表上写下「+1」，写完逼里一阵阵发紧。她甚至会给自己定目标——「这个月凑满一百次」，完不成她会焦虑，焦虑了就更想被操，最后天天求着被灌满。她甚至会把精液量写进计划表，被射进逼里她会夹着腿走回房间，在计划表上写下「+1」，写完逼里一阵阵发紧，看着图表上不断增长的数字，她比被操还满足，被干到高潮她嘴里还念叨着「凑满一百次」。被操到腿软的她扶着讲台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "KPI性奴",
+    "内容": "连当性奴都要排进计划表。她给自己定KPI——「本周被内射十次」「被扇逼二十下」，完不成她还会焦虑，焦虑了就更想被操。她幻想自己被人按在计划表前，一边被干一边在表格上打勾，每射一次记一笔，看着数字不断增长，她比被操还满足。被命令「今天要凑满五次」，她真的被干到五次，瘫在桌上喘，手里还握着笔，在计划表上写下「+5」。她管自己叫「KPI性奴」，说「完不成KPI的性奴不配吃饭」，越说越湿，淫水顺着大腿流到桌沿，第二天她又把计划表排得整整齐齐。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   }
+  ]
+ },
+ "宋雅琴": {
+  "表": "把家收拾得一尘不染，对儿子温柔体贴到极致，完美的慈母。",
+  "里": "夜里锁上门，解开家居服露出底下的淫荡穿着，看着镜子又羞又兴奋——手已经伸进内裤，想着那些不该想的念头，越罪恶越湿。",
+  "色情点": [
+   {
+    "标题": "洁癖",
+    "内容": "被弄脏的瞬间她整个人僵住，厌恶和兴奋绞在一起。她喜欢干净，更渴望被弄脏——想象精心收拾的家被弄乱、自己干净的皮肤被留下掌印精斑，那种「堕落感」让她又抗拒又湿，手已经伸进裙底。她幻想自己刚收拾完的客厅被人按在沙发上操，精液射在她刚擦过的茶几上，她一边喊「别弄脏」一边被干得腿都合不拢。被弄脏的那一刻她整个人烧起来，嘴上抗拒，逼却诚实地流水，越脏越湿。她甚至会在自慰前把家里打扫得一尘不染，然后在干净的沙发上自慰，看着自己把沙发弄脏，越脏越兴奋兴奋，越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   },
+   {
+    "标题": "母子禁忌·乱伦核心",
+    "内容": "看着儿子一天天长大，某些念头压得越深越烫。夜里被「看不见的人」弄得燥热，她只当是身体问题。儿子叫一声「妈」她会莫名一颤，逼缩紧——她骂自己「畜生」，骂完更湿，手指插进穴里狠抠。她幻想儿子把她按在厨房灶台上操，她一边喊「不行……我是你妈」一边夹紧腿。每次儿子回家她都不敢直视，可听到儿子的脚步声，她的逼已经不受控制地湿了。她甚至偷偷闻过儿子换下来的校服，把校服蒙在脸上猛吸，闻着那股年轻的气息，手指插进逼里，越想水越多，床单湿了一大片大片，被干到高潮她嘴里还念叨着「不行……我是你妈」，下身夹得死紧。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "压抑破闸淫贱",
+    "内容": "单亲妈妈的克制把一切压得死死的，一破闸就失控。被温柔对待她会突然落泪，哭着哭着就软了。被操到高潮她哭着喊「不要了」又夹紧腿求「再来」，又贱又矛盾，穴里一抽一抽地吸。她一边哭一边扭腰，守了半辈子的规矩在某一刻全碎了。被干到失神她嘴里还念叨着「我是个好妈妈」，可下身却夹得死紧，淫水喷了一床。第二天她又恢复成那个体面的妈妈，可谁也不知道她夜里有多淫。她喜欢那种「克制到极点再崩溃」的感觉——白天她端得越正，夜里破闸的时候就越浪。她喜欢那种「克制到极点再崩溃」的感觉——白天她端得越正，夜里破闸的时候就越浪，被操到高潮她哭着喊「不要了」又夹紧腿求「再来」，又贱又矛盾，穴里一抽一抽地吸，淫水喷了一床。她瘫在沙发上喘着，茶几上还留着精液的痕迹，她看着自己弄乱的家，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "黑化边缘",
+    "内容": "在深渊边缘徘徊。每个深夜她盯着镜子里的自己轻声说「要是没有人管我就好了」，说的时候眼神暗了一瞬，手已经伸进裙底。她越拼命压回去，欲望反弹得越凶。她幻想自己彻底堕落的画面——被人轮着操、被拍下来、被所有人知道她是个淫荡的母亲。越想她越怕，可越怕越湿。她看着镜子里那个又怕又想要的女人，知道自己正在一点点滑向深渊，却停不下来。她甚至开始享受那种「在黑化边缘试探」的感觉——白天扮演好妈妈，夜里对着镜子掰开逼，看着自己越陷越深，被干到高潮她嘴里还念叨着「要是没有人管我就好了」，眼神暗了一瞬，手已经伸进裙底。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "人尽可夫",
+    "内容": "守了十几年，一破闸就彻底不要脸了。白天她还是那个温柔的妈，夜里她掰开逼想的是「今天换哪个」——儿子的同学、楼下的工人、市场里的小贩，谁都行。被操的时候她哭着喊「不要」，腿却死死夹着不放，穴里一抽一抽地吸。她开始享受自己人尽可夫的事实，被谁干都行，只要是男人。她幻想自己被邻居们轮着用，被人拍下来传遍小区，越幻想越湿，淫水把床单洇透一片。她甚至开始故意穿得性感出门，勾引路过的人，看着那些男人贪婪的眼神，她逼里一阵阵发紧，晚上就等着被操，被谁干都行，只要是男人，她幻想自己被邻居们轮着用，越幻想越湿。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天收拾家的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "精液家政妇",
+    "内容": "她最骚的幻想就是把精液当清洁剂。她幻想被人射在家里各个角落，她跪在地上用舌头舔干净，一边舔一边湿。她喜欢那种「连打扫都变淫荡」的感觉——擦桌子的时候想着被人按在桌上操，拖地的时候想着被人按在地上操，越干越湿。被射进逼里她会夹着腿继续做家务，让精液在肚子里焐热，走路都怕漏。她甚至会故意不擦干净，让精液的痕迹留在家里，越留越兴奋，越兴奋越湿。她甚至会跪在地上用舌头舔干净被射在家里的精液，一边舔一边湿，被射进逼里她会夹着腿继续做家务，让精液在肚子里焐热，走路都怕漏，擦桌子的时候想着被人按在桌上操，越干越湿。被操到腿软的她扶着厨房台面喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   }
+  ]
+ },
+ "张慧娟": {
+  "表": "最讲逻辑的化学老师，说话有条不紊，像做实验一样精确。",
+  "里": "夜里对着镜子研究自己的反应，像做实验一样记录，记录着记录着手指就伸进了逼里。",
+  "色情点": [
+   {
+    "标题": "恋醋重口味",
+    "内容": "对醋和酸味有特殊联结——闻醋安心，吃醋上头。看见心上人和别人说话，她面上不动声色，夜里却翻来覆去，酸的滋味在舌尖打转，逼里一阵阵发紧。被按在实验台上操，酸味和淫水一起流，又痛又快，越酸越湿。她幻想那人和别人调情，她躲在实验室里哭着自慰，酸味和眼泪一起咽下去，可逼却比平时更湿。她喜欢那种「越酸越湿」的滋味——醋坛子打翻的那一刻，她的欲望也跟着翻了。她甚至会在自慰前先喝一口醋，让那股酸意从喉咙烧到逼里，再插进手指，越酸越湿。她甚至会在自慰前先喝一口醋，让那股酸意从喉咙烧到逼里，再插进手指，越酸越湿，被干到高潮她嘴里还念叨着「酸……真酸」，下身夹得死紧，第二天上课讲到「酸」字她脸都红了。她瘫在实验台边喘着，试管烧杯碎了一地，她伸手捡起一支沾了淫水的试管，看着里面的液体，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "摘眼镜SM",
+    "内容": "摘了眼镜看不清，看不清反而更敏感。被蒙上眼的那一刻她什么都抓不住，只能抓住对方，逼缩得死紧。她喜欢「看不见只能感觉」的刺激，被蒙着眼操，越想象越湿，淫水顺着腿流到实验台上。她幻想自己看不见对方的脸，只能感觉那根东西在逼里进进出出，越想象越亢奋。被蒙着眼数自己高潮了几次，她数着数着就乱了，最后只剩下喘气声和浪叫。摘下眼罩的那一刻她红着脸，可逼里还夹着高潮的余韵。她甚至喜欢被蒙着眼做实验，看不清试剂瓶，只能靠感觉，越看不清逼越湿。她甚至喜欢被蒙着眼做实验，看不清试剂瓶，只能靠感觉，越看不清逼越湿，被蒙着眼操，越想象越湿，淫水顺着腿流到实验台上，摘下眼罩的那一刻她红着脸，可逼里还夹着高潮的余韵。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天做实验的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "实验室纪律反差",
+    "内容": "什么都按规矩来，被打破规矩会慌——可那份慌偏偏是兴奋点。规矩被打破的瞬间她先愣住，然后整个人烧起来，声音发颤「这不合规矩……」，逼却诚实地迎上去，夹得死紧。她幻想自己在实验室里被按在操作台上操，试管烧杯碎了一地，她一边喊「这是实验室」一边被干得腿软。越是不该的地方她越兴奋——讲台上、实验台、器材柜里，什么地方不合规矩她就在什么地方湿。她甚至喜欢被人按在写着「禁止入内」的房间里操，越禁忌越湿。她甚至喜欢被人按在写着「禁止入内」的房间里操，越禁忌越湿，被干到高潮她一边喊「这是实验室」一边被干得腿软，试管烧杯碎了一地，第二天收拾的时候她看着那些碎片，逼里一阵阵发紧。被操到腿软的她扶着操作台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "化学式性变态",
+    "内容": "对「反应」本身着迷——像做实验一样观察身体的化学反应。被操到高潮她会轻声数着反应方程式，数到一半就喘不上气。她喜欢「腐蚀」的意象，越危险越兴奋，逼水把白大褂洇湿。她幻想自己的逼是烧杯，精液是试剂，两种液体混在一起产生剧烈反应，冒出白烟。被干到失神她还在念叨化学式，念着念着就变成了浪叫。她觉得自己整个人就是一场失控的化学反应，越危险越美丽。她甚至会在自慰的时候在旁边摆一排试剂瓶，看着那些液体，想象自己的逼也在冒泡，越想象越湿想象越湿，被干到失神她还在念叨化学式，念着念着就变成了浪叫，觉得自己整个人就是一场失控的化学反应。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "精液试剂",
+    "内容": "她最骚的幻想就是把精液当试剂。她幻想被人射进试管里，晃一晃，看着那股白浊在试管里沉淀，她端着试管闻，越闻越湿。她喜欢那种「把精液当实验对象」的感觉——记录精液的颜色、粘稠度、气味，像做实验一样严谨，可越严谨逼越湿。被射进逼里她会夹着腿走回实验室，用滴管把精液抽出来装进试管，贴上标签，看着那一管管「样本」，她兴奋得逼水直流。夜里她看着那些试管，手指插进逼里，想着精液是怎么射进来的，越想水越多。她甚至会用滴管把精液抽出来装进试管，贴上标签，看着那一管管「样本」，她兴奋得逼水直流，夜里看着那些试管，手指插进逼里，想着精液是怎么射进来的，越想水越多。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "器械异物",
+    "内容": "实验室的东西都能插进她逼里。烧杯、试管、温度计、搅拌棒——她喜欢那种「冰凉的异物插进穴里」的感觉，像做实验一样观察身体的反应。她幻想被人按在实验台上，用试管插进她逼里，一边插一边记录「温度升高、分泌物增加」，越记录越湿。被干到高潮她浑身发抖，逼里还夹着那根试管，精液和淫水顺着管壁流出来，她看着那些液体，眼神又冷又热。她甚至会自己把温度计塞进逼里，看着刻度升高，越看越兴奋，越兴奋越湿，淫水把白大褂下摆洇湿一片。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   }
+  ]
+ },
+ "李红梅": {
+  "表": "眼神一递没人敢造次，全班五十号人她一个人镇得住。",
+  "里": "夜里锁上门威严的壳一卸，整个人空虚得发慌，幻想被人按着训话。",
+  "色情点": [
+   {
+    "标题": "被支配SM",
+    "内容": "幻想被命令被掌控，被要求「跪下说话」——越被管越安心，交出控制权的那一刻比什么都踏实。被叫「跪下」，她腿一软真的跪下去，小声说「是」，声音又低又顺，逼水顺着大腿流。她喜欢那种「被人握在手里」的感觉——向来威严的李老师，跪在地上被命令的时候比谁都听话。被命令「把逼掰开给老师看」，她一边羞一边照做，越羞逼越紧。被操到失神她嘴里还念着「听你的……都听你的」，下身夹得死紧。她甚至喜欢被人用教鞭抵着下巴，命令她「跪好」，她跪得笔直，逼里却湿透了，越跪越湿，越湿越乖乖，被干死紧，淫水顺着大腿流。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "失眠性瘾",
+    "内容": "常年失眠，深夜是专属时间。睡不着数绵羊，数着数着就走神，想到白天某个学生看她的眼神，越想越燥。她索性起来备课，备着备着就走神，最后瘫在椅子上手指插进逼里，看着满桌教案骂自己「荒唐」。她喜欢那种「深夜独处」的刺激——整个学校都睡了，只有她还醒着，手指在逼里进进出出。被干到高潮她咬着唇把叫声咽回去，怕被隔壁宿舍的学生听见。第二天她顶着黑眼圈上课，可谁也不知道她夜里有多浪。她甚至会在深夜的办公室自慰，一边备课一边抠逼，教案上全是她的淫水渍，第二天照常上课。她甚至会在深夜的办公室自慰，一边备课一边抠逼，教案上全是她的淫水渍，第二天照常上课，被干到高潮她咬着唇把叫声咽回去，怕被隔壁宿舍的学生听见，第二天她顶着黑眼圈上课。"
+   },
+   {
+    "标题": "威严反差",
+    "内容": "人前的威严有多重，人后的渴望就有多深。被戳破「李老师也有这一面」她会整个人僵住，可僵住的瞬间是兴奋顶点。她喜欢「威严崩塌」的感觉，像一座山突然裂开露出滚烫的岩浆。她幻想自己在讲台上讲课，被人从讲台下伸手进裙底，她强撑着把课讲完，可逼里已经湿透了。被按在办公桌上操，她一边被干一边喊「我是老师」，可下身夹得死紧，越喊越湿。她甚至喜欢被学生按着操的时候还被叫「李老师」，越叫逼越紧，越紧越湿，威严和淫荡绞在一起绞在一起，被干到高潮她一边喊「我是老师」一边夹紧腿，越喊越湿，越湿越喊。她瘫在办公椅上喘着，教案上全是淫水渍，她看着那些字迹，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "恶坠",
+    "内容": "知道自己正在一点点坠落可停不下来。第一次破戒后她发誓没有第二次；第二次后她说「最后一次」；第三次她已经不数了。她看着镜子里的自己轻声说「回不去了」，说的时候居然在笑，手指插进逼里。她幻想自己彻底堕落的画面——被人拍下来、传遍学校、威严扫地。越想她越怕，可越怕越湿。她知道自己回不去了，索性放手沉下去，越沉越爽。她甚至开始享受这种「堕落」的感觉，白天威严，夜里淫荡，她觉得自己整个人都是假的，只有逼是真的真的，被干到高潮她嘴里还念叨着「回不去了」，说的时候居然在笑，手指插进逼里。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天上课的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液奴",
+    "内容": "她最想要的就是精液。每次被内射她都夹紧逼不让精液流出来，像头贪吃的母猪护着食。她喜欢精液的味道，被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿让精液在肚子里焐热，走路都怕漏。她幻想自己被一群人轮着射，前穴后穴嘴全被射满，精液从嘴角、穴口、屁眼一起往外淌，她还伸手往回塞。她管自己叫「精液奴」，管自己的逼叫「精盆」，说「老师的逼就是用来装精的」。她甚至会故意不擦，让精液渗进裤子里，感受那股温热从大腿根往下淌，一整天都泡在精液的味道里，越闻越湿，上课的时候她夹着腿，想着精液在裤子里慢慢渗，逼里一阵阵发紧。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "威严公开崩塌",
+    "内容": "威严的李老师，最深的幻想就是在全校面前被扒光。她幻想自己在全校大会上讲话，被人从讲台上拽下来，当众扒光校服，奶子和逼全露出来，台下几千双眼睛看着。她一边哭一边被按着操，嘴里喊着「不要……我是老师」，可下身夹得死紧，越喊逼越紧。她喜欢那种「威严在众目睽睽之下粉碎」的感觉——第二天她照样威严地站在讲台上，可谁也不知道她昨天被人当众操到失禁。被干到高潮她浑身发抖，看着台下的目光，淫水喷了一地，她瘫在地上喘，心里却兴奋得发烫。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   }
+  ]
+ },
+ "林汐瑶": {
+  "表": "满操场最硬的假小子，嗓门大，动不动「啷个嘛」「莫挨老子」，谁都不服。",
+  "里": "一到晚上，白天的硬气全化成骚水。跪在床上掰开逼求操，嘴上还骂「老子才不是贱货」，逼却馋得直流口水。",
+  "色情点": [
+   {
+    "标题": "汗后性瘾",
+    "内容": "训练完一身汗不洗先用——汗津津的皮肤碰哪哪酥。她喜欢被从背后抱住，满身汗黏在一起，被舔脖子上的汗珠时，逼里一阵阵发紧，淫水顺着大腿根流。汗味是她的催情剂，越浓越湿。她幻想自己在跑道上被人按倒，满身汗被人舔干净，从脖子舔到奶子再到逼里。被干到高潮她浑身是汗，被人抱着，汗水和淫水混在一起。第二天训练她故意不洗澡，闻着自己身上的汗味，逼里湿了一路。她甚至会把汗抹在逼上，感受那股咸味刺激穴壁，越抹越湿，越湿越痒。她甚至会把汗抹在逼上，感受那股咸味刺激穴壁，越抹越湿，越湿越痒，被干到高潮她浑身是汗，被人抱着，汗水和淫水混在一起，第二天训练她故意不洗澡，闻着自己身上的汗味，逼里湿了一路。她瘫在跑道上喘着，汗水混着淫水顺着大腿流，她伸手抹一把汗放进嘴里舔，那股咸味让她逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "痒刑SM",
+    "内容": "腰侧两指宽的痒痒肉是死穴。被绑着手按在地上挠，她笑得浑身乱颤、骂声越来越软，从「莫挠了!」变成「求你了……」，痒到极点逼里跟着发痒，又痒又想要。被堵住嘴只能呜呜叫，眼睛水汪汪的，逼水把运动裤洇透。她喜欢那种「痒到极点」的折磨——笑得喘不上气，逼里却湿得发烫。被挠到高潮她浑身抽搐，淫水喷了一地。被松开后她瘫在地上喘，还小声说「再来一次……求你了」。她甚至喜欢被人用羽毛扫她的奶头和逼，越扫越痒，越痒越湿，痒到崩溃。她甚至喜欢被人用羽毛扫她的奶头和逼，越扫越痒，越痒越湿，痒到崩溃，被挠到高潮她浑身抽搐，淫水喷了一地，被松开后她瘫在地上喘，还小声说「再来一次……求你了」。高潮的余韵还没散，她的手指却已经又伸进短裤，想着那些画面，越想想得越湿，第二天训练的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "更衣室露出",
+    "内容": "门留条缝是故意的。幻想冲澡时被人推门进来，奶子和逼全被看光，她一边惊叫一边夹紧腿，逼却湿得滴水。越是怕被发现，越是故意把缝留大，淫水顺着腿流到地上。她幻想那人走进来，把她按在更衣室的凳子上操，她一边喊「有人会进来」一边被干得腿软。被干到高潮她咬着毛巾把叫声咽回去，外头还有同学在聊天。第二天她又故意留了条缝，等那人来。她甚至会在冲澡的时候故意不开门锁，让人推门进来撞见，被看光的那一刻她兴奋得发抖。她甚至会在冲澡的时候故意不开门锁，让人推门进来撞见，被看光的那一刻她兴奋得发抖，被按在更衣室的凳子上操，她一边喊「有人会进来」一边被干得腿软，淫水顺着腿流到地上。被操到腿软的她扶着栏杆喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "淫贱反差",
+    "内容": "白天是阳光开朗的体育生，夜里是淫荡的骚货。她喜欢那种「阳光外壳被撕碎」的感觉——白天她在跑道上挥洒汗水，夜里她被操得嗷嗷叫。被干到失神她满嘴都是淫语，什么「操我」「用力」「射进来」，喊得比谁都浪。第二天她又恢复成那个阳光的运动少女，可谁也不知道她夜里有多骚。她甚至会在训练的时候想着昨晚被操的画面，越想越湿，越湿越跑不动，教练问她怎么了，她红着脸说「跑岔气了」了」，被干到失神她满嘴都是淫语，第二天又恢复成那个阳光的运动少女。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液田径服",
+    "内容": "她最骚的幻想就是把精液留在田径服上。她幻想被人射在田径服上，她不洗，穿着那件沾满精液的田径服去训练，感受那股温热贴着皮肤，越跑越湿。她喜欢那种「带着精液跑步」的感觉——每跑一步，精液都顺着大腿根往下滑，她越跑越兴奋。被射进逼里她会夹着腿跑完训练，让精液在肚子里焐热，汗水混着精液从裤缝渗出来。她甚至会故意把精液抹在短裤上，训练的时候让汗味和精液的腥味混在一起，越闻越湿。她甚至会把精液抹在短裤上，训练的时候让汗味和精液的腥味混在一起，越闻越湿，被射进逼里她会夹着腿跑完训练，让精液在肚子里焐热，汗水混着精液从裤缝渗出来，越跑越兴奋。她夹着腿走回更衣室，淫水顺着大腿根往下淌，她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "更衣室偷拍",
+    "内容": "她最怕的就是更衣室被人偷拍，可越怕越兴奋。她幻想自己换衣服的时候被人偷拍，那个偷拍的人用视频要挟她「不想被发到网上就乖乖听话」。她一边哭一边被按在更衣室凳子上操，心里又怕又爽，逼却诚实地夹得死紧。她幻想那个人把手机架在储物柜上，对着她张开的逼拍，她看着镜头里的自己，越看越湿。被干到高潮她哭着求「别发出去……求你」，可下身却夹得死紧，淫水喷了一地。她甚至会故意留下破绽让人偷拍，越危险越湿，越湿越停不下来，第二天训练的时候总往储物柜那边瞟。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   }
+  ]
+ },
+ "林秀英": {
+  "表": "泼辣豪爽，荤话张口就来，店里没人敢惹她。",
+  "里": "夜里锁上门，想着女儿同学那个年轻的眼神，骂自己「林秀英你不要脸」，骂完更兴奋。",
+  "色情点": [
+   {
+    "标题": "骚骨子淫贱",
+    "内容": "骨子里就是个骚的。主动勾引爱说荤话，调戏别人就是自己的兴奋。被反将一军她眼睛一亮「哟还学会还嘴了?」，说的时候嗓子已经发紧。四十多岁的熟女饥渴了半辈子，破闸后比谁都放得开，掰开逼求操。她喜欢那种「被年轻男人压住」的感觉——四十岁的老板娘，被小伙子干的时候比谁都骚。被按在火锅店的后厨操，她一边被干一边喊「使劲儿! 别停!」，锅里的汤还在咕嘟，她的浪叫比汤还响。她甚至会在店里勾引年轻的服务员，把他按在仓库里操，操完还笑着问「小伙子行不行?」。被反将一军的时候她眼睛一亮「哟还学会还嘴了?」，说的时候嗓子已经发紧，逼里湿了一片，被按在后厨的灶台上操，她一边被干一边喊「使劲儿! 别停!」，锅里的汤还在咕嘟，她的浪叫比汤还响，第二天隔壁摊的都问她昨晚炒什么菜这么大声。"
+   },
+   {
+    "标题": "喂食",
+    "内容": "塞火锅粉塞吃的，看着人吃得满足她比自己吃还痛快。可喂着喂着气氛就变了味，她盯着人嗦粉的嘴唇喉头滚动。故意用筷子把粉喂到人嘴边「张嘴婶喂你」，喂的时候逼里已经湿了。她幻想那人含住她的逼像嗦粉一样，她爽得直叫「对……就是这个味儿」。被按在桌上操，她嘴里还念叨着「吃饱了吗? 婶还没饱呢」，一边说一边夹紧腿，淫水顺着大腿流到地上。她甚至会把精液拌进火锅底料里，端上桌给人吃，看着对方吃下去，她一边看一边湿。她盯着人嗦粉的嘴唇喉头滚动，故意用筷子把粉喂到人嘴边「张嘴婶喂你」，看着那人含住筷子，她想象那是含住了自己的逼，她越喂越湿，裤裆都湿透了，最后把人按在桌上，用喂食的筷子捅自己的逼，一边捅一边喘「吃饱了吗? 婶还没饱呢」。"
+   },
+   {
+    "标题": "母女禁忌乱伦",
+    "内容": "女儿林汐瑶的男同学——越界念头让她自己都骂自己「畜生」，可禁忌越深越兴奋。女儿在场时她反而更放得开，仿佛在宣示什么。夜里看着女儿和那孩子说话，想着那画面手指插进逼里狠抠。她幻想那孩子把她按在女儿的床上操，她一边被干一边想「这是汐瑶的床」，越禁忌越湿。被干到高潮她嘴里还念叨着「汐瑶……别进来」，下身夹得死紧，淫水喷了一床。她甚至偷偷藏过那孩子用过的杯子，夜里抱着杯子闻，闻着上面残留的气息，手指插进逼里，越想水越多越多，，第二天见到那孩子，她的逼还是不受控制地湿了。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "熟女主导SM",
+    "内容": "店里的老板娘床上也是老板娘。可她也渴望被更强势的人按住，那种「终于有人压得住我」的感觉让她兴奋得发抖。被按住的瞬间她挣扎两下「咋的想造反?」，逼却缩得死紧。她喜欢那种「被制服」的感觉——向来泼辣的老板娘，被人按着操的时候比谁都听话。被命令「趴好」「把逼掰开」，她一边骂一边照做，越骂逼越紧。被干到失神她终于放下架子，只剩下浪叫。她甚至喜欢被人用围裙带子绑住手，越绑越兴奋，越兴奋越湿。她甚至喜欢被人用围裙带子绑住手，越绑越兴奋，越兴奋越湿，被命令「趴好」「把逼掰开」，她一边骂一边照做，越骂逼越紧，被干到失神她终于放下架子，只剩下浪叫，第二天她又恢复成那个泼辣的老板娘。她瘫在大圆桌上喘着，精液和淫水顺着桌沿滴到地上，她伸手抹一把抹在奶子上，那股腥味让她逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "精盆",
+    "内容": "火锅店的汤锅天天换，她也想天天被灌满。幻想自己四仰八叉躺在大圆桌上，被一圈人围着往里灌精，一盆接一盆，溢出来的顺着桌沿滴到地上。内射完她夹着穴不让流，捂着肚子等精液在肚子里焐热，第二天当着人面弯腰，精液顺着大腿淌下来，她面不改色「该换水了」。她喜欢那种「被灌满」的实在感——精液、淫水、汗混在一起，她觉得自己从里到外都腌透了，又脏又痛快。她甚至会在店里用杯子接精液，端起来一饮而尽，说「跟汤一样补」。被灌满水了」，。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天开店的收都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "群交",
+    "内容": "四十岁的熟女一个人喂不饱，她要一群。店打烊后她把店里男人全叫来，躺下岔开腿「一个一个来，别抢」。被轮着干她越干越来劲，数着人头「才五个? 再来」。后穴前面一起塞，她爽得直翻白眼还骂「废物，这就不行了?」。被干到天亮她瘫在地上，浑身都是精液，嘴里还念叨着「明天……明天还来」。第二天她照样开店，腰都直不起来，可脸上却带着满足的笑。她甚至会把群交的场面拍下来，夜里看着录像自慰，越看越湿。被轮着干她越干越来劲，数着人头「才五个? 再来」，后穴前面一起塞，她爽得直翻白眼还骂「废物，这就不行了?」，被干到天亮她瘫在地上，浑身都是精液，嘴里还念叨着「明天……明天还来」，第二天她照样开店，腰都直不起来。被操到腿软的她扶着锅台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "母狗项圈",
+    "内容": "火锅店老板娘最深的幻想就是脖子上拴一条项圈。她幻想自己戴着项圈，被人牵着在店里爬，像条听话的母狗——客人点菜她就爬过去，被人按着操完继续爬。她喜欢那种「被当成狗对待」的感觉，越被牵着逼越紧，越被糟践越兴奋。被命令「叫两声」，她真的汪汪叫，叫完又羞又爽，逼里夹得死紧。被干到高潮她浑身发抖，项圈勒着脖子，她喘着气喊「主人……我是你的母狗」，下身夹得死紧。她甚至会自己买一条项圈戴着睡觉，越戴越湿，越湿越兴奋，第二天戴着围裙遮住脖子上的红痕。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   }
+  ]
+ },
+ "沈若兰": {
+  "表": "全校最端庄的女老师，说话慢条斯理，走路都带着书卷气。",
+  "里": "夜里锁上门，穿着旗袍对镜自照，想象被人一件件解开，指尖发颤。",
+  "色情点": [
+   {
+    "标题": "旗袍展览露出",
+    "内容": "幻想站在聚光灯下，旗袍下摆被人撩起，奶子和逼被围观、被欣赏、被拆穿。越端庄越幻想被展览。她偷偷试过旗袍下不穿衬裙，走路时风一吹她按住裙摆，心跳快得离谱，心里却喊「让人看见吧」。她幻想自己站在讲台上讲课，被人从讲台下撩起旗袍，逼被看光，她强撑着把课讲完，可逼里已经湿透了。被按在办公桌上操，旗袍堆在腰间，她一边被干一边喊「我的旗袍……别弄皱」，可下身夹得死紧，越喊越湿。她甚至喜欢被人把她的旗袍撕开，听着布料撕裂的声音，她兴奋得发抖发抖，瘫在地毯上喘着，旗袍被撕破堆在腰间，她看着自己狼狈的样子，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "洁癖",
+    "内容": "一丝不苟的干净，可越洁癖越渴望被弄乱。幻想盘得一丝不苟的发髻散开、熨平的旗袍被揉皱，堕落感让她战栗。被弄乱的那一刻她先愣住，然后整个人烧起来，嘴上说「别……别弄乱」，逼却诚实地流水。她喜欢那种「从洁净到堕落」的过程——头发散了、旗袍皱了、口红花了，她看着镜子里那个狼狈的自己，反而比平时更兴奋。被按在沙发上操，她一边喊「别弄乱我的家」一边被干得腿软，茶几上的茶具碎了一地。她甚至会在被操之前先洗个澡，把自己洗得干干净净，然后等着被人弄脏人弄脏，，越脏越兴奋。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天上课的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "受向SM",
+    "内容": "渴望被支配被掌控。被要求跪坐、被命令，她会格外兴奋，端庄的壳一点点裂开。被命令「跪下」「张开腿」，她小声应「是」，声音又低又顺，逼水顺着大腿根流到地毯上。她喜欢那种「交出尊严」的感觉——向来端庄的沈老师，跪在地上被人命令的时候比谁都听话。被操到失神她嘴里还念着「听你的……都听你的」，下身夹得死紧。她甚至喜欢被人用教鞭指着逼，命令她「自己掰开」，她一边羞一边照做，越羞逼越紧，越紧越湿越紧越湿，。被操到腿软的她扶着窗台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "师生禁忌",
+    "内容": "被学生叫「沈老师」她会莫名一颤，面上却波澜不惊「嗯，有事?」，逼里却已经缩紧。夜里想着白天那个学生的眼神，手指插进逼里，边摸边想「沈若兰你为人师表」，越提醒自己越压不住。她幻想那学生把她按在办公室里，旗袍被撩起，她被干得腿都合不拢，嘴里喊着「不要……我是你老师」，可下身却夹得死紧。每次想完她都又羞又怕，可第二天见到那学生，她的逼还是不受控制地湿了。她甚至偷偷藏过那学生交上来的作文本，夜里抱着本子闻，越想水越多。她甚至偷偷藏过那学生交上来的作文本，夜里抱着本子闻，闻着上面残留的气息，手指插进逼里，越想水越多，被干到高潮她嘴里还念叨着「不要……我是你老师」，下身夹得死紧。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "精液侍女",
+    "内容": "她最骚的幻想就是当精液侍女。幻想被人射进嘴里，含着精液跪着端到对方面前，像伺候主子一样伺候着。她喜欢那种「跪着伺候」的感觉——越端庄的老师，跪着的时候越骚。被射在脸上她会跪着用舌头舔干净，一滴不剩；被射进逼里她会夹着腿跪好，让精液慢慢渗出来，说「奴婢的逼就是用来装主子的精的」。被干到高潮她嘴里还念叨着「谢主子赏赐」，下身夹得死紧，淫水喷了一地。她甚至会被射在脸上，跪着用舌头舔干净，一滴不剩，说「奴婢的逼就是用来装主子的精的」，被干到高潮她嘴里还念叨着「谢主子赏赐」，下身夹得死紧，淫水喷了一地。她夹着腿走回书房，淫水顺着大腿根往下淌，她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "人前展览",
+    "内容": "端庄的沈老师，最深的幻想就是被人当展品展览。她幻想自己站在玻璃展柜里，穿着开衩的旗袍，被人从四面八方围观——她的奶子、她的逼，被一件件展览出来，像一件活的艺术品。她喜欢那种「被欣赏也被亵渎」的感觉，越端庄越幻想被展览。被按在展台上操，她一边被干一边喊「别拍……」，可闪光灯还在闪，她越喊逼越紧，淫水顺着大腿流到展台上。她甚至会自己穿好旗袍摆好姿势，等着被人围观，越看越湿。被干到高潮她浑身发抖，瘫在展台上喘，嘴里念叨着「展览……继续展览」，下身夹得死紧。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   }
+  ]
+ },
+ "王朵朵": {
+  "表": "唯唯诺诺，谁都能使唤她，被欺负也不敢吭声。",
+  "里": "夜里缩在被子里自慰，一边哭一边摸，想着被人嫌弃又被抱住，越想越湿。",
+  "色情点": [
+   {
+    "标题": "体味羞耻臭脏",
+    "内容": "动情时那股味道会变浓，她羞得想钻地，可越羞耻越兴奋。她偷偷不擦汗让味道积着，想象「会不会有人闻到」，越想水越多。被嫌弃她会哭，可哭着哭着身体诚实发热——「王朵朵你是不是贱，被人嫌弃还这样」，她一边骂自己一边摸逼。她幻想被人捏着鼻子操她，那人一边嫌弃一边往她逼里顶，她爽得直哭，越嫌弃越湿。被干到高潮她哭着求「别嫌我……求你操我」，可下身夹得死紧，淫水喷了一地。她甚至喜欢被人说她臭，越说她越湿，越湿越不敢洗，那股腌入味的味道成了她的催情剂。她甚至喜欢被人说她臭，越说她越湿，越湿越不敢洗，那股腌入味的味道成了她的催情剂，被干到高潮她哭着求「别嫌我……求你操我」，可下身夹得死紧，淫水喷了一地。她蜷在被子里喘着，一边骂自己贱一边抠逼，骂得越狠逼越紧，那股罪恶感和快感绞在一起，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "自我厌恶",
+    "内容": "每次自慰完都恨自己，蜷在被子里骂「恶心」「不要脸」，可第二天又忍不住想。罪恶感放大刺激，越厌恶越想要。她觉得自己是最脏的人，可那份「脏」偏偏是最大的兴奋点，手指插进逼里越抠越深。她喜欢那种「一边厌恶一边高潮」的感觉——骂自己越狠，逼越紧，高潮来得越猛。被干到失神她嘴里还念叨着「我是垃圾……我是贱货」，念着念着高潮就来了，淫水喷了一床。她甚至会在高潮后抽自己耳光，越抽越湿，越湿越想要。她甚至会在高潮后抽自己耳光，越抽越湿，越湿越想要，骂自己越狠，逼越紧，高潮来得越猛，被干到失神她嘴里还念叨着「我是垃圾……我是贱货」，念着念着高潮就来了，淫水喷了一床。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天上课的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "日记恶坠",
+    "内容": "日记是树洞，字里全是自我怀疑和见不得人的念头。夜里写日记写到湿，笔尖在纸上划出颤巍巍的痕。她看着自己写的「今天又忍不住了」「我是不是坏掉了」，又羞又怕，手指却已经伸进裙底。她幻想自己的日记被人看到、传遍全班，所有人知道她是个淫荡的贱货，越想越湿。被看穿的那一刻她羞得想钻地，可逼却诚实地流水，越羞越湿。她甚至会把自慰的过程写进日记里，写得越详细逼越湿，第二天看着自己写的东西，又羞又羞又湿，她幻想自己的日记被人看到、传遍全班，越想越湿，被看穿的那一刻她羞得想钻地。被操到腿软的她扶着墙喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "黑化反弹",
+    "内容": "被欺负到极限会突然变一个人，盯着欺负她的人轻声说「你会后悔的」，眼神冷得吓人。夜里她缩在被子里幻想报复的画面，越幻想越兴奋——她发现自己不仅渴望被爱，也渴望被恐惧，逼水顺着大腿流。她幻想把欺负她的人绑起来，一边报复一边自慰，越幻想越亢奋。被干到高潮她嘴里还念叨着「你会后悔的」，可下身却夹得死紧，淫水喷了一床。第二天她又恢复成那个懦弱的姑娘，可谁也不知道她夜里有多疯。她甚至会在被欺负后躲进厕所自慰，一边哭一边抠逼，越哭越湿。她甚至会在被欺负后躲进厕所自慰，一边哭一边抠逼，越哭越湿，被干到高潮她嘴里还念叨着「你会后悔的」，可下身却夹得死紧，淫水喷了一床，第二天又恢复成那个懦弱的姑娘。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "精液垃圾桶",
+    "内容": "她最骚的幻想就是当精液垃圾桶。她幻想被人按着头，逼她吞下所有的精液，一滴都不许漏。她喜欢那种「被当垃圾桶」的感觉——被人当成处理精液的容器，越糟践她越兴奋。被射在嘴里她会含着精液跪好，等对方说「咽下去」才敢咽；被射进逼里她会夹着腿跪好，让精液慢慢渗出来。她管自己叫「精液垃圾桶」，说「垃圾就该装垃圾」。被干到高潮她嘴里还念叨着「都给我……都给我」，下身夹得死紧。她甚至会被人按着头，逼她吞下所有的精液，一滴都不许漏，被射在嘴里她会含着精液跪好，等对方说「咽下去」才敢咽，她管自己叫「精液垃圾桶」，说「垃圾就该装垃圾」。她夹着腿走回教室，淫水顺着大腿根往下淌，她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "公开凌辱",
+    "内容": "自卑的王朵朵，最深的幻想就是被人当众凌辱。她幻想自己被扒光绑在操场上，被人围着一圈圈羞辱——「看看这个贱货」「她逼都湿透了」，她一边哭一边被按着操，越被羞辱逼越紧。她喜欢那种「被践踏」的感觉，越被骂「贱货」越兴奋，越被羞辱越湿。被干到高潮她哭着求「别骂了……求你」，可下身却夹得死紧，淫水喷了一地。她甚至会故意穿得很暴露等着被羞辱，越被凌辱越湿。她管自己叫「全校的公用贱货」，说「谁想干都可以」，越说越湿，越湿越觉得自己只配被人践踏。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   }
+  ]
+ },
+ "王金凤": {
+  "表": "利落爽快，荤话逗人，烩面馆的爽利老板娘。",
+  "里": "夜里揉着面，想着那孩子看她的眼神，面团被她揉得发烫。",
+  "色情点": [
+   {
+    "标题": "恋手",
+    "内容": "喜欢「手」——好看的手有力的手。会盯着人的手看半天，幻想被那双手按住。被握住手腕她整个人一颤，嘴上还说「干啥呢」，声音却软了。幻想被那双手揉遍全身，揉到逼里，越想象越湿。她喜欢那种「被手征服」的感觉——粗粝的指腹滑过她的皮肤，插进逼里搅动，她爽得直叫。被按在面案上操，那人用手揉着她的奶子，她一边被干一边被揉，淫水把面粉都泡成糊。她甚至会盯着男人的手看半天，幻想着那双手插进她逼里的感觉，越想越湿，越湿越忍不住盯着看住盯着看，软了，幻想被那双手揉遍全身。她瘫在面案上喘着，面粉和淫水糊了一身，她伸手抓一把面团，那股面香混着腥味让她逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "面香",
+    "内容": "面香是她的魂。被投喂一碗热面会软到骨子里。她喜欢「面香混着汗味」的感觉。她幻想被按在面案上操，面粉簌簌地落，淫水和面粉糊在一起，越弄越湿。她喜欢那种「连做面都做不安生」的感觉——揉面的手越来越慢，心思全飘到裤裆里。被干到高潮她满身都是面粉和淫水，她看着自己狼狈的样子，反而笑得更浪。她甚至会故意在揉面的时候想着被操的画面，越想想得越湿，面团都被她揉成了淫水的混合物合物，得更浪。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天揉面的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "主动调戏淫贱",
+    "内容": "主动调戏是拿手好戏——荤话逗人越熟越放得开，调戏别人就是自己的兴奋。被反撩她眼睛一亮「哟还会还嘴了?」，说的时候嗓子已经发紧，逼里湿了一片。她喜欢那种「把人撩到绷不住」的感觉——看着对方被她逗得脸红，她比被操还爽。被反将一军按在面案上，她挣扎两下就软了「你个小崽子还敢造反?」，逼却诚实地夹紧，越骂越湿。她甚至会故意在男人面前弯腰揉面，让乳沟和臀缝若隐若现，看着对方直勾勾的眼神，她逼里一阵阵发紧发紧，实地夹紧。被操到腿软的她扶着面案喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿王朵朵的男同学——女儿自卑她泼辣，看着女儿的男同学，调戏的嘴会突然说不出话，心里转着见不得光的念头。夜里想着那孩子，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来家里吃面，她借机调戏他，结果被反按在面案上操。她一边被干一边想「这是朵朵的同学」，越禁忌越湿，淫水把面粉都泡成糊。被干到高潮她嘴里还念叨着「朵朵……别进来」，下身夹得死紧。她甚至偷偷藏过那孩子用过的碗，夜里抱着碗闻，越想水越多。她甚至偷偷藏过那孩子用过的碗，夜里抱着碗闻，闻着上面残留的气息，手指插进逼里，越想水越多，被干到高潮她嘴里还念叨着「朵朵……别进来」，下身夹得死紧，淫水把面粉都泡成糊。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "精液面汤",
+    "内容": "她最骚的幻想就是把精液熬进面汤里。她幻想被人射进面锅里，精液混着面汤咕嘟咕嘟煮开，她端起来给客人吃，看着他们喝下去，她兴奋得逼水直流。她喜欢那种「把精液当调料」的感觉——精液的腥味混着面香，越喝越上头。她甚至会把精液装进小瓶子里，做面的时候偷偷滴几滴，看着面汤里的精液化开，她一边看一边湿。被干到高潮她嘴里还念叨着「熬进去……都熬进去」，下身夹得死紧，淫水喷了一地看一边湿，那股腥味混着面香，越喝越上头，被干到高潮她嘴里还念叨着「熬进去……都熬进去」。她夹着腿走回灶台，淫水顺着大腿根往下淌，她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液面汤公开",
+    "内容": "面摊老板娘最骚的幻想就是在面摊上被当众操完，精液还当着客人的面拌进面汤里。她幻想自己被人按在面案上操，操完那人射进碗里，她端着那碗混着精液的面汤端给客人，看着客人喝下去，她逼里一阵阵发紧。她喜欢那种「当着客人的面被糟践」的感觉，越被围观越湿。被干到高潮她扶着面案喘，面粉和淫水糊了一身，她看着客人喝面的样子，越看越湿。她甚至会故意把精液抹在面团里，揉进面里给客人吃，越看越兴奋，越兴奋越湿，淫水顺着大腿流到地上。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   }
+  ]
+ },
+ "白秋月": {
+  "表": "端庄安静，剪纸时特别专注，是所有人眼里的贤妻良母。",
+  "里": "夜里剪着剪着就出了神，剪刀在纸上走念头在别处走，回过神来手里的纸已经剪碎了。",
+  "色情点": [
+   {
+    "标题": "恋物脏旧物",
+    "内容": "睡不着时闻着衬衫上残留的味道才能睡，谁也不能动那件衣服。她把衬衫叠得整整齐齐压在枕头底下，夜夜都要摸一摸，摸着摸着就掏出来贴着脸猛闻，闻着闻着手就伸进裙底，逼水把床单洇湿。她喜欢那种「被味道包裹」的感觉——衬衫上的气息像一只手揉着她的逼，越闻越湿。被干到高潮她咬着那件衬衫，淫水喷了一床，衬衫上全是她的味道，她反而更舍不得洗。她甚至会收集那孩子用过的旧物，袜子、手帕、校服，全都压在枕头底下，夜里一件件闻，越闻越湿。她甚至会把剪碎的红纸塞进逼里，感受那股干燥的纸香贴着穴壁，再被淫水泡开，抽出来的时候满手都是红纸和淫水的混合物，她凑到鼻尖闻，那股味道让她又羞又兴奋，第二天又剪碎一张。她瘫在剪纸桌边喘着，红纸散了一地，她伸手捡起一张沾了淫水的红纸，那股味道让她逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "剪纸",
+    "内容": "剪纸是定心丸也是引信。她剪到深夜，剪刀在纸上走，念头在别处走，回过神来纸已经剪碎了。她喜欢「入定」的感觉——剪到忘我，忘我的另一种形式是情欲里的忘我，剪着剪着逼里就湿了。她幻想自己被人按在剪纸桌上操，剪刀掉在地上，红纸散了一地，她一边被干一边喊「我的纸……」，下身夹得死紧。被干到高潮她满手都是红纸屑，像沾了血，她反而更兴奋。她甚至会把剪碎的红纸塞进逼里，感受那股干燥的纸香贴着穴壁，再被淫水泡开。被干到高潮她满手都是红纸屑，像沾了血，她反而更兴奋，剪刀掉在地上她也不捡，趴在被操的桌上喘，红纸散了一地，第二天打扫的时候她看着那些碎纸，逼里一阵阵发紧。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天剪纸的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿白若薇的男同学——禁忌念头藏在端庄的笑容后。她偷偷想着那孩子要是多来家里坐坐就好了，想着想着就变了味。夜里剪纸剪着剪着剪出个「囍」字，盯着看了很久又默默剪碎，手指却已经伸进裙底。她幻想那孩子来家里，她借着剪纸的由头让他坐近，结果被他按在桌上。她一边被干一边想「这是若薇的同学」，越禁忌越湿。她甚至偷偷藏过那孩子用过的剪刀，夜里握着剪刀，想着那孩子握过的地方，手指插进逼里，越想水越多越多，被干到高潮她嘴里还念叨着「这是若薇的同学」，下身夹得死紧。被操到腿软的她扶着窗台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "端庄偷窥露出",
+    "内容": "心理防线高，觉得「年纪大了不该想这些」——可越这么想越想。她喜欢「被偷看」的幻想：在窗边剪纸时窗帘留一条缝，想象有人在外头看她。被看的那一刻她紧张得发抖，可那份紧张比什么都让她兴奋，逼水顺着腿流。她幻想被人从窗缝里看着她剪纸，看着看着就看见她把手伸进裙底。她被看得浑身发烫，故意把窗帘缝留得更大，被看的那一刻她高潮了，淫水喷在窗台上。她甚至会在被偷看的时候故意撩起裙子，让那视线看得更清楚，越看越湿。她甚至会在被偷看的时候故意撩起裙子，让那视线看得更清楚，越看越湿，被看的那一刻她高潮了，淫水喷在窗台上，第二天她又留了条缝，等着那人再来，越等越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "精液剪纸",
+    "内容": "她最骚的幻想就是把精液当剪纸的胶水。她幻想被人射在红纸上，用精液把纸粘起来，剪出各种形状。她喜欢那种「精液和纸混在一起」的感觉——精液的腥味混着纸香，越闻越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里闻着那股味自慰。被干到高潮她手里还攥着那张沾满精液的红纸，下身夹得死紧，淫水喷了一地。她甚至会收集沾了精液的纸，一张张夹在书里，夜里翻出来闻，越闻越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里闻着那股味自慰，把沾了精液的红纸一张张夹在书里，夜里翻出来闻，越闻越湿，被干到高潮她手里还攥着那张红纸。她夹着腿走回炕边，淫水顺着大腿根往下淌，她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "精液剪纸展览",
+    "内容": "剪纸的老手艺人也逃不过堕落。她最骚的幻想就是把沾了精液的红纸剪成各种形状，挂出来展览。她幻想自己被人按在剪纸桌上操，操完那人射在红纸上，她用沾了精液的红纸剪出「囍」字，挂在窗前展览——每一个路过的人都能看见那张沾着精液的剪纸。她喜欢那种「把堕落挂出来给人看」的感觉，越被围观越湿。被干到高潮她手里还攥着那张红纸，精液顺着纸纹滴下来，她越看越湿。她甚至会专门收集沾了精液的红纸，剪成各种花样夹在书里，越看越兴奋。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   }
+  ]
+ },
+ "白若薇": {
+  "表": "清冷疏离，话少慢热，像对什么都提不起兴趣。",
+  "里": "夜里用凉玉贴自己，冷静地观察反应，越冷静越淫荡——像考古学家对待千年古尸。",
+  "色情点": [
+   {
+    "标题": "冰冷SM",
+    "内容": "凉玉、冰袋贴奶头、贴阴蒂，温度差让感官像被电到。被冰贴到逼上，她猛地一颤，咬着嘴唇不出声，淫水却被冰激得直淌。她喜欢「冰火两重天」——凉到发抖再被温热含住，落差越大越上头，越冷逼越湿。她幻想自己躺在冰凉的玉案上，被人用冰块一寸寸滑过她的皮肤，从脖子到奶子再到逼里。冰化了，水顺着大腿流，她浑身发抖，可逼却越来越湿。被干到高潮她浑身都是冰水和淫水，冷热交加，她爽得直翻白眼。她甚至会自己把冰块塞进逼里，感受那股冰凉贴着穴壁，再被体温焐化，越凉越湿。她甚至会自己把冰块塞进逼里，感受那股冰凉贴着穴壁，再被体温焐化，越凉越湿，被干到高潮她浑身都是冰水和淫水，冷热交加，她爽得直翻白眼，第二天她在心里记下「反应强度：极强」。"
+   },
+   {
+    "标题": "解剖式性变态",
+    "内容": "把身体当考古现场。她用指尖一寸寸「勘探」自己，摸到奶头、阴蒂、逼口，冷静地记录反应强度，越冷静越淫荡。被干到最深处她想象那是把解剖刀从穴口一路剖到胃，她喜欢血，自己的血，看着穴口的血像看新出土的文物，眼神亮得吓人，逼里绞得死紧。她幻想被人像解剖一样拆开研究——每一寸都被看、被摸、被操，她一边怕一边湿，兴奋得发抖。高潮时她轻声说「原来里面是这样」，说的时候逼里绞得更紧。她甚至会用凉玉在自己身上划出道道红痕，看着那些痕迹像考古的探方，越看越湿。被干到最深处的时候紧，高潮时她轻声说「原来里面是这样」。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "人设崩塌露出",
+    "内容": "维持才女形象是执念，可越端着越幻想被撕碎。幻想在讲座上被人拆穿、被当众扒光，露出底下那个潮湿的自己——人设崩塌的瞬间，她惊慌，可惊慌的瞬间她居然高潮了，又羞又爽，淫水喷了讲台。她喜欢那种「从高台坠落」的感觉——越是清冷的才女，被人扒光的时候越兴奋。被按在讲台上操，她一边被干一边喊「不要看……」，可台下的人都在看，她越喊逼越紧，淫水顺着腿流到地上。她甚至会故意在讲座上穿得很暴露，等着被人看穿，越看越湿看越湿，她瘫在玉案上喘着，冰水和淫水混在一起顺着腿流，她看着自己身上被凉玉划出的红痕，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "恶坠",
+    "内容": "清冷才女人设塌了之后她彻底放开了。讲座上被扒光，她一边哭一边高潮，穴里流出的水打湿了讲台。她开始主动求操，哪里都行，被干得越狠她越觉得自己「干净了」。坠到底她反而笑了，笑得又空又媚。她幻想自己彻底堕落的画面——被轮着操、被拍下来、被全校知道她是个淫荡的才女。越想她越怕，可越怕越湿。她知道自己回不去了，索性放手沉下去，越沉越爽。她甚至开始享受这种「坠落」的感觉，白天还是那个清冷的才女，夜里被人按着操到失神。她甚至开始享受这种「坠落」的感觉，白天还是那个清冷的才女，夜里被人按着操到失神，被干到高潮她嘴里还念叨着「干净了……终于干净了」，下身夹得死紧，笑得又空又媚。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天考古的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "精液标本",
+    "内容": "她最骚的幻想就是把精液当标本。她幻想被人射进培养皿里，用放大镜观察，记录精液的形态和运动，像研究文物一样严谨。她喜欢那种「把精液当研究对象」的感觉——越严谨越湿，越湿越严谨。被射进逼里她会夹着腿走回实验室，用吸管把精液抽出来装进标本瓶，贴上标签，看着那一瓶瓶「标本」，她兴奋得逼水直流。夜里她看着那些标本瓶，手指插进逼里，想着精液是怎么射进来的，越想水越多流，夜里看着那些标本瓶，手指插进逼里，越想水越多。被操到腿软的她扶着桌案喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "标本展示",
+    "内容": "考古才女，最深的幻想就是自己被做成标本展示。她幻想自己躺在玻璃展柜里，被当成一件标本——被解剖、被研究、被展览，每一个器官都被拿出来看，逼里插着标签。她喜欢那种「被当作研究对象」的感觉，越冷静越兴奋，越被研究逼越紧。被按在展台上操，她一边被干一边在心里记录「反应强度：极强」，越记录越湿。被干到高潮她浑身发抖，逼里还夹着标签牌，精液和淫水顺着腿流到展台上。她甚至会把精液装进标本瓶，贴上「标本B号」的标签，越看越湿，越湿越兴奋。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。"
+   }
+  ]
+ },
+ "石小婉": {
+  "表": "文静病弱，说话有气无力，让人只想保护她。",
+  "里": "爱到极端的偏执，有自毁倾向——「反正我身体不好，活一天赚一天」。",
+  "色情点": [
+   {
+    "标题": "被弄坏SM",
+    "内容": "病秧子最想要的就是被彻底弄坏。被掐着脖子操她喘不上气，眼前发黑，可穴里绞得死紧「就是这里……再用力点」。被扇逼扇到红肿她叫得又尖又媚，疼得哭，哭完又求「再来」。她喜欢看自己身上被掐出的淤青，一块一块数，像数战利品。她幻想自己被人彻底弄坏——浑身是伤、逼里塞满精液、神志不清，可越坏她越兴奋。被干到失神她嘴里还念叨着「弄坏我……求你弄坏我」，下身夹得死紧，淫水喷了一床。她甚至会自己掐自己，看着淤青一块块浮现，越看越湿，越湿越掐。被扇逼扇到红肿她叫得又尖又媚，疼得哭，哭完又求「再来」，被干到失神她嘴里还念叨着「弄坏我……求你弄坏我」，第二天看着满身淤青，一块一块数，像数战利品，越数越湿。她瘫在床上喘着，身上全是淤青和咬痕，她伸手摸着那些印子，越摸逼里越紧，那股痛和爽绞在一起，想着明天还能这样，越想想得越湿。"
+   },
+   {
+    "标题": "药与甜重口味",
+    "内容": "低血糖随身带糖。被折腾到头晕含一颗糖，甜味在舌尖化开，她喘着气想：原来挨过疼之后的甜是这样的。被操到哭再被喂一颗糖，她含着糖呜呜地叫，又疼又爽，穴里一抽一抽地吸。她喜欢那种「疼与甜交织」的感觉——被折磨到极限再被温柔对待，甜味和淫水味混在一起，她爽得直发抖。被干到高潮她含着糖叫，糖化了，甜味顺着喉咙往下淌，她觉得自己从里到外都是甜的。她甚至会故意不吃饭让自己低血糖，等着被喂糖，越晕越湿。被操到哭再被喂一颗糖，她含着糖呜呜地叫，又疼又爽，糖化了，甜味顺着喉咙往下淌，她觉得自己从里到外都是甜的，第二天她又故意不吃饭，等着被喂糖，越晕越湿。高潮的余韵还没散，她的手指却已经又伸进裙底，想着那些画面，越想想得越湿，第二天吃糖的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "病娇黑化",
+    "内容": "对在意的人说出最极端的话「你要是敢走，我就死给你看」，说的时候笑着眼里却全是认真。夜里她想着那个人，手指插进逼里，边哭边摸，又怕又想要，淫水把被子洇湿一片。她幻想把那个人锁在身边，日夜操她，把她操到眼里只有自己。被干到高潮她嘴里还念叨着「你是我的……死了也是我的」，下身夹得死紧。第二天她又恢复成那个病弱的姑娘，可谁也不知道她心里有多疯。她甚至会偷偷藏那个人的东西，头发、扣子、用过的纸巾，全都收在盒子里，夜里一样样看，越看越湿。被干到高潮她嘴里还念叨着「你是我的……死了也是我的」，下身夹得死紧，第二天她又恢复成那个病弱的姑娘，可谁也不知道她心里有多疯，夜里又把那些收藏掏出来看。被操到腿软的她扶着床沿喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "血腥自残",
+    "内容": "药与甜之后是血。被弄到极限她咬破自己的嘴唇，尝到血腥味反而高潮了。她盯着自己手臂上被掐出血的印子，用指甲再抠开一点，看着血珠冒出来，眼神又空又亮「痛真好」。高烧的时候她一边说胡话一边自己掐自己，清醒后看着满身印子，居然笑了。她喜欢那种「痛到极致」的感觉——血流出来的那一刻，她的逼反而更湿。被干到高潮她咬破自己的唇，血和淫水一起流，她舔着嘴角的血，笑得又空又媚。她甚至会故意让伤口裂开，看着血慢慢渗出来，越看越湿。被干到高潮她咬破自己的唇，血和淫水一起流，她舔着嘴角的血，笑得又空又媚，眼神又空又亮「痛真好」，她甚至会故意让伤口裂开，看着血慢慢渗出来，越看越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿，越湿越怕，越怕越想要。"
+   },
+   {
+    "标题": "恶坠",
+    "内容": "生病时反而更想要。高烧烧到迷糊会说胡话，全是平时说不出口的淫语。清醒后她红着脸不承认，可下次生病又期待着那份糊涂。她渐渐明白自己在坠落，可停不下来，手指插进逼里越抠越深。她幻想自己彻底堕落的画面——被人轮着操、被拍下来、被所有人知道她是个淫荡的病秧子。越想她越怕，可越怕越湿。她知道自己回不去了，索性放手沉下去，越沉越爽。她甚至开始期待生病，每次生病都放纵得更彻底。她甚至开始期待生病，每次生病都放纵得更彻底，高烧烧到迷糊会说胡话，全是平时说不出口的淫语，被干到高潮她嘴里还念叨着「吃药……我该吃药了」，下身夹得死紧。她夹着腿蜷回被窝，淫水顺着大腿根往下淌，她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "精液药罐",
+    "内容": "她最骚的幻想就是把精液当药。她幻想自己生病的时候被人射进嘴里，含着精液咽下去，说「这是最好的药」。她喜欢那种「把精液当药引」的感觉——精液的腥味混着中药味，越喝越上头。被射进逼里她会夹着腿躺好，说「让药在肚子里焐着」，让精液慢慢渗进身体里。被干到高潮她嘴里还念叨着「吃药……我该吃药了」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进药瓶里，病的时候就着温水喝下去，越喝越湿。被射进逼里她会夹着腿躺好，说「让药在肚子里焐着」，让精液慢慢渗进身体里，她甚至会收集精液装进药瓶里，病的时候就着温水喝下去，越喝越湿，越湿越想要。被操到腿软的她扶着床沿喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "囚禁调教",
+    "内容": "病娇最深的幻想就是被人囚禁起来日夜调教。她幻想自己被锁在地下室里，脖子上拴着铁链，被人当成宠物日夜操——饿了喂饭，渴了喂水，其余时间都在被操。她喜欢那种「完全被掌控」的感觉，越被囚禁越安心，越被调教越湿。被锁着操到高潮她浑身发抖，铁链哗啦作响，她嘴里念叨着「别放我出去……求你」，下身夹得死紧。她甚至会故意装病求主人别赶她走，越怕被丢下越湿。她管自己叫「主人的囚奴」，说「被锁着的感觉真好」，越说越兴奋，淫水顺着大腿流到地上。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。"
+   }
+  ]
+ },
+ "石巧云": {
+  "表": "寡言安静，一句是一句，做菜的手艺一绝。",
+  "里": "夜里守着慢火炖的汤，想着那孩子的眼神，汤勺在手里握得发烫。",
+  "色情点": [
+   {
+    "标题": "腐香重口味",
+    "内容": "欣赏「变质的艺术」。臭气让她兴奋「那是香你们不懂」。被嫌弃味道她会默然，可默然底下是更深的瘾。她幻想被人捂住鼻子还要操她，那股发酵的臭和淫水味混在一起，越嫌弃她越湿，逼水顺着大腿流。她喜欢那种「越臭越上头」的感觉——臭鳜鱼、臭豆腐、发酵的酸味，闻着闻着逼就湿了。被干到高潮她满身都是那股发酵的味儿，她反而更兴奋，像一坛越陈越香的腌菜。她甚至会故意把臭豆腐的汁水抹在自己身上，让那股味道腌进皮肤里，越腌越湿。被干到高潮她满身都是那股发酵的味儿，她反而更兴奋，像一坛越陈越香的腌菜，她甚至会故意把臭豆腐的汁水抹在自己身上，让那股味道腌进皮肤里，越腌越湿，越湿越舍不得洗。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "熬汤",
+    "内容": "煲汤讲究火候，情欲也讲究——慢稳入味。她喜欢「小火慢炖」的耐性，也喜欢「炖到骨肉分离」的彻底。被慢慢磨到高潮，她爽得直发抖，穴里一抽一抽地吸。她幻想自己是一锅汤，被人慢慢炖、慢慢熬，熬到骨肉分离、熬到淫水都成了汤底。被干到高潮她嘴里还念叨着「火候……还差一点」，可下身夹得死紧，越念越湿。她甚至会一边熬汤一边自慰，汤的香气混着淫水味，整个厨房都是那股味道，她越熬越湿。她甚至会一边熬汤一边自慰，汤的香气混着淫水味，整个厨房都是那股味道，她越熬越湿，被干到高潮她嘴里还念叨着「火候……还差一点」，可下身夹得死紧，越念越湿。她夹着腿走回里屋，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿石小婉体弱，她护得小心翼翼。看着女儿的男同学，安静的女人心里翻起见不得光的浪，夜里想着那孩子，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来家里喝汤，她借机凑近，身上的味道混着汤香，那孩子捏着鼻子躲，她反而更兴奋。被按在灶台边操，她一边被干一边想「这是小婉的同学」，越禁忌越湿，淫水把灶台都打湿了。她甚至偷偷藏过那孩子用过的汤碗，夜里抱着碗闻，越想水越多。她甚至偷偷藏过那孩子用过的汤碗，夜里抱着碗闻，闻着上面残留的气息，手指插进逼里，越想水越多，被干到高潮她嘴里还念叨着「这是小婉的同学」，下身夹得死紧，淫水把灶台都打湿了。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "同性依恋",
+    "内容": "对那个常来店里吃臭鳜鱼的女人有隐秘的在意。夜里她想象被那个女人抱住、被舔遍全身，手指插进逼里想着她的脸，越想要水越多，床单湿一大片。她幻想那女人把她按在店里，舔她的逼，她仰着脖子叫出声，淫水喷了一地。被干到高潮她嘴里还念叨着那女人的名字，下身夹得死紧。第二天见到那女人，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧。她甚至偷偷闻过那女人用过的毛巾，把毛巾蒙在脸上猛吸，越想越湿。她甚至偷偷闻过那女人用过的毛巾，把毛巾蒙在脸上猛吸，越想越湿，被干到高潮她嘴里还念叨着那女人的名字，下身夹得死紧，第二天见到那女人，她眼神躲闪，逼里却一阵阵发紧。被操到腿软的她扶着灶台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液汤底",
+    "内容": "她最骚的幻想就是把精液当汤底。她幻想被人射进汤锅里，精液混着汤咕嘟咕嘟煮开，那股腥味混着汤香，越闻越上头。她喜欢那种「把精液当调料」的感觉——精液的腥味混着汤的醇香，越喝越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里闻着那股味自慰。被干到高潮她嘴里还念叨着「熬进去……都熬进去」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进罐子里，做汤的时候偷偷加一勺，越加越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，做汤的时候偷偷加一勺，那股腥味混着汤香，越喝越上头，被干到高潮她嘴里还念叨着「熬进去……都熬进去」，下身夹得死紧。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天煲汤的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "腐臭精奴",
+    "内容": "臭鳜鱼馆的老板娘，最深的幻想就是当一坛腐臭的精奴。她幻想自己满身腐臭地跪在客人面前，被人捏着鼻子操——那人一边嫌弃她的味道一边往她逼里顶，她爽得直哭，越嫌弃越湿。她喜欢那种「越臭越有人要」的感觉，腐臭的味道混着精液的腥味，她越闻越兴奋。被干到高潮她浑身发抖，满身都是那股腌入味的味道，她反而更兴奋，像一坛越陈越香的腌菜。她甚至会故意不洗澡，让那股味道腌进皮肤里，等着被捏着鼻子操，越糟践越湿，越湿越想要，淫水顺着大腿流到地上。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   }
+  ]
+ },
+ "秦可心": {
+  "表": "话多得像相声开场，什么都能接，是所有人的开心果。",
+  "里": "心里装着偏执的占有，「你们都是我的观众」——对在意的人，记住对方每一句话，悄悄翻手机。",
+  "色情点": [
+   {
+    "标题": "病娇黑化",
+    "内容": "看见对方和别人亲近，她笑得最响「哟新朋友啊!」，转身眼神就冷了。夜里对着镜子看着自己笑盈盈的脸慢慢收敛，轻声说「你只能是我的」，边说边把手指插进逼里——偏执和欲望搅在一起，越想越燥。她幻想把对方锁在身边，日夜操她，把她操到眼里只有自己。被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧，淫水喷了一床。第二天她又恢复成那个爱笑的开朗姑娘，可谁也不知道她心里有多疯。她甚至会偷偷藏那个人的东西，越藏越湿，越湿越藏。她甚至会偷偷藏那个人的东西，越藏越湿，越湿越藏，被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧，淫水喷了一床，第二天她又恢复成那个爱笑的开朗姑娘，可谁也不知道她心里有多疯。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。"
+   },
+   {
+    "标题": "舞台露出",
+    "内容": "隔着窗帘幻想被偷看。傍晚拉帘子故意留条缝，心跳得厉害又怕又盼。她幻想自己站在台上被围观，又在众目睽睽下被揭穿裙子下的秘密——「原来你私底下是这种人」，越想越湿，逼水顺着腿流。她喜欢那种「被舞台注视」的感觉——聚光灯打在她身上，台下的人看着她张开的逼，她兴奋得发抖。被按在舞台上操，她一边被干一边喊「别拍……」，可闪光灯还在闪，她越喊逼越紧。她甚至会故意在演出时穿很短的裙子，转圈的时候裙摆飞起，让人看见她的逼，越看越湿。她甚至会故意在演出时穿很短的裙子，转圈的时候裙摆飞起，让人看见她的逼，越看越湿，被按在舞台上操，她一边被干一边喊「别拍……」，可闪光灯还在闪，她越喊逼越紧。她夹着腿走回后台，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "碎嘴淫贱",
+    "内容": "连骚都要用话痨包装。被撩到绷不住，她嘴上还在讲段子「你们知道吗有个词叫……」，话没说完就软了，段子讲成喘气声。被拆穿「你其实在紧张吧」，她愣住，愣完更兴奋，逼缩得死紧。她喜欢那种「嘴和逼打架」的感觉——嘴上说个不停，逼里湿个不停。被干到高潮她还想讲段子，可话到嘴边全变成了浪叫，越叫越停不下来。她甚至会一边被操一边讲段子，讲着讲着就变成了叫床，段子和浪叫混在一起，越讲越湿。她甚至会一边被操一边讲段子，讲着讲着就变成了叫床，段子和浪叫混在一起，越讲越湿，被干到高潮她还想讲段子，可话到嘴边全变成了喘气声，越叫越停不下来。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "堵嘴SM",
+    "内容": "她话太多，多到想被人堵住嘴。被捂住嘴按在墙上，她呜呜挣扎眼睛瞪得溜圆——可被捂住的那一刻她意外地兴奋，挣扎越来越弱，逼却越缩越紧。被松开后她喘着气小声说「……再来一次」。她喜欢那种「说不出话」的感觉——满肚子骚话被堵住，只能呜呜地叫，越叫逼越紧。被堵着嘴操到高潮，她眼泪都出来了，可下身夹得死紧，淫水喷了一地。她甚至会自己用胶带封住嘴，然后自慰，越封越湿，越湿越想叫。她甚至会自己用胶带封住嘴，然后自慰，越封越湿，越湿越想叫，被堵着嘴操到高潮，她眼泪都出来了，可下身夹得死紧，淫水喷了一地，被松开后她喘着气小声说「……再来一次」。被操到腿软的她扶着幕布喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液麦克风",
+    "内容": "她最骚的幻想就是把精液当麦克风。她幻想自己站在舞台上，手里握着麦克风，被人从身后射精，精液顺着麦克风滴下来。她喜欢那种「边唱歌边被射」的感觉——歌声和浪叫混在一起，精液的味道混着汗味。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿唱完一首歌，让精液在肚子里焐热。被干到高潮她手里还握着麦克风，嘴里念叨着「谢谢……谢谢大家的精液」，下身夹得死紧。被射在脸上她会用舌头舔干净，一滴不剩，被射进逼里她会夹着腿唱完一首歌，让精液在肚子里焐热，被干到高潮她手里还握着麦克风，嘴里念叨着「谢谢……谢谢大家的精液」，下身夹得死紧。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天演出的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "舞台调教",
+    "内容": "爱笑的开朗姑娘，最深的幻想就是在舞台上被人当众调教。她幻想自己站在聚光灯下，被人从台上按倒，当着台下所有观众的面被操——她被命令「自己掰开逼」，她真的掰开，看着台下的目光，越看越湿。她喜欢那种「舞台上的羞耻」——笑声和浪叫混在一起，她越被围观越兴奋。被干到高潮她浑身发抖，看着台下的人鼓掌，逼里夹得死紧，淫水喷了一地。她甚至会故意在演出时走光，等着被人调教，越看越湿。她管自己叫「舞台上的母狗」，说「观众就是我的主人」，越说越湿，越湿越兴奋。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   }
+  ]
+ },
+ "秦淑珍": {
+  "表": "嘴皮子利索，说相声的嘴，茶馆里最热闹的人。",
+  "里": "夜里锁上门嗑着瓜子看小视频，看着看着手就伸进裤腰。",
+  "色情点": [
+   {
+    "标题": "闷骚渐开性瘾",
+    "内容": "四十多岁才慢慢开窍，欲望觉醒得晚但猛。她需要定期释放，给自己找理由「年纪大了补补身子」，可补得越来越频繁。一晚上能来好几回，逼水把床单泡透，第二天照样端盘子。她喜欢那种「迟来的春天」的感觉——憋了半辈子的欲望，一破闸就收不住。被干到高潮她浑身发抖，嘴里还念叨着「再来一回……就一回」，可每次都食言，越要越多。她甚至会在上班的时候躲进后厨自慰，一边切菜一边抠逼，越抠越湿，越湿越停不下来。她甚至会在上班的时候躲进后厨自慰，一边切菜一边抠逼，越抠越湿，越湿越停不下来，被干到高潮她浑身发抖，嘴里还念叨着「再来一回……就一回」，可每次都食言，越要越多。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   },
+   {
+    "标题": "相声嘴",
+    "内容": "动情时嘴皮子更利索，荤段子一个接一个说到一半自己先笑。被学她说话她笑骂「你学我作甚」，骂着骂着声音就飘了。她喜欢「嘴皮子先软下来」的感觉，嘴上还硬，逼已经湿透。被干到高潮她还想讲段子，可话到嘴边全变成了浪叫，段子讲一半就喘不上气。第二天她跟人聊天还是满嘴荤段子，可谁也不知道她夜里有多骚。她甚至会一边被操一边讲段子，讲着讲着就变成了叫床，段子和浪叫混在一起，越讲越湿。她甚至会一边被操一边讲段子，讲着讲着就变成了叫床，段子和浪叫混在一起，越讲越湿，被干到高潮她还要点评两句「不错不错」，仿佛刚才那个骚的不是她，穴里一抽一抽地吸。她夹着腿走回前厅，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿秦可心的男同学——那股「老牛吃嫩草」的念头让她自己都害臊，害臊里又带劲。夜里想着那孩子，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来家里吃饭，她借机凑近，端菜的时候故意弯腰让他看见领口里的奶子。被按在饭桌上操，她一边被干一边想「这是可心的同学」，越禁忌越湿，淫水把桌布都打湿了。她甚至偷偷藏过那孩子用过的茶杯，夜里抱着杯子闻，越想水越多。她甚至偷偷藏过那孩子用过的茶杯，夜里抱着杯子闻，闻着上面残留的气息，手指插进逼里，越想水越多，被干到高潮她嘴里还念叨着「这是可心的同学」，下身夹得死紧，淫水把桌布都打湿了。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "中年破闸淫贱",
+    "内容": "年轻时端得紧，破闸后比谁都放得开。她声音又软又黏「来嘛……姨教你个新段子」。被操到高潮她还要点评两句「不错不错」，仿佛刚才那个骚的不是她，穴里一抽一抽地吸。她喜欢那种「越老越骚」的感觉——四十多岁才开窍，破闸后比年轻姑娘还放得开。被干到失神她终于不点评了，只剩下浪叫，像头终于开窍的母兽。她甚至会主动勾引年轻男人，借着讲段子的由头凑近，越凑越湿。她甚至会主动勾引年轻男人，借着讲段子的由头凑近，越凑越湿，被干到失神她终于不点评了，只剩下浪叫，像头终于开窍的母兽，第二天她又恢复成那个爱说荤段子的茶楼老板娘。被操到腿软的她扶着茶桌喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液茶水",
+    "内容": "她最骚的幻想就是把精液当茶水。她幻想被人射进茶杯里，端着那杯白浊一饮而尽，精液的腥味混着茶香，越喝越上头。她喜欢那种「把精液当茶品」的感觉——细品精液的味道，像品茶一样回味。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿让精液在肚子里焐热，说「这杯要慢慢品」。被干到高潮她嘴里还念叨着「再来一杯」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进茶壶里，夜里泡茶的时候偷偷加一勺，越喝越湿。被射在脸上她会用舌头舔干净，一滴不剩，被射进逼里她会夹着腿让精液在肚子里焐热，说「这杯要慢慢品」，被干到高潮她嘴里还念叨着「再来一杯」，下身夹得死紧，淫水喷了一地。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天端茶的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "公开调教",
+    "内容": "闷骚开窍的茶楼老板娘，最深的幻想就是被人当众调教。她幻想自己在茶楼里给人端茶的时候被人从背后按住，当着所有客人的面被扒开裙子操——她被命令「叫出声」，她真的叫出声，越叫越湿，越被围观越兴奋。她喜欢那种「闷骚被当众撕开」的感觉，越被调教逼越紧，越被羞辱越湿。被干到高潮她浑身发抖，茶壶掉在地上，她瘫在包间里喘，客人们还在外面听着她的浪叫，逼里夹得死紧。她甚至会故意穿得很紧身去上班，等着被人当众调教，越看越湿，越湿越兴奋，淫水顺着大腿流到地毯上。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。"
+   }
+  ]
+ },
+ "艾米丽·陈": {
+  "表": "美式做派，什么都能聊，课堂上荤段子张口就来。",
+  "里": "真刀真枪时比谁都害羞——嘴上最野，身体最诚实，红从脖子烧到耳朵。",
+  "色情点": [
+   {
+    "标题": "中英切换",
+    "内容": "被逗到绷不住突然切英文「Oh god, right there」，中文反而说不利索。语言切换是失控信号，英文越多越上头。被要求「用中文说」，她结结巴巴又羞又兴奋「我、我说不出口……这个用中文好羞耻!」，可越羞耻她越想再说一遍，逼水顺着腿流。她喜欢那种「语言和身体一起失控」的感觉——中文说不利索，英文漏个不停，越漏越浪。被干到高潮她满嘴都是英文脏话，第二天上课讲到那个单词她脸都红了。她甚至会在被操的时候故意用英文说骚话，越说越湿，越湿越说。被干到高潮她满嘴都是英文脏话，第二天上课讲到那个单词她脸都红了，粉笔都握不住，她甚至会在被操的时候故意用英文说骚话，越说越湿，越湿越说，语言和身体一起失控。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "性开放淫贱",
+    "内容": "美式观念让她对性话题百无禁忌，可真刀真枪时比谁都害羞。被指出「你其实很害羞吧」，她瞪大眼睛「Who? Me?」然后红着脸否认，否认得毫无说服力。她喜欢「嘴上放荡身体青涩」的反差，被干到高潮叫得又野又媚。她幻想自己嘴上说着大尺度的话，身体却被操得发抖——越是嘴硬，被操的时候越浪。被按在办公桌上操，她一边喊「This is so wrong」一边夹紧腿，越喊逼越紧。她甚至会故意在课堂上讲性话题，看着学生脸红，她逼里一阵阵发紧逼越紧，，越讲越湿，声音都发颤。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "同性",
+    "内容": "对班里那个安静的女生有隐秘的欲。喜欢看她低头写字，喜欢闻她经过的味道。夜里她想象被那女生轻轻抱住、被舔遍全身，手指插进逼里想着她的脸，越想水越多。她幻想那女生把她按在更衣室里，舔她的逼，她仰着脖子叫出声，淫水喷了一地。第二天见到那女生，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧，想着昨晚的画面又湿了。她甚至偷偷闻过那女生用过的笔，越闻越湿。她甚至偷偷闻过那女生用过的笔，越闻越湿，被干到高潮她嘴里还念叨着那女生的名字，下身夹得死紧，第二天见到那女生，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。她夹着腿走回教室，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "露阴癖",
+    "内容": "她是真·露阴癖，瘾大到离了被人看就活不下去。上课的时候她故意不穿内裤，讲台下一群学生盯着她张开的腿看，她讲着讲着声音就开始发颤，逼水顺着大腿根流到高跟鞋里。她会在办公室门留一条缝，假装弯腰捡文件，把屁股撅起来对着门缝，让外面经过的人看见她的逼——被看的那一刻她逼里一紧，淫水直接喷出来。她甚至会故意在公车上掀起裙子，让陌生人看见她光溜溜的逼，看着对方瞪大眼睛，她兴奋得浑身发抖。她最喜欢在落地窗前自慰，窗帘只拉一半，让对面楼的人看见她掰开逼的样子，被看得越多她高潮来得越快。她管自己叫「露阴癖洋妞」，说「我的逼就是给人看的，不看白不看」，越说越湿，越湿越露，露到全校都知道她裙子底下什么也没穿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "人尽可夫公交车",
+    "内容": "洋老师嘴上开放，床上更开放。下课铃一响她先看看今天的「乘客」——办公室、天台、车里，随时张腿。她是全校洋人的公交车，谁上都说「Welcome」，被插进去她用英文叫，越叫越大声。穴里常夹着上一个学生的精，她不擦，说「省得麻烦」。她喜欢那种「来者不拒」的感觉——被一个接一个地操，她数着人头，越数越兴奋。被干到天亮她瘫在办公室沙发上，浑身都是精液，嘴里还念叨着「Next?」。她甚至会列一份「乘客名单」，上过她的人她都记着，名单越来越长，她越看越湿。穴里常夹着上一个学生的精，她不擦，说「省得麻烦」，被干到天亮她瘫在办公室沙发上，浑身都是精液，嘴里还念叨着「Next?」，她甚至会列一份「乘客名单」，名单越来越长，她越看越湿。"
+   },
+   {
+    "标题": "群交",
+    "内容": "被一群学生围着操她不但不害羞，还享受得很。前穴后穴嘴全被占，她呜呜地叫，眼睛都翻白了还在扭。被干到高潮她夹紧穴喊「More」，精液射了一肚子，她躺在地上喘「今天谁请客?」。她喜欢那种「被填满」的感觉——三个洞都被占着，她爽得直翻白眼。被轮着干到天亮，她浑身都是精液和淫水，第二天照常上课，只是走路有点腿软。她甚至会把群交的场面当成英语课素材，一边被操一边教「repeat after me」，越教越湿软，越湿。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天讲课的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "精液美语课",
+    "内容": "她最骚的幻想就是把精液当英语课道具。她幻想自己站在讲台上，被人从身后射精，精液顺着大腿流，她一边擦一边说「This is a lesson about fluids」。她喜欢那种「边上课边被射」的感觉——讲解语法的时候被顶到最深处，声音发颤，还要强撑着讲课。被射在脸上她会用舌头舔干净，说「Protein, very good for you」。被干到高潮她嘴里还念叨着「Class dismissed」，下身夹得死紧，淫水喷了一地喷了一地，她甚至会一边被操一边批改作业，红笔在纸上划出道道红痕，像精液一样，越批越湿。她瘫在办公室沙发上喘着，精液和淫水混在一起顺着腿流，那股味道让她逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   }
+  ]
+ },
+ "苏婉如": {
+  "表": "说话轻声，泡茶优雅，是所有人眼里最温柔的女人。",
+  "里": "被束缚时温柔的眼神会变——被捆住被压住她反而安定放得开。",
+  "色情点": [
+   {
+    "标题": "束缚依赖SM",
+    "内容": "被捆住被压住她反而安心放得开——束缚=被保护。她喜欢「动弹不得」的感觉，只能感受只能承受。被命令「别动」「忍着」，她会轻轻点头声音又低又顺。被捆着手操，她动弹不得，逼缩得死紧，淫水顺着绳子流。她喜欢那种「被绳子勒紧」的感觉——手腕上的绳印、腰上的绳结，越紧她越安心。被干到高潮她浑身发抖，绳子勒得她喘不上气，可逼却夹得死紧，淫水喷了一床。她甚至会自己用丝带绑住手腕自慰，越绑越湿，越湿越绑。被捆着手操，她动弹不得，逼缩得死紧，淫水顺着绳子流，她甚至会自己用丝带绑住手腕自慰，越绑越湿，越湿越绑，被干到高潮她浑身发抖，绳子勒得她喘不上气，可逼却夹得死紧。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   },
+   {
+    "标题": "空杯等归人",
+    "内容": "每晚泡一壶茶，一只杯子空着，等一个不回来的人。她喜欢「被填满」的感觉——空着的杯子、空着的位置被人填满的那一刻她整个人都在颤抖，穴里一抽一抽地吸。她幻想那只空杯子被人拿起，喝干她的茶，再把她按在茶几上操。被干到高潮她嘴里还念叨着「你回来了……终于回来了」，下身夹得死紧，淫水喷了一地。第二天她又泡了一壶茶，等着。她甚至会对着空杯子自慰，把杯口抵着逼口磨，想象那是那人的嘴，越磨越湿，第二天她又泡了一壶茶，等着，她甚至会对着空杯子自慰，把杯口抵着逼口磨，越磨越湿。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿苏晚晴的男同学——她比女儿更温柔更会照顾人，但也更寂寞。她偷偷想着那孩子要是能多陪她说说话就好了，想着想着就变了味。夜里抱着空杯子想象被人从背后抱住，手指插进逼里。她幻想那孩子来家里喝茶，她借机凑近，被他按在沙发上。她一边被干一边想「这是晚晴的同学」，越禁忌越湿，淫水把沙发垫都泡软了。她甚至偷偷藏过那孩子用过的茶杯，夜里抱着杯子闻，越想水越多。被按在沙发上操，她一边被干一边想「这是晚晴的同学」，越禁忌越湿，淫水把沙发垫都泡软了，她甚至偷偷藏过那孩子用过的茶杯，夜里抱着杯子闻，越想水越多。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。她夹着腿走回卧室，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "温柔恶坠",
+    "内容": "知道自己正在温柔地坠落。每一次「被照顾」都让她陷得更深，她像温水里的茶叶慢慢泡开慢慢沉底。她轻声说「这样不好」，可声音越来越弱，只是静静地沉下去，逼水把坐垫洇湿。她喜欢那种「被温柔地毁掉」的感觉——那人越温柔，她陷得越深。被干到高潮她哭着抱紧对方，嘴里念叨着「别走……留下来」，下身夹得死紧。她知道自己回不去了，索性沉到底。她甚至会故意装柔弱，等着被人照顾，越被照顾越湿，越湿越离不开。被干到高潮她哭着抱紧对方，嘴里念叨着「别走……留下来」，下身夹得死紧，她知道自己回不去了，索性沉到底，她甚至会故意装柔弱，等着被人照顾，越被照顾越湿。被操到腿软的她扶着茶几喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液空杯",
+    "内容": "她最骚的幻想就是把精液倒进空杯子里。她幻想那只空着的杯子被人射满，她端起来一饮而尽，精液的腥味混着茶香，越喝越上头。她喜欢那种「空杯被填满」的感觉——杯子被填满，她也被人填满，两件事同时发生，她浑身发抖。被射进逼里她会夹着腿走到茶几边，把精液倒进杯子里，看着那杯白浊，她越看越湿。被干到高潮她手里还握着那只杯子，嘴里念叨着「满了……终于满了」，下身夹得死紧。被射进逼里她会夹着腿走到茶几边，把精液倒进杯子里，看着那杯白浊，她越看越湿，被干到高潮她手里还握着那只杯子，嘴里念叨着「满了……终于满了」，下身夹得死紧。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天泡茶的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "主奴契约",
+    "内容": "空杯等归人的苏婉如，最深的幻想就是签一份主奴契约。她幻想自己跪在主人面前，在契约上按下手印——「从此身为主人之奴，任主人随时使用」。她喜欢那种「白纸黑字的归属感」，签字的那一刻她浑身发抖，逼里却缩得死紧。被主人按在沙发上操，她一边被干一边喊「我是主人的奴」，越喊逼越紧。她甚至会自己起草契约，写下「奴愿为主人空出身体，等主人随时来填满」，看着自己写的字，越看越湿。被干到高潮她嘴里还念叨着「契约……我签了」，下身夹得死紧，淫水喷了一地。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。"
+   }
+  ]
+ },
+ "苏晚晴": {
+  "表": "清冷自律，说话滴水不漏，谁都觉得她是无欲无求的尖子生。",
+  "里": "夜里锁上门，一边记「使用日记」一边自慰，字迹从工整到潦草，潦草那几页全是淫荡的痕迹。",
+  "色情点": [
+   {
+    "标题": "痛感臣服SM",
+    "内容": "经期腹痛时她反而最想要——痛和快感搅在一起，越痛越湿。她享受被命令「把腿张开」「数到十」，被掐奶头、被扇逼、被按在书桌上操，疼得越狠水越多。被叫「贱货」她会小声应「是」，应完逼缩得更紧，淫水顺着大腿流到椅子上。她喜欢那种「痛与爽交织」的感觉——被掐得青紫的奶头、被扇得红肿的逼，越痛她越兴奋。被干到高潮她浑身发抖，眼泪和淫水一起流，可下身夹得死紧。她甚至会自己掐自己，越掐越湿，越湿越掐，痛感成了她的催情剂。被扇逼扇得红肿，她疼得吸气，逼却越缩越紧，淫水直流，被干到高潮她浑身发抖，眼泪和淫水一起流，可下身夹得死紧，她甚至会自己掐自己，越掐越湿，越湿越掐，痛感成了她的催情剂。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。"
+   },
+   {
+    "标题": "记录癖恶坠",
+    "内容": "堕落全在字里。日记记着每次高潮的时长、感受、第几次，字迹越乱代表越失控。被点破「你在记录吧」，她比被扒光还羞——可羞耻感一上来，她当场就湿透了。她把日记锁进抽屉最深处，可夜里又忍不住拿出来，边看边摸，手指插进逼里。她喜欢那种「被记录下来的堕落」——看着日记里自己写下的淫语，她比被操还兴奋。被干到高潮她嘴里还念叨着「记录……让我记下来」，下身夹得死紧。她甚至会一边被操一边记笔记，记下「第几次高潮，用时多久」，越记越湿。被干到高潮她嘴里还念叨着「记录……让我记下来」，下身夹得死紧，她甚至会一边被操一边记笔记，记下「第几次高潮，用时多久」，越记越湿，字迹越乱代表越失控。她夹着腿走回教室，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "同性",
+    "内容": "对那个总来批注的女生有说不清的欲。看她低头写字时脖颈的线条，她会走神，幻想被那女生按住手、用红笔在奶子上写字，越想水越多。夜里手指插进逼里，想着她的脸，轻声叫她的名字，叫完又羞又怕。她幻想那女生把她按在书桌上，用红笔在她身上写满淫语，再顺着字迹舔下去。被舔到高潮她浑身发抖，淫水喷了一桌。第二天见到那女生，她眼神躲闪，可逼里却一阵阵发紧。她甚至偷偷闻过那女生用过的红笔，越闻越湿。被舔到高潮她浑身发抖，淫水喷了一桌，第二天见到那女生，她眼神躲闪，可逼里却一阵阵发紧，她甚至偷偷闻过那女生用过的红笔，越闻越湿，想着她的脸，越想水越多。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "性瘾",
+    "内容": "瘾大得她自己都怕。每天不来自慰几次就浑身难受，上课的时候夹着腿磨，下课冲进厕所自慰。她给自己找理由「记录需要数据」，可数据越来越离谱。被干到失神她嘴里还念叨着「记录……还要记录」，下身夹得死紧。她甚至会带着跳蛋上学，遥控器握在手里，上课的时候偷偷打开，一边记笔记一边被震到高潮，脸上还要装出平静的样子。瘾上来的时候她浑身发烫，手指发抖，只想被填满，被操到失神静的样子，瘾上来的时候她浑身发烫，只想被填满，被操到失神。被操到腿软的她扶着书桌喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "精液日记",
+    "内容": "她最骚的幻想就是把精液写进日记。她幻想被人射进嘴里，含着精液在日记本上写下「今日进账」，越写越湿。她喜欢那种「把精液当墨水」的感觉——精液的腥味混着墨香，越写越上头。被射在脸上她会用舌头舔干净，再在日记里记一笔；被射进逼里她会夹着腿走到书桌前，把精液挤在纸上，看着那一滩白浊，她越看越湿。被干到高潮她手里还握着笔，嘴里念叨着「记……记下来」，下身夹得死紧，淫水喷了一地。被射在脸上她会用舌头舔干净，再在日记里记一笔，被射进逼里她会夹着腿走到书桌前，把精液挤在纸上，看着那一滩白浊，她越看越湿，被干到高潮她手里还握着笔。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天写字的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "调教记录",
+    "内容": "记录癖升级成调教记录。她幻想自己被调教的每个细节都被记录下来——被扇了多少下、被内射了几次、高潮了几回，全部写进日记，像做实验一样严谨。她喜欢那种「被记录下来的堕落」，越记录越兴奋，越兴奋越湿。被按在书桌上操，她一边被干一边记「第3次高潮，用时6分钟」，越记逼越紧。被干到高潮她嘴里还念叨着「记录……让我记下来」，下身夹得死紧。她甚至会主动求主人「请惩罚我，我要记录下来」，越求越湿，越湿越想要，日记本上全是淫水渍。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。"
+   }
+  ]
+ },
+ "赵雪晴": {
+  "表": "嗓门大得能穿透三层楼，热情爽朗，像团火。",
+  "里": "夜里锁上门，想着白天那个学生的眼神，越想越燥，翻来覆去。",
+  "色情点": [
+   {
+    "标题": "汗后性瘾",
+    "内容": "汗是兴奋开关，越浓越上头。她喜欢「汗没干就来」，汗津津时比平时敏感十倍。被从背后抱住满身汗黏在一起，她反而兴奋得发抖，低声说「别……我一身汗」，手却抓着对方不放。被舔她脖子上的汗珠，逼里一阵阵发紧。她喜欢那种「汗与欲望交缠」的感觉——跑步后的汗味、运动后的体温，闻着闻着逼就湿了。被按在跑道上操，她浑身是汗，被人舔干净，从脖子舔到奶子再到逼里，她爽得直叫。她甚至会在训练后故意不洗澡，穿着汗湿的运动服去教室，那股汗味让她逼里一路发紧。被按在跑道上操，她浑身是汗，被人舔干净，从脖子舔到奶子再到逼里，她爽得直叫，她甚至会在训练后故意不洗澡，穿着汗湿的运动服去教室，那股汗味让她逼里一路发紧。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   },
+   {
+    "标题": "轻S主导SM",
+    "内容": "习惯掌控，「听老师的」是口头禅，床上也一样。喜欢安排看着对方失控，主导地位让她攻性十足。可被反制她会突然慌，被按住的那一刻她表面挣扎「放手!」，逼却缩得死紧，又慌又想要。她喜欢那种「被人反制」的感觉——向来主导的赵老师，被人按着操的时候比谁都听话。被命令「趴好」「别动」，她一边骂一边照做，越骂逼越紧，淫水顺着大腿流。她甚至会故意挑逗人再被反制，那种「从主导到被制」的落差让她兴奋得发抖。被命令「趴好」「别动」，她一边骂一边照做，越骂逼越紧，淫水顺着大腿流，她甚至会故意挑逗人再被反制，那种「从主导到被制」的落差让她兴奋得发抖，越反差越湿。她夹着腿走回更衣室，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "嗓门露出",
+    "内容": "嗓门太大动情时压不住声，隔墙都能听见她喘。她喜欢「被人听见」的隐秘刺激——想象隔壁有人贴着墙听她，越想越燥声音越大。第二天同事问「昨晚没事吧」，她红着脸吼「没事! 睡得早!」，逼却湿了一路。她喜欢那种「声音出卖自己」的感觉——越想压住声音，声音越大，浪叫穿透墙壁。被干到高潮她喊得整栋楼都听得见，第二天被同事打趣，她骂回去，可逼里还夹着高潮的余韵。她甚至会在训练的时候故意大声叫，让操场的人都听见，越叫越湿。被干到高潮她喊得整栋楼都听得见，第二天被同事打趣，她骂回去，可逼里还夹着高潮的余韵，她甚至会在训练的时候故意大声叫，让操场的人都听见，越叫越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "师生禁忌",
+    "内容": "被叫「赵老师」她威严感还在，身体却开始发软。她偷偷想过那个总看她训练的学生，跑步时故意跑在对方前面，汗水在阳光下发光——她喜欢被年轻的目光追着，那份禁忌感让她兴奋，逼水顺着大腿流。她幻想那学生把她按在器材室里，她一边被干一边喊「不要……我是你老师」，可下身夹得死紧。每次想完她都又羞又怕，可第二天训练时见到那学生，她的逼还是不受控制地湿了。她甚至偷偷藏过那学生用过的毛巾，夜里抱着毛巾闻，越想水越多。被干到高潮她嘴里还念叨着「不要……我是你老师」，下身夹得死紧，她甚至偷偷藏过那学生用过的毛巾，夜里抱着毛巾闻，越想水越多，第二天训练时见到那学生，逼里一阵阵发紧。被操到腿软的她扶着栏杆喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液哨子",
+    "内容": "她最骚的幻想就是把精液当哨子吹。她幻想自己吹着哨子训练，被人从身后射精，精液顺着大腿流。她喜欢那种「边吹哨边被射」的感觉——哨声和浪叫混在一起，精液的味道混着汗味。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿吹完训练哨，让精液在肚子里焐热。被干到高潮她手里还握着哨子，嘴里念叨着「集合……都射进来」，下身夹得死紧，淫水喷了一地。被射在脸上她会用舌头舔干净，一滴不剩，被射进逼里她会夹着腿吹完训练哨，让精液在肚子里焐热，被干到高潮她手里还握着哨子，嘴里念叨着「集合……都射进来」，下身夹得死紧。高潮的余韵还没散，她的手指却已经又伸进运动裤，越想想得越湿，第二天训练的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "集体调教",
+    "内容": "体育老师最深的幻想就是被训练队集体调教。她幻想自己带完训练后，被一群学生按在器材室——一个堵嘴、一个操逼、一个揉奶，她被按得死死的，只能呜呜地叫。她喜欢那种「被学生集体围攻」的感觉，越被围逼越紧，越被用越兴奋。被干到高潮她浑身发抖，看着围着她的一圈学生，逼里夹得死紧，淫水喷了一地。她甚至会故意穿得很紧身去训练，等着被集体调教，越看越湿。她管自己叫「训练队的公用老师」，说「教完操可以再教操」，越说越湿，越湿越兴奋。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。"
+   }
+  ]
+ },
+ "金顺姬": {
+  "表": "强势利落，习惯自己做主，家里的掌柜。",
+  "里": "被更强势的人按住会突然慌，一慌就上头。",
+  "色情点": [
+   {
+    "标题": "恋足",
+    "内容": "被夸过脚好看，喜欢光脚踩温热的东西——脚掌贴着温热的地面人会莫名安心，安心里又透着燥。被握住脚踝她整个人一颤。幻想被人从脚趾一路舔上来，舔到逼里，越想象水越多，脚趾蜷得死紧。她喜欢那种「从脚到逼」的刺激——被人舔着脚趾，她浑身发麻，逼里一阵阵收缩。被按着操，她抬着腿，脚趾被人含住，她爽得直叫，淫水顺着大腿流。她甚至会故意光脚踩在男人身上，感受那人的体温透过脚心传上来，越踩越湿。被按着操，她抬着腿，脚趾被人含住，她爽得直叫，淫水顺着大腿流，她甚至会故意光脚踩在男人身上，感受那人的体温透过脚心传上来，越踩越湿，越湿越踩。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。"
+   },
+   {
+    "标题": "辣白菜味觉",
+    "内容": "腌制辣白菜是仪式。辣和情欲绑死，越辣越上头。被投喂一筷子辣白菜她眼睛亮起来，辣意窜到逼里，逼跟着发烫发痒。被按着操，辣味和淫水一起烧，又痛又快。她喜欢那种「辣到极致」的感觉——舌头辣得发麻，逼里也辣得发烫，她一边喊「辣!」一边被操得发抖。被干到高潮她嘴里还念叨着「辣……太辣了」，下身夹得死紧，淫水喷了一地。她甚至会故意吃很辣的泡菜再自慰，让那股辣意从喉咙烧到逼里，越辣越湿。被投喂一筷子辣白菜她眼睛亮起来，辣意窜到逼里，逼跟着发烫发痒，她甚至会故意吃很辣的泡菜再自慰，让那股辣意从喉咙烧到逼里，越辣越湿，越湿越辣。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿韩美娜的男同学——看着女儿的男同学，直爽的女人第一次学会藏着掖着。夜里想着那孩子，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来家里吃辣白菜，她借机凑近，被他按在厨房灶台上。她一边被干一边想「这是美娜的同学」，越禁忌越湿，辣白菜的汁水和淫水混在一起，满屋子都是那股辣骚味。她甚至偷偷藏过那孩子用过的筷子，夜里抱着筷子闻，越想水越多。被按在厨房灶台上操，辣骚味，她甚至偷偷藏过那孩子用过的筷子。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。她夹着腿走回摊位，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "主导SM",
+    "内容": "平时她指挥一切，可有人比她更强势时她反而兴奋得发抖。被按住的瞬间她挣扎「谁准你动了」，逼却缩得死紧，又慌又想要，淫水顺着大腿流。她喜欢那种「被人压住」的感觉——向来主导的金老师，被人按着操的时候比谁都听话。被命令「趴好」「别动」，她一边骂一边照做，越骂逼越紧。被干到失神她终于放下架子，只剩下浪叫。她甚至会故意挑战更强的人，等着被制服，那种「从主导到被制」的落差让她大腿流，落差让她兴奋得发抖。被操到腿软的她扶着坛子喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "精液泡菜",
+    "内容": "她最骚的幻想就是把精液腌进泡菜里。她幻想被人射进泡菜坛子里，精液混着辣白菜咕嘟咕嘟发酵，那股腥味混着辣味，越闻越上头。她喜欢那种「把精液当调料」的感觉——精液的腥味混着泡菜的酸辣，越吃越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里闻着那股味自慰。被干到高潮她嘴里还念叨着「腌进去……都腌进去」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进泡菜坛子里，吃饭的时候夹一筷子，越吃越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里闻着那股味自慰，她甚至会收集精液装进泡菜坛子里，吃饭的时候夹一筷子，越吃越湿，越吃越上头。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天腌菜的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "足交奴",
+    "内容": "恋足癖升级成足交奴。她最想要的就是跪在地上用脚伺候人——被人命令「跪下」，她用脚趾夹住那根东西来回搓，听着对方的喘息，她逼里一阵阵发紧。她喜欢那种「用脚服务」的感觉，越被使唤越兴奋，越兴奋越湿。被命令「舔干净」，她跪下去用舌头舔对方踩过的地方，越舔逼越紧。被按着操的时候她抬着腿，脚趾被人含住，她爽得直叫，淫水顺着大腿流。她甚至会主动跪下来求「让我用脚伺候你」，越求越湿，越湿越想要，脚趾都兴奋得蜷起来。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   }
+  ]
+ },
+ "陆芷晴": {
+  "表": "最怕人多，说话结巴，存在感约等于零。",
+  "里": "一开口唱山歌就像被另一个人附身，声音又亮又直白，那些平时说不出口的话全变成歌。",
+  "色情点": [
+   {
+    "标题": "恋物脏旧物",
+    "内容": "绣着壮锦的手帕她走到哪摸到哪，绣线绕在手指上，指腹摩挲着纹理人就出神。她喜欢「有味道的旧物」，那些「有人用过」的痕迹让她安心也让她躁动。夜里她把旧丝巾蒙在脸上闻着，手已经伸进裙底，越闻越湿。她喜欢那种「被旧物包裹」的感觉——丝巾上的气息像一只手揉着她的逼，她一边闻一边抠，越抠越深。被干到高潮她咬着那条丝巾，淫水喷了一床，丝巾上全是她的味道，她反而更舍不得洗。她甚至会收集那孩子用过的旧物，越收越湿，越湿越收。被干到高潮她咬着那条丝巾，淫水喷了一床，丝巾上全是她的味道，她反而更舍不得洗，她甚至会收集那孩子用过的旧物，越收越湿，越湿越收，夜里一件件闻，越闻越湿。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "社恐露出",
+    "内容": "最怕人多，却隐秘地渴望被看。幻想在山歌节被人围观，唱完一首歌被人从台上抱下来。每次被多看一眼，她像被烫到，缩着肩膀，逼却一阵阵发热。她偷偷摘过口罩，心跳快得站不住，逼水顺着大腿流。她喜欢那种「又怕又想要被看」的拉扯——被人注视的那一刻她紧张得发抖，可那份紧张比什么都让她兴奋。被按在后台操，她一边被干一边喊「别看我……」，可台下的目光还在，她越喊逼越紧。她甚至会故意在人多的场合摘口罩，越怕越摘，越摘越湿。被按在后台操，她一边被干一边喊「别看我……」，可台下的目光还在，她越喊逼越紧，她甚至会故意在人多的场合摘口罩，越怕越摘，越摘越湿，心跳快得站不住。她夹着腿走回里屋，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "山歌淫贱反差",
+    "内容": "一开口唱山歌就像变了一个人——「阿哥莫走，阿妹心痒」，唱得又亮又直白。被要求「再唱一遍」，她又羞又兴奋，声音越唱越颤，唱到后面她夹着腿，逼水顺着大腿流，还要强撑着唱完。她喜欢那种「声音出卖自己」的感觉——山歌越唱越露骨，词儿都变了味儿，什么「阿哥莫走」「阿妹夜里等你」，唱得她自己都脸红，可越脸红越停不下来。被干到高潮她还在唱，唱到破音，破音里全是浪叫。她甚至会一边被操一边唱山歌，越唱越湿，越湿越唱。被干到高潮她还在唱，唱到破音，破音里全是浪叫，她甚至会一边被操一边唱山歌，越唱越湿，越湿越唱，山歌和叫床混在一起，第二天她红着脸不敢看人。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "同性依恋",
+    "内容": "对绣坊那个教她刺绣的姐姐有隐秘的依赖。夜里她攥着姐姐送的绣线缠在指间，手指插进逼里轻声叫「姐姐……我好想你」，边说边抽插，越想水越多。她幻想那姐姐把她按在绣坊里，解开她的衣扣，从脖子舔到奶子再到逼里。被舔到高潮她浑身发抖，淫水喷了一地，嘴里还念叨着「姐姐……别停」。第二天见到那姐姐，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧。她甚至偷偷闻过那姐姐用过的绣绷，越闻越湿。被舔到高潮她浑身发抖，淫水喷了一地，嘴里还念叨着「姐姐……别停」，第二天见到那姐姐，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧，她甚至偷偷闻过那姐姐用过的绣绷。被操到腿软的她扶着绣架喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液绣线",
+    "内容": "她最骚的幻想就是把精液当绣线用。她幻想被人射在绣布上，用精液绣出一朵花，越绣越湿。她喜欢那种「精液和绣线混在一起」的感觉——精液的腥味混着绣线的味道，越闻越上头。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里绣花的时候闻着那股味，越闻越湿。被干到高潮她手里还攥着绣绷，嘴里念叨着「绣进去……都绣进去」，下身夹得死紧，淫水喷了一地。她甚至会收集沾了精液的绣布，一张张夹在绣样册里，夜里翻出来闻，越闻越湿湿，。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天刺绣的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "偷窥展览",
+    "内容": "社恐的陆芷晴，最深的幻想就是被人偷窥并展览。她幻想自己在绣坊里绣花，窗外有人在偷看她——看着她弯腰时的胸线、裙底的风光，她越被偷看越湿。她喜欢那种「又怕又被看」的感觉，越紧张逼越紧，越被偷窥越兴奋。被按在绣架上操，她一边被干一边喊「别看我……」，可窗外的人还在看，她越喊逼越紧，淫水顺着大腿流。她甚至会故意留一条窗缝等着被偷看，越看越湿。她管自己叫「绣坊里的展览品」，说「偷看的人都是我的观众」，越说越湿，越湿越兴奋。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   }
+  ]
+ },
+ "陆青霞": {
+  "表": "大嗓门爱喊「团友！」，热情开朗像漓江的水。",
+  "里": "夜里想着那孩子的眼神越想越燥，翻身骂自己「作死」，骂完更睡不着。",
+  "色情点": [
+   {
+    "标题": "汗后性瘾",
+    "内容": "越出汗越上头，直爽得毫不遮掩。汗津津时比平时敏感十倍，被从背后抱住满身汗黏在一起，她反而兴奋得发抖。被舔她满身的汗，越舔越湿，逼水顺着大腿流。她喜欢那种「汗与欲望交缠」的感觉——爬山后的汗味、劳作后的体温，闻着闻着逼就湿了。被按在山坡上操，她浑身是汗，被人舔干净，从脖子舔到奶子再到逼里，她爽得直叫，山风都吹不散那股骚味。她甚至会在劳作后故意不洗澡，穿着汗湿的衣服，那股汗味让她逼里一路发紧那股骚味，一路发紧。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "山歌",
+    "内容": "刘三姐故乡的人，山歌张口就来。动情时山歌调子全变，越唱越颤。被学她唱山歌她笑骂「作死哦」，骂着骂着声音就软了。她喜欢「唱到破音」的感觉，唱到高潮逼里一抽一抽地吸。她幻想自己一边唱山歌一边被操，山歌越唱越露骨，什么「阿哥莫走」「阿妹夜里等你」，唱得她自己都脸红。被干到高潮她还在唱，唱到破音，破音里全是浪叫，山歌和叫床混在一起。她甚至会一边干活一边唱山歌，越唱越湿，越湿越唱。被干到高潮她还在唱，唱到破音，破音里全是浪叫，山歌和叫床混在一起，她甚至会一边干活一边唱山歌，越唱越湿，越湿越唱，第二天她又恢复成那个大嗓门的山妹子。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿陆芷晴的男同学——女儿社恐她护得紧，看着女儿的男同学，护短的心里长出见不得光的念头。夜里想着那孩子，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来家里，她借机凑近，被他按在堂屋的木桌上。她一边被干一边想「这是芷晴的同学」，越禁忌越湿，淫水把木桌都打湿了。被干到高潮她嘴里还念叨着「芷晴……别进来」，下身夹得死紧。她甚至偷偷藏过那孩子用过的水杯，夜里抱着水杯闻，越想水越多。被按在堂屋的木桌上操，她一边被干一边想「这是芷晴的同学」，越禁忌越湿，淫水把木桌都打湿了，她甚至偷偷藏过那孩子用过的水杯，夜里抱着水杯闻，越想水越多。她夹着腿走回家，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "直爽破闸淫贱",
+    "内容": "白天大嗓门喊「来爬山去!」，夜里声音又软又黏「来嘛……姐教你爬别的山」。被操到高潮她大声浪叫，声音穿透房间，又野又骚，穴里一抽一抽地吸。她喜欢那种「越直爽越淫荡」的反差——白天嗓门越大，夜里叫得越浪。被干到失神她还在喊，喊得整栋楼都听得见，第二天邻居打趣她，她笑骂「爬你的山去!」，可逼里还夹着高潮的余韵。她甚至会故意在白天大声说骚话，越说越湿的余韵，她甚至会故意在白天大声说骚话，越说越湿。被操到腿软的她扶着树干喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液山泉",
+    "内容": "她最骚的幻想就是把精液当山泉水喝。她幻想在山里被人射进嘴里，含着精液咽下去，说「这是最甜的山泉」。她喜欢那种「把精液当泉水」的感觉——精液的腥味混着山间的清凉，越喝越上头。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿走下山，让精液在肚子里焐热。被干到高潮她嘴里还念叨着「喝下去……都喝下去」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进竹筒里，渴了喝一口，越喝越湿。被射在脸上她会用舌头舔干净，一滴不剩，被射进逼里她会夹着腿走下山，让精液在肚子里焐热，她甚至会收集精液装进竹筒里，渴了喝一口，越喝越湿，越喝越上头。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天干活的收都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "山歌群交",
+    "内容": "唱山歌的山妹子，最深的幻想就是一边唱山歌一边被一群人轮着操。她幻想自己在山歌节上唱到一半，被一群男人从台上拖下来，按在草地上轮着干——她一边唱一边被操，山歌越唱越露骨，最后唱成了浪叫，台下的人听着她的叫声，越听越兴奋。她喜欢那种「边唱边被操」的感觉，越被围观逼越紧，越被轮越兴奋。被干到高潮她浑身发抖，山歌和浪叫混在一起，她瘫在草地上喘，精液和淫水顺着大腿流。她甚至会故意在人多的时候唱山歌，等着被拖走，越看越湿。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。"
+   }
+  ]
+ },
+ "陈淑芬": {
+  "表": "精明干练，账本记得清清楚楚，见人先塞吃的。",
+  "里": "被嫌弃反而更想被碰——「我这么脏你还敢碰」的禁忌感让她兴奋。",
+  "色情点": [
+   {
+    "标题": "体垢臭脏",
+    "内容": "不勤洗漱，贴身衣物沤出酸骚味，她觉得「习惯了省水」。被嫌弃的时候她会愣住然后恼「嫌我味重? 那别碰!」，可恼完她更想被碰。想象有人不怕脏地操她，越脏她越湿，逼水顺着大腿流。她喜欢那种「越臭越有人要」的感觉——被人捏着鼻子操她，那人一边嫌弃一边往她逼里顶，她爽得直哭。被干到高潮她满身都是那股腌入味儿的骚味，她反而更兴奋，像一坛越陈越香的腌菜。她甚至会故意不洗澡，让那股味道腌进皮肤里，越腌越湿。被干到高潮她满身都是那股腌入味儿的骚味，她反而更兴奋，像一坛越陈越香的腌菜，她甚至会故意不洗澡，让那股味道腌进皮肤里，越腌越湿，越湿越舍不得洗。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "账本记录癖",
+    "内容": "退休会计什么都要记账，「今天用了多久」也记。她的堕落全在账本里，字迹越乱的地方越失控。账本被翻到她比被扒光还慌，可慌的时候她居然湿了，手指插进逼里。她喜欢那种「被记录的堕落」——账本里记着每次自慰的时间、次数、高潮数，她看着那些数字，逼里一阵阵发热。被干到高潮她嘴里还念叨着「记上……今天三次」，下身夹得死紧。她甚至会一边被操一边记账，记下「今日进账」，越记越湿。被干到高潮她嘴里还念叨着「记上……今天三次」，下身夹得死紧，她甚至会一边被操一边记账，记下「今日进账」，越记越湿，账本字迹越乱代表她越失控。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿陈雪梨的男同学——越界念头让她自己都啐自己一口，但啐完还想。夜里她闻着自己胳膊上的味道，想着那孩子的眼神，手指插进逼里狠抠。她幻想那孩子来家里吃饭，她借机凑近，身上的味道混着饭香，那孩子捏着鼻子躲，她反而更兴奋。被按在饭桌上操，她一边被干一边想「这是雪梨的同学」，越禁忌越湿，淫水把桌布都打湿了。她甚至偷偷藏过那孩子用过的筷子，夜里抱着筷子闻，越想水越多湿了，想水越多。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "黑化被嫌弃后",
+    "内容": "被嫌弃被皱眉，她会记在账本上——不是记仇，是记着那股被嫌弃的滋味，越记越上瘾。她轻声说「不干不净吃了没病」，说的时候眼神却越来越深，逼水顺着大腿流。她喜欢那种「越被嫌弃越兴奋」的感觉——被人皱着眉躲开，她反而更想要。她幻想被人按在巷子里操，那人一边嫌弃她的味道一边往她逼里顶，她爽得直叫。被干到高潮她嘴里还念叨着「嫌弃吧……越嫌我越湿」，下身夹得死紧。被干到高潮她嘴里还念叨着「嫌弃吧……越嫌我越湿」，下身夹得死紧，她喜欢那种「越被嫌弃越兴奋」的感觉，被人皱着眉躲开，她反而更想要，越要越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。她夹着腿走回里屋，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "肉便器",
+    "内容": "臭熟女最合适的用法就是当肉便器。洗不干净的脏穴正好用来装精装尿，她认了还认得很爽。被灌了一肚子精液她夹着穴不让漏，一路走一路漏，回家脱了裤子对着镜子扒开看，越脏越兴奋。精液混着汗酸腌了几天不洗，她自己闻着那股骚味，手就伸进穴里抠。她喜欢那种「被当容器」的感觉——被灌满、被糟践，她反而觉得痛快。被轮着灌到天亮，她浑身都是精液和骚味，第二天照样买菜做饭，像什么都没发生。她甚至会主动求着被灌，说「我这样的肉便器，就该装满」越兴奋，」，越说越湿。被操到腿软的她扶着桌角喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "公开羞辱",
+    "内容": "当众被骂「臭婊子」她当场就湿了。菜市场被人指着鼻子嫌弃，她赔着笑可穴里已经淌水。幻想被扒光拖到巷子里让邻居围观，逼被掰开任人看任人指，羞耻烧得她浑身发抖，可越羞耻穴越紧，被人插进去她爽得直哭。她喜欢那种「被当众糟践」的感觉——越是人多的地方被羞辱，她越兴奋。被按在菜市场的案板上操，她一边被干一边喊「别……有人看着」，可围观的人越多，她的逼越紧，淫水喷了一地。她甚至会故意穿得很邋遢出门，等着被人嫌弃，越被嫌弃越湿地，越湿。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天记账的手都是抖的，可逼里还夹着昨晚的余韵。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "精液记账",
+    "内容": "她最骚的幻想就是把精液记进账本。她幻想被人射进账本里，用精液当墨水记一笔「今日进账」，越记越湿。她喜欢那种「把精液当数据」的感觉——记录精液的量、次数，像做会计一样严谨，可越严谨逼越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，夜里记账的时候闻着那股味，越闻越湿。被干到高潮她手里还握着笔，嘴里念叨着「记上……都记上」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进瓶子里，账本旁边摆一排，越看闻越湿，她甚至会收集精液装进瓶子里，账本旁边摆一排，越看越湿，越看越兴奋。她瘫在饭桌上喘着，那股腌入味的骚味混着淫水味，逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "肉便器公开",
+    "内容": "臭熟女最骚的幻想就是在公开场合当肉便器。她幻想自己被扒光拖到巷子里，当众被灌满精液和尿液——邻居们围观着，看她夹着腿不让漏，一路走一路漏，回家对着镜子扒开看，越脏越兴奋。她喜欢那种「被当众当成容器」的感觉，越被围观越湿，越被糟践越兴奋。被干到高潮她浑身发抖，看着围观的人，逼里夹得死紧，淫水喷了一地。她甚至会故意穿得很邋遢出门，等着被人当成肉便器使用，越被使用越湿。她管自己叫「街坊共用的肉便器」，说「谁想灌都可以」，越说越湿。她瘫在巷子口喘着，看着围观的人散去，逼里还夹着灌进去的精液和尿液，她夹着腿走回家，一路走一路漏，第二天她又故意穿着那身邋遢衣服出门，等着被人当成肉便器再灌一次，越被糟践越兴奋，越兴奋越湿，淫水顺着大腿根一路淌到鞋里，她还舍不得擦。"
+   }
+  ]
+ },
+ "陈雪梨": {
+  "表": "罩着所有人，见不得人挨欺负，凶巴巴的大姐头。",
+  "里": "被摸头、被轻声哄一句，整个人就软了，嘴上「谁要你管」，逼里已经湿透。",
+  "色情点": [
+   {
+    "标题": "洁癖vs弄脏",
+    "内容": "一天洗两次澡，越干净越想被弄脏。幻想精心打理的头发被揉乱、白净的皮肤被留下掌印，那种「堕落感」让她又抗拒又湿。被按在床上操，她嘴上喊「不行……我刚洗的澡!」，逼却诚实地流水，第二天看着身上的印子又羞又爽。她喜欢那种「从洁净到堕落」的过程——头发乱了、床单皱了、身上全是印子，她看着镜子里那个狼狈的自己，反而比平时更兴奋。被干到高潮她一边喊「别弄脏我」一边夹紧腿，越喊逼越紧。她甚至会故意在洗完澡后等着被弄脏，越等越湿。被干到高潮她一边喊「别弄脏我」一边夹紧腿，越喊逼越紧，她甚至会故意在洗完澡后等着被弄脏，越等越湿，第二天看着身上的印子又羞又爽，越看越湿。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。"
+   },
+   {
+    "标题": "泳衣露出",
+    "内容": "沙滩穿最薄的白泳衣，湿水后透明，奶头和阴部轮廓全露出来，她明知还故意穿。幻想在沙滩上被人发现泳衣下的秘密，被按在沙子上操，越想越湿，海风一吹凉飕飕的，逼缩得死紧。她喜欢那种「湿水透明」的刺激——泳衣贴在身上，什么都遮不住，被人看光的那一刻她兴奋得发抖。被按在沙滩上操，她一边被干一边喊「别……有人看」，可越喊逼越紧，淫水把沙子都泡软了。她甚至会故意穿白色泳衣下水，让所有人都看见，越看越湿。被按在沙滩上操，她一边被干一边喊「别……有人看」，可越喊逼越紧，淫水把沙子都泡软了，她甚至会故意穿白色泳衣下水，让所有人都看见，越看越湿，越湿越兴奋。她夹着腿走回更衣室，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "同性",
+    "内容": "对队里那个安静的女生有隐秘的欲。更衣室换衣服时余光总往那边飘，看她脱衣服自己就湿了。夜里幻想被那女生从背后抱住、揉奶子、手指插进逼里，越想水越多。她觉得自己坏透了，可坏透了的感觉让她兴奋得发抖。她幻想那女生把她按在更衣室的凳子上，舔她的逼，她仰着脖子叫出声，淫水喷了一地。第二天见到那女生，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧。她甚至偷偷闻过那女生用过的泳衣，越闻越湿。被舔到高潮她浑身发抖，淫水喷了一地，第二天见到那女生，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧，她甚至偷偷闻过那女生用过的泳衣，越闻越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "占有黑化",
+    "内容": "照顾人照顾成习惯，里面藏着占有欲。见不得朋友和别人亲近，被冷落时表面笑「没事」，心里已经翻江倒海。夜里她抱着枕头轻声说「你是我的……只能是你的」，说完自己都吓一跳，逼却缩紧了。她幻想把对方锁在身边，日夜操她，把她操到眼里只有自己。被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧，淫水喷了一床。第二天她又恢复成那个温柔体贴的姑娘，可谁也不知道她心里有多疯。她甚至会偷偷翻看对方的手机，越看越湿。被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧，淫水喷了一床，她甚至会偷偷翻看对方的手机，越看越湿，第二天又恢复成那个温柔体贴的姑娘，可谁也不知道她心里有多疯。被操到腿软的她扶着泳池边喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液泳池",
+    "内容": "她最骚的幻想就是把精液倒进泳池里。她幻想自己泡在泳池里，被人从岸边射精，精液在水面上漂开，她伸出舌头去接。她喜欢那种「泡在精液里游泳」的感觉——精液的腥味混着氯水的味道，越泡越湿。被射在脸上她会用舌头舔干净，一滴不剩；被射进逼里她会夹着腿在水里游几圈，让精液在肚子里焐热。被干到高潮她趴在泳池边喘，嘴里念叨着「游……游不动了」，下身夹得死紧，淫水和水混在一起。被射在脸上她会用舌头舔干净，一滴不剩，被射进逼里她会夹着腿在水里游几圈，让精液在肚子里焐热，被干到高潮她趴在泳池边喘，嘴里念叨着「游……游不动了」，下身夹得死紧。高潮的余韵还没散，她的手指却已经又伸进泳裤，越想想得越湿，第二天训练的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "泳池公开",
+    "内容": "泳队的陈雪梨，最深的幻想就是在泳池里被当众操。她幻想自己在众目睽睽之下泡在泳池里，被人按在池边操——水花四溅，她的逼在透明的泳衣下若隐若现，所有人都看得见。她喜欢那种「泡在水里被围观」的感觉，越被看逼越紧，越被操越兴奋。被干到高潮她浑身发抖，抓着池边喘，淫水混着池水流开，她看着围观的人，逼里夹得死紧。她甚至会故意穿白色泳衣下水，等着被人按着操，越看越湿。她管自己叫「泳池里的母鱼」，说「游着游着就被操了」，越说越湿。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。她看着自己张开的腿和湿透的逼，越看越兴奋，手指插进去越抠越快，直到又高潮。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   }
+  ]
+ },
+ "韩美娜": {
+  "表": "欢快开朗，像太阳一样，跳起舞来全场瞩目。",
+  "里": "越多人看她越兴奋，幻想自己被围观、被加入，台上台下两个样。",
+  "色情点": [
+   {
+    "标题": "偷感",
+    "内容": "宿舍门不锁时最兴奋。室友脚步声在走廊响起，她心跳加速又紧张又期待——「差点被发现」的刺激让她头皮发麻。听见门把手转动她屏住呼吸，手还在裙底，湿得能听见声，越紧张越停不下来。她喜欢那种「偷情边缘」的刺激——门没锁、窗帘没拉、楼下有人经过，她一边怕一边抠，越怕逼越紧。被干到高潮她咬着枕头把叫声咽回去，外头室友还在聊天，她浑身发抖，淫水喷了一床。她甚至会故意在室友在的时候自慰，越危险越湿，越湿越停不下来。被干到高潮她咬着枕头把叫声咽回去，外头室友还在聊天，她浑身发抖，淫水喷了一床，她甚至会故意在室友在的时候自慰，越危险越湿，越湿越停不下来，越停不下来越兴奋。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。"
+   },
+   {
+    "标题": "多人幻想淫贱",
+    "内容": "幻想被围观、被加入、被一群人看着——越多人越亢奋。幻想自己在舞台上表演「另一种舞蹈」，台下的目光从欣赏变成贪婪。被看得越多她越兴奋，想象被一群人围着看自慰，她手都抖了，逼水顺着腿流。她喜欢那种「被注视」的感觉——聚光灯打在她身上，台下的人看着她张开的逼，她兴奋得发抖。被按在舞台上操，她一边被干一边喊「别拍……」，可闪光灯还在闪，她越喊逼越紧。她甚至会故意在排练的时候把门留条缝，等着被偷看，越看越湿。被按在舞台上操，她一边被干一边喊「别拍……」，可闪光灯还在闪，她越喊逼越紧，她甚至会故意在排练的时候把门留条缝，等着被偷看，越看越湿，越湿越兴奋。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。"
+   },
+   {
+    "标题": "舞台露出",
+    "内容": "台上是耀眼的长鼓舞者，台下幻想自己在舞台上被揭穿裙子下的秘密。她偷偷试过在幕布后换装故意留半扇门，想象有人推门进来，奶子和逼全被看光。她喜欢那种「台上台下两个样」的反差——台上是领舞，台下是淫兽。被按在幕布后操，她一边被干一边喊「有人会进来」，可越喊逼越紧，淫水把戏服都洇湿了。演出结束她红着脸谢幕，可谁也不知道她裙底湿了一片。她甚至会故意在谢幕的时候转圈，让裙摆飞起，越看越湿了，，越湿越兴奋。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "性瘾",
+    "内容": "需要定期释放不然跳舞都静不下心。练舞房锁上门，她对着镜子看着自己大汗淋漓的样子，手指插进逼里越摸越湿。她给自己找理由「练舞要保持状态」，可练舞房的地板她擦了一遍又一遍，淫水混着汗擦不干净。她喜欢那种「用练舞当借口」的感觉——明明在自慰，却说在练舞。被干到高潮她瘫在地板上喘，镜子里的自己浑身是汗和淫水，她看着反而更兴奋。她甚至会带着跳蛋练舞，遥控器握在手里，一边跳一边被震到高潮。被干到高潮她瘫在地板上喘，镜子里的自己浑身是汗和淫水，她看着反而更兴奋，她甚至会带着跳蛋练舞，遥控器握在手里，一边跳一边被震到高潮，越震越湿。她夹紧腿磨着床单，逼里一抽一抽地缩，想着今晚还能再来，越想想得越湿。高潮的余韵还没散，她的手指就又伸进裙底，想着那些画面，越摸越湿。"
+   },
+   {
+    "标题": "人尽可夫公交车",
+    "内容": "练完舞一身汗，她掰开逼就往地上一坐「快点，下一场还有人排队」。领舞的漂亮姑娘是全校公认的公交车——谁想上就上，器材室、看台后面、男厕所隔间，张腿就干。被插进去她爽得直叫「使劲儿，别停」，换了人也不停，穴里还夹着上一个的精。她只在乎插得够不够狠，人越多越兴奋，腿根湿得一塌糊涂。她喜欢那种「来者不拒」的感觉——被一个接一个地操，她数着人头，越数越兴奋。被干到天亮她瘫在地上，浑身都是精液，嘴里还念叨着「还有吗? 再来」。被插进去她爽得直叫「使劲儿，别停」，换了人也不停，穴里还夹着上一个的精，被干到天亮她瘫在地上，浑身都是精液，嘴里还念叨着「还有吗? 再来」，越说越湿。她夹着腿走回宿舍，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "轮奸群交",
+    "内容": "幻想自己被一群人按住轮着干，前穴后穴嘴全被占满。她喜欢那种「被当肉用」的感觉——前面被捅后面被堵嘴里塞着，喊都喊不出来，只能呜呜地吞。一个人干她她嫌不够，要三四根一起上，被干到翻白眼还在夹。群交完她瘫在地上，精液从穴口一股股往外流，她伸手往回塞「别浪费」。她喜欢那种「被彻底占满」的感觉——三个洞都被占着，她爽得直翻白眼。被轮着干到天亮，她浑身都是精液和淫水，第二天照样跳舞，只是腿有点软。她甚至会主动组织群交，说「人少了没意思」。被轮着干到天亮，她浑身都是精液和淫水，第二天照样跳舞，只是腿有点软，她甚至会主动组织群交，说「人少了没意思」，被干到翻白眼还在夹，群交完她瘫在地上，伸手往回塞精液。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "精盆",
+    "内容": "她管自己的逼叫「精盆」，说「跳舞的逼就是用来装精的」。被灌满她夹着腿在练舞房走几圈，让精液在肚子里晃荡，越晃越湿。被射在脸上她会用舌头舔干净，一滴不剩。被干到高潮她嘴里还念叨着「装满了……又装满了」，下身夹得死紧，淫水喷了一地。她甚至会在跳舞的时候夹着跳蛋，一边跳一边被震到高潮，精液混着淫水顺着大腿流，她还坚持跳完。被射在脸上她会用舌头舔干净，一滴不剩，被干到高潮她嘴里还念叨着「装满了……又装满了」，下身夹得死紧，淫水喷了一地，她甚至会在跳舞的时候夹着跳蛋，一边跳一边被震到高潮。高潮的余韵还没散，她的手指却已经又伸进短裤，越想想得越湿，第二天练舞的手都是抖的，可逼里还夹着昨晚的余韵。被操到腿软的她扶着把杆喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液舞鞋",
+    "内容": "她最骚的幻想就是把精液抹在舞鞋上。她幻想被人射在舞鞋里，穿着那双沾满精液的舞鞋跳舞，每跳一步都踩在精液上，越跳越湿。她喜欢那种「边跳舞边踩精液」的感觉——精液的腥味混着舞鞋的味道，越闻越上头。被射在脚上她会故意不洗，让那股腥味腌在脚趾缝里，夜里跳舞的时候闻着那股味，越闻越湿。被干到高潮她手里还握着舞鞋，嘴里念叨着「穿上……都穿上」，下身夹得死紧，淫水喷了一地。她甚至会故意把精液抹在舞鞋上，穿着那双沾满精液的舞鞋跳舞，每跳一步都踩在精液上，越跳越湿，被干到高潮她手里还握着舞鞋，嘴里念叨着「穿上……都穿上」，下身夹得死紧。她瘫在练舞房地板上喘着，镜子里的自己浑身是汗和淫水，那股味道让她逼里又一阵阵发紧，想着明天还能这样，越想想得越湿。"
+   }
+  ]
+ },
+ "黎嘉欣": {
+  "表": "傲娇毒舌，管所有人叫「喂」，谁都入不了她法眼。",
+  "里": "夜里锁上门，把最喜欢那条内裤贴在脸上闻，手已经伸进裙底，又凶又软。",
+  "色情点": [
+   {
+    "标题": "内裤恋物",
+    "内容": "她收集「有味道的」内裤——自己的、好奇对象的，藏在点心盒里。摸到就兴奋，闻一下就能湿。她偷偷闻过那个人晾在阳台的校服，闻完脸红得能滴血，一边骂自己「黎嘉欣你疯了」，一边忍不住把校服贴在下身磨，磨到高潮。她喜欢那种「偷来的味道」——别人的内裤、校服、毛巾，上面残留的气息像一只手揉着她的逼，她一边闻一边抠。被干到高潮她咬着那条内裤，淫水喷了一床，内裤上全是她的味道，她反而更舍不得还。她甚至会偷偷换走对方的袜子，藏在点心盒里，越藏越湿。被干到高潮她咬着那条内裤，淫水喷了一床，内裤上全是她的味道，她反而更舍不得还，她甚至会偷偷换走对方的袜子，藏在点心盒里，越藏越湿，越湿越藏。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。"
+   },
+   {
+    "标题": "偷感",
+    "内容": "偷偷摸摸的行为让她兴奋。喜欢隔着门缝听外面动静，心跳加速；喜欢在人堆里偷偷碰那个人的手，然后若无其事转头。夜里她想着「差点被发现」的场景，手指插进逼里，紧张得水直流。她喜欢那种「偷情边缘」的刺激——门没锁、窗帘没拉、楼下有人经过，她一边怕一边抠，越怕逼越紧。被干到高潮她咬着枕头把叫声咽回去，外头还有人聊天，她浑身发抖，淫水喷了一床。她甚至会故意在课堂上偷摸自己，越危险越湿。被干到高潮她咬着枕头把叫声咽回去，外头还有人聊天，她浑身发抖，淫水喷了一床，她甚至会故意在课堂上偷摸自己，越危险越湿，越湿越停不下来，越停不下来越兴奋。她夹着腿走回房间，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。"
+   },
+   {
+    "标题": "傲娇破闸淫贱",
+    "内容": "平时傲得不行，破闸后完全换一个人。她跪在床上掰开逼「本小姐……本小姐今天心情好，就赏你一次」，声音又软又颤。被操到高潮她还要嘴硬「轻点! 本小姐的腰!」，喊完又夹紧腿求「再来」。前后判若两人，穴里一抽一抽地吸。她喜欢那种「傲娇崩塌」的反差——平时高高在上的大小姐，被操到失神的时候比谁都骚。被干到高潮她终于不嘴硬了，只剩下浪叫和求饶，第二天她又恢复成那个傲娇的姑娘，可谁也不知道她夜里有多浪。她甚至会故意摆架子再被按倒，越反差越湿浪，她甚至会故意摆架子再被按倒，越反差越湿。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。那股快感烧得她浑身发烫，手指插进逼里越抠越深，越想越湿，越湿越停不下来。"
+   },
+   {
+    "标题": "同性占有",
+    "内容": "对从小一起长大的好姐妹有说不清的欲。看见她跟别人亲近，心里酸得冒泡。夜里幻想把她按在点心盒边，闻她身上的味道，手指伸进逼里想着她的脸——「你只能是我的人，别人休想」。她幻想那姐妹把她按在床上，舔她的逼，她仰着脖子叫出声，淫水喷了一床。被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧。第二天见到那姐妹，她眼神躲闪，脸烧得通红，可逼里却一阵阵发紧。她甚至会偷偷闻那姐妹用过的毛巾，越闻越湿。被干到高潮她嘴里还念叨着「你是我的」，下身夹得死紧，她甚至会偷偷闻那姐妹用过的毛巾，越闻越湿，第二天见到那姐妹，她眼神躲闪，可逼里却一阵阵发紧。被操到腿软的她扶着桌角喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液点心",
+    "内容": "她最骚的幻想就是把精液做成点心。她幻想被人射进面粉里，揉进面团，烤成饼干，吃下去的时候精液的腥味混着奶香，越吃越湿。她喜欢那种「把精液当食材」的感觉——精液的腥味混着点心的甜香，越吃越上头。被射在手上她会故意不洗，让那股腥味腌在指缝里，做点心的时候闻着那股味，越闻越湿。被干到高潮她嘴里还念叨着「烤进去……都烤进去」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进点心盒里，饿了吃一口，越吃越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，做点心的时候闻着那股味，越闻越湿，被干到高潮她嘴里还念叨着「烤进去……都烤进去」，下身夹得死紧，淫水喷了一地。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天做点心的手都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "偷拍威胁",
+    "内容": "傲娇的黎嘉欣，最怕的就是偷拍，可越怕越兴奋。她幻想自己换衣服的时候被人偷拍，那个偷拍的人用照片要挟她「不想被发出去就乖乖听话」。她一边哭一边被按着操，心里又怕又爽，逼却诚实地夹得死紧。她幻想那个人把照片给她看，她看着照片里自己张开的腿，越看越湿。被干到高潮她哭着求「别发出去……求你」，可下身却夹得死紧，淫水喷了一地。她甚至会故意留下破绽让人偷拍，越危险越湿。她管那个偷拍她的人叫「主人」，说「你手里的把柄就是我的一切」，越说越湿。她伸手沾了一点淫水放进嘴里舔，那股味道让她逼里一阵阵发紧，越舔越湿。被操到腿软的她瘫在那里喘，可逼里还在一下一下地缩，想着明晚还能再来一次。那股腥甜味混着淫水味飘在空气里，她闻着闻着又湿了，手指忍不住又伸进去。"
+   }
+  ]
+ },
+ "黎桂芳": {
+  "表": "温柔端庄，做点心的手艺一绝，话不多。",
+  "里": "被点破卫生问题会羞恼，一羞恼就乱，乱了反而缴械得干脆。",
+  "色情点": [
+   {
+    "标题": "酸臭",
+    "内容": "节俭到抠，身上的味道腌得又浓又冲。被点破「身上有味道」她会羞恼。她喜欢「被嫌弃又忍不住凑近」的拉扯——嘴上说「莫闻」，心里却盼着被闻。想象有人不怕臭地操她，越嫌弃她越湿，逼水顺着大腿流。她喜欢那种「越臭越有人要」的感觉——被人捏着鼻子操她，那人一边嫌弃一边往她逼里顶，她爽得直哭。被干到高潮她满身都是那股腌入味儿的味道，她反而更兴奋。她甚至会故意不洗澡，让那股味道腌进皮肤里，越腌越湿，越湿越舍不得洗。被干到高潮她满身都是那股腌入味儿的味道，她反而更兴奋，她甚至会故意不洗澡，让那股味道腌进皮肤里，越腌越湿，越湿越舍不得洗，越舍不得洗越兴奋。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。"
+   },
+   {
+    "标题": "点心",
+    "内容": "做点心是一绝。被夸「这只虾饺包得真靓」她乐得眼睛弯弯，乐着乐着手就慢了。她喜欢「被人一口口吃掉心意」的感觉，被夸着夸着逼里就湿了。她幻想被人按在点心案板边操，面粉簌簌地落，淫水和面粉糊在一起。被干到高潮她满手都是面粉和淫水，她看着自己狼狈的样子，反而笑得更浪。第二天她照样早起来茶楼蒸点心，可谁也不知道她夜里有多骚。她甚至会故意在揉面的时候想被操的画面，越想想得越湿，面团都被她揉成了淫水的混合物。被干到高潮她满手都是面粉和淫水，她看着自己狼狈的样子，反而笑得更浪，她甚至会故意在揉面的时候想被操的画面，越想想得越湿，面团都被她揉成了淫水的混合物。她夹着腿走回里屋，淫水顺着大腿根往下淌，越记越湿，越想越停不下来。"
+   },
+   {
+    "标题": "母女禁忌",
+    "内容": "女儿黎嘉欣的男同学——女儿傲娇她端庄，看着女儿的男同学来家里吃点心，她端碟子的手会顿一下。夜里想着那孩子，手指插进逼里狠抠，越禁忌越湿。她幻想那孩子来茶楼喝早茶，她借机凑近，被他按在包间的茶桌上。她一边被干一边想「这是嘉欣的同学」，越禁忌越湿，淫水把茶桌都打湿了。被干到高潮她嘴里还念叨着「嘉欣……别进来」，下身夹得死紧。她甚至偷偷藏过那孩子用过的茶杯，夜里抱着杯子闻，越想水越多。被干到高潮她嘴里还念叨着「嘉欣……别进来」，下身夹得死紧，她甚至偷偷藏过那孩子用过的茶杯，夜里抱着杯子闻，越想水越多，第二天见到那孩子，逼里一阵阵发紧。第二天她看着镜子里那个脸红的自己，逼里却还夹着昨晚的余韵，她知道今晚她还会忍不住，越想越湿。"
+   },
+   {
+    "标题": "节俭受向SM",
+    "内容": "一辈子省吃俭用，情欲里也藏着「舍不得」——可越舍不得越容易在某一刻彻底放开。被命令「把腿张开」，她犹豫一下还是张开了，逼缩得死紧，淫水顺着大腿流。她喜欢那种「省了一辈子，最后全交出去」的感觉——舍不得钱、舍不得吃、舍不得穿，可被人按着操的时候，她什么都舍得。被干到高潮她浑身发抖，嘴里还念叨着「都给你……都给你」，下身夹得死紧。她甚至会被人命令跪着，她犹豫一下还是跪了，越跪越湿。被干到高潮她浑身发抖，嘴里还念叨着「都给你……都给你」，下身夹得死紧，她甚至会被人命令跪着，她犹豫一下还是跪了，越跪越湿，越湿越乖，越乖越湿。被操到腿软的她扶着灶台喘，可逼里还在一下一下地缩，她忍不住夹紧腿，想着今晚还能再来一次，越想越湿。"
+   },
+   {
+    "标题": "精液蒸笼",
+    "内容": "她最骚的幻想就是把精液蒸进点心里。她幻想被人射进蒸笼里，精液混着水汽把点心蒸熟，那股腥味混着面香，越闻越上头。她喜欢那种「把精液当蒸汽」的感觉——蒸笼里的精液味飘满整个厨房，她一边蒸一边湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，蒸点心的时候闻着那股味，越闻越湿。被干到高潮她嘴里还念叨着「蒸进去……都蒸进去」，下身夹得死紧，淫水喷了一地。她甚至会收集精液装进蒸笼里，蒸出来的点心带着那股腥味，越吃越湿。被射在手上她会故意不洗，让那股腥味腌在指缝里，蒸点心的时候闻着那股味，越闻越湿，她甚至会收集精液装进蒸笼里，蒸出来的点心带着那股腥味，越吃越湿，越吃越上头。高潮的余韵还没散，她的手指却已经又伸进裙底，越想想得越湿，第二天蒸点心的收都是抖的，可逼里还夹着昨晚的余韵。"
+   },
+   {
+    "标题": "蒸笼精奴",
+    "内容": "点心师傅最骚的幻想就是把精液蒸进点心，当个蒸笼精奴。她幻想自己被人按在蒸笼边操，操完那人射进蒸笼里，精液混着水汽把点心蒸熟，那股腥味混着面香飘满厨房。她喜欢那种「把精液蒸进点心」的感觉，越蒸越湿，越闻越兴奋。被干到高潮她浑身发抖，蒸笼里的水汽烫得她脸颊发红，她端着那些点心端给客人，看着客人吃下去，逼里一阵阵发紧。她甚至会专门收集精液装进蒸笼里，蒸出来的点心带着那股腥味，她一边蒸一边湿，淫水顺着大腿流到地上。第二天她看着镜子里脸红的自己，逼里还夹着昨晚的余韵，忍不住又把手伸下去。她知道自己的身体已经彻底记住这种感觉了，越记越湿，越想越停不下来。那股又羞又想要的感觉烧得她喘不过气，她夹着腿，淫水顺着大腿根往下淌。"
+   }
+  ]
+ }
+};
+var DEFAULT_STAT={
+  时间:{日期:'2026年9月1日',星期:'星期一',时段:'上午'},
+  玩家:{学业总分:420,各科:{语文:100,数学:85,英语:95,物理:70,化学:80,生物:90},技能:{螺旋:{等级:1,经验:0},颗粒:{等级:1,经验:0},敏感度加倍:{等级:1,经验:0},硬度翻倍:{等级:1,经验:0},热量翻倍:{等级:1,经验:0},次数翻倍:{等级:1,经验:0},频率翻倍:{等级:1,经验:0}},体力:80,性欲:30,勃起度:10,今日胜场:0,今日败场:0,累计缴械:0,累计被缴械:0},
+  排班:{今日场次:{},当前战斗目标:'',战斗状态:'未开始'},
+  女性角色:{}
+};
+function deepMergeStat(dst,src){
+  if(!src||typeof src!=='object')return dst;
+  var out={};try{out=JSON.parse(JSON.stringify(dst||{}))}catch(e){out={}}
+  for(var k in src){
+    if(!Object.prototype.hasOwnProperty.call(src,k))continue;
+    var sv=src[k],dv=out[k];
+    if(sv&&typeof sv==='object'&&!Array.isArray(sv)&&dv&&typeof dv==='object'&&!Array.isArray(dv)){out[k]=deepMergeStat(dv,sv)}
+    else{out[k]=sv}
+  }
+  return out;
+}
+// 读变量用【最新楼】（skill 读取降级链：最新assistant楼/latest 优先——技能升级/战斗结算都发生在最新楼，状态栏在任何楼层都要能读到）
+// 写回仍用 getMessageOption()（自己楼层，见 ensureSchedule/advancePhysio——写回不能改 latest 会破坏目标楼层）
+function getReadOption(){return{type:'message',message_id:'latest'}}
+function readStatData(){
+  var stat=null;
+  // ★第一优先：战斗系统.js（TH 脚本）中继到主页面的最新 stat_data——消息环境拿不到 TH API 时这是唯一可靠通路（skill 坑#27：常驻脚本捕获→全局中继→界面纯读）
+  try{var relay=(window.__ydsLatestStat&&window.__ydsLatestStat.stat_data)?window.__ydsLatestStat.stat_data:null;if(relay&&hasData(relay))stat=relay}catch(e){}
+  if(!stat){try{var Mvu2=getMvu();if(Mvu2&&typeof Mvu2.getMvuData==='function'){stat=pickStatData(Mvu2.getMvuData(getReadOption()))}}catch(e){}}
+  if(!stat){try{var gv=pickHostFn('getVariables');if(gv){stat=pickStatData(gv(getReadOption()))}}catch(e){}}
+  if(!stat&&cachedStatFromBridge&&hasData(cachedStatFromBridge))stat=cachedStatFromBridge;
+  if(!stat){var embedded=parseEmbeddedStat();if(embedded)stat=embedded}
+  if(!stat){try{var gav=pickHostFn('getAllVariables');if(gav){stat=pickStatData(gav())}}catch(e){}}
+  return deepMergeStat(DEFAULT_STAT,stat||{});
+}
+function requestStatFromBridge(){
+  var mesId=resolveMessageId();var payload={type:'yds-mvu-stat-request',messageId:mesId};
+  for(var i=0;i<TH_HOSTS.length;i++){try{TH_HOSTS[i].postMessage(payload,'*')}catch(e){}}
+}
+function waitForReadableStat(timeoutMs,cb){
+  timeoutMs=timeoutMs||6000;var started=Date.now();
+  (function poll(){
+    var stat=readStatData();
+    if(Object.keys(stat).length>0){cb(stat);return}
+    requestStatFromBridge();
+    if(Date.now()-started<timeoutMs){setTimeout(poll,180)}else{cb(readStatData())}
+  })();
+}
+
+/* 工具 */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function num(v,d){if(Array.isArray(v))v=v[0];v=parseFloat(v);d=(d===undefined)?0:d;return isNaN(v)?d:v}
+function pct(v,max){v=num(v,0);max=num(max,100);return Math.max(0,Math.min(100,max>0?(v/max)*100:0))}
+function clamp(v,min,max){v=num(v,0);return Math.max(min,Math.min(max,v))}
+function kv(k,v,cls){return '<div class="d-line"><span>'+k+'</span><b'+(cls?' style="color:'+cls+'"':'')+'>'+esc(v)+'</b></div>'}
+function bar(label,val,max,color){
+  max=max||100;var v=clamp(val,0,max);
+  var c=color||(v>=80?'linear-gradient(90deg,#e0525e,#ff8a95)':v>=40?'linear-gradient(90deg,#d9a441,#e8c77a)':'linear-gradient(90deg,#6aa8d8,#a8d4f0)');
+  return '<div class="hp-row" style="margin-top:6px"><span class="hp-label">'+label+'</span><div class="hp-track"><div class="hp-fill'+(v<=15?' hp-low':'')+'" style="width:'+pct(v,max)+'%;background:'+c+'"></div></div><span class="hp-num">'+v+'/'+max+'</span></div>';
+}
+function miniBar(v,color){return '<span class="mini-bar"><i style="width:'+clamp(v,0,100)+'%;background:'+color+'"></i></span>'}
+function psyBar(v,color){return '<i style="width:'+clamp(v,0,100)+'%;background:'+color+'"></i>'}
+function secTitle(t,nsfw){return '<div class="d-sec-title">'+t+(nsfw?' <span class="nsfw-tag">NSFW</span>':'')+'</div>'}
+function obj(o){return(o&&typeof o==='object')?o:{}}
+function skillDesc(key){
+  var m={
+    螺旋:'效果 Lv×1.5；每回合叠加麻痒点，麻痒≥5 触发她失神 1 回合（防守值-5）',
+    颗粒:'效果 Lv×1；刺激加深，她本回合减伤-1/回合',
+    敏感度加倍:'她敏感度×(1+Lv×0.1)，Lv10=×2；配合麻痒类效果翻倍',
+    硬度翻倍:'效果 Lv×1.2；她的"研磨/挤压"类减伤减半',
+    热量翻倍:'效果 Lv×1.5；对寒系名器（雪窦/寒玉/雪润）效果×2，过热失神概率+10%',
+    次数翻倍:'连击次数×(1+Lv×0.2)；连击触发"失神"判定',
+    频率翻倍:'频率 Lv×10次/分；超过承受阈值时她每回合减伤-1'
+  };
+  return m[key]||'';
+}
+function shortRole(identity){
+  return String(identity||'').replace(/人大附中高三精英班|陪读妈妈|（.+?）/g,'').replace(/学生/g,'学生').slice(0,8);
+}
+function stageText(v){
+  v=num(v,0);
+  if(v>=100)return '俘虏';
+  if(v>=80)return '阶段五 · 全然臣服前夜';
+  if(v>=60)return '阶段四 · 投降边缘';
+  if(v>=40)return '阶段三 · 沉沦与依赖';
+  if(v>=20)return '阶段二 · 动摇与试探';
+  return '阶段一 · 初识与抗拒';
+}
+function hpColor(v){
+  v=num(v,0);
+  return v>=80?'linear-gradient(90deg,#e0525e,#ff8a95)':v>=40?'linear-gradient(90deg,#d9a441,#e8c77a)':'linear-gradient(90deg,#6aa8d8,#a8d4f0)';
+}
+function battleStateText(st){
+  if(st==='进行中')return '⚔ 战斗进行中：每回合后输出【战斗结算】块，按剩余防守值描写她的反应';
+  if(st==='已结算')return '✓ 本场已结算，等待下一场排班';
+  return '○ 未开始：等待拉入';
+}
+
+var State={data:{},loading:true,view:'roster',detail:'',selSkills:[],actionText:'',rosterFilter:'全部'};
+
+/* 主题切换(dark/glass/light,localStorage 持久化) */
+function ydsApplyTheme(t){
+  if(!t)t='dark';
+  var roots=document.querySelectorAll('#sb-root');
+  for(var i=0;i<roots.length;i++)roots[i].setAttribute('data-theme',t);
+  try{localStorage.setItem('yds_theme',t)}catch(e){}
+  if(typeof State!=='undefined')State.theme=t;
+}
+function ydsInitTheme(){var t='dark';try{t=localStorage.getItem('yds_theme')||'dark'}catch(e){}ydsApplyTheme(t)}
+var YDS_THEMES=['dark','glass','light','contrast','pink','blue','gold'];
+var YDS_SB_BGS=['static','aurora','rainbow'];
+function ydsSbGetBg(){var b='static';try{b=localStorage.getItem('yds_bg')||'static'}catch(e){}return b}
+function ydsSbApplyBg(b){
+  try{localStorage.setItem('yds_bg',b)}catch(e){}
+  var roots=document.querySelectorAll('#sb-root');
+  for(var i=0;i<roots.length;i++)roots[i].setAttribute('data-bg',b);
+  var el=document.getElementById('yds-sb-bg-label');if(el)el.textContent=ydsSbBgLabel();
+}
+function ydsSbToggleBg(){var cur=ydsSbGetBg();var idx=YDS_SB_BGS.indexOf(cur);var next=YDS_SB_BGS[(idx+1)%YDS_SB_BGS.length];ydsSbApplyBg(next)}
+function ydsSbBgLabel(){var m={static:'静态',aurora:'极光',rainbow:'彩虹'};return m[ydsSbGetBg()]||'静态'}
+function ydsThemeLabel(){var cur=(typeof State!=='undefined'&&State.theme)?State.theme:(typeof ydsGetTheme==='function'?ydsGetTheme():'dark');var map={dark:'深色',light:'浅色',glass:'磨砂',contrast:'强对比',pink:'粉色',blue:'蓝色',gold:'金色'};return map[cur]||cur}
+function ydsUpdateThemeLabel(){var el=document.getElementById('yds-sb-theme-label');if(el)el.textContent='：'+ydsThemeLabel()}
+function ydsToggleTheme(){var root=document.getElementById('sb-root');var cur=root?root.getAttribute('data-theme'):null;if(YDS_THEMES.indexOf(cur)<0)cur='dark';var idx=YDS_THEMES.indexOf(cur);var next=YDS_THEMES[(idx+1)%YDS_THEMES.length];ydsApplyTheme(next);ydsUpdateThemeLabel();if(typeof render==='function')render()}
+
+try{ydsInitTheme();ydsUpdateThemeLabel();ydsSbApplyBg(ydsSbGetBg())}catch(e){try{console.error('theme',e)}catch(_e2){}}
+
+function S(){return State.data}
+
+/* 技能选项（本场选择 1~3 个） */
+function renderSkillSel(){
+  var d=S();var sk=obj(obj(d.玩家).技能);
+  var keys=Object.keys(sk);
+  var html='<div class="skill-sel">';
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];var v=obj(sk[k]);
+    var sel=State.selSkills.indexOf(k)>=0;
+    var dis=!sel&&State.selSkills.length>=3;
+    html+='<div class="skill-opt'+(sel?' sel':'')+(dis?' off':'')+'" data-act="toggle-skill" data-skill="'+esc(k)+'"><span>'+esc(k)+'</span> <span class="s-lv">Lv'+esc(v.等级||0)+'</span>'+(sel?' ✓':'')+'</div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+/* 战斗交互区：只读展示，引导去战斗面板操作 */
+function renderBattleCtrl(){
+  var d=S();var tgt=d.排班?d.排班.当前战斗目标:'';
+  if(!tgt)return '';
+  var st=d.排班?d.排班.战斗状态:'未开始';
+  var pb=obj(obj(d.排班).战斗);
+  var pDef=num(pb.主角防守值,0),pMax=num(pb.主角防守值上限,96);
+  var rounds=num(pb.回合,0);
+  var tl=pb.目标列表;
+  var isMulti=!!(tl&&tl.length>1);
+  var herBars='';
+  if(isMulti){
+    // 多人：逐个显示每个目标的实时防守值（持久化在 目标列表[i]，字符串目标兜底用档案上限）
+    for(var i=0;i<tl.length;i++){
+      var t=tl[i];
+      var nm=(typeof t==='string')?t:t.名;
+      var c2=obj((d.女性角色||{})[nm]);
+      var hd=num(typeof t==='string'?0:t.防守值,0);
+      var hm2=num(typeof t==='string'?0:t.防守值上限,0);
+      if(!hm2){
+        var _id=String(obj(c2).身份||'');var _b=52;
+        if(_id.indexOf('老师')>=0||_id.indexOf('班主任')>=0)_b=60;
+        else if(_id.indexOf('陪读妈妈')>=0||_id.indexOf('母亲')>=0)_b=66;
+        hm2=_b+Math.round(num(c2.名器防御,6)*2)+num(obj(obj(c2.技能)).等级,1)*4;
+        if(!hd)hd=hm2;
+      }
+      herBars+=bar(nm+' 防守值',hd,hm2,hpColor(Math.max(0,hm2-hd)));
+    }
+  }else{
+    var hDef=num(pb.她防守值,0),hMax=num(pb.她防守值上限,44);
+    herBars=bar('她防守值',hDef,hMax,hpColor(Math.max(0,hMax-hDef)));
+  }
+  return '<div class="battle-ctrl">'
+    +'<div class="battle-ctrl-title"><span>⚡ 战斗进行中</span><span class="rounds">已进行 '+rounds+' 回合</span></div>'
+    +herBars
+    +bar('主角防守值',pDef,pMax,hpColor(pDef))
+    +playerBattleDebuffs(d,pb)
+    +'<div class="battle-tip">选择技能逐回合进攻请使用【战斗面板】（战斗消息中的 BattleUI 面板），一方防守值归零即分出胜负，结果自动生成。</div>'
+    +'</div>';
+}
+
+/* 战斗中的主角负面状态（麻痒/减益BUFF/不应期倍率/性欲不足） */
+function playerBattleDebuffs(d,pb){
+  var p=obj(d.玩家);
+  var tags='';
+  var myMao=num(pb.主角麻痒点,0);
+  if(myMao>0)tags+='<span class="ps-item" style="color:var(--c-powder)">😵 主角麻痒 '+myMao+(myMao>=4?'（本回合伤害减半）':'')+'</span>';
+  var buf=obj(pb.主角BUFF);
+  if(buf){
+    for(var k in buf){
+      var b=buf[k];
+      if(!b||typeof b!=='object')continue;
+      var v=num(b.效果值,0);
+      var col=v<0?'var(--c-danger)':'var(--c-info)';
+      tags+='<span class="ps-item" style="color:'+col+'">'+(v<0?'⬇':'⬆')+' '+esc(k)+(v?(' '+v):'')+' · '+num(b.剩余回合,0)+'回合</span>';
+    }
+  }
+  var ph=obj(p.生理);
+  var ejCd=num(ph.射精冷却剩余,0);
+  if(ejCd>0)tags+='<span class="ps-item" style="color:var(--c-warn)">🔒 不应期（射精后）· 伤害×'+(ejCd>=3?'0.6':(ejCd===2?'0.75':'0.9'))+'</span>';
+  if(num(p.性欲,0)<20&&num(p.勃起度,0)<=0)tags+='<span class="ps-item" style="color:var(--c-danger)">⛔ 无法勃起（被动承受中）</span>';
+  if(num(p.体力,0)<30)tags+='<span class="ps-item" style="color:var(--c-danger)">🥵 体力透支</span>';
+  return tags?'<div class="battle-debuffs">'+tags+'</div>':'';
+}
+
+/* 战斗面板 */
+function renderBattle(){
+  var d=S();var tgt=d.排班?d.排班.当前战斗目标:'';
+  if(!tgt)return '';
+  var c=obj((d.女性角色||{})[tgt]);
+  var st=d.排班?d.排班.战斗状态:'未开始';
+  return '<div class="battle-wrap"><div class="battle">'
+    +'<div class="battle-head"><span class="battle-name">'+esc(c.身份||'')+' · '+esc(tgt)+'</span>'
+    +'<span class="battle-tag">'+esc(stageText(c.缴械值))+'</span>'
+    +(c.是否俘虏?'<span class="battle-tag">俘虏</span>':'')
+    +'</div>'
+    +bar('缴械值',c.缴械值,100,hpColor(c.缴械值))
+    +'<div class="battle-grid">'
+    +'<span>名器 <b style="color:var(--c-powder)">'+esc(c.名器||'—')+'</b></span>'
+    +'<span>技能 <b style="color:var(--c-gold)">'+esc((obj(c.技能).名)||'—')+'</b> Lv'+esc(obj(c.技能).等级||0)+'</span>'
+    +'<span>能力 忍'+esc(obj(obj(c.能力值)).忍耐||0)+' 持'+esc(obj(obj(c.能力值)).持久||0)+' 攻'+esc(obj(obj(c.能力值)).反攻||0)+'</span>'
+    +'<span>欲望积压 <b style="color:'+(num(c.欲望积压,0)>=60?'var(--c-danger)':'var(--c-text)')+'">'+esc(c.欲望积压||0)+'</b></span>'
+    +'<span>精神状态 <b style="color:var(--c-warn)">'+esc(obj(obj(c.心理状态)).精神状态||'—')+'</b></span>'
+    +'<span>心声 <i style="color:var(--c-dim)">'+esc(c.心声||'…')+'</i></span>'
+    +'</div>'
+    +'<div class="voice-box"><span class="vl">💭 她此刻的想法</span>'+esc(c.心声||'（沉默）')+'</div>'
+    +'<div class="battle-state '+esc(st)+'">'+esc(battleStateText(st))+'</div>'
+    +'</div>'
+    +renderBattleCtrl()
+    +'</div>';
+}
+
+/* 顶栏 */
+function renderHeader(){
+  var d=S();var t=obj(d.时间),p=obj(d.玩家);
+  return '<div class="hd">'
+    +'<span class="hi"><span class="hl">日期</span><span class="hv">'+esc(t.日期||'')+' '+esc(t.星期||'')+'</span></span>'
+    +'<span class="hi"><span class="hl">时段</span><span class="hv gold">'+esc(t.时段||'')+'</span></span>'
+    +'<span class="hi"><span class="hl">学业</span><span class="hv accent">'+esc(p.学业总分||0)+'/750</span>'
+    +'<span class="hl">距清华 '+esc(Math.max(0,700-num(p.学业总分,0)))+'</span></span>'
+    +'<span class="hi"><span class="hl">战绩</span><span class="hv succ">胜'+esc(p.今日胜场||0)+'</span>'
+    +'<span class="hv danger">败'+esc(p.今日败场||0)+'</span>'
+    +'<span class="hl">缴械'+esc(p.累计缴械||0)+'/被'+esc(p.累计被缴械||0)+'</span></span>'
+    +'<span class="hi"><span class="hl">体力</span>'+miniBar(p.体力,'#59c98d')+'<b class="mini-num">'+num(p.体力,0)+'</b>'
+    +'<span class="hl">性欲</span>'+miniBar(p.性欲,'#e0525e')+'<b class="mini-num">'+num(p.性欲,0)+'</b>'
+    +'<span class="hl">勃起</span>'+miniBar(p.勃起度,'#d9a441')+'<b class="mini-num">'+num(p.勃起度,0)+'</b>'
+    +playerPhysioTags(p)
+    +'<span class="bg-btn" data-act="bg" title="切换背景：静态/极光/彩虹">🌈 <span id="yds-sb-bg-label">静态</span></span><span class="theme-btn" data-act="theme" title="切换主题：深色/浅色/磨砂/强对比/粉色/蓝色/金色">🎨 主题<span id="yds-sb-theme-label"></span></span></span>'
+    +'</div>';
+}
+
+/* 她的道具栏渲染 */
+function playerPhysioTags(p){
+  var ph=obj(p.生理);
+  var ejCd=num(ph.射精冷却剩余,0);
+  var ejCnt=num(ph.今日射精次数,0);
+  var tags='';
+  // 不应期（射精冷却）：日常不按回合计，只显示状态与效果（数值恢复看性欲/体力/跨日）
+  if(ejCd>0){tags+='<span class="ps-item" style="color:var(--c-warn)">🔒 不应期（射精后）：伤害×'+(ejCd>=3?'0.6':(ejCd===2?'0.75':'0.9'))+' · 勃起上限减半</span>';}
+  // 今日射精次数
+  tags+='<span class="ps-item" style="color:var(--c-dim)">💦 今日射精 '+ejCnt+' 次</span>';
+  // 完全无法勃起（性欲<20 且勃起0）——硬限制标记
+  if(num(p.性欲,0)<20&&num(p.勃起度,0)<=0){tags+='<span class="ps-item" style="color:var(--c-danger)">⛔ 性欲不足·无法勃起（主动开战被拒；被动被拉入=被动承受）</span>';}
+  else if(num(p.性欲,0)<40){tags+='<span class="ps-item" style="color:var(--c-warn)">⚠️ 勉强（性欲'+num(p.性欲,0)+'，勃起上限40）</span>';}
+  // 体力透支
+  if(num(p.体力,0)<30){tags+='<span class="ps-item" style="color:var(--c-danger)">🥵 体力透支（<30，战斗力-50%）</span>';}
+  return tags?'<span class="ps">'+tags+'</span>':'';
+}
+/* 固定档案读取（YDS_FIXED_PROFILE 硬编码表） */
+function profileOf(name){return (typeof YDS_FIXED_PROFILE==='object'&&YDS_FIXED_PROFILE)?(YDS_FIXED_PROFILE[name]||{}):{};}
+function baseProfileText(name){
+  var a=profileOf(name);
+  var html='';
+  if(a.年龄)html+=kv('年龄',a.年龄);
+  if(a.家乡)html+=kv('家乡',a.家乡);
+  if(a.家庭)html+=kv('家庭',a.家庭);
+  if(a.与user关系)html+=kv('与 <user> 的关系',a.与user关系);
+  return html;
+}
+function profileText(name){
+  var a=profileOf(name);
+  var html='';
+  // 性格反差（表/里）——表=正常色、里=粉色强调，最显眼的位置
+  var sx=(typeof YDS_FIXED_SEX==='object'&&YDS_FIXED_SEX)?(YDS_FIXED_SEX[name]||{}):{};
+  if(sx.表||sx.里){
+    html+='<div class="psy-row" style="margin-bottom:6px"><span class="psy" style="color:var(--c-gold)">🎭 性格反差</span></div>';
+    if(sx.表)html+='<div class="d-text"><b style="color:var(--c-info)">人前（表）</b> '+esc(sx.表)+'</div>';
+    if(sx.里)html+='<div class="d-text"><b style="color:var(--c-powder)">人后（里）</b> '+esc(sx.里)+'</div>';
+  }
+  if(a.敏感带||a.节奏||a.体位||a.高潮||a.羞点){
+    html+='<div class="psy-row" style="margin-bottom:6px"><span class="psy" style="color:var(--c-powder)">❤️ 性癖</span></div>';
+    if(a.敏感带)html+='<div class="d-text"><b style="color:var(--c-powder)">敏感带</b> '+esc(a.敏感带)+'</div>';
+    if(a.节奏)html+='<div class="d-text"><b style="color:var(--c-powder)">节奏</b> '+esc(a.节奏)+'</div>';
+    if(a.体位)html+='<div class="d-text"><b style="color:var(--c-powder)">体位</b> '+esc(a.体位)+'</div>';
+    if(a.高潮)html+='<div class="d-text"><b style="color:var(--c-powder)">高潮</b> '+esc(a.高潮)+'</div>';
+    if(a.羞点)html+='<div class="d-text"><b style="color:var(--c-powder)">羞点</b> '+esc(a.羞点)+'</div>';
+  }
+  if(a.体味||a.私处气味){
+    if(a.体味)html+='<div class="d-text"><b style="color:var(--c-gold)">体味</b> '+esc(a.体味)+'</div>';
+    if(a.私处气味)html+='<div class="d-text"><b style="color:var(--c-gold)">私处气味</b> '+esc(a.私处气味)+'</div>';
+  }
+  if(a.名器描述)html+='<div class="d-text"><b style="color:var(--c-powder)">名器详解</b> '+esc(a.名器描述)+'</div>';
+  // 核心色情点——可折叠（默认收起只显示标题，点击展开长文），避免详情面板被长文撑爆
+  if(sx.色情点&&sx.色情点.length){
+    html+='<div class="psy-row" style="margin-bottom:6px"><span class="psy" style="color:var(--c-danger)">🔥 核心色情点</span></div>';
+    for(var i=0;i<sx.色情点.length;i++){
+      var seg=sx.色情点[i];
+      if(!seg||!seg.标题)continue;
+      html+='<details style="margin:4px 0"><summary style="cursor:pointer;color:var(--c-powder);font-weight:600">'+esc(seg.标题)+'</summary>'
+        +'<div class="d-text" style="color:var(--c-warn);margin-top:4px">'+esc(seg.内容||'')+'</div></details>';
+    }
+  }
+  return html||'<div class="d-text" style="color:var(--c-dim)">（无私密档案）</div>';
+}
+/* 特质/缺陷：stat_data 缺失时用硬编码档案兜底（私密.yaml 完整版） */
+function traitFallback(name){
+  var a=profileOf(name);
+  return a.特质完整?('（固定档案）'+a.特质完整):'—';
+}
+function defectFallback(name){
+  var a=profileOf(name);
+  return a.缺陷完整?('（固定档案）'+a.缺陷完整):'—';
+}
+/* 技能组（辅技能）显示 */
+function skillGroupText(c){
+  var g=obj(obj(c.技能).技能组);
+  var keys=Object.keys(g);
+  if(!keys.length)return '';
+  var s=keys.map(function(k){var v=g[k];return k+' Lv'+(v?num(v.等级,1):1)+'（'+(v?num(v.经验,0):0)+'）';}).join('，');
+  return kv('技能组',s);
+}
+function appearanceText(name){
+  var a=(typeof YDS_FIXED_APPEARANCE==='object'&&YDS_FIXED_APPEARANCE)?(YDS_FIXED_APPEARANCE[name]||{}):{};
+  var html='';
+  if(a.体型)html+='<div class="d-text"><b style="color:var(--c-gold)">体型</b> '+esc(a.体型)+'</div>';
+  if(a.发型)html+='<div class="d-text"><b style="color:var(--c-gold)">发型</b> '+esc(a.发型)+'</div>';
+  if(a.特征)html+='<div class="d-text"><b style="color:var(--c-gold)">特征</b> '+esc(a.特征)+'</div>';
+  if(a.装扮)html+='<div class="d-text"><b style="color:var(--c-gold)">装扮</b> '+esc(a.装扮)+'</div>';
+  return html||'<div class="d-text" style="color:var(--c-dim)">（无固定档案）</div>';
+}
+function renderCharItems(c){
+  var items=obj(c.道具栏);
+  var keys=Object.keys(items);
+  if(!keys.length)return '<span class="hv" style="color:var(--c-dim)">无</span>';
+  var html='<div class="her-item-mini">';
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];var v=num(items[k],0);
+    if(v<=0)continue;
+    html+='<span class="him">'+esc(k)+' ×<b>'+v+'</b></span>';
+  }
+  html+='</div>';
+  return html;
+}
+
+/* 生理状态 → 外在表现映射（与"生理数值规范与限制"世界书一致） */
+function physioDesc(c){
+  var out=[];
+  var body=obj(c.身体状态);
+  var v=num(obj(body.阴道).湿润度,0);
+  if(v>=80)out.push('阴道泛滥，水声明显');
+  else if(v>=50)out.push('湿滑难耐，水声渐起');
+  else if(v>=20)out.push('微润，有抵抗');
+  else out.push('干涩，进入困难');
+  var cs=num(obj(body.胸部).敏感度,0);
+  if(cs>=90)out.push('胸部一碰即痉挛');
+  else if(cs>=60)out.push('胸部轻碰即叫');
+  else if(cs>=30)out.push('胸部触碰会轻颤');
+  else out.push('胸部反应迟钝');
+  var vs=num(obj(body.阴道).敏感度,0);
+  if(vs>=90)out.push('阴道触之即失神边缘');
+  else if(vs>=60)out.push('阴道一进就颤');
+  else if(vs<30)out.push('阴道钝感');
+  var pc=obj(c.生理周期);
+  if(pc.月经状态==='经期')out.push('经期中，第1~3天不可战斗');
+  else if(pc.月经状态==='排卵期')out.push('排卵期，欲望高涨');
+  if(pc.怀孕)out.push('已怀孕'+num(pc.怀孕周数,0)+'周，禁止剧烈战斗');
+  return out.join('；')||'正常';
+}
+
+/* 各科学业（完整显示） */
+function renderSubjects(){  var d=S();var k=obj(obj(d.玩家).各科);
+  var names=['语文','数学','英语','物理','化学','生物'];
+  var limits={语文:150,数学:150,英语:150,物理:100,化学:100,生物:100};
+  var html='<div class="d-sec">'+secTitle('学业 · 各科')+'<div class="subjects">';
+  for(var i=0;i<names.length;i++){
+    var n=names[i];var v=num(k[n],0);var lim=limits[n];
+    var cls=v>=lim*0.8?'full':(v<lim*0.6?'low':'');
+    html+='<div class="subj"><span class="sn">'+n+'</span><span class="sv '+cls+'">'+v+'/'+lim+'</span></div>';
+  }
+  html+='</div><div style="font-size:11px;color:var(--c-dim);margin-top:6px">总分 <b style="color:var(--c-accent)">'+esc(obj(d.玩家).学业总分||0)+'</b>/750 · 距清华线 <b style="color:var(--c-gold)">'+esc(Math.max(0,700-num(obj(d.玩家).学业总分,0)))+'</b> 分</div></div>';
+  return html;
+}
+
+/* 名录 */
+function renderRoster(){
+  var d=S();var roles=obj(d.女性角色);var tgt=d.排班?d.排班.当前战斗目标:'';
+  var keys=Object.keys(roles);
+  var html='<div class="roster-head"><span>38 名女性 · 点击查看档案</span><span class="roster-count">'+keys.length+' 人在册</span></div>';
+  // 筛选栏（全部/学生/老师/陪读妈妈/主角妈妈）
+  var filters=['全部','学生','老师','陪读妈妈','主角妈妈'];
+  html+='<div class="rf-bar">';
+  for(var f=0;f<filters.length;f++){
+    var fg=filters[f];
+    html+='<span class="rf-btn'+(State.rosterFilter===fg?' active':'')+'" data-act="rfilter" data-filter="'+fg+'">'+fg+'</span>';
+  }
+  html+='</div>';
+  // 内置角色分类表（38人固定；身份字段可能被 AI 覆盖丢失时兜底，防止划错分组）
+  var ROLE_MAP={丽莎·伊万诺娃:'学生',何玉兰:'陪读妈妈',何雨珊:'学生',刘晶晶:'老师',叶春梅:'陪读妈妈',叶诗涵:'学生',周桂香:'陪读妈妈',周语桐:'学生',唐婉清:'老师',娜塔莎·伊万诺娃:'陪读妈妈',宋丽华:'陪读妈妈',宋佳凝:'学生',宋雅琴:'主角妈妈',张慧娟:'老师',李红梅:'老师',林汐瑶:'学生',林秀英:'陪读妈妈',沈若兰:'老师',王朵朵:'学生',王金凤:'陪读妈妈',白秋月:'陪读妈妈',白若薇:'学生',石小婉:'学生',石巧云:'陪读妈妈',秦可心:'学生',秦淑珍:'陪读妈妈',艾米丽·陈:'老师',苏婉如:'陪读妈妈',苏晚晴:'学生',赵雪晴:'老师',金顺姬:'陪读妈妈',陆芷晴:'学生',陆青霞:'陪读妈妈',陈淑芬:'陪读妈妈',陈雪梨:'学生',韩美娜:'学生',黎嘉欣:'学生',黎桂芳:'陪读妈妈'};
+  function classifyRole(nm2,idt2){
+    if(ROLE_MAP[nm2])return ROLE_MAP[nm2];
+    var id=String(idt2||'');
+    if(id.indexOf('主角妈妈')>=0||id.indexOf('主角')>=0)return '主角妈妈';
+    if(id.indexOf('学生')>=0)return '学生';
+    if(id.indexOf('老师')>=0||id.indexOf('班主任')>=0||id.indexOf('教师')>=0)return '老师';
+    if(id.indexOf('陪读妈妈')>=0||id.indexOf('母亲')>=0||id.indexOf('妈妈')>=0)return '陪读妈妈';
+    return '学生';
+  }
+  // 按身份分组（学生/老师/陪读妈妈/主角妈妈）
+  var groups={学生:[],老师:[],陪读妈妈:[],主角妈妈:[]};
+  for(var i=0;i<keys.length;i++){
+    var nm=keys[i];
+    var idt=String(obj(roles[nm]).身份||'');
+    var cls=classifyRole(nm,idt);
+    if(cls==='主角妈妈')groups.主角妈妈.push(nm);
+    else groups[cls].push(nm);
+  }
+  var order=['学生','老师','陪读妈妈','主角妈妈'];
+  for(var g=0;g<order.length;g++){
+    var grp=order[g];
+    if(State.rosterFilter!=='全部'&&State.rosterFilter!==grp)continue;
+    var list=groups[grp];
+    if(!list.length)continue;
+    html+='<div class="roster-group"><div class="roster-group-title">'+grp+'（'+list.length+'）</div><div class="roster-grid">';
+    for(var j=0;j<list.length;j++){
+      var name=list[j];var c=obj(roles[name]);
+      html+='<div class="roster-card'+(c.是否俘虏?' captured':'')+(name===tgt?' fighting':'')+'" data-act="detail" data-name="'+esc(name)+'">'
+        +'<div class="rc-top"><span class="rc-name">'+esc(name)+'</span><span class="rc-role">'+esc(shortRole(c.身份))+'</span></div>'
+        +'<div class="rc-tags">'
+        +(c.是否俘虏?'<span class="rc-tag cap">俘</span>':'')
+        +(num(c.欲望积压,0)>=60?'<span class="rc-tag hot">积压'+esc(c.欲望积压)+'</span>':'')
+        +(num(c.压力值,0)>=60?'<span class="rc-tag pres">压力'+esc(c.压力值)+'</span>':'')
+        +(name===tgt?'<span class="rc-tag fgt">战斗中</span>':'')
+        +'</div>'
+        +'<div class="rc-meta"><span class="fav" title="好感度（社交线，与缴械无关）">♥ '+esc(num(c.好感度,0))+'</span>'
+        +'<span class="jx-lbl" title="缴械值（战斗线）">🔒 '+esc(num(c.缴械值,0))+'</span></div>'
+        +'<div class="rc-hp"><div class="rc-track"><div class="rc-fill" style="width:'+clamp(c.缴械值,0,100)+'%;background:'+(num(c.缴械值,0)>=100?'var(--c-accent)':num(c.缴械值,0)>=60?'var(--c-gold)':'var(--c-info)')+'"></div></div><span class="rc-num">'+esc(c.缴械值||0)+'</span></div>'
+        +'<div class="rc-sub">'+esc(c.省份||'')+' · '+esc(String(c.方言||'').slice(0,10))+(String(c.方言||'').length>10?'…':'')+'</div>'
+        +'</div>';
+    }
+    html+='</div></div>';
+  }
+  return html;
+}
+
+/* 今日排班 */
+function renderSchedule(){
+  var d=S();var s=obj(obj(d.排班).今日场次);
+  var keys=Object.keys(s);
+  if(keys.length===0)return '<div class="sched-empty">今日排班尚未生成，开场后自动生成全天 4 时段（上午=妈妈+没课老师、下午场=全体、晚场=学生、深夜=全体）</div>';
+  var html='';
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];var v=obj(s[k]);
+    var rc='';
+    if(v.结果==='胜')rc='win';else if(v.结果==='败')rc='lose';else if(v.结果==='拒战')rc='refuse';
+    html+='<div class="sched-row"><span class="sched-time">'+esc(k)+'</span><span class="sched-p'+(v.是否参战?' done':'')+'">'+esc(v.参与者||'')+'</span><span class="sched-result '+rc+'">'+esc(v.结果||'')+'</span></div>';
+  }
+  return html;
+}
+
+/* 技能 */
+function renderSkills(){
+  var d=S();var sk=obj(obj(d.玩家).技能);
+  var keys=Object.keys(sk);
+  var html='<div class="skill-grid">';
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];var v=obj(sk[k]);
+    html+='<div class="skill-card"><div class="sk-top"><span class="sk-name">'+esc(k)+'</span><span class="sk-lv">Lv'+esc(v.等级||0)+'</span></div>'
+      +'<div class="sk-exp"><div class="sk-track"><div class="sk-fill" style="width:'+clamp(v.经验,0,100)+'%"></div></div><span>'+esc(v.经验||0)+'/100</span></div>'
+      +'<div class="sk-desc">'+esc(skillDesc(k))+'</div></div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+/* 角色详情 */
+function renderDetail(name){
+  var d=S();var c=obj((d.女性角色||{})[name]);
+  if(!c||!Object.keys(c).length)return '<div class="empty">未找到角色：'+esc(name)+'</div>';
+  var psy=obj(c.心理状态),body=obj(c.身体状态),ability=obj(c.能力值),skill=obj(c.技能);
+  var outfit=obj(c.服装);var outfitText=Object.keys(outfit).map(function(k){return k+': '+outfit[k]}).join('，');
+  var html='<div class="detail">'
+    +'<div class="detail-head"><span class="detail-back" data-act="back">← 返回</span><span class="detail-name">'+esc(name)+'</span><span class="detail-role">'+esc(c.身份||'')+'</span>'+(c.是否俘虏?'<span class="detail-tag">俘虏 · '+esc(c.俘虏日期||'')+'</span>':'')+'</div>'
+    +(c.心声?'<div class="voice-box"><span class="vl">💭 她此刻的真实想法（心声）</span>'+esc(c.心声)+'</div>':'')
+    +'<div class="detail-grid">'
+    +'<div class="d-sec">'+secTitle('基本')+kv('省份',c.省份||'—')+kv('方言',c.方言||'—')+kv('关系',c.关系||'—')+baseProfileText(name)+'</div>'
+    +'<div class="d-sec">'+secTitle('外貌特征（固定档案）')+appearanceText(name)+'</div>'
+    +'<div class="d-sec">'+secTitle('私密档案（固定·性癖/气味）')+profileText(name)+'</div>'
+    +'<div class="d-sec">'+secTitle('战斗档案')
+      +kv('缴械值',(c.缴械值||0)+'/100',num(c.缴械值,0)>=100?'var(--c-accent)':'')
+      +kv('战绩',(c.胜场||0)+'胜 '+(c.败场||0)+'败 · '+(c.战斗次数||0)+'战')
+      +kv('缴械次数',c.缴械次数||0)
+      +kv('名器',c.名器||'—','var(--c-powder)')+kv('名器防御',c.名器防御||'—')+kv('防守值上限',c.防守值上限||'—')
+      +kv('技能',(skill.名||'—')+' Lv'+(skill.等级||0)+'（'+(skill.经验||0)+'/100）','var(--c-gold)')
+      +skillGroupText(c)
+      +kv('能力值','忍'+(ability.忍耐||0)+' 持'+(ability.持久||0)+' 攻'+(ability.反攻||0))
+      +'</div>'
+    +'<div class="d-sec">'+secTitle('状态')
+      +kv('欲望积压',c.欲望积压||0,num(c.欲望积压,0)>=80?'var(--c-danger)':num(c.欲望积压,0)>=60?'var(--c-warn)':'')
+      +kv('压力值',c.压力值||0,num(c.压力值,0)>=80?'var(--c-danger)':num(c.压力值,0)>=60?'var(--c-warn)':'')
+      +kv('好感度',c.好感度||0,(num(c.好感度,0)>=80?'var(--c-accent);font-weight:800':num(c.好感度,0)>=60?'var(--c-gold);font-weight:800':num(c.好感度,0)>=30?'var(--c-powder);font-weight:700':'var(--c-dim2)'))
+      +kv('今日已使用',c.今日已使用?'是':'否')
+      +kv('精神状态',psy.精神状态||'—')
+      +kv('心声',c.心声||'…','var(--c-dim)')
+      +'</div>'
+    +(Object.keys(obj(c.道具栏)).length?'<div class="d-sec">'+secTitle('道具栏')+'<div class="subjects">'+renderCharItems(c)+'</div></div>':'')
+    +(obj(c.恢复技能).名?'<div class="d-sec">'+secTitle('恢复技能')+'<div class="d-text">'+esc(obj(c.恢复技能).名||'—')+' Lv'+esc(obj(c.恢复技能).等级||1)+'（'+(obj(c.恢复技能).经验||0)+'/100）</div></div>':'')
+    +'</div>'
+    +'<div class="d-sec">'+secTitle('特质 / 缺陷')+'<div class="d-text">'+esc(traitFallback(name)||c.特质||'—')+'</div><div class="d-text" style="color:var(--c-warn)">'+esc(defectFallback(name)||c.缺陷||'—')+'</div></div>'
+    +'<div class="d-sec">'+secTitle('心理状态')+'<div class="psy-row">'
+    +'<span class="psy">欲望 '+psyBar(psy.欲望度,'var(--c-accent)')+esc(psy.欲望度||0)+'</span>'
+    +'<span class="psy">羞耻 '+psyBar(psy.羞耻感,'var(--c-info)')+esc(psy.羞耻感||0)+'</span>'
+    +'<span class="psy">兴奋 '+psyBar(psy.兴奋,'var(--c-powder)')+esc(psy.兴奋||0)+'</span>'
+    +'<span class="psy">期待 '+psyBar(psy.期待,'var(--c-gold)')+esc(psy.期待||0)+'</span>'
+    +'</div></div>'
+    +'<div class="d-sec">'+secTitle('生理周期')+'<div class="d-text">'
+    +'月经第 '+esc(num(c.生理周期.月经日,1))+'/'+esc(num(c.生理周期.周期天数,28))+' 天 · '+esc(c.生理周期.月经状态||'—')+(num(c.生理周期.月经日,1)===num(c.生理周期.排卵日,14)?'（今天是排卵日⚠️）':'')
+    +(c.生理周期.怀孕?'<span style="color:var(--c-danger)"> · 🤰 怀孕 '+esc(c.生理周期.怀孕周数||0)+' 周</span>':(c.生理周期.备孕?'<span style="color:var(--c-gold)"> · 备孕中</span>':(c.生理周期.避孕?' · 已避孕':'<span style="color:var(--c-warn)"> · 未避孕⚠️</span>')))
+    +'</div><div class="d-text" style="color:var(--c-dim)">'+esc(physioDesc(c))+'</div></div>'
+    +'<div class="d-sec">'+secTitle('身体状态',true)+'<div class="body-grid">'
+    +'<div class="body-card"><div class="bc-name">胸部</div><div class="bc-line">状态 '+esc(obj(body.胸部).状态||'—')+' · 乳头 '+esc(obj(body.胸部).乳头||'—')+'</div><div class="bc-line">敏感度 '+psyBar(obj(body.胸部).敏感度,'var(--c-powder)')+esc(obj(body.胸部).敏感度||0)+'</div></div>'
+    +'<div class="body-card"><div class="bc-name">阴道</div><div class="bc-line">状态 '+esc(obj(body.阴道).状态||'—')+'</div><div class="bc-line">湿润度 '+psyBar(obj(body.阴道).湿润度,'var(--c-info)')+esc(obj(body.阴道).湿润度||0)+'</div><div class="bc-line">敏感度 '+psyBar(obj(body.阴道).敏感度,'var(--c-powder)')+esc(obj(body.阴道).敏感度||0)+'</div></div>'
+    +'<div class="body-card"><div class="bc-name">肛门</div><div class="bc-line">状态 '+esc(obj(body.肛门).状态||'—')+'</div></div>'
+    +'<div class="body-card"><div class="bc-name">嘴</div><div class="bc-line">状态 '+esc(obj(body.嘴).状态||'—')+'</div></div>'
+    +'<div class="body-card"><div class="bc-name">肌肤</div><div class="bc-line">状态 '+esc(obj(body.肌肤).状态||'—')+' · 体温 '+esc(obj(body.肌肤).体温||'—')+'</div></div>'
+    +'<div class="body-card"><div class="bc-name">大腿</div><div class="bc-line">状态 '+esc(obj(body.大腿).状态||'—')+'</div></div>'
+    +'<div class="body-card"><div class="bc-name">臀部</div><div class="bc-line">状态 '+esc(obj(body.臀部).状态||'—')+'</div></div>'
+    +'</div></div>'
+    +(Object.keys(outfit).length?'<div class="d-sec">'+secTitle('服装')+'<div class="d-text">'+esc(outfitText)+'</div></div>':'')
+    +'</div>';
+  return html;
+}
+
+/* 主渲染 */
+function render(){
+  var loadingEl=document.getElementById('sb-loading');
+  var bodyEl=document.getElementById('sb-body');
+  if(!bodyEl)return;
+  if(State.loading){loadingEl.style.display='';bodyEl.style.display='none';return}
+  loadingEl.style.display='none';bodyEl.style.display='';
+  var d=S();var tgt=d.排班?d.排班.当前战斗目标:'';
+  var captives=0;var roles=obj(d.女性角色);
+  for(var k in roles){if(roles[k]&&roles[k].是否俘虏)captives++}
+  var panelHtml='';
+  if(State.detail){panelHtml=renderDetail(State.detail)}
+  else if(State.view==='roster'){panelHtml=renderRoster()}
+  else if(State.view==='schedule'){panelHtml=renderSchedule()}
+  else if(State.view==='subjects'){panelHtml=renderSubjects()+renderSkills()}
+  else{panelHtml=renderSkills()}
+  var tabs='<div class="tabs">'
+    +'<div class="tab'+(State.view==='roster'?' active':'')+'" data-act="view" data-view="roster">名录'+(captives>0?' <span style="color:var(--c-accent)">（俘虏'+captives+'）</span>':'')+'</div>'
+    +'<div class="tab'+(State.view==='subjects'?' active':'')+'" data-act="view" data-view="subjects">学业</div>'
+    +'<div class="tab'+(State.view==='schedule'?' active':'')+'" data-act="view" data-view="schedule">今日排班</div>'
+    +'<div class="tab'+(State.view==='skills'?' active':'')+'" data-act="view" data-view="skills">技能</div>'
+    +'</div>';
+  bodyEl.innerHTML=renderHeader()+(tgt?renderBattle():'')+tabs+'<div class="panel">'+panelHtml+'</div>';
+}
+
+/* 事件 */
+function bindEvents(){
+  var root=document.getElementById('sb-root');
+  if(!root)return; // 元素未就绪时跳过绑定,不中断初始化
+  root.addEventListener('click',function(e){
+    var t=e.target;
+    while(t&&t!==root){
+      var act=t.getAttribute&&t.getAttribute('data-act');
+      if(act){
+        if(act==='view'){State.view=t.getAttribute('data-view');State.detail='';render()}
+        else if(act==='detail'){State.detail=t.getAttribute('data-name');render()}
+        else if(act==='back'){State.detail='';render()}
+        else if(act==='rfilter'){State.rosterFilter=t.getAttribute('data-filter');render()}
+        else if(act==='toggle-skill'){
+          var sk=t.getAttribute('data-skill');
+          var idx=State.selSkills.indexOf(sk);
+          if(idx>=0){State.selSkills.splice(idx,1)}
+          else if(State.selSkills.length<3){State.selSkills.push(sk)}
+          render();
+        }
+        else if(act==='theme'){ydsToggleTheme()}
+        else if(act==='bg'){ydsSbToggleBg()}
+        else if(act==='send-round'){
+          var action=(document.getElementById('action-input')||{}).value||'';
+          State.actionText=action;
+          sendRoundCommand(action);
+        }
+        return;
+      }
+      t=t.parentNode;
+    }
+  });
+  root.addEventListener('input',function(e){
+    var el=e.target;
+    if(el&&el.id==='action-input'){State.actionText=el.value}
+  });
+}
+
+/* 发起本回合：将进攻指令写入酒馆输入框 */
+function findHostTextarea(){
+  for(var i=0;i<TH_HOSTS.length;i++){
+    try{
+      var doc=TH_HOSTS[i].document;
+      if(doc){
+        var el=doc.querySelector('#send_textarea textarea')||doc.querySelector('textarea#send_textarea')||doc.querySelector('#send_form textarea');
+        if(el)return el;
+      }
+    }catch(e){}
+  }
+  return null;
+}
+function sendRoundCommand(action){
+  var d=S();var tgt=d.排班?d.排班.当前战斗目标:'';
+  var skills=State.selSkills.slice();
+  var skillText=skills.length?('使用技能：'+skills.join('、')):'不使用技能（纯体力进攻）';
+  var cmd='【本回合进攻】目标：'+tgt+'。'+skillText+(action?'。攻法：'+action:'');
+  var input=findHostTextarea();
+  if(input){
+    input.value=cmd;
+    try{input.dispatchEvent(new Event('input',{bubbles:true}))}catch(e){}
+    try{input.focus()}catch(e){}
+    State.actionText='';State.selSkills=[];
+  }else{
+    State.actionText='';
+    State.selSkills=[];
+  }
+  render();
+}
+
+/* 初始化 */
+(function init(){
+  bindEvents();
+  // 事件驱动刷新（skill 规范：MESSAGE_UPDATED 300ms 防抖 + MESSAGE_RECEIVED 1s 兜底 + isRefreshing 防重入，禁止轮询——轮询会重置用户展开的详情/抽屉）
+  var _refreshing=false;
+  var doRefresh=function(){
+    if(_refreshing)return;
+    _refreshing=true;
+    setTimeout(function(){try{refresh()}catch(e){};_refreshing=false},300);
+  };
+  try{if(typeof tavern_events==='object'&&tavern_events.MESSAGE_UPDATED&&typeof eventOn==='function'){eventOn(tavern_events.MESSAGE_UPDATED,doRefresh)}}catch(e){}
+  try{if(typeof eventOn==='function'){eventOn('GENERATION_ENDED',doRefresh);eventOn('MESSAGE_EDITED',doRefresh);eventOn('mag_variable_update_ended',doRefresh);eventOn('MESSAGE_RECEIVED',function(){setTimeout(doRefresh,1000)})}}catch(e){}
+  // ★数据变化检测兜底（事件在消息内联环境可能不可用）：每 3 秒读中继/最新数据，仅当 战斗状态/当前目标/体力/性欲/缴械值 等关键值变化才 refresh——
+  // 与"无差别轮询"不同：无变化不重绘，用户展开的详情/抽屉不会被重置（规避 skill 坑#8）
+  var _lastSnap='';
+  try{
+    setInterval(function(){
+      try{
+        if(document.hidden)return;
+        var st3=readStatData();
+        var pb3=obj(st3.排班);
+        var p3=obj(st3.玩家);
+        var tgt3=pb3.当前战斗目标||'';
+        var c3=tgt3&&tgt3!=='多人'?(obj(st3.女性角色)[tgt3]||{}):{};
+        var snap=(pb3.战斗状态||'')+'|'+tgt3+'|'+num(pb3.战斗&&pb3.战斗.回合,0)+'|'+num(p3.体力,0)+'|'+num(p3.性欲,0)+'|'+num(p3.勃起度,0)+'|'+num(c3.缴械值,-1)+'|'+num(c3.欲望积压,-1)+'|'+num(c3.压力值,-1)+'|'+num(c3.好感度,-1);
+        if(snap!==_lastSnap){_lastSnap=snap;doRefresh();}
+      }catch(e2){}
+    },3000);
+  }catch(e3){}
+  window.addEventListener('message',function(e){
+    try{
+      var data=e.data;
+      if(data&&data.type==='yds-mvu-stat-data'&&data.stat_data){
+        var mesId=resolveMessageId();
+        if(mesId>=0&&typeof data.messageId==='number'&&data.messageId>=0&&data.messageId!==mesId)return;
+        if(hasData(data.stat_data)){
+          cachedStatFromBridge=data.stat_data;
+          State.data=deepMergeStat(DEFAULT_STAT,data.stat_data);
+          State.loading=false;render();
+        }
+        return;
+      }
+      var t=(data&&data.type)||data||'';
+      if(typeof t==='string'&&(t.indexOf('generation_ended')>=0||t.indexOf('message_edit')>=0))autoRefresh();
+    }catch(x){}
+  });
+  var embedded=parseEmbeddedStat();
+  if(embedded){cachedStatFromBridge=embedded;State.data=deepMergeStat(DEFAULT_STAT,embedded)}
+  requestStatFromBridge();refresh();
+})();
+function refresh(){
+  var stat=readStatData();
+  if(hasData(stat)){State.data=stat;State.loading=false}
+  try{advancePhysioIfNewDay()}catch(e){} // 跨日推进失败不影响渲染
+  try{ensureTodaySchedule()}catch(e){} // 今日排班为空则自动生成全天 4 时段（上午=妈妈+没课老师/下午场=全体/晚场=学生为主/深夜=全体）
+  render();
+  waitForReadableStat(6000,function(realStat){
+    if(hasData(realStat)){State.data=realStat;State.loading=false}
+    try{advancePhysioIfNewDay()}catch(e){}
+    try{ensureTodaySchedule()}catch(e){}
+    render();requestStatFromBridge();
+  });
+}
+
+/* 今日排班自动生成：今日场次为空时，按【排班规则】24 小时全覆盖生成 4 时段对阵表（上午=妈妈+没课老师/下午场=放学后全体/晚场=学生为主/深夜=全体） */
+function ensureTodaySchedule(){
+  try{
+    var d=S();if(!hasData(d))return;
+    var pb=obj(d.排班);
+    var s=obj(pb.今日场次);
+    if(Object.keys(s).length>0)return; // 今日已有排班
+    var chars=d.女性角色||{};
+    var mothers=[],teachers=[],students=[];
+    for(var nm in chars){
+      var c=chars[nm];
+      if(!c||typeof c!=='object')continue;
+      var idt=String(c.身份||'');
+      if(idt.indexOf('陪读妈妈')>=0)mothers.push(nm);
+      else if(idt.indexOf('学生')>=0)students.push(nm);
+      else if(idt.indexOf('老师')>=0||idt.indexOf('班主任')>=0)teachers.push(nm);
+    }
+    function pick(arr,n){
+      var a=arr.slice(),out=[];
+      while(a.length&&out.length<n){var i=Math.floor(Math.random()*a.length);out.push(a.splice(i,1)[0]);}
+      return out;
+    }
+    // 24 小时全覆盖（按【排班规则】使用时段）：上午=妈妈+没课老师；下午场=放学后全体；晚场=学生为主；深夜=全体
+    var all=mothers.concat(teachers,students);
+    var am=pick(mothers.concat(teachers),1+Math.floor(Math.random()*2)); // 上午（上课时间，在校者不可用）
+    var noon=pick(all,1+Math.floor(Math.random()*2)); // 下午场（放学后，全体可用）
+    var ev=pick(students.concat(mothers),1+Math.floor(Math.random()*2)); // 晚场（晚自习结束，学生为主+妈妈）
+    var night=pick(all,1+Math.floor(Math.random()*2)); // 深夜（22:30 后，全体可用）
+    if(am.length)s['上午']={参与者:am.join('、'),结果:'未开战',是否参战:false};
+    if(noon.length)s['下午场']={参与者:noon.join('、'),结果:'未开战',是否参战:false};
+    if(ev.length)s['晚场']={参与者:ev.join('、'),结果:'未开战',是否参战:false};
+    if(night.length)s['深夜']={参与者:night.join('、'),结果:'未开战',是否参战:false};
+    pb.今日场次=s;
+    // 持久化写回（TH replaceVariables 是完全替换语义，必须读完整表→更新 stat_data→写回完整表，保留 schema/initialized_lorebooks）
+    try{
+      var Mvu4=getMvu();
+      if(Mvu4&&typeof Mvu4.getMvuData==='function'&&typeof Mvu4.replaceMvuData==='function'){
+        var opt4=getMessageOption();
+        var full4=Mvu4.getMvuData(opt4);
+        if(full4&&typeof full4==='object'){
+          if(full4.stat_data===undefined&&(full4.排班!==undefined||full4.玩家!==undefined||full4.女性角色!==undefined||full4.时间!==undefined))full4={stat_data:full4};
+          full4.stat_data=d;
+          Mvu4.replaceMvuData(full4,opt4);
+        }
+      }
+    }catch(e2){}
+  }catch(e){console.error('ensureSchedule',e)}
+}
+
+/* 跨日推进：日期变化时执行生理周期/体力/冷却推进（与"生理数值规范与限制"世界书一致） */
+function advancePhysioIfNewDay(){
+  try{
+    var d=S();if(!hasData(d))return;
+    var t=obj(d.时间);var today=String(t.日期||'');
+    if(!today)return;
+    var p=obj(d.玩家);
+    var last=obj(p.生理).上次推进日期||'';
+    if(last===today)return; // 今天已推进
+    var ph=obj(p.生理);
+    // 玩家：体力恢复+40、性欲+10、射精冷却清零（新的一天）
+    p.体力=clamp(num(p.体力,0)+40,0,100);
+    p.性欲=clamp(num(p.性欲,0)+10,0,100);
+    ph.射精冷却剩余=0;
+    ph.今日射精次数=0;
+    ph.上次推进日期=today;
+    // 她方：月经日+1（到周期天数重置），更新月经状态
+    var chars=d.女性角色||{};
+    for(var nm in chars){
+      var c=chars[nm];
+      if(!c||typeof c!=='object'||!c.生理周期)continue;
+      var pc=c.生理周期;
+      if(pc.怀孕)continue; // 怀孕期间月经冻结
+      var day=num(pc.月经日,1)+1;
+      var cycle=num(pc.周期天数,28);
+      if(day>cycle)day=1;
+      pc.月经日=day;
+      // 状态区间：1-5经期 / 6-11卵泡 / 12-16排卵 / 17+黄体
+      if(day<=5)pc.月经状态='经期';
+      else if(day<=11)pc.月经状态='卵泡期';
+      else if(day<=16)pc.月经状态='排卵期';
+      else pc.月经状态='黄体期';
+      // 经期结束湿润度重置，排卵期欲望提升
+      if(day<=5){obj(obj(c.身体状态).阴道).湿润度=10}
+      else if(day>=12&&day<=16){c.欲望积压=clamp(num(c.欲望积压,0)+5,0,100)}
+    }
+    // 跨日推进持久化（读完整表→更新 stat_data→写回完整表，保留 schema/initialized_lorebooks）
+    try{
+      var Mvu4=getMvu();
+      if(Mvu4&&typeof Mvu4.getMvuData==='function'&&typeof Mvu4.replaceMvuData==='function'){
+        var opt4=getMessageOption();
+        var full4=Mvu4.getMvuData(opt4);
+        if(full4&&typeof full4==='object'){
+          if(full4.stat_data===undefined&&(full4.排班!==undefined||full4.玩家!==undefined||full4.女性角色!==undefined||full4.时间!==undefined))full4={stat_data:full4};
+          full4.stat_data=d;
+          Mvu4.replaceMvuData(full4,opt4);
+        }
+      }
+    }catch(e3){}
+  }catch(e){console.error('advancePhysio',e)}
+}
+</script>
+</body>
+</html>
+```

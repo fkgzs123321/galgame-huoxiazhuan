@@ -1,0 +1,85 @@
+# 同级生2 变量更新规则
+
+本文件规定 AI 在 `<UpdateVariable>` 与 `<UpdateTable>` 中更新变量和表格的规则。
+所有变量和表格字段都有 DDL CHECK 约束，违反约束会触发 SQLite 错误。
+
+## 一、单轮变化上限（快速参考）
+
+> 详细限制与难度修正参 `世界书/EJS预处理/变量变化幅度控制.txt` 的 `CHANGE_LIMITS` / `validateChange()`。
+> 本节为 AI 快速参考上限，实际执行以 `变量变化幅度控制.txt` 为准（单次上限 ±10，含单次/每日/每周三档）。
+
+### 1.1 主角属性（6维）
+- 魅力 / 学业 / 体力 / 社交 / 敏感 / 声誉：单轮参考上限 ≤ 5 点
+- 详细分档与难度修正：参 `变量变化幅度控制.txt.CHANGE_LIMITS.protagonist_stats`
+
+### 1.2 主角副状态（3）
+- 疲劳 / 心情：单轮参考上限 ≤ 5 点
+- 现金：单笔参考上限 ≤ 5000（收支分别限制）
+- 详细限制：参 `变量变化幅度控制.txt.CHANGE_LIMITS.protagonist_subs`
+
+### 1.3 女角好感度
+- 好感度 / 心动值 / 嫉妒值 / 信任度：单轮参考上限 ≤ 5 点
+- 详细限制：参 `变量变化幅度控制.txt.CHANGE_LIMITS.heroine_affection`
+
+### 1.4 NSFW 字段
+- 暴露程度 / 湿润度 / 兴奋度：单档变化（不跨档跳跃）
+- H经验：单轮参考上限 ≤ 5 点
+- 详细限制：参 `变量变化幅度控制.txt.CHANGE_LIMITS.nsfw_fields`
+
+### 1.5 跨时段累积
+- 跨时段累积变化无上限（如多日累积可让 魅力 从 50 涨到 80）
+- 单轮超出参考上限时，以 `变量变化幅度控制.txt.validateChange()` 的判定结果为准
+
+## 二、关系档位锁定（达不到阈值禁止行为）
+
+### 2.1 行为档位阈值表
+- 单一真相源：`世界书/EJS预处理/全局规则-NSFW身体规则.txt` 的 `NSFW_BODY_RULES.nsfw_hard_gates` 对象（5 档硬门槛：轻度接触/中度接触/重度接触/初H/进阶H玩法）。
+- 扮演准则引用：`核心铁律.txt` 第三节关系档位锁 + `防口胡.txt` 第 3.1 节，两者数值与 nsfw_hard_gates 完全对齐。
+
+### 2.2 死结局触发条件
+- 单一真相源：`世界书/EJS预处理/全局规则总表.txt.BAD_ENDINGS`，本表不再重复定义。
+
+## 三、触发条件（快速参考）
+
+### 3.1 时间推进
+- 单一真相源：`世界书/EJS预处理/全局规则总表.txt.TIME_LOCATION_RULES`，本表不再重复定义。
+
+### 3.2 行动消耗
+- 单一真相源：`世界书/EJS预处理/全局规则总表.txt.BEHAVIOR_TABLE`，本表不再重复定义。
+
+### 3.2.1 难度 4 档修正系数
+- 单一真相源：`世界书/EJS预处理/全局规则总表.txt.DIFFICULTY_MODIFIERS`，本表不再重复定义。
+
+### 3.3 关系阶段跳跃
+- 单一真相源：`世界书/EJS预处理/全局规则总表.txt.RELATION_STAGES`，本表不再重复定义。
+
+## 四、表格写入规则（DDL 概要，本文件独有）
+
+### 4.1 DDL.global_state（每轮更新）
+- UPDATE row_id=1，更新时间/位置/场景；所有字段 NOT NULL。
+
+### 4.2 DDL.protagonist_info（属性变化时）
+- UPDATE row_id=1，更新对应字段；数值 0-100（money 例外，≥0）。
+
+### 4.3 DDL.inventory（物品变化时）
+- INSERT/UPDATE/DELETE（数量为 0）；item_name 不可重复。
+
+### 4.4 DDL.important_npc（女角状态变化时）
+- UPDATE 对应 row_id；好感度 -100~100，关系阶段与 NSFW 字段必须匹配 CHECK 列表。
+
+### 4.5 DDL.chronicle（事件触发时）
+- INSERT 新行；code_index 不可重复。
+
+### 4.6 DDL.check_suggestions（选项更新时）
+- UPDATE 现有选项 / INSERT 新选项。
+
+## 五、互斥攻略规则
+- 单一真相源：`世界书/EJS预处理/全局规则总表.txt.MUTEX_RELATIONS`（且全局表更全），本表不再重复定义。
+
+## 六、防作弊规则
+- 单一真相源：`世界书/EJS预处理/防口胡机制.txt`，本表不再重复定义。
+
+## 七、特殊机制
+- LCG 确定性骰子：参 `世界书/EJS预处理/LCG骰子/引擎.txt`。
+- 难度修正：参 `世界书/EJS预处理/全局规则总表.txt.DIFFICULTY_MODIFIERS`。
+- 系统警报：参 `世界书/EJS预处理/扮演准则/防崩溃.txt`。

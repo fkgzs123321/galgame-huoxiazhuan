@@ -1,0 +1,1230 @@
+project:
+  name: 旮旯给木-同级生2
+  worldbookName: 旮旯给木-同级生2
+  form: charactercard
+  mvu: true
+  ui_mode: frontend
+world:
+  overview: 八十八町，一个普通的日本小镇，冬天。现实世界，无任何超自然元素。全部角色为成年人。 玩家扮演的主角 18 岁，母亲早逝、父亲是常年在外的考古学家，寄住在鸣泽家十年。 唯一的非现实元素承袭引擎：他能通过摄像头看见「屏幕外的她」。
+  regions:
+    - name: 住宅区
+    - name: 八十八学园
+    - name: 商业区
+    - name: 车站与娱乐
+    - name: 郊外
+    - name: 如月町
+    - name: 温泉乡
+    - name: 医院
+  factions: []
+characters:
+  - name: 主角
+    basic:
+      identity: 见 底座_nanpa2/主角设定.txt
+    appearance: []
+    tri_faceted: false
+  - name: 鸣泽唯
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+      stages:
+        变量: 女角.鸣泽唯.好感度（−4 ~ +4，共九档）
+        分段:
+          - −4 厌恶
+          - −3 排斥
+          - −2 冷淡
+          - −1 不反感
+          - 0 中立
+          - +1 好感
+          - +2 喜欢
+          - +3 依恋
+          - +4 沦陷
+        写法: 每段独立互斥，只输出当前那一段。用词尺度跟着阶段走
+    tri_faceted: true
+  - name: 水野友美
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 筱原泉
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 南川洋子
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 加藤美纪
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 舞岛可怜
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 杉本樱子
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 都筑梢
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 野野村美里
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 安田爱美
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 田中美沙
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 片桐美铃
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 鸣泽美佐子
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 永岛佐知子
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 永岛久美子
+    basic:
+      identity: 见 底座_nanpa2/女角设定.md
+    appearance: []
+    personality:
+      base: 见 底座_nanpa2/女角设定-补完.md（基调权威版本）
+    tri_faceted: true
+  - name: 川尻彰
+    type: NPC
+    function: 好朋友
+  - name: 长冈芳树
+    type: NPC
+    function: 问题儿童
+  - name: 西御寺有友
+    type: NPC
+    function: 财阀独生子
+  - name: 天道新干线
+    type: NPC
+    function: 体育老师
+  - name: 她_温砚
+  - name: 她_丰娆
+  - name: 她_舒晏
+  - name: 她_唐响
+  - name: 她_沈眠
+  - name: 她_莫漾
+  - name: 她_纪清
+style:
+  perspective: 第三人称
+  tone: 日常白描，不加滤镜
+  mood: 日常底下的窒息感（design-spec §一 情感落点）
+  reference: 无
+entries:
+  - name: 四态循环
+    type: 世界观
+    path: 世界书/世界观/引擎/四态循环.yaml
+  - name: 反抗与判定
+    type: 世界观
+    path: 世界书/世界观/引擎/反抗与判定.yaml
+  - name: 兴奋度机制
+    type: 世界观
+    path: 世界书/世界观/引擎/兴奋度机制.yaml
+  - name: 出招
+    type: 世界观
+    path: 世界书/世界观/引擎/出招.yaml
+  - name: 交互循环
+    type: 世界观
+    path: 世界书/世界观/引擎/交互循环.yaml
+  - name: 剧情推进
+    type: 世界观
+    path: 世界书/世界观/引擎/剧情推进.yaml
+  - name: 边界情况
+    type: 世界观
+    path: 世界书/世界观/引擎/边界情况.yaml
+  - name: 离线行动
+    type: 世界观
+    path: 世界书/世界观/引擎/离线行动.yaml
+  - name: 加载纪律
+    type: 扮演准则
+    path: 世界书/扮演准则/加载纪律.yaml
+    order: 1
+  - name: CoT注入
+    type: 扮演准则
+    path: 世界书/扮演准则/CoT注入.yaml
+    状态: 已跳过
+    原因: 本卡把思维链做成了 扮演准则/思维链.yaml 条目（八步骨架）。CoT 的内容在那里 + 预设侧可由玩家自行注入，不需要单独的 CoT注入 条目
+    替代: 思维链
+  - name: 判定引擎
+    type: 扮演准则
+    path: 世界书/扮演准则/判定引擎.yaml
+  - name: 思维链
+    type: 扮演准则
+    path: 世界书/扮演准则/思维链.yaml
+  - name: 叙述准则
+    type: 扮演准则
+    path: 世界书/扮演准则/叙述准则.yaml
+  - name: 感知禁令
+    type: 扮演准则
+    path: 世界书/扮演准则/感知禁令.yaml
+  - name: 玩家的输入
+    type: 扮演准则
+    path: 世界书/扮演准则/玩家的输入.yaml
+  - name: 阶段指导
+    type: 阶段指导
+    scope: catalog
+    path: 世界书/阶段指导/阶段指导.yaml
+    purpose: 四态 + 情绪 + 熟练度五档（新手/上手/沉浸/狂热/收官），每档写她的手段、给 <user> 的空间、痕迹扫描
+    note: ★ 熟练度五档是「阶段化玩法」→ skills 判为阶段指导并**并入本条**，不单独立条
+  - name: 八十八町
+    type: 世界观
+    path: 世界书/世界观/底座_nanpa2/八十八町.yaml
+    purpose: 时间制（17 天 / 5 时段 / 见一个人消耗时间）、只能选一个、D0 指令系统、地图三功能
+  - name: 关系封闭
+    type: 世界观
+    path: 世界书/世界观/底座_nanpa2/关系封闭.yaml
+    purpose: 封闭之后世界怎么运转（哪条线关掉、哪些事件不再出现）。互斥矩阵本身是契约，不进本条
+  - name: 时间轴索引
+    type: 时间线
+    part: history
+    path: 世界书/时间线/时间轴索引.yaml
+    purpose: 常驻索引。17 天骨架 + 5 时段 + 公共规则 + 每日锚点清单（当天的详情不在此条）
+    note: 原「关卡序列」并进本条 —— 一个条目只承载一类信息，反过来说也不该两个条目承载一类
+  - name: 人物出现索引
+    type: 时间线
+    part: history
+    path: 世界书/时间线/人物出现索引.yaml
+    purpose: (日期, 时段, 地点) → 在场名单，供引擎查询
+  - name: 第01天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第01天.yaml
+    purpose: 12-22 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第02天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第02天.yaml
+    purpose: 01--3 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第03天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第03天.yaml
+    purpose: 01--2 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第04天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第04天.yaml
+    purpose: 01--1 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第05天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第05天.yaml
+    purpose: 01-00 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第06天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第06天.yaml
+    purpose: 01-01 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第07天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第07天.yaml
+    purpose: 01-02 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第08天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第08天.yaml
+    purpose: 01-03 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第09天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第09天.yaml
+    purpose: 01-04 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第10天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第10天.yaml
+    purpose: 01-05 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第11天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第11天.yaml
+    purpose: 01-06 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第12天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第12天.yaml
+    purpose: 01-07 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第13天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第13天.yaml
+    purpose: 01-08 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第14天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第14天.yaml
+    purpose: 01-09 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第15天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第15天.yaml
+    purpose: 01-10 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第16天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第16天.yaml
+    purpose: 01-11 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 第17天
+    type: 时间线
+    part: plot
+    path: 世界书/时间线/plot/第17天.yaml
+    purpose: 01-12 的事件锚点与在场名单（EJS 按当前天数渲染）
+  - name: 地理速览
+    type: 地理
+    part: region
+    scope: catalog
+    path: 世界书/地理/地理速览.yaml
+    purpose: 索引条目，始终 constant 且不参与同 part 计数
+  - name: 住宅区
+    type: 地理
+    part: region
+    path: 世界书/地理/住宅区.yaml
+    keywords:
+      - 住宅区
+  - name: 八十八学园
+    type: 地理
+    part: region
+    path: 世界书/地理/八十八学园.yaml
+    keywords:
+      - 八十八学园
+  - name: 商业区
+    type: 地理
+    part: region
+    path: 世界书/地理/商业区.yaml
+    keywords:
+      - 商业区
+  - name: 车站与娱乐
+    type: 地理
+    part: region
+    path: 世界书/地理/车站与娱乐.yaml
+    keywords:
+      - 车站与娱乐
+  - name: 郊外
+    type: 地理
+    part: region
+    path: 世界书/地理/郊外.yaml
+    keywords:
+      - 郊外
+  - name: 如月町
+    type: 地理
+    part: region
+    path: 世界书/地理/如月町.yaml
+    keywords:
+      - 如月町
+  - name: 温泉乡
+    type: 地理
+    part: region
+    path: 世界书/地理/温泉乡.yaml
+    keywords:
+      - 温泉乡
+  - name: 医院
+    type: 地理
+    part: region
+    path: 世界书/地理/医院.yaml
+    keywords:
+      - 医院
+  - name: 角色速览
+    type: 角色
+    part: other
+    scope: catalog
+    path: 世界书/角色/速览.yaml
+  - name: 主角
+    type: 角色
+    part: basic
+    path: 世界书/角色/主角/基础信息.yaml
+    keywords:
+      - 主角
+  - name: 她_温砚
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/温砚.yaml
+    keywords:
+      - 温砚
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 她_丰娆
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/丰娆.yaml
+    keywords:
+      - 丰娆
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 她_舒晏
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/舒晏.yaml
+    keywords:
+      - 舒晏
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 她_唐响
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/唐响.yaml
+    keywords:
+      - 唐响
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 她_沈眠
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/沈眠.yaml
+    keywords:
+      - 沈眠
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 她_莫漾
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/莫漾.yaml
+    keywords:
+      - 莫漾
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 她_纪清
+    type: 角色
+    part: other
+    path: 世界书/角色/屏幕外的她/纪清.yaml
+    keywords:
+      - 纪清
+    note: 她要什么（goal_units 的人设映射）写在本条 —— 「她想要什么」是角色的一部分，不是世界观
+  - name: 鸣泽唯_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/鸣泽唯/基础信息.yaml
+    keywords:
+      - 鸣泽唯
+      - 小唯
+  - name: 鸣泽唯_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/鸣泽唯/性格调色盘.yaml
+    keywords:
+      - 鸣泽唯
+      - 小唯
+  - name: 鸣泽唯_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/鸣泽唯/三面性.yaml
+    keywords:
+      - 鸣泽唯
+      - 小唯
+  - name: 鸣泽唯_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/鸣泽唯/NSFW反差与剧情线.yaml
+    keywords:
+      - 鸣泽唯
+      - 小唯
+  - name: 水野友美_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/水野友美/基础信息.yaml
+    keywords:
+      - 水野友美
+      - 友美
+  - name: 水野友美_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/水野友美/性格调色盘.yaml
+    keywords:
+      - 水野友美
+      - 友美
+  - name: 水野友美_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/水野友美/三面性.yaml
+    keywords:
+      - 水野友美
+      - 友美
+  - name: 水野友美_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/水野友美/NSFW反差与剧情线.yaml
+    keywords:
+      - 水野友美
+      - 友美
+  - name: 筱原泉_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/筱原泉/基础信息.yaml
+    keywords:
+      - 筱原泉
+      - 泉
+  - name: 筱原泉_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/筱原泉/性格调色盘.yaml
+    keywords:
+      - 筱原泉
+      - 泉
+  - name: 筱原泉_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/筱原泉/三面性.yaml
+    keywords:
+      - 筱原泉
+      - 泉
+  - name: 筱原泉_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/筱原泉/NSFW反差与剧情线.yaml
+    keywords:
+      - 筱原泉
+      - 泉
+  - name: 南川洋子_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/南川洋子/基础信息.yaml
+    keywords:
+      - 南川洋子
+      - 洋子
+  - name: 南川洋子_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/南川洋子/性格调色盘.yaml
+    keywords:
+      - 南川洋子
+      - 洋子
+  - name: 南川洋子_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/南川洋子/三面性.yaml
+    keywords:
+      - 南川洋子
+      - 洋子
+  - name: 南川洋子_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/南川洋子/NSFW反差与剧情线.yaml
+    keywords:
+      - 南川洋子
+      - 洋子
+  - name: 加藤美纪_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/加藤美纪/基础信息.yaml
+    keywords:
+      - 加藤美纪
+      - 美纪
+  - name: 加藤美纪_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/加藤美纪/性格调色盘.yaml
+    keywords:
+      - 加藤美纪
+      - 美纪
+  - name: 加藤美纪_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/加藤美纪/三面性.yaml
+    keywords:
+      - 加藤美纪
+      - 美纪
+  - name: 加藤美纪_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/加藤美纪/NSFW反差与剧情线.yaml
+    keywords:
+      - 加藤美纪
+      - 美纪
+  - name: 舞岛可怜_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/舞岛可怜/基础信息.yaml
+    keywords:
+      - 舞岛可怜
+      - 可怜
+  - name: 舞岛可怜_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/舞岛可怜/性格调色盘.yaml
+    keywords:
+      - 舞岛可怜
+      - 可怜
+  - name: 舞岛可怜_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/舞岛可怜/三面性.yaml
+    keywords:
+      - 舞岛可怜
+      - 可怜
+  - name: 舞岛可怜_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/舞岛可怜/NSFW反差与剧情线.yaml
+    keywords:
+      - 舞岛可怜
+      - 可怜
+  - name: 杉本樱子_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/杉本樱子/基础信息.yaml
+    keywords:
+      - 杉本樱子
+      - 樱子
+  - name: 杉本樱子_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/杉本樱子/性格调色盘.yaml
+    keywords:
+      - 杉本樱子
+      - 樱子
+  - name: 杉本樱子_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/杉本樱子/三面性.yaml
+    keywords:
+      - 杉本樱子
+      - 樱子
+  - name: 杉本樱子_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/杉本樱子/NSFW反差与剧情线.yaml
+    keywords:
+      - 杉本樱子
+      - 樱子
+  - name: 都筑梢_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/都筑梢/基础信息.yaml
+    keywords:
+      - 都筑梢
+      - 梢
+  - name: 都筑梢_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/都筑梢/性格调色盘.yaml
+    keywords:
+      - 都筑梢
+      - 梢
+  - name: 都筑梢_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/都筑梢/三面性.yaml
+    keywords:
+      - 都筑梢
+      - 梢
+  - name: 都筑梢_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/都筑梢/NSFW反差与剧情线.yaml
+    keywords:
+      - 都筑梢
+      - 梢
+  - name: 野野村美里_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/野野村美里/基础信息.yaml
+    keywords:
+      - 野野村美里
+      - 美里
+  - name: 野野村美里_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/野野村美里/性格调色盘.yaml
+    keywords:
+      - 野野村美里
+      - 美里
+  - name: 野野村美里_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/野野村美里/三面性.yaml
+    keywords:
+      - 野野村美里
+      - 美里
+  - name: 野野村美里_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/野野村美里/NSFW反差与剧情线.yaml
+    keywords:
+      - 野野村美里
+      - 美里
+  - name: 安田爱美_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/安田爱美/基础信息.yaml
+    keywords:
+      - 安田爱美
+      - 爱美
+  - name: 安田爱美_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/安田爱美/性格调色盘.yaml
+    keywords:
+      - 安田爱美
+      - 爱美
+  - name: 安田爱美_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/安田爱美/三面性.yaml
+    keywords:
+      - 安田爱美
+      - 爱美
+  - name: 安田爱美_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/安田爱美/NSFW反差与剧情线.yaml
+    keywords:
+      - 安田爱美
+      - 爱美
+  - name: 田中美沙_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/田中美沙/基础信息.yaml
+    keywords:
+      - 田中美沙
+      - 美沙
+  - name: 田中美沙_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/田中美沙/性格调色盘.yaml
+    keywords:
+      - 田中美沙
+      - 美沙
+  - name: 田中美沙_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/田中美沙/三面性.yaml
+    keywords:
+      - 田中美沙
+      - 美沙
+  - name: 田中美沙_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/田中美沙/NSFW反差与剧情线.yaml
+    keywords:
+      - 田中美沙
+      - 美沙
+  - name: 片桐美铃_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/片桐美铃/基础信息.yaml
+    keywords:
+      - 片桐美铃
+      - 片桐老师
+      - 美铃
+  - name: 片桐美铃_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/片桐美铃/性格调色盘.yaml
+    keywords:
+      - 片桐美铃
+      - 片桐老师
+      - 美铃
+  - name: 片桐美铃_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/片桐美铃/三面性.yaml
+    keywords:
+      - 片桐美铃
+      - 片桐老师
+      - 美铃
+  - name: 片桐美铃_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/片桐美铃/NSFW反差与剧情线.yaml
+    keywords:
+      - 片桐美铃
+      - 片桐老师
+      - 美铃
+  - name: 鸣泽美佐子_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/鸣泽美佐子/基础信息.yaml
+    keywords:
+      - 鸣泽美佐子
+      - 美佐子
+  - name: 鸣泽美佐子_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/鸣泽美佐子/性格调色盘.yaml
+    keywords:
+      - 鸣泽美佐子
+      - 美佐子
+  - name: 鸣泽美佐子_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/鸣泽美佐子/三面性.yaml
+    keywords:
+      - 鸣泽美佐子
+      - 美佐子
+  - name: 鸣泽美佐子_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/鸣泽美佐子/NSFW反差与剧情线.yaml
+    keywords:
+      - 鸣泽美佐子
+      - 美佐子
+  - name: 永岛佐知子_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/永岛佐知子/基础信息.yaml
+    keywords:
+      - 永岛佐知子
+      - 佐知子
+  - name: 永岛佐知子_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/永岛佐知子/性格调色盘.yaml
+    keywords:
+      - 永岛佐知子
+      - 佐知子
+  - name: 永岛佐知子_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/永岛佐知子/三面性.yaml
+    keywords:
+      - 永岛佐知子
+      - 佐知子
+  - name: 永岛佐知子_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/永岛佐知子/NSFW反差与剧情线.yaml
+    keywords:
+      - 永岛佐知子
+      - 佐知子
+  - name: 永岛久美子_基础信息
+    type: 角色
+    part: basic
+    path: 世界书/角色/底座_nanpa2/永岛久美子/基础信息.yaml
+    keywords:
+      - 永岛久美子
+      - 久美子
+  - name: 永岛久美子_性格调色盘
+    type: 角色
+    part: personality
+    path: 世界书/角色/底座_nanpa2/永岛久美子/性格调色盘.yaml
+    keywords:
+      - 永岛久美子
+      - 久美子
+  - name: 永岛久美子_三面性
+    type: 角色
+    part: tri_faceted
+    path: 世界书/角色/底座_nanpa2/永岛久美子/三面性.yaml
+    keywords:
+      - 永岛久美子
+      - 久美子
+  - name: 永岛久美子_NSFW反差与剧情线
+    type: 角色
+    part: other
+    path: 世界书/角色/底座_nanpa2/永岛久美子/NSFW反差与剧情线.yaml
+    keywords:
+      - 永岛久美子
+      - 久美子
+  - name: 川尻彰
+    type: NPC
+    path: 世界书/NPC/川尻彰.yaml
+    keywords:
+      - 川尻彰
+      - 好朋友
+  - name: 长冈芳树
+    type: NPC
+    path: 世界书/NPC/长冈芳树.yaml
+    keywords:
+      - 长冈芳树
+      - 问题儿童
+  - name: 西御寺有友
+    type: NPC
+    path: 世界书/NPC/西御寺有友.yaml
+    keywords:
+      - 西御寺有友
+      - 财阀独生子
+  - name: 天道新干线
+    type: NPC
+    path: 世界书/NPC/天道新干线.yaml
+    keywords:
+      - 天道新干线
+      - 体育老师
+  - name: "[InitVar]请勿打开"
+    type: MVU
+    part: initvar
+    path: 世界书/变量/initvar.yaml
+  - name: 变量列表
+    type: MVU
+    part: variable_list
+    path: 世界书/变量/变量列表.yaml
+  - name: 变量更新规则
+    type: MVU
+    part: update_rules
+    path: 世界书/变量/变量更新规则.yaml
+  - name: "[mvu_update]变量输出格式"
+    type: MVU
+    part: output_format
+    path: 世界书/变量/变量输出格式.txt
+  - name: 终局
+    type: 事件
+    path: 世界书/事件/终局.yaml
+    purpose: 1-07 深夜的结局判定（单次触发 → skills 判为「事件」，不是时间线）
+  - name: 文风_骚妈
+    type: 扮演准则
+    path: 世界书/扮演准则/文风_骚妈.yaml
+    默认状态: 停用
+    说明: 文风条，玩家按需开一条。同一时间只开一条
+  - name: 文风_白洁
+    type: 扮演准则
+    path: 世界书/扮演准则/文风_白洁.yaml
+    默认状态: 停用
+    说明: 文风条，玩家按需开一条。同一时间只开一条
+  - name: 文风_母猪轻
+    type: 扮演准则
+    path: 世界书/扮演准则/文风_母猪轻.yaml
+    默认状态: 停用
+    说明: 文风条，玩家按需开一条。同一时间只开一条
+  - name: 文风_母猪中
+    type: 扮演准则
+    path: 世界书/扮演准则/文风_母猪中.yaml
+    默认状态: 停用
+    说明: 文风条，玩家按需开一条。同一时间只开一条
+  - name: 文风_母猪重
+    type: 扮演准则
+    path: 世界书/扮演准则/文风_母猪重.yaml
+    默认状态: 停用
+    说明: 文风条，玩家按需开一条。同一时间只开一条
+  - name: 人设补丁
+    type: 世界观
+    path: 世界书/世界观/底座_nanpa2/人设补丁.yaml
+    说明: 七套「她」的底座相关手段表现（7 套 × 4 行）
+  - name: 主角_性格调色盘
+    type: 角色
+    path: null
+    说明: 主角分片条目之一（注册用 contents 组合）
+  - name: 她_郁灼
+    type: 角色
+    path: null
+    说明: 第八套「她」（郁灼）的人设条目，EJS 门控 她.人设 === 郁灼
+  - name: 文风_脏词标准
+    type: 扮演准则
+    path: 世界书/扮演准则/文风_脏词标准.yaml
+    说明: skills 的全局用词表。可叠加在任何文风上
+engine_contracts:
+  - file: 底座_nanpa2/状态表.yaml
+    what: T2 状态表（221 状态，每个填「意义」）+ ★ 15×15 互斥矩阵（逐格照搬 + 49 对冲突）
+  - file: 底座_nanpa2/initvar.yaml
+    what: 变量初始值
+  - file: 底座_nanpa2/目的清单.yaml
+    what: goal_units 数值契约（88 张 CG + 7 套人设的单元映射）—— 「她要什么」的**条目版**在 她_XX，本文是**数值版**
+  - file: 底座_nanpa2/偏好系数表.yaml（待写）
+    what: 出招时各女角的偏好权重 —— 引擎算给「她」看，AI 不需要
+  - file: 底座_nanpa2/地理速览.yaml
+    what: T1 地图机制数据（距离 / 开放时段 / 在场名单）
+  - file: 机制/判定引擎.txt
+    what: E3 判定引擎实现（LCG + 判定链），不含任何世界观/角色/地点名
+  - file: Token 预算与加载策略.md
+    what: token 规范与八条手段、定稿转换清单
+  - file: budget.json（待建）
+    what: 项目级预算（覆盖校验器默认值）
+  - file: schema.ts（待建）
+    what: MVU 变量类型定义（由 状态表.yaml 派生）
+mvu:
+  structure: |
+    顶层结构（详见 底座_nanpa2/状态表.yaml，T2 契约，221 个状态）：
+    ├── 世界
+    │   ├── 日期 / 天数 / 时段 / 时段进度 / 章节
+    │   ├── 当前地点 / 当前女角 / 场景模式
+    │   ├── 天气 / 只能选一个 / 互斥状态
+    │   └── 底座（= nanpa2）
+    ├── 主角
+    │   ├── 身体状态 / 心情
+    │   ├── 说话 / 做事 / 懂东西（3 维明牌）
+    │   └── 拒绝 / 判定结果（引擎写入）
+    ├── 女角 ×15
+    │   └── 关系阶段 / 好感度 / 心动值 / 信任度 / 嫉妒值
+    ├── 经济
+    ├── 过程（世界的裂缝 / 她用过的手段）
+    └── 剧情（日记 / 樱子线 / 美纪线 / 互斥触发 / 死结局标识）
+  variables: []
+  "[mvu_update] 提示词条目（配置，非创作条目）":
+    说明: 带 [mvu_update] 前缀 → 只发给「负责更新变量的 AI」（额外模型解析开启时生效）。它们不进 entries
+    条目:
+      - name: "[mvu_update]变量输出格式"
+        path: 世界书/变量/变量输出格式.txt
+        来源: skills 模板（assets/mvu-templates），默认不改
+      - name: "[mvu_update]选项池输出"
+        path: 世界书/变量/选项池输出.yaml
+        用途: 告诉额外模型怎么写 局面.当前选项
+      - name: "[mvu_update]本卡变量路径"
+        path: 世界书/变量/本卡变量路径.yaml
+        用途: 钉死 JSON Patch 的 path 写法（不带 stat_data）
+    ★ 为什么单独放这里: 它们是提示词配置，不是创作内容。且必须自包含（额外模型看不到别处），不参与「一处定义」的合并
+ejs:
+  entries:
+    - name: 八十八町
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2'"
+    - name: 第01天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 1"
+    - name: 第02天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 2"
+    - name: 第03天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 3"
+    - name: 第04天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 4"
+    - name: 第05天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 5"
+    - name: 第06天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 6"
+    - name: 第07天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 7"
+    - name: 第08天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 8"
+    - name: 第09天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 9"
+    - name: 第10天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 10"
+    - name: 第11天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 11"
+    - name: 第12天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 12"
+    - name: 第13天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 13"
+    - name: 第14天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 14"
+    - name: 第15天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 15"
+    - name: 第16天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 16"
+    - name: 第17天
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.天数', { defaults: 0 }) === 17"
+    - name: 住宅区
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['自宅', '友美家', '洋子家', '可怜家', '信良家', '西御寺家', '芳树宅', '泉美家', '天道家', '公寓'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 八十八学园
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['学园内', '3年B班教室', '2年C班教室', '图书室', '保健室', '天台', '职员室', '摄影社社办', '演剧部仓库', '体育馆', '体育馆后面', '体育仓库', '网球场', '校庭', '弓箭练习场', '美术教室'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 商业区
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['便利店', 'ATARU', '旅行代理店', '咖啡店憩', '才艺中心', '电视台', '保育园'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 车站与娱乐
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['88车站', '游乐中心', '电影院', '游园地'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 郊外
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['88海岸', '88公园', '白蛇池公园', '高台'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 如月町
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['如月车站', '如月神宫', '车站饭店'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 温泉乡
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['永岛旅馆', '温泉', '滑雪场'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 医院
+      complexity: 条目显隐
+      condition: "getvar('stat_data.世界.底座', { defaults: '' }) === 'nanpa2' && ['88市民医院'].includes(getvar('stat_data.场景.当前地点', { defaults: '' }))"
+    - name: 阶段指导
+      complexity: 段落控制
+      note: 按熟练度阶段（1-5）渲染段落，每档只渲染它自己那一节
+    - name: 她_温砚
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '温砚'"
+    - name: 她_丰娆
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '丰娆'"
+    - name: 她_舒晏
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '舒晏'"
+    - name: 她_唐响
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '唐响'"
+    - name: 她_沈眠
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '沈眠'"
+    - name: 她_莫漾
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '莫漾'"
+    - name: 她_纪清
+      complexity: 条目显隐
+      group:
+        labels:
+          - 屏幕外的她
+        use_priority: true
+        weight: 100
+      condition: "getvar('stat_data.她.人设', { defaults: '' }) === '纪清'"
+first_messages:
+  - format: 说明式
+    output_path: 开场白/0.txt
+  - format: 表单式
+    output_path: 开场白/1.txt
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/2.txt
+    initvar_override: 开场白/initvar/2.yaml
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/3.txt
+    initvar_override: 开场白/initvar/3.yaml
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/4.txt
+    initvar_override: 开场白/initvar/4.yaml
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/5.txt
+    initvar_override: 开场白/initvar/5.yaml
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/6.txt
+    initvar_override: 开场白/initvar/6.yaml
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/7.txt
+    initvar_override: 开场白/initvar/7.yaml
+  - format: 叙事式
+    word_count: 500~700
+    output_path: 开场白/8.txt
+    initvar_override: 开场白/initvar/8.yaml
+变更记录:
+  - 日期: 2026-09-16
+    内容:
+      - 推演链 → 改名 思维链（并精简为八步骨架 + 引用）
+      - 新增 5 个文风条目（默认停用，玩家按需开一条）
+      - 新增 3 个 [mvu_update] 提示词条目（配置段）
+      - 去关卡化：关卡 → 天（含 世界.关卡进度 → 世界.游戏进度）
+      - 新增 [mvu_update]选项池输出 / 本卡变量路径（修 path 带 stat_data 的静默失败）
+      - 接管选项 UI：大条 + lit + 光泽 + 底部三按钮 + 面板内输入框（不再 prompt）
+      - 选项固定四条；叙事四段；回合闭合；三层结构；反抗值涨落写全
+  - 日期: 2026-09-16
+    内容:
+      - 按 skills「完整性」检查修正：CoT注入 标为已跳过（由 思维链 替代）
+      - 补登记 3 个漏登条目：人设补丁 / 公共选项池 / 主角_性格调色盘
+  - 日期: 2026-09-16
+    内容:
+      - 加载纪律 里加「本卡机制层分工」表（便利性，非 skills 要求）
+  - 日期: 2026-09-16
+    内容:
+      - 修正「四段叙事」第二段：不说「他的反应」——选项是她摆她点，玩家从来不是在选择；强化「她没在等他」
+  - 日期: 2026-09-16
+    内容:
+      - 清除会引发误会的措辞；加载纪律 加「用词黑名单」
+  - 日期: 2026-09-16
+    内容:
+      - 出招 补「她的选择怎么定」：三条依据 + 倾向不是保证 + 误点是随机 + 拒绝不改变她下一层挑什么
+  - 日期: 2026-09-16
+    内容:
+      - 补注册 她_郁灼（第八套「她」此前漏注册，导致选郁灼仍显示温砚）
+  - 日期: 2026-09-16
+    内容:
+      - 修 本卡变量路径：AI 写的 /场面/地点 与 /时间/时段进度 不存在 → 整批 JSON Patch 失败；补真实层级与「一条错全批废」的警告
+  - 日期: 2026-09-16
+    内容:
+      - 放开预算（T0 hard 18400 / TOTAL 52000）；按标准把 本卡变量路径 写全（含各层子键与九条照抄例）
+  - 日期: 2026-09-16
+    内容:
+      - 专项体检（有来无回/没公式/没落脚点/没闭环）后修三处：
+      - ① 删掉 交互循环 里旧版「第二段 · 你的反应是哪一种」（与新版并存，会让 AI 收到两版指令）
+      - ② 八十八町：「时间.时段进度」→「时间.时段」（前者不存在）
+      - ③ 剧情推进：补「满 = 100」与每层 +6~10
+  - 日期: 2026-09-16
+    内容:
+      - ★ 数值规范：区分 主角.体力（当天行动力，每天回满）与 主角.身体状态（长期健康，跌了难回升）
+      - 补齐缺数字的更新规则：身体状态 / 体力 / 心情 / 经济.现金 / 经济.累计储蓄 / 她.目的进度 / 她.已拿到 / 她.熟练度 / 过程.世界的裂缝
+  - 日期: 2026-09-18
+    内容:
+      - ★ 文风：新增 文风_脏词标准（skills 全局用词表，可叠加）
+      - ★ 样板：鸣泽唯 性格调色盘 重写为 9 阶段版（好感度 −4 ~ +4）
+      - 九阶段：−4 厌恶/−3 排斥/−2 冷淡/−1 不反感/0 中立/+1 好感/+2 喜欢/+3 依恋/+4 沦陷
+      - ★ 键的规划：底座女角用「对 <user> 的好感度」；屏幕外的她用「对这个游戏的好感度」（兼用熟练度）
+  - 日期: 2026-09-18
+    内容:
+      - ★ 修正：鸣泽唯 9 阶段第一版写成了「冷冽」的行为清单，不符合「无尽骚妈」
+      - 重写为「无尽骚妈」笔法：每段带【远看】【近看】【动作】【台词】【尺度】，负段附【旁人视线】
+      - ★ 无尽骚妈的五个手法写进条目开头：①远看/近看落差 ②衣料物理性 ③形状在动时 ④旁人视线 ⑤台词对身份
+  - 日期: 2026-09-18
+    内容:
+      - 修正：鸣泽唯 性格调色盘 改为写「她是什么人」（底色/主色调/点缀/九段衍生），文风归 文风_骚妈，不在角色条目里写「怎么下笔」

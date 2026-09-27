@@ -1,0 +1,300 @@
+@@generate_before
+<%_
+/* 派系任务系统控制器
+   定义派系任务类型/难度/奖励/超时,行为校验入口 */
+
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var threatPoints = Number(getvar('stat_data.殖民地.威胁点数', { scope: 'local', defaults: 0 })) || 0;
+var lastQuestDay = Number(getvar('stat_data.事件计时器.上次任务日', { scope: 'local', defaults: 0 })) || 0;
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+var p1Social = Number(getvar('stat_data.殖民者_主角.社交', { scope: 'local', defaults: 5 })) || 5;
+
+/* 派系列表(与派系贸易系统一致) */
+var factionList = [
+  { name: '部落联盟', relation: Number(getvar('stat_data.派系.部落联盟.关系', { scope: 'local', defaults: 0 })) || 0, level: '中立' },
+  { name: '城市邦联', relation: Number(getvar('stat_data.派系.城市邦联.关系', { scope: 'local', defaults: 0 })) || 0, level: '中立' },
+  { name: '商人公会', relation: Number(getvar('stat_data.派系.商人公会.关系', { scope: 'local', defaults: 15 })) || 15, level: '友好' },
+  { name: '海盗团', relation: Number(getvar('stat_data.派系.海盗团.关系', { scope: 'local', defaults: -40 })) || -40, level: '敌对' },
+  { name: '机械教团', relation: Number(getvar('stat_data.派系.机械教团.关系', { scope: 'local', defaults: -50 })) || -50, level: '敌对' },
+  { name: '帝国', relation: Number(getvar('stat_data.派系.帝国.关系', { scope: 'local', defaults: -20 })) || -20, level: '中立偏敌' },
+  { name: '游牧部落', relation: Number(getvar('stat_data.派系.游牧部落.关系', { scope: 'local', defaults: 5 })) || 5, level: '中立' },
+  { name: '流亡者组织', relation: Number(getvar('stat_data.派系.流亡者组织.关系', { scope: 'local', defaults: -10 })) || -10, level: '中立偏敌' }
+];
+
+/* 任务类型表 QUEST_DB
+   字段: 类型(任务大类), 描述(任务说明), 奖励银两(基础银两), 奖励关系(关系增量),
+        奖励物品(物品奖励), 难度基础(基础难度1-5), 最小关系(触发最小关系值) */
+var QUEST_DB = {
+  '求助信': {
+    类型: '求助信', 描述: '派系据点遭袭/疾病/饥荒,请求殖民者前往救援',
+    奖励银两: 200, 奖励关系: 10, 奖励物品: '无',
+    难度基础: 3, 最小关系: 0, 超时天数: 7
+  },
+  '赏金': {
+    类型: '赏金', 描述: '派系通缉目标(强盗头目/野兽/叛徒),要求击杀',
+    奖励银两: 400, 奖励关系: 5, 奖励物品: '无',
+    难度基础: 4, 最小关系: 0, 超时天数: 7
+  },
+  '物资请求': {
+    类型: '物资请求', 描述: '派系急需物资(食物/药品/材料),请求殖民者交付',
+    奖励银两: 150, 奖励关系: 3, 奖励物品: '无',
+    难度基础: 2, 最小关系: 10, 超时天数: 7
+  },
+  '特殊任务': {
+    类型: '特殊任务', 描述: '护送要人/探索遗迹/回收信物,高风险高回报',
+    奖励银两: 300, 奖励关系: 15, 奖励物品: '稀有物品',
+    难度基础: 5, 最小关系: 20, 超时天数: 7
+  }
+};
+
+/* 难度分级表 DIFFICULTY_DB
+   字段: 星级(1-5), 名称(难度名称), 检定修正(_check阈值修正), 敌人强度(威胁倍率) */
+var DIFFICULTY_DB = {
+  1: { 星级: '★', 名称: '简单', 检定修正: 1.2, 敌人强度: 0.6 },
+  2: { 星级: '★★', 名称: '普通', 检定修正: 1.0, 敌人强度: 1.0 },
+  3: { 星级: '★★★', 名称: '困难', 检定修正: 0.8, 敌人强度: 1.5 },
+  4: { 星级: '★★★★', 名称: '险恶', 检定修正: 0.6, 敌人强度: 2.0 },
+  5: { 星级: '★★★★★', 名称: '致命', 检定修正: 0.4, 敌人强度: 3.0 }
+};
+
+/* 任务触发判定
+   faction=派系对象, relation=关系值, day=当前游戏日
+   返回: 触发判定结果 */
+function _questTrigger(faction, relation, day) {
+  var rel = Number(relation) || 0;
+  var d = Number(day) || 1;
+  var lastDay = Number(getvar('stat_data.事件计时器.上次任务日', { scope: 'local', defaults: 0 })) || 0;
+  var daysSince = d - lastDay;
+  var minInterval;
+  if (storyteller === '菲比') { minInterval = 5; }
+  else if (storyteller === '兰迪') { minInterval = 2; }
+  else { minInterval = 4; }
+  var intervalMet = (daysSince >= minInterval);
+  /* 敌对派系(-50以下)不触发任务 */
+  if (rel <= -50) {
+    return { 触发: false, 原因: '派系敌对,拒绝派发任务', 派系: faction.name, 关系: rel };
+  }
+  /* 中立以下派系仅触发求助信/赏金 */
+  var availableTypes = [];
+  if (rel < 10) {
+    availableTypes = ['求助信', '赏金'];
+  } else if (rel < 20) {
+    availableTypes = ['求助信', '赏金', '物资请求'];
+  } else {
+    availableTypes = ['求助信', '赏金', '物资请求', '特殊任务'];
+  }
+  if (!intervalMet) {
+    return {
+      触发: false, 原因: '冷却中,距上次任务仅' + daysSince + '天',
+      派系: faction.name, 关系: rel, 冷却剩余: minInterval - daysSince,
+      可用类型: availableTypes
+    };
+  }
+  /* LCG骰子判定是否触发(50%概率) */
+  var triggerRoll = _lcgRoll('quest_trigger_' + faction.name + '_' + d, 1, 100)[0];
+  var willTrigger = (triggerRoll <= 50);
+  return {
+    触发: willTrigger,
+    原因: willTrigger ? '骰值' + triggerRoll + '/100 ≤50 触发' : '骰值' + triggerRoll + '/100 >50 未触发',
+    派系: faction.name,
+    关系: rel,
+    距上次任务: daysSince + '天',
+    可用类型: availableTypes,
+    骰值: triggerRoll
+  };
+}
+
+/* 难度计算
+   quest=任务对象(查QUEST_DB), factionLevel=派系等级(派系实力1-5)
+   返回: 难度星级与修正 */
+function _questDifficulty(quest, factionLevel) {
+  var q = quest;
+  if (typeof quest === 'string') {
+    q = QUEST_DB[quest] || QUEST_DB['求助信'];
+  }
+  var base = Number(q.难度基础) || 3;
+  var fl = Number(factionLevel) || 1;
+  /* 派系等级越高,任务难度越高 */
+  var adjusted = Math.min(5, Math.max(1, base + Math.floor((fl - 1) / 2)));
+  var diff = DIFFICULTY_DB[adjusted] || DIFFICULTY_DB[3];
+  /* 阶段修正: 繁荣期任务难度+1 */
+  if (phase === '繁荣期') { adjusted = Math.min(5, adjusted + 1); }
+  diff = DIFFICULTY_DB[adjusted] || DIFFICULTY_DB[3];
+  return {
+    星级: diff.星级,
+    名称: diff.名称,
+    难度值: adjusted,
+    检定修正: diff.检定修正,
+    敌人强度: diff.敌人强度,
+    基础难度: base,
+    派系修正: Math.floor((fl - 1) / 2),
+    阶段修正: (phase === '繁荣期') ? 1 : 0
+  };
+}
+
+/* 奖励计算
+   quest=任务对象, success=成功等级(大成功/普通成功/极难成功/失败/大失败)
+   返回: 银两/关系/物品奖励 */
+function _questReward(quest, success) {
+  var q = quest;
+  if (typeof quest === 'string') {
+    q = QUEST_DB[quest] || QUEST_DB['求助信'];
+  }
+  var baseSilver = Number(q.奖励银两) || 100;
+  var baseRelation = Number(q.奖励关系) || 5;
+  var item = q.奖励物品 || '无';
+  var silverReward = baseSilver;
+  var relationReward = baseRelation;
+  var itemReward = '无';
+  var s = String(success) || '普通成功';
+  if (s === '大成功') {
+    silverReward = Math.round(baseSilver * 1.5);
+    relationReward = baseRelation + 5;
+    if (item !== '无') { itemReward = item + '(优质)'; }
+    else { itemReward = '额外银两×0.5'; silverReward += Math.round(baseSilver * 0.5); }
+  } else if (s === '极难成功' || s === '普通成功') {
+    silverReward = baseSilver;
+    relationReward = baseRelation;
+    itemReward = item;
+  } else if (s === '失败') {
+    silverReward = 0;
+    relationReward = -2;
+    itemReward = '无';
+  } else if (s === '大失败') {
+    silverReward = 0;
+    relationReward = -5;
+    itemReward = '无';
+  }
+  /* 社交技能修正: 每点社交+2%银两 */
+  var socialMod = 1 + p1Social * 0.02;
+  silverReward = Math.round(silverReward * socialMod);
+  return {
+    银两: silverReward,
+    关系: relationReward,
+    物品: itemReward,
+    成功等级: s,
+    社交修正: socialMod,
+    基础银两: baseSilver,
+    基础关系: baseRelation
+  };
+}
+
+/* 任务超时判定
+   quest=任务对象, startDay=任务开始日
+   返回: 超时判定结果(7天超时) */
+function _questTimeout(quest, startDay) {
+  var q = quest;
+  if (typeof quest === 'string') {
+    q = QUEST_DB[quest] || QUEST_DB['求助信'];
+  }
+  var timeoutDays = Number(q.超时天数) || 7;
+  var start = Number(startDay) || 1;
+  var elapsed = gameDay - start;
+  var remaining = timeoutDays - elapsed;
+  var isTimeout = (elapsed >= timeoutDays);
+  return {
+    超时: isTimeout,
+    已用天数: elapsed,
+    剩余天数: Math.max(0, remaining),
+    超时限制: timeoutDays,
+    失败原因: isTimeout ? '任务超时(' + timeoutDays + '天)' : '未超时'
+  };
+}
+
+/* 触发演示 */
+var triggerDemo = _questTrigger(factionList[0], factionList[0].relation, gameDay);
+var questDemo = QUEST_DB['求助信'];
+var diffDemo = _questDifficulty('求助信', 1);
+var rewardSuccessDemo = _questReward('求助信', '普通成功');
+var rewardCritDemo = _questReward('求助信', '大成功');
+var rewardFailDemo = _questReward('求助信', '失败');
+var timeoutDemo = _questTimeout('求助信', gameDay - 3);
+_%>
+<派系任务系统就绪>
+[当前任务状态]
+游戏日: <%= gameDay %> / 阶段: <%= phase %> / 故事讲述者: <%= storyteller %>
+威胁点数: <%= threatPoints %> / 殖民地银两: <%= silver %> / 社交技能: <%= p1Social %>
+距上次任务: <%= gameDay - lastQuestDay %>天 (<%= storyteller %>最小间隔<%= storyteller === '菲比' ? 5 : (storyteller === '兰迪' ? 2 : 4) %>天)
+
+[派系状态]
+<%_ for (var i = 0; i < factionList.length; i++) { var f = factionList[i]; _%>
+<%= (i+1) %>. <%= f.name %> - 关系<%= f.relation %> (<%= f.level %>)
+<%_ } _%>
+
+[任务类型表 QUEST_DB]
+1. 求助信: 救援任务 (奖励: 银两200 + 关系+10) 难度3星 超时7天
+   → 派系据点遭袭/疾病/饥荒,需前往救援
+2. 赏金: 击杀目标 (奖励: 银两400 + 关系+5) 难度4星 超时7天
+   → 通缉强盗头目/野兽/叛徒,要求击杀
+3. 物资请求: 交付物资 (奖励: 银两150 + 关系+3) 难度2星 超时7天 需关系>=10
+   → 派系急需食物/药品/材料
+4. 特殊任务: 护送/探索/回收 (奖励: 银两300 + 关系+15 + 稀有物品) 难度5星 超时7天 需关系>=20
+   → 高风险高回报任务
+
+[难度分级表 DIFFICULTY_DB]
+★ 简单: 检定修正×1.2 敌人强度×0.6
+★★ 普通: 检定修正×1.0 敌人强度×1.0
+★★★ 困难: 检定修正×0.8 敌人强度×1.5
+★★★★ 险恶: 检定修正×0.6 敌人强度×2.0
+★★★★★ 致命: 检定修正×0.4 敌人强度×3.0
+
+[任务触发规则]
+1. 触发判定: _questTrigger(faction, relation, day)
+   冷却: 菲比5天 / 兰迪2天 / 卡桑德拉4天
+   概率: LCG骰子1d100 ≤50 触发
+   关系门槛: <-50 敌对不触发 / <10 仅求助信+赏金 / <20 +物资请求 / >=20 全类型
+   演示: <%= factionList[0].name %> 关系<%= factionList[0].relation %> → <%= triggerDemo.触发 ? '触发' : '未触发' %> (<%= triggerDemo.原因 %>)
+   可用类型: <%= triggerDemo.可用类型 ? triggerDemo.可用类型.join('/') : '无' %>
+
+2. 难度计算: _questDifficulty(quest, factionLevel)
+   最终难度 = 基础难度 + floor((派系等级-1)/2) + 阶段修正(繁荣期+1)
+   上限5星(致命),下限1星(简单)
+   演示: 求助信 + 派系等级1 → <%= diffDemo.星级 %> <%= diffDemo.名称 %> (检定修正×<%= diffDemo.检定修正 %>, 敌人强度×<%= diffDemo.敌人强度 %>)
+
+3. 奖励计算: _questReward(quest, success)
+   成功等级: 大成功(银两×1.5+关系+5) / 普通/极难成功(基础) / 失败(银两0/关系-2) / 大失败(银两0/关系-5)
+   社交修正: 银两 × (1 + 社交×0.02)
+   演示(求助信):
+     普通成功: 银两<%= rewardSuccessDemo.银两 %> + 关系+<%= rewardSuccessDemo.关系 %> 物品<%= rewardSuccessDemo.物品 %>
+     大成功: 银两<%= rewardCritDemo.银两 %> + 关系+<%= rewardCritDemo.关系 %> 物品<%= rewardCritDemo.物品 %>
+     失败: 银两<%= rewardFailDemo.银两 %> + 关系<%= rewardFailDemo.关系 %> 物品<%= rewardFailDemo.物品 %>
+
+4. 超时判定: _questTimeout(quest, startDay)
+   超时限制: 7天 (所有任务统一)
+   超时后果: 任务失败,关系-3
+   演示: 求助信 + 3天前开始 → 已用<%= timeoutDemo.已用天数 %>天,剩余<%= timeoutDemo.剩余天数 %>天 <%= timeoutDemo.超时 ? '(已超时)' : '(未超时)' %>
+
+[任务执行流程]
+1.触发判定 → 2.选择任务类型 → 3.难度计算 → 4.派遣殖民者 → 5.执行检定(_check) → 6.奖励发放 → 7.关系更新
+
+[行为校验要求]
+派系任务行为必须输出行为校验块:
+<派系任务校验>
+- 派系名称: [派系名]
+- 当前关系: [关系值] [关系层级]
+- 任务类型: [求助信/赏金/物资请求/特殊任务]
+- 任务描述: [任务说明]
+- 难度星级: [1-5星] [难度名称]
+- 检定修正: [×0.4~1.2]
+- 敌人强度: [×0.6~3.0]
+- 执行者: [殖民者姓名]
+- 检定结果: [_check结果(大成功/极难成功/普通成功/失败/大失败)]
+- 奖励银两: [银两数] [含社交修正]
+- 奖励关系: [关系增减]
+- 奖励物品: [物品名/无]
+- 超时状态: [剩余天数/已超时]
+- 银两变动: [扣除/增加/余额]
+- 关系变动: [触发原因/增减值/新关系值]
+</派系任务校验>
+
+[派系任务系统说明]
+本控制器为派系任务统一入口,所有派系任务触发/难度/奖励/超时必须经此判定。
+任务类型表(QUEST_DB)定义4类任务,奖励与难度基础值固定,可被社交技能修正。
+难度分级表(DIFFICULTY_DB)定义5级难度,影响检定阈值与敌人强度。
+触发判定依赖DDL确定性骰子引擎(_lcgRoll),确保触发概率可追溯可复现。
+任务检定使用_check函数,难度修正影响检定阈值(简单×1.2/致命×0.4)。
+与派系贸易系统联动:任务奖励的银两/关系变更需同步到殖民地.银两和派系.xxx.关系变量。
+超时统一7天,超时后任务失败且关系-3,需与时间推进调度器联动检测。
+</派系任务系统就绪>

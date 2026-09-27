@@ -1,0 +1,151 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 八十八海岸 · 地理场景定义（v3 · 去重版）
+   ════════════════════════════════════════════════════════════
+   职责：仅定义本区域的场景列表、时段准入、商店、特殊事件、地点详情。
+   NPC 出现日程由「寒假日程调度器/人物出现总表.txt」单一来源提供，
+   本文件不再持有 npc_schedule 字段（避免三处重复定义）。
+   由「世界观场景控制器」按 current_region 精准 getwi 加载（绿灯，按需激活）。
+   精准输出策略（v3）：仅输出 current_location 详情 + 区域级元数据。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* 读取当前地点（MVU 变量）用于精准输出 */
+const _currentLocation = String(getvar('stat_data.场景.当前地点', { scope: 'local', defaults: '' }) || '');
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' }) || '早');
+const _weather = String(getvar('stat_data.时间.天气', { scope: 'local', defaults: '晴' }) || '晴');
+
+const _regionCoast = {
+  region_name: '八十八海岸',
+  scenes: [
+    '海滩',
+    '海堤',
+    '灯塔',
+    '海岸商店街',
+    '海鲜餐厅'
+  ],
+  time_slot_access: {
+    '早':   { accessible: true,  note: '晨跑者稀少，海风寒冷' },
+    '上午': { accessible: true,  note: '海岸训练/散步，游客稀少' },
+    '下午': { accessible: true,  note: '冬季最佳约会点，日落时分浪漫' },
+    '晚':   { accessible: false, note: '冬季海岸夜晚寒冷，无人，建议离开' },
+    '深夜': { accessible: false, note: '禁止进入，触发安全警告（legal_warning +1）' }
+  },
+  /* npc_schedule 已迁移至「寒假日程调度器/人物出现总表.txt」单一来源 */
+  shop_items: 'SHOP_BY_REGION["八十八海岸"]（6件）：海鲜烧烤/海水冰沙/贝壳项链/海螺哨/游泳圈/防晒霜',
+  special_events: [
+    { day: 6,  slot: '下午', event_id: 'day06下午_海岸约会唯',     note: '与鸣泽唯海岸约会，心动期推进' },
+    { day: 12, slot: '下午', event_id: 'day12下午_海岸偶遇久美子', note: '偶遇永岛久美子散步，信任期推进' },
+    { day: 15, slot: '下午', event_id: 'day15下午_海岸日落',       note: '海岸日落浪漫场景，通用约会事件' }
+  ],
+  description: '八十八町海岸线，冬季游客稀少，适合散步和独处。南川洋子常在此晨跑训练；下午是冬季最佳约会点，唯/友美/久美子可能在此出现。晚/深夜禁止进入：晚段无人且寒冷，深夜段触发安全警告（legal_warning +1）。海岸商店街售海鲜与海边礼物。',
+  location_details: {
+    '海滩': {
+      aliases: ['海滩','海岸','沙滩'],
+      description: '八十八海岸主海滩，冬季空旷，散步约会推荐地',
+      ambient_sounds: '海浪声/海风/海鸥鸣',
+      default_activities: ['散步','约会','捡贝壳','看海','晨跑'],
+      time_slot_descriptions: { '早':'晨跑者稀少','上午':'游客稀少','下午':'冬季最佳约会时段','晚':'寒冷无人','深夜':'禁止进入' },
+      weather_modifiers: { '晴':'阳光海面','雨':'雨打海面','雪':'雪覆沙滩','暴风雪':'狂涛巨浪' },
+      heroines_likely: [1, 6, 8, 13],
+      bad_end_risk: 'low',
+      events_triggered: ['day06下午_海岸约会唯','day12下午_海岸偶遇久美子','day15下午_海岸日落']
+    },
+    '海堤': {
+      aliases: ['海堤','防波堤','堤防'],
+      description: '海岸防波堤，可坐堤观海，独处思考地',
+      ambient_sounds: '浪花拍堤声/海风/远处船笛',
+      default_activities: ['独处','看海','思考','约会'],
+      time_slot_descriptions: { '早':'清静','上午':'空旷','下午':'日落观海','晚':'寒冷','深夜':'禁止' },
+      weather_modifiers: { '晴':'阳光明媚','雨':'湿滑','雪':'寒意','暴风雪':'禁入' },
+      heroines_likely: [6, 8, 14],
+      bad_end_risk: 'low'
+    },
+    '灯塔': {
+      aliases: ['灯塔','航标塔'],
+      description: '海岸灯塔，可登顶俯瞰，情侣秘境，特殊事件触发地',
+      ambient_sounds: '风声/海浪声/灯塔机械声',
+      default_activities: ['登顶','俯瞰','约会','触发事件'],
+      time_slot_descriptions: { '早':'清静','上午':'可登','下午':'日落推荐','晚':'夜灯亮起','深夜':'禁止' },
+      weather_modifiers: { '晴':'视野极佳','雨':'湿滑','雪':'银白','暴风雪':'禁入' },
+      heroines_likely: [1, 8, 14],
+      bad_end_risk: 'medium',
+      flags_set: ['lighthouse_visit_count'],
+      events_triggered: ['灯塔约会事件']
+    },
+    '海岸商店街': {
+      aliases: ['海岸商店街','海岸街','海岸商店'],
+      description: '海岸商店街，售卖海鲜与海边礼物，旅游纪念品集中',
+      ambient_sounds: '叫卖声/包装声/闲聊',
+      default_activities: ['购物','买礼物','吃海鲜','闲逛'],
+      time_slot_descriptions: { '早':'准备营业','上午':'营业','下午':'营业高峰','晚':'打烊','深夜':'已关门' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [],
+      bad_end_risk: 'low',
+      flags_set: ['seaside_gift_purchased']
+    },
+    '海鲜餐厅': {
+      aliases: ['海鲜餐厅','海食','海鲜店'],
+      description: '海岸海鲜餐厅，新鲜海产，约会推荐地',
+      ambient_sounds: '餐具声/烹饪声/闲聊',
+      default_activities: ['用餐','约会','社交','品尝海鲜'],
+      time_slot_descriptions: { '早':'准备','上午':'午餐','下午':'下午茶','晚':'晚餐高峰','深夜':'已关门' },
+      weather_modifiers: { '晴':'明亮','雨':'室内','雪':'温暖','暴风雪':'室内' },
+      heroines_likely: [1, 8, 14],
+      bad_end_risk: 'low',
+      flags_set: ['seafood_dinner_count']
+    },
+    '机车行二楼': {
+      aliases: ['机车行二楼','机车行2楼','机车行阁楼'],
+      description: '海岸机车行二楼，隐蔽空间，可触发特殊秘密事件',
+      ambient_sounds: '楼下引擎声/远处海浪/低语',
+      default_activities: ['探索','触发秘密事件','秘密会面'],
+      time_slot_descriptions: { '早':'关闭','上午':'偶开','下午':'可进入','晚':'开启','深夜':'神秘' },
+      weather_modifiers: { '晴':'普通','雨':'神秘','雪':'寂静','暴风雪':'异象' },
+      heroines_likely: [],
+      bad_end_risk: 'high',
+      hidden_location: true,
+      unlock_condition: '机车行好感度达标或特定flag触发',
+      flags_set: ['coast_garage_secret_count'],
+      events_triggered: ['海岸机车行秘密事件'],
+      time_lock: '深夜进入触发关键剧情'
+    }
+  }
+};
+
+/* 精准提取当前地点详情（避免全量输出 6 个地点） */
+const _currentLocationDetail = _regionCoast.location_details[_currentLocation] || null;
+const _currentLocationNarrative = _currentLocationDetail ? {
+  location: _currentLocation,
+  aliases: _currentLocationDetail.aliases,
+  description: _currentLocationDetail.description,
+  ambient_sounds: _currentLocationDetail.ambient_sounds,
+  default_activities: _currentLocationDetail.default_activities,
+  current_time_slot_description: _currentLocationDetail.time_slot_descriptions[_timeSlot] || '未定义',
+  current_weather_modifier: _currentLocationDetail.weather_modifiers[_weather] || '未定义',
+  heroines_likely: _currentLocationDetail.heroines_likely || [],
+  bad_end_risk: _currentLocationDetail.bad_end_risk || 'low',
+  time_lock: _currentLocationDetail.time_lock,
+  exclusive_choices: _currentLocationDetail.exclusive_choices,
+  hidden_location: _currentLocationDetail.hidden_location,
+  unlock_condition: _currentLocationDetail.unlock_condition,
+  flags_set: _currentLocationDetail.flags_set,
+  events_triggered: _currentLocationDetail.events_triggered
+} : { location: _currentLocation, note: '当前地点无详细定义（使用区域默认描述）' };
+%>
+
+<%/* ─── 区域叙事提示 + 数据输出 ─── */%>
+[区域：八十八海岸。冬季海岸，游客稀少，下午为最佳约会时段。晚段寒冷无人，深夜禁止进入并触发安全警告（legal_warning +1）。南川洋子（6）常驻晨跑训练；下午可能出现唯、友美、久美子。海岸商店街售海鲜烧烤与海边礼物（贝壳项链/海螺哨等）。当前时段下可遭遇 NPC 已锁定，禁止引入未列出的女角。]
+
+<%= JSON.stringify({
+  region: _regionCoast.region_name,
+  scenes: _regionCoast.scenes,
+  time_slot_access: _regionCoast.time_slot_access,
+  shop_items_ref: 'SHOP_BY_REGION["八十八海岸"]',
+  shop_items_count: 6,
+  safety_warning: '深夜进入触发 legal_warning +1',
+  special_events: _regionCoast.special_events,
+  description: _regionCoast.description,
+  current_location_detail: _currentLocationNarrative,
+  npc_source: '寒假日程调度器/人物出现总表.txt (getAvailableHeroines)'
+}, null, 2) %>

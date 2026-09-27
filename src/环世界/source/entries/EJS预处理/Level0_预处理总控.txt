@@ -1,0 +1,225 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   环世界 Level0 预处理总控（核心调度器）
+   ════════════════════════════════════════════════════════════
+   架构：场景驱动条件加载（对标同级生2 EJS精准控制框架）
+
+   原则：
+   1. 本条目是唯一的蓝灯 @@generate_before 条目
+   2. 其他所有 @@generate_before 条目均为关灯(enabled:false)
+   3. 由本控制器通过 getwi() 按场景条件加载，共享函数作用域
+   4. 数据表不常驻，仅对应场景时加载
+   5. 控制器只输出计算结果摘要，详细规则不进上下文
+
+   执行顺序：
+   1. 加载 DDL 确定性骰子引擎（基础设施，定义 _lcgRoll/_check 等函数）
+   2. 读取 MVU 变量，判定当前场景模式
+   3. 加载 Level 1 核心引擎（每轮必调）
+   4. 加载 Level 2 基础生存系统（日常默认）
+   5. 按场景条件加载 Level 3 扩展系统
+   6. 按场景条件加载 Level 4 数据表
+   7. 输出殖民地状态摘要+本轮调度指令
+
+   场景模式（stat_data.殖民地.当前场景）：
+   - 日常（默认）：核心引擎+基础生存(14模块)
+   - 战斗：+装甲数值表+袭击触发器+战斗控制器+武器表+弹药表+机械族表(6模块)
+   - 建设：+建筑数值表+建筑系统+装饰美观+材料表(4模块)
+   - 种植：+种植畜牧+作物表+食物表+动物表(4模块)
+   - 医疗：+医疗手术+疾病+成瘾+机械飞升+尸体处理+药品表(6模块)
+   - NSFW：+NSFW+生理周期+关系+奴隶(4模块)
+   - 贸易：+派系贸易+轨道贸易+派系任务+社交事件+派系定义(5模块)
+   - 探索：+远征商队+考古+虫害+采矿+火灾(5模块)
+   - 研究：+科技树+制作系统+技能成长+艺术品表(4模块)
+   - 特殊事件：+精神崩溃+污染+多结局+教育儿童(4模块)
+
+   注：装甲/建筑数据表现在由对应场景加载完整版（不再内含于控制器）。
+   ════════════════════════════════════════════════════════════ */%>
+
+<%/* ─── 1. 加载 DDL 确定性骰子引擎（最先执行，所有模块共享函数） ─── */%>
+<%- await getwi('DDL确定性骰子引擎') %>
+
+<%/* ─── 2. 读取 MVU 变量，判定场景模式 ─── */%>
+<%_
+var sceneMode = getvar('stat_data.殖民地.当前场景', { scope: 'local', defaults: '日常' }) || '日常';
+var raidCooldown = Number(getvar('stat_data.殖民地.袭击冷却', { scope: 'local', defaults: 96 })) || 96;
+var gameDay = Number(getvar('stat_data.殖民地.游戏日', { scope: 'local', defaults: 1 })) || 1;
+var timeSlot = getvar('stat_data.殖民地.时段', { scope: 'local', defaults: '清晨' }) || '清晨';
+var season = getvar('stat_data.殖民地.季节', { scope: 'local', defaults: '春' }) || '春';
+var temperature = Number(getvar('stat_data.殖民地.温度', { scope: 'local', defaults: 20 })) || 20;
+var weather = getvar('stat_data.殖民地.天气', { scope: 'local', defaults: '晴' }) || '晴';
+var biome = getvar('stat_data.殖民地.biome', { scope: 'local', defaults: '温带森林' }) || '温带森林';
+var storyteller = getvar('stat_data.殖民地.故事讲述者', { scope: 'local', defaults: '卡桑德拉' }) || '卡桑德拉';
+var phase = getvar('stat_data.殖民地.阶段', { scope: 'local', defaults: '拓荒期' }) || '拓荒期';
+var wealth = Number(getvar('stat_data.殖民地.财富总值', { scope: 'local', defaults: 800 })) || 800;
+var threat = Number(getvar('stat_data.殖民地.威胁点数', { scope: 'local', defaults: 0 })) || 0;
+var alertLevel = Number(getvar('stat_data.殖民地.警戒等级', { scope: 'local', defaults: 20 })) || 20;
+var silver = Number(getvar('stat_data.殖民地.银两', { scope: 'local', defaults: 800 })) || 800;
+var powerNet = Number(getvar('stat_data.殖民地.电力净额', { scope: 'local', defaults: 0 })) || 0;
+var batteryCharge = Number(getvar('stat_data.殖民地.蓄电池电量', { scope: 'local', defaults: 0 })) || 0;
+
+if (raidCooldown <= 0) sceneMode = '战斗';
+
+var needRaidCheck = raidCooldown <= 6;
+var needPowerWarning = powerNet < 0;
+var needBatteryWarning = batteryCharge < 100;
+_%>
+
+<%/* ─── 3. Level 1 核心引擎（每轮必调） ─── */%>
+<%- await getwi('时间推进调度器') %>
+<%- await getwi('财富估值器') %>
+<%- await getwi('事件调度器') %>
+<%- await getwi('讲述者参数表') %>
+<%- await getwi('四阶段指导') %>
+<%- await getwi('biome模块') %>
+<%- await getwi('固定地图') %>
+<%- await getwi('事件包') %>
+
+<%/* ─── 4. Level 2 基础生存系统（日常默认加载） ─── */%>
+<%- await getwi('殖民者预设模板') %>
+<%- await getwi('工作优先级系统') %>
+<%- await getwi('天气效果系统') %>
+<%- await getwi('温度环境系统') %>
+<%- await getwi('电力系统') %>
+<%- await getwi('烹饪系统') %>
+
+<%/* ─── 5. Level 3 场景条件加载 ─── */%>
+
+<%/* ── 5.1 战斗场景（先加载数据表，再加载控制器） ── */%>
+<% if (sceneMode === '战斗') { %>
+<%- await getwi('装甲数值表ARMOR_DB') %>
+<%- await getwi('袭击触发器') %>
+<%- await getwi('战斗控制器') %>
+<% } %>
+
+<%/* ── 5.2 建设场景（先加载数据表，再加载控制器） ── */%>
+<% if (sceneMode === '建设') { %>
+<%- await getwi('建筑数值表BUILDING_DB') %>
+<%- await getwi('建筑系统') %>
+<%- await getwi('装饰美观系统') %>
+<% } %>
+
+<%/* ── 5.3 种植场景 ── */%>
+<% if (sceneMode === '种植') { %>
+<%- await getwi('种植畜牧系统') %>
+<% } %>
+
+<%/* ── 5.4 医疗场景 ── */%>
+<% if (sceneMode === '医疗') { %>
+<%- await getwi('医疗手术系统') %>
+<%- await getwi('疾病系统') %>
+<%- await getwi('成瘾戒断系统') %>
+<%- await getwi('机械飞升系统') %>
+<%- await getwi('尸体处理葬礼系统') %>
+<% } %>
+
+<%/* ── 5.5 NSFW场景 ── */%>
+<% if (sceneMode === 'NSFW') { %>
+<%- await getwi('NSFW系统') %>
+<%- await getwi('生理周期怀孕系统') %>
+<%- await getwi('关系系统') %>
+<%- await getwi('奴隶系统') %>
+<% } %>
+
+<%/* ── 5.6 贸易场景 ── */%>
+<% if (sceneMode === '贸易') { %>
+<%- await getwi('派系贸易系统') %>
+<%- await getwi('轨道贸易系统') %>
+<%- await getwi('派系任务系统') %>
+<%- await getwi('社交事件系统') %>
+<%- await getwi('派系定义') %>
+<% } %>
+
+<%/* ── 5.7 探索场景 ── */%>
+<% if (sceneMode === '探索') { %>
+<%- await getwi('远征商队系统') %>
+<%- await getwi('考古系统') %>
+<%- await getwi('虫害系统') %>
+<%- await getwi('采矿资源勘探系统') %>
+<%- await getwi('火灾系统') %>
+<% } %>
+
+<%/* ── 5.8 研究场景 ── */%>
+<% if (sceneMode === '研究') { %>
+<%- await getwi('科技树') %>
+<%- await getwi('制作系统') %>
+<%- await getwi('技能成长系统') %>
+<% } %>
+
+<%/* ── 5.9 特殊事件场景 ── */%>
+<% if (sceneMode === '特殊事件') { %>
+<%- await getwi('精神崩溃系统') %>
+<%- await getwi('污染系统') %>
+<%- await getwi('多结局系统') %>
+<%- await getwi('教育儿童成长系统') %>
+<% } %>
+
+<%/* ─── 6. Level 4 数据表（仅对应场景加载，装甲/建筑已在Level 3加载） ─── */%>
+
+<%/* ── 6.1 战斗数据表（装甲已在Level 3加载） ── */%>
+<% if (sceneMode === '战斗') { %>
+<%- await getwi('武器数值表WEAPON_DB') %>
+<%- await getwi('弹药数值表AMMO_DB') %>
+<%- await getwi('机械族数值表MECHANOID_DB') %>
+<% } %>
+
+<%/* ── 6.2 建设数据表（建筑已在Level 3加载） ── */%>
+<% if (sceneMode === '建设') { %>
+<%- await getwi('材料数值表MATERIAL_DB') %>
+<% } %>
+
+<%/* ── 6.3 种植数据表 ── */%>
+<% if (sceneMode === '种植') { %>
+<%- await getwi('作物数值表CROP_DB') %>
+<%- await getwi('食物数值表FOOD_DB') %>
+<%- await getwi('动物数值表ANIMAL_DB') %>
+<% } %>
+
+<%/* ── 6.4 医疗数据表 ── */%>
+<% if (sceneMode === '医疗') { %>
+<%- await getwi('药品数值表MED_DB') %>
+<% } %>
+
+<%/* ── 6.5 研究数据表 ── */%>
+<% if (sceneMode === '研究') { %>
+<%- await getwi('艺术品数值表ART_DB') %>
+<% } %>
+
+<%/* ─── 7. 输出殖民地状态摘要+本轮调度指令 ─── */%>
+<殖民地状态摘要>
+游戏日: <%= gameDay %>
+时段: <%= timeSlot %>
+季节: <%= season %>
+温度: <%= temperature %>°C
+天气: <%= weather %>
+生态群落: <%= biome %>
+故事讲述者: <%= storyteller %>
+殖民地阶段: <%= phase %>
+财富总值: <%= wealth %>
+威胁点数: <%= threat %>
+袭击冷却: <%= raidCooldown %>小时
+警戒等级: <%= alertLevel %>
+银两: <%= silver %>
+电力净额: <%= powerNet %>W
+蓄电池电量: <%= batteryCharge %>Wd
+当前场景模式: <%= sceneMode %>
+</殖民地状态摘要>
+<本轮调度指令>
+场景模式: <%= sceneMode %>
+必调模块: 时间推进调度器, 财富估值器, 事件调度器
+已加载场景模块: <%= sceneMode %>
+</本轮调度指令>
+<%_ if (needRaidCheck) { _%>
+<袭击预警>
+袭击冷却仅剩 <%= raidCooldown %> 小时，即将触发袭击判定。
+</袭击预警>
+<%_ } _%>
+<%_ if (needPowerWarning) { _%>
+<电力预警>
+电力净额 <%= powerNet %>W，发电不足需求，蓄电池放电中。
+</电力预警>
+<%_ } _%>
+<%_ if (needBatteryWarning) { _%>
+<蓄电池低>
+蓄电池电量 <%= batteryCharge %>Wd，低于安全阈值100Wd。
+</蓄电池低>
+<%_ } _%>

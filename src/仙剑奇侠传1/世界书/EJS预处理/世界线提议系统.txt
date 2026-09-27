@@ -1,0 +1,426 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   仙剑奇侠传1 · 世界线提议系统（原著事件改写机制）
+   ════════════════════════════════════════════════════════════
+   职责：
+   1. 维护原著事件 ID 表（约80个关键事件，6 章节 + 历史背景）
+   2. 提供世界线提议格式（WorldlineProposal XML）
+   3. 定义提议接受条件（合理性 / 不死局 / 章节匹配）
+   4. 定义改写后效果（标记已改写 / 触发分支 / 解锁隐藏结局）
+   5. 输出当前可提议事件列表给 AI
+   加载策略：蓝灯系统级，可由主调度控制器按需 getwi 加载
+   依赖：需先加载「全局规则总表.txt」的 var 兜底声明；建议加载「阶段联动框架.txt」
+   define() 模式：注册 WORLDLINE_PROPOSAL 全局常量，供主调度控制器/章节触发器/角色条目调用
+   变量路径（与 schema.ts 对齐）：
+     stat_data.当前章节                当前所在章节（1-6）
+     stat_data.章节进度               当前章节进度（1-60）
+     stat_data.世界线.已改写事件      已改写的原著事件 ID 集合
+     stat_data.世界线.当前世界线      当前世界线标识（原著线/改写线）
+     stat_data.世界线.提议历史        历次世界线提议记录
+     stat_data.世界线.隐藏结局解锁    已解锁的隐藏结局标识集合
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ─── 1. 读取 MVU 当前章节与世界线状态 ─── */
+if (typeof _wlCurrentChapter === 'undefined') var _wlCurrentChapter = Number(getvar('stat_data.当前章节', { scope: 'local', defaults: 1 })) || 1;
+if (typeof _wlChapterProgress === 'undefined') var _wlChapterProgress = Number(getvar('stat_data.章节进度', { scope: 'local', defaults: 1 })) || 1;
+if (typeof _wlRewrittenEvents === 'undefined') var _wlRewrittenEvents = getvar('stat_data.世界线.已改写事件', { scope: 'local', defaults: [] }) || [];
+if (typeof _wlCurrentLine === 'undefined') var _wlCurrentLine = getvar('stat_data.世界线.当前世界线', { scope: 'local', defaults: '原著线' }) || '原著线';
+if (typeof _wlProposalHistory === 'undefined') var _wlProposalHistory = getvar('stat_data.世界线.提议历史', { scope: 'local', defaults: [] }) || [];
+if (typeof _wlHiddenEndings === 'undefined') var _wlHiddenEndings = getvar('stat_data.世界线.隐藏结局解锁', { scope: 'local', defaults: [] }) || [];
+
+/* ════════════════════════════════════════════════════════════
+   一、原著事件 ID 表（约80个关键事件）
+   ════════════════════════════════════════════════════════════ */
+const WORLDLINE_PROPOSAL = {
+
+  /* ───── 1. 原著事件 ID 表 ───── */
+  canonical_events: {
+
+    /* ── 第1章·仙灵岛结缘（10个） ── */
+    chapter_1: [
+      { id: 'shenshen_poisoned',           name: '婶婶中毒',         desc: '李逍遥婶婶李凤突中奇毒，逍遥外出求药',                effect: '主线启动' },
+      { id: 'jiujianxian_guide',           name: '酒剑仙指点',       desc: '酒剑仙指点逍遥渡海仙灵岛求药之法',                  effect: '解锁仙灵岛路线' },
+      { id: 'duhai_xianlingdao',           name: '渡海登仙灵岛',     desc: '逍遥渡海登仙灵岛，初入灵月宫',                      effect: '解锁仙灵岛场景' },
+      { id: 'xianlingdao_meet_linger',     name: '仙灵岛初遇灵儿',   desc: '逍遥在仙池偶遇沐浴的赵灵儿，二人初识',              effect: '灵儿登场' },
+      { id: 'linger_bathing_encounter',    name: '灵儿沐浴相遇',     desc: '仙池相遇的尴尬一幕，灵儿对逍遥留下印象',            effect: '关系起点' },
+      { id: 'grandmother_trust',           name: '姥姥托孤',         desc: '姥姥将灵儿托付逍遥，赠女娲遗物',                    effect: '灵儿入队' },
+      { id: 'grandmother_death',           name: '姥姥之死',         desc: '姥姥为护灵儿与逍遥力竭而亡',                        effect: '情感羁绊加深' },
+      { id: 'linger_kidnapped',            name: '灵儿被掳',         desc: '拜月教徒突袭仙灵岛掳走灵儿',                      effect: '触发章节切换→第2章' },
+      { id: 'xianlingdao_escape',          name: '仙灵岛逃离',       desc: '逍遥与灵儿在姥姥掩护下逃离仙灵岛',                  effect: '主线推进' },
+      { id: 'yuhangzhen_depart',           name: '余杭镇启程',       desc: '逍遥告别余杭镇，踏上寻人之旅',                      effect: '主线推进' }
+    ],
+
+    /* ── 第2章·苏州比武招亲（10个） ── */
+    chapter_2: [
+      { id: 'suzhou_arrival',                  name: '抵达苏州',         desc: '逍遥抵达苏州城，正逢林家堡比武招亲',                effect: '解锁苏州场景' },
+      { id: 'biwu_zhaqin',                    name: '比武招亲擂台',     desc: '逍遥登擂台连胜，赢得比武招亲',                      effect: '月如登场' },
+      { id: 'lin_yueru_join',                  name: '林月如入队',       desc: '林月如以"输者随行"为由加入队伍',                    effect: '月如入队' },
+      { id: 'yueru_engagement_contract',      name: '月如婚约成立',     desc: '林天南当面许婚，逍遥与月如定下婚约',                effect: '关系推进' },
+      { id: 'liu_jinyuan_meet',                name: '苏州遇刘晋元',     desc: '逍遥在苏州结识书生刘晋元',                          effect: '晋元登场' },
+      { id: 'yinlongku_explore',               name: '隐龙窟深入探索',   desc: '众人深入隐龙窟查探蛇妖作祟',                        effect: '解锁隐龙窟场景' },
+      { id: 'yinlongku_snake',                 name: '隐龙窟蛇妖事件',   desc: '隐龙窟蛇妖作妖作祟，掳走城中少女',                      effect: '主线推进' },
+      { id: 'save_suzhou_villagers',           name: '拯救苏州村民',     desc: '众人解救被蛇妖掳走的村民',                          effect: '声望提升' },
+      { id: 'snake_demon_battle',              name: '蛇妖BOSS战',       desc: '逍遥月如联手击败隐龙窟蛇妖',                        effect: '危机解除' },
+      { id: 'suzhou_depart',                   name: '离开苏州',         desc: '众人离开苏州，继续寻人之旅',                        effect: '触发章节切换→第3章' }
+    ],
+
+    /* ── 第3章·京城彩依事件（10个） ── */
+    chapter_3: [
+      { id: 'jingcheng_arrival',               name: '京城抵达',         desc: '众人抵达京城长安，遇京城繁华',                      effect: '解锁京城场景' },
+      { id: 'liu_jinyuan_reunion',             name: '与刘晋元重逢',     desc: '在京城与刘晋元重逢，受邀暂住刘府',                  effect: '主线推进' },
+      { id: 'caiyi_event',                     name: '彩依事件',         desc: '逍遥在刘府邂逅化为入形的彩依',                      effect: '彩依登场' },
+      { id: 'jinyuan_poisoned',                name: '晋元中毒',         desc: '刘晋元身中奇毒，命悬一线',                          effect: '主线推进' },
+      { id: 'caiyi_reveal_true_form',          name: '彩依现出原形',     desc: '彩依在众人面前现出蝴蝶精原形',                      effect: '真相揭露' },
+      { id: 'du_niangzi_grudge',               name: '毒娘子恩怨揭晓',   desc: '揭毒娘子与彩依之间的恩怨纠葛',                      effect: '主线推进' },
+      { id: 'jingcheng_investigate',           name: '京城调查妖事',     desc: '众人调查京城妖异事件，追查毒娘子',                  effect: '解锁调查支线' },
+      { id: 'du_niangzi_boss',                 name: '毒娘子BOSS战',     desc: '逍遥与毒娘子决战，毒娘子被降服',                    effect: '触发章节切换→第4章' },
+      { id: 'caiyi_sacrifice_save',            name: '彩依牺牲救晋元',   desc: '彩依牺牲自身救活刘晋元',                            effect: '情感高潮' },
+      { id: 'jingcheng_depart',                name: '离开京城',         desc: '众人离开京城，赴蜀山求神器',                        effect: '主线推进' }
+    ],
+
+    /* ── 第4章·蜀山锁妖塔（10个） ── */
+    chapter_4: [
+      { id: 'shushan_arrival',                 name: '蜀山抵达',         desc: '众人上蜀山派求借神器救灵儿',                        effect: '解锁蜀山场景' },
+      { id: 'jiansheng_refuse_lend',           name: '剑圣拒借神器',     desc: '剑圣以天规为由拒绝借出神器',                        effect: '主线转折' },
+      { id: 'suoyota_imprison_linger',         name: '锁妖塔囚禁灵儿',   desc: '灵儿曾被囚于锁妖塔，真相逐渐浮现',                  effect: '真相揭露' },
+      { id: 'linger_imprison_truth',           name: '灵儿被囚真相',     desc: '灵儿被囚锁妖塔的真相大白，牵出女娲一脉身世',        effect: '身世揭露' },
+      { id: 'suoyota_breach_formation',        name: '锁妖塔破阵',       desc: '众人闯锁妖塔，破除层层阵法',                        effect: '解锁锁妖塔场景' },
+      { id: 'ling_er_rescue',                  name: '营救灵儿',         desc: '逍遥等人深入锁妖塔营救灵儿',                        effect: '主线推进' },
+      { id: 'zhenyu_mingwang_battle',          name: '镇狱明王之战',     desc: '对战锁妖塔镇狱明王，恶战过关',                      effect: '触发章节切换→第5章' },
+      { id: 'jiansheng_acknowledge',           name: '剑圣认可逍遥',     desc: '剑圣见证逍遥的决心，给予认可',                      effect: '声望提升' },
+      { id: 'shushan_artifact_acquire',         name: '蜀山神器获得',     desc: '逍遥获得蜀山派神器支援',                            effect: '战力提升' },
+      { id: 'shushan_depart',                  name: '离开蜀山',         desc: '众人离开蜀山，赴苗疆寻灵儿身世',                    effect: '主线推进' }
+    ],
+
+    /* ── 第5章·苗疆决战（10个） ── */
+    chapter_5: [
+      { id: 'miaojiang_reunion',               name: '苗疆与灵儿重逢',   desc: '逍遥在苗疆与灵儿重逢，牵出女娲一脉身世',            effect: '解锁苗疆场景' },
+      { id: 'miaojiang_tribe_visit',           name: '苗疆部落访问',     desc: '众人访问白苗族与黑苗族，了解部落纷争',                effect: '解锁支线' },
+      { id: 'baiyue_appear',                   name: '拜月教主现身',     desc: '拜月教主正式现身，图谋水魔兽',                      effect: '主线反派登场' },
+      { id: 'baiyue_conspiracy_reveal',         name: '拜月阴谋揭晓',     desc: '拜月教主唤醒水魔兽祸乱苗疆的阴谋揭晓',                effect: '危机升级' },
+      { id: 'baiyue_minion_battle',            name: '拜月教徒战斗',     desc: '众人击败拜月教护法与教徒',                          effect: '战力验证' },
+      { id: 'shui_moshou_awaken',              name: '水魔兽觉醒',       desc: '拜月唤醒水魔兽，祸乱苗疆',                          effect: '危机升级' },
+      { id: 'shui_moshou_seal_attempt',        name: '水魔兽封印尝试',   desc: '众人尝试封印水魔兽，初战受挫',                      effect: '主线推进' },
+      { id: 'nuwa_bloodline_ritual',           name: '女娲血脉仪式',     desc: '灵儿接受女娲血脉觉醒仪式',                          effect: '主线推进' },
+      { id: 'nuwa_awaken',                     name: '女娲血脉觉醒',     desc: '灵儿女娲血脉之力觉醒，战力大涨',                    effect: '触发章节切换→第6章' },
+      { id: 'miaojiang_decisive_battle',       name: '苗疆决战',         desc: '苗疆决战爆发，众人对抗拜月势力',                    effect: '主线推进' }
+    ],
+
+    /* ── 第6章·结局分支（10个） ── */
+    chapter_6: [
+      { id: 'nuwa_altar_ritual',               name: '女娲祭坛仪式',     desc: '众人抵达女娲祭坛，准备终局之战',                    effect: '解锁祭坛场景' },
+      { id: 'baiyue_final_battle',             name: '拜月终战',         desc: '逍遥与拜月教主最终决战',                            effect: '主线高潮' },
+      { id: 'shui_moshou_final_battle',        name: '水魔兽终战',       desc: '众人对抗水魔兽的最终决战',                          effect: '主线高潮' },
+      { id: 'tian_repair_ritual',              name: '补天仪式完成',     desc: '灵儿以女娲血脉启动补天仪式',                        effect: '主线高潮' },
+      { id: 'ling_er_butian',                   name: '灵儿补天',         desc: '灵儿以女娲血脉补天，牺牲己身',                      effect: '主线高潮' },
+      { id: 'ling_er_sacrifice_butian',        name: '灵儿补天牺牲',     desc: '灵儿为补天而牺牲，众人悲痛',                        effect: '情感高潮' },
+      { id: 'yueru_sacrifice',                 name: '月如牺牲',         desc: '月如为护逍遥而牺牲',                                effect: '主线高潮' },
+      { id: 'yueru_revive',                    name: '月如复活',         desc: '条件分支：月如好感≥80且女娲血脉觉醒阶段≥3时复活',    effect: '分支判定' },
+      { id: 'ending_branch',                   name: '结局分支判定',     desc: '依月如复活条件与女娲血脉阶段分歧结局',              effect: '分支判定' },
+      { id: 'ending_resolution',               name: '结局收束',         desc: '依分支判定进入对应结局，终章收束',                  effect: '终章收束' }
+    ],
+
+    /* ── 历史背景事件（20个） ── */
+    timeline: [
+      { id: 'timeline_nuwa_seal_water_demon',      name: '远古女娲封印水魔兽',     desc: '远古时代女娲封印水魔兽，立下苗疆守护',              effect: '世界观基石' },
+      { id: 'timeline_qing_er_nuwa_inherit',        name: '青儿继承女娲血脉',       desc: '青儿继承女娲一脉血脉之力',                          effect: '血脉传承' },
+      { id: 'timeline_qing_er_death',              name: '青儿之死',               desc: '青儿（巫后）为守护苗疆而亡',                        effect: '历史转折' },
+      { id: 'timeline_wu_hou_death',               name: '巫后之死',               desc: '巫后为护灵儿与苗疆牺牲',                            effect: '历史转折' },
+      { id: 'timeline_wu_wang_seal_sacrifice',     name: '巫王封印牺牲',           desc: '巫王以自身为代价加固水魔兽封印',                    effect: '历史事件' },
+      { id: 'timeline_zhao_linger_birth',           name: '赵灵儿降生',             desc: '赵灵儿降生，承载女娲一脉血脉',                    effect: '血脉延续' },
+      { id: 'timeline_linger_mother_death',        name: '灵儿母亲之死',           desc: '灵儿母亲林青儿为护灵儿而亡',                        effect: '身世伏笔' },
+      { id: 'timeline_grandmother_escape',          name: '姥姥携灵儿逃亡',         desc: '姥姥携幼年灵儿逃离苗疆，隐居仙灵岛',                effect: '身世伏笔' },
+      { id: 'timeline_linger_childhood_seclusion',  name: '灵儿童年隐居',           desc: '灵儿在仙灵岛度过隐居童年',                          effect: '身世伏笔' },
+      { id: 'timeline_baiyue_cult_origin',          name: '拜月教起源',             desc: '拜月教在苗疆兴起，图谋水魔兽之力',                  effect: '反派起源' },
+      { id: 'timeline_baiyue_water_demon_pact',     name: '拜月与水魔兽契约',       desc: '拜月教主与水魔兽缔结契约，图谋天下',                effect: '反派阴谋' },
+      { id: 'timeline_miao_tribe_split',            name: '苗疆部落分裂',           desc: '苗疆白苗族与黑苗族因拜月教而分裂',                  effect: '势力格局' },
+      { id: 'timeline_miaojiang_ancient_war',       name: '苗疆古战争',             desc: '苗疆古时部落战争，埋下世代恩怨',                    effect: '历史背景' },
+      { id: 'timeline_heishui_prosperity',          name: '黑水国盛世',             desc: '黑水国曾经的盛世辉煌',                              effect: '历史背景' },
+      { id: 'timeline_heishui_kingdom_fall',         name: '黑水国覆灭',             desc: '黑水国因拜月教与水魔兽而覆灭',                      effect: '历史背景' },
+      { id: 'timeline_shushan_founding',            name: '蜀山派立派',             desc: '蜀山派立派，以镇妖伏魔为己任',                      effect: '势力格局' },
+      { id: 'timeline_suoyota_construction',        name: '锁妖塔建造',             desc: '蜀山派建造锁妖塔，镇压群妖',                        effect: '势力格局' },
+      { id: 'timeline_xianjian_legend',             name: '仙剑传说起源',           desc: '仙剑传说流传，蕴含上古之力',                        effect: '世界观基石' },
+      { id: 'timeline_zhenyue_sword_forge',         name: '镇岳剑铸造',             desc: '镇岳剑铸造完成，成为蜀山镇派之宝',                  effect: '物品传说' },
+      { id: 'timeline_yueru_childhood_martial',     name: '月如童年习武',           desc: '林月如童年随父习武，养成豪爽性格',                  effect: '角色背景' }
+    ]
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     二、世界线提议格式（WorldlineProposal XML）
+     ════════════════════════════════════════════════════════════ */
+  proposal_format: {
+    template: [
+      '<WorldlineProposal>',
+      '原著事件ID: [事件ID]',
+      '当前世界线: [原著线/改写线]',
+      '提议改写: [改写内容简述]',
+      '改写理由: [玩家输入]',
+      '影响评估: [AI 评估影响]',
+      '</WorldlineProposal>'
+    ].join('\n'),
+    example: [
+      '<WorldlineProposal>',
+      '原著事件ID: xianlingdao_meet_linger',
+      '当前世界线: 原著线',
+      '提议改写: 李逍遥提前到达仙灵岛，姥姥未死，灵儿未被掳',
+      '改写理由: [玩家输入]',
+      '影响评估: [AI 评估影响]',
+      '</WorldlineProposal>'
+    ].join('\n'),
+    fields: {
+      '原著事件ID': '必填，必须为 canonical_events 中已登记的事件 ID',
+      '当前世界线': '必填，原著线 或 改写线',
+      '提议改写': '必填，玩家希望如何改写该原著事件',
+      '改写理由': '必填，玩家输入的改写理由',
+      '影响评估': 'AI 评估改写对后续剧情、角色关系、结局分支的影响'
+    }
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     三、提议接受条件
+     ════════════════════════════════════════════════════════════ */
+  acceptance_conditions: {
+    desc: 'AI 收到 WorldlineProposal 后须逐条检查以下条件，全部满足方可接受改写',
+    conditions: [
+      {
+        id: 'condition_rational',
+        name: '改写合理',
+        rule: '改写不违反仙剑1世界观核心设定（女娲血脉/五灵法术/蜀山镇妖/拜月阴谋等）',
+        check_points: [
+          '不违反女娲一脉血脉传承规则',
+          '不违反五灵法术体系相生相克',
+          '不违反蜀山派镇妖天规核心',
+          '不违反拜月教主与水魔兽契约关系',
+          '不违反主角李逍遥身份固定'
+        ]
+      },
+      {
+        id: 'condition_no_dead_end',
+        name: '不导致死结局',
+        rule: '改写后不会触发 BAD_END_1 至 BAD_END_8 任一死结局',
+        check_points: [
+          '不会导致女娲血脉未觉醒战拜月',
+          '不会导致关键角色永久死亡',
+          '不会导致蜀山派彻底敌对',
+          '不会导致水魔兽无法封印',
+          '不会导致主角妄图弑神'
+        ]
+      },
+      {
+        id: 'condition_chapter_match',
+        name: '符合当前章节进度',
+        rule: '被改写的原著事件 ID 所属章节须 ≤ 当前章节，禁止预先改写未来章节事件',
+        check_points: [
+          '事件 ID 所属章节 ≤ stat_data.当前章节',
+          '事件 ID 尚未在 stat_data.世界线.已改写事件 中标记',
+          '改写不破坏当前章节进度推进逻辑'
+        ]
+      }
+    ],
+    accept_rule: '三条条件全部满足 → 接受改写，执行改写后效果；任一不满足 → 拒绝改写，向玩家说明不满足的具体条件'
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     四、改写后效果
+     ════════════════════════════════════════════════════════════ */
+  rewrite_effects: {
+    desc: '改写被接受后，AI 须在 <UpdateVariable> 块中执行以下效果',
+    effects: [
+      {
+        id: 'effect_mark_rewritten',
+        name: '原著事件标记为"已改写"',
+        action: '将事件 ID 追加至 stat_data.世界线.已改写事件 数组',
+        variable_patch: 'ADD /世界线/已改写事件/- with value "[事件ID]"'
+      },
+      {
+        id: 'effect_switch_worldline',
+        name: '切换当前世界线',
+        action: '将 stat_data.世界线.当前世界线 设为"改写线"',
+        variable_patch: 'REPLACE /世界线/当前世界线 with value "改写线"'
+      },
+      {
+        id: 'effect_record_proposal',
+        name: '记录提议历史',
+        action: '将本次 WorldlineProposal 追加至 stat_data.世界线.提议历史',
+        variable_patch: 'ADD /世界线/提议历史/- with value {事件ID, 改写内容, 改写理由, 影响评估, 时间戳}'
+      },
+      {
+        id: 'effect_trigger_branch',
+        name: '触发新的剧情分支',
+        action: 'AI 须基于改写内容生成新的剧情分支，替代原著剧情走向',
+        note: '新分支须延续改写后的世界线逻辑，不得无故回归原著线'
+      },
+      {
+        id: 'effect_unlock_hidden_ending',
+        name: '解锁隐藏结局',
+        action: '改写累计达指定数量或改写关键事件时，解锁对应隐藏结局标识至 stat_data.世界线.隐藏结局解锁',
+        hidden_endings: {
+          'hidden_ending_1_grandmother_survive': {
+            trigger: '改写 grandmother_death 事件使姥姥存活',
+            desc: '姥姥存活结局：姥姥未死，持续指导灵儿，女娲血脉觉醒更顺利'
+          },
+          'hidden_ending_2_linger_not_kidnapped': {
+            trigger: '改写 linger_kidnapped 事件使灵儿未被掳',
+            desc: '灵儿未失踪结局：灵儿始终随队，第2-4章剧情走向完全不同'
+          },
+          'hidden_ending_3_yueru_no_sacrifice': {
+            trigger: '改写 yueru_sacrifice 事件使月如未牺牲',
+            desc: '月如未牺牲结局：月如始终随队，结局分支走向不同'
+          },
+          'hidden_ending_4_linger_survive_butian': {
+            trigger: '改写 ling_er_sacrifice_butian 事件使灵儿补天后存活',
+            desc: '灵儿存活结局：补天后灵儿以女娲血脉之力幸存'
+          },
+          'hidden_ending_5_all_survive': {
+            trigger: '同时改写 grandmother_death / yueru_sacrifice / ling_er_sacrifice_butian 三个事件',
+            desc: '全员存活结局：姥姥/月如/灵儿均存活，完美结局'
+          }
+        }
+      }
+    ]
+  },
+
+  /* ════════════════════════════════════════════════════════════
+     五、工具函数
+     ════════════════════════════════════════════════════════════ */
+  getEventsByChapter: function (chapterIndex) {
+    var key = 'chapter_' + chapterIndex;
+    return WORLDLINE_PROPOSAL.canonical_events[key] || [];
+  },
+  getEventById: function (eventId) {
+    var groups = WORLDLINE_PROPOSAL.canonical_events;
+    for (var g in groups) {
+      if (!groups.hasOwnProperty(g)) continue;
+      var arr = groups[g];
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].id === eventId) return arr[i];
+      }
+    }
+    return null;
+  },
+  getEventChapter: function (eventId) {
+    var groups = WORLDLINE_PROPOSAL.canonical_events;
+    for (var g in groups) {
+      if (!groups.hasOwnProperty(g)) continue;
+      var arr = groups[g];
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].id === eventId) {
+          if (g === 'timeline') return 0;
+          return Number(g.replace('chapter_', ''));
+        }
+      }
+    }
+    return -1;
+  },
+  isEventRewritten: function (eventId) {
+    if (!Array.isArray(_wlRewrittenEvents)) return false;
+    return _wlRewrittenEvents.indexOf(eventId) !== -1;
+  },
+  getProposableEvents: function (currentChapter) {
+    var result = [];
+    var groups = WORLDLINE_PROPOSAL.canonical_events;
+    for (var g in groups) {
+      if (!groups.hasOwnProperty(g)) continue;
+      var chIdx = (g === 'timeline') ? 0 : Number(g.replace('chapter_', ''));
+      if (chIdx > currentChapter) continue;
+      var arr = groups[g];
+      for (var i = 0; i < arr.length; i++) {
+        if (!WORLDLINE_PROPOSAL.isEventRewritten(arr[i].id)) {
+          result.push({
+            id: arr[i].id,
+            name: arr[i].name,
+            chapter: (g === 'timeline') ? '历史背景' : ('第' + chIdx + '章'),
+            desc: arr[i].desc
+          });
+        }
+      }
+    }
+    return result;
+  },
+  countTotalEvents: function () {
+    var total = 0;
+    var groups = WORLDLINE_PROPOSAL.canonical_events;
+    for (var g in groups) {
+      if (!groups.hasOwnProperty(g)) continue;
+      total += groups[g].length;
+    }
+    return total;
+  }
+};
+
+define('WORLDLINE_PROPOSAL', WORLDLINE_PROPOSAL);
+%>
+
+<%_ // ───────── 参考摘要（输出给AI使用）───────── _%>
+<%_ var _proposableList = WORLDLINE_PROPOSAL.getProposableEvents(_wlCurrentChapter); _%>
+<%_ var _totalEvents = WORLDLINE_PROPOSAL.countTotalEvents(); _%>
+<%_ var _rewrittenCount = Array.isArray(_wlRewrittenEvents) ? _wlRewrittenEvents.length : 0; _%>
+<%_ var _hiddenEndingsCount = Array.isArray(_wlHiddenEndings) ? _wlHiddenEndings.length : 0; _%>
+【世界线提议系统 · 参考摘要】
+
+■ 系统职责
+- 维护原著事件 ID 表（共 <%= _totalEvents %> 个关键事件，6 章节 + 历史背景）
+- 提供世界线提议格式 WorldlineProposal，允许玩家改写原著事件
+- 定义提议接受条件：改写合理 / 不死局 / 章节匹配
+- 定义改写后效果：标记已改写 / 切换世界线 / 触发分支 / 解锁隐藏结局
+
+■ 原著事件 ID 表（<%= _totalEvents %> 个）
+- 第1章·仙灵岛结缘（10）：shenshen_poisoned / jiujianxian_guide / duhai_xianlingdao / xianlingdao_meet_linger / linger_bathing_encounter / grandmother_trust / grandmother_death / linger_kidnapped / xianlingdao_escape / yuhangzhen_depart
+- 第2章·苏州比武招亲（10）：suzhou_arrival / biwu_zhaqin / lin_yueru_join / yueru_engagement_contract / liu_jinyuan_meet / yinlongku_explore / yinlongku_snake / save_suzhou_villagers / snake_demon_battle / suzhou_depart
+- 第3章·京城彩依事件（10）：jingcheng_arrival / liu_jinyuan_reunion / caiyi_event / jinyuan_poisoned / caiyi_reveal_true_form / du_niangzi_grudge / jingcheng_investigate / du_niangzi_boss / caiyi_sacrifice_save / jingcheng_depart
+- 第4章·蜀山锁妖塔（10）：shushan_arrival / jiansheng_refuse_lend / suoyota_imprison_linger / linger_imprison_truth / suoyota_breach_formation / ling_er_rescue / zhenyu_mingwang_battle / jiansheng_acknowledge / shushan_artifact_acquire / shushan_depart
+- 第5章·苗疆决战（10）：miaojiang_reunion / miaojiang_tribe_visit / baiyue_appear / baiyue_conspiracy_reveal / baiyue_minion_battle / shui_moshou_awaken / shui_moshou_seal_attempt / nuwa_bloodline_ritual / nuwa_awaken / miaojiang_decisive_battle
+- 第6章·结局分支（10）：nuwa_altar_ritual / baiyue_final_battle / shui_moshou_final_battle / tian_repair_ritual / ling_er_butian / ling_er_sacrifice_butian / yueru_sacrifice / yueru_revive / ending_branch / ending_resolution
+- 历史背景（20）：timeline_nuwa_seal_water_demon / timeline_qing_er_nuwa_inherit / timeline_qing_er_death / timeline_wu_hou_death / timeline_wu_wang_seal_sacrifice / timeline_zhao_linger_birth / timeline_linger_mother_death / timeline_grandmother_escape / timeline_linger_childhood_seclusion / timeline_baiyue_cult_origin / timeline_baiyue_water_demon_pact / timeline_miao_tribe_split / timeline_miaojiang_ancient_war / timeline_heishui_prosperity / timeline_heishui_kingdom_fall / timeline_shushan_founding / timeline_suoyota_construction / timeline_xianjian_legend / timeline_zhenyue_sword_forge / timeline_yueru_childhood_martial
+
+■ 世界线提议格式
+<WorldlineProposal>
+原著事件ID: [事件ID]
+当前世界线: [原著线/改写线]
+提议改写: [改写内容简述]
+改写理由: [玩家输入]
+影响评估: [AI 评估影响]
+</WorldlineProposal>
+
+■ 提议接受条件（须全部满足）
+1. 改写合理：不违反仙剑1世界观核心设定（女娲血脉/五灵法术/蜀山镇妖/拜月阴谋/主角身份固定）
+2. 不导致死结局：不触发 BAD_END_1 至 BAD_END_8 任一死结局
+3. 符合当前章节进度：被改写事件所属章节 ≤ 当前章节，且尚未被标记为已改写
+
+■ 改写后效果（接受改写时在 <UpdateVariable> 执行）
+1. 原著事件标记为"已改写"：ADD /世界线/已改写事件/- with value "[事件ID]"
+2. 切换当前世界线：REPLACE /世界线/当前世界线 with value "改写线"
+3. 记录提议历史：ADD /世界线/提议历史/- with value {事件ID, 改写内容, 改写理由, 影响评估, 时间戳}
+4. 触发新的剧情分支：AI 须基于改写内容生成新剧情分支，不得无故回归原著线
+5. 解锁隐藏结局：改写关键事件或累计达指定数量时，ADD /世界线/隐藏结局解锁/- with value "[结局标识]"
+   隐藏结局清单：
+   - hidden_ending_1_grandmother_survive：改写 grandmother_death 使姥姥存活
+   - hidden_ending_2_linger_not_kidnapped：改写 linger_kidnapped 使灵儿未被掳
+   - hidden_ending_3_yueru_no_sacrifice：改写 yueru_sacrifice 使月如未牺牲
+   - hidden_ending_4_linger_survive_butian：改写 ling_er_sacrifice_butian 使灵儿补天后存活
+   - hidden_ending_5_all_survive：同时改写 grandmother_death / yueru_sacrifice / ling_er_sacrifice_butian
+
+■ 工具函数（挂在全局对象 WORLDLINE_PROPOSAL 上）
+- getEventsByChapter(chapterIndex)         返回指定章节的原著事件列表
+- getEventById(eventId)                     按 ID 查询事件详情
+- getEventChapter(eventId)                  返回事件所属章节（历史背景返回 0）
+- isEventRewritten(eventId)                判定事件是否已被改写
+- getProposableEvents(currentChapter)      返回当前可提议事件列表（未改写且章节匹配）
+- countTotalEvents()                       返回原著事件总数
+
+■ 当前运行时状态（MVU读取）
+- 当前章节：<%= _wlCurrentChapter %>
+- 章节进度：<%= _wlChapterProgress %> / 60
+- 当前世界线：<%= _wlCurrentLine %>
+- 已改写事件数：<%= _rewrittenCount %> / <%= _totalEvents %>
+- 已解锁隐藏结局数：<%= _hiddenEndingsCount %>
+- 当前可提议事件数：<%= _proposableList.length %>
+
+■ 当前可提议事件列表（章节 ≤ <%= _wlCurrentChapter %> 且未改写）
+<%_ for (var i = 0; i < _proposableList.length; i++) { _%>
+<%_   var e = _proposableList[i]; _%>
+- [<%= e.chapter %>] <%= e.id %>（<%= e.name %>）：<%= e.desc %>
+<%_ } _%>
+
+[世界线提议系统摘要结束。AI 须按上述规则处理玩家的 WorldlineProposal：逐条检查接受条件，全部满足方接受改写并执行改写后效果；任一不满足须拒绝改写并向玩家说明原因。改写后须延续改写世界线逻辑，不得无故回归原著线。]

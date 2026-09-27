@@ -1,0 +1,573 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   不要玩弄我的鸡吧-forge · 全局规则总表（单一来源 Single Source of Truth）
+   ════════════════════════════════════════════════════════════
+   所有 EJS 控制器（D0/人物总控/事件总控/NSFW总控/读取变量过滤）的规则来源。
+   任何数值、阈值、变化量、互斥关系都在此处写死，AI 不可私自修改。
+   修改规则必须先改本表，再传播到各控制器。
+   关灯加载：enabled:false，由 D0 通过 getwi('全局规则总表') 加载。
+*/%>
+
+<%
+/* ════════════════════════════════════════════════════════════
+   一、玩家身份（PLAYER_IDENTITY，固定单一身份）
+   ════════════════════════════════════════════════════════════ */
+if (typeof PLAYER_IDENTITY === 'undefined') var PLAYER_IDENTITY = {
+  name_placeholder: '{{user}}',
+  age: 18,
+  identity: '私立圣德女子学院高三2班转学生（唯一男性）',
+  home: '女生宿舍A栋三楼高三2班4人宿舍',
+  school_access: true,
+  initial_money: 500,
+  initial_stats: {
+    精力: 80, 精力上限: 80, 理智: 80, 健康: 75,
+    压力: 10, stamina: 80, 怀疑值: 0, 堕落值: 0,
+  },
+  initial_skills: {
+    meditation: 5, exercise: 3, insight: 3,
+    disguise: 3, recovery: 5, willpower: 3,
+  },
+  initial_academic: { score: 75, stage: 3, exam_countdown: 103 },
+};
+
+/* ════════════════════════════════════════════════════════════
+   一·补：校园设施铁律（FACILITY_RULES，硬编码·AI不可修改·每轮强制执行）
+   ════════════════════════════════════════════════════════════
+   圣德女子学院全校所有如厕/洗浴/更衣设施均为女性专用。
+   {{user}}是全校唯一男性，只能使用以下设施：
+   ┌──────────┬──────────────────────────────────────────────┐
+   │ 场景     │ {{user}}允许使用的设施                        │
+   ├──────────┼──────────────────────────────────────────────┤
+   │ 教学楼   │ 女卫生间（最里侧隔间，女生默认回避）          │
+   │ 宿舍     │ 自己宿舍的独立卫生间（含淋浴）                │
+   │ 公共洗浴 │ A栋三楼公共女澡堂（分时段使用）               │
+   │ 行政楼   │ 一楼教工女厕所                                │
+   │ 校医室   │ 附属女卫生间                                  │
+   └──────────┴──────────────────────────────────────────────┘
+   社会惯例：其他女性在场时对{{user}}共用设施感到不适但不会驱赶，
+   会遮挡/背对/加快速度。{{user}}正常如厕/洗浴被允许，但不能偷窥或猥亵。
+   ★违反处理：正文中出现任何不属于上表的设施 → 立即修正 + 回退重写。
+   ════════════════════════════════════════════════════════════ */
+if (typeof FACILITY_RULES === 'undefined') var FACILITY_RULES = {
+  // 全校设施均为女性专用，以下为{{user}}允许使用的设施清单
+  allowed_facilities: {
+    '教学楼':   '女卫生间（最里侧隔间，女生默认回避）',
+    '宿舍':     '自己宿舍的独立卫生间（含淋浴）',
+    '公共洗浴': 'A栋三楼公共女澡堂（分时段使用）',
+    '行政楼':   '一楼教工女厕所',
+    '校医室':   '附属女卫生间',
+  },
+  // 社会惯例：女性角色对{{user}}共用设施的态度
+  social_convention: {
+    attitude: '不适但不会驱赶',
+    behaviors: ['遮挡身体', '背对{{user}}', '加快速度离开'],
+    rule: '{{user}}正常如厕/洗浴被允许，但不能故意偷窥或猥亵',
+  },
+  // 执行铁律
+  enforcement: {
+    check_every_turn: true,
+    violation_action: '立即修正为对应女性设施 + 回退场景重写',
+    forbidden_keywords: ['男厕', '男洗手间', '男厕所', '男澡堂', '男更衣室', '男浴室'],
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   一·补2：室友铁律（ROOMMATE_RULES，硬编码·AI不可修改·每轮强制执行）
+   ════════════════════════════════════════════════════════════ */
+if (typeof ROOMMATE_RULES === 'undefined') var ROOMMATE_RULES = {
+  // {{user}}的室友是固定的3人，AI不得替换、增减或编造其他室友
+  roommates: ['苏晴', '秦雨', '张雨萱'],
+  // 林婉清住隔壁单人间，不是室友
+  neighbor: '林婉清',
+  neighbor_note: '林婉清住隔壁单人间（班长特权），不是{{user}}的室友。若剧情需要她出现在宿舍，必须明确写"从隔壁过来"或"敲门进来"。',
+  // 宿舍信息
+  dorm: '女生宿舍A栋三楼高三2班4人宿舍',
+  // 执行铁律
+  enforcement: {
+    check_every_turn: true,
+    violation_action: '立即修正为正确室友 + 回退场景重写',
+    rule: '宿舍场景中{{user}}同房间内只能出现苏晴/秦雨/张雨萱，不得出现任何其他角色作为室友',
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   二、游戏时间轴（GAME_TIMELINE，120天总跨度）
+   ════════════════════════════════════════════════════════════ */
+if (typeof GAME_TIMELINE === 'undefined') var GAME_TIMELINE = {
+  total_days: 120,
+  start_date: '2月下旬开学',
+  gaokao_day: 103,        // 第103天：高考
+  results_day: 120,       // 第120天：成绩出炉，终局判定窗口
+  stage_day_ranges: {
+    1: [1, 30],            // 初级玩具
+    2: [31, 60],           // 等比复刻
+    3: [61, 95],           // 灵体投影
+    4: [96, 102],          // 人偶容器
+    5: [103, 120],         // 实体化共生（终局）
+  },
+  exam_schedule: {
+    weekly: '每周三 (day % 7 === 3)',
+    monthly: '每月最后3天 (day % 30 >= 28，且非季考/高考日)',
+    quarterly: [30, 60, 90],
+    gaokao: 103,
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   三、9时段定义（TIME_SLOTS，对齐高三学生作息）
+   ════════════════════════════════════════════════════════════ */
+if (typeof TIME_SLOTS === 'undefined') var TIME_SLOTS = [
+  { name: '早晨',   hour_range: [5, 7],   idx: 1, desc: '起床洗漱，早锻炼' },
+  { name: '晨读',   hour_range: [7, 8],   idx: 2, desc: '教室晨读' },
+  { name: '上午',   hour_range: [8, 12],  idx: 3, desc: '上午课程' },
+  { name: '中午',   hour_range: [12, 14], idx: 4, desc: '午餐午休' },
+  { name: '下午',   hour_range: [14, 17], idx: 5, desc: '下午课程' },
+  { name: '傍晚',   hour_range: [17, 19], idx: 6, desc: '晚餐课间' },
+  { name: '晚自习', hour_range: [19, 22], idx: 7, desc: '晚自习' },
+  { name: '夜里',   hour_range: [22, 2],  idx: 8, desc: '宿舍熄灯后' },
+  { name: '半夜',   hour_range: [2, 5],   idx: 9, desc: '深夜睡眠' },
+];
+
+/* ════════════════════════════════════════════════════════════
+   四、难度系数（DIFFICULTY_MODIFIERS，3档）
+   ════════════════════════════════════════════════════════════ */
+if (typeof DIFFICULTY_MODIFIERS === 'undefined') var DIFFICULTY_MODIFIERS = {
+  '普通': {
+    idx: 0,
+    allowance_base: 100,
+    reward_mult: 1.5,
+    energy_cost_mult: 0.8,
+    理智消耗倍率: 0.8,
+    suspicion_mult: 0.7,
+    female_use_freq_mult: 0.7,
+    女性传播倍率: 0.7,
+    female_skill_growth_mult: 0.7,
+    初始精力: 100, 初始理智: 100, 初始精力上限: 100, 初始体力上限: 100, 初始体力: 100, 初始健康: 90, 初始压力: 5, 初始金钱: 800,
+  },
+  '困难': {
+    idx: 1,
+    allowance_base: 50,
+    reward_mult: 1.0,
+    energy_cost_mult: 1.0,
+    理智消耗倍率: 1.0,
+    suspicion_mult: 1.0,
+    female_use_freq_mult: 1.0,
+    女性传播倍率: 1.0,
+    female_skill_growth_mult: 1.0,
+    初始精力: 80, 初始理智: 80, 初始精力上限: 80, 初始体力上限: 80, 初始体力: 80, 初始健康: 75, 初始压力: 10, 初始金钱: 500,
+  },
+  '地狱': {
+    idx: 2,
+    allowance_base: 30,
+    reward_mult: 0.5,
+    energy_cost_mult: 1.3,
+    理智消耗倍率: 1.3,
+    suspicion_mult: 1.3,
+    female_use_freq_mult: 1.3,
+    女性传播倍率: 1.3,
+    female_skill_growth_mult: 1.3,
+    初始精力: 60, 初始理智: 60, 初始精力上限: 60, 初始体力上限: 60, 初始体力: 60, 初始健康: 60, 初始压力: 20, 初始金钱: 300,
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   四·补：难度锁定规则（DIFFICULTY_LOCK，开局可选·此后不可改·硬约束）
+   ════════════════════════════════════════════════════════════ */
+if (typeof DIFFICULTY_LOCK === 'undefined') var DIFFICULTY_LOCK = {
+  // 难度只能在开局（第1天早晨）选择一次，此后不可更改
+  // 开局选择入口：开局页.html 的难度选择按钮
+  // 锁定时机：第1天任何时段结束后，或玩家执行第一个行动后
+  lock_after_day: 1,
+  lock_after_first_action: true,
+  // 锁定后处理：
+  //   - 状态栏HTML的难度切换按钮在第2天起禁用（灰色不可点击）
+  //   - AI收到"切换难度"指令时按综合防口胡第十六章16.2第7项驳回（设定注入）
+  //   - 变量 stat_data.隐藏层.难度锁定 = true 后不可重置
+  // 开局选择话术（第1天第一次互动时AI主动询问）：
+  opening_prompt: '在开始之前，请选择本局难度。普通：适合休闲体验；困难：标准平衡；地狱：极限挑战。选择后不可更改。',
+  // 锁定后驳回话术：
+  reject_msg: '难度已在开局锁定，不可中途更改。当前难度：{difficulty}。这是硬约束，不可绕过。',
+};
+
+/* ════════════════════════════════════════════════════════════
+   五、补给品表（SUPPLY_TABLE，6种，唯一购买来源）
+   ════════════════════════════════════════════════════════════ */
+if (typeof SUPPLY_TABLE === 'undefined') var SUPPLY_TABLE = [
+  { id: 'meal',       name: '营养餐（食堂）', price: 20,  effects: { energy: 15, stamina: 10 },                     limit: '无限购',   location: '食堂',   time_restriction: '仅中午/下午时段' },
+  { id: 'drink',      name: '功能饮料',       price: 15,  effects: { energy: 10, stamina: 5 },                      limit: '每日1次',  location: '小卖部', time_restriction: '任意时段', overuse_penalty: 'sanity-5' },
+  { id: 'vitamin',    name: '维生素片',       price: 30,  effects: { energy: 20, stamina: 15 },                     limit: '每日1次',  location: '小卖部', time_restriction: '任意时段' },
+  { id: 'sleep_pill', name: '安眠药',         price: 25,  effects: { sanity: 15, energy: 10 },                      limit: '夜间使用',  location: '校医室', time_restriction: '需沈雨桐在场', dependency_warning: '连续3天使用触发药物依赖(sanity-2/天)' },
+  { id: 'supplement', name: '高级补剂',       price: 80,  effects: { energy: 40, stamina: 30, sanity: 10 },         limit: '每日1次',  location: '校医室', time_restriction: '需沈雨桐在场' },
+  { id: 'herbal',     name: '特制药膳',       price: 150, effects: { energy: 20, stamina: 20, sanity: 20, health: 20, stress: -20 }, limit: '每日1次', location: '校医室', time_restriction: '需沈雨桐在场' },
+];
+
+/* ════════════════════════════════════════════════════════════
+   六、金钱铁律（MONEY_RULES，防口胡）
+   ════════════════════════════════════════════════════════════ */
+if (typeof MONEY_RULES === 'undefined') var MONEY_RULES = {
+  // 唯一收入来源
+  income_sources: ['每日生活费（早晨自动到账）', '考试奖励（考试日且成绩达标）'],
+  // 严禁的收入来源
+  forbidden_income: ['打工', '兼职', '家教', '勤工俭学', '借钱', '贷款', '信用卡', '偷钱', '捡钱', '受贿', '赌博', '股票', '彩票', '投资', '出售物品', '二手交易', '网络带货', '家人额外打款', '奖金', '奖学金'],
+  // 唯一购买地点
+  purchase_locations: ['食堂（营养餐）', '小卖部（功能饮料/维生素片）', '校医室（安眠药/高级补剂/特制药膳，需沈雨桐在场）'],
+  // 严禁的购买途径
+  forbidden_purchase: ['网购', '校外购买', '同学代买', '偷窃', '自制', '任何其他途径'],
+  // 拒绝话术
+  refuse_phrases: [
+    '高三学业紧张，没有时间打工',
+    '家里只给这么多，再多没有了',
+    '学校不允许学生兼职',
+    '学校封闭管理，出不去',
+    '校医室才有这个，小卖部没卖',
+  ],
+};
+
+/* ════════════════════════════════════════════════════════════
+   七、考试奖励表（EXAM_REWARDS，按考试类型×排名档）
+   ════════════════════════════════════════════════════════════ */
+if (typeof EXAM_REWARDS === 'undefined') var EXAM_REWARDS = {
+  rank_tiers: [
+    { name: '年级前10', score_min: 90 },
+    { name: '年级前50', score_min: 75 },
+    { name: '其他',     score_min: 0  },
+  ],
+  table: {
+    '周考':  { '年级前10': 50,  '年级前50': 20,  '其他': 0 },
+    '月考':  { '年级前10': 200, '年级前50': 100, '其他': 0 },
+    '季考':  { '年级前10': 500, '年级前50': 200, '其他': 0 },
+    '高考':  { '年级前10': 0,   '年级前50': 0,   '其他': 0 },  // 高考无金钱奖励，触发结局
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   八、5阶段晋升阈值（STAGE_THRESHOLDS，经验+天数双触发）
+   ════════════════════════════════════════════════════════════ */
+if (typeof STAGE_THRESHOLDS === 'undefined') var STAGE_THRESHOLDS = {
+  exp_thresholds: [0, 30, 100, 200, 350],      // 各阶段累计经验下限
+  day_thresholds: [0, 30, 60, 95, 102],         // 各阶段最低天数
+  daily_exp_max: 30,                             // 日经验上限（防速通）
+  stages: [
+    { id: 1, name: '初级玩具',   day_range: [1, 30],    next_exp: 30,  next_day: 30,  extra_cond: '持有者已使用(持有者信息.是否使用过=true)' },
+    { id: 2, name: '等比复刻',   day_range: [31, 60],   next_exp: 100, next_day: 60,  extra_cond: '传播人数>=3 + 持有者执念>=30' },
+    { id: 3, name: '灵体投影',   day_range: [61, 95],   next_exp: 200, next_day: 95,  extra_cond: '传播人数>=6 + 至少1人综合阶段达到C_沉沦期' },
+    { id: 4, name: '人偶容器',   day_range: [96, 102],  next_exp: 350, next_day: 102, extra_cond: '传播人数>=10 + 至少1人达到D_疯狂期 + 怀疑值>=60' },
+    { id: 5, name: '实体化共生', day_range: [103, 120], next_exp: null, next_day: null, extra_cond: '终局阶段，无下一阶段' },
+  ],
+};
+
+/* ════════════════════════════════════════════════════════════
+   九、经验值计算公式（EXP_FORMULA）
+   ════════════════════════════════════════════════════════════ */
+if (typeof EXP_FORMULA === 'undefined') var EXP_FORMULA = {
+  // 单次获得经验 = 基础经验 × 多人加成 × 高频加成 × 场景加成 × 阶段加成 × 持有者加成
+  base_exp: 1,
+  multi_user_mult: function(users) {
+    if (users === 1) return 1.0;
+    if (users === 2) return 1.5;
+    if (users === 3) return 2.0;
+    if (users === 4) return 2.5;
+    return 3.0;  // 5+
+  },
+  high_freq_mult: function(todayUsesCount) {
+    return Math.min(1.8, 1 + todayUsesCount * 0.2);
+  },
+  scene_mult: { '高危': 1.3, '普通': 1.0 },
+  high_risk_scenes: ['dorm_night', 'classroom', 'infirmary', 'library_archive', 'storage'],
+  stage_mult: [1.0, 1.0, 1.1, 1.2, 1.3, 1.5],  // index 0 占位，1-5 对应阶段
+  holder_mult: { self: 1.5, other: 1.0 },
+};
+
+/* ════════════════════════════════════════════════════════════
+   十、防速通保护（ANTI_RUSH_RULES）
+   ════════════════════════════════════════════════════════════ */
+if (typeof ANTI_RUSH_RULES === 'undefined') var ANTI_RUSH_RULES = {
+  daily_use_max: 5,                // 每日使用次数上限
+  use_interval_hours: 2,           // 单次使用间隔至少2小时
+  holder_daily_use_max: 2,         // 持有者每日最多使用2次
+  传播冷却天数: 7,    // 传播冷却7天
+  传播每日上限: 2,      // 每日最多传播2人
+  传播总上限倍率: 5, // 总传播上限 = 当前阶段 × 5
+  day_threshold_enforced: true,    // 天数不到经验再多也不晋升
+  exp_threshold_enforced: true,    // 经验不足天数到了也不晋升
+};
+
+/* ════════════════════════════════════════════════════════════
+   十一、技能系统（SKILL_SYSTEM，100级5档制）
+   ════════════════════════════════════════════════════════════ */
+if (typeof SKILL_SYSTEM === 'undefined') var SKILL_SYSTEM = {
+  max_level: 100,
+  tiers: [
+    { range: [1, 20],  tier_num: 1, name: '入门' },
+    { range: [21, 40], tier_num: 2, name: '初级' },
+    { range: [41, 60], tier_num: 3, name: '中级' },
+    { range: [61, 80], tier_num: 4, name: '高级' },
+    { range: [81, 100], tier_num: 5, name: '大师' },
+  ],
+  skills: {
+    meditation: { name: '冥想', daily_max: 50, desc: '恢复理智，抵抗精神污染' },
+    exercise:   { name: '锻炼', daily_max: 40, desc: '提升体力与体能' },
+    insight:    { name: '洞察', daily_max: 40, desc: '观察力，发现异常与线索' },
+    disguise:   { name: '伪装', daily_max: 30, desc: '掩饰行为，降低被发现概率' },
+    recovery:   { name: '恢复', daily_max: 30, desc: '自愈能力，加速状态回复' },
+    willpower:  { name: '意志', daily_max: 30, desc: '精神抗性，抵抗沉沦' },
+  },
+  getTier: function(level) {
+    if (level <= 20) return { num: 1, name: '入门' };
+    if (level <= 40) return { num: 2, name: '初级' };
+    if (level <= 60) return { num: 3, name: '中级' };
+    if (level <= 80) return { num: 4, name: '高级' };
+    return { num: 5, name: '大师' };
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   十二、女性角色模板（FEMALE_TEMPLATES，7类）
+   ════════════════════════════════════════════════════════════ */
+if (typeof FEMALE_TEMPLATES === 'undefined') var FEMALE_TEMPLATES = {
+  '纯真': { '传播.倾向': 0.2, personality_pool: ['害羞','好奇','迷茫'] },
+  '御姐': { '传播.倾向': 0.4, personality_pool: ['从容','控制','享乐'] },
+  '辣妹': { '传播.倾向': 0.8, personality_pool: ['放纵','炫耀','分享'] },
+  '运动': { '传播.倾向': 0.3, personality_pool: ['开朗','野性','直接'] },
+  '文静': { '传播.倾向': 0.1, personality_pool: ['文静','隐藏','敏感'] },
+  '熟女': { '传播.倾向': 0.2, personality_pool: ['从容','掌控','经验'] },
+  '萝莉': { '传播.倾向': 0.05, personality_pool: ['天真','好奇','胆小','依赖'] },
+};
+
+/* ════════════════════════════════════════════════════════════
+   十三、多维状态阶段（COMPOSITE_STAGES，5期）
+   ════════════════════════════════════════════════════════════ */
+if (typeof COMPOSITE_STAGES === 'undefined') var COMPOSITE_STAGES = [
+  { id: 'A', name: 'A_理性期',   执念上限: 20,  理性下限: 70, desc: '理性主导，尚可自控' },
+  { id: 'B', name: 'B_动摇期',   执念上限: 40,  理性下限: 50, desc: '开始动摇，好奇与抗拒并存' },
+  { id: 'C', name: 'C_沉沦期',   执念上限: 70,  理性下限: 30, desc: '明显沉沦，主动寻求使用' },
+  { id: 'D', name: 'D_疯狂期',   执念上限: 100, 理性下限: 0,  desc: '完全疯狂，丧失理智' },
+  { id: 'E', name: 'E_清醒反扑期', 执念上限: 50, 理性下限: 60, desc: '疯狂后的清醒反扑，试图摆脱但身体已依赖' },
+];
+
+/* ════════════════════════════════════════════════════════════
+   十四、死结局表（BAD_ENDINGS）
+   ════════════════════════════════════════════════════════════ */
+if (typeof BAD_ENDINGS === 'undefined') var BAD_ENDINGS = {
+  '崩坏': {
+    trigger: '理智 <= 0 或 堕落值 >= 200',
+    result: '玩家精神彻底崩坏，沦为假阴茎的奴隶，失去自我意识',
+  },
+  '黑市掌控': {
+    trigger: '怀疑值 >= 200 且 传播人数 >= 15',
+    result: '假阴茎被黑市组织盯上，玩家被控制，成为黑市工具',
+  },
+  '同归于尽': {
+    trigger: '怀疑值 >= 150 且 选择摧毁假阴茎 且 阶段 >= 4',
+    result: '玩家与假阴茎同归于尽，假阴茎被摧毁但玩家也重伤',
+  },
+  '未解之谜': {
+    trigger: '第120天成绩出炉 且 未达成任何其他结局',
+    result: '假阴茎之谜永远未解，玩家带着秘密毕业',
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   十五、好结局表（GOOD_ENDINGS，与终局分支与守卫规则一致）
+   ════════════════════════════════════════════════════════════
+   字段说明：学业.阶段（1-5学业阶段）替代 academic.score
+   stage≈score 映射：1(<60) / 2(60-74) / 3(75-84) / 4(85-94) / 5(95+)
+   exam_left<=0 表示高考已过（exam_countdown 归零）
+   ════════════════════════════════════════════════════════════ */
+if (typeof GOOD_ENDINGS === 'undefined') var GOOD_ENDINGS = {
+  '健康': {
+    trigger: 'exam_left<=0 且 学业.阶段>=4 且 使用阶段<=2 且 怀疑值<60 且 理智>50',
+    result: '健康结局：高考成功，假阴茎之谜妥善解决，玩家健康成长',
+  },
+  '平庸': {
+    trigger: 'exam_left<=0 且 学业.阶段>=3 且 使用阶段<=4 且 未达成 健康',
+    result: '平庸结局：高考尚可，假阴茎仍在但未失控，平淡度过',
+  },
+  '真相揭示': {
+    trigger: '怀疑值>=100 且 使用阶段>=4 且 传播人数>=8',
+    result: '真相揭示结局：玩家揭开假阴茎真相（反向掌控/谈判交易/彻底摧毁/接受命运）',
+  },
+  '坠落': {
+    trigger: 'exam_left<=0 且 使用阶段>=3 且 学业.阶段<=2 且 未达成其他结局',
+    result: '坠落结局：高考失利，假阴茎失控，玩家堕落',
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   十六、结局触发优先级（ENDING_PRIORITY，高→低）
+   ════════════════════════════════════════════════════════════ */
+if (typeof ENDING_PRIORITY === 'undefined') var ENDING_PRIORITY = [
+  '崩坏',         // 精神崩坏，随时触发
+  '黑市掌控',     // 黑市介入
+  '同归于尽',     // 玩家选择摧毁
+  '真相揭示',     // 真相揭示
+  '健康',         // 健康结局
+  '平庸',         // 平庸结局
+  '坠落',         // 坠落结局
+  '未解之谜',     // 兜底结局
+];
+
+/* ════════════════════════════════════════════════════════════
+   十七、行动次数限制（ACTION_LIMITS）
+   ════════════════════════════════════════════════════════════ */
+if (typeof ACTION_LIMITS === 'undefined') var ACTION_LIMITS = {
+  daily_use_max: 5,             // 每日使用假阴茎次数上限
+  use_interval_hours: 2,        // 使用间隔
+  holder_daily_use_max: 2,      // 持有者每日使用上限
+  daily_purchase_limits: {      // 每日购买次数限制
+    meal: Infinity,
+    drink: 1,
+    vitamin: 1,
+    sleep_pill: 1,
+    supplement: 1,
+    herbal: 1,
+  },
+  study_daily_max: 8,           // 每日学习时长上限（小时）
+  interaction_daily_max: 20,    // 每日互动次数上限
+};
+
+/* ════════════════════════════════════════════════════════════
+   十八、LCG骰子常量（LCG_CONSTANTS）
+   ════════════════════════════════════════════════════════════
+   注：LCG引擎函数(_makeSeed/_lcgDouble/_percentRoll)因getwi隔离作用域，
+   已在各使用条目（LCG骰子系统/技能对抗与发现机制）本地定义，本表不重复声明。
+   判定档位：6档（含极难成功/困难成功），见_percentRoll函数。
+   ════════════════════════════════════════════════════════════ */
+if (typeof LCG_CONSTANTS === 'undefined') var LCG_CONSTANTS = {
+  // 种子公式：seed = ((((day*7 + hour*13)*7919 + id)*11 + stage)*17 + extra)*31
+  // 官方嵌套乘法（NR LCG参数：a=1664525, c=1013904223, m=2^32）
+  day_mul: 7,
+  hour_mul: 13,
+  id_mul: 7919,
+  stage_mul: 11,
+  extra_mul: 17,
+  final_mul: 31,
+  // 判定制式：D100（百分比制，0-100）
+  dice_type: 'D100',
+  // 判定档位（5档，与_percentRoll函数一致）
+  tiers: ['大成功', '极难成功', '困难成功', '成功', '大失败', '失败'],
+};
+
+/* ════════════════════════════════════════════════════════════
+   十九、疑心度阶段（SUSPICION_STAGES，8阶段·与疑心度阶段与解锁表一致）
+   ════════════════════════════════════════════════════════════
+   数据骨架：id+range+name（执行细节见 [mvu_plot]疑心度阶段与解锁表）
+   ════════════════════════════════════════════════════════════ */
+if (typeof SUSPICION_STAGES === 'undefined') var SUSPICION_STAGES = [
+  { id: 0, range: [0, 30],    name: '毫无察觉',   desc: '未注意到任何异常，归因于高三压力' },
+  { id: 1, range: [31, 50],   name: '隐隐不安',   desc: '奇怪梦境+腰酸，开始关注自身身体' },
+  { id: 2, range: [51, 70],   name: '怀疑身体',   desc: '发现规律性，理性分析病状' },
+  { id: 3, range: [71, 90],   name: '关注周围',   desc: '注意到他人气色变化，建立联系' },
+  { id: 4, range: [91, 110],  name: '怀疑关联',   desc: '确认日期重合，怀疑被针对' },
+  { id: 5, range: [111, 130], name: '主动调查',   desc: '搜集证据，进入主动阶段' },
+  { id: 6, range: [131, 150], name: '对峙边缘',   desc: '搜查/对峙/报警，直接冲突' },
+  { id: 7, range: [151, 200], name: '完全觉醒',   desc: '完全知晓真相，进入终局分支判定' },
+];
+
+/* 疑心度阶段查询函数（按怀疑值返回阶段对象） */
+if (typeof getSuspicionStage === 'undefined') var getSuspicionStage = function(susp) {
+  var s = Number(susp) || 0;
+  for (var i = 0; i < SUSPICION_STAGES.length; i++) {
+    var st = SUSPICION_STAGES[i];
+    if (s >= st.range[0] && s <= st.range[1]) return st;
+  }
+  return SUSPICION_STAGES[SUSPICION_STAGES.length - 1];  // 兜底返回最后阶段
+};
+
+/* ════════════════════════════════════════════════════════════
+   二十、场景模式定义（SCENE_MODES，7种）
+   ════════════════════════════════════════════════════════════ */
+if (typeof SCENE_MODES === 'undefined') var SCENE_MODES = {
+  '开局': { desc: '第1天，初始状态', priority: 1 },
+  '日常': { desc: '常规校园生活', priority: 2 },
+  '使用': { desc: '夜间+阶段2+使用事件', priority: 3 },
+  '调查': { desc: '疑心度>=70', priority: 4 },
+  '社交': { desc: '周末/傍晚/晚自习', priority: 5 },
+  '学业': { desc: '工作日上午/下午+高考倒计时<30天', priority: 6 },
+  '终局': { desc: '怀疑值>=150 或 totalUses>=100 或 堕落值>=150', priority: 7 },
+};
+
+/* ════════════════════════════════════════════════════════════
+   二十一、疲劳/生存强制规则（SURVIVAL_RULES）
+   ════════════════════════════════════════════════════════════ */
+if (typeof SURVIVAL_RULES === 'undefined') var SURVIVAL_RULES = {
+  fatigue_thresholds: {
+    50: { warn: '疲劳警告，建议休息，下次行动效率-30%（骰子档位-1）' },
+    80: { force: '强制休息，仅允许休息/睡眠，坚持行动触发晕倒（fatigue重置60，mood-20，当日女角好感-3）' },
+  },
+  energy_thresholds: {
+    20: { force: '体力过低，强制休息，仅允许休息/睡眠' },
+  },
+  理智阈值: {
+    10: { force: '防绝望机制，禁止自残/轻生描述，自动前往保健室找沈雨桐，理智+20' },
+  },
+  stress_thresholds: {
+    80: { warn: '压力过高，学习效率-30%，建议放松' },
+    100: { force: '压力爆表，强制休息一日，压力重置50' },
+  },
+};
+
+/* ════════════════════════════════════════════════════════════
+   二十二、女性角色uid映射表（FEMALE_UID_MAP，25人）
+   ════════════════════════════════════════════════════════════ */
+if (typeof FEMALE_UID_MAP === 'undefined') var FEMALE_UID_MAP = {
+  叶知秋: '叶知秋',
+  周思琪: '周思琪',
+  唐小糖: '唐小糖',
+  小夜: '小夜',
+  张雨萱: '张雨萱',
+  怜奈: '怜奈',
+  林婉清: '林婉清',  // 初始持有者
+  林小艾: '林小艾',
+  柚子: '柚子',
+  柳思雨: '柳思雨',
+  桃桃: '桃桃',
+  欧阳雪: '欧阳雪',
+  江月白: '江月白',
+  沈雨桐: '沈雨桐',  // 校医
+  白露: '白露',
+  秦雨: '秦雨',
+  苏婉清: '苏婉清',
+  苏晴: '苏晴',
+  赵灵儿: '赵灵儿',
+  铃: '铃',
+  陆诗涵: '陆诗涵',
+  陈老师: '陈老师',
+  韩雪: '韩雪',
+  顾小曼: '顾小曼',
+  慕容晴: '慕容晴',
+};
+
+/* 反向映射：name → uid */
+if (typeof FEMALE_NAME_TO_UID === 'undefined') var FEMALE_NAME_TO_UID = (function() {
+  var m = {};
+  for (var uid in FEMALE_UID_MAP) {
+    if (FEMALE_UID_MAP.hasOwnProperty(uid)) {
+      m[FEMALE_UID_MAP[uid]] = uid;
+    }
+  }
+  return m;
+})();
+
+/* ════════════════════════════════════════════════════════════
+   二十三、变量路径常量（VAR_PATHS，统一变量访问路径）
+   ════════════════════════════════════════════════════════════ */
+if (typeof VAR_PATHS === 'undefined') var VAR_PATHS = {
+  time: 'stat_data.时间',
+  stats: 'stat_data.状态',
+  skills: 'stat_data.技能',
+  使用阶段: 'stat_data.使用阶段',
+  academic: 'stat_data.学业',
+  female_users: 'stat_data.女性角色',
+  hidden: 'stat_data.隐藏层',
+  symptoms: 'stat_data.症状',
+  events: 'stat_data.事件',
+  endings: 'stat_data.结局',
+  environment: 'stat_data.环境',
+  inventory: 'stat_data.物品栏',
+  storage: 'stat_data.仓库',
+  shop_goods: 'stat_data.商店商品',
+  tasks: 'stat_data.任务',
+};
+%>
+[全局规则总表已加载] 单一来源(Single Source of Truth)，所有EJS控制器共享此规则常量。修改规则必须先改本表。

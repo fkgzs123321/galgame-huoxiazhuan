@@ -1,0 +1,742 @@
+[
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/四态循环/position/order",
+  "value": 20
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/反抗与判定/position/order",
+  "value": 21
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/兴奋度机制/position/order",
+  "value": 22
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/出招/position/order",
+  "value": 23
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/交互循环/position/order",
+  "value": 24
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/剧情推进/position/order",
+  "value": 25
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/边界情况/position/order",
+  "value": 26
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/离线行动/position/order",
+  "value": 27
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/加载纪律/position/order",
+  "value": 30
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/判定引擎/position/order",
+  "value": 31
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/思维链/position/order",
+  "value": 32
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/叙述准则/position/order",
+  "value": 33
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/感知禁令/position/order",
+  "value": 34
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/玩家的输入/position/order",
+  "value": 35
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/叙述底线/position/order",
+  "value": 36
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/文风_骚妈/position/order",
+  "value": 37
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/扮演准则/文风_母猪中/position/order",
+  "value": 38
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/阶段指导/阶段指导/position/order",
+  "value": 55
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/阶段指导/熟练度阶段/position/order",
+  "value": 56
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/武林格局/position/order",
+  "value": 200
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/这个世界的规矩/position/order",
+  "value": 201
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/公共选项池/position/order",
+  "value": 202
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/世界观/关系封闭/position/order",
+  "value": 203
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/平安镇/position/order",
+  "value": 300
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/玉女峰/position/order",
+  "value": 301
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/武当山/position/order",
+  "value": 302
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/大雪山/position/order",
+  "value": 303
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/商家堡/position/order",
+  "value": 304
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/五指山/position/order",
+  "value": 305
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/冰火岛/position/order",
+  "value": 306
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/黑森林/position/order",
+  "value": 307
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/灵心观/position/order",
+  "value": 308
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/地理/随机地图/position/order",
+  "value": 309
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_温砚/position/order",
+  "value": 40
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_丰娆/position/order",
+  "value": 41
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_舒晏/position/order",
+  "value": 42
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_唐响/position/order",
+  "value": 43
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_沈眠/position/order",
+  "value": 44
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_莫漾/position/order",
+  "value": 45
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_纪清/position/order",
+  "value": 46
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/她_郁灼/position/order",
+  "value": 47
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/角色速览/position/order",
+  "value": 100
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/李青照_基础信息/position/order",
+  "value": 500
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/李青照_性格调色盘/position/order",
+  "value": 501
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/李青照_NSFW反差与剧情线/position/order",
+  "value": 502
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/公孙大娘_基础信息/position/order",
+  "value": 503
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/公孙大娘_性格调色盘/position/order",
+  "value": 504
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/公孙大娘_NSFW反差与剧情线/position/order",
+  "value": 505
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/聂隐娘_基础信息/position/order",
+  "value": 506
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/聂隐娘_性格调色盘/position/order",
+  "value": 507
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/聂隐娘_NSFW反差与剧情线/position/order",
+  "value": 508
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/红拂女_基础信息/position/order",
+  "value": 509
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/红拂女_性格调色盘/position/order",
+  "value": 510
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/红拂女_NSFW反差与剧情线/position/order",
+  "value": 511
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/柳如是_基础信息/position/order",
+  "value": 512
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/柳如是_性格调色盘/position/order",
+  "value": 513
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/柳如是_NSFW反差与剧情线/position/order",
+  "value": 514
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/李师师_基础信息/position/order",
+  "value": 515
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/李师师_性格调色盘/position/order",
+  "value": 516
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/李师师_NSFW反差与剧情线/position/order",
+  "value": 517
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/薛涛_基础信息/position/order",
+  "value": 518
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/薛涛_性格调色盘/position/order",
+  "value": 519
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/薛涛_NSFW反差与剧情线/position/order",
+  "value": 520
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/绿珠_基础信息/position/order",
+  "value": 521
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/绿珠_性格调色盘/position/order",
+  "value": 522
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/绿珠_NSFW反差与剧情线/position/order",
+  "value": 523
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/桑轻虹_基础信息/position/order",
+  "value": 524
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/桑轻虹_性格调色盘/position/order",
+  "value": 525
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/桑轻虹_NSFW反差与剧情线/position/order",
+  "value": 526
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/阿绣_基础信息/position/order",
+  "value": 527
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/阿绣_性格调色盘/position/order",
+  "value": 528
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/阿绣_NSFW反差与剧情线/position/order",
+  "value": 529
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/唐晚词_基础信息/position/order",
+  "value": 530
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/唐晚词_性格调色盘/position/order",
+  "value": 531
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/唐晚词_NSFW反差与剧情线/position/order",
+  "value": 532
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/入画_基础信息/position/order",
+  "value": 533
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/入画_性格调色盘/position/order",
+  "value": 534
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/入画_NSFW反差与剧情线/position/order",
+  "value": 535
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/小红_基础信息/position/order",
+  "value": 536
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/小红_性格调色盘/position/order",
+  "value": 537
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/小红_NSFW反差与剧情线/position/order",
+  "value": 538
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/听琴_基础信息/position/order",
+  "value": 539
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/听琴_性格调色盘/position/order",
+  "value": 540
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/听琴_NSFW反差与剧情线/position/order",
+  "value": 541
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/司棋_基础信息/position/order",
+  "value": 542
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/司棋_性格调色盘/position/order",
+  "value": 543
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/司棋_NSFW反差与剧情线/position/order",
+  "value": 544
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/侍书_基础信息/position/order",
+  "value": 545
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/侍书_性格调色盘/position/order",
+  "value": 546
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/侍书_NSFW反差与剧情线/position/order",
+  "value": 547
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/茶花女_基础信息/position/order",
+  "value": 548
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/茶花女_性格调色盘/position/order",
+  "value": 549
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/茶花女_NSFW反差与剧情线/position/order",
+  "value": 550
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/平婆婆_基础信息/position/order",
+  "value": 551
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/平婆婆_性格调色盘/position/order",
+  "value": 552
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/平婆婆_NSFW反差与剧情线/position/order",
+  "value": 553
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/瑞婆婆_基础信息/position/order",
+  "value": 554
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/瑞婆婆_性格调色盘/position/order",
+  "value": 555
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/瑞婆婆_NSFW反差与剧情线/position/order",
+  "value": 556
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/史婆婆_基础信息/position/order",
+  "value": 557
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/史婆婆_性格调色盘/position/order",
+  "value": 558
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/史婆婆_NSFW反差与剧情线/position/order",
+  "value": 559
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/何铁手_基础信息/position/order",
+  "value": 560
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/何铁手_性格调色盘/position/order",
+  "value": 561
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/何铁手_NSFW反差与剧情线/position/order",
+  "value": 562
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/潘小莲_基础信息/position/order",
+  "value": 563
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/潘小莲_性格调色盘/position/order",
+  "value": 564
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/潘小莲_NSFW反差与剧情线/position/order",
+  "value": 565
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/卖花妞_基础信息/position/order",
+  "value": 566
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/卖花妞_性格调色盘/position/order",
+  "value": 567
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/卖花妞_NSFW反差与剧情线/position/order",
+  "value": 568
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/阿庆嫂_基础信息/position/order",
+  "value": 569
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/阿庆嫂_性格调色盘/position/order",
+  "value": 570
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/阿庆嫂_NSFW反差与剧情线/position/order",
+  "value": 571
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/中年妇人_基础信息/position/order",
+  "value": 572
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/中年妇人_性格调色盘/position/order",
+  "value": 573
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/中年妇人_NSFW反差与剧情线/position/order",
+  "value": 574
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/老婆婆_基础信息/position/order",
+  "value": 575
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/老婆婆_性格调色盘/position/order",
+  "value": 576
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/老婆婆_NSFW反差与剧情线/position/order",
+  "value": 577
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/神秘女子_基础信息/position/order",
+  "value": 578
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/神秘女子_性格调色盘/position/order",
+  "value": 579
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/神秘女子_NSFW反差与剧情线/position/order",
+  "value": 580
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/薛千柔_基础信息/position/order",
+  "value": 581
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/薛千柔_性格调色盘/position/order",
+  "value": 582
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/薛千柔_NSFW反差与剧情线/position/order",
+  "value": 583
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/花千红_基础信息/position/order",
+  "value": 584
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/花千红_性格调色盘/position/order",
+  "value": 585
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/花千红_NSFW反差与剧情线/position/order",
+  "value": 586
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/商老太_基础信息/position/order",
+  "value": 587
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/商老太_性格调色盘/position/order",
+  "value": 588
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/商老太_NSFW反差与剧情线/position/order",
+  "value": 589
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/马春花_基础信息/position/order",
+  "value": 590
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/马春花_性格调色盘/position/order",
+  "value": 591
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/马春花_NSFW反差与剧情线/position/order",
+  "value": 592
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/商宝霞_基础信息/position/order",
+  "value": 593
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/商宝霞_性格调色盘/position/order",
+  "value": 594
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/商宝霞_NSFW反差与剧情线/position/order",
+  "value": 595
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/王璁儿_基础信息/position/order",
+  "value": 596
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/王璁儿_性格调色盘/position/order",
+  "value": 597
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/王璁儿_NSFW反差与剧情线/position/order",
+  "value": 598
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/唐思儿_基础信息/position/order",
+  "value": 599
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/唐思儿_性格调色盘/position/order",
+  "value": 600
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/唐思儿_NSFW反差与剧情线/position/order",
+  "value": 601
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/桃花_基础信息/position/order",
+  "value": 602
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/桃花_性格调色盘/position/order",
+  "value": 603
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/角色/桃花_NSFW反差与剧情线/position/order",
+  "value": 604
+ },
+ {
+  "op": "replace",
+  "path": "/entryManifest/事件/终局/position/order",
+  "value": 60
+ }
+]

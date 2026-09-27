@@ -1,0 +1,84 @@
+@@generate_before
+<%_
+// ════════════════════════════════════════════════════════════
+// KK园区 EJS 预处理 · 创意重构 v2.0
+// 受害者视角·飞机杯系统·精液成瘾能力
+// 变量路径与 schema.ts 对齐（玩家.*/园区.*/RPG.*/人际.*/角色库.*）
+// ════════════════════════════════════════════════════════════
+
+// ─── 园区阶段系统（3） ───
+define('current_stage', String(getvar('stat_data.园区.当前阶段', { scope: 'local', defaults: '入园恐惧' }) || '入园恐惧'));
+define('plot_progress', Number(getvar('stat_data.园区.剧情进度', { scope: 'local', defaults: 1 })) || 1);
+define('ending_branch', String(getvar('stat_data.园区.结局分支', { scope: 'local', defaults: '' }) || ''));
+
+// ─── 玩家核心字段 ───
+define('player_pos', String(getvar('stat_data.玩家.当前位置', { scope: 'local', defaults: 'KK园区·猪仔宿舍' }) || ''));
+define('player_appearance', Number(getvar('stat_data.玩家.容貌值', { scope: 'local', defaults: 65 })) || 65);
+define('player_scarcity', Number(getvar('stat_data.玩家.性别稀缺度', { scope: 'local', defaults: 100 })) || 100);
+define('player_disguise', Number(getvar('stat_data.玩家.伪装度', { scope: 'local', defaults: 0 })) || 0);
+define('player_escape_prep', Number(getvar('stat_data.玩家.逃跑准备', { scope: 'local', defaults: 0 })) || 0);
+define('player_intel', Number(getvar('stat_data.玩家.情报网', { scope: 'local', defaults: 0 })) || 0);
+define('player_trust', Number(getvar('stat_data.玩家.信任值', { scope: 'local', defaults: 0 })) || 0);
+define('player_injury', Number(getvar('stat_data.玩家.伤势', { scope: 'local', defaults: 0 })) || 0);
+define('player_fear', Number(getvar('stat_data.玩家.恐惧值', { scope: 'local', defaults: 60 })) || 60);
+define('player_hope', Number(getvar('stat_data.玩家.希望值', { scope: 'local', defaults: 50 })) || 50);
+define('player_coerced', Number(getvar('stat_data.玩家.被迫度', { scope: 'local', defaults: 0 })) || 0);
+define('player_power_access', Boolean(getvar('stat_data.玩家.权力接触', { scope: 'local', defaults: false })));
+define('player_external_aid', Boolean(getvar('stat_data.玩家.外部援助', { scope: 'local', defaults: false })));
+define('player_police_clues', Number(getvar('stat_data.玩家.警方线索', { scope: 'local', defaults: 0 })) || 0);
+
+// ─── 飞机杯三系统（玩家层） ───
+define('fjb_binding', String(getvar('stat_data.玩家.飞机杯当前绑定', { scope: 'local', defaults: '无' }) || '无'));
+define('fjb_location', String(getvar('stat_data.玩家.飞机杯定位', { scope: 'local', defaults: '玩家藏在贴身衣物内' }) || ''));
+
+// ─── 精液成瘾能力（7字段） ───
+define('addiction_awakened', Boolean(getvar('stat_data.玩家.精液成瘾能力.已觉醒', { scope: 'local', defaults: true })));
+define('addiction_progress', Number(getvar('stat_data.玩家.精液成瘾能力.觉醒进度', { scope: 'local', defaults: 100 })) || 100);
+define('addiction_oral_count', Number(getvar('stat_data.玩家.精液成瘾能力.已触发口服次数', { scope: 'local', defaults: 0 })) || 0);
+define('addiction_internal_count', Number(getvar('stat_data.玩家.精液成瘾能力.已触发内射次数', { scope: 'local', defaults: 0 })) || 0);
+define('addiction_park_known', Number(getvar('stat_data.玩家.精液成瘾能力.园区知晓程度', { scope: 'local', defaults: 60 })) || 60);
+define('addiction_total_women', Number(getvar('stat_data.玩家.精液成瘾能力.成瘾女性总数', { scope: 'local', defaults: 0 })) || 0);
+
+// ─── 园区派系、道德、利用相关 ───
+define('morality', Number(getvar('stat_data.园区.善恶值', { scope: 'local', defaults: 0 })) || 0);
+define('faction_board', Number(getvar('stat_data.园区.园区董事会', { scope: 'local', defaults: 0 })) || 0);
+define('faction_mgmt', Number(getvar('stat_data.园区.管理层', { scope: 'local', defaults: 0 })) || 0);
+define('faction_guard', Number(getvar('stat_data.园区.打手团', { scope: 'local', defaults: 0 })) || 0);
+define('faction_victim', Number(getvar('stat_data.园区.受害者群', { scope: 'local', defaults: 10 })) || 10);
+define('faction_darknet', Number(getvar('stat_data.园区.暗网网络', { scope: 'local', defaults: 0 })) || 0);
+define('utilization_plan', String(getvar('stat_data.园区.利用计划', { scope: 'local', defaults: '' }) || ''));
+define('utilization_progress', Number(getvar('stat_data.园区.利用进度', { scope: 'local', defaults: 5 })) || 5);
+define('scammed_amount', Number(getvar('stat_data.园区.已诈骗金额', { scope: 'local', defaults: 0 })) || 0);
+define('lcg_seed', Number(getvar('stat_data.园区.LCG种子', { scope: 'local', defaults: 0 })) || 0);
+define('auction_status', String(getvar('stat_data.园区.拍卖状态', { scope: 'local', defaults: '未上架' }) || '未上架'));
+
+// ─── 派生布尔/枚举判定 ───
+define('has_ending', ending_branch !== '');
+define('is_dark_route', morality < -50);
+define('is_light_route', morality > 50);
+define('is_neutral_route', morality >= -50 && morality <= 50);
+
+define('is_stage_fear', current_stage === '入园恐惧');
+define('is_stage_adapt', current_stage === '适应求生');
+define('is_stage_plan', current_stage === '暗中谋划');
+define('is_stage_escape', current_stage === '逃脱行动');
+define('is_stage_ending', current_stage === '结局');
+
+// ─── 精液成瘾能力判定（用于EJS多阶段条目） ───
+define('addiction_dormant', addiction_awakened && addiction_total_women === 0);
+define('addiction_active_oral', addiction_oral_count > 0 && addiction_internal_count === 0);
+define('addiction_active_internal', addiction_internal_count > 0 && addiction_oral_count === 0);
+define('addiction_active_both', addiction_oral_count > 0 && addiction_internal_count > 0);
+define('addiction_harem_threshold', addiction_total_women >= 3);
+define('addiction_harem_king', addiction_total_women >= 10);
+
+// ─── 飞机杯绑定状态判定 ───
+define('fjb_unbound', fjb_binding === '无' || fjb_binding === '');
+define('fjb_bound', !fjb_unbound);
+
+// ─── 路线判定（用于结局矩阵） ───
+define('can_escape', player_escape_prep >= 80 && player_intel >= 5);
+define('can_counterattack', player_disguise >= 80 && player_scarcity >= 90 && player_power_access && morality < -50);
+define('can_rescue', player_police_clues >= 3 && player_external_aid && morality >= 30);
+define('is_sinking', getvar('stat_data.玩家.精神', { scope: 'local', defaults: 60 }) < 20 && player_hope < 10);
+_%>

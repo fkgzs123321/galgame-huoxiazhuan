@@ -1,0 +1,2942 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "default": {},
+  "type": "object",
+  "properties": {
+    "时间": {
+      "description": "时间",
+      "default": {},
+      "$ref": "#/$defs/__schema0"
+    },
+    "场景": {
+      "description": "场景",
+      "default": {},
+      "$ref": "#/$defs/__schema6"
+    },
+    "主角": {
+      "description": "主角",
+      "default": {},
+      "$ref": "#/$defs/__schema10"
+    },
+    "当前女角状态": {
+      "description": "当前女角状态",
+      "default": {},
+      "$ref": "#/$defs/__schema31"
+    },
+    "经济": {
+      "description": "经济",
+      "default": {},
+      "$ref": "#/$defs/__schema37"
+    },
+    "过程": {
+      "description": "过程",
+      "default": {},
+      "$ref": "#/$defs/__schema41"
+    },
+    "剧情": {
+      "description": "剧情",
+      "default": {},
+      "$ref": "#/$defs/__schema49"
+    },
+    "女角": {
+      "description": "女角",
+      "default": {},
+      "$ref": "#/$defs/__schema68"
+    },
+    "世界": {
+      "description": "世界",
+      "default": {},
+      "$ref": "#/$defs/__schema309"
+    },
+    "她": {
+      "description": "她",
+      "default": {},
+      "$ref": "#/$defs/__schema313"
+    },
+    "局面": {
+      "description": "局面",
+      "default": {},
+      "$ref": "#/$defs/__schema321"
+    },
+    "终局": {
+      "description": "终局",
+      "default": {},
+      "$ref": "#/$defs/__schema337"
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "type": "object",
+      "properties": {
+        "当前日期": {
+          "description": "时间.当前日期",
+          "default": "12-22",
+          "$ref": "#/$defs/__schema1"
+        },
+        "天数": {
+          "description": "时间.天数",
+          "default": 1,
+          "$ref": "#/$defs/__schema2"
+        },
+        "时段": {
+          "description": "时间.时段",
+          "default": "早",
+          "$ref": "#/$defs/__schema3"
+        },
+        "章节": {
+          "description": "时间.章节",
+          "default": "寒假前奏",
+          "$ref": "#/$defs/__schema4"
+        },
+        "天气": {
+          "description": "时间.天气",
+          "default": "晴",
+          "$ref": "#/$defs/__schema5"
+        }
+      }
+    },
+    "__schema1": {
+      "type": "string"
+    },
+    "__schema2": {
+      "type": "number"
+    },
+    "__schema3": {
+      "type": "string"
+    },
+    "__schema4": {
+      "type": "string"
+    },
+    "__schema5": {
+      "type": "string"
+    },
+    "__schema6": {
+      "type": "object",
+      "properties": {
+        "当前地点": {
+          "description": "场景.当前地点",
+          "default": "自宅",
+          "$ref": "#/$defs/__schema7"
+        },
+        "当前女角": {
+          "description": "场景.当前女角",
+          "default": "",
+          "$ref": "#/$defs/__schema8"
+        },
+        "场景模式": {
+          "description": "场景.场景模式",
+          "default": "休息",
+          "$ref": "#/$defs/__schema9"
+        }
+      }
+    },
+    "__schema7": {
+      "type": "string"
+    },
+    "__schema8": {
+      "type": "string"
+    },
+    "__schema9": {
+      "type": "string"
+    },
+    "__schema10": {
+      "type": "object",
+      "properties": {
+        "$骰子种子": {
+          "description": "主角.$骰子种子",
+          "default": 20260915,
+          "$ref": "#/$defs/__schema11"
+        },
+        "身体状态": {
+          "description": "主角.身体状态",
+          "default": 80,
+          "$ref": "#/$defs/__schema12"
+        },
+        "心情": {
+          "description": "主角.心情",
+          "default": 70,
+          "$ref": "#/$defs/__schema13"
+        },
+        "说话": {
+          "description": "主角.说话",
+          "default": 40,
+          "$ref": "#/$defs/__schema14"
+        },
+        "做事": {
+          "description": "主角.做事",
+          "default": 40,
+          "$ref": "#/$defs/__schema15"
+        },
+        "懂东西": {
+          "description": "主角.懂东西",
+          "default": 40,
+          "$ref": "#/$defs/__schema16"
+        },
+        "不可逆损伤": {
+          "description": "主角.不可逆损伤",
+          "default": {},
+          "$ref": "#/$defs/__schema17"
+        },
+        "技能": {
+          "description": "主角.技能",
+          "default": {},
+          "$ref": "#/$defs/__schema18"
+        },
+        "反抗值": {
+          "description": "主角.反抗值",
+          "default": 50,
+          "$ref": "#/$defs/__schema22"
+        },
+        "体力": {
+          "description": "主角.体力",
+          "default": 100,
+          "$ref": "#/$defs/__schema23"
+        },
+        "状态": {
+          "description": "主角.状态",
+          "default": "在线",
+          "$ref": "#/$defs/__schema24"
+        },
+        "对她的了解": {
+          "description": "主角.对她的了解",
+          "default": 0,
+          "$ref": "#/$defs/__schema25"
+        },
+        "痕迹": {
+          "description": "主角.痕迹",
+          "default": {},
+          "$ref": "#/$defs/__schema26"
+        },
+        "已知软肋": {
+          "description": "主角.已知软肋",
+          "default": {},
+          "$ref": "#/$defs/__schema27"
+        },
+        "已封死的路": {
+          "description": "主角.已封死的路",
+          "default": {},
+          "$ref": "#/$defs/__schema28"
+        },
+        "身上": {
+          "description": "主角.身上",
+          "default": {},
+          "$ref": "#/$defs/__schema29"
+        },
+        "已知线索": {
+          "description": "主角.已知线索",
+          "default": {},
+          "$ref": "#/$defs/__schema30"
+        }
+      }
+    },
+    "__schema11": {
+      "type": "number"
+    },
+    "__schema12": {
+      "type": "number"
+    },
+    "__schema13": {
+      "type": "number"
+    },
+    "__schema14": {
+      "type": "number"
+    },
+    "__schema15": {
+      "type": "number"
+    },
+    "__schema16": {
+      "type": "number"
+    },
+    "__schema17": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "不可逆损伤的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema18": {
+      "type": "object",
+      "properties": {
+        "打工": {
+          "description": "技能.打工",
+          "default": 0,
+          "$ref": "#/$defs/__schema19"
+        },
+        "学业": {
+          "description": "技能.学业",
+          "default": 0,
+          "$ref": "#/$defs/__schema20"
+        },
+        "机车": {
+          "description": "技能.机车",
+          "default": 0,
+          "$ref": "#/$defs/__schema21"
+        }
+      }
+    },
+    "__schema19": {
+      "type": "number"
+    },
+    "__schema20": {
+      "type": "number"
+    },
+    "__schema21": {
+      "type": "number"
+    },
+    "__schema22": {
+      "type": "number"
+    },
+    "__schema23": {
+      "type": "number"
+    },
+    "__schema24": {
+      "type": "string"
+    },
+    "__schema25": {
+      "type": "number"
+    },
+    "__schema26": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "痕迹的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema27": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "已知软肋的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema28": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "已封死的路的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema29": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "身上的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema30": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "已知线索的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema31": {
+      "type": "object",
+      "properties": {
+        "当前衣着": {
+          "description": "当前女角状态.当前衣着",
+          "default": "",
+          "$ref": "#/$defs/__schema32"
+        },
+        "暴露程度": {
+          "description": "当前女角状态.暴露程度",
+          "default": "",
+          "$ref": "#/$defs/__schema33"
+        },
+        "湿润度": {
+          "description": "当前女角状态.湿润度",
+          "default": 0,
+          "$ref": "#/$defs/__schema34"
+        },
+        "兴奋度": {
+          "description": "当前女角状态.兴奋度",
+          "default": 0,
+          "$ref": "#/$defs/__schema35"
+        },
+        "精液残留": {
+          "description": "当前女角状态.精液残留",
+          "default": "",
+          "$ref": "#/$defs/__schema36"
+        }
+      }
+    },
+    "__schema32": {
+      "type": "string"
+    },
+    "__schema33": {
+      "type": "string"
+    },
+    "__schema34": {
+      "type": "number"
+    },
+    "__schema35": {
+      "type": "number"
+    },
+    "__schema36": {
+      "type": "string"
+    },
+    "__schema37": {
+      "type": "object",
+      "properties": {
+        "现金": {
+          "description": "经济.现金",
+          "default": 5000,
+          "$ref": "#/$defs/__schema38"
+        },
+        "累计储蓄": {
+          "description": "经济.累计储蓄",
+          "default": 0,
+          "$ref": "#/$defs/__schema39"
+        },
+        "当日盈亏": {
+          "description": "经济.当日盈亏",
+          "default": 0,
+          "$ref": "#/$defs/__schema40"
+        }
+      }
+    },
+    "__schema38": {
+      "type": "number"
+    },
+    "__schema39": {
+      "type": "number"
+    },
+    "__schema40": {
+      "type": "number"
+    },
+    "__schema41": {
+      "type": "object",
+      "properties": {
+        "时段楼层数": {
+          "description": "过程.时段楼层数",
+          "default": 0,
+          "$ref": "#/$defs/__schema42"
+        },
+        "当前难度": {
+          "description": "过程.当前难度",
+          "default": "普通",
+          "$ref": "#/$defs/__schema43"
+        },
+        "死结局标识": {
+          "description": "过程.死结局标识",
+          "default": "",
+          "$ref": "#/$defs/__schema44"
+        },
+        "连续无收入天数": {
+          "description": "过程.连续无收入天数",
+          "default": 0,
+          "$ref": "#/$defs/__schema45"
+        },
+        "超自然妄想计数": {
+          "description": "过程.超自然妄想计数",
+          "default": 0,
+          "$ref": "#/$defs/__schema46"
+        },
+        "世界的裂缝": {
+          "description": "过程.世界的裂缝",
+          "default": 0,
+          "$ref": "#/$defs/__schema47"
+        },
+        "她用过的手段": {
+          "description": "过程.她用过的手段",
+          "default": {},
+          "$ref": "#/$defs/__schema48"
+        }
+      }
+    },
+    "__schema42": {
+      "type": "number"
+    },
+    "__schema43": {
+      "type": "string"
+    },
+    "__schema44": {
+      "type": "string"
+    },
+    "__schema45": {
+      "type": "number"
+    },
+    "__schema46": {
+      "type": "number"
+    },
+    "__schema47": {
+      "type": "number"
+    },
+    "__schema48": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "她用过的手段的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema49": {
+      "type": "object",
+      "properties": {
+        "日记收集数": {
+          "description": "剧情.日记收集数",
+          "default": 0,
+          "$ref": "#/$defs/__schema50"
+        },
+        "美纪线进度": {
+          "description": "剧情.美纪线进度",
+          "default": 0,
+          "$ref": "#/$defs/__schema51"
+        },
+        "樱子线解锁": {
+          "description": "剧情.樱子线解锁",
+          "default": false,
+          "$ref": "#/$defs/__schema52"
+        },
+        "樱子死讯": {
+          "description": "剧情.樱子死讯",
+          "default": false,
+          "$ref": "#/$defs/__schema53"
+        },
+        "医院访问次数": {
+          "description": "剧情.医院访问次数",
+          "default": 0,
+          "$ref": "#/$defs/__schema54"
+        },
+        "变数屋访问次数": {
+          "description": "剧情.变数屋访问次数",
+          "default": 0,
+          "$ref": "#/$defs/__schema55"
+        },
+        "变数屋全解锁": {
+          "description": "剧情.变数屋全解锁",
+          "default": false,
+          "$ref": "#/$defs/__schema56"
+        },
+        "阴谋偷听": {
+          "description": "剧情.阴谋偷听",
+          "default": false,
+          "$ref": "#/$defs/__schema57"
+        },
+        "西寺解决进度": {
+          "description": "剧情.西寺解决进度",
+          "default": 0,
+          "$ref": "#/$defs/__schema58"
+        },
+        "西寺债务陷阱": {
+          "description": "剧情.西寺债务陷阱",
+          "default": false,
+          "$ref": "#/$defs/__schema59"
+        },
+        "泉美H完成": {
+          "description": "剧情.泉美H完成",
+          "default": false,
+          "$ref": "#/$defs/__schema60"
+        },
+        "友美误会解决": {
+          "description": "剧情.友美误会解决",
+          "default": false,
+          "$ref": "#/$defs/__schema61"
+        },
+        "毕业生外传完成": {
+          "description": "剧情.毕业生外传完成",
+          "default": false,
+          "$ref": "#/$defs/__schema62"
+        },
+        "洋子短发完成": {
+          "description": "剧情.洋子短发完成",
+          "default": false,
+          "$ref": "#/$defs/__schema63"
+        },
+        "互斥触发": {
+          "description": "剧情.互斥触发",
+          "default": {},
+          "$ref": "#/$defs/__schema64"
+        }
+      }
+    },
+    "__schema50": {
+      "type": "number"
+    },
+    "__schema51": {
+      "type": "number"
+    },
+    "__schema52": {
+      "type": "boolean"
+    },
+    "__schema53": {
+      "type": "boolean"
+    },
+    "__schema54": {
+      "type": "number"
+    },
+    "__schema55": {
+      "type": "number"
+    },
+    "__schema56": {
+      "type": "boolean"
+    },
+    "__schema57": {
+      "type": "boolean"
+    },
+    "__schema58": {
+      "type": "number"
+    },
+    "__schema59": {
+      "type": "boolean"
+    },
+    "__schema60": {
+      "type": "boolean"
+    },
+    "__schema61": {
+      "type": "boolean"
+    },
+    "__schema62": {
+      "type": "boolean"
+    },
+    "__schema63": {
+      "type": "boolean"
+    },
+    "__schema64": {
+      "type": "object",
+      "properties": {
+        "友美泉": {
+          "description": "互斥触发.友美泉",
+          "default": false,
+          "$ref": "#/$defs/__schema65"
+        },
+        "鸣泽母女": {
+          "description": "互斥触发.鸣泽母女",
+          "default": false,
+          "$ref": "#/$defs/__schema66"
+        },
+        "永岛母女": {
+          "description": "互斥触发.永岛母女",
+          "default": false,
+          "$ref": "#/$defs/__schema67"
+        }
+      }
+    },
+    "__schema65": {
+      "type": "boolean"
+    },
+    "__schema66": {
+      "type": "boolean"
+    },
+    "__schema67": {
+      "type": "boolean"
+    },
+    "__schema68": {
+      "type": "object",
+      "properties": {
+        "鸣泽唯": {
+          "description": "女角.鸣泽唯",
+          "default": {},
+          "$ref": "#/$defs/__schema69"
+        },
+        "水野友美": {
+          "description": "女角.水野友美",
+          "default": {},
+          "$ref": "#/$defs/__schema85"
+        },
+        "筱原泉美": {
+          "description": "女角.筱原泉美",
+          "default": {},
+          "$ref": "#/$defs/__schema101"
+        },
+        "南川洋子": {
+          "description": "女角.南川洋子",
+          "default": {},
+          "$ref": "#/$defs/__schema117"
+        },
+        "加藤美纪": {
+          "description": "女角.加藤美纪",
+          "default": {},
+          "$ref": "#/$defs/__schema133"
+        },
+        "舞岛可怜": {
+          "description": "女角.舞岛可怜",
+          "default": {},
+          "$ref": "#/$defs/__schema149"
+        },
+        "杉本樱子": {
+          "description": "女角.杉本樱子",
+          "default": {},
+          "$ref": "#/$defs/__schema165"
+        },
+        "都筑梢江": {
+          "description": "女角.都筑梢江",
+          "default": {},
+          "$ref": "#/$defs/__schema181"
+        },
+        "野野村美里": {
+          "description": "女角.野野村美里",
+          "default": {},
+          "$ref": "#/$defs/__schema197"
+        },
+        "安田爱美": {
+          "description": "女角.安田爱美",
+          "default": {},
+          "$ref": "#/$defs/__schema213"
+        },
+        "田中美沙": {
+          "description": "女角.田中美沙",
+          "default": {},
+          "$ref": "#/$defs/__schema229"
+        },
+        "片桐美铃": {
+          "description": "女角.片桐美铃",
+          "default": {},
+          "$ref": "#/$defs/__schema245"
+        },
+        "鸣泽美佐子": {
+          "description": "女角.鸣泽美佐子",
+          "default": {},
+          "$ref": "#/$defs/__schema261"
+        },
+        "永岛佐知子": {
+          "description": "女角.永岛佐知子",
+          "default": {},
+          "$ref": "#/$defs/__schema277"
+        },
+        "永岛久美子": {
+          "description": "女角.永岛久美子",
+          "default": {},
+          "$ref": "#/$defs/__schema293"
+        }
+      }
+    },
+    "__schema69": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "鸣泽唯.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema70"
+        },
+        "关系阶段": {
+          "description": "鸣泽唯.关系阶段",
+          "default": "熟悉",
+          "$ref": "#/$defs/__schema71"
+        },
+        "状态": {
+          "description": "鸣泽唯.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema72"
+        },
+        "开发度": {
+          "description": "鸣泽唯.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema73"
+        },
+        "身体记忆": {
+          "description": "鸣泽唯.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema74"
+        },
+        "胸": {
+          "description": "鸣泽唯.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema75"
+        },
+        "阴部": {
+          "description": "鸣泽唯.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema78"
+        },
+        "后穴": {
+          "description": "鸣泽唯.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema82"
+        }
+      }
+    },
+    "__schema70": {
+      "type": "number"
+    },
+    "__schema71": {
+      "type": "string"
+    },
+    "__schema72": {
+      "type": "string"
+    },
+    "__schema73": {
+      "type": "number"
+    },
+    "__schema74": {
+      "type": "string"
+    },
+    "__schema75": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema76"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema77"
+        }
+      }
+    },
+    "__schema76": {
+      "type": "number"
+    },
+    "__schema77": {
+      "type": "string"
+    },
+    "__schema78": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema79"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema80"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema81"
+        }
+      }
+    },
+    "__schema79": {
+      "type": "number"
+    },
+    "__schema80": {
+      "type": "string"
+    },
+    "__schema81": {
+      "type": "boolean"
+    },
+    "__schema82": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema83"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema84"
+        }
+      }
+    },
+    "__schema83": {
+      "type": "number"
+    },
+    "__schema84": {
+      "type": "string"
+    },
+    "__schema85": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "水野友美.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema86"
+        },
+        "关系阶段": {
+          "description": "水野友美.关系阶段",
+          "default": "熟悉",
+          "$ref": "#/$defs/__schema87"
+        },
+        "状态": {
+          "description": "水野友美.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema88"
+        },
+        "开发度": {
+          "description": "水野友美.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema89"
+        },
+        "身体记忆": {
+          "description": "水野友美.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema90"
+        },
+        "胸": {
+          "description": "水野友美.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema91"
+        },
+        "阴部": {
+          "description": "水野友美.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema94"
+        },
+        "后穴": {
+          "description": "水野友美.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema98"
+        }
+      }
+    },
+    "__schema86": {
+      "type": "number"
+    },
+    "__schema87": {
+      "type": "string"
+    },
+    "__schema88": {
+      "type": "string"
+    },
+    "__schema89": {
+      "type": "number"
+    },
+    "__schema90": {
+      "type": "string"
+    },
+    "__schema91": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema92"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema93"
+        }
+      }
+    },
+    "__schema92": {
+      "type": "number"
+    },
+    "__schema93": {
+      "type": "string"
+    },
+    "__schema94": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema95"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema96"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema97"
+        }
+      }
+    },
+    "__schema95": {
+      "type": "number"
+    },
+    "__schema96": {
+      "type": "string"
+    },
+    "__schema97": {
+      "type": "boolean"
+    },
+    "__schema98": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema99"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema100"
+        }
+      }
+    },
+    "__schema99": {
+      "type": "number"
+    },
+    "__schema100": {
+      "type": "string"
+    },
+    "__schema101": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "筱原泉美.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema102"
+        },
+        "关系阶段": {
+          "description": "筱原泉美.关系阶段",
+          "default": "熟悉",
+          "$ref": "#/$defs/__schema103"
+        },
+        "状态": {
+          "description": "筱原泉美.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema104"
+        },
+        "开发度": {
+          "description": "筱原泉美.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema105"
+        },
+        "身体记忆": {
+          "description": "筱原泉美.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema106"
+        },
+        "胸": {
+          "description": "筱原泉美.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema107"
+        },
+        "阴部": {
+          "description": "筱原泉美.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema110"
+        },
+        "后穴": {
+          "description": "筱原泉美.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema114"
+        }
+      }
+    },
+    "__schema102": {
+      "type": "number"
+    },
+    "__schema103": {
+      "type": "string"
+    },
+    "__schema104": {
+      "type": "string"
+    },
+    "__schema105": {
+      "type": "number"
+    },
+    "__schema106": {
+      "type": "string"
+    },
+    "__schema107": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema108"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema109"
+        }
+      }
+    },
+    "__schema108": {
+      "type": "number"
+    },
+    "__schema109": {
+      "type": "string"
+    },
+    "__schema110": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema111"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema112"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema113"
+        }
+      }
+    },
+    "__schema111": {
+      "type": "number"
+    },
+    "__schema112": {
+      "type": "string"
+    },
+    "__schema113": {
+      "type": "boolean"
+    },
+    "__schema114": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema115"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema116"
+        }
+      }
+    },
+    "__schema115": {
+      "type": "number"
+    },
+    "__schema116": {
+      "type": "string"
+    },
+    "__schema117": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "南川洋子.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema118"
+        },
+        "关系阶段": {
+          "description": "南川洋子.关系阶段",
+          "default": "熟悉",
+          "$ref": "#/$defs/__schema119"
+        },
+        "状态": {
+          "description": "南川洋子.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema120"
+        },
+        "开发度": {
+          "description": "南川洋子.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema121"
+        },
+        "身体记忆": {
+          "description": "南川洋子.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema122"
+        },
+        "胸": {
+          "description": "南川洋子.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema123"
+        },
+        "阴部": {
+          "description": "南川洋子.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema126"
+        },
+        "后穴": {
+          "description": "南川洋子.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema130"
+        }
+      }
+    },
+    "__schema118": {
+      "type": "number"
+    },
+    "__schema119": {
+      "type": "string"
+    },
+    "__schema120": {
+      "type": "string"
+    },
+    "__schema121": {
+      "type": "number"
+    },
+    "__schema122": {
+      "type": "string"
+    },
+    "__schema123": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema124"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema125"
+        }
+      }
+    },
+    "__schema124": {
+      "type": "number"
+    },
+    "__schema125": {
+      "type": "string"
+    },
+    "__schema126": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema127"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema128"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema129"
+        }
+      }
+    },
+    "__schema127": {
+      "type": "number"
+    },
+    "__schema128": {
+      "type": "string"
+    },
+    "__schema129": {
+      "type": "boolean"
+    },
+    "__schema130": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema131"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema132"
+        }
+      }
+    },
+    "__schema131": {
+      "type": "number"
+    },
+    "__schema132": {
+      "type": "string"
+    },
+    "__schema133": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "加藤美纪.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema134"
+        },
+        "关系阶段": {
+          "description": "加藤美纪.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema135"
+        },
+        "状态": {
+          "description": "加藤美纪.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema136"
+        },
+        "开发度": {
+          "description": "加藤美纪.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema137"
+        },
+        "身体记忆": {
+          "description": "加藤美纪.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema138"
+        },
+        "胸": {
+          "description": "加藤美纪.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema139"
+        },
+        "阴部": {
+          "description": "加藤美纪.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema142"
+        },
+        "后穴": {
+          "description": "加藤美纪.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema146"
+        }
+      }
+    },
+    "__schema134": {
+      "type": "number"
+    },
+    "__schema135": {
+      "type": "string"
+    },
+    "__schema136": {
+      "type": "string"
+    },
+    "__schema137": {
+      "type": "number"
+    },
+    "__schema138": {
+      "type": "string"
+    },
+    "__schema139": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema140"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema141"
+        }
+      }
+    },
+    "__schema140": {
+      "type": "number"
+    },
+    "__schema141": {
+      "type": "string"
+    },
+    "__schema142": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema143"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema144"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema145"
+        }
+      }
+    },
+    "__schema143": {
+      "type": "number"
+    },
+    "__schema144": {
+      "type": "string"
+    },
+    "__schema145": {
+      "type": "boolean"
+    },
+    "__schema146": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema147"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema148"
+        }
+      }
+    },
+    "__schema147": {
+      "type": "number"
+    },
+    "__schema148": {
+      "type": "string"
+    },
+    "__schema149": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "舞岛可怜.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema150"
+        },
+        "关系阶段": {
+          "description": "舞岛可怜.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema151"
+        },
+        "状态": {
+          "description": "舞岛可怜.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema152"
+        },
+        "开发度": {
+          "description": "舞岛可怜.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema153"
+        },
+        "身体记忆": {
+          "description": "舞岛可怜.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema154"
+        },
+        "胸": {
+          "description": "舞岛可怜.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema155"
+        },
+        "阴部": {
+          "description": "舞岛可怜.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema158"
+        },
+        "后穴": {
+          "description": "舞岛可怜.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema162"
+        }
+      }
+    },
+    "__schema150": {
+      "type": "number"
+    },
+    "__schema151": {
+      "type": "string"
+    },
+    "__schema152": {
+      "type": "string"
+    },
+    "__schema153": {
+      "type": "number"
+    },
+    "__schema154": {
+      "type": "string"
+    },
+    "__schema155": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema156"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema157"
+        }
+      }
+    },
+    "__schema156": {
+      "type": "number"
+    },
+    "__schema157": {
+      "type": "string"
+    },
+    "__schema158": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema159"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema160"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema161"
+        }
+      }
+    },
+    "__schema159": {
+      "type": "number"
+    },
+    "__schema160": {
+      "type": "string"
+    },
+    "__schema161": {
+      "type": "boolean"
+    },
+    "__schema162": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema163"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema164"
+        }
+      }
+    },
+    "__schema163": {
+      "type": "number"
+    },
+    "__schema164": {
+      "type": "string"
+    },
+    "__schema165": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "杉本樱子.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema166"
+        },
+        "关系阶段": {
+          "description": "杉本樱子.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema167"
+        },
+        "状态": {
+          "description": "杉本樱子.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema168"
+        },
+        "开发度": {
+          "description": "杉本樱子.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema169"
+        },
+        "身体记忆": {
+          "description": "杉本樱子.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema170"
+        },
+        "胸": {
+          "description": "杉本樱子.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema171"
+        },
+        "阴部": {
+          "description": "杉本樱子.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema174"
+        },
+        "后穴": {
+          "description": "杉本樱子.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema178"
+        }
+      }
+    },
+    "__schema166": {
+      "type": "number"
+    },
+    "__schema167": {
+      "type": "string"
+    },
+    "__schema168": {
+      "type": "string"
+    },
+    "__schema169": {
+      "type": "number"
+    },
+    "__schema170": {
+      "type": "string"
+    },
+    "__schema171": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema172"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema173"
+        }
+      }
+    },
+    "__schema172": {
+      "type": "number"
+    },
+    "__schema173": {
+      "type": "string"
+    },
+    "__schema174": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema175"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema176"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema177"
+        }
+      }
+    },
+    "__schema175": {
+      "type": "number"
+    },
+    "__schema176": {
+      "type": "string"
+    },
+    "__schema177": {
+      "type": "boolean"
+    },
+    "__schema178": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema179"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema180"
+        }
+      }
+    },
+    "__schema179": {
+      "type": "number"
+    },
+    "__schema180": {
+      "type": "string"
+    },
+    "__schema181": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "都筑梢江.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema182"
+        },
+        "关系阶段": {
+          "description": "都筑梢江.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema183"
+        },
+        "状态": {
+          "description": "都筑梢江.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema184"
+        },
+        "开发度": {
+          "description": "都筑梢江.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema185"
+        },
+        "身体记忆": {
+          "description": "都筑梢江.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema186"
+        },
+        "胸": {
+          "description": "都筑梢江.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema187"
+        },
+        "阴部": {
+          "description": "都筑梢江.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema190"
+        },
+        "后穴": {
+          "description": "都筑梢江.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema194"
+        }
+      }
+    },
+    "__schema182": {
+      "type": "number"
+    },
+    "__schema183": {
+      "type": "string"
+    },
+    "__schema184": {
+      "type": "string"
+    },
+    "__schema185": {
+      "type": "number"
+    },
+    "__schema186": {
+      "type": "string"
+    },
+    "__schema187": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema188"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema189"
+        }
+      }
+    },
+    "__schema188": {
+      "type": "number"
+    },
+    "__schema189": {
+      "type": "string"
+    },
+    "__schema190": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema191"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema192"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema193"
+        }
+      }
+    },
+    "__schema191": {
+      "type": "number"
+    },
+    "__schema192": {
+      "type": "string"
+    },
+    "__schema193": {
+      "type": "boolean"
+    },
+    "__schema194": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema195"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema196"
+        }
+      }
+    },
+    "__schema195": {
+      "type": "number"
+    },
+    "__schema196": {
+      "type": "string"
+    },
+    "__schema197": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "野野村美里.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema198"
+        },
+        "关系阶段": {
+          "description": "野野村美里.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema199"
+        },
+        "状态": {
+          "description": "野野村美里.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema200"
+        },
+        "开发度": {
+          "description": "野野村美里.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema201"
+        },
+        "身体记忆": {
+          "description": "野野村美里.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema202"
+        },
+        "胸": {
+          "description": "野野村美里.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema203"
+        },
+        "阴部": {
+          "description": "野野村美里.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema206"
+        },
+        "后穴": {
+          "description": "野野村美里.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema210"
+        }
+      }
+    },
+    "__schema198": {
+      "type": "number"
+    },
+    "__schema199": {
+      "type": "string"
+    },
+    "__schema200": {
+      "type": "string"
+    },
+    "__schema201": {
+      "type": "number"
+    },
+    "__schema202": {
+      "type": "string"
+    },
+    "__schema203": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema204"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema205"
+        }
+      }
+    },
+    "__schema204": {
+      "type": "number"
+    },
+    "__schema205": {
+      "type": "string"
+    },
+    "__schema206": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema207"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema208"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema209"
+        }
+      }
+    },
+    "__schema207": {
+      "type": "number"
+    },
+    "__schema208": {
+      "type": "string"
+    },
+    "__schema209": {
+      "type": "boolean"
+    },
+    "__schema210": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema211"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema212"
+        }
+      }
+    },
+    "__schema211": {
+      "type": "number"
+    },
+    "__schema212": {
+      "type": "string"
+    },
+    "__schema213": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "安田爱美.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema214"
+        },
+        "关系阶段": {
+          "description": "安田爱美.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema215"
+        },
+        "状态": {
+          "description": "安田爱美.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema216"
+        },
+        "开发度": {
+          "description": "安田爱美.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema217"
+        },
+        "身体记忆": {
+          "description": "安田爱美.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema218"
+        },
+        "胸": {
+          "description": "安田爱美.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema219"
+        },
+        "阴部": {
+          "description": "安田爱美.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema222"
+        },
+        "后穴": {
+          "description": "安田爱美.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema226"
+        }
+      }
+    },
+    "__schema214": {
+      "type": "number"
+    },
+    "__schema215": {
+      "type": "string"
+    },
+    "__schema216": {
+      "type": "string"
+    },
+    "__schema217": {
+      "type": "number"
+    },
+    "__schema218": {
+      "type": "string"
+    },
+    "__schema219": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema220"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema221"
+        }
+      }
+    },
+    "__schema220": {
+      "type": "number"
+    },
+    "__schema221": {
+      "type": "string"
+    },
+    "__schema222": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema223"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema224"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema225"
+        }
+      }
+    },
+    "__schema223": {
+      "type": "number"
+    },
+    "__schema224": {
+      "type": "string"
+    },
+    "__schema225": {
+      "type": "boolean"
+    },
+    "__schema226": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema227"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema228"
+        }
+      }
+    },
+    "__schema227": {
+      "type": "number"
+    },
+    "__schema228": {
+      "type": "string"
+    },
+    "__schema229": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "田中美沙.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema230"
+        },
+        "关系阶段": {
+          "description": "田中美沙.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema231"
+        },
+        "状态": {
+          "description": "田中美沙.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema232"
+        },
+        "开发度": {
+          "description": "田中美沙.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema233"
+        },
+        "身体记忆": {
+          "description": "田中美沙.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema234"
+        },
+        "胸": {
+          "description": "田中美沙.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema235"
+        },
+        "阴部": {
+          "description": "田中美沙.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema238"
+        },
+        "后穴": {
+          "description": "田中美沙.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema242"
+        }
+      }
+    },
+    "__schema230": {
+      "type": "number"
+    },
+    "__schema231": {
+      "type": "string"
+    },
+    "__schema232": {
+      "type": "string"
+    },
+    "__schema233": {
+      "type": "number"
+    },
+    "__schema234": {
+      "type": "string"
+    },
+    "__schema235": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema236"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema237"
+        }
+      }
+    },
+    "__schema236": {
+      "type": "number"
+    },
+    "__schema237": {
+      "type": "string"
+    },
+    "__schema238": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema239"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema240"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema241"
+        }
+      }
+    },
+    "__schema239": {
+      "type": "number"
+    },
+    "__schema240": {
+      "type": "string"
+    },
+    "__schema241": {
+      "type": "boolean"
+    },
+    "__schema242": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema243"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema244"
+        }
+      }
+    },
+    "__schema243": {
+      "type": "number"
+    },
+    "__schema244": {
+      "type": "string"
+    },
+    "__schema245": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "片桐美铃.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema246"
+        },
+        "关系阶段": {
+          "description": "片桐美铃.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema247"
+        },
+        "状态": {
+          "description": "片桐美铃.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema248"
+        },
+        "开发度": {
+          "description": "片桐美铃.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema249"
+        },
+        "身体记忆": {
+          "description": "片桐美铃.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema250"
+        },
+        "胸": {
+          "description": "片桐美铃.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema251"
+        },
+        "阴部": {
+          "description": "片桐美铃.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema254"
+        },
+        "后穴": {
+          "description": "片桐美铃.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema258"
+        }
+      }
+    },
+    "__schema246": {
+      "type": "number"
+    },
+    "__schema247": {
+      "type": "string"
+    },
+    "__schema248": {
+      "type": "string"
+    },
+    "__schema249": {
+      "type": "number"
+    },
+    "__schema250": {
+      "type": "string"
+    },
+    "__schema251": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema252"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema253"
+        }
+      }
+    },
+    "__schema252": {
+      "type": "number"
+    },
+    "__schema253": {
+      "type": "string"
+    },
+    "__schema254": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema255"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema256"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema257"
+        }
+      }
+    },
+    "__schema255": {
+      "type": "number"
+    },
+    "__schema256": {
+      "type": "string"
+    },
+    "__schema257": {
+      "type": "boolean"
+    },
+    "__schema258": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema259"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema260"
+        }
+      }
+    },
+    "__schema259": {
+      "type": "number"
+    },
+    "__schema260": {
+      "type": "string"
+    },
+    "__schema261": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "鸣泽美佐子.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema262"
+        },
+        "关系阶段": {
+          "description": "鸣泽美佐子.关系阶段",
+          "default": "熟悉",
+          "$ref": "#/$defs/__schema263"
+        },
+        "状态": {
+          "description": "鸣泽美佐子.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema264"
+        },
+        "开发度": {
+          "description": "鸣泽美佐子.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema265"
+        },
+        "身体记忆": {
+          "description": "鸣泽美佐子.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema266"
+        },
+        "胸": {
+          "description": "鸣泽美佐子.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema267"
+        },
+        "阴部": {
+          "description": "鸣泽美佐子.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema270"
+        },
+        "后穴": {
+          "description": "鸣泽美佐子.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema274"
+        }
+      }
+    },
+    "__schema262": {
+      "type": "number"
+    },
+    "__schema263": {
+      "type": "string"
+    },
+    "__schema264": {
+      "type": "string"
+    },
+    "__schema265": {
+      "type": "number"
+    },
+    "__schema266": {
+      "type": "string"
+    },
+    "__schema267": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema268"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema269"
+        }
+      }
+    },
+    "__schema268": {
+      "type": "number"
+    },
+    "__schema269": {
+      "type": "string"
+    },
+    "__schema270": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema271"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema272"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema273"
+        }
+      }
+    },
+    "__schema271": {
+      "type": "number"
+    },
+    "__schema272": {
+      "type": "string"
+    },
+    "__schema273": {
+      "type": "boolean"
+    },
+    "__schema274": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema275"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema276"
+        }
+      }
+    },
+    "__schema275": {
+      "type": "number"
+    },
+    "__schema276": {
+      "type": "string"
+    },
+    "__schema277": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "永岛佐知子.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema278"
+        },
+        "关系阶段": {
+          "description": "永岛佐知子.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema279"
+        },
+        "状态": {
+          "description": "永岛佐知子.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema280"
+        },
+        "开发度": {
+          "description": "永岛佐知子.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema281"
+        },
+        "身体记忆": {
+          "description": "永岛佐知子.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema282"
+        },
+        "胸": {
+          "description": "永岛佐知子.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema283"
+        },
+        "阴部": {
+          "description": "永岛佐知子.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema286"
+        },
+        "后穴": {
+          "description": "永岛佐知子.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema290"
+        }
+      }
+    },
+    "__schema278": {
+      "type": "number"
+    },
+    "__schema279": {
+      "type": "string"
+    },
+    "__schema280": {
+      "type": "string"
+    },
+    "__schema281": {
+      "type": "number"
+    },
+    "__schema282": {
+      "type": "string"
+    },
+    "__schema283": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema284"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema285"
+        }
+      }
+    },
+    "__schema284": {
+      "type": "number"
+    },
+    "__schema285": {
+      "type": "string"
+    },
+    "__schema286": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema287"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema288"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema289"
+        }
+      }
+    },
+    "__schema287": {
+      "type": "number"
+    },
+    "__schema288": {
+      "type": "string"
+    },
+    "__schema289": {
+      "type": "boolean"
+    },
+    "__schema290": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema291"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema292"
+        }
+      }
+    },
+    "__schema291": {
+      "type": "number"
+    },
+    "__schema292": {
+      "type": "string"
+    },
+    "__schema293": {
+      "type": "object",
+      "properties": {
+        "好感度": {
+          "description": "永岛久美子.好感度",
+          "default": 0,
+          "$ref": "#/$defs/__schema294"
+        },
+        "关系阶段": {
+          "description": "永岛久美子.关系阶段",
+          "default": "初识",
+          "$ref": "#/$defs/__schema295"
+        },
+        "状态": {
+          "description": "永岛久美子.状态",
+          "default": "",
+          "$ref": "#/$defs/__schema296"
+        },
+        "开发度": {
+          "description": "永岛久美子.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema297"
+        },
+        "身体记忆": {
+          "description": "永岛久美子.身体记忆",
+          "default": "",
+          "$ref": "#/$defs/__schema298"
+        },
+        "胸": {
+          "description": "永岛久美子.胸",
+          "default": {},
+          "$ref": "#/$defs/__schema299"
+        },
+        "阴部": {
+          "description": "永岛久美子.阴部",
+          "default": {},
+          "$ref": "#/$defs/__schema302"
+        },
+        "后穴": {
+          "description": "永岛久美子.后穴",
+          "default": {},
+          "$ref": "#/$defs/__schema306"
+        }
+      }
+    },
+    "__schema294": {
+      "type": "number"
+    },
+    "__schema295": {
+      "type": "string"
+    },
+    "__schema296": {
+      "type": "string"
+    },
+    "__schema297": {
+      "type": "number"
+    },
+    "__schema298": {
+      "type": "string"
+    },
+    "__schema299": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "胸.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema300"
+        },
+        "现状": {
+          "description": "胸.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema301"
+        }
+      }
+    },
+    "__schema300": {
+      "type": "number"
+    },
+    "__schema301": {
+      "type": "string"
+    },
+    "__schema302": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "阴部.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema303"
+        },
+        "现状": {
+          "description": "阴部.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema304"
+        },
+        "破瓜": {
+          "description": "阴部.破瓜",
+          "default": false,
+          "$ref": "#/$defs/__schema305"
+        }
+      }
+    },
+    "__schema303": {
+      "type": "number"
+    },
+    "__schema304": {
+      "type": "string"
+    },
+    "__schema305": {
+      "type": "boolean"
+    },
+    "__schema306": {
+      "type": "object",
+      "properties": {
+        "开发度": {
+          "description": "后穴.开发度",
+          "default": 0,
+          "$ref": "#/$defs/__schema307"
+        },
+        "现状": {
+          "description": "后穴.现状",
+          "default": "",
+          "$ref": "#/$defs/__schema308"
+        }
+      }
+    },
+    "__schema307": {
+      "type": "number"
+    },
+    "__schema308": {
+      "type": "string"
+    },
+    "__schema309": {
+      "type": "object",
+      "properties": {
+        "底座": {
+          "description": "世界.底座",
+          "default": "nanpa2",
+          "$ref": "#/$defs/__schema310"
+        },
+        "游戏进度": {
+          "description": "世界.游戏进度",
+          "default": 0,
+          "$ref": "#/$defs/__schema311"
+        },
+        "关系封闭": {
+          "description": "世界.关系封闭",
+          "default": {},
+          "$ref": "#/$defs/__schema312"
+        }
+      }
+    },
+    "__schema310": {
+      "type": "string"
+    },
+    "__schema311": {
+      "type": "number"
+    },
+    "__schema312": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "关系封闭的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema313": {
+      "type": "object",
+      "properties": {
+        "人设": {
+          "description": "她.人设",
+          "default": "",
+          "$ref": "#/$defs/__schema314"
+        },
+        "目的进度": {
+          "description": "她.目的进度",
+          "default": 0,
+          "$ref": "#/$defs/__schema315"
+        },
+        "已拿到": {
+          "description": "她.已拿到",
+          "default": 0,
+          "$ref": "#/$defs/__schema316"
+        },
+        "熟练度": {
+          "description": "她.熟练度",
+          "default": 1,
+          "$ref": "#/$defs/__schema317"
+        },
+        "此刻": {
+          "description": "她.此刻",
+          "default": "",
+          "$ref": "#/$defs/__schema318"
+        },
+        "兴奋度": {
+          "description": "她.兴奋度",
+          "default": 0,
+          "$ref": "#/$defs/__schema319"
+        },
+        "情绪": {
+          "description": "她.情绪",
+          "default": "好奇",
+          "$ref": "#/$defs/__schema320"
+        }
+      }
+    },
+    "__schema314": {
+      "type": "string"
+    },
+    "__schema315": {
+      "type": "number"
+    },
+    "__schema316": {
+      "type": "number"
+    },
+    "__schema317": {
+      "type": "number"
+    },
+    "__schema318": {
+      "type": "string"
+    },
+    "__schema319": {
+      "type": "number"
+    },
+    "__schema320": {
+      "type": "string"
+    },
+    "__schema321": {
+      "type": "object",
+      "properties": {
+        "当前选项": {
+          "description": "局面.当前选项",
+          "default": {},
+          "$ref": "#/$defs/__schema322"
+        },
+        "她的倾向": {
+          "description": "局面.她的倾向",
+          "default": "",
+          "$ref": "#/$defs/__schema323"
+        },
+        "玩家拒绝": {
+          "description": "局面.玩家拒绝",
+          "default": "",
+          "$ref": "#/$defs/__schema324"
+        },
+        "判定结果": {
+          "description": "局面.判定结果",
+          "default": {},
+          "$ref": "#/$defs/__schema325"
+        },
+        "今日指令": {
+          "description": "局面.今日指令",
+          "default": "",
+          "$ref": "#/$defs/__schema326"
+        },
+        "误点": {
+          "description": "局面.误点",
+          "default": false,
+          "$ref": "#/$defs/__schema327"
+        },
+        "她已选": {
+          "description": "局面.她已选",
+          "default": "",
+          "$ref": "#/$defs/__schema328"
+        },
+        "她打的字": {
+          "description": "局面.她打的字",
+          "default": "",
+          "$ref": "#/$defs/__schema329"
+        },
+        "场面": {
+          "description": "局面.场面",
+          "default": {},
+          "$ref": "#/$defs/__schema330"
+        }
+      }
+    },
+    "__schema322": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "当前选项的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema323": {
+      "type": "string"
+    },
+    "__schema324": {
+      "type": "string"
+    },
+    "__schema325": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "判定结果的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema326": {
+      "type": "string"
+    },
+    "__schema327": {
+      "type": "boolean"
+    },
+    "__schema328": {
+      "type": "string"
+    },
+    "__schema329": {
+      "type": "string"
+    },
+    "__schema330": {
+      "type": "object",
+      "properties": {
+        "地点": {
+          "description": "场面.地点",
+          "default": "自宅",
+          "$ref": "#/$defs/__schema331"
+        },
+        "体位": {
+          "description": "场面.体位",
+          "default": "",
+          "$ref": "#/$defs/__schema332"
+        },
+        "节奏": {
+          "description": "场面.节奏",
+          "default": "",
+          "$ref": "#/$defs/__schema333"
+        },
+        "参与": {
+          "description": "场面.参与",
+          "default": {},
+          "$ref": "#/$defs/__schema334"
+        },
+        "留痕": {
+          "description": "场面.留痕",
+          "default": "",
+          "$ref": "#/$defs/__schema335"
+        },
+        "她看到的": {
+          "description": "场面.她看到的",
+          "default": "",
+          "$ref": "#/$defs/__schema336"
+        }
+      }
+    },
+    "__schema331": {
+      "type": "string"
+    },
+    "__schema332": {
+      "type": "string"
+    },
+    "__schema333": {
+      "type": "string"
+    },
+    "__schema334": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "参与的键"
+      },
+      "additionalProperties": {}
+    },
+    "__schema335": {
+      "type": "string"
+    },
+    "__schema336": {
+      "type": "string"
+    },
+    "__schema337": {
+      "type": "object",
+      "properties": {
+        "已触发": {
+          "description": "终局.已触发",
+          "default": false,
+          "$ref": "#/$defs/__schema338"
+        },
+        "剩余体力": {
+          "description": "终局.剩余体力",
+          "default": 0,
+          "$ref": "#/$defs/__schema339"
+        },
+        "选择": {
+          "description": "终局.选择",
+          "default": "",
+          "$ref": "#/$defs/__schema340"
+        }
+      }
+    },
+    "__schema338": {
+      "type": "boolean"
+    },
+    "__schema339": {
+      "type": "number"
+    },
+    "__schema340": {
+      "type": "string"
+    }
+  }
+}

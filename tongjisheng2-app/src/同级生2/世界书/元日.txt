@@ -1,0 +1,286 @@
+@@generate_before
+<%/* ════════════════════════════════════════════════════════════
+   同级生2 · 事件 · 元日
+   ════════════════════════════════════════════════════════════
+   触发条件：01-02 早时段（day_count=12，跨年后的元日初诣）
+   事件类型：季节性
+   影响范围：跨年同行女角 + 其他已相遇女角
+   关联调度器：day12_0102.txt → event_day12_kumiko_morning / event_day12_kumiko_afternoon_play
+   关联规则：全局规则总表.txt → DIFFICULTY_MODIFIERS / LCG_TIER_MODIFIER
+   ════════════════════════════════════════════════════════════ */%>
+
+<%
+/* ── 读取运行时全局变量 ── */
+const _diff = String(getvar('stat_data.临时.当前难度', { scope: 'local', defaults: '普通' })) || '普通';
+const _dayCount = Number(getvar('stat_data.时间.天数', { scope: 'local', defaults: 12 })) || 12;
+const _date = String(getvar('stat_data.时间.当前日期', { scope: 'local', defaults: '01-02' })) || '01-02';
+const _timeSlot = String(getvar('stat_data.时间.时段', { scope: 'local', defaults: '早' })) || '早';
+const _money = Number(getvar('stat_data.主角.现金', { scope: 'local', defaults: 5000 })) || 0;
+const _mood = Number(getvar('stat_data.主角.心情', { scope: 'local', defaults: 70 })) || 0;
+const _sleepQuality = Number(getvar('stat_data.主角.睡眠质量', { scope: 'local', defaults: 70 })) || 0;
+
+/* ── 跨年同行女角（从跨年事件 choice_made 继承，运行时由控制器写入）── */
+const _nyChoice = String(getvar('stat_data.临时.上次选择结果', { scope: 'local', defaults: '' })) || '';
+
+/* ── 难度修正系数（引用 全局规则总表.txt → DIFFICULTY_MODIFIERS）──
+   轻松：increase×1.5 / 大凶概率 5%
+   普通：increase×1.0 / 大凶概率 10%
+   挑战：increase×0.9 / 大凶概率 15%
+   地狱：increase×0.3 / 大凶概率 25%（倒霉日强化） */
+const _DIFF = {
+  '轻松': { increase_mult: 1.5, bad_luck_prob: 0.05, great_luck_prob: 0.25, note: '休闲向，吉签概率提升' },
+  '普通': { increase_mult: 1.0, bad_luck_prob: 0.10, great_luck_prob: 0.15, note: '原作难度' },
+  '挑战': { increase_mult: 0.9, bad_luck_prob: 0.15, great_luck_prob: 0.10, note: '凶签概率提升' },
+  '地狱': { increase_mult: 0.3, bad_luck_prob: 0.25, great_luck_prob: 0.05, note: '大凶概率大幅提升（倒霉日）' }
+};
+const _dm = _DIFF[_diff] || _DIFF['普通'];
+
+function _adj(base) { return Math.round(base * _dm.increase_mult); }
+
+/* ── 御签（おみくじ）抽签结果（LCG 骰子决定）──
+   引用 全局规则总表.txt → LCG_TIER_MODIFIER 风格，5 档吉凶 */
+const OMIKUJI_RESULTS = [
+  {
+    name: '大吉',
+    probability: _dm.great_luck_prob,
+    effect: { all_heroines_affection: _adj(3), mood: _adj(10), note: '当日所有女角 affection +3' },
+    narrative: '你摇出签筒，一根细竹签落地。住持取来对应的签文，展开后是"大吉"二字，墨迹浓黑。签文写着："心想事成，万事如意。所愿皆得，所求皆应。"你心头一暖，新年的第一天就抽到大吉，仿佛整年都被祝福。住持微笑着说："今年是你的好年。"走出神社时，连空气都格外清冽，雪后初晴的阳光照在身上暖融融的。你想，或许今年真能心想事成——那个一直想接近的人，也许会有好结果。大吉的福气将持续一整天，当日所有已相遇女角 affection +3，你的心情也格外舒畅。'
+  },
+  {
+    name: '中吉',
+    probability: 0.30,
+    effect: { money: _adj(500), mood: _adj(5), note: '当日 money +500（小额财运）' },
+    narrative: '签筒摇晃许久，终于落出一根签。"中吉"，签文写着："稳步前行，小有所得。财喜临门，量力而行。"不是最好，但也不差。住持点头："中吉是稳当的好签，今年脚踏实地即可。"你将签文系在神社的结绳架上，让它替你守着这一年的运势。走出神社时，路上捡到一个钱包——里面有些现金，失主早已不见踪影。你想这或许就是"财喜临门"的应验，小额的财运，正好够新年的一顿好饭。中吉的运气不算惊艳，但胜在稳妥，新的一年不必奢求大喜，只要稳步前行就好。'
+  },
+  {
+    name: '吉',
+    probability: 0.35,
+    effect: { mood: _adj(10), note: '当日 mood +10（心境平和）' },
+    narrative: '签是"吉"，最朴实的吉签。签文写着："平平安安，无灾无难。守常则吉，贪进则凶。"没有大喜的承诺，也没有大凶的警告，只是平平实实地告诉你——平安就是福气。住持说："吉签最适合普通人，今年守住本分就好。"你将签系在结绳架上，看着满架的签文在风里轻摆，红的白的，吉的凶的，每个人都在新年许下愿望。你忽然觉得，这种平淡的吉签反而最让人安心。不求大富大贵，只求平平安安。走出神社时，初阳照在雪地上，反射出细碎的光，你的心境格外平和。吉签带来的不是惊喜，而是一整天的好心情。'
+  },
+  {
+    name: '凶',
+    probability: _dm.bad_luck_prob * 0.6,
+    effect: { mood: _adj(-10), note: '当日 mood -10（小不顺）' },
+    narrative: '签筒摇了许久才落出一根，住持展开后微微皱眉——"凶"。签文写着："慎言慎行，莫强出头。守静则安，妄动则祸。"你心头一沉，新年的第一天就抽到凶签，仿佛被泼了一盆冷水。住持安慰道："凶签并非坏事，它提醒你今年要格外谨慎。知晓凶险，方能避开。"你将凶签系在结绳架上，按传统让风带走厄运。但走出神社时，心里还是蒙上一层阴影。果不其然，这一整天小不顺不断——出门踩到水洼，午饭排到一半卖完，回家路上又遇上堵车。凶签的阴影笼罩着这一天，你的心情也跟着低落。但住持说得对，知晓凶险才能避开，这一年的谨慎，从今天开始。'
+  },
+  {
+    name: '大凶',
+    probability: _dm.bad_luck_prob,
+    effect: { all_heroines_jealousy: _adj(5), mood: _adj(-15), note: '当日所有女角 jealousy +5（倒霉日）' },
+    narrative: '签筒里最后一根签落地，住持展开后脸色微变——"大凶"。签文写着："诸事不宜，慎之又慎。口舌是非，感情生变。"这是最差的签，新年的第一天就抽到大凶，仿佛整年都被诅咒。住持严肃地说："大凶之签，今年务必低调行事，尤其感情之事，恐生变故。"你将大凶签系在结绳架上，希望能镇压厄运，但走出神社时，连天空都阴沉下来。果不其然，这一整天倒霉事接踵而至——不仅你自己心绪不宁，连身边的女角们也莫名地对你发脾气，仿佛大凶的霉运传染给了所有人。已相遇的女角们今日 jealousy +5，仿佛感应到你的运势低迷，都对你生了疑心。这是倒霉的一天，但也是考验的一天——若能扛过大凶之日的低潮，今年的感情之路反而会更加坚固。'
+  }
+];
+
+/* ── 元日事件主对象（与 chronicle 表结构对齐）── */
+const hatsu_moude = {
+  /* ═══ chronicle 表登记字段 ═══ */
+  event_id: 'event_seasonal_hatsu_moude',
+  event_type: '季节性',
+  date: '01-02',
+  time_slot: '早',
+  location: '如月神宫（初诣）/ 温泉乡 / 八十八町商业区',
+  heroine_id: null,
+  title: '元日的初诣与御签',
+  description: '1月2日早晨，跨年后的元日。主角若与女角同行跨年，元日早晨会有延续剧情；若独自跨年，元日可独自初诣抽御签。',
+  choice_made: '',
+  is_completed: 0,
+
+  /* ═══ 触发条件 ═══ */
+  trigger: {
+    day_count: 12,
+    date: '01-02',
+    time_slot: '早',
+    prerequisite: '跨年事件(event_seasonal_new_year_eve)已完成；继承其 choice_made 判定延续剧情',
+    auto_trigger: true
+  },
+
+  /* ═══ 影响范围 ═══ */
+  scope: {
+    heroines: '跨年同行女角 + 其他已相遇女角',
+    condition: '跨年同行者触发延续；所有已相遇女角受御签效果影响'
+  },
+
+  /* ═══ 分支设计 ═══ */
+  branches: [
+    /* ── 分支 1：跨年同行延续（按跨年选择的女角触发）── */
+    {
+      heroine_id: 'inherit_from_new_year_eve',
+      heroine_name: '跨年同行女角（继承）',
+      condition: '跨年事件 choice_made 为唯/友美/美沙/佐知子/美铃之一',
+      trigger_threshold: { prev_choice_in: ['yui', 'tomomi', 'misa', 'sachiko', 'misuzu'] },
+      scene: '神社境内早晨 / 同行女角住处附近',
+      invitation: '元日清晨，昨夜跨年同行的女角依然记得倒计时的拥抱。她或许在神社门口等你，或许发来传呼邀你一起吃元日的杂煮。',
+      choices: [
+        {
+          option: '与跨年同行女角继续元日早晨的约会',
+          consequences: {
+            variables: {
+              '同行女角.affection': _adj(5),
+              '同行女角.heartbeat': _adj(5),
+              '主角.mood': _adj(5)
+            },
+            events: ['event_seasonal_hatsu_moude_continuation'],
+            special_event: '元日早晨延续场景（按女角不同有 5 种版本）',
+            cg_unlock: 'cg_hatsu_moude_morning_<heroine>',
+            bad_ending: null
+          },
+          narrative: '元日清晨，雪后初晴。昨夜跨年同行的她，依然记得倒计时时刻的那个拥抱。她发来传呼，或是在神社门口等你——无论哪种，你们的重逢都带着昨夜余温的暧昧。一起在神社境内吃元日的杂煮汤，她舀了一勺给你尝，耳尖微红。或者她带你去看初日出，红日从雪山后升起，将整片雪原染成金色。她靠在你身边，轻声说："昨晚的事……不是梦吧？"你握住她的手确认，她笑得像个孩子。这是元日早晨的延续，跨年的拥抱还在掌心发烫，新年的第一缕阳光照在你们身上，仿佛在为这段关系镀上金边。她今日 affection +5，heartbeat +5，昨夜的情愫在晨光里生根发芽。无论她是唯、友美、美沙、佐知子还是美铃，这个元日早晨都属于你们两个人。'
+        }
+      ]
+    },
+
+    /* ── 分支 2：独自初诣（抽御签）── */
+    {
+      heroine_id: null,
+      heroine_name: '独自初诣',
+      condition: '跨年事件为独自参拜或温泉旅馆分支；或玩家主动选择独自初诣',
+      trigger_threshold: { prev_choice_in: ['alone', 'onsen', 'none'] },
+      scene: '如月神宫（早晨初诣）',
+      invitation: '元日早晨，神社举行初诣仪式。无论昨夜如何度过，元日都可独自前来抽一支御签，占卜新一年的运势。住持在神社本殿前分发签筒。',
+      choices: [
+        {
+          option: '独自去神社抽御签（LCG 骰子决定吉凶）',
+          consequences: {
+            variables: '按抽签结果应用（见 omikuji_results）',
+            events: ['event_seasonal_omikuji_<result>'],
+            special_event: '御签结果影响当日全局（大吉/中吉/吉/凶/大凶）',
+            cg_unlock: 'cg_hatsu_moude_omikuji_<result>',
+            bad_ending: null,
+            dice_check: 'LCG 骰子 5 档概率（受难度修正）'
+          },
+          narrative: '你独自来到如月神宫，元日的早晨香火鼎盛。住持在神前为你摇签筒，竹签相互碰撞的声音清脆。一根签落地，住持取来对应的签文，展开——结果是按 LCG 骰子决定的吉凶。无论大吉、中吉、吉、凶还是大凶，签文都会详细解释今年的运势走向。你将签文系在神社的结绳架上，让风带走厄运，留下福气。大吉则当日所有女角 affection +3，仿佛你身上带着福气，连身边的人都受影响。中吉则当日有 500 日元小额财运。吉签则心境平和，mood +10。凶签则小不顺，mood -10。大凶则是倒霉日，所有女角 jealousy +5，仿佛她们都感应到你的运势低迷。元日的御签，将影响这一整天甚至这一年的运势走向。'
+        }
+      ],
+      omikuji_results: OMIKUJI_RESULTS
+    },
+
+    /* ── 分支 3：温泉乡元日（遇见永岛母女）── */
+    {
+      heroine_id: 14,
+      heroine_name: '永岛佐知子 / 永岛久美子',
+      condition: '跨年在温泉旅馆过夜，或元日早晨前往温泉乡',
+      trigger_threshold: { location: '温泉乡', or_prev_choice: 'onsen' },
+      scene: '温泉乡旅馆 / 如月神宫（温泉乡侧）',
+      invitation: '元日早晨，温泉乡的空气带着硫磺与雪的清冽。你在旅馆用元日早餐时，遇见佐知子带着久美子来参拜——这是 01-03 佐知子正式登场的前置铺垫。',
+      choices: [
+        {
+          option: '在温泉乡元日遇见永岛母女',
+          consequences: {
+            variables: {
+              '永岛佐知子.affection': _adj(3),
+              '永岛久美子.affection': _adj(3),
+              '主角.mood': _adj(4)
+            },
+            events: ['event_day12_kumiko_morning'],
+            special_event: '佐知子/久美子参拜偶遇（01-03 正式登场前置）',
+            cg_unlock: 'cg_hatsu_moude_onsen_nagashima',
+            bad_ending: null
+          },
+          narrative: '元日早晨，你在温泉乡旅馆用完跨年早餐，正准备去参拜。神宫温泉乡侧门处，你遇见佐知子牵着久美子走来。佐知子穿着素色和服，久美子穿着小红外套，母女俩在雪地里像一幅画。久美子认出了你——如果你昨晚独自参拜时偶遇过她——她兴奋地挥手："哥哥！"佐知子有些不好意思，但眼神里藏着感激。你们一起在温泉乡侧的神宫参拜，久美子吵着要抽签，结果抽到"吉"，咯咯笑着给妈妈看。佐知子看着女儿笑，又看了你一眼，轻声说："新年快乐。昨天……谢谢你。"这是永岛母女线在元日的温馨前置，为 01-03 佐知子正式登场埋下伏笔。温泉乡的元日，雪、神社、母女、你——这一幕像新年的明信片。'
+        }
+      ]
+    },
+
+    /* ── 分支 4：商业区元日（商店初售）── */
+    {
+      heroine_id: null,
+      heroine_name: '商业区初售',
+      condition: '元日早晨前往八十八町商业区',
+      trigger_threshold: { location: '八十八町商业区' },
+      scene: '88车站前商业街（初售福袋）',
+      invitation: '元日早晨，商业区商店举行新年初售，部分商品打折，还有福袋活动。88车站前的商业街张灯结彩，店家吆喝着招揽新年第一笔生意。',
+      choices: [
+        {
+          option: '去商业区逛新年初售（部分商品打折）',
+          consequences: {
+            variables: {
+              '主角.money': -1000,
+              '主角.mood': _adj(6)
+            },
+            events: ['event_seasonal_fukubukuro'],
+            special_event: '福袋活动（LCG 骰子决定福袋内容）',
+            cg_unlock: 'cg_hatsu_moude_shopping',
+            bad_ending: null,
+            shop_discount: '部分礼物类商品元日特价 ×0.7'
+          },
+          narrative: '元日早晨，88车站前的商业街人潮涌动。店家们挂着"新年 initial sale"的招牌，红白幕布在风里飘动。你挤进人群，发现新年特惠确实划算——原本 1500 日元的贵重礼物今天特价 1000，原本 500 的普通礼物今天 350。你趁机囤了几份年货与礼物，为接下来的攻略做准备。商业街尽头有家店在搞福袋活动，3000 日元一个，内容保密。你咬咬牙买了一个——里面是 LCG 骰子决定的随机物品，可能是稀有礼物，也可能是普通杂物。无论结果如何，元日的商业区热闹非凡，吆喝声、祝福声、新年音乐交织在一起。你拎着福袋与新购的礼物走在雪地里，心情不错。新年的第一天，从消费开始，也算一种仪式感。'
+        }
+      ]
+    }
+  ],
+
+  /* ═══ 特殊机制：大吉好运延续 ═══ */
+  special_luck: {
+    name: '大吉好运延续',
+    trigger: '元日抽到大吉的女角，次日 affection 额外 +5',
+    effect: { next_day_heroine_affection: _adj(5) },
+    condition: '御签结果为大吉',
+    note: '大吉的福气不仅在元日生效，还会延续到次日，受祝福的女角好感额外提升'
+  },
+
+  /* ═══ 难度修正 ═══ */
+  difficulty_modifiers: {
+    '轻松': '好感加成 ×1.5；大吉概率 25%，大凶概率 5%（吉签强化）',
+    '普通': '标准数值；大吉概率 15%，大凶概率 10%',
+    '挑战': '好感增长 ×0.9；大吉概率 10%，大凶概率 15%（凶签概率提升）',
+    '地狱': '好感增长 ×0.3；大吉概率 5%，大凶概率 25%（大凶概率大幅提升，倒霉日强化）'
+  },
+
+  /* ═══ CG 解锁总表（5 种）═══ */
+  cg_unlocks: [
+    { cg_id: 'cg_hatsu_moude_morning_yui',      condition: '跨年与唯同行+元日延续',   rarity: '稀有' },
+    { cg_id: 'cg_hatsu_moude_morning_tomomi',   condition: '跨年与友美同行+元日延续', rarity: '稀有' },
+    { cg_id: 'cg_hatsu_moude_morning_misa',     condition: '跨年与美沙同行+元日延续', rarity: '稀有' },
+    { cg_id: 'cg_hatsu_moude_morning_sachiko',   condition: '跨年与佐知子同行+元日延续', rarity: '精良' },
+    { cg_id: 'cg_hatsu_moude_morning_misuzu',    condition: '跨年与美铃同行+元日延续', rarity: '传说' },
+    { cg_id: 'cg_hatsu_moude_omikuji_daikichi',  condition: '元日抽到大吉',           rarity: '稀有' },
+    { cg_id: 'cg_hatsu_moude_omikuji_chukichi',  condition: '元日抽到中吉',           rarity: '精良' },
+    { cg_id: 'cg_hatsu_moude_omikuji_kichi',     condition: '元日抽到吉',             rarity: '普通' },
+    { cg_id: 'cg_hatsu_moude_omikuji_kyo',       condition: '元日抽到凶',             rarity: '普通' },
+    { cg_id: 'cg_hatsu_moude_omikuji_daikyo',    condition: '元日抽到大凶',           rarity: '稀有' },
+    { cg_id: 'cg_hatsu_moude_onsen_nagashima',   condition: '温泉乡遇见永岛母女',     rarity: '精良' },
+    { cg_id: 'cg_hatsu_moude_shopping',          condition: '商业区元日初售',         rarity: '普通' }
+  ],
+
+  /* ═══ 时间连续性 ═══ */
+  continuity: {
+    prev_event: 'event_seasonal_new_year_eve',
+    prev_date: '01-01',
+    next_event: 'event_day12_kumiko_morning（久美子线深化）',
+    next_date: '01-02',
+    note: '元日结束后，时间推进至 01-02 上午；若跨年收留了久美子，元日早晨的久美子场景将衔接 day12 调度器的久美子线剧情；元日的御签效果持续整个 day12'
+  }
+};
+
+const _trigger_ok = (_dayCount === 12 && _date === '01-02' && _timeSlot === '早');
+%>
+
+[同级生2 · 季节性事件 · 元日 已加载]
+触发校验：day_count=<%= _dayCount %> / date=<%= _date %> / time_slot=<%= _timeSlot %> / 难度=<%= _diff %>
+触发状态：<%= _trigger_ok ? '✓ 满足' : '✗ 未到时机' %>
+跨年继承：last_event_choice=<%= _nyChoice || '（未记录）' %>
+当前难度修正：好感增益 ×<%= _dm.increase_mult %> / 大吉概率 <%= (_dm.great_luck_prob * 100).toFixed(0) %>% / 大凶概率 <%= (_dm.bad_luck_prob * 100).toFixed(0) %>%
+
+【事件摘要】
+- event_id：event_seasonal_hatsu_moude
+- 日期：01-02（day_count=12）早时段
+- 标题：元日的初诣与御签
+- 分支数：4（跨年延续/独自初诣/温泉乡元日/商业区初售）
+- 影响范围：跨年同行女角 + 其他已相遇女角
+- 特殊机制：御签 5 档吉凶（大吉/中吉/吉/凶/大凶，LCG 骰子决定，受难度修正）
+- CG 可解锁：12 张（5 种元日早晨 + 5 种御签结果 + 温泉乡 + 商业区）
+- 后续衔接：01-02 上午（day12 久美子线深化）
+
+【执行规则】
+1. AI 必须先读取跨年事件 choice_maded（从 stat_data.临时.上次选择结果 继承），据此判定分支：
+   - 唯/友美/美沙/佐知子/美铃 → 分支 1 跨年延续
+   - 独自/温泉旅馆/无 → 分支 2 独自初诣（抽御签）
+   - 温泉旅馆 → 也可选分支 3 温泉乡元日
+   - 任意 → 可选分支 4 商业区初售
+2. 御签抽签使用 LCG 骰子，5 档概率受难度修正（轻松大吉25%/地狱大凶25%）。
+3. 大吉效果：当日所有已相遇女角 affection +3，次日受祝福女角 affection 额外 +5。
+4. 大凶效果：当日所有已相遇女角 jealousy +5（倒霉日），mood -15。
+5. 元日御签效果持续整个 day12，在 chronicle 表插入纪要记录（code_index/time_span/summary/chronicle_text）。
+6. 若跨年收留了久美子，元日早晨的温泉乡分支将衔接 event_day12_kumiko_morning，进入久美子线深化。
+7. 三事件时间连续性：圣诞夜(12-25) → 跨年(01-01) → 元日(01-02)，圣诞夜积累的好感/嫉妒贯穿后续两事件，跨年同行的选择决定元日延续剧情。

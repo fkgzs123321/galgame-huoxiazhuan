@@ -1,0 +1,38 @@
+{
+  "projectName": "同级生2",
+  "worldbookName": "同级生2",
+  "form": "charactercard",
+  "mvu": true,
+  "avatar": "头像.png",
+  "entryManifest": {
+    "EJS预处理": {},
+    "世界观": {},
+    "扮演准则": {},
+    "时间线": {},
+    "地理": {},
+    "角色": {},
+    "NPC": {},
+    "阶段指导": {},
+    "事件": {},
+    "MVU": {}
+  },
+  "typeLists": {
+    "before_char": [],
+    "after_char": [],
+    "depth": []
+  },
+  "strategyThresholds": {},
+  "partOrder": {},
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "同级生2 恋爱模拟角色卡：DDL CHECK 约束 + LCG 确定性骰子 + 单一 inline HTML 状态栏。严格还原寒假 12-22 ~ 01-07 共 17 天的剧情时间表，5 时段/天，按日期+时段+地点精准加载 NPC 条目控制 token。包含 19 位女角（14 位原作女角 + 5 位重制版新增：齐藤姐妹/铃木美穗/仁科/正树夏子），含 NSFW 重 H 字段（参考系统哥的末日 bound_women 表），加入 RPG 属性养成（12 技能） + 经济打工系统（6 种兼职） + 4 档难度（轻松/普通/挑战/地狱） + D0 指令 5 模式（打工/约会/上学/事件/休息） + 9 阶段关系系统（-100 仇视~+100 深爱） + 多维护栏（防口胡/防神化/防绝望/防全知/防崩溃/道德伦理/法律意识/经济护栏/合理性审查）。",
+  "first_messages": [
+    "开场白/0.txt"
+  ],
+  "creator": "",
+  "creator_notes": "",
+  "version": "1.0",
+  "create_date": "2026-07-04T13:09:05.772Z"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "yumq-regex-060-hide-statbar",
+  "scriptName": "8状态栏对AI隐藏",
+  "findRegex": "/<StatusPlaceHolderImpl\\s*\\/>/gi",
+  "replaceString": "",
+  "markdownOnly": false,
+  "promptOnly": true,
+  "placement": [2],
+  "minDepth": null,
+  "maxDepth": null,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "trimStrings": [],
+  "disabled": false
+}

@@ -1,0 +1,269 @@
+/* ============================================================
+   霍格沃茨 · 同层应用 组件细节层（全状态/微交互/视图补全）
+   ============================================================ */
+
+/* —— 按钮全状态细节 —— */
+.hgw-btn { position: relative; overflow: hidden; }
+.hgw-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--hgw-dur-fast);
+  pointer-events: none;
+}
+.hgw-btn:hover::after { opacity: 1; }
+.hgw-btn:focus-visible { outline: 2px solid var(--hgw-gold); outline-offset: 2px; }
+.hgw-btn.lg { letter-spacing: 2px; }
+.hgw-btn.sm { letter-spacing: 0; }
+
+/* —— 卡片全状态 —— */
+.hgw-card:active { transform: scale(0.99); }
+.hgw-card .card-title .sub { margin-left: auto; font-weight: 400; font-size: 10px; color: var(--hgw-text-faint); }
+
+/* —— 输入全状态 —— */
+.hgw-input:hover, .hgw-select:hover { border-color: rgba(255, 255, 255, 0.28); }
+.hgw-input:disabled, .hgw-select:disabled { opacity: 0.5; cursor: not-allowed; }
+.hgw-input.invalid, .hgw-select.invalid { border-color: var(--hgw-danger); box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.12); }
+.hgw-field .hint { font-size: 10px; color: var(--hgw-text-faint); margin-top: 3px; }
+.hgw-field .hint.err { color: var(--hgw-danger); }
+
+/* —— 进度条细节 —— */
+.hgw-bar i { min-width: 0; }
+.hgw-bar .stripe {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 6px, transparent 6px 12px);
+  border-radius: inherit;
+}
+.hgw-bar-label .val { color: var(--hgw-gold-bright); font-weight: 600; }
+
+/* —— 徽章细节 —— */
+.hgw-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: inline-block; }
+.hgw-tag { transition: all var(--hgw-dur-fast); }
+.hgw-tag.clickable { cursor: pointer; }
+.hgw-tag.clickable:hover { filter: brightness(1.3); }
+
+/* —— 表格细节 —— */
+.hgw-table th { position: sticky; top: 0; background: rgba(11, 16, 24, 0.95); z-index: 2; }
+.hgw-table td .hgw-tag { margin-right: 0; }
+.hgw-table tr { transition: background var(--hgw-dur-fast); }
+
+/* —— 列表行细节 —— */
+.hgw-row .row-actions { margin-left: auto; display: flex; gap: 6px; }
+.hgw-row .row-main { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+
+/* —— 空状态细节 —— */
+.hgw-empty .icon { animation: hgw-float-soft 3s ease-in-out infinite; }
+@keyframes hgw-float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* —— 加载状态细节 —— */
+.hgw-loading .spinner { border-width: 3px; }
+
+/* —— 模态细节 —— */
+.hgw-modal { scrollbar-width: thin; }
+.hgw-modal-body > *:last-child { margin-bottom: 0; }
+.hgw-modal .hgw-note { word-break: break-word; }
+
+/* —— 抽屉细节 —— */
+.hgw-drawer-body > *:last-child { margin-bottom: 0; }
+
+/* —— 顶栏细节 —— */
+#hgw-topbar .hgw-top-stat { transition: all var(--hgw-dur-fast); }
+#hgw-topbar .hgw-top-stat:hover { border-color: var(--hgw-gold-line); background: rgba(201, 162, 39, 0.12); }
+#hgw-topbar .hgw-logo .title { transition: text-shadow var(--hgw-dur-md); }
+#hgw-topbar .hgw-logo:hover .title { text-shadow: 0 0 20px rgba(201, 162, 39, 0.7); }
+
+/* —— 导航细节 —— */
+.hgw-nav-item { transition: all var(--hgw-dur-fast); }
+.hgw-nav-item .badge { transition: transform var(--hgw-dur-fast); }
+.hgw-nav-item:hover .badge { transform: scale(1.15); }
+
+/* —— 会话卡细节 —— */
+.hgw-session-card { position: relative; }
+.hgw-session-card.current::after {
+  content: '🎯';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+}
+.hgw-session-card .sess-parts .hgw-badge { transition: all var(--hgw-dur-fast); }
+.hgw-session-card .sess-parts .hgw-badge:hover { transform: scale(1.08); filter: brightness(1.2); }
+
+/* —— 角色卡细节 —— */
+.hgw-char-card { transition: all var(--hgw-dur-fast); }
+.hgw-char-card .c-axes .hgw-axis-mini { transition: all var(--hgw-dur-fast); }
+.hgw-char-card:hover .c-axes .hgw-axis-mini { background: rgba(255, 255, 255, 0.05); }
+.hgw-char-ava .house-ring { transition: all var(--hgw-dur-md); }
+.hgw-char-card:hover .hgw-char-ava .house-ring { opacity: 1; }
+
+/* —— 详情抽屉细节 —— */
+.hgw-char-detail-hero .d-secret { transition: all var(--hgw-dur-fast); }
+.hgw-char-detail-hero .d-secret:hover { background: rgba(142, 124, 195, 0.12); }
+
+/* —— 战斗细节 —— */
+.hgw-spell-pick .pick-cell { position: relative; }
+.hgw-spell-pick .pick-cell:active { transform: scale(0.95); }
+#hgw-battle-stage .hgw-duel-hp { transition: all var(--hgw-dur-md); }
+.hgw-battle-log .lg-you { font-weight: 600; }
+.hgw-battle-log .lg-her { font-weight: 600; }
+
+/* —— 亲密细节 —— */
+.hgw-dim-card { transition: all var(--hgw-dur-fast); }
+.hgw-dim-card:hover { border-color: var(--hgw-love-line); }
+.hgw-combo-item { transition: all var(--hgw-dur-fast); }
+.hgw-combo-item .ci-del { transition: all var(--hgw-dur-fast); }
+
+/* —— 炼药细节 —— */
+.hgw-recipe-row .rr-rate { font-family: var(--hgw-font-serif); }
+.hgw-shop-cell { transition: all var(--hgw-dur-fast); }
+.hgw-shop-cell:hover { border-color: var(--hgw-gold-line); transform: translateY(-2px); }
+
+/* —— 图鉴细节 —— */
+.hgw-lib-card .lc-desc { max-height: none; }
+.hgw-lib-card.clickable:hover .lc-name { color: var(--hgw-gold-bright); }
+
+/* —— 大段文档 —— */
+.hgw-doc {
+  padding: 14px 16px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: var(--hgw-fs-sm);
+  line-height: 2;
+  color: var(--hgw-text-dim);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.hgw-doc .doc-h {
+  font-family: var(--hgw-font-title);
+  font-size: var(--hgw-fs-lg);
+  color: var(--hgw-gold-bright);
+  letter-spacing: 2px;
+  margin: 16px 0 8px;
+}
+.hgw-doc .doc-h:first-child { margin-top: 0; }
+
+/* —— 图鉴全文条目 —— */
+.hgw-full-entry {
+  padding: 12px 14px;
+  border-radius: var(--hgw-r-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--hgw-dur-fast);
+}
+.hgw-full-entry:hover { border-color: var(--hgw-gold-line); background: rgba(201, 162, 39, 0.04); }
+.hgw-full-entry .fe-name { font-size: var(--hgw-fs-md); font-weight: 700; color: var(--hgw-text-bright); margin-bottom: 4px; }
+.hgw-full-entry .fe-preview { font-size: var(--hgw-fs-xs); color: var(--hgw-text-dim); line-height: 1.8; }
+
+/* —— 时间线细节 —— */
+.hgw-tl-item .tl-title .hgw-badge { font-weight: 400; }
+.hgw-tl-item.now { background: rgba(201, 162, 39, 0.05); border-radius: var(--hgw-r-md); }
+
+/* —— 首页 hero 细节 —— */
+#hgw-home-hero .hero-chips .hgw-badge { transition: all var(--hgw-dur-fast); }
+#hgw-home-hero .hero-chips .hgw-badge:hover { transform: translateY(-2px); box-shadow: var(--hgw-shadow-gold); }
+
+/* —— 存档细节 —— */
+.hgw-save-card .sv-ava { transition: all var(--hgw-dur-fast); }
+.hgw-save-card:hover .sv-ava { transform: rotate(-6deg) scale(1.08); }
+
+/* —— 设置行细节 —— */
+.hgw-settings-row .sr-action .hgw-btn { min-width: 64px; }
+
+/* —— 打字机效果（结算块） —— */
+.hgw-typewriter { animation: hgw-type-in 0.4s steps(12) both; overflow: hidden; }
+@keyframes hgw-type-in { from { width: 0; } to { width: 100%; } }
+
+/* —— 消息进入序列 —— */
+.hgw-msg:nth-child(odd) { animation-delay: 0.05s; }
+.hgw-msg:nth-child(even) { animation-delay: 0.1s; }
+
+/* —— 滚动指示 —— */
+.hgw-scroll-fade { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%); }
+
+/* —— 焦点环统一 —— */
+.hgw-btn:focus, .hgw-card:focus, .hgw-row:focus, .hgw-nav-item:focus { outline: none; }
+.hgw-btn:focus-visible, .hgw-card:focus-visible, .hgw-row:focus-visible, .hgw-nav-item:focus-visible { outline: 2px solid var(--hgw-gold); outline-offset: 2px; }
+
+/* —— 高对比度标题 —— */
+.hgw-title-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 12px;
+  color: var(--hgw-gold-bright);
+  font-family: var(--hgw-font-title);
+  font-size: var(--hgw-fs-lg);
+  letter-spacing: 3px;
+}
+.hgw-title-rule::before, .hgw-title-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hgw-gold-line), transparent);
+}
+
+/* —— 角饰 —— */
+.hgw-corner::before, .hgw-corner::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+.hgw-corner::before { top: 6px; left: 6px; border-top: 2px solid var(--hgw-gold-dim); border-left: 2px solid var(--hgw-gold-dim); border-top-left-radius: 6px; }
+.hgw-corner::after { bottom: 6px; right: 6px; border-bottom: 2px solid var(--hgw-gold-dim); border-right: 2px solid var(--hgw-gold-dim); border-bottom-right-radius: 6px; }
+
+/* —— 分隔纹 —— */
+.hgw-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--hgw-gold-dim);
+  font-size: 10px;
+  letter-spacing: 6px;
+  margin: 12px 0;
+}
+.hgw-ornament::before, .hgw-ornament::after {
+  content: '◆';
+  font-size: 7px;
+  color: var(--hgw-gold-dim);
+}
+
+/* —— 数值变化高亮 —— */
+.hgw-flash-up { animation: hgw-flash-up 0.8s ease both; }
+@keyframes hgw-flash-up {
+  0% { color: var(--hgw-ok); text-shadow: 0 0 12px rgba(127, 208, 168, 0.8); }
+  100% { color: inherit; text-shadow: none; }
+}
+.hgw-flash-down { animation: hgw-flash-down 0.8s ease both; }
+@keyframes hgw-flash-down {
+  0% { color: var(--hgw-danger); text-shadow: 0 0 12px rgba(226, 75, 74, 0.8); }
+  100% { color: inherit; text-shadow: none; }
+}
+
+/* —— 帮助浮层 —— */
+.hgw-help-tip {
+  position: fixed;
+  z-index: 9900;
+  max-width: 260px;
+  padding: 10px 14px;
+  background: rgba(16, 26, 38, 0.98);
+  border: 1px solid var(--hgw-gold-line);
+  border-radius: var(--hgw-r-md);
+  box-shadow: var(--hgw-shadow-lg);
+  font-size: var(--hgw-fs-xs);
+  color: var(--hgw-text-dim);
+  line-height: 1.7;
+  animation: hgw-fade-in var(--hgw-dur-fast) both;
+  pointer-events: none;
+}

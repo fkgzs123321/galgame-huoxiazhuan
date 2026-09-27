@@ -1,0 +1,15 @@
+{
+  "id": "fjb-stage-up-beautify",
+  "scriptName": "阶段晋升美化",
+  "findRegex": "/<StageUp\\s+from=\"(\\d+)\"\\s+to=\"(\\d+)\"\\s+name=\"([^\"]+)\"\\s*(?:desc=\"([^\"]+)\"\\s*)?\\/>/g",
+  "replaceString": "<div class=\"fjb-stageup\"><div class=\"fjb-stageup-banner\"><span class=\"fjb-stageup-arrow\">◆</span> 阶段晋升 <span class=\"fjb-stageup-arrow\">◆</span></div><div class=\"fjb-stageup-body\"><div class=\"fjb-stageup-stage\">第$1阶段 → <strong>第$2阶段</strong></div><div class=\"fjb-stageup-name\">$3</div><div class=\"fjb-stageup-desc\">$4</div></div></div>",
+  "trimStrings": [],
+  "placement": [2],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+}
